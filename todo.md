@@ -1,0 +1,6 @@
+- Players
+    - Ratings
+- Pairings
+    - Swiss
+    - Tie-breaking
+- Standings

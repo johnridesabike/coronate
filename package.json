@@ -1,0 +1,19 @@
+{
+  "name": "chessahoochee",
+  "version": "0.1.0",
+  "description": "A chess tournament manager",
+  "main": "main.js",
+  "scripts": {
+    "test": "standard || exit 0",
+    "start": "electron app"
+  },
+  "author": "John Jackson",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "electron": "^4.1.0",
+    "eslint": "^5.15.2",
+    "standard": "*",
+    "stylelint": "~9.10.1",
+    "stylelint-config-standard": "^18.2.0"
+  }
+}
