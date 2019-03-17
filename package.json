@@ -15,6 +15,7 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "electron": "^4.1.0",
+    "electron-rebuild": "^1.8.4",
     "eslint": "^5.15.2",
     "standard": "*",
     "stylelint": "~9.10.1",
