@@ -15,12 +15,6 @@ Todo:
 'use strict'
 
 /**
- * Define constants.
- */
-const SWISS = 0
-const ROUND_ROBIN = 1
-
-/**
  * Represents an indivudal player.
  *
  * @param {string} firstName
@@ -28,7 +22,7 @@ const ROUND_ROBIN = 1
  * @param {int}    rating
  */
 class Player {
-  constructor (firstName, lastName, rating) {
+  constructor (firstName, lastName, rating = 1200) {
     this.firstName = firstName
     this.lastName = lastName
     this.rating = rating
@@ -44,10 +38,9 @@ class Player {
  * @param {int}    type
  */
 class Tournament {
-  constructor (name, timeControl, type = SWISS, playerList = []) {
+  constructor (name, timeControl, playerList = []) {
     this.name = name
     this.timeControl = timeControl
-    this.type = type
     this.playerList = playerList
     this.roundList = []
   }
@@ -65,13 +58,7 @@ class Tournament {
    * Calculate number of rounds
    */
   numOfRounds () {
-    let playerNum = this.playerList.length
-    switch (this.type) {
-      case SWISS:
-        return Math.ceil(Math.log2(playerNum))
-      case ROUND_ROBIN:
-        return Math.ceil(playerNum / 2) * 2 - 1
-    }
+    return Math.ceil(Math.log2(this.playerList.length))
   }
 
   /**
@@ -87,16 +74,55 @@ class Tournament {
    * @param {Player} player
    */
   playerScore (player) {
-    var score
-    for (var round in this.roundList) {
-      for (var match in this.roundList[round]) {
-        var index = this.roundList[round][match].players.indexOf(player)
+    var score = 0
+    for (var r in this.roundList) {
+      for (var m in this.roundList[r]) {
+        var match = this.roundList[r][m]
+        var index = match.players.indexOf(player)
         if (index !== -1) {
-          score += this.roundList[round][match].results[index]
+          score += match.result[index]
         }
       }
     }
     return score
+  }
+
+  /**
+   * Generates a new round.
+   */
+  newRound () {
+    var players = []
+    // Generate a list of players and their scores
+    for (var p in this.playerList) {
+      var player = this.playerList[p]
+      var score = 0
+      for (var r in this.roundList) {
+        for (var m in this.roundList[r]) {
+          var match = this.roundList[r][m]
+          var playerIndex = match.players.indexOf(player)
+          if (playerIndex !== -1) {
+            score += match.result[playerIndex]
+          }
+        }
+      }
+      players.push({ player: player, score: score })
+    }
+    // Sort the players by their scores.
+    players.sort((a, b) => a.score - b.score)
+    var newRound = []
+    for (var i = 0; i < players.length / 2; i++) {
+      newRound.push(
+        new Match(players[i * 2].player, players[i * 2 + 1].player)
+      )
+    }
+    /*
+    TODO:
+    - Equalize white and black
+    - Ensure players aren't matched twice
+    */
+    // return the new round.
+    this.roundList.push(newRound)
+    return newRound
   }
 }
 
@@ -107,9 +133,9 @@ class Tournament {
  * @param {Player} white
  */
 class Match {
-  constructor (black, white) {
-    this.players = [black, white]
-    this.ratingsStart = [black.rating, white.rating]
+  constructor (white, black) {
+    this.players = [white, black]
+    this.ratingsStart = [white.rating, black.rating]
     this.ratingsChange = []
     this.result = [0, 0]
   }
@@ -118,7 +144,7 @@ class Match {
    * Sets black as the winner.
    */
   blackWon () {
-    this.result = [1, 0]
+    this.result = [0, 1]
     // calculate ratings
   }
 
@@ -126,7 +152,7 @@ class Match {
    * Sets white as the winner.
    */
   whiteWon () {
-    this.result = [0, 1]
+    this.result = [1, 0]
     // calculate ratings
   }
 
@@ -139,11 +165,7 @@ class Match {
   }
 }
 
-var players = []
-var john = new Player('John', 'Jackson', 1200)
-
-players.push(john)
-
-module.exports.getPlayer = function (input) {
-  return players[input]
+module.exports = {
+  Tournament: Tournament,
+  Player: Player
 }
