@@ -3,14 +3,6 @@
 *
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
-
-Todo:
-- Players
-    - Ratings
-- Pairings
-    - Swiss
-    - Tie-breaking
-- Standings
 * --------------------------------------------------------------------------- */
 'use strict'
 
@@ -88,6 +80,52 @@ class Tournament {
   }
 
   /**
+   * Calculate a player's color balance
+   *
+   * @param {Player} player
+   *
+   * @return {Int} A negative number means they played as black more. A positive number means they played as white more.
+   */
+  playerColorBalance (player) {
+    var color = 0
+    for (var r in this.roundList) {
+      for (var m in this.roundList[r]) {
+        var match = this.roundList[r][m]
+        if (match.players[0] === player) {
+          color += 1
+        } else if (match.players[1] === player) {
+          color += -1
+        }
+      }
+    }
+    return color
+  }
+
+  /**
+   * Generate a list of a player's opponents.
+   *
+   * @param {Player} player
+   *
+   * @return {Array} A list of past opponents
+   */
+  playerOppHistory (player) {
+    var opponents = []
+    for (var r in this.roundList) {
+      for (var m in this.roundList[r]) {
+        var matchPlayers = this.roundList[r][m].players
+        if (matchPlayers.includes(player)) {
+          opponents = opponents.concat(
+            matchPlayers.filter(
+              player2 => player2 !== player && !opponents.includes(player2)
+            )
+          )
+        }
+      }
+    }
+    return opponents
+  }
+
+  /**
    * Generates a new round.
    */
   newRound () {
@@ -109,17 +147,22 @@ class Tournament {
     }
     // Sort the players by their scores.
     players.sort((a, b) => a.score - b.score)
+    // Match players
     var newRound = []
     for (var i = 0; i < players.length / 2; i++) {
-      newRound.push(
-        new Match(players[i * 2].player, players[i * 2 + 1].player)
-      )
+      var player1 = players[i * 2].player
+      var player2 = players[i * 2 + 1].player
+      // check if players played eachother
+      // if (this.playerOppHistory(player1).includes(player2)) {
+      //   // TODO
+      // }
+      var newMatch = new Match(player1, player2)
+      // Equalize black and white
+      if (this.playerColorBalance(player1) > this.playerColorBalance(player2)) {
+        newMatch.players.reverse()
+      }
+      newRound.push(newMatch)
     }
-    /*
-    TODO:
-    - Equalize white and black
-    - Ensure players aren't matched twice
-    */
     // return the new round.
     this.roundList.push(newRound)
     return newRound
