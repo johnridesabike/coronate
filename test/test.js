@@ -1,4 +1,4 @@
-var { Tournament, Player } = require('./app/chess-tourney.js')
+var { Tournament, Player } = require('./chess-tourney.js')
 var players = [
   new Player('Matthew', 'A'), new Player('Mark', 'B'),
   new Player('Luke', 'C'), new Player('John', 'D'),
