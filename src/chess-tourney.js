@@ -4,7 +4,6 @@
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
-'use strict'
 
 /**
  * Represents an indivudal player.
@@ -65,9 +64,13 @@ class Tournament {
    *
    * @param {Player} player
    */
-  playerScore (player) {
+  playerScore (player, round = null) {
     var score = 0
-    for (var r in this.roundList) {
+    if ( round === null) {
+      round = this.roundList.length
+    }
+    var roundKeys = Array.from(Array(round + 1).keys())
+    for (var r in roundKeys) {
       for (var m in this.roundList[r]) {
         var match = this.roundList[r][m]
         var index = match.players.indexOf(player)
@@ -86,9 +89,13 @@ class Tournament {
    *
    * @return {Int} A negative number means they played as black more. A positive number means they played as white more.
    */
-  playerColorBalance (player) {
+  playerColorBalance (player, round = null) {
     var color = 0
-    for (var r in this.roundList) {
+    if ( round === null) {
+      round = this.roundList.length
+    }
+    var roundKeys = Array.from(Array(round + 1).keys())
+    for (var r in roundKeys) {
       for (var m in this.roundList[r]) {
         var match = this.roundList[r][m]
         if (match.players[0] === player) {
@@ -108,9 +115,13 @@ class Tournament {
    *
    * @return {Array} A list of past opponents
    */
-  playerOppHistory (player) {
+  playerOppHistory (player, round = null) {
     var opponents = []
-    for (var r in this.roundList) {
+    if ( round === null) {
+      round = this.roundList.length
+    }
+    var roundKeys = Array.from(Array(round + 1).keys())
+    for (var r in roundKeys) {
       for (var m in this.roundList[r]) {
         var matchPlayers = this.roundList[r][m].players
         if (matchPlayers.includes(player)) {
@@ -127,6 +138,16 @@ class Tournament {
 
   /**
    * Generates a new round.
+   * TODO:
+   * - Split players into separate lists based on scores (§ 27A2)
+   * - Split players (again) into separate lists based on their ranks, upper half vs lower half (§27A3)
+   * - For each player in the upper half, iterate through the lower half to find an opponent
+   * - - De-queue opponents who faced that player already (§27A1)
+   * - - Pre-assign the player to the opposite color as their last round. (§27A4 & §27A5)
+   * - - Prioritize opponents who played that color for *their* last round. (§27A4 & §27A5)
+   * - Account for odd numbers and other exceptions where players must play each other (low priority)
+   *
+   * @return {Array} the new round
    */
   newRound () {
     var players = []
@@ -152,10 +173,6 @@ class Tournament {
     for (var i = 0; i < players.length / 2; i++) {
       var player1 = players[i * 2].player
       var player2 = players[i * 2 + 1].player
-      // check if players played eachother
-      // if (this.playerOppHistory(player1).includes(player2)) {
-      //   // TODO
-      // }
       var newMatch = new Match(player1, player2)
       // Equalize black and white
       if (this.playerColorBalance(player1) > this.playerColorBalance(player2)) {
@@ -208,7 +225,4 @@ class Match {
   }
 }
 
-module.exports = {
-  Tournament: Tournament,
-  Player: Player
-}
+export {Tournament,Player}

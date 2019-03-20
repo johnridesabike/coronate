@@ -31,3 +31,22 @@
     transform: rotate(360deg);
   }
 }
+
+#root {
+  margin: 0 10% 0 10%;
+}
+
+#root td,
+#root th {
+  padding: 0.25em 1em;
+}
+
+#root th {
+  text-align: left;
+}
+
+.table__number {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+  text-align: right;
+}

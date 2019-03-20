@@ -1,3 +1,6 @@
+/**
+ * This file is quickly becoming irrelevant as its utility gets merged into App.js
+ */
 var { Tournament, Player } = require('./chess-tourney.js')
 var players = [
   new Player('Matthew', 'A'), new Player('Mark', 'B'),
