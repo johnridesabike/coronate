@@ -1,0 +1,7 @@
+{
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false,
+    "typescript.suggest.enabled": false,
+    "typescript.suggestionActions.enabled": false,
+    "javascript.suggestionActions.enabled": false
+}

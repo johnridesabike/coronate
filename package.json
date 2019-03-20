@@ -2,22 +2,31 @@
   "name": "chessahoochee",
   "version": "0.1.0",
   "description": "A chess tournament manager",
-  "main": "main.js",
+  "author": "John Jackson",
+  "license": "GPL-3.0-or-later",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
-  "scripts": {
-    "test": "standard || exit 0",
-    "start": "electron ."
+  "dependencies": {
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-scripts": "2.1.8"
   },
-  "author": "John Jackson",
-  "license": "GPL-3.0-or-later",
-  "devDependencies": {
-    "electron": "^4.1.0",
-    "eslint": "^5.15.2",
-    "standard": "*",
-    "stylelint": "~9.10.1",
-    "stylelint-config-standard": "~18.2.0"
-  }
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
