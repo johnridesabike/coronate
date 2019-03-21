@@ -36,6 +36,11 @@
   margin: 0 1em 0 1em;
 }
 
+h1 {
+  font-size: 1.5em;
+  font-weight: 400;
+}
+
 table {
   margin: 2em auto 0 auto;
 }

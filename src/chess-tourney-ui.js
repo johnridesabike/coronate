@@ -80,6 +80,7 @@ class Standings extends Component {
             <th>First name</th>
             <th>Score</th>
             <th>Color balance</th>
+            <th>Opponent count</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +89,7 @@ class Standings extends Component {
               <td>{player.firstName}</td>
               <td className="table__number">{this.tourney.playerScore(player, this.roundNum)}</td>
               <td className="table__number">{this.tourney.playerColorBalance(player, this.roundNum)}</td>
+              <td className="table__number">{this.tourney.playerOppHistory(player, this.roundNum).length}</td>
             </tr>
           )}
         </tbody>

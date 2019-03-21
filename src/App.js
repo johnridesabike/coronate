@@ -38,6 +38,7 @@ class App extends Component {
   render() {
     return (
       <div className="tournament">
+        <h1>Chessahoochee: a chess tournament app</h1>
         <Roster tourney={cvlTourney}/>
         <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
         {cvlTourney.roundList.map((round, i) => 
