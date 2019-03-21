@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import {Tournament, Player} from './chess-tourney';
 import {Roster, RoundResults, Standings} from './chess-tourney-ui';
+var _ = require('lodash');
 
 function randomRating(min = 800, max = 2500) {
   return Math.floor(Math.random() * (max - min) + min)
@@ -24,14 +25,13 @@ var cvlTourney = new Tournament(
 
 while (cvlTourney.roundList.length < cvlTourney.numOfRounds()) {
   var round = cvlTourney.newRound()
-  for (var i in round) {
-    var match = round[i]
+  _.forEach(round.matches, function(match) {
     if (Math.random() >= 0.5) {
       match.whiteWon()
     } else {
       match.blackWon()
     }
-  }
+  })
 }
 
 class App extends Component {
@@ -39,6 +39,7 @@ class App extends Component {
     return (
       <div className="tournament">
         <Roster tourney={cvlTourney}/>
+        <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
         {cvlTourney.roundList.map((round, i) => 
           <div className="round" key={i}>
             <RoundResults round={round} roundNum={i} tourney={cvlTourney} />

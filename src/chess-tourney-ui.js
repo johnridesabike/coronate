@@ -7,26 +7,23 @@ class Roster extends Component {
   }
   render() {
     return (
-      <section>
-        <h2>Roster</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>First name</th>
-              <th>Rating</th>
+      <table>
+        <caption>Roster</caption>
+        <thead>
+          <tr>
+            <th>First name</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.tourney.playerList.map((player, i) =>
+            <tr key={i}>
+              <td>{player.firstName}</td>
+              <td className="table__number">{player.rating}</td>
             </tr>
-          </thead>
-          <tbody>
-            {this.tourney.playerList.map((player, i) =>
-              <tr key={i}>
-                <td>{player.firstName}</td>
-                <td className="table__number">{player.rating}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <p>Total rounds: {this.tourney.numOfRounds()}</p>
-      </section>
+          )}
+        </tbody>
+      </table>
     )
   }
 }
@@ -39,29 +36,27 @@ class RoundResults extends Component {
   }
   render() {
     return (
-      <section key={this.roundNum}>
-        <h2>Round {this.roundNum + 1} results</h2>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>White</th>
-              <th>Black</th>
-              <th></th>
+      <table key={this.roundNum}>
+        <caption>Round {this.roundNum + 1} results</caption>
+        <thead>
+          <tr>
+            <th></th>
+            <th>White</th>
+            <th>Black</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.round.matches.map((match, i) =>
+            <tr key={i}>
+              <td>{match.result[0] === 1 ? 'Won' : ''}</td>
+              <td>{match.players[0].firstName}</td>
+              <td>{match.players[1].firstName}</td>
+              <td>{match.result[1] === 1 ? 'Won' : ''}</td>
             </tr>
-          </thead>
-          <tbody>
-            {this.round.map((match, i) =>
-              <tr key={i}>
-                <td>{match.result[0] === 1 ? 'Won' : ''}</td>
-                <td>{match.players[0].firstName}</td>
-                <td>{match.players[1].firstName}</td>
-                <td>{match.result[1] === 1 ? 'Won' : ''}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </section>
+          )}
+        </tbody>
+      </table>
     )
   }
 }
@@ -78,27 +73,25 @@ class Standings extends Component {
   }
   render() {
     return (
-      <section key={this.roundNum}>
-        <h2>Current Standings</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>First name</th>
-              <th>Score</th>
-              <th>Color balance</th>
+      <table key={this.roundNum}>
+        <caption>Current Standings</caption>
+        <thead>
+          <tr>
+            <th>First name</th>
+            <th>Score</th>
+            <th>Color balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.players.map((player, i) => 
+            <tr key={i}>
+              <td>{player.firstName}</td>
+              <td className="table__number">{this.tourney.playerScore(player, this.roundNum)}</td>
+              <td className="table__number">{this.tourney.playerColorBalance(player, this.roundNum)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {this.players.map((player, i) => 
-              <tr key={i}>
-                <td>{player.firstName}</td>
-                <td className="table__number">{this.tourney.playerScore(player, this.roundNum)}</td>
-                <td className="table__number">{this.tourney.playerColorBalance(player, this.roundNum)}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </section>
+          )}
+        </tbody>
+      </table>
     )
   }
 }

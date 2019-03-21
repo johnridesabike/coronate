@@ -72,12 +72,14 @@ class Tournament {
     }
     var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
     _.times(round + 1, function(i) {
-      _.forEach(roundList[i], function(match) {
-        var index = match.players.indexOf(player)
-        if (index !== -1) {
-          score += match.result[index]
-        }
-      })
+      if(roundList[i] !== undefined) {
+        _.forEach(roundList[i].matches, function(match) {
+          var index = match.players.indexOf(player)
+          if (index !== -1) {
+            score += match.result[index]
+          }
+        })
+      }
     })
     return score
   }
@@ -96,13 +98,15 @@ class Tournament {
     }
     var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
     _.times(round + 1, function(i) {
-      _.forEach(roundList[i], function(match) {
-        if (match.players[0] === player) {
-          color += 1
-        } else if (match.players[1] === player) {
-          color += -1
-        }
-      })
+      if(roundList[i] !== undefined) {
+        _.forEach(roundList[i].matches, function(match) {
+          if (match.players[0] === player) {
+            color += 1
+          } else if (match.players[1] === player) {
+            color += -1
+          }
+        })
+      }
     })
     return color
   }
@@ -121,7 +125,7 @@ class Tournament {
     }
     var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
     _.times(round + 1, function(i) {
-      _.forEach(roundList[i], function(match) {
+      _.forEach(roundList[i].matches, function(match) {
         if (match.players.includes(player)) {
           opponents = opponents.concat(
             match.players.filter(
@@ -136,18 +140,15 @@ class Tournament {
 
   /**
    * Generates a new round.
-   * TODO:
-   * - Split players into separate lists based on scores (§ 27A2)
-   * - Split players (again) into separate lists based on their ranks, upper half vs lower half (§27A3)
-   * - For each player in the upper half, iterate through the lower half to find an opponent
-   * - - De-queue opponents who faced that player already (§27A1)
-   * - - Pre-assign the player to the opposite color as their last round. (§27A4 & §27A5)
-   * - - Prioritize opponents who played that color for *their* last round. (§27A4 & §27A5)
-   * - Account for odd numbers and other exceptions where players must play each other (low priority)
-   *
    * @return {Array} the new round
    */
-  newRound () {
+  newRound() {
+    var newRound = new Round(this, _.last(this.roundList), this.playerList)
+    newRound.pairPlayers()
+    this.roundList.push(newRound)
+    return newRound
+  }
+  newRoundOld () {
     var players = []
     var roundList = this.roundList
     // Generate a list of players and their scores
@@ -162,7 +163,6 @@ class Tournament {
         })
       })
       players.push({ player: player, score: score })
-
     })
     // Sort the players by their scores.
     players.sort((a, b) => a.score - b.score)
@@ -181,6 +181,67 @@ class Tournament {
     // return the new round.
     this.roundList.push(newRound)
     return newRound
+  }
+}
+
+/**
+ * Represents a round in a tournament.
+ */
+class Round {
+  constructor(tourney, prevRound, players) {
+    this.tourney = tourney
+    this.players = players
+    this.prevRound = prevRound
+    this.matches = []
+  }
+
+  /**
+   * Pair the players
+   * TODO:
+   * - Split players into separate lists based on scores (§ 27A2)
+   * - Split players (again) into separate lists based on their ranks, upper half vs lower half (§27A3)
+   * - For each player in the upper half, iterate through the lower half to find an opponent
+   * - - De-queue opponents who faced that player already (§27A1)
+   * - - Pre-assign the player to the opposite color as their last round. (§27A4 & §27A5)
+   * - - Prioritize opponents who played that color for *their* last round. (§27A4 & §27A5)
+   * - Account for odd numbers and other exceptions where players must play each other (low priority)
+   *
+   */
+  pairPlayers() {
+    var scoreGroups = {}
+    var tourney = this.tourney
+    var matches = this.matches
+    // Group players by score
+    _.map(this.players, function(player) {
+      var score = tourney.playerScore(player)
+      if( !_.has(scoreGroups, score) ) {
+        scoreGroups[score] = []
+      }
+      scoreGroups[score].push(player)
+    })
+    // TODO: Check for score groups with only one member
+    _.forEach(scoreGroups, function(group, score) {
+      for (var i = 0; i < group.length / 2; i++) {
+        var player1 = group[i * 2]
+        var player2 = group[i * 2 + 1]
+        var newMatch = new Match(player1, player2)
+        // Equalize black and white
+        if (tourney.playerColorBalance(player1) > tourney.playerColorBalance(player2)) {
+          newMatch.players.reverse()
+        }
+        matches.push(newMatch)
+      }
+    })
+    return matches
+  }
+
+  /**
+   * Add a player to the roster
+   *
+   * @param {Player} player
+   */
+  addPlayer(player) {
+    this.players.push(player)
   }
 }
 
