@@ -4,6 +4,7 @@
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
+var _ = require('lodash');
 
 /**
  * Represents an indivudal player.
@@ -69,16 +70,15 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    var roundKeys = Array.from(Array(round + 1).keys())
-    for (var r in roundKeys) {
-      for (var m in this.roundList[r]) {
-        var match = this.roundList[r][m]
+    var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
+    _.times(round + 1, function(i) {
+      _.forEach(roundList[i], function(match) {
         var index = match.players.indexOf(player)
         if (index !== -1) {
           score += match.result[index]
         }
-      }
-    }
+      })
+    })
     return score
   }
 
@@ -94,17 +94,16 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    var roundKeys = Array.from(Array(round + 1).keys())
-    for (var r in roundKeys) {
-      for (var m in this.roundList[r]) {
-        var match = this.roundList[r][m]
+    var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
+    _.times(round + 1, function(i) {
+      _.forEach(roundList[i], function(match) {
         if (match.players[0] === player) {
           color += 1
         } else if (match.players[1] === player) {
           color += -1
         }
-      }
-    }
+      })
+    })
     return color
   }
 
@@ -120,19 +119,18 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    var roundKeys = Array.from(Array(round + 1).keys())
-    for (var r in roundKeys) {
-      for (var m in this.roundList[r]) {
-        var matchPlayers = this.roundList[r][m].players
-        if (matchPlayers.includes(player)) {
+    var roundList = this.roundList // Has to reference it because `this` is reassigned inside the next function
+    _.times(round + 1, function(i) {
+      _.forEach(roundList[i], function(match) {
+        if (match.players.includes(player)) {
           opponents = opponents.concat(
-            matchPlayers.filter(
+            match.players.filter(
               player2 => player2 !== player && !opponents.includes(player2)
             )
           )
         }
-      }
-    }
+      })
+    })
     return opponents
   }
 
@@ -151,21 +149,21 @@ class Tournament {
    */
   newRound () {
     var players = []
+    var roundList = this.roundList
     // Generate a list of players and their scores
-    for (var p in this.playerList) {
-      var player = this.playerList[p]
+    _.forEach(this.playerList, function(player) {
       var score = 0
-      for (var r in this.roundList) {
-        for (var m in this.roundList[r]) {
-          var match = this.roundList[r][m]
+      _.forEach(roundList, function(round) {
+        _.forEach(round, function(match) {
           var playerIndex = match.players.indexOf(player)
           if (playerIndex !== -1) {
             score += match.result[playerIndex]
           }
-        }
-      }
+        })
+      })
       players.push({ player: player, score: score })
-    }
+
+    })
     // Sort the players by their scores.
     players.sort((a, b) => a.score - b.score)
     // Match players
