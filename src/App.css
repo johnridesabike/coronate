@@ -33,20 +33,39 @@
 }
 
 #root {
-  margin: 0 10% 0 10%;
+  margin: 0 1em 0 1em;
 }
 
-#root td,
-#root th {
+h1 {
+  font-size: 1.5em;
+  font-weight: 400;
+  text-align: center;
+}
+
+table {
+  margin: 2em auto 0 auto;
+}
+
+td,
+th {
   padding: 0.25em 1em;
 }
 
-#root th {
+th {
   text-align: left;
+}
+
+caption {
+  font-size: 1.125em;
+  font-weight: 700;
 }
 
 .table__number {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   text-align: right;
+}
+
+.center {
+  text-align: center;
 }
