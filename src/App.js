@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import './App.css';
 import {Tournament, Player} from './chess-tourney';
 import {Roster, RoundResults, Standings} from './chess-tourney-ui';
-var _ = require('lodash');
 
 function randomRating(min = 800, max = 2500) {
   return Math.floor(Math.random() * (max - min) + min)
 }
 
-var cvlTourney = new Tournament(
+const cvlTourney = new Tournament(
   'CVL Winter Open',
   15, 
   [
@@ -25,7 +24,7 @@ var cvlTourney = new Tournament(
 
 while (cvlTourney.roundList.length < cvlTourney.numOfRounds()) {
   var round = cvlTourney.newRound()
-  _.forEach(round.matches, function(match) {
+  round.matches.forEach(function(match) {
     if (Math.random() >= 0.5) {
       match.whiteWon()
     } else {

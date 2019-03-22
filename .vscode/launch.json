@@ -1,13 +1,13 @@
 {
   "version": "0.2.0",
   "configurations": [
-      {
-          "name": "Firefox debug",
-          "type": "firefox",
-          "request": "launch",
-          "reAttach": true,
-          "url": "http://localhost:3000/",
-          "webRoot": "${workspaceRoot}/src"
-      }
+    {
+      "name": "Firefox debug",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:3000/",
+      "webRoot": "${workspaceRoot}/src"
+    }
   ]
 }

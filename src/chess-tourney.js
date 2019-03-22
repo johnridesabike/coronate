@@ -4,7 +4,7 @@
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
-var _ = require('lodash')
+var {chain, has, pull, times, zip} = require('lodash')
 
 /**
  * Represents an indivudal player.
@@ -42,8 +42,16 @@ class Tournament {
    *
    * @param {Player} player
    */
-  addPlayer (player) {
+  addPlayer(player) {
     this.playerList.push(player)
+  }
+
+  /**
+   * Add a list of players to the roster
+   * @param {Array} playerList 
+   */
+  addPlayers(playerList) {
+    this.playerList = this.playerList.concat(playerList)
   }
 
   /**
@@ -70,9 +78,9 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    _.times(round + 1, function(i) {
+    times(round + 1, function(i) {
       if(this.roundList[i] !== undefined) {
-        _.forEach(this.roundList[i].matches, function(match) {
+        this.roundList[i].matches.forEach(function(match) {
           var index = match.players.indexOf(player)
           if (index !== -1) {
             score += match.result[index]
@@ -95,9 +103,9 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    _.times(round + 1, function(i) {
+    times(round + 1, function(i) {
       if(this.roundList[i] !== undefined) {
-        _.forEach(this.roundList[i].matches, function(match) {
+        this.roundList[i].matches.forEach(function(match) {
           if (match.players[0] === player) {
             color += 1
           } else if (match.players[1] === player) {
@@ -119,10 +127,10 @@ class Tournament {
   playerOppHistory (player, round = null) {
     var opponents = []
     if ( round === null) {
-      round = this.roundList.length
+      round = this.roundList.length - 1
     }
-    _.times(round + 1, function(i) {
-      _.forEach(this.roundList[i].matches, function(match) {
+    times(round + 1, function(i) {
+      this.roundList[i].matches.forEach(function(match) {
         if (match.players.includes(player)) {
           opponents = opponents.concat(
             match.players.filter(
@@ -140,12 +148,17 @@ class Tournament {
    * @return {Array} the new round
    */
   newRound() {
-    var newRound = new Round(this, this.roundList.length, _.last(this.roundList), this.playerList)
+    var newRound = new Round(
+      this,
+      this.roundList.length,
+      this.roundList[this.roundList.length - 1],
+      this.playerList
+    )
     newRound.pairPlayers()
     this.roundList.push(newRound)
     return newRound
   }
-  newRoundOld () {
+  /* newRoundOld () {
     var players = []
     // Generate a list of players and their scores
     _.forEach(this.playerList, function(player) {
@@ -177,20 +190,21 @@ class Tournament {
     // return the new round.
     this.roundList.push(newRound)
     return newRound
-  }
+  } */
 }
 
 /**
  * Represents a round in a tournament.
  */
 class Round {
+  playerTree = {}
+  matches = []
+
   constructor(tourney, roundNum, prevRound, players) {
     this.roundNum = roundNum
     this.tourney = tourney
     this.playersFlat = players
-    this.playerTree = {}
     this.prevRound = prevRound
-    this.matches = []
   }
 
   /**
@@ -207,34 +221,63 @@ class Round {
    */
   pairPlayers() {
     // Group players by score
-    _.forEach(this.playersFlat, function(player) {
+    this.playersFlat.forEach(function(player) {
       var score = this.tourney.playerScore(player)
-      if( !_.has(this.playerTree, score) ) {
+      if( !has(this.playerTree, score) ) {
         this.playerTree[score] = []
       }
       this.playerTree[score].push(player)
     }.bind(this))
     // TODO: Check for score groups with only one member
     // Split each score group into an upper half and a lower half
-    console.log('round', this.roundNum)
     var playerTreeTest = {}
-    var matchesTest = []
-    _.forEach(this.playerTree, function(value, key){
-      playerTreeTest[key] = _.chain(value)
-        .sortBy('rating')
-        .reverse()
-        .chunk(value.length / 2)
-        .value()
+    // _.forEach(this.playerTree, function(value, key) {
+    Object.keys(this.playerTree).forEach(function(key) {
+      var value = this.playerTree[key]
+      playerTreeTest[key] = chain(value).sortBy('rating').reverse().chunk(value.length/2).value()
     }.bind(this))
-    _.forEach(playerTreeTest, function(halves) {
-      matchesTest = _.concat(matchesTest, _.zip(halves[0], halves[1]))
-    })
-    console.log(matchesTest)
+    // Pair players and equalize black and white
+    Object.keys(playerTreeTest).forEach(function(key) {
+      var scoreGroup = playerTreeTest[key]
+      // If there was no previous round, just zip the arrays and call it a day.
+      if (this.prevRound === undefined) {
+        var matches = zip(scoreGroup[0], scoreGroup[1])
+        matches.forEach(match => this.matches.push(new Match(...match)))
+      } else {
+        var scoreGClone = [].concat(scoreGroup)
+        scoreGroup[0].forEach(function(player1) {
+          var lastColor = this.prevRound.playerColor(player1)
+          var opposites = scoreGClone[1].filter(p => 
+            lastColor !== this.prevRound.playerColor(p)
+            && this.tourney.playerOppHistory(p, this.roundNum - 1).indexOf(player1) === -1)
+          // esnure that no two players don't play each other twice
+          var player2 = opposites[0]
+          if (player1 !== undefined && player2 !== undefined) {
+            scoreGClone[0] = pull(scoreGClone[0], player1)
+            scoreGClone[1] = pull(scoreGClone[1], player2)
+            var newMatch = new Match(player1, player2)
+            if (this.tourney.playerColorBalance(player1) > this.tourney.playerColorBalance(player2)) {
+              newMatch.players.reverse()
+            }
+            this.matches.push(newMatch)
+          }
+        }.bind(this))
+        // Account for any unmatched players
+        zip(scoreGClone[0], scoreGClone[1]).forEach(function(match) {
+          var newMatch = new Match(...match)
+          if (this.tourney.playerColorBalance(match[0]) > this.tourney.playerColorBalance(match[1])) {
+            newMatch.players.reverse()
+          }
+          this.matches.push(newMatch)
+        }.bind(this))
+      }
+      //matchesTest = _.concat(matchesTest, _.zip(halves[0], halves[1]))
+    }.bind(this))
 
-    _.forEach(matchesTest, function(match) {
-      var [player1, player2] = match
-      this.matches.push(new Match(player1, player2))
-    }.bind(this))
+    // _.forEach(matchesTest, function(match) {
+    //   var [player1, player2] = match
+    //   this.matches.push(new Match(player1, player2))
+    // }.bind(this))
 
     // _.forEach(this.playerTree, function(group, score) {
     //   for (var i = 0; i < group.length / 2; i++) {
@@ -249,6 +292,21 @@ class Round {
     //   }
     // }.bind(this))
     return this.matches
+  }
+
+  /**
+   * Sees what color a player was for this round.
+   * @param {Player} player 
+   * @return {number} 0 for white and 1 for black
+   */
+  playerColor(player) {
+    var color = -1
+    this.matches.forEach(function(match) {
+      if (match.players.includes(player)) {
+        color = match.players.indexOf(player);
+      }
+    })
+    return color
   }
 
   /**
