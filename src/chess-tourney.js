@@ -30,7 +30,7 @@ class Player {
  * @param {int}    type
  */
 class Tournament {
-  constructor (name, timeControl, playerList = []) {
+  constructor (name = '', timeControl = 15, playerList = []) {
     this.name = name
     this.timeControl = timeControl
     this.playerList = playerList

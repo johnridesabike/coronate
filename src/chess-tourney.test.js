@@ -2,30 +2,15 @@
  * These tests rely on randomness so aren't reliable. They need to be rewritten to show consistent results.
  */
 var { Tournament, Player } = require('./chess-tourney.js')
-var { sortBy } =  require('lodash')
+var { sortBy, times } =  require('lodash')
 
 function randomRating(min = 800, max = 2500) {
   return Math.floor(Math.random() * (max - min) + min)
 }
 
-const testTourney = new Tournament('A battle for the ages', 15)
-
-it('A tournament can run without crashing', () => {
-  testTourney.addPlayers(
-    [
-      new Player('Matthew', 'A', randomRating()), new Player('Mark', 'B', randomRating()),
-      new Player('Luke', 'C', randomRating()), new Player('John', 'D', randomRating()),
-      new Player('Simon', 'E', randomRating()), new Player('Andrew', 'F', randomRating()),
-      new Player('James', 'G', randomRating()), new Player('Philip', 'H', randomRating()),
-      new Player('Bartholomew', 'I', randomRating()), new Player('Thomas', 'J', randomRating()),
-      new Player('Catherine', 'K', randomRating()), new Player('Clare', 'L', randomRating()),
-      new Player('Judas', 'M', randomRating()), new Player('Matthias', 'N', randomRating()),
-      new Player('Paul', 'O', randomRating()), new Player('Mary', 'P', randomRating())
-    ]
-  )
-
-  while (testTourney.roundList.length < testTourney.numOfRounds()) {
-    var round = testTourney.newRound()
+function randomRounds(tourney) {
+  while (tourney.roundList.length < tourney.numOfRounds()) {
+    var round = tourney.newRound()
     round.matches.forEach(function(match) {
       if (Math.random() >= 0.5) {
         match.whiteWon()
@@ -34,15 +19,38 @@ it('A tournament can run without crashing', () => {
       }
     })
   }
+}
+
+const players = [
+  new Player('Matthew', 'A', randomRating()), new Player('Mark', 'B', randomRating()),
+  new Player('Luke', 'C', randomRating()), new Player('John', 'D', randomRating()),
+  new Player('Simon', 'E', randomRating()), new Player('Andrew', 'F', randomRating()),
+  new Player('James', 'G', randomRating()), new Player('Philip', 'H', randomRating()),
+  new Player('Bartholomew', 'I', randomRating()), new Player('Thomas', 'J', randomRating()),
+  new Player('Catherine', 'K', randomRating()), new Player('Clare', 'L', randomRating()),
+  new Player('Judas', 'M', randomRating()), new Player('Matthias', 'N', randomRating()),
+  new Player('Paul', 'O', randomRating()), new Player('Mary', 'P', randomRating())
+]
+
+it('A tournament can run without crashing', () => {
+  var crashTourney = new Tournament('A battle for the ages', 15)
+  crashTourney.addPlayers(players)
+  randomRounds(crashTourney)
 })
 
 it('No players face each other more than once', () => {
-  var playerOppCount = []
-  testTourney.playerList.forEach(p => 
-    playerOppCount.push(testTourney.playerOppHistory(p).length)
-  )
-  playerOppCount = sortBy(playerOppCount, i => i)
-  expect(playerOppCount[0]).toBe(testTourney.roundList.length)
+  // We run it multiple times to help weed out situations where the randomizer provides a pass when it should fail
+  times(16, ()=> {
+    var playerOppCount = []
+    var oppCountTourney = new Tournament()
+    oppCountTourney.addPlayers(players)
+    randomRounds(oppCountTourney)
+    oppCountTourney.playerList.forEach(p =>
+      playerOppCount.push(oppCountTourney.playerOppHistory(p).length)
+    )
+    playerOppCount = sortBy(playerOppCount, i => i)
+    expect(playerOppCount[0]).toBe(oppCountTourney.roundList.length)
+  })
 })
 
 /*
