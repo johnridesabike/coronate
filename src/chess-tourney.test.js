@@ -36,9 +36,9 @@ it('A tournament can run without crashing', () => {
 
 it('No players face each other more than once', () => {
   // We run it multiple times to help weed out situations where the randomizer provides a pass when it should fail
-  var expectCount = 0,
-    toBeCount = 100
-  times(toBeCount, (i) => {
+  var pairedCorrectly = 0,
+    tourneyNum = 100
+  times(tourneyNum, (i) => {
     var playerOppCount = []
     var oppCountTourney = new Tournament()
     oppCountTourney.addPlayers(players)
@@ -47,12 +47,10 @@ it('No players face each other more than once', () => {
       playerOppCount.push(oppCountTourney.playerOppHistory(p).length)
     )
     if (sortBy(playerOppCount, i => i)[0] === oppCountTourney.roundList.length) {
-      expectCount += 1
-    } else {
-      console.log('TEST NUMBER:', i)
+      pairedCorrectly += 1
     }
   })
-  expect(expectCount).toBe(toBeCount)
+  expect(pairedCorrectly).toBe(tourneyNum)
 })
 
 /*
