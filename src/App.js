@@ -3,22 +3,18 @@ import './App.css';
 import {Tournament, Player} from './chess-tourney';
 import {Roster, RoundResults, Standings} from './chess-tourney-ui';
 
-function randomRating(min = 800, max = 2500) {
-  return Math.floor(Math.random() * (max - min) + min)
-}
-
 const cvlTourney = new Tournament(
   'CVL Winter Open',
   15, 
   [
-    new Player('Matthew', 'A', randomRating()), new Player('Mark', 'B', randomRating()),
-    new Player('Luke', 'C', randomRating()), new Player('John', 'D', randomRating()),
-    new Player('Simon', 'E', randomRating()), new Player('Andrew', 'F', randomRating()),
-    new Player('James', 'G', randomRating()), new Player('Philip', 'H', randomRating()),
-    new Player('Bartholomew', 'I', randomRating()), new Player('Thomas', 'J', randomRating()),
-    new Player('Catherine', 'K', randomRating()), new Player('Clare', 'L', randomRating()),
-    new Player('Judas', 'M', randomRating()), new Player('Matthias', 'N', randomRating()),
-    new Player('Paul', 'O', randomRating()), new Player('Mary', 'P', randomRating())
+    new Player('Matthew', 'A', 800), new Player('Mark', 'B', 850),
+    new Player('Luke', 'C', 900), new Player('John', 'D', 950),
+    new Player('Simon', 'E', 1000), new Player('Andrew', 'F', 1050),
+    new Player('James', 'G', 1100), new Player('Philip', 'H', 1150),
+    new Player('Bartholomew', 'I', 1200), new Player('Thomas', 'J', 1250),
+    new Player('Catherine', 'K', 1300), new Player('Clare', 'L', 1350),
+    new Player('Judas', 'M', 1400), new Player('Matthias', 'N', 1450),
+    new Player('Paul', 'O', 1500), new Player('Mary', 'P', 1600)
   ]
 )
 
@@ -40,10 +36,10 @@ class App extends Component {
         <h1>Chessahoochee: a chess tournament app</h1>
         <Roster tourney={cvlTourney}/>
         <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
-        {cvlTourney.roundList.map((round, i) => 
-          <div className="round" key={i}>
-            <RoundResults round={round} roundNum={i} tourney={cvlTourney} />
-            <Standings players={cvlTourney.playerList} roundNum={i} tourney={cvlTourney}/>
+        {cvlTourney.roundList.map(round => 
+          <div className="round" key={round.roundNum}>
+            <RoundResults round={round} tourney={cvlTourney} />
+            <Standings players={cvlTourney.playerList} roundNum={round.roundNum} tourney={cvlTourney}/>
           </div>
         )}
       </div>

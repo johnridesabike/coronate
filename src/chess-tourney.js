@@ -4,7 +4,7 @@
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
-var {chain, has, pull, times, zip} = require('lodash')
+const {chain, last, pull, sortBy, times, zip} = require('lodash')
 
 /**
  * Represents an indivudal player.
@@ -78,7 +78,7 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    times(round + 1, function(i) {
+    times(round + 1, i => {
       if(this.roundList[i] !== undefined) {
         this.roundList[i].matches.forEach(function(match) {
           var index = match.players.indexOf(player)
@@ -87,7 +87,7 @@ class Tournament {
           }
         })
       }
-    }.bind(this))
+    })
     return score
   }
 
@@ -103,7 +103,7 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length
     }
-    times(round + 1, function(i) {
+    times(round + 1, i => {
       if(this.roundList[i] !== undefined) {
         this.roundList[i].matches.forEach(function(match) {
           if (match.players[0] === player) {
@@ -113,7 +113,7 @@ class Tournament {
           }
         })
       }
-    }.bind(this))
+    })
     return color
   }
 
@@ -129,8 +129,8 @@ class Tournament {
     if ( round === null) {
       round = this.roundList.length - 1
     }
-    times(round + 1, function(i) {
-      this.roundList[i].matches.forEach(function(match) {
+    times(round + 1, i => {
+      this.roundList[i].matches.forEach(match => {
         if (match.players.includes(player)) {
           opponents = opponents.concat(
             match.players.filter(
@@ -139,7 +139,7 @@ class Tournament {
           )
         }
       })
-    }.bind(this))
+    })
     return opponents
   }
 
@@ -151,67 +151,31 @@ class Tournament {
     var newRound = new Round(
       this,
       this.roundList.length,
-      this.roundList[this.roundList.length - 1],
+      last(this.roundList),
       this.playerList
     )
     newRound.pairPlayers()
     this.roundList.push(newRound)
     return newRound
   }
-  /* newRoundOld () {
-    var players = []
-    // Generate a list of players and their scores
-    _.forEach(this.playerList, function(player) {
-      var score = 0
-      _.forEach(this.roundList, function(round) {
-        _.forEach(round, function(match) {
-          var playerIndex = match.players.indexOf(player)
-          if (playerIndex !== -1) {
-            score += match.result[playerIndex]
-          }
-        })
-      })
-      players.push({ player: player, score: score })
-    })
-    // Sort the players by their scores.
-    players.sort((a, b) => a.score - b.score)
-    // Match players
-    var newRound = []
-    for (var i = 0; i < players.length / 2; i++) {
-      var player1 = players[i * 2].player
-      var player2 = players[i * 2 + 1].player
-      var newMatch = new Match(player1, player2)
-      // Equalize black and white
-      if (this.playerColorBalance(player1) > this.playerColorBalance(player2)) {
-        newMatch.players.reverse()
-      }
-      newRound.push(newMatch)
-    }
-    // return the new round.
-    this.roundList.push(newRound)
-    return newRound
-  } */
 }
 
 /**
  * Represents a round in a tournament.
  */
 class Round {
-  playerTree = {}
-  matches = []
-
   constructor(tourney, roundNum, prevRound, players) {
     this.roundNum = roundNum
     this.tourney = tourney
     this.playersFlat = players
     this.prevRound = prevRound
+    this.playerTree = {}
+    this.matches = []
   }
 
   /**
    * Pair the players
    * TODO:
-   * - Split players into separate lists based on scores (§ 27A2)
-   * - Split players (again) into separate lists based on their ranks, upper half vs lower half (§27A3)
    * - For each player in the upper half, iterate through the lower half to find an opponent
    * - - De-queue opponents who faced that player already (§27A1)
    * - - Pre-assign the player to the opposite color as their last round. (§27A4 & §27A5)
@@ -220,32 +184,187 @@ class Round {
    *
    */
   pairPlayers() {
-    // Group players by score
-    this.playersFlat.forEach(function(player) {
+    // var debug = true
+    // debug && console.group('Round', this.roundNum)
+    /**
+     * Part 1: Split players into separate groups based on their scores (USCF § 27A2)
+     * Tree structure:
+     * {
+     *  score: [list of players],
+     *  ...
+     * }
+     */
+    this.playersFlat.forEach(player => {
       var score = this.tourney.playerScore(player)
-      if( !has(this.playerTree, score) ) {
+      if(!(score in this.playerTree)) {
         this.playerTree[score] = []
       }
       this.playerTree[score].push(player)
-    }.bind(this))
-    // TODO: Check for score groups with only one member
-    // Split each score group into an upper half and a lower half
-    var playerTreeTest = {}
-    // _.forEach(this.playerTree, function(value, key) {
-    Object.keys(this.playerTree).forEach(function(key) {
-      var value = this.playerTree[key]
-      playerTreeTest[key] = chain(value).sortBy('rating').reverse().chunk(value.length/2).value()
-    }.bind(this))
+    })
+    /**
+     * Part 2: Split each score group into an upper half and a lower half, based on rating (USCF § 27A3)
+     * Tree structure:
+     * {
+     *  score: [
+     *    [upper half list of players],
+     *    [lower half list of players]
+     *  ],
+     *  ...
+     * }
+     */
+    Object.keys(this.playerTree).forEach(score => {
+      var players = this.playerTree[score]
+      this.playerTree[score] = chain(players)
+        .sortBy('rating')
+        .reverse()
+        .chunk(players.length/2)
+        .value()
+    })
+
+    /**
+     * BEGIN TESTING
+     */
+
+    const matchedPlayers = () => {
+      var players = []
+      this.matches.forEach(match => players = players.concat(match.players))
+      return players
+    }
+    
+    const findAMatch = (player1, pool) => {
+      if(!player1) {
+        throw "player1 is not defined"
+      }
+      var lastColor = this.prevRound.playerColor(player1)
+      var hasntPlayed = pool
+        .filter(p2 => !this.tourney.playerOppHistory(p2).includes(player1))
+        .filter(p2 => p2 !== player1)
+        .filter(p2 => !matchedPlayers().includes(p2))
+      var oppColor = pool.filter(p2 => lastColor !== this.prevRound.playerColor(p2))
+      var player2 = hasntPlayed.filter(p2 => oppColor.includes(p2))[0]
+      // var player2 = hasntPlayed[0]
+      if(!player2) {
+        player2 = hasntPlayed[0]
+      }
+      if (player2) {
+        var newMatch = new Match(player1, player2)
+        if (this.tourney.playerColorBalance(player1) > this.tourney.playerColorBalance(player2)) {
+          newMatch.players.reverse()
+        }
+        this.matches.push(newMatch)
+      }
+      return player2
+    }
+
+    Object.keys(this.playerTree).forEach(score => {
+      var scoreGroup = this.playerTree[score]
+      /**
+       * If there was no previous round, zip the players and call it a day.
+       */
+      if (this.prevRound === undefined) {
+        zip(scoreGroup[0], scoreGroup[1])
+          .forEach(match => 
+            this.matches.push(new Match(...match))
+          )
+      } else {
+        var upperHalf = scoreGroup[0]
+        var lowerHalf = scoreGroup[1]
+        // check if anyone has played each other before
+        // I thought that pairing players with past opponents first would be better... but maybe it isn't?
+        // var oppHistory = []
+        // Object.keys(upperHalf).forEach(i => {
+        //   oppHistory[i] = lowerHalf.filter(p => this.tourney.playerOppHistory(upperHalf[i]).includes(p)).length
+        // })
+        // sortBy(oppHistory, i => i).reverse().forEach(arr => {
+        //   var j = oppHistory.indexOf(arr)
+        //   var player1 = upperHalf[j]
+        //   if (oppHistory[j].length > 0) {
+        //     var player2 = findAMatch(player1, lowerHalf)
+        //     if (!player2) {
+        //       player2 = findAMatch(player1, upperHalf)
+        //     }
+        //     if (!player2) {
+        //       console.log('Round ' + this.roundNum + " COULDN'T FIND opponent for " + player1.firstName + ' | score: ' + score)
+        //       console.log("Hasn't played lowerHalf: "
+        //         + lowerHalf
+        //           .filter(p2 => !this.tourney.playerOppHistory(p2).includes(player1))
+        //           .filter(p2 => p2 !== player1)
+        //           .filter(p2 => !matchedPlayers().includes(p2))
+        //           .length
+        //       )
+        //       console.log("Hasn't played upperHalf: "
+        //         + upperHalf
+        //           .filter(p2 => !this.tourney.playerOppHistory(p2).includes(player1))
+        //           .filter(p2 => p2 !== player1)
+        //           .filter(p2 => !matchedPlayers().includes(p2))
+        //           .length
+        //       )
+        //       console.log('Matched players: ' + matchedPlayers().length)
+        //     }
+        //   }
+        // })
+        upperHalf.forEach(player1 => {
+          var history = lowerHalf.filter(p => this.tourney.playerOppHistory(player1).includes(p))
+          if (history.length > 0) {
+            var player2 = findAMatch(player1, lowerHalf)
+            if (!player2) {
+              player2 = findAMatch(player1, upperHalf)
+            }
+            if (!player2) {
+              console.log('Round ' + this.roundNum + " COULDN'T FIND opponent for " + player1.firstName + ' | score: ' + score)
+              console.log("Hasn't played lowerHalf: "
+                + lowerHalf
+                  .filter(p2 => !this.tourney.playerOppHistory(p2).includes(player1))
+                  .filter(p2 => p2 !== player1)
+                  .filter(p2 => !matchedPlayers().includes(p2))
+                  .length
+              )
+              console.log("Hasn't played upperHalf: "
+                + upperHalf
+                  .filter(p2 => !this.tourney.playerOppHistory(p2).includes(player1))
+                  .filter(p2 => p2 !== player1)
+                  .filter(p2 => !matchedPlayers().includes(p2))
+                  .length
+              )
+              console.log('Matched players: ' + matchedPlayers().length)
+            }
+          }
+        })
+        // pair the rest of the players as normal
+        upperHalf
+          .filter(p => !matchedPlayers().includes(p))
+          .forEach(player1 => {
+            var player2 = findAMatch(player1, lowerHalf)
+            if (!player2) {
+              player2 = findAMatch(player1, upperHalf)
+            }
+            if (!player2) {
+              // console.log('Round ' + this.roundNum, " | couldn't find opponent for " + player1.firstName + ' | score: ' + score)
+            }
+          }
+        )
+      }
+      // debug && console.groupEnd()
+    })
+    // debug && console.groupEnd()
+    /**
+     * END TESTING
+     */
+    return
+     /**
+      * OLD CODE:
+      */
+    /* eslint-disable no-unreachable */
     // Pair players and equalize black and white
-    Object.keys(playerTreeTest).forEach(function(key) {
-      var scoreGroup = playerTreeTest[key]
+    Object.keys(this.playerTree).forEach(key => {
+      var scoreGroup = this.playerTree[key]
       // If there was no previous round, just zip the arrays and call it a day.
       if (this.prevRound === undefined) {
         var matches = zip(scoreGroup[0], scoreGroup[1])
         matches.forEach(match => this.matches.push(new Match(...match)))
       } else {
         var scoreGClone = [].concat(scoreGroup)
-        scoreGroup[0].forEach(function(player1) {
+        scoreGroup[0].forEach(player1 => {
           var lastColor = this.prevRound.playerColor(player1)
           var opposites = scoreGClone[1].filter(p => 
             lastColor !== this.prevRound.playerColor(p)
@@ -261,18 +380,18 @@ class Round {
             }
             this.matches.push(newMatch)
           }
-        }.bind(this))
+        })
         // Account for any unmatched players
-        zip(scoreGClone[0], scoreGClone[1]).forEach(function(match) {
+        zip(scoreGClone[0], scoreGClone[1]).forEach(match => {
           var newMatch = new Match(...match)
           if (this.tourney.playerColorBalance(match[0]) > this.tourney.playerColorBalance(match[1])) {
             newMatch.players.reverse()
           }
           this.matches.push(newMatch)
-        }.bind(this))
+        })
       }
       //matchesTest = _.concat(matchesTest, _.zip(halves[0], halves[1]))
-    }.bind(this))
+    })
 
     // _.forEach(matchesTest, function(match) {
     //   var [player1, player2] = match
