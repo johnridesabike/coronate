@@ -1,10 +1,10 @@
 /* ----------------------------------------------------------------------------
-*                               Chess Tourney
+*                               Chess Tourney js
 *
 * This file handles all of the tournament logic.
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
-const {chain, flatten, last, times, zip} = require('lodash')
+const {chain, flatten, last, times, zip} = require('lodash');
 
 /**
  * Represents an indivudal player.
@@ -15,9 +15,9 @@ const {chain, flatten, last, times, zip} = require('lodash')
  */
 class Player {
   constructor (firstName, lastName, rating = 1200) {
-    this.firstName = firstName
-    this.lastName = lastName
-    this.rating = rating
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.rating = rating;
   }
 }
 
@@ -31,10 +31,10 @@ class Player {
  */
 class Tournament {
   constructor (name = '', timeControl = 15, playerList = []) {
-    this.name = name
-    this.timeControl = timeControl
-    this.playerList = playerList
-    this.roundList = []
+    this.name = name;
+    this.timeControl = timeControl;
+    this.playerList = playerList;
+    this.roundList = [];
   }
 
   /**
@@ -43,7 +43,7 @@ class Tournament {
    * @param {Player} player
    */
   addPlayer(player) {
-    this.playerList.push(player)
+    this.playerList.push(player);
   }
 
   /**
@@ -51,21 +51,21 @@ class Tournament {
    * @param {Array} playerList 
    */
   addPlayers(playerList) {
-    this.playerList = this.playerList.concat(playerList)
+    this.playerList = this.playerList.concat(playerList);
   }
 
   /**
    * Calculate number of rounds
    */
   numOfRounds () {
-    return Math.ceil(Math.log2(this.playerList.length))
+    return Math.ceil(Math.log2(this.playerList.length));
   }
 
   /**
    * Calculate standings
    */
   calcStandings () {
-    return true // todo
+    return true; // todo
   }
 
   /**
@@ -74,21 +74,21 @@ class Tournament {
    * @param {Player} player
    */
   playerScore (player, round = null) {
-    var score = 0
+    var score = 0;
     if ( round === null) {
-      round = this.roundList.length
+      round = this.roundList.length;
     }
     times(round + 1, i => {
       if(this.roundList[i] !== undefined) {
-        this.roundList[i].matches.forEach(function(match) {
-          var index = match.players.indexOf(player)
+        this.roundList[i].matches.forEach(match => {
+          var index = match.players.indexOf(player);
           if (index !== -1) {
-            score += match.result[index]
+            score += match.result[index];
           }
-        })
+        });
       }
-    })
-    return score
+    });
+    return score;
   }
 
   /**
@@ -99,22 +99,22 @@ class Tournament {
    * @return {Int} A negative number means they played as black more. A positive number means they played as white more.
    */
   playerColorBalance (player, round = null) {
-    var color = 0
+    var color = 0;
     if ( round === null) {
-      round = this.roundList.length
+      round = this.roundList.length;
     }
     times(round + 1, i => {
       if(this.roundList[i] !== undefined) {
-        this.roundList[i].matches.forEach(function(match) {
+        this.roundList[i].matches.forEach(match => {
           if (match.players[0] === player) {
-            color += 1
+            color += 1;
           } else if (match.players[1] === player) {
-            color += -1
+            color += -1;
           }
-        })
+        });
       }
-    })
-    return color
+    });
+    return color;
   }
 
   /**
@@ -125,21 +125,21 @@ class Tournament {
    * @return {Array} A list of past opponents
    */
   playerOppHistory (player, round = null) {
-    var opponents = []
+    var opponents = [];
     if ( round === null) {
-      round = this.roundList.length - 1
+      round = this.roundList.length - 1;
     }
     times(round + 1, i => {
       this.roundList[i].matches.forEach(match => {
         if (match.players.includes(player)) {
           opponents = opponents.concat(
-            match.players.filter(
-              player2 => player2 !== player && !opponents.includes(player2)
-            )
-          )
+            match.players
+              .filter(player2 => player2 !== player)
+              .filter(player2 => !opponents.includes(player2))
+          );
         }
-      })
-    })
+      });
+    });
     return opponents
   }
 
@@ -153,10 +153,10 @@ class Tournament {
       this.roundList.length,
       last(this.roundList),
       this.playerList
-    )
-    newRound.pairPlayers()
-    this.roundList.push(newRound)
-    return newRound
+    );
+    newRound.pairPlayers();
+    this.roundList.push(newRound);
+    return newRound;
   }
 }
 
@@ -165,12 +165,12 @@ class Tournament {
  */
 class Round {
   constructor(tourney, roundNum, prevRound, players) {
-    this.roundNum = roundNum
-    this.tourney = tourney
-    this.playersFlat = players
-    this.prevRound = prevRound
-    this.playerTree = {}
-    this.matches = []
+    this.roundNum = roundNum;
+    this.tourney = tourney;
+    this.playersFlat = players;
+    this.prevRound = prevRound;
+    this.playerTree = {};
+    this.matches = [];
   }
 
   /**
@@ -186,11 +186,11 @@ class Round {
      * }
      */
     this.playersFlat.forEach(player => {
-      var score = this.tourney.playerScore(player)
+      var score = this.tourney.playerScore(player);
       if(!(score in this.playerTree)) {
-        this.playerTree[score] = []
+        this.playerTree[score] = [];
       }
-      this.playerTree[score].push(player)
+      this.playerTree[score].push(player);
     })
     /**
      * Part 2: Split each score group into an upper half and a lower half, based on rating (USCF § 27A3)
@@ -204,18 +204,18 @@ class Round {
      * }
      */
     Object.keys(this.playerTree).forEach(score => {
-      var players = this.playerTree[score]
+      var players = this.playerTree[score];
       this.playerTree[score] = chain(players)
         .sortBy('rating')
         .reverse()
         .chunk(players.length/2)
-        .value()
+        .value();
     })
     Object.keys(this.playerTree).forEach(score => {
-      var scoreGroup = this.playerTree[score]
+      var scoreGroup = this.playerTree[score];
       // name the upperHalf and lowerHalf to make the code easier to read
-      var upperHalf = scoreGroup[0]
-      var lowerHalf = scoreGroup[1]
+      var upperHalf = scoreGroup[0];
+      var lowerHalf = scoreGroup[1];
       /**
        * If there was no previous round, zip the players and call it a day.
        */
@@ -223,7 +223,7 @@ class Round {
         zip(upperHalf, lowerHalf)
           .forEach(match => 
             this.matches.push(new Match(...match))
-          )
+          );
       } else {
         /**
          * If there was a previous round, then things get complicated....
@@ -243,44 +243,44 @@ class Round {
         var upperHalfHistory = upperHalf.map(p => 
           [].concat(lowerHalf).concat(upperHalf) // merge the upperHalf and lowerHalf
             .filter(p2 => this.tourney.playerOppHistory(p2).includes(p)) // filter the players who have played this player
-        )
+        );
         /**
          * 2.
          */
         upperHalf.forEach(player1 => {
-          var history = upperHalfHistory[upperHalf.indexOf(player1)]
-          var othersHistory = flatten(upperHalfHistory.slice(upperHalf.indexOf(player1)))
+          var history = upperHalfHistory[upperHalf.indexOf(player1)];
+          var othersHistory = flatten(upperHalfHistory.slice(upperHalf.indexOf(player1)));
           /**
            * 3.
            */
-          var [ player2, match ] = this._findAMatch(player1, lowerHalf.filter(x => othersHistory.includes(x)), history)
+          var [ player2, match ] = this._findAMatch(player1, lowerHalf.filter(x => othersHistory.includes(x)), history);
           /**
            * 4.
            */
           if (!player2) {
-            [ player2, match ] = this._findAMatch(player1, lowerHalf, history)
+            [ player2, match ] = this._findAMatch(player1, lowerHalf, history);
           }
           /**
            * 5.
            */
           if (!player2) {
-            [ player2, match ] = this._findAMatch(player1, lowerHalf, [])
+            [ player2, match ] = this._findAMatch(player1, lowerHalf, []);
           }
           /**
            * 6.
            */
           if (history.includes(player2)) {
-            var foundASwap = false
+            var foundASwap = false;
             upperHalf.filter(p => p !== player1).forEach(otherPlayer => {
               if(!foundASwap) {
-                var otherMatch = this.matches.filter(m => m.players.includes(otherPlayer))[0]
+                var otherMatch = this.matches.filter(m => m.players.includes(otherPlayer))[0];
                 if(otherMatch) {
-                  var otherPlayer2 = otherMatch.players.filter(p => p !== otherPlayer)[0]
-                  var otherHistory = upperHalfHistory[upperHalf.indexOf(otherPlayer)]
+                  var otherPlayer2 = otherMatch.players.filter(p => p !== otherPlayer)[0];
+                  var otherHistory = upperHalfHistory[upperHalf.indexOf(otherPlayer)];
                   if ( !history.includes(otherPlayer2) && !otherHistory.includes(player2) ) {
-                    match.players = [player1, otherPlayer2]
-                    otherMatch.players = [otherPlayer, player2]
-                    foundASwap = true
+                    match.players = [player1, otherPlayer2];
+                    otherMatch.players = [otherPlayer, player2];
+                    foundASwap = true;
                   }
                 }
               }
@@ -289,32 +289,32 @@ class Round {
         })
       }
     })
-    return this.matches
+    return this.matches;
   }
     
   _findAMatch (player1, pool, blackList = []) {
     /**
      * Try to pair the player as the opposite color as their last round. (USCF § 27A4 and § 27A5)
      */
-    var lastColor = this.prevRound.playerColor(player1)
+    var lastColor = this.prevRound.playerColor(player1);
     var hasntPlayed = pool
       .filter(p2 => !blackList.includes(p2)) // Filter anyone on the blacklist (e.g. past opponents [USCF § 27A1])
       .filter(p2 => p2 !== player1) // Don't pair players with themselves
-      .filter(p2 => !flatten(this.matches.map(m => m.players)).includes(p2)) // Don't pair anyone who's already been paired
+      .filter(p2 => !flatten(this.matches.map(m => m.players)).includes(p2)); // Don't pair anyone who's already been paired
     /**
      * Prioritize opponents who played that color for *their* last round. (USCF § 27A4 and § 27A5)
      */
-    var oppColor = pool.filter(p2 => lastColor !== this.prevRound.playerColor(p2))
-    var player2 = hasntPlayed.filter(p2 => oppColor.includes(p2))[0] || hasntPlayed[0]
-    var newMatch
+    var oppColor = pool.filter(p2 => lastColor !== this.prevRound.playerColor(p2));
+    var player2 = hasntPlayed.filter(p2 => oppColor.includes(p2))[0] || hasntPlayed[0];
+    var newMatch;
     if (player2) {
-      newMatch = new Match(player1, player2)
+      newMatch = new Match(player1, player2);
       if (this.tourney.playerColorBalance(player1) > this.tourney.playerColorBalance(player2)) {
-        newMatch.players.reverse()
+        newMatch.players.reverse();
       }
-      this.matches.push(newMatch)
+      this.matches.push(newMatch);
     }
-    return [ player2, newMatch ]
+    return [ player2, newMatch ];
   }
 
   /**
@@ -323,13 +323,13 @@ class Round {
    * @return {number} 0 for white and 1 for black
    */
   playerColor(player) {
-    var color = -1
+    var color = -1;
     this.matches.forEach(match => {
       if (match.players.includes(player)) {
         color = match.players.indexOf(player);
       }
     })
-    return color
+    return color;
   }
 
   /**
@@ -338,7 +338,7 @@ class Round {
    * @param {Player} player
    */
   addPlayer(player) {
-    this.players.push(player)
+    this.players.push(player);
   }
 }
 
@@ -350,17 +350,17 @@ class Round {
  */
 class Match {
   constructor (white, black) {
-    this.players = [white, black]
-    this.ratingsStart = [white.rating, black.rating]
-    this.ratingsChange = []
-    this.result = [0, 0]
+    this.players = [white, black];
+    this.ratingsStart = [white.rating, black.rating];
+    this.ratingsChange = [];
+    this.result = [0, 0];
   }
 
   /**
    * Sets black as the winner.
    */
   blackWon () {
-    this.result = [0, 1]
+    this.result = [0, 1];
     // calculate ratings
   }
 
@@ -368,7 +368,7 @@ class Match {
    * Sets white as the winner.
    */
   whiteWon () {
-    this.result = [1, 0]
+    this.result = [1, 0];
     // calculate ratings
   }
 
@@ -376,9 +376,9 @@ class Match {
    * Sets result as a draw.
    */
   draw () {
-    this.result = [0.5, 0.5]
+    this.result = [0.5, 0.5];
     // calculate ratings
   }
 }
 
-export {Tournament,Player}
+export {Tournament,Player};

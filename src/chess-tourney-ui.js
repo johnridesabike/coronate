@@ -20,7 +20,7 @@ function Roster ({tourney}) {
         )}
       </tbody>
     </table>
-  )
+  );
 }
 
 function RoundResults ({round}) {
@@ -46,14 +46,14 @@ function RoundResults ({round}) {
         )}
       </tbody>
     </table>
-  )
+  );
 }
 
 function Standings ({roundNum, tourney, players}) {
-  var playersClone = [].concat(players)
+  var playersClone = [].concat(players);
   playersClone.sort((a, b) =>
     tourney.playerScore(b, roundNum) - tourney.playerScore(a, roundNum)
-  )
+  );
   return (
     <table key={roundNum}>
       <caption>Current Standings</caption>
@@ -76,7 +76,7 @@ function Standings ({roundNum, tourney, players}) {
         )}
       </tbody>
     </table>
-  )
+  );
 }
 
-export {Roster, RoundResults, Standings}
+export {Roster, RoundResults, Standings};
