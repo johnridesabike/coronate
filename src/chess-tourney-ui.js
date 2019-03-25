@@ -12,7 +12,7 @@ function Roster ({tourney}) {
         </tr>
       </thead>
       <tbody>
-        {tourney.playerList.map((player, i) =>
+        {tourney.roster.all.map((player, i) =>
           <tr key={i}>
             <td>{player.firstName}</td>
             <td className="table__number">{player.rating}</td>

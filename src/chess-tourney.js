@@ -8,57 +8,87 @@ const {chain, flatten, last, times, zip} = require('lodash');
 
 /**
  * Represents an indivudal player.
- *
  * @param {string} firstName
  * @param {string} lastName
  * @param {int}    rating
  */
 class Player {
-  constructor (firstName, lastName, rating = 1200) {
+  constructor (firstName, lastName = '', rating = 1200) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.rating = rating;
+    this.dummy = false;
   }
 }
 
 /**
- * Represents a tournament
- *
+ * A stand-in for bye matches.
+ * @var {Player} dummyPlayer
+ */
+const dummyPlayer =  new Player('Dummy');
+dummyPlayer.dummy = true;
+dummyPlayer.rating = 0;
+
+/**
+ * Tournament class
  * @param {string} name
- * @param {int} timeControl
- * @param {array}  playerList
- * @param {int}    type
+ * @param {int}    timeControl
+ * @param {array}  roster
+ * @param {int}    byeValue
  */
 class Tournament {
-  constructor (name = '', timeControl = 15, playerList = []) {
+  constructor(name = '', timeControl = 15, roster = [], byeValue = 1) {
     this.name = name;
     this.timeControl = timeControl;
-    this.playerList = playerList;
+    this.roster = {
+      all: roster,
+      inactive: [],
+      active: function() {
+        return this.all.filter(i => !this.inactive.includes(i))
+      }
+    };
     this.roundList = [];
+    this.byeValue = byeValue;
   }
 
   /**
-   * Add a player to the roster
-   *
-   * @param {Player} player
+   * Add a player to the roster.
+   * @param {Player} player the player to add
    */
   addPlayer(player) {
-    this.playerList.push(player);
+    this.roster.all.push(player);
   }
 
   /**
-   * Add a list of players to the roster
-   * @param {Array} playerList 
+   * Add a list of players to the roster.
+   * @param {Array} players the list of players to add
    */
-  addPlayers(playerList) {
-    this.playerList = this.playerList.concat(playerList);
+  addPlayers(players) {
+    this.roster.all = this.roster.all.concat(players);
   }
 
   /**
-   * Calculate number of rounds
+   * Remove a player from the active roster. This player won't be placed in future rounds.
+   * @param {Player} player 
    */
-  numOfRounds () {
-    return Math.ceil(Math.log2(this.playerList.length));
+  deactivatePlayer(player) {
+    this.roster.inactive.push(player);
+  }
+  
+  /**
+   * Add a player to the active roster. This player will be placed in future rounds.
+   * @param {Player} player 
+   */
+  activatePlayer(player) {
+    this.roster.inactive.splice(this.roster.inactive.indexOf(player), 1);
+  }
+
+  /**
+   * Calculate number of rounds.
+   * @returns {int} the number of rounds
+   */
+  numOfRounds() {
+    return Math.ceil(Math.log2(this.roster.active().length));
   }
 
   /**
@@ -70,10 +100,9 @@ class Tournament {
 
   /**
    * Calculate a player's score.
-   *
    * @param {Player} player
    */
-  playerScore (player, round = null) {
+  playerScore(player, round = null) {
     var score = 0;
     if ( round === null) {
       round = this.roundList.length;
@@ -93,10 +122,9 @@ class Tournament {
 
   /**
    * Calculate a player's color balance
-   *
    * @param {Player} player
-   *
-   * @return {Int} A negative number means they played as black more. A positive number means they played as white more.
+   * @param {Int}    round The ID of the highest round to consider
+   * @returns {Int} A negative number means they played as black more. A positive number means they played as white more.
    */
   playerColorBalance (player, round = null) {
     var color = 0;
@@ -119,12 +147,10 @@ class Tournament {
 
   /**
    * Generate a list of a player's opponents.
-   *
-   * @param {Player} player
-   *
-   * @return {Array} A list of past opponents
+   * @param   {Player} player
+   * @returns {Array} A list of past opponents
    */
-  playerOppHistory (player, round = null) {
+  playerOppHistory(player, round = null) {
     var opponents = [];
     if ( round === null) {
       round = this.roundList.length - 1;
@@ -145,14 +171,14 @@ class Tournament {
 
   /**
    * Generates a new round.
-   * @return {Array} the new round
+   * @returns {Array} the new round
    */
   newRound() {
     var newRound = new Round(
       this,
       this.roundList.length,
       last(this.roundList),
-      this.playerList
+      this.roster.active()
     );
     newRound.pairPlayers();
     this.roundList.push(newRound);
@@ -167,10 +193,11 @@ class Round {
   constructor(tourney, roundNum, prevRound, players) {
     this.roundNum = roundNum;
     this.tourney = tourney;
-    this.playersFlat = players;
+    this.roster = players;
     this.prevRound = prevRound;
     this.playerTree = {};
     this.matches = [];
+    this.hasDummy = false;
   }
 
   /**
@@ -185,13 +212,13 @@ class Round {
      *  ...
      * }
      */
-    this.playersFlat.forEach(player => {
+    this.roster.forEach(player => {
       var score = this.tourney.playerScore(player);
       if(!(score in this.playerTree)) {
         this.playerTree[score] = [];
       }
       this.playerTree[score].push(player);
-    })
+    });
     /**
      * Part 2: Split each score group into an upper half and a lower half, based on rating (USCF § 27A3)
      * Tree structure:
@@ -203,26 +230,44 @@ class Round {
      *  ...
      * }
      */
-    Object.keys(this.playerTree).forEach(score => {
+    Object.keys(this.playerTree).reverse().forEach(score => {
       var players = this.playerTree[score];
+      /**
+       * If there's an odd number of players in this score group,
+       */
+      if (players.length % 2 !== 0) {
+        /**
+         * ...and if there's an odd number of players in the total round, then add a dummy player.
+         */
+        if (this.roster.length % 2 !== 0 && !this.hasDummy) {
+          players.push(dummyPlayer);
+          this.hasDummy = true;
+        /**
+         * But if there's an even number of players in the total round, then just move a player to the next score group.
+         */
+        } else {
+          var oddPlayer = players[players.length - 1];
+          players.splice(players.length - 1, 1);
+          this.playerTree[Number(score) - 1].push(oddPlayer);
+        }
+      }
       this.playerTree[score] = chain(players)
         .sortBy('rating')
         .reverse()
         .chunk(players.length/2)
         .value();
-    })
+    });
     Object.keys(this.playerTree).forEach(score => {
-      var scoreGroup = this.playerTree[score];
       // name the upperHalf and lowerHalf to make the code easier to read
-      var upperHalf = scoreGroup[0];
-      var lowerHalf = scoreGroup[1];
+      var upperHalf = this.playerTree[score][0];
+      var lowerHalf = this.playerTree[score][1];
       /**
        * If there was no previous round, zip the players and call it a day.
        */
       if (this.prevRound === undefined) {
         zip(upperHalf, lowerHalf)
           .forEach(match => 
-            this.matches.push(new Match(...match))
+            this.matches.push(new Match(this, ...match))
           );
       } else {
         /**
@@ -291,7 +336,14 @@ class Round {
     })
     return this.matches;
   }
-    
+  
+  /**
+   * Find a match for a given player.
+   * @param   {Player} player1  The player to be paired
+   * @param   {Array}  pool      The pool of available players
+   * @param   {Array}  blackList A blacklist of players, possibly in the pool, who should not be paired
+   * @returns {Array}  The paired player and the Match object. Both will be undefined if no match was made.
+   */
   _findAMatch (player1, pool, blackList = []) {
     /**
      * Try to pair the player as the opposite color as their last round. (USCF § 27A4 and § 27A5)
@@ -308,7 +360,7 @@ class Round {
     var player2 = hasntPlayed.filter(p2 => oppColor.includes(p2))[0] || hasntPlayed[0];
     var newMatch;
     if (player2) {
-      newMatch = new Match(player1, player2);
+      newMatch = new Match(this, player1, player2);
       if (this.tourney.playerColorBalance(player1) > this.tourney.playerColorBalance(player2)) {
         newMatch.players.reverse();
       }
@@ -349,7 +401,8 @@ class Round {
  * @param {Player} white
  */
 class Match {
-  constructor (white, black) {
+  constructor(round, white, black) {
+    this.round = round;
     this.players = [white, black];
     this.ratingsStart = [white.rating, black.rating];
     this.ratingsChange = [];
@@ -359,7 +412,7 @@ class Match {
   /**
    * Sets black as the winner.
    */
-  blackWon () {
+  blackWon() {
     this.result = [0, 1];
     // calculate ratings
   }
@@ -367,7 +420,7 @@ class Match {
   /**
    * Sets white as the winner.
    */
-  whiteWon () {
+  whiteWon() {
     this.result = [1, 0];
     // calculate ratings
   }
@@ -375,10 +428,20 @@ class Match {
   /**
    * Sets result as a draw.
    */
-  draw () {
+  draw() {
     this.result = [0.5, 0.5];
     // calculate ratings
   }
+
+  isBye() {
+    const dummies = this.players.map(p => p.dummy);
+    if (dummies[0]) {
+      this.blackWon();
+    } else if(dummies[1]) {
+      this.whiteWon();
+    }
+    return dummies.includes(true);
+  }
 }
 
-export {Tournament,Player};
+export {Tournament, Player};
