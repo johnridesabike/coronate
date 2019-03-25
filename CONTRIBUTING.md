@@ -5,6 +5,7 @@ If you're interested, here's my general to-do list:
 ## API
 - Complete pairing logic to account for all USCF §27 guidelines.
 - Add exceptions for cases with odd numbers of players.
+- Add tie-breaking logic.
 - Improve adding or removing players after a tournament has begun.
 - Add rating calculations.
 - Improve test coverage to account for more situations.
