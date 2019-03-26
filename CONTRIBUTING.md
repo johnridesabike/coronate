@@ -7,10 +7,12 @@ If you're interested, here's my general to-do list:
 - Better bye handling.
 - Improve adding or removing players after a tournament has begun.
 - Add rating calculations.
-- Improve test coverage to account for more situations.
-- Clean up code.
-- Write documentation for API and data structure.
 - Add I/O for saving and loading data across sessions.
+
+## Housekeeping
+- Clean up code.
+- Improve test coverage.
+- Write documentation.
 
 ## Front-end
 - Build a functional front-end UI.
@@ -20,8 +22,8 @@ If you're interested, here's my general to-do list:
 - Build an awesome front-end UI.
 - Package into a standalone Electron app.
 - Publish a web demo.
-- Optimize pairing logic
+- Perfect pairing logic.
 
-The code is designed to follow procedures explained in the [USCF chess rulebook](http://www.uschess.org/content/view/7752/369/), which makes building it a unique challenge compared to a generic Swiss paring system. Where applicable, code comments should cite relevant rulebook section numbers.
+The code is designed to follow procedures described in the [USCF chess rulebook](http://www.uschess.org/content/view/7752/369/), which makes building it a unique challenge compared to a generic Swiss pairing system. Where applicable, code comments should cite relevant rulebook section numbers.
 
 If you have any questions, just open a new issue.
