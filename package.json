@@ -10,6 +10,7 @@
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
   "dependencies": {
+    "glicko2": "^0.8.4",
     "lodash": "^4.17.11",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",

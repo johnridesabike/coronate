@@ -1,25 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Player } from './chess-tourney';
+
 
 
 function Roster ({tourney}) {
+  const [roster, setRoster] = useState(tourney.roster.all);
+  const newPlayer = {firstName: '', lastName: '', rating: 1200};
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setRoster(
+      roster.concat([new Player(newPlayer['firstName'], newPlayer['lastName'], newPlayer['rating'])])
+    );
+  }
+  const updateField = (event) => {
+    newPlayer[event.target.name] = event.target.value;
+  }
+
   return (
-    <table>
-      <caption>Roster</caption>
-      <thead>
-        <tr>
-          <th>First name</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tourney.roster.all.map((player, i) =>
-          <tr key={i}>
-            <td>{player.firstName}</td>
-            <td className="table__number">{player.rating}</td>
+    <div className="roster">
+      <table>
+        <caption>Roster</caption>
+        <thead>
+          <tr>
+            <th>First name</th>
+            <th>Rating</th>
           </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          { roster.map((player, i) =>
+            <tr key={i}>
+              <td>{player.firstName}</td>
+              <td className="table__number">{player.rating}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <form onSubmit={handleSubmit}>
+        <label>
+          First name
+          <input type="text" name="firstName" onChange={updateField} required />
+        </label>
+        <label>
+          Last name
+          <input type="text" name="lastName" onChange={updateField} required />
+        </label>
+        <label>
+          Rating
+          <input type="number" name="rating" onChange={updateField} value="1200" />
+        </label>
+        <input type="submit" value="Add" />
+      </form>
+    </div>
   );
 }
 

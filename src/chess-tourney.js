@@ -5,6 +5,7 @@
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
 const {chain, flatten, last, times, zip} = require('lodash');
+const glicko2 = require('glicko2');
 
 /**
  * Represents an indivudal player.
