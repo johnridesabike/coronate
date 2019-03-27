@@ -10,11 +10,12 @@
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
   "dependencies": {
-    "glicko2": "^0.8.4",
+    "elo-rank": "^1.0.3",
     "lodash": "^4.17.11",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "thenby": "^1.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

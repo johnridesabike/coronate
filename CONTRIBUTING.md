@@ -3,10 +3,8 @@ At the moment, this project is so small and unstable that I'm not actively seeki
 If you're interested, here's my general to-do list:
 
 ## API
-- Add tie-breaking logic.
-- Better bye handling.
+- Better bye handling: black/white balance, tie-break logic, etc.
 - Improve adding or removing players after a tournament has begun.
-- Add rating calculations.
 - Add I/O for saving and loading data across sessions.
 
 ## Housekeeping
@@ -22,7 +20,10 @@ If you're interested, here's my general to-do list:
 - Build an awesome front-end UI.
 - Package into a standalone Electron app.
 - Publish a web demo.
-- Perfect pairing logic.
+- Improve pairing logic.
+- Use Glicko-2 or something else for ratings.
+- Improve K-factor & account for individual players' provisional ratings.
+- Add options for other tie-break methods.
 
 The code is designed to follow procedures described in the [USCF chess rulebook](http://www.uschess.org/content/view/7752/369/), which makes building it a unique challenge compared to a generic Swiss pairing system. Where applicable, code comments should cite relevant rulebook section numbers.
 

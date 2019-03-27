@@ -5,7 +5,16 @@
 * At some point, this could turn into a standalone node module.
 * --------------------------------------------------------------------------- */
 const {chain, flatten, last, times, zip} = require('lodash');
-const glicko2 = require('glicko2');
+const EloRank = require('elo-rank');
+const {firstBy} = require('thenby');
+
+/**
+ * @constant KFACTOR The k-factor used for calculating ratings
+ * @constant ELO     The EloRank object
+ */
+const KFACTOR = 16;
+const ELO = new EloRank(KFACTOR);
+
 
 /**
  * Represents an indivudal player.
@@ -24,11 +33,11 @@ class Player {
 
 /**
  * A stand-in for bye matches.
- * @var {Player} dummyPlayer
+ * @constant {Player} DUMMYPLAYER
  */
-const dummyPlayer =  new Player('Dummy');
-dummyPlayer.dummy = true;
-dummyPlayer.rating = 0;
+const DUMMYPLAYER =  new Player('Dummy');
+DUMMYPLAYER.dummy = true;
+DUMMYPLAYER.rating = 0;
 
 /**
  * Tournament class
@@ -100,11 +109,12 @@ class Tournament {
   }
 
   /**
-   * Calculate a player's score.
+   * Get a list of all of a player's scores from each match.
    * @param {Player} player
+   * @returns {array} the list of scores
    */
-  playerScore(player, round = null) {
-    var score = 0;
+  playerScoreList(player, round = null) {
+    var scores = [];
     if ( round === null) {
       round = this.roundList.length;
     }
@@ -113,12 +123,42 @@ class Tournament {
         this.roundList[i].matches.forEach(match => {
           var index = match.players.indexOf(player);
           if (index !== -1) {
-            score += match.result[index];
+            scores.push(match.result[index]);
           }
         });
       }
     });
+    return scores;
+  }
+
+  /**
+   * Get the total score of a player after a given round.
+   * @param {Player} player 
+   * @param {number} roundNum 
+   */
+  playerScore(player, roundNum = null) {
+    var score = 0;
+    var scores = this.playerScoreList(player, roundNum);
+    if (scores.length > 0) {
+      score =  scores.reduce((accumulator,currentValue) => accumulator + currentValue);
+    }
     return score;
+  }
+
+  /**
+   * Get the cumulative score of a player
+   * @param {Player} player 
+   * @param {number} roundNum 
+   */
+  playerScoreCum(player, roundNum = null) {
+    var runningScore = 0;
+    var cumScores = []
+    var scores = this.playerScoreList(player, roundNum);
+    scores.forEach(score => {
+      runningScore += score;
+      cumScores.push(runningScore);
+    });
+    return cumScores.reduce((accumulator,currentValue) => accumulator + currentValue);;
   }
 
   /**
@@ -147,6 +187,54 @@ class Tournament {
   }
 
   /**
+   * Sort the standings by score and USCF tie-break rules from § 34. USCF recommends using these methods in-order: modified median, solkoff, cumulative, and cumulative of opposition.
+   * @param {number} roundNum 
+   * @returns {Array} The sorted list of players
+   */
+  playerStandings(roundNum = null) {
+    var playersClone = [].concat(this.roster.all);
+    playersClone.sort(
+      firstBy(p => this.playerScore(p, roundNum), -1)
+      .thenBy(p => this.modifiedMedian(p, roundNum), -1) /* USCF § 34E1 */
+      .thenBy(p => this.solkoff(p, roundNum), -1) /* USCF § 34E2 */
+      .thenBy(p => this.playerScoreCum(p, roundNum), -1) /* USCF § 34E3 */
+      .thenBy(p => this.playerOppScoreCum(p, roundNum), -1) /* USCF § 34E9 */
+    );
+    return playersClone;
+  }
+
+  /**
+   * Gets the modified median factor defined in USCF § 34E1
+   * @param {Player} player 
+   * @param {number} roundNum 
+   */
+  modifiedMedian(player, roundNum = null, solkoff = false) {
+    // get all of the opponent's scores
+    var scores = this.playerOppHistory(player, roundNum)
+      .map(opponent => this.playerScore(opponent, roundNum));
+    //sort them, then remove the first and last items
+    scores.sort();
+    if (!solkoff) {
+      scores.pop();
+      scores.shift();
+    }
+    var finalScore = 0;
+    if (scores.length > 0) {
+      finalScore = scores.reduce((accumulator,currentValue) => accumulator + currentValue);
+    }
+    return finalScore;
+  }
+  
+  /**
+   * A shortcut for passing the `solkoff` variable to `this.modifiedMedian`.
+   * @param {Player} player 
+   * @param {number} roundNum 
+   */
+  solkoff(player, roundNum = null) {
+    return this.modifiedMedian(player, roundNum, true);
+  }
+
+  /**
    * Generate a list of a player's opponents.
    * @param   {Player} player
    * @returns {Array} A list of past opponents
@@ -168,6 +256,12 @@ class Tournament {
       });
     });
     return opponents
+  }
+
+  playerOppScoreCum(player, round = null) {
+    const opponents = this.playerOppHistory(player, round);
+    var oppScores = opponents.map(p => this.playerScoreCum(p, round));
+    return oppScores.reduce((a, b) => a + b);
   }
 
   /**
@@ -241,7 +335,7 @@ class Round {
          * ...and if there's an odd number of players in the total round, then add a dummy player.
          */
         if (this.roster.length % 2 !== 0 && !this.hasDummy) {
-          players.push(dummyPlayer);
+          players.push(DUMMYPLAYER);
           this.hasDummy = true;
         /**
          * But if there's an even number of players in the total round, then just move a player to the next score group.
@@ -406,8 +500,18 @@ class Match {
     this.round = round;
     this.players = [white, black];
     this.ratingsStart = [white.rating, black.rating];
-    this.ratingsChange = [];
     this.result = [0, 0];
+    this.scoreExpected = [0, 0]; // used for the Elo calculator
+    this.origRating = [0, 0]; // cache the ratings from when the match began
+    this.newRating = [0, 0]; // the newly calculated ratings after the match ends
+  }
+
+  get white() {
+    return this.players[0];
+  }
+
+  get black() {
+    return this.players[1];
   }
 
   /**
@@ -415,7 +519,7 @@ class Match {
    */
   blackWon() {
     this.result = [0, 1];
-    // calculate ratings
+    this.calcRatings();
   }
 
   /**
@@ -423,7 +527,7 @@ class Match {
    */
   whiteWon() {
     this.result = [1, 0];
-    // calculate ratings
+    this.calcRatings();
   }
 
   /**
@@ -431,7 +535,7 @@ class Match {
    */
   draw() {
     this.result = [0.5, 0.5];
-    // calculate ratings
+    this.calcRatings();
   }
 
   isBye() {
@@ -443,6 +547,23 @@ class Match {
     }
     return dummies.includes(true);
   }
+
+  calcRatings() {
+    this.origRating = [this.white.rating, this.black.rating];
+    this.scoreExpected = [
+      ELO.getExpected(this.white.rating, this.black.rating),
+      ELO.getExpected(this.black.rating, this.white.rating),
+    ];
+    this.newRating = [
+      ELO.updateRating(this.scoreExpected[0], this.result[0], this.white.rating),
+      ELO.updateRating(this.scoreExpected[1], this.result[1], this.black.rating)
+    ];
+    this.white.rating = this.newRating[0];
+    this.black.rating = this.newRating[1];
+  }
 }
+
+// This fails for some reason...
+// module.exports = {Tournament, Player};
 
 export {Tournament, Player};

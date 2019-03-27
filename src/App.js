@@ -47,7 +47,7 @@ class App extends Component {
         {cvlTourney.roundList.map(round => 
           <div className="round" key={round.roundNum}>
             <RoundResults round={round} tourney={cvlTourney} />
-            <Standings players={cvlTourney.roster.active()} roundNum={round.roundNum} tourney={cvlTourney}/>
+            <Standings roundNum={round.roundNum} tourney={cvlTourney}/>
           </div>
         )}
       </div>

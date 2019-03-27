@@ -61,8 +61,10 @@ function RoundResults ({round}) {
       <thead>
         <tr>
           <th></th>
+          <th>Rating</th>
           <th>White</th>
           <th>Black</th>
+          <th>Rating</th>
           <th></th>
         </tr>
       </thead>
@@ -70,8 +72,10 @@ function RoundResults ({round}) {
         {round.matches.map((match, i) =>
           <tr key={i}>
             <td>{match.result[0] === 1 ? 'Won' : ''}</td>
-            <td>{match.players[0].firstName}</td>
-            <td>{match.players[1].firstName}</td>
+            <td>{match.newRating[0] - match.origRating[0]}</td>
+            <td>{match.white.firstName}</td>
+            <td>{match.black.firstName}</td>
+            <td>{match.newRating[1] - match.origRating[1]}</td>
             <td>{match.result[1] === 1 ? 'Won' : ''}</td>
           </tr>
         )}
@@ -80,11 +84,7 @@ function RoundResults ({round}) {
   );
 }
 
-function Standings ({roundNum, tourney, players}) {
-  var playersClone = [].concat(players);
-  playersClone.sort((a, b) =>
-    tourney.playerScore(b, roundNum) - tourney.playerScore(a, roundNum)
-  );
+function Standings({tourney, roundNum}) {
   return (
     <table key={roundNum}>
       <caption>Current Standings</caption>
@@ -92,15 +92,25 @@ function Standings ({roundNum, tourney, players}) {
         <tr>
           <th>First name</th>
           <th>Score</th>
+          <th>Median</th>
+          <th>Solkoff</th>
+          <th>Cumulative</th>
+          <th>Cumulative of opposition</th>
+          <th>Rating</th>
           <th>Color balance</th>
           <th>Opponent count</th>
         </tr>
       </thead>
       <tbody>
-        {playersClone.map((player, i) => 
+        {tourney.playerStandings(roundNum).map((player, i) => 
           <tr key={i}>
             <td>{player.firstName}</td>
             <td className="table__number">{tourney.playerScore(player, roundNum)}</td>
+            <td className="table__number">{tourney.modifiedMedian(player, roundNum)}</td>
+            <td className="table__number">{tourney.solkoff(player, roundNum)}</td>
+            <td className="table_number">{tourney.playerScoreCum(player, roundNum)}</td>
+            <td className="table_number">{tourney.playerOppScoreCum(player, roundNum)}</td>
+            <td>{player.rating}</td>
             <td className="table__number">{tourney.playerColorBalance(player, roundNum)}</td>
             <td className="table__number">{tourney.playerOppHistory(player, roundNum).length}</td>
           </tr>
