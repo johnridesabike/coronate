@@ -54,33 +54,75 @@ function Roster ({tourney}) {
   );
 }
 
-function RoundResults ({round}) {
+function Round ({round}) {
+  const [matches, setMatches] = useState([].concat(round.matches));
+  const setWinner = (match, color, index, event) => {
+    if(event.target.checked) {
+      if(color === 0) {
+        match.whiteWon();
+      } else if (color === 1) {
+        match.blackWon();
+      } else if (color === 0.5) {
+        match.draw();
+      }
+    } else {
+      match.resetResult();
+    }
+    matches[index] = match;
+    setMatches([].concat(matches));
+  }
   return (
-    <table key={round.roundNum}>
-      <caption>Round {round.roundNum + 1} results</caption>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Rating</th>
-          <th>White</th>
-          <th>Black</th>
-          <th>Rating</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {round.matches.map((match, i) =>
-          <tr key={i}>
-            <td>{match.result[0] === 1 ? 'Won' : ''}</td>
-            <td>{match.newRating[0] - match.origRating[0]}</td>
-            <td>{match.white.firstName}</td>
-            <td>{match.black.firstName}</td>
-            <td>{match.newRating[1] - match.origRating[1]}</td>
-            <td>{match.result[1] === 1 ? 'Won' : ''}</td>
+    <div>
+      <table key={round.roundNum}>
+        <caption>Round {round.roundNum + 1} results</caption>
+        <thead>
+          <tr>
+            <th>Won</th>
+            <th>Rating change</th>
+            <th>White</th>
+            <th>Draw</th>
+            <th>Black</th>
+            <th>Rating change</th>
+            <th>Won</th>
           </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {matches.map((match, i) =>
+            <tr key={i}>
+              <td>
+                <form>
+                  <input 
+                    type="checkbox"
+                    checked={match.result[0] === 1}
+                    onChange={(event) => setWinner(match, 0, i, event)} />
+                </form>
+              </td>
+              <td>{match.newRating[0] - match.origRating[0]}</td>
+              <td>{match.whitePlayer.firstName}</td>
+              <td>
+                <form>
+                  <input 
+                    type="checkbox"
+                    checked={match.result[0] === 0.5}
+                    onChange={(event) => setWinner(match, 0.5, i, event)} />
+                </form>
+              </td>
+              <td>{match.blackPlayer.firstName}</td>
+              <td>{match.newRating[1] - match.origRating[1]}</td>
+              <td>
+                <form>
+                  <input 
+                    type="checkbox"
+                    checked={match.result[1] === 1}
+                    onChange={(event) => setWinner(match, 1, i, event)} />
+                </form>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <Standings roundNum={round.roundNum} tourney={round.tourney} />
+    </div>
   );
 }
 
@@ -120,4 +162,4 @@ function Standings({tourney, roundNum}) {
   );
 }
 
-export {Roster, RoundResults, Standings};
+export {Roster, Round, Standings};

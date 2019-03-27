@@ -12,13 +12,30 @@ function randomRounds(tourney) {
 }
 
 function randomMatches(match) {
-  var bye = match.isBye();
-  if (!bye) {
+  if (!match.isBye) {
     if (Math.random() >= 0.5) {
       match.whiteWon();
     } else {
       match.blackWon();
     }
+  }
+}
+
+function randomRoundsDraws(tourney) {
+  while (tourney.roundList.length < tourney.numOfRounds()) {
+    var round = tourney.newRound();
+    round.matches.forEach(match => {
+      if (!match.isBye) {
+        var rando = Math.random();
+        if (rando >= 0.66) {
+          match.whiteWon();
+        } else if (rando >= .33) {
+          match.blackWon();
+        } else {
+          match.draw();
+        }
+      }
+    })
   }
 }
 
@@ -39,6 +56,12 @@ it('A tournament can run without crashing', () => {
   const tourney = new Tournament('A battle for the ages', 15);
   tourney.addPlayers(players.slice(0,16));
   randomRounds(tourney);
+});
+
+it('A tournament can run with drawed rounds without crashing', () => {
+  const tourney = new Tournament('A battle for the ages', 15);
+  tourney.addPlayers(players.slice(0,16));
+  randomRoundsDraws(tourney);
 });
 
 it('No players face each other more than once', () => {
@@ -68,11 +91,11 @@ it('A tournament can pair an odd number of players correctly', () => {
   var playerOppCount = tourney.roster.all
     .map(p => tourney.playerOppHistory(p).length);
 
-  if (sortBy(playerOppCount, i => i)[0] !== tourney.numOfRounds()) {
-    tourney.roundList.forEach(round => {
-      console.log(round.playerTree)
-    });
-  }
+  // if (sortBy(playerOppCount, i => i)[0] !== tourney.numOfRounds()) {
+  //   tourney.roundList.forEach(round => {
+  //     console.log(round.playerTree)
+  //   });
+  // }
   expect(sortBy(playerOppCount, i => i)[0]).toBe(tourney.numOfRounds());
 });
 

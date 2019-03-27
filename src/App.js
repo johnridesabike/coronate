@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import './App.css';
 import {Tournament, Player} from './chess-tourney';
-import {Roster, RoundResults, Standings} from './chess-tourney-ui';
+import {Roster, Round, Standings} from './chess-tourney-ui';
 
 const cvlTourney = new Tournament(
   'CVL Winter Open',
@@ -21,38 +21,56 @@ const players = [
   new Player('Elizabeth', 'S', 1750)
 ];
 
-cvlTourney.addPlayers(players.slice(0,19));
-
-while (cvlTourney.roundList.length < cvlTourney.numOfRounds()) {
-  var round = cvlTourney.newRound();
-  round.matches.forEach(function(match) {
-    var bye = match.isBye();
-    if (!bye) {
-      if (Math.random() >= 0.5) {
-        match.whiteWon();
-      } else {
-        match.blackWon();
-      }
+function randomMatches(match) {
+  var bye = match.isBye();
+  if (!bye) {
+    if (Math.random() >= 0.5) {
+      match.whiteWon();
+    } else {
+      match.blackWon();
     }
-  })
+  }
 }
 
-class App extends Component {
-  render() {
-    return (
-      <div className="tournament">
-        <h1>Chessahoochee: a chess tournament app</h1>
-        <Roster tourney={cvlTourney}/>
-        <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
-        {cvlTourney.roundList.map(round => 
-          <div className="round" key={round.roundNum}>
-            <RoundResults round={round} tourney={cvlTourney} />
-            <Standings roundNum={round.roundNum} tourney={cvlTourney}/>
-          </div>
-        )}
-      </div>
-    )
+cvlTourney.addPlayers(players.slice(0,16));
+
+// while (cvlTourney.roundList.length < cvlTourney.numOfRounds()) {
+//   var round = cvlTourney.newRound();
+//   round.matches.forEach(function(match) {
+//     var bye = match.isBye();
+//     if (!bye) {
+//       if (Math.random() >= 0.5) {
+//         match.whiteWon();
+//       } else {
+//         match.blackWon();
+//       }
+//     }
+//   })
+// }
+
+function App() {
+  const [rounds, setRounds] = useState([].concat(cvlTourney.roundList));
+  const newRound = (event) => {
+    var round = cvlTourney.newRound();
+    // round.matches.forEach(match => randomMatches(match))
+    setRounds([].concat(cvlTourney.roundList));
   }
+  return (
+    <div className="tournament">
+      <h1>Chessahoochee: a chess tournament app</h1>
+      <Roster tourney={cvlTourney}/>
+      <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
+      <div>
+        <button onClick={newRound}>New Round</button>
+      </div>
+      {rounds.map(round => 
+        <div className="round" key={round.roundNum}>
+          <Round round={round} tourney={cvlTourney} />
+          {/* <Standings roundNum={round.roundNum} tourney={cvlTourney}/> */}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;
