@@ -11,9 +11,14 @@ If you're interested, here's my general to-do list:
 - Clean up code.
 - Improve test coverage.
 - Write documentation.
+- Publish a demo.
 
 ## Front-end
-- Build a functional front-end UI.
+- Improve showing ranks and ties.
+- Move tie-breaking stats out of the main view.
+- Add a way to remove rounds.
+- Add a way to remove players from the roster.
+- Add a way to manually match/unmatch players.
 
 ## Beyond the horizon
 - Build an awesome front-end UI.

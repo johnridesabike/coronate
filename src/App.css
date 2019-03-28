@@ -71,16 +71,8 @@ caption {
 }
 
 .tabbar {
-  position: fixed;
-  top: 0;
-  left: 0;
   background-color: #fff;
   width: 100%;
-  height: 32px;
-}
-
-body {
-  margin-top: 32px;
 }
 
 .tabbar ul {
@@ -88,5 +80,34 @@ body {
 }
 
 .tabbar li {
-  display: inline;
+  display: inline-block;
+}
+
+.tab {
+  background-color: transparent;
+  color: green;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: lightgreen;
+}
+
+.tab:disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+.new_round {
+  color: blue;
+  border-width: 1px;
+  border-style: solid;
+  border-color: currentColor;
+  border-radius: 1em;
+}
+
+.new_round:hover {
+  color: lightblue;
 }

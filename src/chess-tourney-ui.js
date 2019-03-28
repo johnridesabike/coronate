@@ -18,7 +18,6 @@ function Roster ({tourney}) {
   const updateField = (event) => {
     newPlayer[event.target.name] = event.target.value;
   }
-
   return (
     <div className="roster">
       <table>
@@ -51,7 +50,7 @@ function Roster ({tourney}) {
           Rating
           <input type="number" name="rating" onChange={updateField} value="1200" />
         </label>
-        <input type="submit" value="Add" />
+        <input type="submit" value="Add"/>
       </form>
       <p className="center">Total rounds: {tourney.numOfRounds()}</p>
     </div>
@@ -59,23 +58,27 @@ function Roster ({tourney}) {
 }
 
 function Round ({tourney, roundNum}) {
+  /**
+   * Be careful when using the `setState` matches and the API's matches.
+   * They have to mirror each other but can't be the same objects.
+   */
   const round = tourney.roundList[roundNum];
-  console.log(round.matches[0].result);
-  const [matches, setMatches] = useState([].concat(round.matches));
+  const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
   const setWinner = (match, color, index, event) => {
+    var origMatch = round.matches[index];
     if(event.target.checked) {
       if(color === 0) {
-        match.whiteWon();
+        origMatch.whiteWon();
       } else if (color === 1) {
-        match.blackWon();
+        origMatch.blackWon();
       } else if (color === 0.5) {
-        match.draw();
+        origMatch.draw();
       }
     } else {
-      match.resetResult();
+      origMatch.resetResult();
     }
-    matches[index] = match;
-    setMatches([].concat(matches));
+    // matches[index] = match;
+    setMatches(round.matches.map(o => Object.assign({}, o)));
   }
   return (
     <div>
@@ -99,27 +102,27 @@ function Round ({tourney, roundNum}) {
                 <form>
                   <input 
                     type="checkbox"
-                    checked={match.result[0] === 1}
+                    checked={round.matches[i].result[0] === 1}
                     onChange={(event) => setWinner(match, 0, i, event)} />
                 </form>
               </td>
-              <td>{match.newRating[0] - match.origRating[0]}</td>
-              <td>{match.whitePlayer.firstName}</td>
+              <td>{round.matches[i].newRating[0] - round.matches[i].origRating[0]}</td>
+              <td>{round.matches[i].whitePlayer.firstName}</td>
               <td>
                 <form>
                   <input 
                     type="checkbox"
-                    checked={match.result[0] === 0.5}
+                    checked={round.matches[i].result[0] === 0.5}
                     onChange={(event) => setWinner(match, 0.5, i, event)} />
                 </form>
               </td>
-              <td>{match.blackPlayer.firstName}</td>
-              <td>{match.newRating[1] - match.origRating[1]}</td>
+              <td>{round.matches[i].blackPlayer.firstName}</td>
+              <td>{round.matches[i].newRating[1] - round.matches[i].origRating[1]}</td>
               <td>
                 <form>
                   <input 
                     type="checkbox"
-                    checked={match.result[1] === 1}
+                    checked={round.matches[i].result[1] === 1}
                     onChange={(event) => setWinner(match, 1, i, event)} />
                 </form>
               </td>
@@ -156,8 +159,8 @@ function Standings({tourney, roundNum}) {
             <td className="table__number">{tourney.playerScore(player, roundNum)}</td>
             <td className="table__number">{tourney.modifiedMedian(player, roundNum)}</td>
             <td className="table__number">{tourney.solkoff(player, roundNum)}</td>
-            <td className="table_number">{tourney.playerScoreCum(player, roundNum)}</td>
-            <td className="table_number">{tourney.playerOppScoreCum(player, roundNum)}</td>
+            <td className="table__number">{tourney.playerScoreCum(player, roundNum)}</td>
+            <td className="table__number">{tourney.playerOppScoreCum(player, roundNum)}</td>
             <td>{player.rating}</td>
             <td className="table__number">{tourney.playerColorBalance(player, roundNum)}</td>
             <td className="table__number">{tourney.playerOppHistory(player, roundNum).length}</td>

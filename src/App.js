@@ -75,12 +75,23 @@ function App() {
         <ul>
           {tabList.map((tab, i) => 
             <li key={i}>
-              <button onClick={() => setCurrentTab(tab)}>
+              <button
+                className="tab"
+                onClick={() => setCurrentTab(tab)}
+                disabled={currentTab === tab}
+                >
                 {tab.name}
               </button>
             </li>
           )}
-          <li><button onClick={newRound}>New Round</button></li>
+          <li>
+            <button 
+              className="tab new_round"
+              onClick={newRound}
+              >
+              New Round
+            </button>
+          </li>
         </ul>
       </nav>
       <h1>Chessahoochee: a chess tournament app</h1>
