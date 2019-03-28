@@ -53,6 +53,7 @@ function Roster ({tourney}) {
         </label>
         <input type="submit" value="Add" />
       </form>
+      <p className="center">Total rounds: {tourney.numOfRounds()}</p>
     </div>
   );
 }

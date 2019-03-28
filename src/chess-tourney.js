@@ -160,7 +160,11 @@ class Tournament {
       runningScore += score;
       cumScores.push(runningScore);
     });
-    return cumScores.reduce((a, b) => a + b);;
+    var totalScore = 0;
+    if (cumScores.length !== 0) {
+      totalScore = cumScores.reduce((a, b) => a + b);
+    }
+    return totalScore;
   }
 
   /**
@@ -265,7 +269,11 @@ class Tournament {
   playerOppScoreCum(player, round = null) {
     const opponents = this.playerOppHistory(player, round);
     var oppScores = opponents.map(p => this.playerScoreCum(p, round));
-    return oppScores.reduce((a, b) => a + b);
+    var score = 0;
+    if (oppScores.length !== 0){
+      score = oppScores.reduce((a, b) => a + b);
+    }
+    return score;
   }
 
   /**

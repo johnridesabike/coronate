@@ -85,7 +85,6 @@ function App() {
       </nav>
       <h1>Chessahoochee: a chess tournament app</h1>
       {currentTab.contents}
-      <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
       {/* {cvlTourney.roundList.map(round => 
         <div className="round" key={round.roundNum}>
           <Round round={round} />
