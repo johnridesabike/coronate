@@ -69,3 +69,24 @@ caption {
 .center {
   text-align: center;
 }
+
+.tabbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  width: 100%;
+  height: 32px;
+}
+
+body {
+  margin-top: 32px;
+}
+
+.tabbar ul {
+  list-style: none;
+}
+
+.tabbar li {
+  display: inline;
+}

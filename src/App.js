@@ -49,26 +49,48 @@ cvlTourney.addPlayers(players.slice(0,16));
 // }
 
 function App() {
-  const [rounds, setRounds] = useState([].concat(cvlTourney.roundList));
   const newRound = (event) => {
     var round = cvlTourney.newRound();
-    // round.matches.forEach(match => randomMatches(match))
-    setRounds([].concat(cvlTourney.roundList));
+    tabList.push(
+      {
+        name: 'Round ' + (round.roundNum + 1),
+        contents: <Round tourney={cvlTourney} roundNum={round.roundNum} />
+      }
+    );
+    setTabList([].concat(tabList));
+    setCurrentTab(tabList[tabList.length - 1])
   }
+  const [tabList, setTabList] = useState(
+    [
+      {
+        name: 'Roster',
+        contents: <Roster tourney={cvlTourney} />
+      }
+    ]
+  );
+  const [currentTab, setCurrentTab] = useState(tabList[0]);
   return (
     <div className="tournament">
+      <nav className="tabbar">
+        <ul>
+          {tabList.map((tab, i) => 
+            <li key={i}>
+              <button onClick={() => setCurrentTab(tab)}>
+                {tab.name}
+              </button>
+            </li>
+          )}
+          <li><button onClick={newRound}>New Round</button></li>
+        </ul>
+      </nav>
       <h1>Chessahoochee: a chess tournament app</h1>
-      <Roster tourney={cvlTourney}/>
+      {currentTab.contents}
       <p className="center">Total rounds: {cvlTourney.numOfRounds()}</p>
-      <div>
-        <button onClick={newRound}>New Round</button>
-      </div>
-      {rounds.map(round => 
+      {/* {cvlTourney.roundList.map(round => 
         <div className="round" key={round.roundNum}>
-          <Round round={round} tourney={cvlTourney} />
-          {/* <Standings roundNum={round.roundNum} tourney={cvlTourney}/> */}
+          <Round round={round} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

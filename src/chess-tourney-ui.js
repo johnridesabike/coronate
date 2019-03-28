@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Player } from './chess-tourney';
 
-
-
 function Roster ({tourney}) {
   const [roster, setRoster] = useState(tourney.roster.all);
   const newPlayer = {firstName: '', lastName: '', rating: 1200};
   const handleSubmit = (event) => {
     event.preventDefault();
-    setRoster(
-      roster.concat([new Player(newPlayer['firstName'], newPlayer['lastName'], newPlayer['rating'])])
+    tourney.addPlayer(
+      new Player(
+        newPlayer['firstName'],
+        newPlayer['lastName'],
+        newPlayer['rating']
+      )
     );
+    setRoster([].concat(tourney.roster.all));
   }
   const updateField = (event) => {
     newPlayer[event.target.name] = event.target.value;
@@ -54,7 +57,9 @@ function Roster ({tourney}) {
   );
 }
 
-function Round ({round}) {
+function Round ({tourney, roundNum}) {
+  const round = tourney.roundList[roundNum];
+  console.log(round.matches[0].result);
   const [matches, setMatches] = useState([].concat(round.matches));
   const setWinner = (match, color, index, event) => {
     if(event.target.checked) {
