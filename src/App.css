@@ -109,3 +109,8 @@ caption {
 .new_round:hover {
   color: lightgray;
 }
+
+.inactive .table__player,
+.inactive .table__number {
+  opacity: 0.5;
+}

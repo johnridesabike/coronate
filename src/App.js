@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import {Tournament, Player} from './chess-tourney';
-import {Roster, Round} from './chess-tourney-ui';
+import Tournament from './chess-tourney/tournament';
+import { MainRoster, Round } from './chess-tourney-ui';
 
 const cvlTourney = new Tournament(
   'CVL Winter Open',
@@ -28,7 +28,7 @@ function App() {
     [
       {
         name: 'Roster',
-        contents: <Roster tourney={cvlTourney} />
+        contents: <MainRoster tourney={cvlTourney} />
       }
     ]
   );

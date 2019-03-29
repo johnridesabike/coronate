@@ -1,7 +1,8 @@
 /**
  * These tests rely on randomness so aren't reliable. They need to be rewritten to show consistent results.
  */
-const { Tournament, Player } = require('./chess-tourney.js');
+import Tournament from './chess-tourney/tournament';
+import { Player } from './chess-tourney/player';
 const { sortBy, times } =  require('lodash');
 
 function randomRounds(tourney) {
@@ -106,7 +107,7 @@ it("A tournament doesn't crash when players are removed", () => {
   tourney.newRound().matches.forEach(match => randomMatches(match));
   
   var playerTree = {};
-  tourney.roster.active().forEach(player => {
+  tourney.roster.active.forEach(player => {
     var score = tourney.playerScore(player);
     if(!(score in playerTree)) {
       playerTree[score] = [];

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Player } from './chess-tourney';
+import { Player } from './chess-tourney/player';
 import demoRoster from './demo-players';
 
-function Roster ({tourney}) {
+function MainRoster ({tourney}) {
   const [roster, setRoster] = useState(tourney.roster.all);
   const [demoLoaded, setDemoLoaded] = useState(false);
   const newPlayer = {firstName: '', lastName: '', rating: 1200};
   const handleSubmit = (event) => {
     event.preventDefault();
     tourney.addPlayer(
-      new Player(
+      Player(
         newPlayer['firstName'],
         newPlayer['lastName'],
         newPlayer['rating']
@@ -26,6 +26,17 @@ function Roster ({tourney}) {
     setDemoLoaded(true);
     setRoster([].concat(tourney.roster.all));
   }
+  const deactivatePlayer = (player) => {
+    var baleted = tourney.removePlayer(player);
+    if (!baleted) {
+      tourney.deactivatePlayer(player);
+    }
+    setRoster([].concat(tourney.roster.all));
+  }
+  const activatePlayer = (player) => {
+    tourney.activatePlayer(player);
+    setRoster([].concat(tourney.roster.all));
+  }
   return (
     <div className="roster">
       <table>
@@ -34,13 +45,25 @@ function Roster ({tourney}) {
           <tr>
             <th>First name</th>
             <th>Rating</th>
+            <th>Rounds played</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           { roster.map((player, i) =>
-            <tr key={i}>
-              <td>{player.firstName}</td>
+            <tr key={i} 
+              className={tourney.roster.inactive.includes(player) ? 'inactive' : 'active'}>
+              <td className="table__player">{player.firstName}</td>
               <td className="table__number">{player.rating}</td>
+              <td className="table__number">
+                {tourney.playerMatchHistory(player).length}
+              </td>
+              <td>
+              {tourney.roster.inactive.includes(player)
+                ? <button onClick={() => activatePlayer(player)}>Activate</button>
+                : <button onClick={() => deactivatePlayer(player)}>Deactivate</button>
+              }
+              </td>
             </tr>
           )}
         </tbody>
@@ -150,6 +173,7 @@ function Round ({tourney, roundNum}) {
 }
 
 function Standings({tourney, roundNum}) {
+  const round = tourney.roundList[roundNum]
   return (
     <table key={roundNum}>
       <caption>Current Standings</caption>
@@ -175,7 +199,17 @@ function Standings({tourney, roundNum}) {
             <td className="table__number">{tourney.solkoff(player, roundNum)}</td>
             <td className="table__number">{tourney.playerScoreCum(player, roundNum)}</td>
             <td className="table__number">{tourney.playerOppScoreCum(player, roundNum)}</td>
-            <td>{player.rating}</td>
+            <td>
+              {/* Get the player's rating for the round, or their rating for
+                  the last round they completed. */}
+              {round.playerMatch(player)
+                ? round.playerMatch(player).playerInfo(player).newRating
+                : tourney
+                    .playerMatchHistory(player)[tourney.playerMatchHistory(player).length -1]
+                    .playerInfo(player)
+                    .newRating
+              }
+            </td>
             <td className="table__number">{tourney.playerColorBalance(player, roundNum)}</td>
             <td className="table__number">{tourney.playerOppHistory(player, roundNum).length}</td>
           </tr>
@@ -185,4 +219,4 @@ function Standings({tourney, roundNum}) {
   );
 }
 
-export {Roster, Round, Standings};
+export {MainRoster, Round, Standings};
