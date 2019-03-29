@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Player } from './chess-tourney';
+import demoRoster from './demo-players';
 
 function Roster ({tourney}) {
   const [roster, setRoster] = useState(tourney.roster.all);
+  const [demoLoaded, setDemoLoaded] = useState(false);
   const newPlayer = {firstName: '', lastName: '', rating: 1200};
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,6 +19,12 @@ function Roster ({tourney}) {
   }
   const updateField = (event) => {
     newPlayer[event.target.name] = event.target.value;
+  }
+  const loadDemo = () => {
+    var players = demoRoster.slice(0,16).map(p => Player(p));
+    tourney.addPlayers(players);
+    setDemoLoaded(true);
+    setRoster([].concat(tourney.roster.all));
   }
   return (
     <div className="roster">
@@ -37,6 +45,12 @@ function Roster ({tourney}) {
           )}
         </tbody>
       </table>
+      <p>
+        <button disabled={demoLoaded} onClick={loadDemo}>Load a demo roster</button>
+      </p>
+      <p>
+        Or add your own players:
+      </p>
       <form onSubmit={handleSubmit}>
         <label>
           First name

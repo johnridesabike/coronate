@@ -5,7 +5,7 @@
   "author": "John Jackson",
   "license": "GPL-3.0-or-later",
   "private": true,
-  "homepage": "https://johnridesabike.github.io/chessahoochee/",
+  "homepage": ".",
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/chessahoochee.git"

@@ -17,8 +17,10 @@ const ELO = new EloRank(KFACTOR);
 
 
 /**
- * Represents an indivudal player.
- * @param {string} firstName
+ * Represents an indivudal player. Call it with `Player('John', ...)` or
+ * `Player({firstName: 'John', ...})`. The latter is convenient for converting 
+ * JSON objects.
+ * @param {string or object} firstName
  * @param {string} lastName
  * @param {int}    rating
  */
@@ -26,10 +28,14 @@ function Player(firstName, lastName = '', rating = 1200) {
   if (!(this instanceof Player)) {
     return new Player(firstName, lastName, rating)
   }
-  this.firstName = firstName;
-  this.lastName = lastName;
-  this.rating = rating;
   this.dummy = false;
+  if (typeof firstName === 'object') {
+    Object.assign(this, firstName)
+  } else {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.rating = rating;
+  }
 }
 
 /**
@@ -103,7 +109,11 @@ Tournament.prototype.activatePlayer = function(player) {
  * @returns {int} the number of rounds
  */
 Tournament.prototype.numOfRounds = function() {
-  return Math.ceil(Math.log2(this.roster.active().length));
+  var roundNum = Math.ceil(Math.log2(this.roster.active().length));
+  if (roundNum === -Infinity) {
+    roundNum = 0;
+  }
+  return roundNum;
 }
 
 /**
@@ -284,7 +294,10 @@ Tournament.prototype.playerOppScoreCum = function(player, round = null) {
  * @returns {Array} the new round
  */
 Tournament.prototype.newRound = function() {
-  var newRound = new Round(
+  if (!this.isNewRoundReady) {
+    return false;
+  }
+  var newRound = Round(
     this,
     this.roundList.length,
     last(this.roundList),
@@ -294,6 +307,23 @@ Tournament.prototype.newRound = function() {
   this.roundList.push(newRound);
   return newRound;
 }
+
+Object.defineProperties(
+  Tournament.prototype,
+  {
+    isNewRoundReady: {
+      get: function() {
+        var isReady = false;
+        if (this.roundList.length > 0) {
+          isReady = last(this.roundList).isComplete;
+        } else {
+          isReady = (this.roster.all.length > 0);
+        }
+        return isReady
+      }
+    }
+  }
+);
 
 /**
  * Represents a round in a tournament.
@@ -549,6 +579,17 @@ Round.prototype.addPlayer = function(player) {
   return this;
 }
 
+Object.defineProperties(
+  Round.prototype,
+  {
+    isComplete: {
+      get: function(){
+        return !this.matches.map(m => m.isComplete).includes(false);
+      }
+    }
+  }
+);
+
 /**
  * Represents a match in a tournament.
  *
@@ -574,7 +615,8 @@ function Match(round, white, black) {
   }
 }
 
-Object.defineProperties(Match.prototype,
+Object.defineProperties(
+  Match.prototype,
   {
     whitePlayer: {
       get: function(){ return this.players[0]},
@@ -646,7 +688,7 @@ Match.prototype.draw = function() {
   this.calcRatings();
 }
 
-Round.prototype.resetResult = function() {
+Match.prototype.resetResult = function() {
   this.result = [0, 0];
   this.newRating = this.origRating;
 }

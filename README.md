@@ -1,3 +1,5 @@
-This is a soon-to-be app for managing chess tournaments. I'm also using it to learn Node.js and React.
+This is a soon-to-be app for managing chess tournaments. 
 
-It's currently in an embryonic state, so not usable at all. Stay tuned.
+[You can view a demo here.](https://johnridesabike.github.io/chessahoochee/)
+
+Want to contribute? Great! [Read this to get started](CONTRIBUTING.md).
