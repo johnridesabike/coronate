@@ -101,13 +101,11 @@ caption {
 }
 
 .new_round {
-  color: blue;
-  border-width: 1px;
-  border-style: solid;
-  border-color: currentColor;
-  border-radius: 1em;
+  color: white;
+  background-color: green;
+  border-radius: 0.5em;
 }
 
 .new_round:hover {
-  color: lightblue;
+  color: lightgray;
 }
