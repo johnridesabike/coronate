@@ -1,4 +1,4 @@
-This project is build using Node.js and React, so familiarity with those will come in handy. If you're interested in helping, here's my general roadmap for the different components:
+This project is built using Node.js and React, so familiarity with those will come in handy. If you're interested in helping, here's my general roadmap for the different components:
 
 ## API
 
@@ -6,10 +6,10 @@ The API (basically everything in `src/chess-tourney.js`) is still very unstable,
 
 Other API to-dos:
 
-- Better bye handling: signups, black/white balance, tie-break logic, etc.
 - Improve adding or removing players after a tournament has begun.
 - Add I/O for saving and loading data across sessions.
 - Improve rating calculations: individual k-factor for players, provisional ratings, and possibly moving to a different engine (e.g. Glicko-2).
+- Better bye handling: signups, black/white balance, tie-break logic, etc.
 
 ## Front-end
 
