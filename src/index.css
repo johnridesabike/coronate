@@ -13,3 +13,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+body.demo {
+  padding-bottom: 2em;
+}
+
+a {
+  color: blue;
+  text-decoration: none;
+}
+
+a:hover {
+  color: skyblue;
+}
+
+.caution {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2em;
+  background-image: url('/caution.svg');
+  background-repeat: repeat;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  font-weight: 700;
+}
+
+.caution p {
+  margin: 0;
+  padding: 2px;
+  background-color: white;
+}
