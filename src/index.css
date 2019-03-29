@@ -33,7 +33,6 @@ a:hover {
   left: 0;
   width: 100%;
   height: 2em;
-  background-image: url('/caution.svg');
   background-repeat: repeat;
   display: flex;
   flex-flow: column;
