@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/chessahoochee/precache-manifest.ac0d40e28a5a285ebb857955438e4f79.js"
+  "/chessahoochee/precache-manifest.26f3e29386da3acf79bc8b59b87cce7b.js"
 );
 
 workbox.clientsClaim();
