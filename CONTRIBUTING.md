@@ -19,7 +19,6 @@ To-dos:
 
 - Improve how ranks and ties are displayed.
 - Add a way to remove rounds.
-- Add a way to remove players from the roster.
 - Add a way to manually match/unmatch players.
 - Add pages for managing  global roster outside of individual tournaments.
 - Add pages for editing a player and displaying their stats.

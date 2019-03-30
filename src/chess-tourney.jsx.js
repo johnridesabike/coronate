@@ -37,37 +37,41 @@ function MainRoster ({tourney}) {
     tourney.roster.activatePlayer(player);
     setRoster([].concat(tourney.roster.all));
   }
+  var rosterTable = '';
+  if (roster.length > 0) {
+    rosterTable = 
+    <table><caption>Roster</caption>
+      <thead>
+        <tr>
+          <th>First name</th>
+          <th>Rating</th>
+          <th>Rounds played</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        { roster.map((player, i) =>
+          <tr key={i} 
+            className={tourney.roster.inactive.includes(player) ? 'inactive' : 'active'}>
+            <td className="table__player">{player.firstName}</td>
+            <td className="table__number">{player.rating}</td>
+            <td className="table__number">
+              {tourney.playerMatchHistory(player).length}
+            </td>
+            <td>
+            {tourney.roster.inactive.includes(player)
+              ? <button onClick={() => activatePlayer(player)}>Activate</button>
+              : <button onClick={() => deactivatePlayer(player)}>Deactivate</button>
+            }
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  }
   return (
     <div className="roster">
-      <table>
-        <caption>Roster</caption>
-        <thead>
-          <tr>
-            <th>First name</th>
-            <th>Rating</th>
-            <th>Rounds played</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          { roster.map((player, i) =>
-            <tr key={i} 
-              className={tourney.roster.inactive.includes(player) ? 'inactive' : 'active'}>
-              <td className="table__player">{player.firstName}</td>
-              <td className="table__number">{player.rating}</td>
-              <td className="table__number">
-                {tourney.playerMatchHistory(player).length}
-              </td>
-              <td>
-              {tourney.roster.inactive.includes(player)
-                ? <button onClick={() => activatePlayer(player)}>Activate</button>
-                : <button onClick={() => deactivatePlayer(player)}>Deactivate</button>
-              }
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {rosterTable}
       <p>
         <button disabled={demoLoaded} onClick={loadDemo}>Load a demo roster</button>
       </p>
@@ -96,11 +100,12 @@ function MainRoster ({tourney}) {
 
 function Round ({tourney, roundNum}) {
   /**
-   * Be careful when using the `setState` matches and the API's matches.
+   * Be careful when using the `setState` `matches` and the API's `matches`.
    * They have to mirror each other but can't be the same objects.
    */
   const round = tourney.roundList[roundNum];
   const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
+  const [openCards, setCards] = useState([]);
   const setWinner = (match, color, index, event) => {
     var origMatch = round.matches[index];
     if(event.target.checked) {
@@ -117,18 +122,28 @@ function Round ({tourney, roundNum}) {
     // matches[index] = match;
     setMatches(round.matches.map(o => Object.assign({}, o)));
   }
+  const togglePlayerCard = (id) => {
+    if (openCards.includes(id)) {
+      setCards(openCards.filter(i => i !== id));
+    } else {
+      setCards([].concat(openCards).concat([id]));
+    }
+    // if (openCards.includes(id)) {
+    //   setCards(openCards.map(i => i !== id));
+    // } else {
+    //   setCards([].concat(openCards).push(id));
+    // }
+  }
   return (
     <div>
-      <table key={round.roundNum}>
+      <table key={round.roundNum} className="table__roster">
         <caption>Round {round.roundNum + 1} results</caption>
         <thead>
           <tr>
             <th>Won</th>
-            <th>Rating change</th>
             <th>White</th>
             <th>Draw</th>
             <th>Black</th>
-            <th>Rating change</th>
             <th>Won</th>
           </tr>
         </thead>
@@ -136,34 +151,45 @@ function Round ({tourney, roundNum}) {
           {matches.map((match, i) =>
             <tr key={i} className={round.matches[i].isBye ? 'inactive' : ''}>
               <td>
-                <form>
-                  <input 
-                    type="checkbox"
-                    checked={round.matches[i].result[0] === 1}
-                    disabled={round.matches[i].isBye}
-                    onChange={(event) => setWinner(match, 0, i, event)} />
-                </form>
+                <input 
+                  type="checkbox"
+                  checked={round.matches[i].result[0] === 1}
+                  disabled={round.matches[i].isBye}
+                  onChange={(event) => setWinner(match, 0, i, event)} />
               </td>
-              <td className="table__number">{round.matches[i].newRating[0] - round.matches[i].origRating[0]}</td>
-              <td className="table__player">{round.matches[i].whitePlayer.firstName}</td>
-              <td>
-                <form>
-                  <input 
-                    type="checkbox"
-                    checked={round.matches[i].result[0] === 0.5}
-                    onChange={(event) => setWinner(match, 0.5, i, event)} />
-                </form>
+              <td className="table__player">
+                {round.matches[i].whitePlayer.firstName}
+                <button onClick={() => togglePlayerCard(i)}>?</button>
+                {openCards.includes(i) && 
+                  <PlayerCard
+                    tourney={tourney}
+                    round={round}
+                    player={round.matches[i].whitePlayer} />
+                }
               </td>
-              <td className="table__player">{round.matches[i].blackPlayer.firstName}</td>
-              <td className="table__number">{round.matches[i].newRating[1] - round.matches[i].origRating[1]}</td>
               <td>
-                <form>
-                  <input 
-                    type="checkbox"
-                    checked={round.matches[i].result[1] === 1}
-                    disabled={round.matches[i].isBye}
-                    onChange={(event) => setWinner(match, 1, i, event)} />
-                </form>
+                <input 
+                  type="checkbox"
+                  checked={round.matches[i].result[0] === 0.5}
+                  disabled={round.matches[i].isBye}
+                  onChange={(event) => setWinner(match, 0.5, i, event)} />
+              </td>
+              <td className="table__player">
+                {round.matches[i].blackPlayer.firstName}
+                <button onClick={() => togglePlayerCard(i)}>?</button>
+                {openCards.includes(i) && 
+                  <PlayerCard
+                    tourney={tourney}
+                    round={round}
+                    player={round.matches[i].blackPlayer} />
+                }
+              </td>
+              <td>
+                <input 
+                  type="checkbox"
+                  checked={round.matches[i].result[1] === 1}
+                  disabled={round.matches[i].isBye}
+                  onChange={(event) => setWinner(match, 1, i, event)} />
               </td>
             </tr>
           )}
@@ -174,8 +200,45 @@ function Round ({tourney, roundNum}) {
   );
 }
 
+function PlayerCard({tourney, round, player}) {
+  var ratingChange = (
+    round.matchByPlayer(player).playerInfo(player).newRating
+    - round.matchByPlayer(player).playerInfo(player).origRating
+  );
+  if (ratingChange > -1) {
+    ratingChange = "+" + ratingChange
+  }
+  const colorBalance = tourney.playerColorBalance(player, round.roundNum);
+  var color = 'Even';
+  if (colorBalance > 0) {
+    color = 'White +' + colorBalance;
+  } else if (colorBalance < 0) {
+    color = 'Black +' + Math.abs(colorBalance);
+  }
+  return (
+    <dl className="player-card">
+      <dt>Rating</dt>
+      <dd>
+        {round.matchByPlayer(player).playerInfo(player).origRating}
+        &nbsp;({ratingChange})
+      </dd>
+      <dt>Color balance</dt>
+      <dd>{color}</dd>
+      <dt>Opponent history</dt>
+      <dd>
+        <ol>
+          {tourney.playerOppHistory(player).map((opponent, i) =>
+            <li key={i}>
+              {opponent.firstName}
+            </li>  
+          )}
+        </ol>
+      </dd>
+    </dl>
+  );
+}
+
 function Standings({tourney, roundNum}) {
-  const round = tourney.roundList[roundNum]
   return (
     <table key={roundNum}>
       <caption>Current Standings</caption>
@@ -187,13 +250,10 @@ function Standings({tourney, roundNum}) {
           <th>Solkoff</th>
           <th>Cumulative</th>
           <th>Cumulative of opposition</th>
-          <th>Rating</th>
-          <th>Color balance</th>
-          <th>Opponent count</th>
         </tr>
       </thead>
       <tbody>
-        {tourney.playerStandings(roundNum).map((entry, i) => 
+        {tourney.calcStandings(roundNum).map((entry, i) => 
           <tr key={i}>
             <td>{entry.player.firstName}</td>
             <td className="table__number">{entry.score}</td>
@@ -201,19 +261,6 @@ function Standings({tourney, roundNum}) {
             <td className="table__number">{entry.solkoff}</td>
             <td className="table__number">{entry.scoreCum}</td>
             <td className="table__number">{entry.oppScoreCum}</td>
-            <td>
-              {/* Get the player's rating for the round, or their rating for
-                  the last round they completed. */}
-              {round.playerMatch(entry.player)
-                ? round.playerMatch(entry.player).playerInfo(entry.player).newRating
-                : tourney
-                    .playerMatchHistory(entry.player)[tourney.playerMatchHistory(entry.player).length -1]
-                    .playerInfo(entry.player)
-                    .newRating
-              }
-            </td>
-            <td className="table__number">{tourney.playerColorBalance(entry.player, roundNum)}</td>
-            <td className="table__number">{tourney.playerOppHistory(entry.player, roundNum).length}</td>
           </tr>
         )}
       </tbody>

@@ -51,10 +51,21 @@ Tournament.prototype.numOfRounds = function() {
 }
 
 /**
- * Calculate standings
+ * Generates a new round.
+ * @returns {Array} the new round
  */
-Tournament.prototype.calcStandings = function() {
-  return true; // todo
+Tournament.prototype.newRound = function() {
+  if (!this.isNewRoundReady) {
+    return false;
+  }
+  var newRound = Round(
+    this,
+    this.roundList.length,
+    last(this.roundList),
+    this.roster.active
+  );
+  this.roundList.push(newRound);
+  return newRound;
 }
 
 Tournament.prototype.playerMatchHistory = function(player, roundNum = null) {
@@ -131,6 +142,7 @@ Tournament.prototype.playerColorBalance = function(player, roundNum = null) {
   var color = 0;
   this
     .playerMatchHistory(player, roundNum)
+    .filter(match => !match.isBye)
     .forEach(match => {
       if (match.players[0] === player) {
         color += 1;
@@ -140,34 +152,6 @@ Tournament.prototype.playerColorBalance = function(player, roundNum = null) {
     }
   );
   return color;
-}
-
-/**
- * Sort the standings by score and USCF tie-break rules from § 34. USCF
- * recommends using these methods in-order: modified median, solkoff, 
- * cumulative, and cumulative of opposition.
- * @param {number} roundNum 
- * @returns {Array} The sorted list of players
- */
-Tournament.prototype.playerStandings = function(roundNum = null) {
-  const standings = this.roster.all.map(player => {
-    return {
-      player: player,
-      score: this.playerScore(player, roundNum),
-      modifiedMedian: this.modifiedMedian(player, roundNum),
-      solkoff: this.solkoff(player, roundNum),
-      scoreCum: this.playerScoreCum(player, roundNum),
-      oppScoreCum: this.playerOppScoreCum(player, roundNum)
-    }
-  });
-  standings.sort(
-    firstBy(p => p.score, -1)
-    .thenBy(p => p.modifiedMedian, -1)
-    .thenBy(p => p.solkoff, -1)
-    .thenBy(p => p.scoreCum, -1)
-    .thenBy(p => p.oppScoreCum, -1)
-  );
-  return standings;
 }
 
 /**
@@ -232,19 +216,29 @@ Tournament.prototype.playerOppScoreCum = function(player, round = null) {
 }
 
 /**
- * Generates a new round.
- * @returns {Array} the new round
+ * Sort the standings by score and USCF tie-break rules from § 34. USCF
+ * recommends using these methods in-order: modified median, solkoff, 
+ * cumulative, and cumulative of opposition.
+ * @param {number} roundNum 
+ * @returns {Array} The sorted list of players
  */
-Tournament.prototype.newRound = function() {
-  if (!this.isNewRoundReady) {
-    return false;
-  }
-  var newRound = Round(
-    this,
-    this.roundList.length,
-    last(this.roundList),
-    this.roster.active
+Tournament.prototype.calcStandings = function(roundNum = null) {
+  const standings = this.roster.all.map(player => {
+    return {
+      player: player,
+      score: this.playerScore(player, roundNum),
+      modifiedMedian: this.modifiedMedian(player, roundNum),
+      solkoff: this.solkoff(player, roundNum),
+      scoreCum: this.playerScoreCum(player, roundNum),
+      oppScoreCum: this.playerOppScoreCum(player, roundNum)
+    }
+  });
+  standings.sort(
+    firstBy(p => p.score, -1)
+    .thenBy(p => p.modifiedMedian, -1)
+    .thenBy(p => p.solkoff, -1)
+    .thenBy(p => p.scoreCum, -1)
+    .thenBy(p => p.oppScoreCum, -1)
   );
-  this.roundList.push(newRound);
-  return newRound;
+  return standings;
 }

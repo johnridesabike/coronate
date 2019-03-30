@@ -118,3 +118,7 @@ caption {
 .dummy {
   font-style: italic;
 }
+
+.table__roster td {
+  vertical-align: top;
+}

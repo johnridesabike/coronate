@@ -30,9 +30,8 @@ Object.defineProperties(
   }
 );
 
-
-Round.prototype.playerMatch = function(player) {
-  var theMatch;
+Round.prototype.matchByPlayer = function(player) {
+  var theMatch = null;
   this.matches.forEach(match => {
     if (match.players.includes(player)) {
       theMatch = match;

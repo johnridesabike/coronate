@@ -68,7 +68,8 @@ Match.prototype.playerInfo = function(player) {
   return {
     origRating: this.origRating[index],
     newRating: this.newRating[index],
-    score: this.result[index]
+    score: this.result[index],
+    color: index
   }
 }
 
