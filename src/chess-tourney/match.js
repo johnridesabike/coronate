@@ -1,5 +1,5 @@
-import  { DUMMYPLAYER } from './player';
-const EloRank = require('elo-rank');
+import { DUMMYPLAYER } from './player';
+import EloRank from 'elo-rank';
 
 /**
  * TODO: make this customizable for each player based on their match history.
@@ -15,7 +15,7 @@ const ELO = new EloRank(KFACTOR);
  * @param {Player} black
  * @param {Player} white
  */
-function Match(round, white, black) {
+export default function Match(round, white, black) {
   if (!(this instanceof Match)) {
     return new Match(round, white, black);
   }
@@ -38,24 +38,24 @@ Object.defineProperties(
   Match.prototype,
   {
     whitePlayer: {
-      get: function(){ return this.players[0]},
-      set: function(player){ this.players[0] = player}
+      get: function(){ return this.players[0] },
+      set: function(player){ this.players[0] = player }
     },
     blackPlayer: {
       get: function(){ return this.players[1]},
-      set: function(player){ this.players[1] = player}
+      set: function(player){ this.players[1] = player }
     },
     whiteOrigRating: {
-      get: function(){ return this.origRating[0]}
+      get: function(){ return this.origRating[0] }
     },
     blackOrigRating: {
-      get: function(){ return this.origRating[1]}
+      get: function(){ return this.origRating[1] }
     },
     isComplete: {
-      get: function(){ return this.result.reduce((a, b) => a + b) !== 0}
+      get: function(){ return this.result.reduce((a, b) => a + b) !== 0 }
     },
     isBye: {
-      get: function(){ return this.players.includes(DUMMYPLAYER)}
+      get: function(){ return this.players.includes(DUMMYPLAYER) }
     }
   }
 );
@@ -77,7 +77,8 @@ Match.prototype.playerInfo = function(player) {
  */
 Match.prototype.blackWon = function() {
   this.result = [0, 1];
-  this.calcRatings();
+  calcRatings(this);
+  return this;
 }
 
 /**
@@ -85,7 +86,8 @@ Match.prototype.blackWon = function() {
  */
 Match.prototype.whiteWon = function() {
   this.result = [1, 0];
-  this.calcRatings();
+  calcRatings(this);
+  return this;
 }
 
 /**
@@ -93,28 +95,25 @@ Match.prototype.whiteWon = function() {
  */
 Match.prototype.draw = function() {
   this.result = [0.5, 0.5];
-  this.calcRatings();
+  calcRatings(this);
+  return this;
 }
 
 Match.prototype.resetResult = function() {
   this.result = [0, 0];
   this.newRating = this.origRating;
+  return this;
 }
 
-Match.prototype.calcRatings = function() {
-  this.scoreExpected = [
-    ELO.getExpected(this.whiteOrigRating, this.blackOrigRating),
-    ELO.getExpected(this.blackOrigRating, this.whiteOrigRating),
+function calcRatings(match) {
+  match.scoreExpected = [
+    ELO.getExpected(match.whiteOrigRating, match.blackOrigRating),
+    ELO.getExpected(match.blackOrigRating, match.whiteOrigRating),
   ];
-  this.newRating = [
-    ELO.updateRating(this.scoreExpected[0], this.result[0], this.whiteOrigRating),
-    ELO.updateRating(this.scoreExpected[1], this.result[1], this.blackOrigRating)
+  match.newRating = [
+    ELO.updateRating(match.scoreExpected[0], match.result[0], match.whiteOrigRating),
+    ELO.updateRating(match.scoreExpected[1], match.result[1], match.blackOrigRating)
   ];
-  this.whitePlayer.rating = this.newRating[0];
-  this.blackPlayer.rating = this.newRating[1];
+  match.whitePlayer.rating = match.newRating[0];
+  match.blackPlayer.rating = match.newRating[1];
 }
-
-// This fails for some reason...
-// module.exports = {Tournament, Player};
-
-export default Match;

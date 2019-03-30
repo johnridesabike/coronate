@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Player } from './chess-tourney/player';
+import { Player } from './chess-tourney';
 import demoRoster from './demo-players';
 
 function MainRoster ({tourney}) {
@@ -22,19 +22,19 @@ function MainRoster ({tourney}) {
   }
   const loadDemo = () => {
     var players = demoRoster.slice(0,16).map(p => Player(p));
-    tourney.addPlayers(players);
+    tourney.roster.addPlayers(players);
     setDemoLoaded(true);
     setRoster([].concat(tourney.roster.all));
   }
   const deactivatePlayer = (player) => {
-    var baleted = tourney.removePlayer(player);
+    var baleted = tourney.roster.removePlayer(player);
     if (!baleted) {
-      tourney.deactivatePlayer(player);
+      tourney.roster.deactivatePlayer(player);
     }
     setRoster([].concat(tourney.roster.all));
   }
   const activatePlayer = (player) => {
-    tourney.activatePlayer(player);
+    tourney.roster.activatePlayer(player);
     setRoster([].concat(tourney.roster.all));
   }
   return (
@@ -134,17 +134,18 @@ function Round ({tourney, roundNum}) {
         </thead>
         <tbody>
           {matches.map((match, i) =>
-            <tr key={i}>
+            <tr key={i} className={round.matches[i].isBye ? 'inactive' : ''}>
               <td>
                 <form>
                   <input 
                     type="checkbox"
                     checked={round.matches[i].result[0] === 1}
+                    disabled={round.matches[i].isBye}
                     onChange={(event) => setWinner(match, 0, i, event)} />
                 </form>
               </td>
-              <td>{round.matches[i].newRating[0] - round.matches[i].origRating[0]}</td>
-              <td>{round.matches[i].whitePlayer.firstName}</td>
+              <td className="table__number">{round.matches[i].newRating[0] - round.matches[i].origRating[0]}</td>
+              <td className="table__player">{round.matches[i].whitePlayer.firstName}</td>
               <td>
                 <form>
                   <input 
@@ -153,13 +154,14 @@ function Round ({tourney, roundNum}) {
                     onChange={(event) => setWinner(match, 0.5, i, event)} />
                 </form>
               </td>
-              <td>{round.matches[i].blackPlayer.firstName}</td>
-              <td>{round.matches[i].newRating[1] - round.matches[i].origRating[1]}</td>
+              <td className="table__player">{round.matches[i].blackPlayer.firstName}</td>
+              <td className="table__number">{round.matches[i].newRating[1] - round.matches[i].origRating[1]}</td>
               <td>
                 <form>
                   <input 
                     type="checkbox"
                     checked={round.matches[i].result[1] === 1}
+                    disabled={round.matches[i].isBye}
                     onChange={(event) => setWinner(match, 1, i, event)} />
                 </form>
               </td>
@@ -191,27 +193,27 @@ function Standings({tourney, roundNum}) {
         </tr>
       </thead>
       <tbody>
-        {tourney.playerStandings(roundNum).map((player, i) => 
+        {tourney.playerStandings(roundNum).map((entry, i) => 
           <tr key={i}>
-            <td>{player.firstName}</td>
-            <td className="table__number">{tourney.playerScore(player, roundNum)}</td>
-            <td className="table__number">{tourney.modifiedMedian(player, roundNum)}</td>
-            <td className="table__number">{tourney.solkoff(player, roundNum)}</td>
-            <td className="table__number">{tourney.playerScoreCum(player, roundNum)}</td>
-            <td className="table__number">{tourney.playerOppScoreCum(player, roundNum)}</td>
+            <td>{entry.player.firstName}</td>
+            <td className="table__number">{entry.score}</td>
+            <td className="table__number">{entry.modifiedMedian}</td>
+            <td className="table__number">{entry.solkoff}</td>
+            <td className="table__number">{entry.scoreCum}</td>
+            <td className="table__number">{entry.oppScoreCum}</td>
             <td>
               {/* Get the player's rating for the round, or their rating for
                   the last round they completed. */}
-              {round.playerMatch(player)
-                ? round.playerMatch(player).playerInfo(player).newRating
+              {round.playerMatch(entry.player)
+                ? round.playerMatch(entry.player).playerInfo(entry.player).newRating
                 : tourney
-                    .playerMatchHistory(player)[tourney.playerMatchHistory(player).length -1]
-                    .playerInfo(player)
+                    .playerMatchHistory(entry.player)[tourney.playerMatchHistory(entry.player).length -1]
+                    .playerInfo(entry.player)
                     .newRating
               }
             </td>
-            <td className="table__number">{tourney.playerColorBalance(player, roundNum)}</td>
-            <td className="table__number">{tourney.playerOppHistory(player, roundNum).length}</td>
+            <td className="table__number">{tourney.playerColorBalance(entry.player, roundNum)}</td>
+            <td className="table__number">{tourney.playerOppHistory(entry.player, roundNum).length}</td>
           </tr>
         )}
       </tbody>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import Tournament from './chess-tourney/tournament';
-import { MainRoster, Round } from './chess-tourney-ui';
+import { Tournament } from './chess-tourney';
+import { MainRoster, Round } from './chess-tourney.jsx';
 
 const cvlTourney = new Tournament(
   'CVL Winter Open',

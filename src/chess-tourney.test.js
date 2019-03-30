@@ -3,7 +3,7 @@
  */
 import Tournament from './chess-tourney/tournament';
 import { Player } from './chess-tourney/player';
-const { sortBy, times } =  require('lodash');
+import { sortBy, times } from 'lodash';
 
 function randomRounds(tourney) {
   while (tourney.roundList.length < tourney.numOfRounds()) {
@@ -55,13 +55,13 @@ const players = [
 
 it('A tournament can run without crashing', () => {
   const tourney = Tournament('A battle for the ages', 15);
-  tourney.addPlayers(players.slice(0,16));
+  tourney.roster.addPlayers(players.slice(0,16));
   randomRounds(tourney);
 });
 
 it('A tournament can run with drawed rounds without crashing', () => {
   const tourney = Tournament('A battle for the ages', 15);
-  tourney.addPlayers(players.slice(0,16));
+  tourney.roster.addPlayers(players.slice(0,16));
   randomRoundsDraws(tourney);
 });
 
@@ -72,7 +72,7 @@ it('No players face each other more than once', () => {
   times(tourneyNum, (i) => {
     var playerOppCount = [];
     var tourney = Tournament();
-    tourney.addPlayers(players.slice(0,16))
+    tourney.roster.addPlayers(players.slice(0,16))
     randomRounds(tourney);
     playerOppCount = playerOppCount
       .concat(tourney.roster.all
@@ -87,7 +87,7 @@ it('No players face each other more than once', () => {
 
 it('A tournament can pair an odd number of players correctly', () => {
   const tourney = Tournament('An odd tournament indeed');
-  tourney.addPlayers(players.slice(0,19));
+  tourney.roster.addPlayers(players.slice(0,19));
   randomRounds(tourney);
   var playerOppCount = tourney.roster.all
     .map(p => tourney.playerOppHistory(p).length);
@@ -102,7 +102,7 @@ it('A tournament can pair an odd number of players correctly', () => {
 
 it("A tournament doesn't crash when players are removed", () => {
   const tourney = Tournament();
-  tourney.addPlayers(players.slice(0,16))
+  tourney.roster.addPlayers(players.slice(0,16))
   tourney.newRound().matches.forEach(match => randomMatches(match));
   tourney.newRound().matches.forEach(match => randomMatches(match));
   
@@ -114,8 +114,8 @@ it("A tournament doesn't crash when players are removed", () => {
     }
     playerTree[score].push(player);
   });
-  tourney.deactivatePlayer(playerTree[0][0]);
-  tourney.deactivatePlayer(playerTree[1][0]);
+  tourney.roster.deactivatePlayer(playerTree[0][0]);
+  tourney.roster.deactivatePlayer(playerTree[1][0]);
 
   tourney.newRound().matches.forEach(match => randomMatches(match));
   tourney.newRound().matches.forEach(match => randomMatches(match));

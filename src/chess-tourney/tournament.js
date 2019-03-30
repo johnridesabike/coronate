@@ -1,7 +1,7 @@
 import Roster from './roster';
 import Round from './round';
-const { firstBy }     = require('thenby'),
-      { last, times } = require('lodash');
+import { firstBy } from 'thenby';
+import { last, times } from 'lodash';
 
 /**
  * Tournament class
@@ -10,13 +10,13 @@ const { firstBy }     = require('thenby'),
  * @param {array}  roster
  * @param {int}    byeValue
  */
-function Tournament(name = '', timeControl = 15, roster = [], byeValue = 1) {
+export default function Tournament(name = '', timeControl = 15, roster = [], byeValue = 1) {
   if (!(this instanceof Tournament)) {
     return new Tournament(name, timeControl, roster, byeValue)
   }
   this.name = name;
   this.timeControl = timeControl;
-  this.roster = Roster(roster);
+  this.roster = Roster(roster, this);
   this.roundList = [];
   this.byeValue = byeValue;
 }
@@ -37,48 +37,6 @@ Object.defineProperties(
     }
   }
 );
-
-/**
- * Add a player to the roster.
- * @param {Player} player the player to add
- */
-Tournament.prototype.addPlayer = function(player) {
-  this.roster.all.push(player);
-}
-
-/**
- * Add a list of players to the roster.
- * @param {Array} players the list of players to add
- */
-Tournament.prototype.addPlayers = function(players) {
-  this.roster.all = this.roster.all.concat(players);
-}
-
-/**
- * Remove a player from the active roster. This player won't be placed in
- * future rounds.
- * @param {Player} player 
- */
-Tournament.prototype.deactivatePlayer = function(player) {
-  this.roster.inactive.push(player);
-}
-  
-/**
- * Add a player to the active roster. This player will be placed in future
- * rounds.
- * @param {Player} player 
- */
-Tournament.prototype.activatePlayer = function(player) {
-  this.roster.inactive.splice(this.roster.inactive.indexOf(player), 1);
-}
-
-Tournament.prototype.removePlayer = function(player) {
-  if (this.playerMatchHistory(player).length > 0) {
-    return false; // TODO: add a helpful error message
-  }
-  delete this.roster.all[this.roster.all.indexOf(player)];
-  return this;
-}
 
 /**
  * Calculate number of rounds.
@@ -136,9 +94,9 @@ Tournament.prototype.playerScoreList = function(player, roundNum = null) {
  */
 Tournament.prototype.playerScore = function(player, roundNum = null) {
   var score = 0;
-  var scores = this.playerScoreList(player, roundNum);
-  if (scores.length > 0) {
-    score = scores.reduce((a, b) => a + b);
+  var scoreList = this.playerScoreList(player, roundNum);
+  if (scoreList.length > 0) {
+    score = scoreList.reduce((a, b) => a + b);
   }
   return score;
 }
@@ -192,15 +150,24 @@ Tournament.prototype.playerColorBalance = function(player, roundNum = null) {
  * @returns {Array} The sorted list of players
  */
 Tournament.prototype.playerStandings = function(roundNum = null) {
-  var playersClone = [].concat(this.roster.all);
-  playersClone.sort(
-    firstBy(p => this.playerScore(p, roundNum), -1)
-    .thenBy(p => this.modifiedMedian(p, roundNum), -1) /* USCF § 34E1 */
-    .thenBy(p => this.solkoff(p, roundNum), -1) /* USCF § 34E2 */
-    .thenBy(p => this.playerScoreCum(p, roundNum), -1) /* USCF § 34E3 */
-    .thenBy(p => this.playerOppScoreCum(p, roundNum), -1) /* USCF § 34E9 */
+  const standings = this.roster.all.map(player => {
+    return {
+      player: player,
+      score: this.playerScore(player, roundNum),
+      modifiedMedian: this.modifiedMedian(player, roundNum),
+      solkoff: this.solkoff(player, roundNum),
+      scoreCum: this.playerScoreCum(player, roundNum),
+      oppScoreCum: this.playerOppScoreCum(player, roundNum)
+    }
+  });
+  standings.sort(
+    firstBy(p => p.score, -1)
+    .thenBy(p => p.modifiedMedian, -1)
+    .thenBy(p => p.solkoff, -1)
+    .thenBy(p => p.scoreCum, -1)
+    .thenBy(p => p.oppScoreCum, -1)
   );
-  return playersClone;
+  return standings;
 }
 
 /**
@@ -278,9 +245,6 @@ Tournament.prototype.newRound = function() {
     last(this.roundList),
     this.roster.active
   );
-  newRound.pairPlayers();
   this.roundList.push(newRound);
   return newRound;
 }
-
-export default Tournament;

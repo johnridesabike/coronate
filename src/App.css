@@ -114,3 +114,7 @@ caption {
 .inactive .table__number {
   opacity: 0.5;
 }
+
+.dummy {
+  font-style: italic;
+}

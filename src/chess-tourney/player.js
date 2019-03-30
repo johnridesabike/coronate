@@ -6,7 +6,7 @@
  * @param {string} lastName
  * @param {int}    rating
  */
-function Player(firstName, lastName = '', rating = 1200) {
+export function Player(firstName, lastName = '', rating = 1200) {
   if (!(this instanceof Player)) {
     return new Player(firstName, lastName, rating)
   }
@@ -24,8 +24,6 @@ function Player(firstName, lastName = '', rating = 1200) {
  * A stand-in for bye matches.
  * @constant {Player} DUMMYPLAYER
  */
-const DUMMYPLAYER =  Player('Dummy');
+export const DUMMYPLAYER =  Player('Dummy');
 DUMMYPLAYER.dummy = true;
 DUMMYPLAYER.rating = 0;
-
-export { Player, DUMMYPLAYER };
