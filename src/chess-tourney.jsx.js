@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Player } from './chess-tourney';
+import { Player, scores } from './chess-tourney';
 import demoRoster from './demo-players';
 
 function MainRoster ({tourney}) {
@@ -9,11 +9,11 @@ function MainRoster ({tourney}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     tourney.addPlayer(
-      Player(
-        newPlayer['firstName'],
-        newPlayer['lastName'],
-        newPlayer['rating']
-      )
+        new Player(
+            newPlayer['firstName'],
+            newPlayer['lastName'],
+            newPlayer['rating']
+        )
     );
     setRoster([].concat(tourney.roster.all));
   }
@@ -21,7 +21,7 @@ function MainRoster ({tourney}) {
     newPlayer[event.target.name] = event.target.value;
   }
   const loadDemo = () => {
-    var players = demoRoster.slice(0,16).map(p => Player(p));
+    var players = demoRoster.slice(0,16).map(p => new Player(p));
     tourney.roster.addPlayers(players);
     setDemoLoaded(true);
     setRoster([].concat(tourney.roster.all));
@@ -206,7 +206,7 @@ function Round ({tourney, roundId}) {
           )}
         </tbody>
       </table>
-      <p style={{'text-align': 'center'}}>
+      <p style={{textAlign: 'center'}}>
         <button onClick={randomize}>Random!</button>
       </p>
       <Standings roundId={round.id} tourney={round.tourney} />
@@ -222,7 +222,7 @@ function PlayerCard({tourney, round, player}) {
   if (ratingChange > -1) {
     ratingChange = "+" + ratingChange
   }
-  const colorBalance = tourney.playerColorBalance(player, round.id);
+  const colorBalance = scores.playerColorBalance(tourney, player, round.id);
   var color = 'Even';
   if (colorBalance > 0) {
     color = 'White +' + colorBalance;
@@ -241,7 +241,7 @@ function PlayerCard({tourney, round, player}) {
       <dt>Opponent history</dt>
       <dd>
         <ol>
-          {tourney.playerOppHistory(player, round.id).map((opponent, i) =>
+          {scores.playerOppHistory(tourney, player, round.id).map((opponent, i) =>
             <li key={i}>
               {opponent.firstName}
             </li>  
@@ -267,7 +267,7 @@ function Standings({tourney, roundId}) {
           <th>Cumulative of opposition</th>
         </tr>
       </thead>
-      {tourney.calcStandings(roundId).map((rank, i) => 
+      {scores.calcStandings(tourney, roundId).map((rank, i) => 
         <tbody key={i}>
           {rank.map((player, j) => 
             <tr key={j}>

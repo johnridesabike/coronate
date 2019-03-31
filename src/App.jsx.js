@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import './App.css';
-import { Tournament } from './chess-tourney';
-import { MainRoster, Round } from './chess-tourney.jsx';
+import React, { useState } from "react";
+import "./App.css";
+import { Tournament } from "./chess-tourney";
+import { MainRoster, Round } from "./chess-tourney.jsx.js";
 
 const cvlTourney = new Tournament(
-  'CVL Winter Open',
-  15
+  "CVL Winter Open"
 )
 
 function App() {
   const newRound = (event) => {
     var round = cvlTourney.newRound();
     if (!round) {
-      alert('Either add players or complete the current matches first.');
+      alert("Either add players or complete the current matches first.");
       return;
     }
     tabList.push(
       {
-        name: 'Round ' + (round.id + 1),
+        name: "Round " + (round.id + 1),
         contents: <Round tourney={cvlTourney} roundId={round.id} />
       }
     );
@@ -27,7 +26,7 @@ function App() {
   const [tabList, setTabList] = useState(
     [
       {
-        name: 'Roster',
+        name: "Roster",
         contents: <MainRoster tourney={cvlTourney} />
       }
     ]
@@ -64,4 +63,16 @@ function App() {
   );
 }
 
-export default App;
+function Caution() {
+    return (
+        <p>
+            <span role="img" aria-label="waving hand">👋</span>&nbsp;
+            This is an unstable demo build!
+            Want to help make it better? Head to the&nbsp;
+            <span role="img" aria-label="finger pointing right">👉</span>&nbsp;
+            <a href="https://github.com/johnridesabike/chessahoochee">Git repository</a>.
+        </p>
+    );
+}
+
+export {App, Caution};

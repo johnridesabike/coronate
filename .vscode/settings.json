@@ -1,7 +1,15 @@
 {
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
+  "editor.detectIndentation": false,
     "typescript.suggest.enabled": false,
     "typescript.suggestionActions.enabled": false,
-    "javascript.suggestionActions.enabled": false
+    "javascript.suggestionActions.enabled": false,
+    "jslint.version": "es6",
+    "jslint.exclude": {
+        "**/*.jsx.*": true
+    },
+    "jslint.options": {
+        "devel": true,
+        "predef": ["it", "expect"],
+        "this": true
+    }
 }

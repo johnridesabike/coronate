@@ -11,7 +11,7 @@ body {
   width: 100vw;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto 2em;
+  grid-template-rows: auto 3em;
   grid-template-columns: auto;
   grid-template-areas: 
     "root"
@@ -35,7 +35,6 @@ a:hover {
 .caution {
   grid-area: footer;
   width: 100%;
-  height: 2em;
   background-repeat: repeat;
   display: flex;
   flex-flow: column;
