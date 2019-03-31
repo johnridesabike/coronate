@@ -1,8 +1,16 @@
-import Match from "./match";
-import {Player, DUMMYPLAYER} from "./player";
-import Roster from "./roster";
-import Round from "./round";
-import scores from "./scores";
-import Tournament from "./tournament";
+import createMatch from "./match";
+import {createPlayer, DUMMYPLAYER} from "./player";
+import newRoster from "./roster";
+import createRound from "./round";
+import * as scores from "./scores";
+import createTournament from "./tournament";
 
-export {Match, Player, DUMMYPLAYER, Roster, Round, scores, Tournament};
+export {
+    createMatch,
+    createPlayer,
+    DUMMYPLAYER,
+    newRoster,
+    createRound,
+    scores,
+    createTournament
+};

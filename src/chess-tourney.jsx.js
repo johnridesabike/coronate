@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Player, scores } from './chess-tourney';
+import {createPlayer, scores} from './chess-tourney';
 import demoRoster from './demo-players';
 
 function MainRoster ({tourney}) {
@@ -8,8 +8,8 @@ function MainRoster ({tourney}) {
   const newPlayer = {firstName: '', lastName: '', rating: 1200};
   const handleSubmit = (event) => {
     event.preventDefault();
-    tourney.addPlayer(
-        new Player(
+    tourney.roster.addPlayer(
+        createPlayer(
             newPlayer['firstName'],
             newPlayer['lastName'],
             newPlayer['rating']
@@ -21,7 +21,7 @@ function MainRoster ({tourney}) {
     newPlayer[event.target.name] = event.target.value;
   }
   const loadDemo = () => {
-    var players = demoRoster.slice(0,16).map(p => new Player(p));
+    var players = demoRoster.slice(0,16).map(p => createPlayer(p));
     tourney.roster.addPlayers(players);
     setDemoLoaded(true);
     setRoster([].concat(tourney.roster.all));
@@ -56,7 +56,7 @@ function MainRoster ({tourney}) {
             <td className="table__player">{player.firstName}</td>
             <td className="table__number">{player.rating}</td>
             <td className="table__number">
-              {tourney.playerMatchHistory(player).length}
+              {tourney.getMatchesByPlayer(player).length}
             </td>
             <td>
             {tourney.roster.inactive.includes(player)
@@ -79,21 +79,27 @@ function MainRoster ({tourney}) {
         Or add your own players:
       </p>
       <form onSubmit={handleSubmit}>
-        <label>
-          First name
-          <input type="text" name="firstName" onChange={updateField} required />
-        </label>
-        <label>
-          Last name
-          <input type="text" name="lastName" onChange={updateField} required />
-        </label>
-        <label>
-          Rating
-          <input type="number" name="rating" onChange={updateField} value="1200" />
-        </label>
+        <p>
+            <label>
+            First name&nbsp;
+            <input type="text" name="firstName" onChange={updateField} required />
+            </label>
+        </p>
+        <p>
+            <label>
+            Last name&nbsp;
+            <input type="text" name="lastName" onChange={updateField} required />
+            </label>
+        </p>
+        <p>
+            <label>
+            Rating&nbsp;
+            <input type="number" name="rating" onChange={updateField} value="1200" />
+            </label>
+        </p>
         <input type="submit" value="Add"/>
       </form>
-      <p className="center">Total rounds: {tourney.numOfRounds()}</p>
+      <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
     </div>
   );
 }
@@ -159,47 +165,47 @@ function Round ({tourney, roundId}) {
         </thead>
         <tbody>
           {matches.map((match, i) =>
-            <tr key={i} className={round.matches[i].isBye ? 'inactive' : ''}>
+            <tr key={i} className={round.matches[i].isBye() ? 'inactive' : ''}>
               <td className="table__number">{i + 1}</td>
               <td>
                 <input 
                   type="checkbox"
-                  checked={round.matches[i].result[0] === 1}
-                  disabled={round.matches[i].isBye}
+                  checked={round.matches[i].getWhite().result === 1}
+                  disabled={round.matches[i].isBye()}
                   onChange={(event) => setWinner(0, i, event)} />
               </td>
               <td className="table__player">
-                {round.matches[i].whitePlayer.firstName}
+                {round.matches[i].getWhite().player.firstName}
                 <button onClick={() => togglePlayerCard(i)}>?</button>
                 {openCards.includes(i) && 
                   <PlayerCard
                     tourney={tourney}
                     round={round}
-                    player={round.matches[i].whitePlayer} />
+                    player={round.matches[i].getWhite().player} />
                 }
               </td>
               <td>
                 <input 
                   type="checkbox"
-                  checked={round.matches[i].result[0] === 0.5}
-                  disabled={round.matches[i].isBye}
+                  checked={round.matches[i].getWhite().result === 0.5}
+                  disabled={round.matches[i].isBye()}
                   onChange={(event) => setWinner(0.5, i, event)} />
               </td>
               <td className="table__player">
-                {round.matches[i].blackPlayer.firstName}
+                {round.matches[i].getBlack().player.firstName}
                 <button onClick={() => togglePlayerCard(i)}>?</button>
                 {openCards.includes(i) && 
                   <PlayerCard
                     tourney={tourney}
                     round={round}
-                    player={round.matches[i].blackPlayer} />
+                    player={round.matches[i].getBlack().player} />
                 }
               </td>
               <td>
                 <input 
                   type="checkbox"
-                  checked={round.matches[i].result[1] === 1}
-                  disabled={round.matches[i].isBye}
+                  checked={round.matches[i].getBlack().result === 1}
+                  disabled={round.matches[i].isBye()}
                   onChange={(event) => setWinner(1, i, event)} />
               </td>
             </tr>
@@ -216,8 +222,8 @@ function Round ({tourney, roundId}) {
 
 function PlayerCard({tourney, round, player}) {
   var ratingChange = (
-    round.matchByPlayer(player).playerInfo(player).newRating
-    - round.matchByPlayer(player).playerInfo(player).origRating
+    round.getMatchByPlayer(player).getPlayerInfo(player).newRating
+    - round.getMatchByPlayer(player).getPlayerInfo(player).origRating
   );
   if (ratingChange > -1) {
     ratingChange = "+" + ratingChange
@@ -233,7 +239,7 @@ function PlayerCard({tourney, round, player}) {
     <dl className="player-card">
       <dt>Rating</dt>
       <dd>
-        {round.matchByPlayer(player).playerInfo(player).origRating}
+        {round.getMatchByPlayer(player).getPlayerInfo(player).origRating}
         &nbsp;({ratingChange})
       </dd>
       <dt>Color balance</dt>
@@ -241,7 +247,7 @@ function PlayerCard({tourney, round, player}) {
       <dt>Opponent history</dt>
       <dd>
         <ol>
-          {scores.playerOppHistory(tourney, player, round.id).map((opponent, i) =>
+          {tourney.getPlayersByOpponent(player, round.id).map((opponent, i) =>
             <li key={i}>
               {opponent.firstName}
             </li>  

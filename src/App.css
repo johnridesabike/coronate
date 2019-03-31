@@ -34,9 +34,8 @@
 
 #root {
   padding: 0 1em 0 1em;
-  overflow:scroll;
+  overflow:auto;
   grid-area: root;
-  overflow: scroll;
 }
 
 h1 {

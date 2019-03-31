@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Tournament } from "./chess-tourney";
-import { MainRoster, Round } from "./chess-tourney.jsx.js";
+import {createTournament} from "./chess-tourney";
+import {MainRoster, Round} from "./chess-tourney.jsx.js";
 
-const cvlTourney = new Tournament(
-  "CVL Winter Open"
-)
+const cvlTourney = createTournament("CVL Winter Open");
 
 function App() {
   const newRound = (event) => {

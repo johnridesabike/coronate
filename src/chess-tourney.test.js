@@ -1,12 +1,11 @@
 /**
  * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
  */
-import Tournament from "./chess-tourney/tournament";
-import {Player} from "./chess-tourney/player";
+import {createPlayer, createTournament, scores} from "./chess-tourney";
 import {sortBy, times} from "lodash";
 
 function randomMatches(match) {
-    if (!match.isBye) {
+    if (!match.isBye()) {
         if (Math.random() >= 0.5) {
             match.whiteWon();
         } else {
@@ -16,7 +15,7 @@ function randomMatches(match) {
 }
 
 function randomMatchesDraws(match) {
-    if (!match.isBye) {
+    if (!match.isBye()) {
         let rando = Math.random();
         if (rando >= 0.66) {
             match.whiteWon();
@@ -29,40 +28,40 @@ function randomMatchesDraws(match) {
 }
 
 function randomRounds(tourney) {
-    while (tourney.roundList.length < tourney.numOfRounds()) {
+    while (tourney.roundList.length < tourney.getNumOfRounds()) {
         let round = tourney.newRound();
         round.matches.forEach(randomMatches);
     }
 }
 
 function randomRoundsDraws(tourney) {
-    while (tourney.roundList.length < tourney.numOfRounds()) {
+    while (tourney.roundList.length < tourney.getNumOfRounds()) {
         let round = tourney.newRound();
         round.matches.forEach(randomMatchesDraws);
     }
 }
 
 const players = [
-    new Player("Matthew", "A", 800), new Player("Mark", "B", 850),
-    new Player("Luke", "C", 900), new Player("John", "D", 950),
-    new Player("Simon", "E", 1000), new Player("Andrew", "F", 1050),
-    new Player("James", "G", 1100), new Player("Philip", "H", 1150),
-    new Player("Bartholomew", "I", 1200), new Player("Thomas", "J", 1250),
-    new Player("Catherine", "K", 1300), new Player("Clare", "L", 1350),
-    new Player("Judas", "M", 1400), new Player("Matthias", "N", 1450),
-    new Player("Paul", "O", 1500), new Player("Mary", "P", 1600),
-    new Player("Theresa", "Q", 1650), new Player("Megan", "R", 1700),
-    new Player("Elizabeth", "S", 1750)
+    createPlayer("Matthew", "A", 800), createPlayer("Mark", "B", 850),
+    createPlayer("Luke", "C", 900), createPlayer("John", "D", 950),
+    createPlayer("Simon", "E", 1000), createPlayer("Andrew", "F", 1050),
+    createPlayer("James", "G", 1100), createPlayer("Philip", "H", 1150),
+    createPlayer("Bartholomew", "I", 1200), createPlayer("Thomas", "J", 1250),
+    createPlayer("Catherine", "K", 1300), createPlayer("Clare", "L", 1350),
+    createPlayer("Judas", "M", 1400), createPlayer("Matthias", "N", 1450),
+    createPlayer("Paul", "O", 1500), createPlayer("Mary", "P", 1600),
+    createPlayer("Theresa", "Q", 1650), createPlayer("Megan", "R", 1700),
+    createPlayer("Elizabeth", "S", 1750)
 ];
 
 it("A tournament can run without crashing", function () {
-    const tourney = new Tournament("A battle for the ages");
+    const tourney = createTournament("A battle for the ages");
     tourney.roster.addPlayers(players.slice(0, 16));
     randomRounds(tourney);
 });
 
 it("A tournament can run with drawen rounds without crashing", function () {
-    const tourney = new Tournament("A battle for the ages");
+    const tourney = createTournament("A battle for the ages");
     tourney.roster.addPlayers(players.slice(0, 16));
     randomRoundsDraws(tourney);
 });
@@ -74,12 +73,12 @@ it("No players face each other more than once", function () {
     let tourneyNum = 10;
     times(tourneyNum, function () {
         let playerOppCount = [];
-        let tourney = new Tournament();
+        let tourney = createTournament();
         tourney.roster.addPlayers(players.slice(0, 16));
         randomRounds(tourney);
         playerOppCount = playerOppCount.concat(
             tourney.roster.all.map(
-                (p) => tourney.playerOppHistory(p).length
+                (p) => tourney.getPlayersByOpponent(p).length
             )
         );
         if (sortBy(playerOppCount, (i) => i)[0] === tourney.roundList.length) {
@@ -90,31 +89,30 @@ it("No players face each other more than once", function () {
 });
 
 it("A tournament can pair an odd number of players correctly", function () {
-    const tourney = new Tournament("An odd tournament indeed");
+    const tourney = createTournament("An odd tournament indeed");
     tourney.roster.addPlayers(players.slice(0, 19));
     randomRounds(tourney);
     let playerOppCount = tourney.roster.all.map(
-        (p) => tourney.playerOppHistory(p).length
+        (p) => tourney.getPlayersByOpponent(p).length
     );
-    expect(sortBy(playerOppCount, (i) => i)[0]).toBe(tourney.numOfRounds());
+    expect(sortBy(playerOppCount, (i) => i)[0]).toBe(tourney.getNumOfRounds());
 });
 
 it("A tournament doesn't crash when players are removed", function () {
-    const tourney = new Tournament();
+    const tourney = createTournament();
     tourney.roster.addPlayers(players.slice(0, 16));
     tourney.newRound().matches.forEach((match) => randomMatches(match));
     tourney.newRound().matches.forEach((match) => randomMatches(match));
     let playerTree = {};
-    tourney.roster.active.forEach(function (player) {
-        let score = tourney.playerScore(player);
-        if (playerTree.score === undefined) {
+    tourney.roster.getActive().forEach(function (player) {
+        let score = scores.playerScore(tourney, player);
+        if (playerTree[score] === undefined) {
             playerTree[score] = [];
         }
         playerTree[score].push(player);
     });
     tourney.roster.deactivatePlayer(playerTree[0][0]);
     tourney.roster.deactivatePlayer(playerTree[1][0]);
-
     tourney.newRound().matches.forEach((match) => randomMatches(match));
     tourney.newRound().matches.forEach((match) => randomMatches(match));
 });

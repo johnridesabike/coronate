@@ -6,7 +6,7 @@ import {firstBy} from "thenby";
  * @returns {array} the list of scores
  */
 function playerScoreList(tourney, player, roundId = null) {
-    return tourney.playerMatchHistory(player, roundId).map(
+    return tourney.getMatchesByPlayer(player, roundId).map(
         (match) => match.result[match.players.indexOf(player)]
     );
 }
@@ -54,7 +54,7 @@ function playerScoreCum(tourney, player, roundId = null) {
  */
 function playerColorBalance(tourney, player, roundId = null) {
     var color = 0;
-    tourney.playerMatchHistory(player, roundId).filter(
+    tourney.getMatchesByPlayer(player, roundId).filter(
         (match) => !match.isBye
     ).forEach(
         function (match) {
@@ -75,7 +75,7 @@ function playerColorBalance(tourney, player, roundId = null) {
  */
 function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
     // get all of the opponent's scores
-    var scores = playerOppHistory(tourney, player, roundId).map(
+    var scores = tourney.getPlayersByOpponent(player, roundId).map(
         (opponent) => playerScore(tourney, opponent, roundId)
     );
     //sort them, then remove the first and last items
@@ -100,26 +100,9 @@ function solkoff(tourney, player, roundId = null) {
     return modifiedMedian(tourney, player, roundId, true);
 }
 
-/**
- * Generate a list of a player's opponents.
- * @param   {Player} player
- * @returns {Array} A list of past opponents
- */
-function playerOppHistory(tourney, player, roundId = null) {
-    var opponents = [];
-    tourney.playerMatchHistory(player, roundId).forEach(function (match) {
-        opponents = opponents.concat(
-            match.players.filter(
-                (player2) => player2 !== player
-            )
-        );
-    });
-    return opponents;
-}
-
-function playerOppScoreCum(tourney, player, roundID = null) {
-    const opponents = playerOppHistory(tourney, player, roundID);
-    var oppScores = opponents.map((p) => playerScoreCum(tourney, p, roundID));
+function playerOppScoreCum(tourney, player, roundId = null) {
+    const opponents = tourney.getPlayersByOpponent(player, roundId);
+    var oppScores = opponents.map((p) => playerScoreCum(tourney, p, roundId));
     var score = 0;
     if (oppScores.length !== 0) {
         score = oppScores.reduce((a, b) => a + b);
@@ -146,11 +129,22 @@ function calcStandings(tourney, roundId = null) {
         };
     });
     standingsFlat.sort(
-        firstBy((p) => p.score, -1)
-        .thenBy((p) => p.modifiedMedian, -1)
-        .thenBy((p) => p.solkoff, -1)
-        .thenBy((p) => p.scoreCum, -1)
-        .thenBy((p) => p.oppScoreCum, -1)
+        firstBy(
+            (p) => p.score,
+            -1
+        ).thenBy(
+            (p) => p.modifiedMedian,
+            -1
+        ).thenBy(
+            (p) => p.solkoff,
+            -1
+        ).thenBy(
+            (p) => p.scoreCum,
+            -1
+        ).thenBy(
+            (p) => p.oppScoreCum,
+            -1
+        )
     );
     const standingsTree = [];
     var runningRank = 0;
@@ -173,16 +167,13 @@ function calcStandings(tourney, roundId = null) {
     return standingsTree;
 }
 
-export default Object.freeze(
-    {
-        calcStandings,
-        modifiedMedian,
-        playerColorBalance,
-        playerOppHistory,
-        playerOppScoreCum,
-        playerScore,
-        playerScoreCum,
-        playerScoreList,
-        solkoff
-    }
-);
+export {
+    calcStandings,
+    modifiedMedian,
+    playerColorBalance,
+    playerOppScoreCum,
+    playerScore,
+    playerScoreCum,
+    playerScoreList,
+    solkoff
+};

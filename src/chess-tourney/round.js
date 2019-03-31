@@ -1,6 +1,6 @@
 import {DUMMYPLAYER} from "./player";
-import Match from "./match";
-import scores from "./scores";
+import createMatch from "./match";
+import {playerColorBalance, playerScore} from "./scores";
 import {chain, flatten, zip} from "lodash";
 
 /**
@@ -37,9 +37,9 @@ function findAMatch(round, player1, pool, blackList = []) {
         .filter((p2) => oppColor.includes(p2))[0] || hasntPlayed[0];
     var newMatch;
     if (player2) {
-        newMatch = new Match(round, player1, player2);
-        if (scores.playerColorBalance(round.tourney, player1)
-            > scores.playerColorBalance(round.tourney, player2)) {
+        newMatch = createMatch(round, player1, player2);
+        if (playerColorBalance(round.tourney, player1)
+            > playerColorBalance(round.tourney, player2)) {
             newMatch.players.reverse();
         }
         round.matches.push(newMatch);
@@ -61,7 +61,7 @@ function pairPlayers(round) {
      * }
      */
     round.roster.forEach(function (player) {
-        var score = scores.playerScore(round.tourney, player, round.id);
+        var score = playerScore(round.tourney, player, round.id);
         if(round.playerTree[score] === undefined) {
             round.playerTree[score] = [];
         }
@@ -131,7 +131,7 @@ function pairPlayers(round) {
         if (round.prevRound === undefined) {
             zip(upperHalf, lowerHalf)
                 .forEach((match) =>
-                    round.matches.push(new Match(round, ...match))
+                    round.matches.push(createMatch(round, ...match))
                 );
         } else {
             /**
@@ -164,7 +164,7 @@ function pairPlayers(round) {
                 [].concat(lowerHalf).concat(upperHalf)
                     .filter((p2) =>
                     // filter the players who have played this player
-                        scores.playerOppHistory(round.tourney, p2).includes(p)
+                    round.tourney.getPlayersByOpponent(p2).includes(p)
                     )
             );
             /**
@@ -235,61 +235,43 @@ function pairPlayers(round) {
 /**
  * Represents a round in a tournament.
  */
-function Round(tourney, id, prevRound, players) {
-    this.id = id;
-    this.tourney = tourney;
-    this.roster = players;
-    this.prevRound = prevRound;
-    this.playerTree = {};
-    this.matches = [];
-    this.hasDummy = false;
-    pairPlayers(this);
+function createRound(tourney, id, prevRound, players) {
+    const round = {
+        id: id,
+        tourney: tourney,
+        roster: players,
+        prevRound: prevRound,
+        playerTree: {},
+        matches: [],
+        hasDummy: false,
+        isComplete: function() {
+                return !round.matches.map((m) => m.isComplete).includes(false);
+        },
+        getMatchByPlayer: function (player) {
+            var theMatch = null;
+            round.matches.forEach(function (match) {
+                if (match.players.includes(player)) {
+                    theMatch = match;
+                }
+            });
+            return theMatch;
+        },
+        playerColor: function (player) {
+            var color = -1;
+            round.matches.forEach(function (match) {
+                if (match.players.includes(player)) {
+                    color = match.players.indexOf(player);
+                }
+            });
+            return color;
+        },
+        addPlayer: function(player) {
+            round.players.push(player);
+            return round;
+        }
+    };
+    pairPlayers(round);
+    return round;
 }
 
-Object.defineProperties(
-    Round.prototype,
-    {
-        isComplete: {
-            get: function() {
-                return !this.matches.map((m) => m.isComplete).includes(false);
-            }
-        }
-    }
-);
-
-Round.prototype.matchByPlayer = function(player) {
-    var theMatch = null;
-    this.matches.forEach(function (match) {
-        if (match.players.includes(player)) {
-            theMatch = match;
-        }
-    });
-    return theMatch;
-};
-
-/**
- * Sees what color a player was for this round.
- * @param {Player} player
- * @return {number} 0 for white and 1 for black
- */
-Round.prototype.playerColor = function(player) {
-    var color = -1;
-    this.matches.forEach(function (match) {
-        if (match.players.includes(player)) {
-            color = match.players.indexOf(player);
-        }
-    });
-    return color;
-};
-
-/**
- * Add a player to the roster
- *
- * @param {Player} player
- */
-Round.prototype.addPlayer = function(player) {
-    this.players.push(player);
-    return this;
-};
-
-export default Object.freeze(Round);
+export default Object.freeze(createRound);

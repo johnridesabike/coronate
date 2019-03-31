@@ -5,11 +5,12 @@
     "javascript.suggestionActions.enabled": false,
     "jslint.version": "es6",
     "jslint.exclude": {
-        "**/*.jsx.*": true
+        "**/*.jsx.*": true,
+        "**/node_modules/*": true
     },
     "jslint.options": {
         "devel": true,
         "predef": ["it", "expect"],
-        "this": true
+        "this": false
     }
 }
