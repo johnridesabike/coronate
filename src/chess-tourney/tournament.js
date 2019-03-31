@@ -43,11 +43,11 @@ Object.defineProperties(
  * @returns {int} the number of rounds
  */
 Tournament.prototype.numOfRounds = function() {
-  var roundNum = Math.ceil(Math.log2(this.roster.active.length));
-  if (roundNum === -Infinity) {
-    roundNum = 0;
+  var roundId = Math.ceil(Math.log2(this.roster.active.length));
+  if (roundId === -Infinity) {
+    roundId = 0;
   }
-  return roundNum;
+  return roundId;
 }
 
 /**
@@ -68,12 +68,12 @@ Tournament.prototype.newRound = function() {
   return newRound;
 }
 
-Tournament.prototype.playerMatchHistory = function(player, roundNum = null) {
-  if (roundNum === null) {
-    roundNum = this.roundList.length;
+Tournament.prototype.playerMatchHistory = function(player, roundId = null) {
+  if (roundId === null) {
+    roundId = this.roundList.length;
   }
-  var matches = []
-  times(roundNum + 1, i => {
+  let matches = []
+  times(roundId + 1, i => {
     if (this.roundList[i] !== undefined) {
       this.roundList[i].matches.forEach(match => {
         if (match.players.indexOf(player) !== -1) {
@@ -90,9 +90,9 @@ Tournament.prototype.playerMatchHistory = function(player, roundNum = null) {
  * @param {Player} player
  * @returns {array} the list of scores
  */
-Tournament.prototype.playerScoreList = function(player, roundNum = null) {
+Tournament.prototype.playerScoreList = function(player, roundId = null) {
   var scores = this
-    .playerMatchHistory(player, roundNum)
+    .playerMatchHistory(player, roundId)
     .map(match => 
       match.result[match.players.indexOf(player)]);
   return scores;
@@ -101,11 +101,11 @@ Tournament.prototype.playerScoreList = function(player, roundNum = null) {
 /**
  * Get the total score of a player after a given round.
  * @param {Player} player 
- * @param {number} roundNum 
+ * @param {number} roundId 
  */
-Tournament.prototype.playerScore = function(player, roundNum = null) {
+Tournament.prototype.playerScore = function(player, roundId = null) {
   var score = 0;
-  var scoreList = this.playerScoreList(player, roundNum);
+  var scoreList = this.playerScoreList(player, roundId);
   if (scoreList.length > 0) {
     score = scoreList.reduce((a, b) => a + b);
   }
@@ -115,12 +115,12 @@ Tournament.prototype.playerScore = function(player, roundNum = null) {
 /**
  * Get the cumulative score of a player
  * @param {Player} player 
- * @param {number} roundNum 
+ * @param {number} roundId 
  */
-Tournament.prototype.playerScoreCum = function(player, roundNum = null) {
+Tournament.prototype.playerScoreCum = function(player, roundId = null) {
   var runningScore = 0;
   var cumScores = []
-  var scores = this.playerScoreList(player, roundNum);
+  var scores = this.playerScoreList(player, roundId);
   scores.forEach(score => {
     runningScore += score;
     cumScores.push(runningScore);
@@ -138,10 +138,10 @@ Tournament.prototype.playerScoreCum = function(player, roundNum = null) {
  * @param {Int}    round The ID of the highest round to consider
  * @returns {Int} A negative number means they played as black more. A positive number means they played as white more.
  */
-Tournament.prototype.playerColorBalance = function(player, roundNum = null) {
+Tournament.prototype.playerColorBalance = function(player, roundId = null) {
   var color = 0;
   this
-    .playerMatchHistory(player, roundNum)
+    .playerMatchHistory(player, roundId)
     .filter(match => !match.isBye)
     .forEach(match => {
       if (match.players[0] === player) {
@@ -157,12 +157,12 @@ Tournament.prototype.playerColorBalance = function(player, roundNum = null) {
 /**
  * Gets the modified median factor defined in USCF § 34E1
  * @param {Player} player 
- * @param {number} roundNum 
+ * @param {number} roundId 
  */
-Tournament.prototype.modifiedMedian = function(player, roundNum = null, solkoff = false) {
+Tournament.prototype.modifiedMedian = function(player, roundId = null, solkoff = false) {
   // get all of the opponent's scores
-  var scores = this.playerOppHistory(player, roundNum)
-    .map(opponent => this.playerScore(opponent, roundNum));
+  var scores = this.playerOppHistory(player, roundId)
+    .map(opponent => this.playerScore(opponent, roundId));
   //sort them, then remove the first and last items
   scores.sort();
   if (!solkoff) {
@@ -179,10 +179,10 @@ Tournament.prototype.modifiedMedian = function(player, roundNum = null, solkoff 
 /**
  * A shortcut for passing the `solkoff` variable to `this.modifiedMedian`.
  * @param {Player} player 
- * @param {number} roundNum 
+ * @param {number} roundId 
  */
-Tournament.prototype.solkoff = function(player, roundNum = null) {
-  return this.modifiedMedian(player, roundNum, true);
+Tournament.prototype.solkoff = function(player, roundId = null) {
+  return this.modifiedMedian(player, roundId, true);
 }
 
 /**
@@ -190,15 +190,14 @@ Tournament.prototype.solkoff = function(player, roundNum = null) {
  * @param   {Player} player
  * @returns {Array} A list of past opponents
  */
-Tournament.prototype.playerOppHistory = function(player, roundNum = null) {
+Tournament.prototype.playerOppHistory = function(player, roundId = null) {
   var opponents = [];
   this
-    .playerMatchHistory(player, roundNum)
+    .playerMatchHistory(player, roundId)
     .forEach(match => {
       opponents = opponents.concat(
         match.players
           .filter(player2 => player2 !== player)
-          .filter(player2 => !opponents.includes(player2))
       );
     }
   );
@@ -219,26 +218,45 @@ Tournament.prototype.playerOppScoreCum = function(player, round = null) {
  * Sort the standings by score and USCF tie-break rules from § 34. USCF
  * recommends using these methods in-order: modified median, solkoff, 
  * cumulative, and cumulative of opposition.
- * @param {number} roundNum 
+ * @param {number} roundId 
  * @returns {Array} The sorted list of players
  */
-Tournament.prototype.calcStandings = function(roundNum = null) {
-  const standings = this.roster.all.map(player => {
+Tournament.prototype.calcStandings = function(roundId = null) {
+  const standingsFlat = this.roster.all.map(player => {
     return {
       player: player,
-      score: this.playerScore(player, roundNum),
-      modifiedMedian: this.modifiedMedian(player, roundNum),
-      solkoff: this.solkoff(player, roundNum),
-      scoreCum: this.playerScoreCum(player, roundNum),
-      oppScoreCum: this.playerOppScoreCum(player, roundNum)
+      score: this.playerScore(player, roundId),
+      modifiedMedian: this.modifiedMedian(player, roundId),
+      solkoff: this.solkoff(player, roundId),
+      scoreCum: this.playerScoreCum(player, roundId),
+      oppScoreCum: this.playerOppScoreCum(player, roundId)
     }
   });
-  standings.sort(
+  standingsFlat.sort(
     firstBy(p => p.score, -1)
     .thenBy(p => p.modifiedMedian, -1)
     .thenBy(p => p.solkoff, -1)
     .thenBy(p => p.scoreCum, -1)
     .thenBy(p => p.oppScoreCum, -1)
   );
-  return standings;
+  const standingsTree = [];
+  let runningRank = 0;
+  standingsFlat.forEach((player, i, sf) => {
+    if (i !== 0) { // we can't compare the first player with someone before them
+      let prevPlayer = sf[i - 1];
+      if (!(player.score === prevPlayer.score &&
+          player.modifiedMedian === prevPlayer.modifiedMedian &&
+          player.solkoff === prevPlayer.solkoff &&
+          player.scoreCum === prevPlayer.scoreCum &&
+          player.oppScoreCum === prevPlayer.oppScoreCum)
+      ) {
+        runningRank += 1;
+      }
+    }
+    if (!standingsTree[runningRank]) {
+      standingsTree[runningRank] = [];
+    }
+    standingsTree[runningRank].push(player);
+  });
+  return standingsTree;
 }

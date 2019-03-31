@@ -5,11 +5,11 @@ import { chain, flatten, zip } from 'lodash';
 /**
  * Represents a round in a tournament.
  */
-export default function Round(tourney, roundNum, prevRound, players) {
+export default function Round(tourney, id, prevRound, players) {
   if (!(this instanceof Round)) {
-    return new Round(tourney, roundNum, prevRound, players)
+    return new Round(tourney, id, prevRound, players)
   }
-  this.roundNum = roundNum;
+  this.id = id;
   this.tourney = tourney;
   this.roster = players;
   this.prevRound = prevRound;

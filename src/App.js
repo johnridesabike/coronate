@@ -17,8 +17,8 @@ function App() {
     }
     tabList.push(
       {
-        name: 'Round ' + (round.roundNum + 1),
-        contents: <Round tourney={cvlTourney} roundNum={round.roundNum} />
+        name: 'Round ' + (round.id + 1),
+        contents: <Round tourney={cvlTourney} roundId={round.id} />
       }
     );
     setTabList([].concat(tabList));
@@ -60,11 +60,6 @@ function App() {
       </nav>
       <h1>Chessahoochee: a chess tournament app</h1>
       {currentTab.contents}
-      {/* {cvlTourney.roundList.map(round => 
-        <div className="round" key={round.roundNum}>
-          <Round round={round} />
-        </div>
-      )} */}
     </div>
   );
 }

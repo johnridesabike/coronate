@@ -8,7 +8,7 @@ Other API to-dos:
 
 - Improve adding or removing players after a tournament has begun.
 - Add I/O for saving and loading data across sessions.
-- Improve rating calculations: individual k-factor for players, provisional ratings, and possibly moving to a different engine (e.g. Glicko-2).
+- Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
 - Better bye handling: signups, black/white balance, tie-break logic, etc.
 
 ## Front-end

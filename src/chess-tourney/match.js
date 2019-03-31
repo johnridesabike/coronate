@@ -1,13 +1,9 @@
-import { DUMMYPLAYER } from './player';
-import EloRank from 'elo-rank';
-
 /**
- * TODO: make this customizable for each player based on their match history.
- * @constant KFACTOR The k-factor used for calculating ratings
- * @constant ELO     The EloRank object
+ * This module is probably the messiest, since I can't decide the best way to
+ * organize it.
  */
-const KFACTOR = 16;
-const ELO = new EloRank(KFACTOR);
+
+import { DUMMYPLAYER } from './player';
 
 /**
  * Represents a match in a tournament.
@@ -22,7 +18,6 @@ export default function Match(round, white, black) {
   this.round = round;
   this.players = [white, black];
   this.result = [0, 0];
-  this.scoreExpected = [0, 0]; // used for the Elo calculator
   this.origRating = [white.rating, black.rating]; // cache the ratings from when the match began
   this.newRating = [white.rating, black.rating]; // the newly calculated ratings after the match ends
   // set bye rounds
@@ -61,7 +56,7 @@ Object.defineProperties(
 );
 
 Match.prototype.playerInfo = function(player) {
-  var index = this.players.indexOf(player)
+  let index = this.players.indexOf(player)
   if (index === -1) {
     return false;
   }
@@ -107,14 +102,18 @@ Match.prototype.resetResult = function() {
 }
 
 function calcRatings(match) {
-  match.scoreExpected = [
-    ELO.getExpected(match.whiteOrigRating, match.blackOrigRating),
-    ELO.getExpected(match.blackOrigRating, match.whiteOrigRating),
+  let whiteElo = match.whitePlayer.eloRank(match);
+  let blackElo = match.blackPlayer.eloRank(match);
+  const FLOOR = 100;
+  let scoreExpected = [
+    whiteElo.getExpected(match.whiteOrigRating, match.blackOrigRating),
+    blackElo.getExpected(match.blackOrigRating, match.whiteOrigRating),
   ];
   match.newRating = [
-    ELO.updateRating(match.scoreExpected[0], match.result[0], match.whiteOrigRating),
-    ELO.updateRating(match.scoreExpected[1], match.result[1], match.blackOrigRating)
+    whiteElo.updateRating(scoreExpected[0], match.result[0], match.whiteOrigRating),
+    blackElo.updateRating(scoreExpected[1], match.result[1], match.blackOrigRating)
   ];
+  match.newRating = match.newRating.map(rating => rating < FLOOR ? FLOOR : rating);
   match.whitePlayer.rating = match.newRating[0];
   match.blackPlayer.rating = match.newRating[1];
 }
