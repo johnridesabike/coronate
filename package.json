@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A chess tournament manager",
   "author": "John Jackson",
-  "license": "GPL-3.0-or-later",
+  "license": "ISC",
   "private": true,
   "homepage": ".",
   "repository": {

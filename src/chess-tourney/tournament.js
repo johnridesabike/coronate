@@ -1,4 +1,4 @@
-import newRoster from "./roster";
+import createRoster from "./roster";
 import createRound from "./round";
 import {last, times} from "lodash";
 
@@ -68,7 +68,7 @@ function createTournament(name = "", playerList = []) {
             return newRound;
         }
     };
-    tourney.roster = newRoster(tourney, playerList);
+    tourney.roster = createRoster(tourney, playerList);
     return tourney;
 }
 

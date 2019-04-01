@@ -1,0 +1,29 @@
+{
+    "tieBreak": [
+        {
+            "name": "Modified median",
+            "funcName": "modifiedMedian",
+            "active": true
+        },
+        {
+            "name": "Solkoff",
+            "funcName": "solkoff",
+            "active": true
+        },
+        {
+            "name": "Cumulative score",
+            "funcName": "playerScoreCum",
+            "active": true
+        },
+        {
+            "name": "Cumulative of opposition",
+            "funcName": "playerOppScoreCum",
+            "active": true
+        },
+        {
+            "name": "Most black",
+            "funcName": "playerColorBalance",
+            "active": false
+        }
+    ]
+}

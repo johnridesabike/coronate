@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {createPlayer, scores} from './chess-tourney';
+import {createPlayer, scores, config} from './chess-tourney';
 import demoRoster from './demo-players';
 
 function MainRoster ({tourney}) {
@@ -105,157 +105,191 @@ function MainRoster ({tourney}) {
 }
 
 function Round ({tourney, roundId}) {
-  /**
-   * Be careful when using the `setState` `matches` and the API's `matches`.
-   * They have to mirror each other but can't be the same objects.
-   */
-  const round = tourney.roundList[roundId];
-  const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
-  const [openCards, setCards] = useState([]);
-  const setWinner = (color, index, event) => {
-    let origMatch = round.matches[index];
-    if(event.target.checked) {
-      if(color === 0) {
-        origMatch.whiteWon();
-      } else if (color === 1) {
-        origMatch.blackWon();
-      } else if (color === 0.5) {
-        origMatch.draw();
-      }
-    } else {
-      origMatch.resetResult();
+    /**
+     * Be careful when using the `setState` `matches` and the API's `matches`.
+     * They have to mirror each other but can't be the same objects.
+     */
+    const round = tourney.roundList[roundId];
+    const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
+    const setWinner = (color, index, event) => {
+        let origMatch = round.matches[index];
+        if(event.target.checked) {
+        if(color === 0) {
+            origMatch.whiteWon();
+        } else if (color === 1) {
+            origMatch.blackWon();
+        } else if (color === 0.5) {
+            origMatch.draw();
+        }
+        } else {
+        origMatch.resetResult();
+        }
+        // matches[index] = match;
+        setMatches(round.matches.map(o => Object.assign({}, o)));
     }
-    // matches[index] = match;
-    setMatches(round.matches.map(o => Object.assign({}, o)));
-  }
-  const togglePlayerCard = (id) => {
-    if (openCards.includes(id)) {
-      setCards(openCards.filter(i => i !== id));
-    } else {
-      setCards([].concat(openCards).concat([id]));
+    const randomize = () => {
+        matches.forEach((match, i) => {
+            let origMatch = round.matches[i];
+            if (origMatch.isBye()) {
+                return;
+            }
+            let rando = Math.random();
+            if (rando >= 0.55) {
+                origMatch.whiteWon();
+            } else if (rando >= .1) {
+                origMatch.blackWon();
+            } else {
+                origMatch.draw();
+            }
+        });
+        setMatches(round.matches.map(o => Object.assign({}, o)));
     }
-  }
-  const randomize = () => {
-    matches.forEach((match, i) => {
-      let origMatch = round.matches[i];
-      let rando = Math.random();
-      if (rando >= 0.55) {
-        origMatch.whiteWon();
-      } else if (rando >= .1) {
-        origMatch.blackWon();
-      } else {
-        origMatch.draw();
-      }
-    });
-    setMatches(round.matches.map(o => Object.assign({}, o)));
-  }
-  return (
-    <div>
-      <table key={round.id} className="table__roster">
-        <caption>Round {round.id + 1} results</caption>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Won</th>
-            <th>White</th>
-            <th>Draw</th>
-            <th>Black</th>
-            <th>Won</th>
-          </tr>
-        </thead>
-        <tbody>
-          {matches.map((match, i) =>
-            <tr key={i} className={round.matches[i].isBye() ? 'inactive' : ''}>
-              <td className="table__number">{i + 1}</td>
-              <td>
+    return (
+        <div className="round">
+            <table className="table__roster">
+                <caption>Round {round.id + 1} results</caption>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Won</th>
+                    <th>White</th>
+                    <th>Draw</th>
+                    <th>Black</th>
+                    <th>Won</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {matches.map((match, i) =>
+                    <RoundMatch
+                        key={i}
+                        tourney={tourney}
+                        roundId={roundId}
+                        matchId={i}
+                        setWinner={setWinner} />
+                )}
+                </tbody>
+            </table>
+            <p style={{textAlign: 'center'}}>
+                <button onClick={randomize}>Random!</button>
+            </p>
+            <Standings roundId={round.id} tourney={round.tourney} />
+        </div>
+    );
+}
+
+function RoundMatch({tourney, roundId, matchId, setWinner}) {
+    const round = tourney.roundList[roundId];
+    const match = round.matches[matchId];
+    const [openCards, setCards] = useState([[]]);
+    const isCardOpen = (id) => {
+        if(openCards[roundId] === undefined) {
+            return false;
+        } else {
+            return openCards[roundId].includes(id);
+        }
+    };
+    const togglePlayerCard = (id) => {
+        var newCards = [...openCards];
+        if (newCards[roundId] === undefined) {
+            newCards[roundId] = [];
+        }
+        if (newCards[roundId].includes(id)) {
+            newCards[roundId] = newCards[roundId].filter(i => i !== id)
+            setCards(newCards);
+        } else {
+            newCards[roundId] = newCards[roundId].concat([id])
+            setCards(newCards);
+        }
+    };
+    return (
+        <tr className={match.isBye() ? 'inactive' : ''}>
+            <td className="table__number">{matchId + 1}</td>
+            <td>
                 <input 
-                  type="checkbox"
-                  checked={round.matches[i].getWhite().result === 1}
-                  disabled={round.matches[i].isBye()}
-                  onChange={(event) => setWinner(0, i, event)} />
-              </td>
-              <td className="table__player">
-                {round.matches[i].getWhite().player.firstName}
-                <button onClick={() => togglePlayerCard(i)}>?</button>
-                {openCards.includes(i) && 
-                  <PlayerCard
+                type="checkbox"
+                checked={match.getWhite().result === 1}
+                disabled={match.isBye()}
+                onChange={(event) => setWinner(0, matchId, event)} />
+            </td>
+            <td className="table__player">
+                {match.getWhite().player.firstName}
+                {isCardOpen(matchId) && 
+                <PlayerCard
                     tourney={tourney}
                     round={round}
-                    player={round.matches[i].getWhite().player} />
+                    player={match.getWhite().player} />
                 }
-              </td>
-              <td>
+            </td>
+            <td>
                 <input 
-                  type="checkbox"
-                  checked={round.matches[i].getWhite().result === 0.5}
-                  disabled={round.matches[i].isBye()}
-                  onChange={(event) => setWinner(0.5, i, event)} />
-              </td>
-              <td className="table__player">
-                {round.matches[i].getBlack().player.firstName}
-                <button onClick={() => togglePlayerCard(i)}>?</button>
-                {openCards.includes(i) && 
-                  <PlayerCard
+                    type="checkbox"
+                    checked={match.getWhite().result === 0.5}
+                    disabled={match.isBye()}
+                    onChange={(event) => setWinner(0.5, matchId, event)} />
+            </td>
+            <td className="table__player">
+                {match.getBlack().player.firstName}
+                {isCardOpen(matchId) && 
+                <PlayerCard
                     tourney={tourney}
                     round={round}
-                    player={round.matches[i].getBlack().player} />
+                    player={match.getBlack().player} />
                 }
-              </td>
-              <td>
+            </td>
+            <td>
                 <input 
-                  type="checkbox"
-                  checked={round.matches[i].getBlack().result === 1}
-                  disabled={round.matches[i].isBye()}
-                  onChange={(event) => setWinner(1, i, event)} />
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <p style={{textAlign: 'center'}}>
-        <button onClick={randomize}>Random!</button>
-      </p>
-      <Standings roundId={round.id} tourney={round.tourney} />
-    </div>
-  );
+                    type="checkbox"
+                    checked={match.getBlack().result === 1}
+                    disabled={match.isBye()}
+                    onChange={(event) => setWinner(1, matchId, event)} />
+            </td>
+            <td>
+                <button onClick={() => togglePlayerCard(matchId)}>?</button>
+                {match.warnings}
+            </td>
+        </tr>
+    );
 }
 
 function PlayerCard({tourney, round, player}) {
-  var ratingChange = (
-    round.getMatchByPlayer(player).getPlayerInfo(player).newRating
-    - round.getMatchByPlayer(player).getPlayerInfo(player).origRating
-  );
-  if (ratingChange > -1) {
-    ratingChange = "+" + ratingChange
-  }
-  const colorBalance = scores.playerColorBalance(tourney, player, round.id);
-  var color = 'Even';
-  if (colorBalance > 0) {
-    color = 'White +' + colorBalance;
-  } else if (colorBalance < 0) {
-    color = 'Black +' + Math.abs(colorBalance);
-  }
-  return (
-    <dl className="player-card">
-      <dt>Rating</dt>
-      <dd>
-        {round.getMatchByPlayer(player).getPlayerInfo(player).origRating}
-        &nbsp;({ratingChange})
-      </dd>
-      <dt>Color balance</dt>
-      <dd>{color}</dd>
-      <dt>Opponent history</dt>
-      <dd>
-        <ol>
-          {tourney.getPlayersByOpponent(player, round.id).map((opponent, i) =>
-            <li key={i}>
-              {opponent.firstName}
-            </li>  
-          )}
-        </ol>
-      </dd>
-    </dl>
-  );
+    var ratingChange = (
+        round.getMatchByPlayer(player).getPlayerInfo(player).newRating
+        - round.getMatchByPlayer(player).getPlayerInfo(player).origRating
+    );
+    if (ratingChange > -1) {
+        ratingChange = "+" + ratingChange
+    }
+    const colorBalance = scores.playerColorBalance(tourney, player, round.id);
+    var color = 'Even';
+    if (colorBalance > 0) {
+        color = 'White +' + colorBalance;
+    } else if (colorBalance < 0) {
+        color = 'Black +' + Math.abs(colorBalance);
+    }
+    return (
+        <dl className="player-card">
+        <dt>Score</dt>
+        <dd>{scores.playerScore(tourney, player, round.id)}</dd>
+        <dt>Rating</dt>
+        <dd>
+            {round.getMatchByPlayer(player).getPlayerInfo(player).origRating}
+            &nbsp;({ratingChange})
+        </dd>
+        <dt>Color balance</dt>
+        <dd>{color}</dd>
+        <dt>Opponent history</dt>
+        <dd>
+            <ol>
+            {tourney.getPlayersByOpponent(player, round.id).map((opponent, i) =>
+                <li key={i}>
+                {opponent.firstName}
+                </li>  
+            )}
+            </ol>
+        </dd>
+        </dl>
+    );
 }
 
 function Standings({tourney, roundId}) {
@@ -267,23 +301,23 @@ function Standings({tourney, roundId}) {
           <th></th>
           <th>First name</th>
           <th>Score</th>
-          <th>Median</th>
-          <th>Solkoff</th>
-          <th>Cumulative</th>
-          <th>Cumulative of opposition</th>
+          {config.tieBreak.filter((m) => m.active).map((method, i) =>
+              <th key={i}>{method.name}</th>
+          )}
         </tr>
       </thead>
       {scores.calcStandings(tourney, roundId).map((rank, i) => 
         <tbody key={i}>
           {rank.map((player, j) => 
             <tr key={j}>
-              <td>{i + 1}</td>
-              <td>{player.player.firstName}</td>
-              <td className="table__number">{player.score}</td>
-              <td className="table__number">{player.modifiedMedian}</td>
-              <td className="table__number">{player.solkoff}</td>
-              <td className="table__number">{player.scoreCum}</td>
-              <td className="table__number">{player.oppScoreCum}</td>
+                <td>{i + 1}</td>
+                <td>{player.player.firstName}</td>
+                <td className="table__number">{player.score}</td>
+                {config.tieBreak.filter((m) => m.active).map((method, i) =>
+                    <td className="table__number" key={i}>
+                        {player[method.func.name]}
+                    </td>
+                )}
             </tr>
             )}
         </tbody>

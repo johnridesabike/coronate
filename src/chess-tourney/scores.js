@@ -1,5 +1,6 @@
 import {firstBy} from "thenby";
-
+import config from "./config";
+import {DUMMYPLAYER} from "./player";
 /**
  * Get a list of all of a player's scores from each match.
  * @param {Player} player
@@ -7,6 +8,18 @@ import {firstBy} from "thenby";
  */
 function playerScoreList(tourney, player, roundId = null) {
     return tourney.getMatchesByPlayer(player, roundId).map(
+        (match) => match.result[match.players.indexOf(player)]
+    );
+}
+
+// Maybe merge this with the other function?
+function playerScoreListNoByes(tourney, player, roundId = null) {
+    return tourney.getMatchesByPlayer(
+        player,
+        roundId
+    ).filter(
+        (match) => !match.isBye()
+    ).map(
         (match) => match.result[match.players.indexOf(player)]
     );
 }
@@ -33,7 +46,7 @@ function playerScore(tourney, player, roundId = null) {
 function playerScoreCum(tourney, player, roundId = null) {
     var runningScore = 0;
     var cumScores = [];
-    var scores = playerScoreList(tourney, player, roundId);
+    var scores = playerScoreListNoByes(tourney, player, roundId);
     scores.forEach(function (score) {
         runningScore += score;
         cumScores.push(runningScore);
@@ -55,7 +68,7 @@ function playerScoreCum(tourney, player, roundId = null) {
 function playerColorBalance(tourney, player, roundId = null) {
     var color = 0;
     tourney.getMatchesByPlayer(player, roundId).filter(
-        (match) => !match.isBye
+        (match) => !match.isBye()
     ).forEach(
         function (match) {
             if (match.players[0] === player) {
@@ -75,7 +88,12 @@ function playerColorBalance(tourney, player, roundId = null) {
  */
 function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
     // get all of the opponent's scores
-    var scores = tourney.getPlayersByOpponent(player, roundId).map(
+    var scores = tourney.getPlayersByOpponent(
+        player,
+        roundId
+    ).filter(
+        (opponent) => opponent !== DUMMYPLAYER
+    ).map(
         (opponent) => playerScore(tourney, opponent, roundId)
     );
     //sort them, then remove the first and last items
@@ -101,7 +119,12 @@ function solkoff(tourney, player, roundId = null) {
 }
 
 function playerOppScoreCum(tourney, player, roundId = null) {
-    const opponents = tourney.getPlayersByOpponent(player, roundId);
+    const opponents = tourney.getPlayersByOpponent(
+        player,
+        roundId
+    ).filter(
+        (opponent) => opponent !== DUMMYPLAYER
+    );
     var oppScores = opponents.map((p) => playerScoreCum(tourney, p, roundId));
     var score = 0;
     if (oppScores.length !== 0) {
@@ -110,52 +133,45 @@ function playerOppScoreCum(tourney, player, roundId = null) {
     return score;
 }
 
+function areScoresEqual(player1, player2) {
+    const scoreTypes = Object.getOwnPropertyNames(player1);
+    var areEqual = true;
+    scoreTypes.forEach(function (score) {
+        if (score !== "player" && player1[score] !== player2[score]) {
+            areEqual = false;
+        }
+    });
+    return areEqual;
+}
+
 /**
- * Sort the standings by score and USCF tie-break rules from § 34. USCF
- * recommends using these methods in-order: modified median, solkoff,
- * cumulative, and cumulative of opposition.
+ * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {number} roundId
  * @returns {Array} The sorted list of players
  */
 function calcStandings(tourney, roundId = null) {
+    const tieBreaks = config.tieBreak.filter((m) => m.active);
     const standingsFlat = tourney.roster.all.map(function (player) {
-        return {
+        var standing = {
             player: player,
-            score: playerScore(tourney, player, roundId),
-            modifiedMedian: modifiedMedian(tourney, player, roundId),
-            solkoff: solkoff(tourney, player, roundId),
-            scoreCum: playerScoreCum(tourney, player, roundId),
-            oppScoreCum: playerOppScoreCum(tourney, player, roundId)
+            score: playerScore(tourney, player, roundId)
         };
+        tieBreaks.forEach(function (method) {
+            standing[method.func.name] = method.func(tourney, player, roundId);
+        });
+        return standing;
     });
-    standingsFlat.sort(
-        firstBy(
-            (p) => p.score,
-            -1
-        ).thenBy(
-            (p) => p.modifiedMedian,
-            -1
-        ).thenBy(
-            (p) => p.solkoff,
-            -1
-        ).thenBy(
-            (p) => p.scoreCum,
-            -1
-        ).thenBy(
-            (p) => p.oppScoreCum,
-            -1
-        )
-    );
+    var sortFunc = firstBy((player) => player.score, -1);
+    tieBreaks.forEach(function (method) {
+        sortFunc = sortFunc.thenBy((player) => player[method.func.name], -1);
+    });
+    standingsFlat.sort(sortFunc);
     const standingsTree = [];
     var runningRank = 0;
     standingsFlat.forEach(function (player, i, sf) {
         if (i !== 0) { // we can't compare the first player with a previous one
-            var prevPlayer = sf[i - 1];
-            if (!(player.score === prevPlayer.score
-                && player.modifiedMedian === prevPlayer.modifiedMedian
-                && player.solkoff === prevPlayer.solkoff
-                && player.scoreCum === prevPlayer.scoreCum
-                && player.oppScoreCum === prevPlayer.oppScoreCum)) {
+            const prevPlayer = sf[i - 1];
+            if (!areScoresEqual(player, prevPlayer)) {
                 runningRank += 1;
             }
         }

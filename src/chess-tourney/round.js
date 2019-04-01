@@ -2,6 +2,7 @@ import {DUMMYPLAYER} from "./player";
 import createMatch from "./match";
 import {playerColorBalance, playerScore} from "./scores";
 import {chain, flatten, zip} from "lodash";
+import {firstBy} from "thenby";
 
 /**
  * Find a match for a given player.
@@ -12,7 +13,7 @@ import {chain, flatten, zip} from "lodash";
  * @returns {Array}    The paired player and the Match object. Both will be
  * undefined if no match was made.
  */
-function findAMatch(round, player1, pool, blackList = []) {
+function findAMatch(round, matches, player1, pool, blackList = []) {
     /**
      * Try to pair the player as the opposite color as their last round.
      * (USCF § 27A4 and § 27A5)
@@ -23,8 +24,8 @@ function findAMatch(round, player1, pool, blackList = []) {
         .filter((p2) => !blackList.includes(p2))
         // Don"t pair players with themselves
         .filter((p2) => p2 !== player1)
-        // Don"t pair anyone who"s already been paired
-        .filter((p2) => !flatten(round.matches.map(
+        // Don"t pair anyone who's already been paired
+        .filter((p2) => !flatten(matches.map(
             (m) => m.players)).includes(p2)
         );
     /**
@@ -40,17 +41,18 @@ function findAMatch(round, player1, pool, blackList = []) {
         newMatch = createMatch(round, player1, player2);
         if (playerColorBalance(round.tourney, player1)
             > playerColorBalance(round.tourney, player2)) {
-            newMatch.players.reverse();
+            newMatch.reverse();
         }
-        round.matches.push(newMatch);
     }
-    return [ player2, newMatch ];
+    return [player2, newMatch];
 }
 
 /**
  * Pair the players
  */
 function pairPlayers(round) {
+    const matches = [];
+    const tourney = round.tourney;
     /**
      * Part 1: Split players into separate groups based on their scores
      * (USCF § 27A2)
@@ -61,7 +63,7 @@ function pairPlayers(round) {
      * }
      */
     round.roster.forEach(function (player) {
-        var score = playerScore(round.tourney, player, round.id);
+        var score = playerScore(tourney, player, round.id);
         if(round.playerTree[score] === undefined) {
             round.playerTree[score] = [];
         }
@@ -79,8 +81,23 @@ function pairPlayers(round) {
      *    ...
      * }
      */
-    Object.keys(round.playerTree).reverse().forEach(function (score, i, list) {
+    /**
+     * Extracts the scores and sorts them from highest to lowest.
+     * @param {object} tree
+     * @returns {array} The sorted scores.
+     */
+    function getScores(tree) {
+        var scores = Object.keys(tree);
+        scores.sort((a, b) => Number(b) - Number(a));
+        return scores;
+    }
+    getScores(round.playerTree).forEach(function (score, i, list) {
         var players = round.playerTree[score];
+        // TODO: Debug this sort order soon...
+        players.sort(
+            firstBy((p) => playerScore(tourney, p, round.id), -1)
+            .thenBy((p) => p.rating, -1)
+        );
         /**
          * If there"s an odd number of players in this score group,
          */
@@ -115,13 +132,11 @@ function pairPlayers(round) {
             delete round.playerTree[score];
         } else {
             round.playerTree[score] = chain(players)
-            .sortBy("rating")
-            .reverse()
             .chunk(players.length / 2)
             .value();
         }
     });
-    Object.keys(round.playerTree).forEach(function (score) {
+    getScores(round.playerTree).forEach(function (score) {
         // name the upperHalf and lowerHalf to make the code easier to read
         var upperHalf = round.playerTree[score][0];
         var lowerHalf = round.playerTree[score][1];
@@ -131,7 +146,7 @@ function pairPlayers(round) {
         if (round.prevRound === undefined) {
             zip(upperHalf, lowerHalf)
                 .forEach((match) =>
-                    round.matches.push(createMatch(round, ...match))
+                    matches.push(createMatch(round, ...match))
                 );
         } else {
             /**
@@ -142,8 +157,7 @@ function pairPlayers(round) {
              * 3. Attempt to match with a lower-half opponent who isn"t in their
              *    history yet AND who is in the history of other upper-half
              *    players. The second part helps eliminate a small percentage of
-             *    history overlap.
-             *      * (USCF § 27A1 - highest priority rule)
+             *    history overlap. (USCF § 27A1 - highest priority rule)
              * 4. If no opponent was found, try again but don"t consider the
              *    history of other upper-half players.
              * 5. If still no opponent was found, just pick whoever is left in
@@ -164,13 +178,15 @@ function pairPlayers(round) {
                 [].concat(lowerHalf).concat(upperHalf)
                     .filter((p2) =>
                     // filter the players who have played this player
-                    round.tourney.getPlayersByOpponent(p2).includes(p)
+                    tourney.getPlayersByOpponent(p2).includes(p)
                     )
             );
             /**
              * 2.
              */
             upperHalf.forEach(function (player1) {
+                var player2;
+                var match;
                 var history = upperHalfHistory[upperHalf.indexOf(player1)];
                 var othersHistory = flatten(upperHalfHistory
                     .slice(upperHalf.indexOf(player1))
@@ -178,10 +194,9 @@ function pairPlayers(round) {
                 /**
                  * 3.
                  */
-                var player2;
-                var match;
                 [player2, match] = findAMatch(
                     round,
+                    matches,
                     player1,
                     lowerHalf.filter((x) =>
                         othersHistory.includes(x)), history
@@ -191,7 +206,7 @@ function pairPlayers(round) {
                  */
                 if (!player2) {
                     [player2, match] = findAMatch(
-                        round,player1, lowerHalf, history
+                        round, matches, player1, lowerHalf, history
                     );
                 }
                 /**
@@ -199,7 +214,7 @@ function pairPlayers(round) {
                  */
                 if (!player2) {
                     [player2, match] = findAMatch(
-                        round, player1, lowerHalf, []
+                        round, matches, player1, lowerHalf, []
                     );
                 }
                 /**
@@ -209,7 +224,7 @@ function pairPlayers(round) {
                     var foundASwap = false;
                     upperHalf.filter((p) => p !== player1).forEach(function (otherPlayer) {
                         if(!foundASwap) {
-                            var otherMatch = round.matches
+                            var otherMatch = matches
                                 .filter((m) => m.players.includes(otherPlayer))[0];
                             if(otherMatch) {
                                 var otherPlayer2 = otherMatch.players
@@ -226,10 +241,18 @@ function pairPlayers(round) {
                         }
                     });
                 }
+                /**
+                 * check for matching errors.
+                 */
+                if (tourney.getPlayersByOpponent(player1).includes(player2)) {
+                    match.warnings = player1.firstName+ " has played "
+                        + player2.firstName + " previously.";
+                }
+                matches.push(match);
             });
         }
     });
-    return round.matches;
+    return matches;
 }
 
 /**
@@ -245,7 +268,7 @@ function createRound(tourney, id, prevRound, players) {
         matches: [],
         hasDummy: false,
         isComplete: function() {
-                return !round.matches.map((m) => m.isComplete).includes(false);
+            return !round.matches.map((m) => m.isComplete()).includes(false);
         },
         getMatchByPlayer: function (player) {
             var theMatch = null;
@@ -270,7 +293,7 @@ function createRound(tourney, id, prevRound, players) {
             return round;
         }
     };
-    pairPlayers(round);
+    round.matches = pairPlayers(round);
     return round;
 }
 
