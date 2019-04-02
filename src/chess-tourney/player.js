@@ -38,7 +38,7 @@ function createPlayer(firstName, lastName = "", rating = 1200) {
          * @param {object} tourney The current tournament.
          * @returns {object} An `EloRank` object.
          */
-        eloRank: function (tourney) {
+        eloRank(tourney) {
             const m = tourney.getMatchesByPlayer(player).length;
             const K = 800 / (player.Ne + m);
             return new EloRank(K);

@@ -7,7 +7,7 @@ function createTournament(name = "", playerList = []) {
         name: name,
         roundList: [],
         byeValue: 1,
-        isNewRoundReady: function () {
+        isNewRoundReady() {
             var isReady = false;
             if (tourney.roundList.length > 0) {
                 isReady = last(tourney.roundList).isComplete();
@@ -16,7 +16,7 @@ function createTournament(name = "", playerList = []) {
             }
             return isReady;
         },
-        getMatchesByPlayer: function (player, roundId = null) {
+        getMatchesByPlayer(player, roundId = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
@@ -32,7 +32,7 @@ function createTournament(name = "", playerList = []) {
             });
             return matches;
         },
-        getPlayersByOpponent: function (opponent, roundId = null) {
+        getPlayersByOpponent(opponent, roundId = null) {
             var players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
@@ -45,7 +45,7 @@ function createTournament(name = "", playerList = []) {
             );
             return players;
         },
-        getNumOfRounds: function () {
+        getNumOfRounds() {
             var roundId = Math.ceil(
                 Math.log2(tourney.roster.getActive().length)
             );
@@ -54,16 +54,11 @@ function createTournament(name = "", playerList = []) {
             }
             return roundId;
         },
-        newRound: function () {
+        newRound() {
             if (!tourney.isNewRoundReady()) {
                 return false;
             }
-            var newRound = createRound(
-                tourney,
-                tourney.roundList.length,
-                last(tourney.roundList),
-                tourney.roster.getActive()
-            );
+            var newRound = createRound(tourney);
             tourney.roundList.push(newRound);
             return newRound;
         }
