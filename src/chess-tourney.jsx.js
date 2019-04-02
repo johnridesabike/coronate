@@ -1,128 +1,129 @@
-import React, { useState } from 'react';
-import {createPlayer, scores, config} from './chess-tourney';
-import demoRoster from './demo-players';
+import React, {useState} from "react";
+import {createPlayer, scores, config} from "./chess-tourney";
+import demoRoster from "./demo-players.json";
 
-function MainRoster ({tourney}) {
-  const [roster, setRoster] = useState(tourney.roster.all);
-  const [demoLoaded, setDemoLoaded] = useState(false);
-  const newPlayer = {firstName: '', lastName: '', rating: 1200};
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    tourney.roster.addPlayer(
-        createPlayer(
-            newPlayer['firstName'],
-            newPlayer['lastName'],
-            newPlayer['rating']
-        )
-    );
-    setRoster([].concat(tourney.roster.all));
-  }
-  const updateField = (event) => {
-    newPlayer[event.target.name] = event.target.value;
-  }
-  const loadDemo = () => {
-    var players = demoRoster.slice(0,16).map(p => createPlayer(p));
-    tourney.roster.addPlayers(players);
-    setDemoLoaded(true);
-    setRoster([].concat(tourney.roster.all));
-  }
-  const deactivatePlayer = (player) => {
-    var baleted = tourney.roster.removePlayer(player);
-    if (!baleted) {
-      tourney.roster.deactivatePlayer(player);
+function MainRoster({tourney}) {
+    const [roster, setRoster] = useState(tourney.roster.all);
+    const [demoLoaded, setDemoLoaded] = useState(false);
+    const newPlayer = {firstName: "", lastName: "", rating: 1200};
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        tourney.roster.addPlayer(
+            createPlayer(
+                newPlayer["firstName"],
+                newPlayer["lastName"],
+                newPlayer["rating"]
+            )
+        );
+        setRoster([].concat(tourney.roster.all));
+    };
+    const updateField = (event) => {
+        newPlayer[event.target.name] = event.target.value;
+    };
+    const loadDemo = () => {
+        var players = demoRoster.slice(0,16).map(p => createPlayer(p));
+        tourney.roster.addPlayers(players);
+        setDemoLoaded(true);
+        setRoster([].concat(tourney.roster.all));
     }
-    setRoster([].concat(tourney.roster.all));
-  }
-  const activatePlayer = (player) => {
-    tourney.roster.activatePlayer(player);
-    setRoster([].concat(tourney.roster.all));
-  }
-  var rosterTable = '';
-  if (roster.length > 0) {
-    rosterTable = 
-    <table><caption>Roster</caption>
-      <thead>
-        <tr>
-          <th>First name</th>
-          <th>Rating</th>
-          <th>Rounds played</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        { roster.map((player, i) =>
-          <tr key={i} 
-            className={tourney.roster.inactive.includes(player) ? 'inactive' : 'active'}>
-            <td className="table__player">{player.firstName}</td>
-            <td className="table__number">{player.rating}</td>
-            <td className="table__number">
-              {tourney.getMatchesByPlayer(player).length}
-            </td>
-            <td>
-            {tourney.roster.inactive.includes(player)
-              ? <button onClick={() => activatePlayer(player)}>Activate</button>
-              : <button onClick={() => deactivatePlayer(player)}>x</button>
-            }
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  }
-  return (
-    <div className="roster">
-      {rosterTable}
-      <p>
-        <button disabled={demoLoaded} onClick={loadDemo}>Load a demo roster</button>
-      </p>
-      <p>
-        Or add your own players:
-      </p>
-      <form onSubmit={handleSubmit}>
-        <p>
-            <label>
-            First name&nbsp;
-            <input type="text" name="firstName" onChange={updateField} required />
-            </label>
-        </p>
-        <p>
-            <label>
-            Last name&nbsp;
-            <input type="text" name="lastName" onChange={updateField} required />
-            </label>
-        </p>
-        <p>
-            <label>
-            Rating&nbsp;
-            <input type="number" name="rating" onChange={updateField} value="1200" />
-            </label>
-        </p>
-        <input type="submit" value="Add"/>
-      </form>
-      <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
-    </div>
-  );
+    const deactivatePlayer = (player) => {
+        var removed = tourney.roster.removePlayer(player);
+        if (!removed) {
+            tourney.roster.deactivatePlayer(player);
+        }
+        setRoster([].concat(tourney.roster.all));
+    }
+    const activatePlayer = (player) => {
+        tourney.roster.activatePlayer(player);
+        setRoster([].concat(tourney.roster.all));
+    }
+    var rosterTable = "";
+    if (roster.length > 0) {
+        rosterTable = 
+        <table>
+            <caption>Roster</caption>
+            <thead>
+                <tr>
+                <th>First name</th>
+                <th>Rating</th>
+                <th>Rounds played</th>
+                <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                { roster.map((player, i) =>
+                <tr key={i} 
+                    className={tourney.roster.inactive.includes(player) ? "inactive" : "active"}>
+                    <td className="table__player">{player.firstName}</td>
+                    <td className="table__number">{player.rating}</td>
+                    <td className="table__number">
+                    {tourney.getMatchesByPlayer(player).length}
+                    </td>
+                    <td>
+                    {tourney.roster.inactive.includes(player)
+                    ? <button onClick={() => activatePlayer(player)}>Activate</button>
+                    : <button onClick={() => deactivatePlayer(player)}>x</button>
+                    }
+                    </td>
+                </tr>
+                )}
+            </tbody>
+        </table>
+    }
+    return (
+        <div className="roster">
+            {rosterTable}
+            <p>
+                <button disabled={demoLoaded} onClick={loadDemo}>Load a demo roster</button>
+            </p>
+            <p>
+                Or add your own players:
+            </p>
+            <form onSubmit={handleSubmit}>
+                <p>
+                    <label>
+                    First name&nbsp;
+                    <input type="text" name="firstName" onChange={updateField} required />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    Last name&nbsp;
+                    <input type="text" name="lastName" onChange={updateField} required />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    Rating&nbsp;
+                    <input type="number" name="rating" onChange={updateField} value="1200" />
+                    </label>
+                </p>
+                <input type="submit" value="Add"/>
+            </form>
+            <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
+        </div>
+    );
 }
 
 function Round ({tourney, roundId}) {
     /**
-     * Be careful when using the `setState` `matches` and the API's `matches`.
-     * They have to mirror each other but can't be the same objects.
+     * Be careful when using the `setState` `matches` and the API"s `matches`.
+     * They have to mirror each other but can"t be the same objects.
      */
     const round = tourney.roundList[roundId];
     const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
     const setWinner = (color, index, event) => {
         let origMatch = round.matches[index];
         if(event.target.checked) {
-        if(color === 0) {
-            origMatch.whiteWon();
-        } else if (color === 1) {
-            origMatch.blackWon();
-        } else if (color === 0.5) {
-            origMatch.draw();
-        }
+            if(color === 0) {
+                origMatch.whiteWon();
+            } else if (color === 1) {
+                origMatch.blackWon();
+            } else if (color === 0.5) {
+                origMatch.draw();
+            }
         } else {
-        origMatch.resetResult();
+            origMatch.resetResult();
         }
         // matches[index] = match;
         setMatches(round.matches.map(o => Object.assign({}, o)));
@@ -170,7 +171,7 @@ function Round ({tourney, roundId}) {
                 )}
                 </tbody>
             </table>
-            <p style={{textAlign: 'center'}}>
+            <p style={{textAlign: "center"}}>
                 <button onClick={randomize}>Random!</button>
             </p>
             <Standings roundId={round.id} tourney={round.tourney} />
@@ -203,7 +204,7 @@ function RoundMatch({tourney, roundId, matchId, setWinner}) {
         }
     };
     return (
-        <tr className={match.isBye() ? 'inactive' : ''}>
+        <tr className={match.isBye() ? "inactive" : ""}>
             <td className="table__number">{matchId + 1}</td>
             <td>
                 <input 
@@ -261,11 +262,11 @@ function PlayerCard({tourney, round, player}) {
         ratingChange = "+" + ratingChange
     }
     const colorBalance = scores.playerColorBalance(tourney, player, round.id);
-    var color = 'Even';
+    var color = "Even";
     if (colorBalance > 0) {
-        color = 'White +' + colorBalance;
+        color = "White +" + colorBalance;
     } else if (colorBalance < 0) {
-        color = 'Black +' + Math.abs(colorBalance);
+        color = "Black +" + Math.abs(colorBalance);
     }
     return (
         <dl className="player-card">

@@ -19,28 +19,30 @@ function findAMatch(round, matches, player1, pool, blackList = []) {
      * (USCF § 27A4 and § 27A5)
      */
     var lastColor = round.prevRound.playerColor(player1);
-    var hasntPlayed = pool
+    var hasntPlayed = pool.filter(
         // Filter anyone on the blacklist (e.g. past opponents [USCF § 27A1])
-        .filter((p2) => !blackList.includes(p2))
-        // Don't pair players with themselves
-        .filter((p2) => p2 !== player1)
-        // Don't pair anyone who's already been paired
-        .filter((p2) => !flatten(matches.map(
-            (m) => m.players)).includes(p2)
-        );
+        (p2) => !blackList.includes(p2)
+    ).filter( // Don't pair players with themselves
+        (p2) => p2 !== player1
+    ).filter(// Don't pair anyone who's already been paired
+        (p2) => !flatten(matches.map((m) => m.players)).includes(p2)
+    );
     /**
      * Prioritize opponents who played that color for *their* last round.
      * (USCF § 27A4 and § 27A5)
      */
-    var oppColor = pool
-        .filter((p2) => lastColor !== round.prevRound.playerColor(p2));
-    var player2 = hasntPlayed
-        .filter((p2) => oppColor.includes(p2))[0] || hasntPlayed[0];
+    var oppColor = pool.filter(
+        (p2) => lastColor !== round.prevRound.playerColor(p2)
+    );
+    var player2 = hasntPlayed.filter(
+        (p2) => oppColor.includes(p2)
+    )[0] || hasntPlayed[0];
     var newMatch;
     if (player2) {
         newMatch = createMatch(round, player1, player2);
-        if (playerColorBalance(round.tourney, player1)
-            > playerColorBalance(round.tourney, player2)) {
+        var p1Color = playerColorBalance(round.tourney, player1);
+        var p2Color = playerColorBalance(round.tourney, player2);
+        if (p1Color > p2Color) {
             newMatch.reverse();
         }
     }
@@ -66,7 +68,7 @@ function pairPlayers(round) {
      */
     round.roster.forEach(function (player) {
         var score = playerScore(tourney, player, round.id);
-        if(round.playerTree[score] === undefined) {
+        if (round.playerTree[score] === undefined) {
             round.playerTree[score] = [];
         }
         round.playerTree[score].push(player);
@@ -93,12 +95,18 @@ function pairPlayers(round) {
         scores.sort((a, b) => Number(b) - Number(a));
         return scores;
     }
-    getScores(round.playerTree).forEach(function (score, i, list) {
+    // reverse it so dummy players etc. get added to lower groups first.
+    getScores(round.playerTree).reverse().forEach(function (score, i, list) {
         var players = round.playerTree[score];
         // TODO: Debug this sort order soon...
         players.sort(
-            firstBy((p) => playerScore(tourney, p, round.id), -1)
-            .thenBy((p) => p.rating, -1)
+            firstBy(
+                (p) => playerScore(tourney, p, round.id),
+                -1
+            ).thenBy(
+                (p) => p.rating,
+                -1
+            )
         );
         /**
          * If there's an odd number of players in this score group...
@@ -108,12 +116,11 @@ function pairPlayers(round) {
              * ...and if there's an odd number of players in the total round,
              * then add a dummy player.
              */
-            if (round.roster.length % 2 !== 0 && !round.hasDummy) {
+            if (round.roster.length % 2 !== 0 && !round.hasDummy()) {
                 players.push(DUMMYPLAYER);
-                round.hasDummy = true;
             /**
-             * ...but if there's an even number of players in the total round, then
-             * just move a player to the next score group.
+             * ...but if there's an even number of players in the total round,
+             * then just move a player to the next score group.
              */
             } else {
                 var oddPlayer = players[players.length - 1];
@@ -170,15 +177,18 @@ function pairPlayers(round) {
             /**
              * 1.
              * @var {array} upperHalfHistory Each index matches the player's
-             * indexin upperHalf. Each sub-array is a list of their opponents.
+             * index in `upperHalf`. Each sub-array is a list of their
+             * opponents. This is a cache to improve performance and code
+             * complexity.
              */
-            var upperHalfHistory = upperHalf.map((p) =>
-                // merge the upperHalf and lowerHalf
-                [...lowerHalf].concat(upperHalf)
-                    .filter((p2) =>
-                    // filter the players who have played this player
-                    tourney.getPlayersByOpponent(p2).includes(p)
-                    )
+            var upperHalfHistory = upperHalf.map(
+                (p) => [
+                    ...lowerHalf
+                ].concat( // merge the upperHalf and lowerHalf
+                    upperHalf
+                ).filter( // filter the players who have played this player
+                    (p2) => tourney.getPlayersByOpponent(p2).includes(p)
+                )
             );
             /**
              * 2.
@@ -187,8 +197,8 @@ function pairPlayers(round) {
                 var player2;
                 var match;
                 var history = upperHalfHistory[upperHalf.indexOf(player1)];
-                var othersHistory = flatten(upperHalfHistory
-                    .slice(upperHalf.indexOf(player1))
+                var othersHistory = flatten(
+                    upperHalfHistory.slice(upperHalf.indexOf(player1))
                 );
                 /**
                  * 3.
@@ -197,15 +207,19 @@ function pairPlayers(round) {
                     round,
                     matches,
                     player1,
-                    lowerHalf.filter((x) =>
-                        othersHistory.includes(x)), history
+                    lowerHalf.filter((x) => othersHistory.includes(x)),
+                    history
                 );
                 /**
                  * 4.
                  */
                 if (!player2) {
                     [match, player2] = findAMatch(
-                        round, matches, player1, lowerHalf, history
+                        round,
+                        matches,
+                        player1,
+                        lowerHalf,
+                        history
                     );
                 }
                 /**
@@ -213,7 +227,11 @@ function pairPlayers(round) {
                  */
                 if (!player2) {
                     [match, player2] = findAMatch(
-                        round, matches, player1, lowerHalf, []
+                        round,
+                        matches,
+                        player1,
+                        lowerHalf,
+                        []
                     );
                 }
                 /**
@@ -221,31 +239,41 @@ function pairPlayers(round) {
                  */
                 if (history.includes(player2)) {
                     var foundASwap = false;
-                    upperHalf.filter((p) => p !== player1).forEach(function (otherPlayer) {
-                        if(!foundASwap) {
-                            var otherMatch = matches
-                                .filter((m) => m.players.includes(otherPlayer))[0];
-                            if(otherMatch) {
-                                var otherPlayer2 = otherMatch.players
-                                    .filter((p) => p !== otherPlayer)[0];
-                                var otherHistory = upperHalfHistory[upperHalf
-                                    .indexOf(otherPlayer)];
-                                if (!history.includes(otherPlayer2)
-                                        && !otherHistory.includes(player2)) {
+                    upperHalf.filter(
+                        (p) => p !== player1
+                    ).forEach(
+                        function (otherPlayer) {
+                            if (foundASwap) {
+                                return;
+                            }
+                            var otherMatch = matches.filter(
+                                (m) => m.players.includes(otherPlayer)
+                            )[0]; // just grab the first one
+                            if (otherMatch) {
+                                var otherPlayer2 = otherMatch.players.filter(
+                                    (p) => p !== otherPlayer
+                                )[0]; // just grab the first one.
+                                var p1CanSwap = !history.includes(otherPlayer2);
+                                var otherCanSwap = !upperHalfHistory[
+                                    upperHalf.indexOf(otherPlayer)
+                                ].includes(player2);
+                                if (p1CanSwap && otherCanSwap) {
                                     match.players = [player1, otherPlayer2];
                                     otherMatch.players = [otherPlayer, player2];
                                     foundASwap = true;
                                 }
                             }
                         }
-                    });
+                    );
                 }
                 /**
                  * check for matching errors.
                  */
                 if (tourney.getPlayersByOpponent(player1).includes(player2)) {
-                    match.warnings = player1.firstName+ " has played "
-                        + player2.firstName + " previously.";
+                    match.warnings = (
+                        player1.firstName + " and " + player2.firstName +
+                        " have played previously."
+                    );
                 }
                 matches.push(match);
             });
@@ -266,7 +294,6 @@ function createRound(tourney) {
         prevRound: last(tourney.roundList),
         playerTree: {},
         matches: [],
-        hasDummy: false,
         isComplete() {
             return !round.matches.map((m) => m.isComplete()).includes(false);
         },
@@ -281,16 +308,18 @@ function createRound(tourney) {
         },
         playerColor(player) {
             var color = -1;
-            round.matches.forEach(function (match) {
-                if (match.players.includes(player)) {
-                    color = match.players.indexOf(player);
-                }
-            });
+            const match = round.getMatchByPlayer(player);
+            if (match) {
+                color = match.players.indexOf(player);
+            }
             return color;
         },
         addPlayer(player) {
             round.players.push(player);
             return round;
+        },
+        hasDummy() {
+            return round.roster.includes(DUMMYPLAYER);
         }
     };
     round.matches = pairPlayers(round);
