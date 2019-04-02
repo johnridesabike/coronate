@@ -1,5 +1,5 @@
 import * as scores from "./scores";
-import config from "./defaultConfig.json";
+import config from "./default-config.json";
 console.log(scores);
 /**
  * `tieBreak` is Used for tiebreaks. USCF recommends using these methods
