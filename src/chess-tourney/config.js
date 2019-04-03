@@ -1,6 +1,5 @@
 import * as scores from "./scores";
 import config from "./default-config.json";
-console.log(scores);
 /**
  * `tieBreak` is Used for tiebreaks. USCF recommends using these methods
  * in-order: modified median, solkoff, cumulative, and cumulative of opposition.
