@@ -78,7 +78,7 @@ it("No players face each other more than once", function () {
         randomRoundsDraws(tourney);
         playerOppCount = playerOppCount.concat(
             tourney.roster.all.map(
-                (p) => tourney.getPlayersByOpponent(p).length
+                (p) => new Set(tourney.getPlayersByOpponent(p)).size
             )
         );
         if (sortBy(playerOppCount, (i) => i)[0] === tourney.roundList.length) {
@@ -93,7 +93,7 @@ it("A tournament can pair an odd number of players correctly", function () {
     tourney.roster.addPlayers(players.slice(0, 19));
     randomRounds(tourney);
     let playerOppCount = tourney.roster.all.map(
-        (p) => tourney.getPlayersByOpponent(p).length
+        (p) => new Set(tourney.getPlayersByOpponent(p)).size
     );
     expect(sortBy(playerOppCount, (i) => i)[0]).toBe(tourney.getNumOfRounds());
 });
