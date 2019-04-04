@@ -6,10 +6,10 @@ The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is 
 
 Other API to-dos:
 
-- Improve adding or removing players after a tournament has begun.
 - Add I/O for saving and loading data across sessions.
 - Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
-- Better bye handling: signups, black/white balance, tie-break logic, etc.
+- Add bye signups.
+- Add player match restrictions (don't pair family members, etc.).
 
 ## Front-end
 

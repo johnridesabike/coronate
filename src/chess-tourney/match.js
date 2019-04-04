@@ -59,7 +59,7 @@ function createMatch(round, white, black) {
          * @property {string} warnings Any warnings about the match, e.g. if
          * there was a pairing error.
          */
-        warnings: null,
+        warnings: "",
         /**
          * @property {array} players The pair of `Player` objects. White is at
          * index `0` and black is at index `1`.

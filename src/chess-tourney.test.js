@@ -70,12 +70,12 @@ it("No players face each other more than once", function () {
     // We run it multiple times to help weed out situations where the
     // randomizer provides a pass when it should fail
     let pairedCorrectly = 0;
-    let tourneyNum = 10;
+    let tourneyNum = 100;
     times(tourneyNum, function () {
         let playerOppCount = [];
         let tourney = createTournament();
         tourney.roster.addPlayers(players.slice(0, 16));
-        randomRounds(tourney);
+        randomRoundsDraws(tourney);
         playerOppCount = playerOppCount.concat(
             tourney.roster.all.map(
                 (p) => tourney.getPlayersByOpponent(p).length

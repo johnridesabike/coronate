@@ -4,7 +4,6 @@ import demoRoster from "./demo-players.json";
 
 function MainRoster({tourney}) {
     const [roster, setRoster] = useState(tourney.roster.all);
-    const [demoLoaded, setDemoLoaded] = useState(false);
     const newPlayer = {firstName: "", lastName: "", rating: 1200};
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -23,7 +22,6 @@ function MainRoster({tourney}) {
     const loadDemo = () => {
         var players = demoRoster.slice(0,16).map(p => createPlayer(p));
         tourney.roster.addPlayers(players);
-        setDemoLoaded(true);
         setRoster([].concat(tourney.roster.all));
     }
     const deactivatePlayer = (player) => {
@@ -74,7 +72,7 @@ function MainRoster({tourney}) {
         <div className="roster">
             {rosterTable}
             <p>
-                <button disabled={demoLoaded} onClick={loadDemo}>Load a demo roster</button>
+                <button onClick={loadDemo}>Load a demo roster</button>
             </p>
             <p>
                 Or add your own players:

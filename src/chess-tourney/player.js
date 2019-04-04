@@ -42,6 +42,14 @@ function createPlayer(firstName, lastName = "", rating = 1200) {
             const m = tourney.getMatchesByPlayer(player).length;
             const K = 800 / (player.Ne + m);
             return new EloRank(K);
+        },
+        /**
+         * Get if a player has had a bye round.
+         * @param {object} tourney The current tournament.
+         * @returns {bool} True if the player has had a bye round, false if not.
+         */
+        hasHadBye(tourney) {
+            return tourney.getPlayersByOpponent(player).includes(DUMMYPLAYER);
         }
     };
     if (typeof firstName === "object") {
@@ -61,7 +69,7 @@ function createPlayer(firstName, lastName = "", rating = 1200) {
 const DUMMYPLAYER = Object.freeze(
     createPlayer(
         {
-            firstName: "Dummy",
+            firstName: "Bye",
             dummy: true,
             rating: 0
         }
