@@ -144,11 +144,36 @@ function pairPlayers(round) {
                 /**
                  * § 27A1. Avoid players meeting twice (highest priority)
                  * § 27A2. Equal scores
+                 * § 27A5. Alternating colors
                  */
                 pool = basePool.filter(
                     poolFilters.neverMatched
                 ).filter(
                     poolFilters.equalScore
+                ).filter(
+                    poolFilters.diffDueColor
+                );
+            }
+            if (pool.length === 0) {
+                /**
+                 * § 27A1. Avoid players meeting twice (highest priority)
+                 * § 27A2. Equal scores
+                 */
+                pool = basePool.filter(
+                    poolFilters.neverMatched
+                ).filter(
+                    poolFilters.equalScore
+                );
+            }
+            if (pool.length === 0) {
+                /**
+                 * § 27A1. Avoid players meeting twice (highest priority)
+                 * § 27A5. Alternating colors
+                 */
+                pool = basePool.filter(
+                    poolFilters.neverMatched
+                ).filter(
+                    poolFilters.diffDueColor
                 );
             }
             if (pool.length === 0) {
