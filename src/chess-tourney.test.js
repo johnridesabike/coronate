@@ -70,7 +70,7 @@ it("No players face each other more than once", function () {
     // We run it multiple times to help weed out situations where the
     // randomizer provides a pass when it should fail
     let pairedCorrectly = 0;
-    let tourneyNum = 100;
+    let tourneyNum = 50;
     times(tourneyNum, function () {
         let playerOppCount = [];
         let tourney = createTournament();
@@ -90,7 +90,7 @@ it("No players face each other more than once", function () {
 
 it("A tournament can pair an odd number of players correctly", function () {
     let pairedCorrectly = 0;
-    let tourneyNum = 100;
+    let tourneyNum = 50;
     times(tourneyNum, function () {
         let playerOppCount = [];
         let tourney = createTournament();

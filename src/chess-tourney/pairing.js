@@ -6,30 +6,67 @@ import {playerColorBalance, playerScore} from "./scores";
 import {DUMMYPLAYER} from "./player";
 
 /**
- * To-do: tweak these
+ * TODO: These probably need to be tweaked.
  */
 /**
  * @constant avoidMeetingTwicePriority The weight given to avoid players
  * meeting twice. This is the highest priority. (USCF § 27A1)
  */
-const avoidMeetingTwicePriority = 10;
+const avoidMeetingTwicePriority = 32;
 /**
- * @constant diffScoresPriority The weight given to match players with a
- * different score. As a negative value, it prioritizes players with closer
- * scores. This gets multiplied against the players' score difference.
+ * @constant sameScoresPriority The weight given to match players with
+ * equal scores. This gets divided against the players' score difference.
  * (USCF § 27A2)
  */
-const diffScoresPriority = -2;
+const sameScoresPriority = 16;
 /**
- * @constant differentHalfPriority The weight given to match players in opposite
- * halves. (USCF § 27A3)
+ * @constant differentHalfPriority The weight given to match players in lower
+ * versus upper halves. (USCF § 27A3)
  */
-const differentHalfPriority = 2;
+const differentHalfPriority = 4;
 /**
  * @constant differentDueColorPriority The weight given to match players with
  * opposite due colors. (USCF § 27A4 and § 27A5)
  */
-const differentDueColorPriority = 1;
+const differentDueColorPriority = 2;
+
+/**
+ * Create an array of blossom-compatible weighted matchups. This returns
+ * an array of each potential match, formatted like so: [idOfPlayer1,
+ * idOfPlayer2, priority]. A higher priority means a more likely matchup.
+ * Use it in `Array.prototype.reduce()`.
+ * @param {array} allMatches The running list of all possible matchups.
+ * @param {object} player1 The data for the first player.
+ * @param {number} ignore The index of the player.
+ * @param {array} src The original array.
+ */
+function matchupReducer(allMatches, player1, ignore, src) {
+    var opponents = src.filter((p) => p !== player1);
+    var playerMatches = opponents.map(function (player2) {
+        var match = [player1.id, player2.id, 0];
+        var priority = 0;
+        var scoreDiff;
+        if (!player1.opponentHistory.includes(player2.player)) {
+            priority += avoidMeetingTwicePriority;
+        }
+        scoreDiff = Math.ceil(
+            Math.abs((player1.score * 2) - (player2.score * 2))
+        ) + 1;
+        priority += sameScoresPriority / scoreDiff;
+        if (player1.upperHalf !== player2.upperHalf) {
+            priority += differentHalfPriority;
+        }
+        if (player1.dueColor === null) {
+            priority += differentDueColorPriority;
+        } else if (player1.dueColor !== player2.dueColor) {
+            priority += differentDueColorPriority;
+        }
+        match[2] = Math.ceil(priority);
+        return match;
+    });
+    allMatches = allMatches.concat(playerMatches);
+    return allMatches;
+}
 
 /**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
@@ -41,9 +78,10 @@ const differentDueColorPriority = 1;
 function pairPlayers(round) {
     var byeMatch;
     var byePlayerData;
-    // var player1;
     var potentialMatches;
     var matches;
+    var results;
+    var reducedResults;
     const tourney = round.tourney;
     const dueColor = function (player) {
         if (round.prevRound === undefined) {
@@ -68,38 +106,30 @@ function pairPlayers(round) {
         };
     });
     const scoreList = new Set(playerData.map((p) => p.score));
-    // const poolFilters = {
-    //     noMatchSelf: (p2) => p2.player !== player1.player,
-    //     noMatchedThisRound: (p2) => !p2.matched,
-    //     neverMatched: (p2) => !player1.opponentHistory.includes(p2.player),
-    //     equalScore: (p2) => p2.score === player1.score,
-    //     diffDueColor: function (p2) {
-    //         return p2.dueColor === null || p2.dueColor !== player1.dueColor;
-    //     },
-    //     diffHalf: (p2) => p2.upperHalf !== player1.upperHalf
-    // };
-    /**
-     * We want to pair the highest-scoring and highest-rated players first.
-     * This automatically ensures that players who can't be paired in their own
-     * score group will be paired in the next group lower instead (USCF § 29C1).
-     */
-    playerData.sort(
-        firstBy((p) => p.score, -1).thenBy((p) => p.player.rating, -1)
-    );
     /**
      * If there's an odd number of players, assign a bye to the lowest-rated
      * player in the lowest score group. (USCF § 29L2.)
      */
     if (playerData.length % 2 !== 0) {
+        playerData.sort(
+            firstBy((p) => p.score, -1).thenBy((p) => p.player.rating, -1)
+        );
         byePlayerData = last(
             playerData.filter(
                 (p) => !p.player.hasHadBye(tourney)
             )
         );
+        /**
+         * In the impossible situation that *everyone* has played a bye round
+         * previously, then just pick the last player.
+         */
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
         byeMatch = createMatch(round, byePlayerData.player, DUMMYPLAYER);
+        /**
+         * Remove the bye'd player from the list so they won't be matched again.
+         */
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
     /**
@@ -120,185 +150,68 @@ function pairPlayers(round) {
         }
     });
     /**
-     * Iterate through each player to find a match. We'll use a cascading set
-     * of filters to determine ideal matches.
+     * Run the reducer. See `matchupReducer()` for info.
      */
-    // playerData.forEach(function (player) {
-    //     if (!player.matched) {
-    //         var player2;
-    //         var match;
-    //         var pool;
-    //         player1 = player;
-    //         /**
-    //          * No matter what, you can't match a player with themselves
-    //          * and you can't match a player twice per round.
-    //          */
-    //         var basePool = playerData.filter(
-    //             poolFilters.noMatchSelf
-    //         ).filter(
-    //             poolFilters.noMatchedThisRound
-    //         );
-    //         /**
-    //          * § 27A1. Avoid players meeting twice (highest priority)
-    //          * § 27A2. Equal scores
-    //          * § 27A3. Upper half vs. lower half
-    //          * § 27A4. Eqalizing colors [TODO: needs more work, see below.]
-    //          * § 27A5. Alternating colors
-    //          */
-    //         pool = basePool.filter(
-    //             poolFilters.neverMatched
-    //         ).filter(
-    //             poolFilters.equalScore
-    //         ).filter(
-    //             poolFilters.diffHalf
-    //         ).filter(
-    //             poolFilters.diffDueColor
-    //         );
-    //         if (pool.length === 0) {
-    //             /**
-    //              * § 27A1. Avoid players meeting twice (highest priority)
-    //              * § 27A2. Equal scores
-    //              * § 27A3. Upper half vs. lower half
-    //              */
-    //             pool = basePool.filter(
-    //                 poolFilters.neverMatched
-    //             ).filter(
-    //                 poolFilters.equalScore
-    //             ).filter(
-    //                 poolFilters.diffHalf
-    //             );
-    //         }
-    //         if (pool.length === 0) {
-    //             /**
-    //              * § 27A1. Avoid players meeting twice (highest priority)
-    //              * § 27A2. Equal scores
-    //              * § 27A5. Alternating colors
-    //              */
-    //             pool = basePool.filter(
-    //                 poolFilters.neverMatched
-    //             ).filter(
-    //                 poolFilters.equalScore
-    //             ).filter(
-    //                 poolFilters.diffDueColor
-    //             );
-    //         }
-    //         if (pool.length === 0) {
-    //             /**
-    //              * § 27A1. Avoid players meeting twice (highest priority)
-    //              * § 27A2. Equal scores
-    //              */
-    //             pool = basePool.filter(
-    //                 poolFilters.neverMatched
-    //             ).filter(
-    //                 poolFilters.equalScore
-    //             );
-    //         }
-    //         if (pool.length === 0) {
-    //             /**
-    //              * § 27A1. Avoid players meeting twice (highest priority)
-    //              * § 27A5. Alternating colors
-    //              */
-    //             pool = basePool.filter(
-    //                 poolFilters.neverMatched
-    //             ).filter(
-    //                 poolFilters.diffDueColor
-    //             );
-    //         }
-    //         if (pool.length === 0) {
-    //             /**
-    //              * § 27A1. Avoid players meeting twice (highest priority)
-    //              */
-    //             pool = basePool.filter(
-    //                 poolFilters.neverMatched
-    //             );
-    //         }
-    //         /**
-    //          * We couldn't find a match, so just take whoever's left.
-    //          */
-    //         if (pool.length === 0) {
-    //             pool = basePool;
-    //         }
-    //         player2 = pool[0];
-    //         match = createMatch(round, player1.player, player2.player);
-    //         player1.matched = true;
-    //         player2.matched = true;
-    //         /**
-    //          * A quick-and-easy way to keep colors mostly equal.
-    //          * TODO: Make this smarter.
-    //          */
-    //         if (player1.colorBalance > player2.colorBalance) {
-    //             match.reverse();
-    //         }
-    //         /**
-    //          * When the match isn't ideal, include a warning.
-    //          */
-    //         if (player1.opponentHistory.includes(player2.player)) {
-    //             match.warnings += (
-    //                 " " + player1.player.firstName
-    //                 + " and " + player2.player.firstName
-    //                 + " have played previously."
-    //             );
-    //         }
-    //         [player1, player2].forEach(function (player) {
-    //             if (Math.abs(player.colorBalance) > 2) {
-    //                 match.warnings += (
-    //                     " " + player.player.firstName
-    //                     + "'s color balance is off"
-    //                 );
-    //             }
-    //         });
-    //         matches.push(match);
-    //     }
-    // });
-    potentialMatches = playerData.reduce(function (matches, player1) {
-        var opponents = playerData.filter((p) => p !== player1);
-        opponents.forEach(function (player2) {
-            var match = [player1.id, player2.id, 0];
-            var priority = 0;
-            var scoreDiff;
-            if (!player1.opponentHistory.includes(player2.player)) {
-                priority += avoidMeetingTwicePriority;
-            }
-            scoreDiff = Math.abs(player1.score - player2.score);
-            priority += scoreDiff * diffScoresPriority;
-            if (player1.upperHalf !== player2.upperHalf) {
-                priority += differentHalfPriority;
-            }
-            if (player1.dueColor === null) {
-                priority += differentDueColorPriority;
-            }
-            if (player1.dueColor !== player2.dueColor) {
-                priority += differentDueColorPriority;
-            }
-            match[2] = Math.ceil(priority);
-            matches.push(match);
-        });
-        return matches;
-    }, []);
-
-    var results = blossom(potentialMatches);
-    var reducedResults = results.reduce(
+    potentialMatches = playerData.reduce(matchupReducer, []);
+    /**
+     * Feed all of the potential matches to Edmonds-blossom and let the
+     * algorithm work its magic. This returns an array where each index is the
+     * ID of one player and each value is the ID of the matched player.
+     */
+    results = blossom(potentialMatches);
+    /**
+     * Translate those IDs into actual pairs of players.
+     */
+    reducedResults = results.reduce(
         function (matches, p1Id, p2Id) {
+            /**
+             * Filter out unmatched players. (Even though we removed the byes
+             * from the list, blossom will automatically include their missing
+             * IDs in its results.)
+             */
             if (p1Id !== -1) {
                 var p1 = playerData.filter((p) => p.id === p1Id)[0];
                 var p2 = playerData.filter((p) => p.id === p2Id)[0];
+                var ideal = potentialMatches.filter(
+                    (pair) => pair[0] === p1Id && pair[1] === p2Id
+                )[0][2];
                 var matched = matches.map((pair) => pair[0]);
+                /**
+                 * Blossom returns a lot of redundant matches. Check that this
+                 * matchup wasn't already added.
+                 */
                 if (!matched.includes(p1) && !matched.includes(p2)) {
-                    matches.push([p1, p2]);
+                    matches.push([p1, p2, ideal]);
                 }
             }
             return matches;
         },
         []
     );
+    /**
+     * Sort by net score and rating for board placement.
+     */
+    reducedResults.sort(
+        firstBy(
+            (pair) => pair[0].score + pair[1].score,
+            -1
+        ).thenBy(
+            (pair) => pair[0].rating + pair[1].rating,
+            -1
+        )
+    );
+    /**
+     * Turn the results into new match objects.
+     */
     matches = reducedResults.map(
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
+            const ideal = pair[2];
             const match = createMatch(round, player1.player, player2.player);
+            match.ideal = ideal;
             /**
              * A quick-and-easy way to keep colors mostly equal.
-             * TODO: Make this smarter.
              */
             if (player1.colorBalance > player2.colorBalance) {
                 match.reverse();

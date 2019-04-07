@@ -82,6 +82,11 @@ function createMatch(round, white, black) {
          */
         newRating: [white.rating, black.rating],
         /**
+         * @property {number} ideal How ideal this matchup was, based on the
+         * maximum matching algorithm.
+         */
+        ideal: 0,
+        /**
          * Switch white and black.
          * @returns {object} This `match` object.
          */
