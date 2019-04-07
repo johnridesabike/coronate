@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import numeral from "numeral";
 import {createPlayer, scores, config} from "./chess-tourney";
 import demoRoster from "./demo-players.json";
 
@@ -286,6 +287,10 @@ function PlayerCard({tourney, round, player}) {
                 </li>  
             )}
             </ol>
+        </dd>
+        <dt>Match ideal</dt>
+        <dd>
+            {numeral(round.getMatchByPlayer(player).ideal).format("00%")}
         </dd>
         </dl>
     );

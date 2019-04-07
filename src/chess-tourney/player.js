@@ -49,7 +49,7 @@ function createPlayer(firstName, lastName = "", rating = 1200) {
          * @returns {bool} True if the player has had a bye round, false if not.
          */
         hasHadBye(tourney) {
-            return tourney.getPlayersByOpponent(player).includes(DUMMYPLAYER);
+            return tourney.getPlayersByOpponent(player).includes(dummyPlayer);
         }
     };
     if (typeof firstName === "object") {
@@ -64,9 +64,9 @@ function createPlayer(firstName, lastName = "", rating = 1200) {
 
 /**
  * A stand-in for bye matches.
- * @constant {Player} DUMMYPLAYER
+ * @constant {Player} dummyPlayer
  */
-const DUMMYPLAYER = Object.freeze(
+const dummyPlayer = Object.freeze(
     createPlayer(
         {
             firstName: "Bye",
@@ -76,4 +76,4 @@ const DUMMYPLAYER = Object.freeze(
     )
 );
 
-export {DUMMYPLAYER, createPlayer};
+export {dummyPlayer, createPlayer};

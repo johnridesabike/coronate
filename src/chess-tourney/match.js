@@ -1,4 +1,4 @@
-import {DUMMYPLAYER} from "./player";
+import {dummyPlayer} from "./player";
 
 /**
  * Update the ratings for a match based on their ratings when the match began
@@ -147,7 +147,7 @@ function createMatch(round, white, black) {
          * @returns {bool} `True` if it's a bye match, `false` if not.
          */
         isBye() {
-            return match.players.includes(DUMMYPLAYER);
+            return match.players.includes(dummyPlayer);
         },
         /**
          * Get all of the match data for a specific player color.
@@ -197,9 +197,9 @@ function createMatch(round, white, black) {
         }
     };
     // set bye rounds
-    if (match.players[0] === DUMMYPLAYER) {
+    if (match.players[0] === dummyPlayer) {
         match.result = [0, 1];
-    } else if (match.players[1] === DUMMYPLAYER) {
+    } else if (match.players[1] === dummyPlayer) {
         match.result = [1, 0];
     }
     return match;

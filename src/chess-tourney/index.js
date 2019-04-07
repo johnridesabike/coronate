@@ -1,5 +1,5 @@
 import createMatch from "./match";
-import {createPlayer, DUMMYPLAYER} from "./player";
+import {createPlayer, dummyPlayer} from "./player";
 import createRoster from "./roster";
 import createRound from "./round";
 import * as scores from "./scores";
@@ -10,7 +10,7 @@ export {
     config,
     createMatch,
     createPlayer,
-    DUMMYPLAYER,
+    dummyPlayer,
     createRoster,
     createRound,
     scores,

@@ -1,4 +1,4 @@
-import {DUMMYPLAYER} from "./player";
+import {dummyPlayer} from "./player";
 import {last} from "lodash";
 import pairPlayers from "./pairing";
 
@@ -38,7 +38,7 @@ function createRound(tourney) {
             return round;
         },
         hasDummy() {
-            return round.roster.includes(DUMMYPLAYER);
+            return round.roster.includes(dummyPlayer);
         }
     };
     round.matches = pairPlayers(round);
