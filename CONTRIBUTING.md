@@ -2,7 +2,7 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## API
 
-The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is still very unstable, so I'm not actively seeking help for that until I flesh out how the final product will be organized. However, there is one area that *does* need help: pairing logic. Currently, the code will try its best to pair players according to USCF rules. However, it will occasionally paint itself into a corner where the last players to be paired are ineligible because they've played each other previously. I've coded in some safeguards to minimize that from happening, but it's still a common occurance. Any help improving that will be greatly appreciated.
+The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is still very unstable, so I'm not actively seeking help for that until I flesh out how the final product will be organized. However, one area where I am seeking feedback is the pairing algorithm, specifically how it weights matchups. If you see any problems with its priorities, please open an issue!
 
 Other API to-dos:
 

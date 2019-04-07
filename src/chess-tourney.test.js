@@ -89,13 +89,23 @@ it("No players face each other more than once", function () {
 });
 
 it("A tournament can pair an odd number of players correctly", function () {
-    const tourney = createTournament("An odd tournament indeed");
-    tourney.roster.addPlayers(players.slice(0, 19));
-    randomRounds(tourney);
-    let playerOppCount = tourney.roster.all.map(
-        (p) => new Set(tourney.getPlayersByOpponent(p)).size
-    );
-    expect(sortBy(playerOppCount, (i) => i)[0]).toBe(tourney.getNumOfRounds());
+    let pairedCorrectly = 0;
+    let tourneyNum = 100;
+    times(tourneyNum, function () {
+        let playerOppCount = [];
+        let tourney = createTournament();
+        tourney.roster.addPlayers(players.slice(0, 19));
+        randomRoundsDraws(tourney);
+        playerOppCount = playerOppCount.concat(
+            tourney.roster.all.map(
+                (p) => new Set(tourney.getPlayersByOpponent(p)).size
+            )
+        );
+        if (sortBy(playerOppCount, (i) => i)[0] === tourney.roundList.length) {
+            pairedCorrectly += 1;
+        }
+    });
+    expect(pairedCorrectly).toBe(tourneyNum);
 });
 
 it("A tournament doesn't crash when players are removed", function () {

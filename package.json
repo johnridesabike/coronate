@@ -11,6 +11,7 @@
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
   "dependencies": {
+    "edmonds-blossom": "^1.0.0",
     "elo-rank": "^1.0.3",
     "lodash": "^4.17.11",
     "react": "^16.8.4",
