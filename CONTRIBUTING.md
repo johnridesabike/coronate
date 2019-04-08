@@ -7,9 +7,7 @@ The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is 
 Other API to-dos:
 
 - Add I/O for saving and loading data across sessions.
-- Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
 - Add player match restrictions (don't pair family members, etc.).
-- Add user configuration options.
 
 ## Front-end
 
@@ -18,7 +16,6 @@ The user-facing interface currently leaves a lot to be desired, but I'm actively
 To-dos:
 
 - Improve how ranks and ties are displayed.
-- Add a way to remove rounds.
 - Add a way to manually match/unmatch players.
 - Add pages for managing a global roster outside of individual tournaments.
 - Add pages for editing a player and displaying their stats.
@@ -38,9 +35,9 @@ These will get done eventually, but is very low priority now.
 - Build an awesome front-end UI.
 - Package into a standalone Electron app.
 - Improve pairing logic.
-- Add user options for tie-break methods.
 - Add round robin pairings.
 - Export API into standalone node module.
+- Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
 
 
 The code is designed to follow procedures described in the [USCF chess rulebook](http://www.uschess.org/content/view/7752/369/), which makes building it a unique challenge compared to a generic Swiss pairing system. Where applicable, code comments should cite relevant rulebook section numbers.

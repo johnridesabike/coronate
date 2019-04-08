@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import numeral from "numeral";
-import {createPlayer, scores, config} from "./chess-tourney";
+import {scores, config, io, globalRoster} from "./chess-tourney";
 import demoRoster from "./demo-players.json";
+import {last} from "lodash";
 
 function MainRoster({tourney}) {
     const [roster, setRoster] = useState(tourney.roster.all);
@@ -9,21 +10,21 @@ function MainRoster({tourney}) {
     const newPlayer = {firstName: "", lastName: "", rating: 1200};
     const handleSubmit = (event) => {
         event.preventDefault();
-        tourney.roster.addPlayer(
-            createPlayer(
-                newPlayer["firstName"],
-                newPlayer["lastName"],
-                newPlayer["rating"]
-            )
-        );
+        let player = globalRoster.addPlayer(
+            {
+                "firstName": newPlayer["firstName"],
+                "lastName": newPlayer["lastName"],
+                "rating": newPlayer["rating"]
+            });
+        tourney.roster.importPlayer(player.id);
         setRoster([].concat(tourney.roster.all));
     };
     const updateField = (event) => {
         newPlayer[event.target.name] = event.target.value;
     };
     const loadDemo = () => {
-        var players = demoRoster.slice(0,16).map(p => createPlayer(p));
-        tourney.roster.addPlayers(players);
+        let players = globalRoster.addPlayers(demoRoster.slice(0,16));
+        tourney.roster.importPlayers(players.map((p) => p.id));
         setRoster([].concat(tourney.roster.all));
     };
     const deactivatePlayer = (player) => {
@@ -138,11 +139,13 @@ function MainRoster({tourney}) {
                 <input type="submit" value="Add"/>
             </form>
             <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
+            <Options />
+            <ExportData data={tourney} />
         </div>
     );
 }
 
-function Round ({tourney, roundId}) {
+function Round ({tourney, roundId, delFunc}) {
     /**
      * Be careful when using the `setState` `matches` and the API"s `matches`.
      * They have to mirror each other but can"t be the same objects.
@@ -212,6 +215,13 @@ function Round ({tourney, roundId}) {
                 <button onClick={randomize}>Random!</button>
             </p>
             <Standings roundId={round.id} tourney={round.tourney} />
+            <h2>Actions</h2>
+            <button
+                disabled={round !== last(tourney.roundList)}
+                data-roundid={round.id}
+                onClick={delFunc}>
+                Delete round
+            </button>
         </div>
     );
 }
@@ -366,6 +376,73 @@ function Standings({tourney, roundId}) {
       )}
     </table>
   );
+}
+
+function Options() {
+    const [tbOptions, setTbOptions] = useState(config.tieBreak);
+    const tbToggle = (event) => {
+        let key = event.target.dataset.key;
+        tbOptions[key].active = event.target.checked;
+        setTbOptions([...tbOptions]);
+    };
+    const tbMoveUp = (event) => {
+        let key = Number(event.target.dataset.key);
+        let newTbs = config.moveTieBreak(key, key - 1)
+        if (newTbs) {
+            setTbOptions([...newTbs]);
+        }
+    };
+    const tbMoveDown = (event) => {
+        let key = Number(event.target.dataset.key);
+        let newTbs = config.moveTieBreak(key, key + 1)
+        if (newTbs) {
+            setTbOptions([...newTbs]);
+        } 
+    };
+    let tieBreaks = tbOptions.map((method, i) => 
+        <li key={i}>
+            <input 
+                type="checkbox"
+                data-key={i} 
+                checked={method.active} 
+                onChange={tbToggle}/>
+            {method.name}
+            <button
+                data-key={i}
+                disabled={i === 0}
+                onClick={tbMoveUp}>
+                <span data-key={i} role="img" aria-label="Move up">⬆️</span>
+            </button>
+            <button
+                data-key={i}
+                disabled={i === tbOptions.length - 1}
+                onClick={tbMoveDown}>
+                <span data-key={i} role="img" aria-label="Move down">⬇️</span>
+            </button>
+        </li>
+    );
+    return (
+        <section>
+            <h2>Options</h2>
+            <h3>Tie break priority</h3>
+            <ol>
+                {tieBreaks}
+            </ol>
+        </section>
+    );
+}
+
+function ExportData({data}) {
+    const outputTourney = io.saveTourneyData(data);
+    const outputPlayers = io.savePlayerData();
+    return (
+        <section>
+            <h2>Export tournament data</h2>
+            <textarea rows="50" cols="80" value={outputTourney} readOnly />
+            <h2>Export player data</h2>
+            <textarea rows="50" cols="80" value={outputPlayers} readOnly />
+        </section>
+    );
 }
 
 export {MainRoster, Round, Standings};

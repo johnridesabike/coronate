@@ -102,6 +102,9 @@ function createTournament(name = "", playerList = []) {
             return newRound;
         },
         removeRound(round) {
+            if (typeof round === "number" || typeof round === "string") {
+                round = tourney.roundList[round];
+            }
             if (round !== last(tourney.roundList)) {
                 throw new Error("You can only remove the last round");
             }

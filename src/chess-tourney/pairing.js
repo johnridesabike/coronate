@@ -2,7 +2,7 @@ import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
 import createMatch from "./match";
-import {playerColorBalance, playerScore} from "./scores";
+import scores from "./scores";
 import {dummyPlayer} from "./player";
 
 /**
@@ -56,7 +56,7 @@ function pairPlayers(round) {
     let reducedResults;
     const tourney = round.tourney;
     const dueColor = function (player) {
-        if (round.prevRound === undefined) {
+        if (!round.prevRound) {
             return null;
         }
         let color = 0;
@@ -70,9 +70,9 @@ function pairPlayers(round) {
         return {
             player: player,
             id: id,
-            score: playerScore(tourney, player, round.id),
+            score: scores.playerScore(tourney, player, round.id),
             dueColor: dueColor(player),
-            colorBalance: playerColorBalance(tourney, player),
+            colorBalance: scores.playerColorBalance(tourney, player),
             opponentHistory: tourney.getPlayersByOpponent(player),
             upperHalf: false
         };

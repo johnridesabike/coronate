@@ -1,10 +1,11 @@
 import createMatch from "./match";
-import {createPlayer, dummyPlayer} from "./player";
+import {createPlayer, dummyPlayer, globalRoster} from "./player";
 import createRoster from "./roster";
 import createRound from "./round";
-import * as scores from "./scores";
+import scores from "./scores";
 import createTournament from "./tournament";
 import config from "./config";
+import io from "./io";
 
 export {
     config,
@@ -14,5 +15,7 @@ export {
     createRoster,
     createRound,
     scores,
-    createTournament
+    createTournament,
+    io,
+    globalRoster
 };

@@ -183,7 +183,24 @@ function calcStandings(tourney, roundId = null) {
     return standingsTree;
 }
 
-export {
+/**
+ * `scores.tieBreak` is used for to determine the tie-break methods. USCF
+ * recommends using these methods in-order: modified median, solkoff,
+ * cumulative, and cumulative of opposition.
+ * */
+const tieBreakMethods = {
+    modifiedMedian,
+    playerColorBalance,
+    playerOppScoreCum,
+    playerScoreCum,
+    solkoff
+};
+config.tieBreak.forEach(function (method) {
+    // Dumb question... does assigning functions like this harm security?
+    method.func = tieBreakMethods[method.funcName];
+});
+
+export default Object.freeze({
     calcStandings,
     modifiedMedian,
     playerColorBalance,
@@ -192,4 +209,4 @@ export {
     playerScoreCum,
     playerScoreList,
     solkoff
-};
+});

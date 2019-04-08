@@ -24,7 +24,7 @@ function createRound(tourney) {
         /**
          * @property {object} prevRound The round previous to this one.
          */
-        prevRound: last(tourney.roundList),
+        prevRound: last(tourney.roundList) || null,
         /**
          * @property {array} matches The list of match objects.
          */
@@ -96,6 +96,13 @@ function createRound(tourney) {
             match.resetResult();
             round.matches = round.matches.filter((m) => m !== match);
             return round;
+        },
+        toJSON(key) {
+            if (key === "prevRound") {
+                return round.id;
+            } else {
+                return round;
+            }
         }
     };
     round.matches = pairPlayers(round);
