@@ -434,13 +434,28 @@ function Options() {
 
 function ExportData({data}) {
     const outputTourney = io.saveTourneyData(data);
-    const outputPlayers = io.savePlayerData();
+    const [outputPlayers, setOutputPlayers] = useState(io.savePlayerData());
+    const loadPlayers = (event) => {
+        event.preventDefault();
+        io.loadPlayerData(event.target.playerdata.value);
+    };
+    const changedPlayers = (event) => {
+        setOutputPlayers(event.target.value);
+    };
     return (
         <section>
             <h2>Export tournament data</h2>
             <textarea rows="50" cols="80" value={outputTourney} readOnly />
             <h2>Export player data</h2>
-            <textarea rows="50" cols="80" value={outputPlayers} readOnly />
+            <form onSubmit={loadPlayers}>
+                <textarea
+                    rows="50"
+                    cols="80"
+                    value={outputPlayers}
+                    name="playerdata"
+                    onChange={changedPlayers} />
+                <input type="submit" value="Load" />
+            </form>
         </section>
     );
 }

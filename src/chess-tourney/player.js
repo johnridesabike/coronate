@@ -1,4 +1,5 @@
 import EloRank from "elo-rank";
+import {last} from "lodash";
 
 /**
  * Represents an indivudal player. Call it with `createPlayer("John", ...)` or
@@ -99,7 +100,12 @@ const globalRoster = {
      * @returns {object} This created player object.
      */
     addPlayer(player) {
-        player.id = globalRoster.roster.length;
+        let lastPlayer = last(globalRoster.roster);
+        if (lastPlayer) {
+            player.id = last(globalRoster.roster).id + 1;
+        } else {
+            player.id = 0;
+        }
         let newPlayer = createPlayer(player);
         globalRoster.roster.push(newPlayer);
         return newPlayer;
