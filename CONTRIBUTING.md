@@ -8,8 +8,8 @@ Other API to-dos:
 
 - Add I/O for saving and loading data across sessions.
 - Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
-- Add bye signups.
 - Add player match restrictions (don't pair family members, etc.).
+- Add user configuration options.
 
 ## Front-end
 
@@ -20,7 +20,7 @@ To-dos:
 - Improve how ranks and ties are displayed.
 - Add a way to remove rounds.
 - Add a way to manually match/unmatch players.
-- Add pages for managing  global roster outside of individual tournaments.
+- Add pages for managing a global roster outside of individual tournaments.
 - Add pages for editing a player and displaying their stats.
 
 ## Housekeeping

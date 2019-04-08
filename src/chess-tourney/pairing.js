@@ -12,7 +12,7 @@ import {dummyPlayer} from "./player";
  * @constant avoidMeetingTwicePriority The weight given to avoid players
  * meeting twice. This is the highest priority. (USCF § 27A1)
  */
-const avoidMeetingTwicePriority = 32;
+const avoidMeetingTwicePriority = 20;
 /**
  * @constant sameScoresPriority The weight given to match players with
  * equal scores. This gets muliplied against a ratio taken from the distance
@@ -27,12 +27,12 @@ const sameScoresPriority = 16;
  * versus upper halves. This is only applied to players being matched within
  * the same score group. (USCF § 27A3)
  */
-const differentHalfPriority = 4;
+const differentHalfPriority = 2;
 /**
  * @constant differentDueColorPriority The weight given to match players with
  * opposite due colors. (USCF § 27A4 and § 27A5)
  */
-const differentDueColorPriority = 2;
+const differentDueColorPriority = 1;
 
 const maxPriority = (
     avoidMeetingTwicePriority
@@ -49,25 +49,24 @@ const maxPriority = (
  * @returns {array} The list of matches.
  */
 function pairPlayers(round) {
-    var byeMatch;
-    var byePlayerData;
-    var potentialMatches;
-    var matches;
-    var results;
-    var reducedResults;
+    let byeMatch;
+    let potentialMatches;
+    let matches;
+    let results;
+    let reducedResults;
     const tourney = round.tourney;
     const dueColor = function (player) {
         if (round.prevRound === undefined) {
             return null;
         }
-        var color = 0;
-        var prevColor = round.prevRound.playerColor(player);
+        let color = 0;
+        let prevColor = round.prevRound.playerColor(player);
         if (prevColor === 0) {
             color = 1;
         }
         return color;
     };
-    var playerData = round.roster.map(function (player, id) {
+    let playerData = round.roster.map(function (player, id) {
         return {
             player: player,
             id: id,
@@ -95,10 +94,10 @@ function pairPlayers(round) {
      * @param {array} src The original array.
      */
     const matchupReducer = function (allMatches, player1, ignore, src) {
-        var opponents = src.filter((p) => p !== player1);
-        var playerMatches = opponents.map(function (player2) {
-            var priority = 0;
-            var scoreDiff;
+        let opponents = src.filter((p) => p !== player1);
+        let playerMatches = opponents.map(function (player2) {
+            let priority = 0;
+            let scoreDiff;
             if (!player1.opponentHistory.includes(player2.player)) {
                 priority += avoidMeetingTwicePriority;
             }
@@ -128,14 +127,24 @@ function pairPlayers(round) {
         return allMatches;
     };
 
-    // If there's an odd number of players, assign a bye to the lowest-rated
-    // player in the lowest score group. (USCF § 29L2.)
+    // If there's an odd number of players, time to assign a bye.
     if (playerData.length % 2 !== 0) {
-        byePlayerData = last(
-            playerData.filter(
-                (p) => !p.player.hasHadBye(tourney)
-            )
-        );
+        // Get the next person in line from bye signups.
+        let byePlayer = tourney.byeQueue.filter(
+            (p) => !p.hasHadBye(tourney)
+        )[0];
+        let byePlayerData = playerData.filter(
+            (pd) => pd.player === byePlayer
+        )[0];
+        // If there isn't anyone on the list, assign a bye to the lowest-rated
+        // player in the lowest score group. (USCF § 29L2.)
+        if (!byePlayerData) {
+            byePlayerData = last(
+                playerData.filter(
+                    (p) => !p.player.hasHadBye(tourney)
+                )
+            );
+        }
         // In the impossible situation that *everyone* has played a bye round
         // previously, then just pick the last player.
         if (!byePlayerData) {
@@ -148,7 +157,7 @@ function pairPlayers(round) {
     // Determine which players are in the upper and lower halves of their score
     // groups.
     scoreList.forEach(function (score) {
-        var playersWithScore = playerData.filter((pd) => pd.score === score);
+        let playersWithScore = playerData.filter((pd) => pd.score === score);
         playersWithScore.sort((pd) => pd.player.rating).reverse();
         if (playersWithScore.length > 1) {
             // The first chunk is the upper half
@@ -173,13 +182,13 @@ function pairPlayers(round) {
             // from the list, blossom will automatically include their missing
             // IDs in its results.)
             if (p1Id !== -1) {
-                var p1 = playerData.filter((p) => p.id === p1Id)[0];
-                var p2 = playerData.filter((p) => p.id === p2Id)[0];
-                var ideal = potentialMatches.filter(
+                let p1 = playerData.filter((p) => p.id === p1Id)[0];
+                let p2 = playerData.filter((p) => p.id === p2Id)[0];
+                let ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
-                var matched = matches.map((pair) => pair[0]);
-                // var matched = matches.map((pair) => pair[0]);
+                let matched = matches.map((pair) => pair[0]);
+                // let matched = matches.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
                 if (!matched.includes(p1) && !matched.includes(p2)) {

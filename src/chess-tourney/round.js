@@ -8,16 +8,43 @@ import pairPlayers from "./pairing";
  */
 function createRound(tourney) {
     const round = {
+        /**
+         * @property {number} id The ID number of the round.
+         */
         id: tourney.roundList.length,
+        /**
+         * @property {object} tourney The tournament object containing this
+         * round.
+         */
         tourney: tourney,
+        /**
+         * @property {array} roster The list of players in this round.
+         */
         roster: tourney.roster.getActive(),
+        /**
+         * @property {object} prevRound The round previous to this one.
+         */
         prevRound: last(tourney.roundList),
+        /**
+         * @property {array} matches The list of match objects.
+         */
         matches: [],
+        /**
+         * Get whether or not all of the matches in this round have completed.
+         * @returns {bool} `True` if they have all completed, `false` if they
+         * haven't.
+         */
         isComplete() {
             return !round.matches.map((m) => m.isComplete()).includes(false);
         },
+        /**
+         * Get the match player has played in.
+         * @param {object} player The player.
+         * @returns {?object} The match object or `null` if no match is
+         * found.
+         */
         getMatchByPlayer(player) {
-            var theMatch = null;
+            let theMatch = null;
             round.matches.forEach(function (match) {
                 if (match.players.includes(player)) {
                     theMatch = match;
@@ -25,20 +52,50 @@ function createRound(tourney) {
             });
             return theMatch;
         },
+        /**
+         * Get the color of a player for this round.
+         * @param {object} player The player.
+         * @returns {number} `0` for white, `1` for black, or `-1` if the player
+         * wasn't found.
+         */
         playerColor(player) {
-            var color = -1;
+            let color = -1;
             const match = round.getMatchByPlayer(player);
             if (match) {
                 color = match.getPlayerColor(player);
             }
             return color;
         },
+        /**
+         * Add a player to the round.
+         * TODO: I don't think this is used.
+         * @param {object} player The player.
+         * @returns {object} this round.
+         */
         addPlayer(player) {
             round.players.push(player);
             return round;
         },
-        hasDummy() {
+        /**
+         * Get whether or not this round has a bye round.
+         * TODO: I don't thin this is used.
+         * @returns {bool} `True` if it does, `false` if it doesn't.
+         */
+        hasBye() {
             return round.roster.includes(dummyPlayer);
+        },
+        /**
+         * Remove a match. This undoes the results of the match.
+         * @param {number|object} match The object or ID of the match.
+         * @returns {object} This round object.
+         */
+        removeMatch(match) {
+            if (typeof match === "number") {
+                match = round.matches[match];
+            }
+            match.resetResult();
+            round.matches = round.matches.filter((m) => m !== match);
+            return round;
         }
     };
     round.matches = pairPlayers(round);

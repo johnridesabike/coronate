@@ -113,7 +113,8 @@ caption {
 }
 
 .inactive .table__player,
-.inactive .table__number {
+.inactive .table__number,
+li.inactive {
   opacity: 0.5;
 }
 

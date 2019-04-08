@@ -4,9 +4,28 @@ import {last, times} from "lodash";
 
 function createTournament(name = "", playerList = []) {
     const tourney = {
+        /**
+         * @property {string} name The display name of the tournament.
+         */
         name: name,
+        /**
+         * @property {array} roundList The list of rounds.
+         */
         roundList: [],
+        /**
+         * @property {number} byeValue How many points a bye is worth. USCF
+         * suggests either 1 or 0.5.
+         */
         byeValue: 1,
+        /**
+         * @property {array} byeQueue A list of players signed up for bye
+         * rounds, if byes are necessary.
+         */
+        byeQueue: [],
+        /**
+         * Get if a new round is ready or not.
+         * @returns {bool} `True` if a round is ready, `false` if not.
+         */
         isNewRoundReady() {
             var isReady = false;
             if (tourney.roundList.length > 0) {
@@ -16,6 +35,12 @@ function createTournament(name = "", playerList = []) {
             }
             return isReady;
         },
+        /**
+         * Get a list of matches containing a particular player.
+         * @param {object} player The specified player.
+         * @param {number} roundId The round to fetch up to.
+         * @returns {array} The list of matches.
+         */
         getMatchesByPlayer(player, roundId = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
@@ -32,6 +57,12 @@ function createTournament(name = "", playerList = []) {
             });
             return matches;
         },
+        /**
+         * Get a list of players who have played a specified player.
+         * @param {object} player The specified player.
+         * @param {number} roundId The round to fetch up to.
+         * @returns {array} A list of player objects.
+         */
         getPlayersByOpponent(opponent, roundId = null) {
             var players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
@@ -45,6 +76,10 @@ function createTournament(name = "", playerList = []) {
             );
             return players;
         },
+        /**
+         * Get the minimum number of rounds based on the number of players.
+         * @returns {number} The number of rounds.
+         */
         getNumOfRounds() {
             var roundId = Math.ceil(
                 Math.log2(tourney.roster.getActive().length)
@@ -54,6 +89,10 @@ function createTournament(name = "", playerList = []) {
             }
             return roundId;
         },
+        /**
+         * Create a new round and add it to the round list.
+         * @returns {object} The new round object.
+         */
         newRound() {
             if (!tourney.isNewRoundReady()) {
                 return false;
@@ -61,8 +100,39 @@ function createTournament(name = "", playerList = []) {
             var newRound = createRound(tourney);
             tourney.roundList.push(newRound);
             return newRound;
+        },
+        removeRound(round) {
+            if (round !== last(tourney.roundList)) {
+                throw new Error("You can only remove the last round");
+            }
+            round.matches.forEach(function (match) {
+                round.removeMatch(match);
+            });
+            tourney.roundList = tourney.roundList.filter((r) => r !== round);
+            return tourney;
+        },
+        /**
+         * Add a player to the bye queue.
+         * @param {object} player The player object.
+         * @returns {object} This tournament object.
+         */
+        addPlayerToByeQueue(player) {
+            tourney.byeQueue.push(player);
+            return tourney;
+        },
+        /**
+         * Remove a player from the bye queue.
+         * @param {object} player The player object.
+         * @returns {object} This tournament object.
+         */
+        removePlayerFromByeQueue(player) {
+            tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
+            return tourney;
         }
     };
+    /**
+     * @property {object} roster The roster object.
+     */
     tourney.roster = createRoster(tourney, playerList);
     return tourney;
 }

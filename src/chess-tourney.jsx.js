@@ -5,6 +5,7 @@ import demoRoster from "./demo-players.json";
 
 function MainRoster({tourney}) {
     const [roster, setRoster] = useState(tourney.roster.all);
+    const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
     const newPlayer = {firstName: "", lastName: "", rating: 1200};
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -24,18 +25,26 @@ function MainRoster({tourney}) {
         var players = demoRoster.slice(0,16).map(p => createPlayer(p));
         tourney.roster.addPlayers(players);
         setRoster([].concat(tourney.roster.all));
-    }
+    };
     const deactivatePlayer = (player) => {
         var removed = tourney.roster.removePlayer(player);
         if (!removed) {
             tourney.roster.deactivatePlayer(player);
         }
         setRoster([].concat(tourney.roster.all));
-    }
+    };
     const activatePlayer = (player) => {
         tourney.roster.activatePlayer(player);
         setRoster([].concat(tourney.roster.all));
-    }
+    };
+    const byeSignUp = (player) => {
+        tourney.addPlayerToByeQueue(player);
+        setByeQueue([].concat(tourney.byeQueue));
+    };
+    const byeDrop = (player) => {
+        tourney.removePlayerFromByeQueue(player);
+        setByeQueue([].concat(tourney.byeQueue));
+    };
     var rosterTable = "";
     if (roster.length > 0) {
         rosterTable = 
@@ -46,6 +55,7 @@ function MainRoster({tourney}) {
                 <th>First name</th>
                 <th>Rating</th>
                 <th>Rounds played</th>
+                <th></th>
                 <th></th>
                 </tr>
             </thead>
@@ -64,14 +74,42 @@ function MainRoster({tourney}) {
                     : <button onClick={() => deactivatePlayer(player)}>x</button>
                     }
                     </td>
+                    <td>
+                    {tourney.roster.getActive().length % 2 !== 0 &&
+                        (tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
+                        ? <button disabled>Bye</button>
+                        : <button onClick={() => byeSignUp(player)}>Bye</button>)
+                    }
+                    </td>
                 </tr>
                 )}
             </tbody>
         </table>
     }
+    var byeList = "";
+    if (tourney.byeQueue.length > 0) {
+        byeList = 
+        <div>
+            <h2>Bye signups:</h2>
+            <ol>
+                {byeQueue.map((player, i) =>  
+                    <li
+                    className={player.hasHadBye(tourney) ? "inactive" : "active"}>
+                        {player.firstName}
+                        <button
+                            onClick={() => byeDrop(player)}
+                            disabled={player.hasHadBye(tourney)}>
+                            x
+                        </button>
+                    </li>
+                )}
+            </ol>
+        </div>
+    }
     return (
         <div className="roster">
             {rosterTable}
+            {byeList}
             <p>
                 <button onClick={loadDemo}>Load a demo roster</button>
             </p>
