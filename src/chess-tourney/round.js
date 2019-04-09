@@ -13,10 +13,10 @@ function createRound(tourney) {
          */
         id: tourney.roundList.length,
         /**
-         * @property {object} tourney The tournament object containing this
-         * round.
+         * @property {object} ref_tourney A reference to the tournament
+         * containing this round.
          */
-        tourney: tourney,
+        ref_tourney: tourney,
         /**
          * @property {array} roster The list of players in this round.
          */
@@ -24,7 +24,7 @@ function createRound(tourney) {
         /**
          * @property {object} prevRound The round previous to this one.
          */
-        prevRound: last(tourney.roundList) || null,
+        ref_prevRound: last(tourney.roundList) || null,
         /**
          * @property {array} matches The list of match objects.
          */

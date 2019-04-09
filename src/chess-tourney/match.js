@@ -7,8 +7,8 @@ import {dummyPlayer} from "./player";
  * @returns {object} The `match` object.
  */
 function calcRatings(match) {
-    let whiteElo = match.players[0].eloRank(match.tourney);
-    let blackElo = match.players[1].eloRank(match.tourney);
+    let whiteElo = match.players[0].eloRank(match.ref_tourney);
+    let blackElo = match.players[1].eloRank(match.ref_tourney);
     const FLOOR = 100;
     let scoreExpected = [
         whiteElo.getExpected(match.origRating[0], match.origRating[1]),
@@ -47,14 +47,15 @@ function calcRatings(match) {
 function createMatch(round, white, black) {
     const match = {
         /**
-         * @property {object} round A link to the round containing this match.
+         * @property {object} ref_round A reference to the round containing
+         * this match.
          */
-        round: round,
+        ref_round: round,
         /**
-         * @property {object} tourney a link to the tournemnt containing this
-         * match.
+         * @property {object} ref_tourney A reference to the tournament
+         * containing this match.
          */
-        tourney: round.tourney,
+        ref_tourney: round.ref_tourney,
         /**
          * @property {string} warnings Any warnings about the match, e.g. if
          * there was a pairing error.

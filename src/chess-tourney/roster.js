@@ -8,10 +8,10 @@ import {createPlayer, globalRoster} from "./player";
 function createRoster(tourney, players = []) {
     const roster = {
         /**
-         * @property {object} tourney A link to the tournemnt containing this
-         * match.
+         * @property {object} ref_tourney A reference to the tournemnt
+         * containing this match.
          */
-        tourney: tourney,
+        ref_tourney: tourney,
         /**
          * @param {array} all A list of all of the players.
          */
@@ -64,7 +64,7 @@ function createRoster(tourney, players = []) {
          * @returns {object} This roster object.
          */
         removePlayer(player) {
-            if (roster.tourney.getMatchesByPlayer(player).length > 0) {
+            if (roster.ref_tourney.getMatchesByPlayer(player).length > 0) {
                 return null; // TODO: add a helpful error message
             }
             delete roster.all[roster.all.indexOf(player)];

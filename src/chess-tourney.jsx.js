@@ -214,7 +214,7 @@ function Round ({tourney, roundId, delFunc}) {
             <p style={{textAlign: "center"}}>
                 <button onClick={randomize}>Random!</button>
             </p>
-            <Standings roundId={round.id} tourney={round.tourney} />
+            <Standings roundId={round.id} tourney={round.ref_tourney} />
             <h2>Actions</h2>
             <button
                 disabled={round !== last(tourney.roundList)}

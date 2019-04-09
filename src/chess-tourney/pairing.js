@@ -54,13 +54,13 @@ function pairPlayers(round) {
     let matches;
     let results;
     let reducedResults;
-    const tourney = round.tourney;
+    const tourney = round.ref_tourney;
     const dueColor = function (player) {
-        if (!round.prevRound) {
+        if (!round.ref_prevRound) {
             return null;
         }
         let color = 0;
-        let prevColor = round.prevRound.playerColor(player);
+        let prevColor = round.ref_prevRound.playerColor(player);
         if (prevColor === 0) {
             color = 1;
         }

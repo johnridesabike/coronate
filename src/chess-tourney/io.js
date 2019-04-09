@@ -1,8 +1,7 @@
 import {globalRoster, createPlayer} from "./player";
 
 function replacer(key, value) {
-    const recursion = ["tourney", "round"];
-    if (recursion.includes(key)) {
+    if (key.startsWith("ref_")) {
         return undefined;
     } else {
         return value;
