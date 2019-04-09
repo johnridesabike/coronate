@@ -63,6 +63,7 @@ function createPlayer(playerDataObj) {
      * Get if a player has had a bye round.
      * @param {object} tourney The current tournament.
      * @returns {bool} True if the player has had a bye round, false if not.
+     * TODO: move this to the tournament object?
      */
     player.hasHadBye = function (tourney) {
         return tourney.getPlayersByOpponent(player).includes(dummyPlayer);

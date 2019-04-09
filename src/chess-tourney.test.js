@@ -2,9 +2,7 @@
  * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
  */
 import {
-    createPlayer,
     createTournament,
-    scores,
     globalRoster
 } from "./chess-tourney";
 import demoPlayers from "./demo-players.json";
