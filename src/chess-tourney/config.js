@@ -20,4 +20,16 @@ config.moveTieBreak = function (methodId, newPos) {
     return config.tieBreak;
 };
 
+/**
+ * Removes circular references with `JSON.stringify()`.
+ */
+config.noCircRefs = function (key, value) {
+    if (key.startsWith("ref_")) {
+        return undefined;
+    } else {
+        return value;
+    }
+};
+
+
 export default Object.freeze(config);

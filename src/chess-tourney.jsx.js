@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import numeral from "numeral";
-import {scores, config, io, globalRoster} from "./chess-tourney";
+import {scores, config, globalRoster} from "./chess-tourney";
 import demoRoster from "./demo-players.json";
 import {last} from "lodash";
 
-function MainRoster({tourney}) {
+function MainRoster({tourney, loadFunc}) {
     const [roster, setRoster] = useState(tourney.roster.all);
     const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
     const newPlayer = {firstName: "", lastName: "", rating: 1200};
@@ -140,7 +140,7 @@ function MainRoster({tourney}) {
             </form>
             <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
             <Options />
-            <ExportData data={tourney} />
+            <ExportData tourney={tourney} loadFunc={loadFunc} />
         </div>
     );
 }
@@ -432,25 +432,40 @@ function Options() {
     );
 }
 
-function ExportData({data}) {
-    const outputTourney = io.saveTourneyData(data);
-    const [outputPlayers, setOutputPlayers] = useState(io.savePlayerData());
+function ExportData({tourney, loadFunc}) {
+    const [outputPlayers, setOutputPlayers] = useState(
+        JSON.stringify(globalRoster, config.noCircRefs, 4)
+    );
+    const [outputTourney, setOutputTourney] = useState(
+        JSON.stringify(tourney, config.noCircRefs, 4)
+    );
     const loadPlayers = (event) => {
         event.preventDefault();
-        io.loadPlayerData(event.target.playerdata.value);
+        let players = JSON.parse(event.target.playerdata.value);
+        globalRoster.loadPlayerData(players);
     };
     const changedPlayers = (event) => {
         setOutputPlayers(event.target.value);
     };
+    const loadTourney = function (event) {
+        event.preventDefault();
+        let tourneyData = JSON.parse(event.target.tourneyData.value);
+        loadFunc(tourneyData);
+    };
     return (
         <section>
             <h2>Export tournament data</h2>
-            <textarea 
-                className="json"
-                rows="25"
-                cols="50" 
-                value={outputTourney}
-                readOnly />
+            <form onSubmit={loadTourney}>
+                <textarea 
+                    className="json"
+                    rows="25"
+                    cols="50" 
+                    value={outputTourney}
+                    onChange={(event) => setOutputTourney(event.target.value)}
+                    name="tourneyData"
+                    />
+                <input type="submit" value="load" />
+            </form>
             <h2>Export player data</h2>
             <form onSubmit={loadPlayers}>
                 <textarea

@@ -29,7 +29,7 @@ function createRoster(tourney, importObj = null) {
             return roster.all.filter((i) => !roster.inactive.includes(i));
         },
         importPlayer(playerId) {
-            let player = createPlayer(globalRoster.roster[playerId]);
+            let player = createPlayer(globalRoster.getPlayerById(playerId));
             player.isReference = true;
             roster.all.push(player);
             return roster;
@@ -70,7 +70,7 @@ function createRoster(tourney, importObj = null) {
             delete roster.all[roster.all.indexOf(player)];
             return roster;
         },
-        getPlayerByID(id) {
+        getPlayerById(id) {
             return roster.all.filter((p) => p.id === id)[0];
         }
     };
@@ -81,7 +81,7 @@ function createRoster(tourney, importObj = null) {
             (pId) => roster.importPlayer(pId)
         );
         roster.inactive = importObj.inactive.map(
-            (pId) => roster.getPlayerByID(pId)
+            (pId) => roster.getPlayerById(pId)
         );
     }
     return roster;

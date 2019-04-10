@@ -47,10 +47,10 @@ function createMatch(round, importObj) {
     let [black, white] = importObj.players;
     // If the players are ID numbers, get their referant objects.
     if (typeof black === "number") {
-        black = tourney.roster.getPlayerByID(black);
+        black = tourney.roster.getPlayerById(black);
     }
     if (typeof white === "number") {
-        white = tourney.roster.getPlayerByID(white);
+        white = tourney.roster.getPlayerById(white);
     }
     const match = {
         /**

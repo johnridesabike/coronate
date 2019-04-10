@@ -12,7 +12,11 @@ function createRound(tourney, importObj = {}) {
         /**
          * @property {number} id The ID number of the round.
          */
-        id: importObj.id || tourney.roundList.length,
+        id: (
+            (importObj.id !== undefined)
+            ? importObj.id
+            : tourney.roundList.length
+        ),
         /**
          * @property {object} ref_tourney A reference to the tournament
          * containing this round.
@@ -24,9 +28,8 @@ function createRound(tourney, importObj = {}) {
         roster: importObj.roster || tourney.roster.getActive(),
         /**
          * @property {object} prevRound The round previous to this one.
-         * TODO: this might break on imports...
          */
-        ref_prevRound: last(tourney.roundList) || null,
+        ref_prevRound: importObj.ref_prevRound || last(tourney.roundList),
         /**
          * @property {array} matches The list of match objects.
          */
@@ -107,6 +110,13 @@ function createRound(tourney, importObj = {}) {
             }
         }
     };
+    round.roster = round.roster.map(function (player) {
+        if (typeof player === "number") {
+            return tourney.roster.getPlayerById(player);
+        } else {
+            return player;
+        }
+    });
     if (round.matches) {
         // If match data was imported, then init it.
         round.matches = round.matches.map(

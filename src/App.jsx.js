@@ -4,17 +4,32 @@ import {createTournament} from "./chess-tourney";
 import {MainRoster, Round} from "./chess-tourney.jsx.js";
 import {last} from "lodash";
 
-const tourney = createTournament("CVL Winter Open");
+const defaultTournament = createTournament("CVL Winter Open");
 
 function App() {
-    const [tabList, setTabList] = useState(
-        [
-            {
-                name: "Roster",
-                contents: <MainRoster tourney={tourney} />
-            }
-        ]
-    );
+    const [tourney, setTourney] = useState(defaultTournament);
+    const reset = (newData) => {
+        let newTabs = [defaultTab];
+        let newTourney = createTournament(newData);
+        newTabs = newTabs.concat(
+            newTourney.roundList.map((round) => ({
+                name: "Round " + (round.id + 1),
+                id: round.id,
+                contents: <Round 
+                    tourney={newTourney} 
+                    roundId={round.id}
+                    delFunc={delRound}/>
+            }))
+        );
+        setTourney(newTourney);
+        setTabList(newTabs);
+        setCurrentTab(tabList[0])
+    };
+    const defaultTab = {
+        name: "Roster",
+        contents: <MainRoster tourney={tourney} loadFunc={reset}/>
+    };
+    const [tabList, setTabList] = useState([defaultTab]);
     const [currentTab, setCurrentTab] = useState(tabList[0]);
     const newRound = (event) => {
         let round = tourney.newRound();
@@ -22,16 +37,14 @@ function App() {
             alert("Either add players or complete the current matches first.");
             return;
         }
-        tabList.push(
-            {
-                name: "Round " + (round.id + 1),
-                id: round.id,
-                contents: <Round 
-                    tourney={tourney} 
-                    roundId={round.id}
-                    delFunc={delRound} />
-            }
-        );
+        tabList.push({
+            name: "Round " + (round.id + 1),
+            id: round.id,
+            contents: <Round 
+                tourney={tourney} 
+                roundId={round.id}
+                delFunc={delRound} />
+        });
         setTabList([].concat(tabList));
         setCurrentTab(tabList[tabList.length - 1])
     };

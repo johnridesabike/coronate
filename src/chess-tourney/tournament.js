@@ -156,8 +156,13 @@ function createTournament(importObj = "") {
     }
     if (tourney.roundList.length >= 0) {
         // If round data was imported, then init it.
-        tourney.roundList = tourney.roundList.map(
-            (roundData) => createRound(tourney, roundData)
+        tourney.roundList = tourney.roundList.reduce(
+            function (roundList, roundData) {
+                roundData.ref_prevRound = last(roundList) || null;
+                roundList.push(createRound(tourney, roundData));
+                return roundList;
+            },
+            []
         );
     }
     return tourney;
