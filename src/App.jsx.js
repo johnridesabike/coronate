@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import "./App.css";
-import {createTournament} from "./chess-tourney";
+import {createTournament, globalRoster} from "./chess-tourney";
 import {MainRoster, Round} from "./chess-tourney.jsx.js";
+import {Players} from "./chess-tourneyv2.jsx.js";
 import {last} from "lodash";
+import demoRoster from "./demo-players.json";
+
+globalRoster.addPlayers(demoRoster.slice(0,16));
 
 const defaultTournament = createTournament("CVL Winter Open");
 
 function App() {
     const [tourney, setTourney] = useState(defaultTournament);
     const reset = (newData) => {
-        let newTabs = [defaultTab];
+        let newTabs = [...defaultTabs];
         let newTourney = createTournament(newData);
         newTabs = newTabs.concat(
             newTourney.roundList.map((round) => ({
@@ -25,11 +29,18 @@ function App() {
         setTabList(newTabs);
         setCurrentTab(tabList[0])
     };
-    const defaultTab = {
-        name: "Roster",
-        contents: <MainRoster tourney={tourney} loadFunc={reset}/>
-    };
-    const [tabList, setTabList] = useState([defaultTab]);
+    const defaultTabs = [
+        {
+            name: "Players",
+            contents: <Players />
+                
+        },
+        {
+            name: "Tournament",
+            contents: <MainRoster tourney={tourney} loadFunc={reset}/>
+        }
+    ];
+    const [tabList, setTabList] = useState([...defaultTabs]);
     const [currentTab, setCurrentTab] = useState(tabList[0]);
     const newRound = (event) => {
         let round = tourney.newRound();

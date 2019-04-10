@@ -140,7 +140,7 @@ function MainRoster({tourney, loadFunc}) {
             </form>
             <p className="center">Total rounds: {tourney.getNumOfRounds()}</p>
             <Options />
-            <ExportData tourney={tourney} loadFunc={loadFunc} />
+            {/* <ExportData tourney={tourney} loadFunc={loadFunc} /> */}
         </div>
     );
 }
@@ -432,53 +432,53 @@ function Options() {
     );
 }
 
-function ExportData({tourney, loadFunc}) {
-    const [outputPlayers, setOutputPlayers] = useState(
-        JSON.stringify(globalRoster, config.noCircRefs, 4)
-    );
-    const [outputTourney, setOutputTourney] = useState(
-        JSON.stringify(tourney, config.noCircRefs, 4)
-    );
-    const loadPlayers = (event) => {
-        event.preventDefault();
-        let players = JSON.parse(event.target.playerdata.value);
-        globalRoster.loadPlayerData(players);
-    };
-    const changedPlayers = (event) => {
-        setOutputPlayers(event.target.value);
-    };
-    const loadTourney = function (event) {
-        event.preventDefault();
-        let tourneyData = JSON.parse(event.target.tourneyData.value);
-        loadFunc(tourneyData);
-    };
-    return (
-        <section>
-            <h2>Export tournament data</h2>
-            <form onSubmit={loadTourney}>
-                <textarea 
-                    className="json"
-                    rows="25"
-                    cols="50" 
-                    value={outputTourney}
-                    onChange={(event) => setOutputTourney(event.target.value)}
-                    name="tourneyData"
-                    />
-                <input type="submit" value="load" />
-            </form>
-            <h2>Export player data</h2>
-            <form onSubmit={loadPlayers}>
-                <textarea
-                    className="json"
-                    rows="25"
-                    cols="50"
-                    value={outputPlayers}
-                    name="playerdata"
-                    onChange={changedPlayers} />
-                <input type="submit" value="Load" />
-            </form>
-        </section>
-    );
-}
+// function ExportData({tourney, loadFunc}) {
+//     const [outputPlayers, setOutputPlayers] = useState(
+//         JSON.stringify(globalRoster, config.noCircRefs, 4)
+//     );
+//     const [outputTourney, setOutputTourney] = useState(
+//         JSON.stringify(tourney, config.noCircRefs, 4)
+//     );
+//     const loadPlayers = (event) => {
+//         event.preventDefault();
+//         let players = JSON.parse(event.target.playerdata.value);
+//         globalRoster.loadPlayerData(players);
+//     };
+//     const changedPlayers = (event) => {
+//         setOutputPlayers(event.target.value);
+//     };
+//     const loadTourney = function (event) {
+//         event.preventDefault();
+//         let tourneyData = JSON.parse(event.target.tourneyData.value);
+//         loadFunc(tourneyData);
+//     };
+//     return (
+//         <section>
+//             <h2>Export tournament data</h2>
+//             <form onSubmit={loadTourney}>
+//                 <textarea 
+//                     className="json"
+//                     rows="25"
+//                     cols="50" 
+//                     value={outputTourney}
+//                     onChange={(event) => setOutputTourney(event.target.value)}
+//                     name="tourneyData"
+//                     />
+//                 <input type="submit" value="load" />
+//             </form>
+//             <h2>Export player data</h2>
+//             <form onSubmit={loadPlayers}>
+//                 <textarea
+//                     className="json"
+//                     rows="25"
+//                     cols="50"
+//                     value={outputPlayers}
+//                     name="playerdata"
+//                     onChange={changedPlayers} />
+//                 <input type="submit" value="Load" />
+//             </form>
+//         </section>
+//     );
+// }
 
 export {MainRoster, Round, Standings};

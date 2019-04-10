@@ -90,21 +90,18 @@ const dummyPlayer = Object.freeze(
 
 const globalRoster = {
     roster: [],
+    lastId: -1,
     /**
      * Add a player to the roster.
      * @param {object} player The player object to add.
      * @returns {object} This created player object.
      */
-    addPlayer(player) {
-        let lastPlayer = last(globalRoster.roster);
-        if (lastPlayer) {
-            player.id = last(globalRoster.roster).id + 1;
-        } else {
-            player.id = 0;
-        }
-        let newPlayer = createPlayer(player);
-        globalRoster.roster.push(newPlayer);
-        return newPlayer;
+    addPlayer(playerData) {
+        playerData.id = globalRoster.lastId + 1;
+        globalRoster.lastId = playerData.id;
+        let player = createPlayer(playerData);
+        globalRoster.roster.push(player);
+        return player;
     },
     /**
      * Add a list of players to the roster.
@@ -124,8 +121,19 @@ const globalRoster = {
         globalRoster.roster = data.roster.map(
             (player) => createPlayer(player)
         );
+    },
+    delPlayer(playerId) {
+        let index = globalRoster.roster.map(
+            (p) => p.id
+        ).indexOf(
+            Number(playerId)
+        );
+        if (index === -1) {
+            return null;
+        }
+        let player = globalRoster.roster.splice(index, 1);
+        return player;
     }
-    // TODO remove players
 };
 
 export {dummyPlayer, createPlayer, globalRoster};

@@ -6,7 +6,6 @@ The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is 
 
 Other API to-dos:
 
-- Add I/O for saving and loading data across sessions.
 - Add player match restrictions (don't pair family members, etc.).
 
 ## Front-end
