@@ -24,9 +24,9 @@ function loadPlayerData(input) {
     Object.assign(globalRoster, newRoster);
 }
 
-function loadTournamentData(input) {
-    // TODO
-}
+// function loadTournamentData(input) {
+//     // TODO
+// }
 
 export default Object.freeze({
     saveTourneyData,

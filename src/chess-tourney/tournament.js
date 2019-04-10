@@ -2,7 +2,13 @@ import createRoster from "./roster";
 import createRound from "./round";
 import {last, times} from "lodash";
 
-function createTournament(name = "", playerList = []) {
+function createTournament(importObj = "") {
+    let name;
+    if (typeof importObj === "string") {
+        name = importObj;
+    } else {
+        name = importObj.name;
+    }
     const tourney = {
         /**
          * @property {string} name The display name of the tournament.
@@ -23,11 +29,15 @@ function createTournament(name = "", playerList = []) {
          */
         byeQueue: [],
         /**
+         * @property {object} roster The roster object.
+         */
+        roster: null,
+        /**
          * Get if a new round is ready or not.
          * @returns {bool} `True` if a round is ready, `false` if not.
          */
         isNewRoundReady() {
-            var isReady = false;
+            let isReady = false;
             if (tourney.roundList.length > 0) {
                 isReady = last(tourney.roundList).isComplete();
             } else {
@@ -45,7 +55,7 @@ function createTournament(name = "", playerList = []) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
-            var matches = [];
+            let matches = [];
             times(roundId + 1, function (i) {
                 if (tourney.roundList[i] !== undefined) {
                     tourney.roundList[i].matches.forEach(function (match) {
@@ -64,7 +74,7 @@ function createTournament(name = "", playerList = []) {
          * @returns {array} A list of player objects.
          */
         getPlayersByOpponent(opponent, roundId = null) {
-            var players = [];
+            let players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
                     players = players.concat(
@@ -81,7 +91,7 @@ function createTournament(name = "", playerList = []) {
          * @returns {number} The number of rounds.
          */
         getNumOfRounds() {
-            var roundId = Math.ceil(
+            let roundId = Math.ceil(
                 Math.log2(tourney.roster.getActive().length)
             );
             if (roundId === -Infinity) {
@@ -97,7 +107,7 @@ function createTournament(name = "", playerList = []) {
             if (!tourney.isNewRoundReady()) {
                 return false;
             }
-            var newRound = createRound(tourney);
+            let newRound = createRound(tourney);
             tourney.roundList.push(newRound);
             return newRound;
         },
@@ -133,10 +143,23 @@ function createTournament(name = "", playerList = []) {
             return tourney;
         }
     };
-    /**
-     * @property {object} roster The roster object.
-     */
-    tourney.roster = createRoster(tourney, playerList);
+    // Importing JSON-parsed data
+    if (typeof importObj === "object") {
+        Object.assign(tourney, importObj);
+    }
+    if (tourney.roster) {
+        // If roster data was imported, then init it.
+        tourney.roster = createRoster(tourney, tourney.roster);
+    } else {
+        // create a blank roster
+        tourney.roster = createRoster(tourney);
+    }
+    if (tourney.roundList.length >= 0) {
+        // If round data was imported, then init it.
+        tourney.roundList = tourney.roundList.map(
+            (roundData) => createRound(tourney, roundData)
+        );
+    }
     return tourney;
 }
 

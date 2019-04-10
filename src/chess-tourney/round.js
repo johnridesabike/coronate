@@ -1,17 +1,18 @@
 import {dummyPlayer} from "./player";
 import {last} from "lodash";
 import pairPlayers from "./pairing";
+import createMatch from "./match";
 
 /**
  * Create an object to represent a round in a tournament.
  * @param {object} tourney The tournament containing the round.
  */
-function createRound(tourney) {
+function createRound(tourney, importObj = {}) {
     const round = {
         /**
          * @property {number} id The ID number of the round.
          */
-        id: tourney.roundList.length,
+        id: importObj.id || tourney.roundList.length,
         /**
          * @property {object} ref_tourney A reference to the tournament
          * containing this round.
@@ -20,15 +21,16 @@ function createRound(tourney) {
         /**
          * @property {array} roster The list of players in this round.
          */
-        roster: tourney.roster.getActive(),
+        roster: importObj.roster || tourney.roster.getActive(),
         /**
          * @property {object} prevRound The round previous to this one.
+         * TODO: this might break on imports...
          */
         ref_prevRound: last(tourney.roundList) || null,
         /**
          * @property {array} matches The list of match objects.
          */
-        matches: [],
+        matches: importObj.matches || null,
         /**
          * Get whether or not all of the matches in this round have completed.
          * @returns {bool} `True` if they have all completed, `false` if they
@@ -105,7 +107,14 @@ function createRound(tourney) {
             }
         }
     };
-    round.matches = pairPlayers(round);
+    if (round.matches) {
+        // If match data was imported, then init it.
+        round.matches = round.matches.map(
+            (matchData) => createMatch(round, matchData)
+        );
+    } else {
+        round.matches = pairPlayers(round);
+    }
     return round;
 }
 

@@ -445,12 +445,18 @@ function ExportData({data}) {
     return (
         <section>
             <h2>Export tournament data</h2>
-            <textarea rows="50" cols="80" value={outputTourney} readOnly />
+            <textarea 
+                className="json"
+                rows="25"
+                cols="50" 
+                value={outputTourney}
+                readOnly />
             <h2>Export player data</h2>
             <form onSubmit={loadPlayers}>
                 <textarea
-                    rows="50"
-                    cols="80"
+                    className="json"
+                    rows="25"
+                    cols="50"
                     value={outputPlayers}
                     name="playerdata"
                     onChange={changedPlayers} />

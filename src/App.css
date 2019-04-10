@@ -125,3 +125,7 @@ li.inactive {
 .table__roster td {
   vertical-align: top;
 }
+
+textarea.json {
+    font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
+}

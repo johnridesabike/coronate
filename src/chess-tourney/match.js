@@ -1,5 +1,3 @@
-import {dummyPlayer} from "./player";
-
 /**
  * Update the ratings for a match based on their ratings when the match began
  * and the match result. See the `elo-rank` NPM package for more information.
@@ -44,7 +42,16 @@ function calcRatings(match) {
  * @param {object} black The `player` object for white.
  * @param {object} white The `player` object for black.
  */
-function createMatch(round, white, black) {
+function createMatch(round, importObj) {
+    let tourney = round.ref_tourney;
+    let [black, white] = importObj.players;
+    // If the players are ID numbers, get their referant objects.
+    if (typeof black === "number") {
+        black = tourney.roster.getPlayerByID(black);
+    }
+    if (typeof white === "number") {
+        white = tourney.roster.getPlayerByID(white);
+    }
     const match = {
         /**
          * @property {object} ref_round A reference to the round containing
@@ -55,12 +62,12 @@ function createMatch(round, white, black) {
          * @property {object} ref_tourney A reference to the tournament
          * containing this match.
          */
-        ref_tourney: round.ref_tourney,
+        ref_tourney: tourney,
         /**
          * @property {string} warnings Any warnings about the match, e.g. if
          * there was a pairing error.
          */
-        warnings: "",
+        warnings: importObj.warnings || "",
         /**
          * @property {array} players The pair of `Player` objects. White is at
          * index `0` and black is at index `1`.
@@ -71,22 +78,22 @@ function createMatch(round, white, black) {
          * win is `1`, and a draw is `0.5`. White is at index `0` and black is
          * at index `1`.
          */
-        result: [0, 0],
+        result: importObj.result || [0, 0],
         /**
          * @property {array} origRating the cached ratings from when the match
          * began. White is at index `0` and black is at index `1`.
          */
-        origRating: [white.rating, black.rating],
+        origRating: importObj.origRating || [white.rating, black.rating],
         /**
          * @property {array} newRating the updated ratings after the match ends.
          * White is at index `0` and black is at index `1`.
          */
-        newRating: [white.rating, black.rating],
+        newRating: importObj.newRating || [white.rating, black.rating],
         /**
          * @property {number} ideal How ideal this matchup was, based on the
          * maximum matching algorithm.
          */
-        ideal: 0,
+        ideal: importObj.ideal || 0,
         /**
          * Switch white and black.
          * @returns {object} This `match` object.
@@ -148,7 +155,8 @@ function createMatch(round, white, black) {
          * @returns {bool} `True` if it's a bye match, `false` if not.
          */
         isBye() {
-            return match.players.includes(dummyPlayer);
+            let dummies = match.players.map((p) => p.dummy);
+            return dummies.includes(true);
         },
         /**
          * Get all of the match data for a specific player color.
@@ -198,10 +206,10 @@ function createMatch(round, white, black) {
         }
     };
     // set bye rounds
-    if (match.players[0] === dummyPlayer) {
-        match.result = [0, 1];
-    } else if (match.players[1] === dummyPlayer) {
-        match.result = [1, 0];
+    if (match.players[0].dummy) {
+        match.result = [0, tourney.byeValue];
+    } else if (match.players[1].dummy) {
+        match.result = [tourney.byeValue, 0];
     }
     return match;
 }

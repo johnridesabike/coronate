@@ -150,7 +150,10 @@ function pairPlayers(round) {
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
-        byeMatch = createMatch(round, byePlayerData.player, dummyPlayer);
+        byeMatch = createMatch(
+            round,
+            {players: [byePlayerData.player, dummyPlayer]}
+        );
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
@@ -215,7 +218,10 @@ function pairPlayers(round) {
             const player1 = pair[0];
             const player2 = pair[1];
             const ideal = pair[2];
-            const match = createMatch(round, player1.player, player2.player);
+            const match = createMatch(
+                round,
+                {players: [player1.player, player2.player]}
+            );
             match.ideal = ideal / maxPriority;
             // A quick-and-easy way to keep colors mostly equal.
             if (player1.colorBalance > player2.colorBalance) {

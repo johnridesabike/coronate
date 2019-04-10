@@ -5,7 +5,7 @@ import {createPlayer, globalRoster} from "./player";
  * @param {array}  players A list of player objects.
  * @returns {object} The roster object.
  */
-function createRoster(tourney, players = []) {
+function createRoster(tourney, importObj = null) {
     const roster = {
         /**
          * @property {object} ref_tourney A reference to the tournemnt
@@ -15,7 +15,7 @@ function createRoster(tourney, players = []) {
         /**
          * @param {array} all A list of all of the players.
          */
-        all: players,
+        all: [],
         /**
          * @param {array} inactive A list of the players who won't be paired in
          * future rounds.
@@ -69,8 +69,21 @@ function createRoster(tourney, players = []) {
             }
             delete roster.all[roster.all.indexOf(player)];
             return roster;
+        },
+        getPlayerByID(id) {
+            return roster.all.filter((p) => p.id === id)[0];
         }
     };
+    // Importing JSON-parsed data
+    if (importObj) {
+        // Turn the player IDs into player objects
+        importObj.all.forEach(
+            (pId) => roster.importPlayer(pId)
+        );
+        roster.inactive = importObj.inactive.map(
+            (pId) => roster.getPlayerByID(pId)
+        );
+    }
     return roster;
 }
 
