@@ -2,17 +2,17 @@
  * The components in this file will eventually replace the v1 file.
  */
 import React, {useState} from "react";
-import {globalRoster} from "./chess-tourney";
+import {createTournament} from "./chess-tourney";
 
-export function Players() {
+export function Players({playerManager}) {
+    const [roster, setRoster] = useState(playerManager.roster);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
-    const [roster, setRoster] = useState(globalRoster.roster);
     const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
     const handleSubmit = function (event) {
         event.preventDefault();
-        globalRoster.addPlayer(newPlayer);
+        playerManager.addPlayer(newPlayer);
         setNewPlayer(newPlayerDefault);
-        setRoster(globalRoster.roster);
+        setRoster([...playerManager.roster]);
     };
     const updateField = function (event) {
         let update = {};
@@ -20,8 +20,8 @@ export function Players() {
         setNewPlayer(Object.assign({}, newPlayer, update));
     };
     const delPlayer = function (event) {
-        globalRoster.delPlayer(event.target.dataset.id);
-        setRoster([...globalRoster.roster]);
+        playerManager.delPlayer(event.target.dataset.id);
+        setRoster([...playerManager.roster]);
     };
     let rosterTable = "";
     if (roster.length > 0) {
@@ -66,37 +66,99 @@ export function Players() {
                 <p>
                     <label>
                     First name&nbsp;
-                    <input
-                        type="text"
-                        name="firstName"
-                        onChange={updateField}
-                        value={newPlayer.firstName}
-                        required />
+                    <input type="text" name="firstName" onChange={updateField}
+                        value={newPlayer.firstName} required />
                     </label>
                 </p>
                 <p>
                     <label>
                     Last name&nbsp;
-                    <input
-                        type="text"
-                        name="lastName"
-                        onChange={updateField}
-                        value={newPlayer.lastName}
-                        required />
+                    <input type="text" name="lastName" onChange={updateField}
+                        value={newPlayer.lastName} required />
                     </label>
                 </p>
                 <p>
                     <label>
                     Rating&nbsp;
-                    <input
-                        type="number"
-                        name="rating"
-                        onChange={updateField}
-                        value={newPlayer.rating} />
+                    <input type="number" name="rating" onChange={updateField}
+                        value={newPlayer.rating} required />
                     </label>
                 </p>
-                <input type="submit" value="Add"/>
+                <p>
+                    <input type="submit" value="Add"/>
+                </p>
             </form>
+        </div>
+    );
+}
+
+export function TournamentList({playerManager}) {
+    const newTourneyDefaults = {name: "Test"};
+    const [tourneyList, setTourneyList] = useState([]);
+    const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
+    const [openTourney, setOpenTourney] = useState(null);
+    const newTourney = function(event) {
+        event.preventDefault();
+        let tourney = createTournament(event.target.name.value);
+        setTourneyList([...tourneyList,...[tourney]])
+        setNewTourneyData(newTourneyDefaults);
+        setOpenTourney(tourney);
+    };
+    const updateField = function (event) {
+        let update = {};
+        update[event.target.name] = event.target.value
+        setNewTourneyData(Object.assign({}, newTourneyData, update));
+    };
+    return (
+        <main>
+            {(tourneyList.length > 0)
+            ?
+                <ol>
+                    {tourneyList.map((tourney, i) => 
+                        <li key={i}>
+                            {tourney.name}
+                        </li>    
+                    )}
+                </ol>
+            :
+                <p>
+                    No tournaments added yet.
+                </p>
+            }
+            <form onSubmit={newTourney}>
+                <input type="text" name="name" value={newTourneyData.name}
+                    onChange={updateField} required />
+                <input type="submit" value="New Tournament" />
+            </form>
+            {openTourney &&
+                <Tournament tourney={openTourney} playerManager={playerManager} />
+            }
+        </main>
+    );
+}
+
+function Tournament({tourney, playerManager}) {
+    const [roster, setRoster] = useState(tourney.roster.all);
+    const importDefault = function () {
+        tourney.roster.importPlayerList(playerManager.roster);
+        setRoster([...tourney.roster.all])
+    };
+    return (
+        <div>
+            {(roster.length > 0) 
+            ?
+                <ul>
+                {roster.map((player) =>
+                    <li key={player.id}>
+                        {player.firstName}      
+                    </li>
+                )}
+                </ul>
+            :
+                <button onClick={importDefault}>
+                    Import all players?
+                </button>
+            }
         </div>
     );
 }

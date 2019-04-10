@@ -1,4 +1,4 @@
-import {createPlayer, globalRoster} from "./player";
+import {createPlayer} from "./player";
 /**
  * Create a roster object which manages a tournament's players.
  * @param {object} tourney The roster's tournament.
@@ -28,14 +28,22 @@ function createRoster(tourney, importObj = null) {
         getActive() {
             return roster.all.filter((i) => !roster.inactive.includes(i));
         },
-        importPlayer(playerId) {
+        importPlayerIds(globalRoster, playerId) {
             let player = createPlayer(globalRoster.getPlayerById(playerId));
             player.isReference = true;
             roster.all.push(player);
             return roster;
         },
-        importPlayers(playerIdList) {
+        importPlayerIdsList(playerIdList) {
             playerIdList.map((id) => roster.importPlayer(id));
+            return roster;
+        },
+        importPlayerList(playerList) {
+            roster.all = playerList.map(function (origPlayer) {
+                let player = createPlayer(origPlayer);
+                player.isReference = true;
+                return player;
+            });
             return roster;
         },
         /**

@@ -1,5 +1,5 @@
 import createMatch from "./match";
-import {createPlayer, globalRoster} from "./player";
+import {createPlayer, createPlayerManager} from "./player";
 import createRoster from "./roster";
 import createRound from "./round";
 import scores from "./scores";
@@ -14,5 +14,5 @@ export {
     createRound,
     scores,
     createTournament,
-    globalRoster
+    createPlayerManager
 };

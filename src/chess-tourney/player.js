@@ -87,52 +87,58 @@ const dummyPlayer = Object.freeze(
     )
 );
 
-const globalRoster = {
-    roster: [],
-    lastId: -1,
-    /**
-     * Add a player to the roster.
-     * @param {object} player The player object to add.
-     * @returns {object} This created player object.
-     */
-    addPlayer(playerData) {
-        playerData.id = globalRoster.lastId + 1;
-        globalRoster.lastId = playerData.id;
-        let player = createPlayer(playerData);
-        globalRoster.roster.push(player);
-        return player;
-    },
-    /**
-     * Add a list of players to the roster.
-     * @param {array} players A list of players to add.
-     * @returns {array} The list of created player objects.
-     */
-    addPlayers(players) {
-        let newPlayerList = players.map(
-            (player) => globalRoster.addPlayer(player)
-        );
-        return newPlayerList;
-    },
-    getPlayerById(id) {
-        return globalRoster.roster.filter((p) => p.id === id)[0];
-    },
-    loadPlayerData(data) {
-        globalRoster.roster = data.roster.map(
-            (player) => createPlayer(player)
-        );
-    },
-    delPlayer(playerId) {
-        let index = globalRoster.roster.map(
-            (p) => p.id
-        ).indexOf(
-            Number(playerId)
-        );
-        if (index === -1) {
-            return null;
+function createPlayerManager(importObj = {}) {
+    const roster = {
+        roster: importObj.roster || [],
+        lastId: importObj.lastId || -1,
+        /**
+         * Add a player to the roster.
+         * @param {object} player The player object to add.
+         * @returns {object} This created player object.
+         */
+        addPlayer(playerData) {
+            playerData.id = roster.lastId + 1;
+            roster.lastId = playerData.id;
+            let player = createPlayer(playerData);
+            roster.roster.push(player);
+            return player;
+        },
+        /**
+         * Add a list of players to the roster.
+         * @param {array} players A list of players to add.
+         * @returns {array} The list of created player objects.
+         */
+        addPlayers(playersData) {
+            let newPlayerList = playersData.map(
+                (player) => roster.addPlayer(player)
+            );
+            return newPlayerList;
+        },
+        getPlayerById(id) {
+            return roster.roster.filter((p) => p.id === id)[0];
+        },
+        loadPlayerData(data) {
+            roster.roster = data.map(
+                (player) => createPlayer(player)
+            );
+        },
+        delPlayer(playerId) {
+            let index = roster.roster.map(
+                (p) => p.id
+            ).indexOf(
+                Number(playerId)
+            );
+            if (index === -1) {
+                return null;
+            }
+            let player = roster.roster.splice(index, 1);
+            return player;
         }
-        let player = globalRoster.roster.splice(index, 1);
-        return player;
+    };
+    if (importObj.playerData) {
+        roster.roster = roster.addPlayers(importObj.playerData);
     }
-};
+    return roster;
+}
 
-export {dummyPlayer, createPlayer, globalRoster};
+export {dummyPlayer, createPlayer, createPlayerManager};

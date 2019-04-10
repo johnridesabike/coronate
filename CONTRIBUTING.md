@@ -7,6 +7,7 @@ The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is 
 Other API to-dos:
 
 - Add player match restrictions (don't pair family members, etc.).
+- Clean up player management methods & improve communication between global player management and tournament-local player management.
 
 ## Front-end
 
