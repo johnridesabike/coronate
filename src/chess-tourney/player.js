@@ -1,5 +1,4 @@
 import EloRank from "elo-rank";
-import {last} from "lodash";
 
 /**
  * Represents an indivudal player. Call it with `createPlayer("John", ...)` or
