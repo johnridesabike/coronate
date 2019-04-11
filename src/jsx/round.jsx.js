@@ -1,4 +1,4 @@
-import React, {useState, Fragment} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 
 export function RoundContainer({tourney, round, roundList, setRoundList}) {
     if (round) {
@@ -20,7 +20,7 @@ function NewRound({tourney, setRoundList}) {
                 Make new round
             </button>);
     } else {
-        return <p>Complete the first last round first.</p>
+        return <p>Complete the last round first.</p>
     }
 }
 
@@ -76,14 +76,10 @@ function Round({round}) {
                 </tr>
                 </thead>
                 <tbody>
-                {/* {matches.map((match, i) =>
+                {matches.map((match) =>
                     <RoundMatch
-                        key={i}
-                        tourney={tourney}
-                        roundId={roundId}
-                        matchId={i}
-                        setWinner={setWinner} />
-                )} */}
+                        key={match.id} match={match} />
+                )}
                 </tbody>
             </table>
             <p style={{textAlign: "center"}}>
@@ -97,5 +93,48 @@ function Round({round}) {
                 Delete round
             </button> */}
         </Fragment>
+    );
+}
+
+function RoundMatch({match}) {
+    const [result, setResult] = useState(match.result);
+    useEffect(function () {
+        match.setResult(result);
+    }, [result]);
+    return (
+        <tr className={match.isBye() ? "inactive" : ""}>
+            <td className="table__number">{match.id + 1}</td>
+            <td>
+                <input 
+                type="checkbox"
+                checked={result[0] === 1}
+                disabled={match.isBye()}
+                onChange={() => setResult([1,0])} />
+            </td>
+            <td className="table__player">
+                {match.getWhite().player.firstName}
+            </td>
+            <td>
+                <input 
+                    type="checkbox"
+                    checked={result[0] === 0.5}
+                    disabled={match.isBye()}
+                    onChange={() => setResult([0.5, 0.5])} />
+            </td>
+            <td className="table__player">
+                {match.getBlack().player.firstName}
+            </td>
+            <td>
+                <input 
+                    type="checkbox"
+                    checked={result[1] === 1}
+                    disabled={match.isBye()}
+                    onChange={() => setResult([0, 1])} />
+            </td>
+            <td>
+                <button >?</button>
+                {match.warnings}
+            </td>
+        </tr>
     );
 }

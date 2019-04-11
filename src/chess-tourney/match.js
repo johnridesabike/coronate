@@ -53,6 +53,7 @@ function createMatch(round, importObj) {
         white = tourney.roster.getPlayerById(white);
     }
     const match = {
+        id: importObj.id || 0,
         /**
          * @property {object} ref_round A reference to the round containing
          * this match.
@@ -129,6 +130,11 @@ function createMatch(round, importObj) {
          */
         draw() {
             match.result = [0.5, 0.5];
+            calcRatings(match);
+            return match;
+        },
+        setResult(result) {
+            match.result = result;
             calcRatings(match);
             return match;
         },

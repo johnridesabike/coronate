@@ -125,6 +125,9 @@ function createRound(tourney, importObj = {}) {
     } else {
         round.matches = pairPlayers(round);
     }
+    round.matches.forEach(function (match, index) {
+        match.id = index;
+    });
     return round;
 }
 
