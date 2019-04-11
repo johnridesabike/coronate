@@ -144,26 +144,39 @@ function areScoresEqual(player1, player2) {
     return areEqual;
 }
 
+function getTbFunc(funcName) {
+    const tieBreakMethods = {
+        modifiedMedian,
+        playerColorBalance,
+        playerOppScoreCum,
+        playerScoreCum,
+        solkoff
+    };
+    return tieBreakMethods[funcName];
+}
+
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {number} roundId
  * @returns {Array} The sorted list of players
  */
 function calcStandings(tourney, roundId = null) {
-    const tieBreaks = config.tieBreak.filter((m) => m.active);
+    const tieBreaks = tourney.tieBreak.filter((m) => m.active);
     const standingsFlat = tourney.roster.all.map(function (player) {
         var standing = {
             player: player,
             score: playerScore(tourney, player, roundId)
         };
         tieBreaks.forEach(function (method) {
-            standing[method.func.name] = method.func(tourney, player, roundId);
+            standing[method.name] = getTbFunc(
+                method.funcName
+            )(tourney, player, roundId);
         });
         return standing;
     });
     var sortFunc = firstBy((player) => player.score, -1);
     tieBreaks.forEach(function (method) {
-        sortFunc = sortFunc.thenBy((player) => player[method.func.name], -1);
+        sortFunc = sortFunc.thenBy((player) => player[method.funcName], -1);
     });
     standingsFlat.sort(sortFunc);
     const standingsTree = [];
@@ -182,23 +195,6 @@ function calcStandings(tourney, roundId = null) {
     });
     return standingsTree;
 }
-
-/**
- * `scores.tieBreak` is used for to determine the tie-break methods. USCF
- * recommends using these methods in-order: modified median, solkoff,
- * cumulative, and cumulative of opposition.
- * */
-const tieBreakMethods = {
-    modifiedMedian,
-    playerColorBalance,
-    playerOppScoreCum,
-    playerScoreCum,
-    solkoff
-};
-config.tieBreak.forEach(function (method) {
-    // Dumb question... does assigning functions like this harm security?
-    method.func = tieBreakMethods[method.funcName];
-});
 
 export default Object.freeze({
     calcStandings,

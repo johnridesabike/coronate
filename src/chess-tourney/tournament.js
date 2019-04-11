@@ -1,6 +1,7 @@
 import createRoster from "./roster";
 import createRound from "./round";
 import {last, times} from "lodash";
+import config from "./default-config.json";
 
 function createTournament(importObj = "") {
     let name;
@@ -32,6 +33,7 @@ function createTournament(importObj = "") {
          * @property {object} roster The roster object.
          */
         roster: null,
+        tieBreak: config.tieBreak,
         /**
          * Get if a new round is ready or not.
          * @returns {bool} `True` if a round is ready, `false` if not.

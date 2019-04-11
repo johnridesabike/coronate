@@ -28,7 +28,7 @@ function createRoster(tourney, importObj = null) {
         getActive() {
             return roster.all.filter((i) => !roster.inactive.includes(i));
         },
-        importPlayerIds(globalRoster, playerId) {
+        importPlayerById(globalRoster, playerId) {
             let player = createPlayer(globalRoster.getPlayerById(playerId));
             player.isReference = true;
             roster.all.push(player);
@@ -72,14 +72,31 @@ function createRoster(tourney, importObj = null) {
          * @returns {object} This roster object.
          */
         removePlayer(player) {
-            if (roster.ref_tourney.getMatchesByPlayer(player).length > 0) {
+            if (roster.canRemovePlayer(player)) {
                 return null; // TODO: add a helpful error message
             }
             delete roster.all[roster.all.indexOf(player)];
             return roster;
         },
+        removePlayerById(playerId) {
+            roster.removePlayer(roster.getPlayerById(playerId));
+            return roster;
+        },
         getPlayerById(id) {
             return roster.all.filter((p) => p.id === id)[0];
+        },
+        canRemovePlayer(player) {
+            return (roster.ref_tourney.getMatchesByPlayer(player).length > 0);
+        },
+        canRemovePlayerById(id) {
+            return roster.canRemovePlayer(roster.getPlayerById(id));
+        },
+        setByIdList(playerManager, list) {
+            const currentIds = roster.all.map((p) => p.id);
+            const toAdd = list.filter((id) => !currentIds.includes(id));
+            const toRemove = currentIds.filter((id) => !list.includes(id));
+            toAdd.forEach((id) => roster.importPlayerById(playerManager, id));
+            toRemove.forEach((id) => roster.removePlayerById(id));
         }
     };
     // Importing JSON-parsed data

@@ -1,32 +1,34 @@
 import React, { useState } from "react";
 import "./App.css";
+import {MainNav, NavItem} from "./components.jsx"
 import {createPlayerManager} from "./chess-tourney";
-import {Players, TournamentList} from "./chess-tourneyv2.jsx.js";
+import {Players} from "./players.jsx";
+import {TournamentList} from "./tournament.jsx";
 import demoRoster from "./demo-players.json";
 
 // const defaultTournament = createTournament("CVL Winter Open");
 const demoData = {playerData: demoRoster.slice(0,16)}
 
 function App() {
+    const [tourneylist, setTourneyList] = useState([]);
     const [playerManager, setPlayerManager] = useState(
         createPlayerManager(demoData)
     );
     const [currentView, setCurrentView] = useState(0);
+    const setViewList = (id) => setCurrentView(id);
     const viewList = [
         <Players playerManager={playerManager} />,
-        <TournamentList playerManager={playerManager} />
+        <TournamentList playerManager={playerManager}
+            tourneyList={tourneylist} setTourneyList={setTourneyList} />
     ];
-    const setViewList = (event) => setCurrentView(event.target.dataset.id);
     return (
         <main>
-            <nav className="main-menu">
-                <button data-id="0" onClick={setViewList}>
-                    Players
-                </button>
-                <button data-id="1" onClick={setViewList}>
-                    Tournaments
-                </button>
-            </nav>
+            <MainNav>
+                <NavItem name="Players"
+                    action={() => setViewList(0)} isOpen={currentView === 0} />
+                <NavItem name="Tournaments"
+                    action={() => setViewList(1)} isOpen={currentView === 1} />
+            </MainNav>
             {viewList[currentView]}
         </main>
     );
