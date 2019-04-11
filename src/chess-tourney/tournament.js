@@ -11,6 +11,7 @@ function createTournament(importObj = "") {
         name = importObj.name;
     }
     const tourney = {
+        id: 0,
         /**
          * @property {string} name The display name of the tournament.
          */
@@ -33,7 +34,7 @@ function createTournament(importObj = "") {
          * @property {object} roster The roster object.
          */
         roster: null,
-        tieBreak: config.tieBreak,
+        tieBreak: JSON.parse(configString).tieBreak,
         /**
          * Get if a new round is ready or not.
          * @returns {bool} `True` if a round is ready, `false` if not.

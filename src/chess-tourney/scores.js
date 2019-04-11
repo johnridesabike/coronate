@@ -1,5 +1,4 @@
 import {firstBy} from "thenby";
-import config from "./config";
 import {dummyPlayer} from "./player";
 /**
  * Get a list of all of a player's scores from each match.
@@ -92,7 +91,7 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
         player,
         roundId
     ).filter(
-        (opponent) => opponent !== dummyPlayer
+        (opponent) => !opponent.dummy
     ).map(
         (opponent) => playerScore(tourney, opponent, roundId)
     );
@@ -123,7 +122,7 @@ function playerOppScoreCum(tourney, player, roundId = null) {
         player,
         roundId
     ).filter(
-        (opponent) => opponent !== dummyPlayer
+        (opponent) => !opponent.dummy
     );
     var oppScores = opponents.map((p) => playerScoreCum(tourney, p, roundId));
     var score = 0;

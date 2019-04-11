@@ -13,9 +13,10 @@ export function TournamentList({playerManager, tourneyList, setTourneyList}) {
     const newTourney = function(event) {
         event.preventDefault();
         let tourney = createTournament(event.target.name.value);
+        tourney.id = tourneyList.length;
         setTourneyList([...tourneyList,...[tourney]])
         setNewTourneyData(newTourneyDefaults);
-        setOpenTourney(tourney);
+        setOpenTourney(tourney)
     };
     const updateField = function (event) {
         let update = {};
@@ -49,7 +50,10 @@ export function TournamentList({playerManager, tourneyList, setTourneyList}) {
                 <input type="submit" value="New Tournament" />
             </form>
             {openTourney &&
-                <Tournament tourney={openTourney} playerManager={playerManager} />
+                <Tournament 
+                    key={openTourney.id}
+                    tourney={openTourney}
+                    playerManager={playerManager} />
             }
         </main>
     );
@@ -65,7 +69,8 @@ function Tournament({tourney, playerManager}) {
                 <Tab>Standings</Tab>
             </TabList>
             <TabPanel>
-                <TourneySetup tourney={tourney} playerManager={playerManager}/>
+                <TourneySetup key={tourney.id} roster={roster} setRoster={setRoster}
+                    tourney={tourney} playerManager={playerManager}/>
             </TabPanel>
             <TabPanel>
                 <Standings tourney={tourney} />
@@ -74,39 +79,39 @@ function Tournament({tourney, playerManager}) {
     );
 }
 
-function TourneySetup({tourney, playerManager}) {
-    const [roster, setRoster] = useState(tourney.roster.all);
+function TourneySetup({tourney, playerManager, roster, setRoster}) {
     const [isSelecting, setIsSelecting] = useState(roster.length === 0);
     if (isSelecting) {
         return <PlayerSelect
             tourney={tourney} 
             playerManager={playerManager}
             setIsSelecting={setIsSelecting}
+            roster={roster}
+            key={tourney.id}
             setRoster={setRoster} />
     } else {
         return <TourneyManager 
             tourney={tourney}
             roster={roster}
             setRoster={setRoster}
+            key={tourney.id}
             setIsSelecting={setIsSelecting} />
     }
 }
 
-function PlayerSelect({playerManager, tourney, setIsSelecting, setRoster}) {
-    const [checked, setChecked] = useState(tourney.roster.all.map((p) => p.id));
-    const toggleCheck = function (event) {
-        const id = Number(event.target.dataset.id);
-        if (checked.includes(id)) {
-            setRoster([...tourney.roster.all]);
-            setChecked(checked.filter((i) => i !== id));
-        } else {
-            setRoster([...tourney.roster.all]);
-            setChecked([id].concat(checked));
-        }
-    };
+function PlayerSelect({playerManager, tourney, setIsSelecting, roster, setRoster}) {
+    const [checked, setChecked] = useState(roster.map((p) => p.id));
     useEffect(function () {
         tourney.roster.setByIdList(playerManager, checked);
     });
+    const toggleCheck = function (event) {
+        const id = Number(event.target.dataset.id);
+        if (checked.includes(id)) {
+            setChecked(checked.filter((i) => i !== id));
+        } else {
+            setChecked([id].concat(checked));
+        }
+    };
     const globalRoster = playerManager.roster;
     return (
         <Fragment>
@@ -207,7 +212,10 @@ export function TourneyManager({tourney, roster, setRoster, setIsSelecting}) {
             <button onClick={() => setIsSelecting(true)}>
                 Select players
             </button>
-            <Options tourney={tourney} />
+            <button>
+                New round
+            </button>
+            <Options key={tourney.id} tourney={tourney} />
         </Fragment>
     );
 }
@@ -215,8 +223,8 @@ export function TourneyManager({tourney, roster, setRoster, setIsSelecting}) {
 function Options({tourney}) {
     const [tbOptions, setTbOptions] = useState(tourney.tieBreak);
     const tbToggle = (event) => {
-        let key = event.target.dataset.key;
-        tbOptions[key].active = event.target.checked;
+        let id = event.target.dataset.pos;
+        tbOptions[id].active = event.target.checked;
         setTbOptions([...tbOptions]);
     };
     const tbMove = (pos, dir) => {
@@ -229,29 +237,28 @@ function Options({tourney}) {
     useEffect(function () {
         tourney.tieBreak = tbOptions
     });
-    let tieBreaks = tbOptions.map((method, i) => 
-        <li key={i}>
-            <input 
-                type="checkbox"
-                data-pos={i} 
-                checked={method.active} 
-                onChange={tbToggle}/>
-            {method.name}
-            <button onClick={() => tbMove(i, -1)} disabled={i === 0}>
-                <span role="img" aria-label="Move up">↑</span>
-            </button>
-            <button onClick={() => tbMove(i, 1)}
-                disabled={i === tbOptions.length - 1} >
-                <span role="img" aria-label="Move down">↓</span>
-            </button>
-        </li>
-    );
     return (
         <section>
             <h3>Options</h3>
             <h3>Tie break priority</h3>
             <ol>
-                {tieBreaks}
+            {tbOptions.map((method, i) => 
+                <li key={method.funcName}>
+                    <input 
+                        type="checkbox"
+                        data-pos={i} 
+                        checked={method.active} 
+                        onChange={tbToggle}/>
+                    {method.name}
+                    <button onClick={() => tbMove(i, -1)} disabled={i === 0}>
+                        <span role="img" aria-label="Move up">↑</span>
+                    </button>
+                    <button onClick={() => tbMove(i, 1)}
+                        disabled={i === tbOptions.length - 1} >
+                        <span role="img" aria-label="Move down">↓</span>
+                    </button>
+                </li>
+            )}
             </ol>
         </section>
     );
@@ -289,4 +296,81 @@ export function Standings({tourney}) {
         )}
       </table>
     );
-  }
+}
+
+
+function Round({tourney, roundId}) {
+    const round = tourney.roundList[roundId];
+    const [matches, setMatches] = useState(round.matches.map(o => Object.assign({}, o)));
+    const setWinner = (color, index, event) => {
+        let origMatch = round.matches[index];
+        if(event.target.checked) {
+            if(color === 0) {
+                origMatch.whiteWon();
+            } else if (color === 1) {
+                origMatch.blackWon();
+            } else if (color === 0.5) {
+                origMatch.draw();
+            }
+        } else {
+            origMatch.resetResult();
+        }
+        // matches[index] = match;
+        setMatches(round.matches.map(o => Object.assign({}, o)));
+    }
+    const randomize = () => {
+        matches.forEach((match, i) => {
+            let origMatch = round.matches[i];
+            if (origMatch.isBye()) {
+                return;
+            }
+            let rando = Math.random();
+            if (rando >= 0.55) {
+                origMatch.whiteWon();
+            } else if (rando >= .1) {
+                origMatch.blackWon();
+            } else {
+                origMatch.draw();
+            }
+        });
+        setMatches(round.matches.map(o => Object.assign({}, o)));
+    }
+    return (
+        <Fragment>
+            <table className="table__roster">
+                <caption>Round {round.id + 1} results</caption>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Won</th>
+                    <th>White</th>
+                    <th>Draw</th>
+                    <th>Black</th>
+                    <th>Won</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {/* {matches.map((match, i) =>
+                    <RoundMatch
+                        key={i}
+                        tourney={tourney}
+                        roundId={roundId}
+                        matchId={i}
+                        setWinner={setWinner} />
+                )} */}
+                </tbody>
+            </table>
+            <p style={{textAlign: "center"}}>
+                <button onClick={randomize}>Random!</button>
+            </p>
+            <h2>Actions</h2>
+            {/* <button
+                disabled={round !== last(tourney.roundList)}
+                data-roundid={round.id}
+                onClick={delFunc}>
+                Delete round
+            </button> */}
+        </Fragment>
+    );
+}
