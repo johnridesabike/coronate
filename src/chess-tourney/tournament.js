@@ -1,6 +1,6 @@
 import createRoster from "./roster";
 import createRound from "./round";
-import {last, times} from "lodash";
+import {last, times, cloneDeep} from "lodash";
 import config from "./default-config.json";
 
 function createTournament(importObj = "") {
@@ -34,7 +34,7 @@ function createTournament(importObj = "") {
          * @property {object} roster The roster object.
          */
         roster: null,
-        tieBreak: JSON.parse(configString).tieBreak,
+        tieBreak: cloneDeep(config.tieBreak),
         /**
          * Get if a new round is ready or not.
          * @returns {bool} `True` if a round is ready, `false` if not.
@@ -143,6 +143,10 @@ function createTournament(importObj = "") {
          */
         removePlayerFromByeQueue(player) {
             tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
+            return tourney;
+        },
+        setByeQueue(playerList) {
+            tourney.byQueue = playerList;
             return tourney;
         }
     };

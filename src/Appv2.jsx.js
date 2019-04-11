@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
-import {MainNav, NavItem} from "./components.jsx"
+import {MainNav, NavItem} from "./jsx/utility.jsx"
 import {createPlayerManager} from "./chess-tourney";
-import {Players} from "./players.jsx";
-import {TournamentList} from "./tournament.jsx";
+import {Players} from "./jsx/players.jsx";
+import {TournamentList} from "./jsx/tournament.jsx";
 import demoRoster from "./demo-players.json";
 
 // const defaultTournament = createTournament("CVL Winter Open");

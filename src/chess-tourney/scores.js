@@ -1,5 +1,4 @@
 import {firstBy} from "thenby";
-import {dummyPlayer} from "./player";
 /**
  * Get a list of all of a player's scores from each match.
  * @param {Player} player
