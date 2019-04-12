@@ -1,32 +1,35 @@
 import React, {useState, useEffect, Fragment} from "react";
 
-export function TourneySetup({tourney, playerManager, roster, setRoster}) {
-    const [isSelecting, setIsSelecting] = useState(roster.length === 0);
+export function TourneySetup({tourney, playerManager, playerList, setPlayerList}) {
+    const [isSelecting, setIsSelecting] = useState(playerList.length === 0);
     if (isSelecting) {
         return <PlayerSelect
             key={tourney.id}
             tourney={tourney} 
             playerManager={playerManager}
             setIsSelecting={setIsSelecting}
-            roster={roster}
-            setRoster={setRoster}
+            setPlayerList={setPlayerList}
             />
     } else {
         return <TourneyManager
             key={tourney.id}
             tourney={tourney}
-            roster={roster}
             setIsSelecting={setIsSelecting} />
     }
 }
 
-function PlayerSelect({playerManager, tourney, setIsSelecting, roster, setRoster}) {
+function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
+    const [pImports, setPImports] = useState(tourney.roster.all.map((p) => p.id));
+    useEffect(function () {
+        tourney.roster.setByIdList(playerManager, pImports);
+        setPlayerList([...tourney.roster.all])
+    }, [pImports]);
     const toggleCheck = function (event) {
         const id = Number(event.target.dataset.id);
-        if (roster.includes(id)) {
-            setRoster(roster.filter((i) => i!== id));
+        if (pImports.includes(id)) {
+            setPImports(pImports.filter((i) => i!== id));
         } else {
-            setRoster([id].concat(roster));
+            setPImports([id].concat(pImports));
         }
     };
     const globalRoster = playerManager.roster;
@@ -40,16 +43,16 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, roster, setRoster
                 <li key={player.id}>
                     <input type="checkbox" data-id={player.id}
                         onChange={toggleCheck}
-                        checked={roster.includes(player.id)}
+                        checked={pImports.includes(player.id)}
                         disabled={tourney.roster.canRemovePlayerById(player.id)} />
                     {player.firstName} {player.lastName}
                 </li>    
             )}
             </ul>
-            <button onClick={() => setRoster(globalRoster.map((p) => p.id))}>
+            <button onClick={() => setPImports(globalRoster.map((p) => p.id))}>
                 Select all
             </button>
-            <button onClick={() => setRoster([])}>
+            <button onClick={() => setPImports([])}>
                 Select none
             </button>
             <button onClick={() => setIsSelecting(false)}>
@@ -59,7 +62,7 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, roster, setRoster
     );
 }
 
-export function TourneyManager({tourney, roster, setIsSelecting}) {
+export function TourneyManager({tourney, setIsSelecting}) {
     const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
     const byeSignUp = (player) => {
         setByeQueue([...byeQueue,...[player]]);

@@ -99,6 +99,9 @@ function createRound(tourney, importObj = {}) {
                 match = round.matches[match];
             }
             match.resetResult();
+            match.players.forEach(function (player) {
+                player.matchCount -= 1;
+            });
             round.matches = round.matches.filter((m) => m !== match);
             return round;
         },

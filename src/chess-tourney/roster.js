@@ -29,8 +29,7 @@ function createRoster(tourney, importObj = null) {
             return roster.all.filter((i) => !roster.inactive.includes(i));
         },
         importPlayerById(globalRoster, playerId) {
-            let player = createPlayer(globalRoster.getPlayerById(playerId));
-            player.isReference = true;
+            let player = globalRoster.getPlayerById(playerId);
             roster.all.push(player);
             return roster;
         },
@@ -39,11 +38,7 @@ function createRoster(tourney, importObj = null) {
             return roster;
         },
         importPlayerList(playerList) {
-            roster.all = playerList.map(function (origPlayer) {
-                let player = createPlayer(origPlayer);
-                player.isReference = true;
-                return player;
-            });
+            roster.all = playerList;
             return roster;
         },
         /**

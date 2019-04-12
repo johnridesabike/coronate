@@ -34,22 +34,18 @@ function createPlayer(importObj = {}) {
          */
         dummy: importObj.dummy || false,
         /**
-         * @property {number} Ne Number of games the rating is based on.
+         * @property {number} matchCount Number of games the rating is based on.
          */
-        Ne: importObj.Ne || 0,
-        /**
-         * TODO
-         */
-        isReference: importObj.isReference || false,
+        matchCount: importObj.matchCount || 0,
         /**
          * Create an Elo calculator with an updated K-factor. See the `elo-rank`
          * NPM package for more information.
          * @param {object} tourney The current tournament.
          * @returns {object} An `EloRank` object.
          */
-        eloRank(tourney) {
-            const m = tourney.getMatchesByPlayer(player).length;
-            const K = 800 / (player.Ne + m);
+        getEloRank() {
+            const ne = player.matchCount || 1;
+            const K = (800 / ne);
             return new EloRank(K);
         },
         /**

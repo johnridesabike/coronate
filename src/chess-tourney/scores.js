@@ -60,8 +60,8 @@ function playerScoreCum(tourney, player, roundId = null) {
  * Calculate a player's color balance
  * @param {Player} player
  * @param {Int}    round The ID of the highest round to consider
- * @returns {Int} A negative number means they played as black more. A positive
- * number means they played as white more.
+ * @returns {Int} A negative number means they played as white more. A positive
+ * number means they played as black more.
  */
 function playerColorBalance(tourney, player, roundId = null) {
     var color = 0;
@@ -70,9 +70,9 @@ function playerColorBalance(tourney, player, roundId = null) {
     ).forEach(
         function (match) {
             if (match.players[0] === player) {
-                color += 1;
-            } else if (match.players[1] === player) {
                 color += -1;
+            } else if (match.players[1] === player) {
+                color += 1;
             }
         }
     );

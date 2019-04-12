@@ -1,14 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx"
 import {RoundContainer} from "./round.jsx";
 
-export function TournamentList({playerManager, tourneyList, setTourneyList}) {
+export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
-    const [openTourney, setOpenTourney] = useState(null);
     const newTourney = function(event) {
         event.preventDefault();
         let tourney = createTournament(event.target.name.value);
@@ -26,8 +25,17 @@ export function TournamentList({playerManager, tourneyList, setTourneyList}) {
         const id = event.target.dataset.id;
         setOpenTourney(tourneyList[id])
     };
-    return (
-        <main>
+    let content = "";
+    if (openTourney) {
+        content = 
+        <Tournament 
+        key={openTourney.id}
+        tourney={openTourney}
+        playerManager={playerManager}
+        setOpenTourney={setOpenTourney} />
+    } else {
+        content = 
+        <Fragment>
             {(tourneyList.length > 0)
             ?
                 <ol>
@@ -48,36 +56,35 @@ export function TournamentList({playerManager, tourneyList, setTourneyList}) {
                     onChange={updateField} required />
                 <input type="submit" value="New Tournament" />
             </form>
-            {openTourney &&
-                <Tournament 
-                    key={openTourney.id}
-                    tourney={openTourney}
-                    playerManager={playerManager} />
-            }
+        </Fragment>
+    }
+    return (
+        <main>
+            {content}
         </main>
     );
 }
 
-function Tournament({tourney, playerManager}) {
-    const [roster, setRoster] = useState(tourney.roster.all.map((p) => p.id));
-    const [roundList, setRoundList] = useState(tourney.roundList);
+function Tournament({tourney, playerManager, setOpenTourney}) {
+    const [playerList, setPlayerList] = useState(tourney.roster.all);
     const [roundNums, setRoundNums] = useState(
         [...Array(tourney.getNumOfRounds()).keys()]
     );
     useEffect(function () {
-        tourney.roster.setByIdList(playerManager, roster);
         setRoundNums([...Array(tourney.getNumOfRounds()).keys()]);
-    }, [roster]);
+    }, [playerList]);
+    const [roundList, setRoundList] = useState(tourney.roundList);
     const isRoundReady = function (id) {
         // we also return if it's the next available round so the user can begin it
         return roundList[id] || id === roundList.length;
     }
     return (
         <Tabs>
+            <button onClick={() => setOpenTourney(null)}>&lt; back</button>
             <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Setup</Tab>
-                <Tab disabled={roster.length === 0}>Standings</Tab>
+                <Tab disabled={playerList.length === 0}>Standings</Tab>
                 {roundNums.map((roundNum) => 
                     <Tab key={roundNum} disabled={!isRoundReady(roundNum)}>
                         Round {roundNum + 1}
@@ -85,7 +92,8 @@ function Tournament({tourney, playerManager}) {
                 )}
             </TabList>
             <TabPanel>
-                <TourneySetup key={tourney.id} roster={roster} setRoster={setRoster}
+                <TourneySetup key={tourney.id} setPlayerList={setPlayerList}
+                    playerList={playerList}
                     tourney={tourney} playerManager={playerManager}/>
             </TabPanel>
             <TabPanel>

@@ -1,98 +1,66 @@
 import React, { useState } from "react";
 import "./App.css";
-import {createTournament, globalRoster} from "./chess-tourney";
-import {MainRoster, Round} from "./chess-tourney.jsx.js";
-import {Players} from "./chess-tourneyv2.jsx.js";
-import {last} from "lodash";
+import {MainNav, NavItem} from "./jsx/utility.jsx.js"
+import {createPlayerManager} from "./chess-tourney";
+import {Players} from "./jsx/players.jsx.js";
+import {TournamentList} from "./jsx/tournament.jsx.js";
 import demoRoster from "./demo-players.json";
 
-globalRoster.addPlayers(demoRoster.slice(0,16));
-
-const defaultTournament = createTournament("CVL Winter Open");
+// const defaultTournament = createTournament("CVL Winter Open");
+const demoData = {playerData: demoRoster.slice(0,16)}
 
 function App() {
-    const [tourney, setTourney] = useState(defaultTournament);
-    const reset = (newData) => {
-        let newTabs = [...defaultTabs];
-        let newTourney = createTournament(newData);
-        newTabs = newTabs.concat(
-            newTourney.roundList.map((round) => ({
-                name: "Round " + (round.id + 1),
-                id: round.id,
-                contents: <Round 
-                    tourney={newTourney} 
-                    roundId={round.id}
-                    delFunc={delRound}/>
-            }))
-        );
-        setTourney(newTourney);
-        setTabList(newTabs);
-        setCurrentTab(tabList[0])
-    };
-    const defaultTabs = [
-        {
-            name: "Players",
-            contents: <Players />
-                
-        },
-        {
-            name: "Tournament",
-            contents: <MainRoster tourney={tourney} loadFunc={reset}/>
-        }
-    ];
-    const [tabList, setTabList] = useState([...defaultTabs]);
-    const [currentTab, setCurrentTab] = useState(tabList[0]);
-    const newRound = (event) => {
-        let round = tourney.newRound();
-        if (!round) {
-            alert("Either add players or complete the current matches first.");
-            return;
-        }
-        tabList.push({
-            name: "Round " + (round.id + 1),
-            id: round.id,
-            contents: <Round 
-                tourney={tourney} 
-                roundId={round.id}
-                delFunc={delRound} />
-        });
-        setTabList([].concat(tabList));
-        setCurrentTab(tabList[tabList.length - 1])
-    };
-    const delRound = (event) => {
-        let roundid = Number(event.target.dataset.roundid);
-        tourney.removeRound(event.target.dataset.roundid);
-        let newTablist = tabList.filter((t) => t.id !== roundid);
-        setTabList(newTablist);
-        setCurrentTab(last(newTablist));
-    };
-    return (
-        <div className="tournament">
-        <nav className="tabbar">
-            <ul>
-            {tabList.map((tab, i) => 
-                <li key={i}>
-                <button
-                    className="tab"
-                    onClick={() => setCurrentTab(tab)}
-                    disabled={currentTab === tab} >
-                    {tab.name}
-                </button>
-                </li>
-            )}
-            <li>
-                <button 
-                className="tab new_round"
-                onClick={newRound} >
-                New Round
-                </button>
-            </li>
-            </ul>
-        </nav>
-        <h1>Chessahoochee: a chess tournament app</h1>
-        {currentTab.contents}
-        </div>
+    const [tourneylist, setTourneyList] = useState([]);
+    const [openTourney, setOpenTourney] = useState(null);
+    const [playerManager, setPlayerManager] = useState(
+        createPlayerManager(demoData)
     );
+    const [currentView, setCurrentView] = useState(0);
+    const setViewList = (id) => setCurrentView(id);
+    const viewList = [
+        <Players playerManager={playerManager} />,
+        <TournamentList playerManager={playerManager}
+            tourneyList={tourneylist} setTourneyList={setTourneyList}
+            openTourney={openTourney} setOpenTourney={setOpenTourney} />
+    ];
+    return (
+        <main>
+            <MainNav>
+                <NavItem name="Players"
+                    action={() => setViewList(0)} isOpen={currentView === 0} />
+                <NavItem name="Tournaments"
+                    action={() => setViewList(1)} isOpen={currentView === 1} />
+            </MainNav>
+            {viewList[currentView]}
+        </main>
+    );
+    // return (
+    //     <div className="tournament">
+    //     <nav className="tabbar">
+    //         <ul>
+    //         {tabList.map((tab, i) => 
+    //             <li key={i}>
+    //             <button
+    //                 className="tab"
+    //                 onClick={() => setCurrentTab(tab)}
+    //                 disabled={currentTab === tab} >
+    //                 {tab.name}
+    //             </button>
+    //             </li>
+    //         )}
+    //         <li>
+    //             <button 
+    //             className="tab new_round"
+    //             onClick={newRound} >
+    //             New Round
+    //             </button>
+    //         </li>
+    //         </ul>
+    //     </nav>
+    //     <h1>Chessahoochee: a chess tournament app</h1>
+    //     {currentTab.contents}
+    //     </div>
+    // );
 }
 
 function Caution() {

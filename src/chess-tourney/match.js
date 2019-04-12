@@ -5,8 +5,8 @@
  * @returns {object} The `match` object.
  */
 function calcRatings(match) {
-    let whiteElo = match.players[0].eloRank(match.ref_tourney);
-    let blackElo = match.players[1].eloRank(match.ref_tourney);
+    let whiteElo = match.players[0].getEloRank();
+    let blackElo = match.players[1].getEloRank();
     const FLOOR = 100;
     let scoreExpected = [
         whiteElo.getExpected(match.origRating[0], match.origRating[1]),
@@ -31,8 +31,9 @@ function calcRatings(match) {
             : rating
         )
     );
-    match.players[0].rating = match.newRating[0];
-    match.players[1].rating = match.newRating[1];
+    match.players.forEach(function (player, i) {
+        player.rating = match.newRating[i];
+    });
     return match;
 }
 
@@ -134,8 +135,14 @@ function createMatch(round, importObj) {
             return match;
         },
         setResult(result) {
-            match.result = result;
-            calcRatings(match);
+            if (result !== match.result) {
+                match.result = result;
+                if (result[0] + result[1] === 0) {
+                    match.resetResult();
+                } else {
+                    calcRatings(match);
+                }
+            }
             return match;
         },
         /**
@@ -200,14 +207,14 @@ function createMatch(round, importObj) {
          * A shortcut for `match.getColorInfo()` for white.
          * @returns {object} See `match.getColorInfo()`
          */
-        getWhite() {
+        getWhiteInfo() {
             return match.getColorInfo(0);
         },
         /**
          * A shortcut for `match.getColorInfo()` for black.
          * @returns {object} See `match.getColorInfo()`
          */
-        getBlack() {
+        getBlackInfo() {
             return match.getColorInfo(1);
         }
     };
@@ -217,6 +224,12 @@ function createMatch(round, importObj) {
     } else if (match.players[1].dummy) {
         match.result = [tourney.byeValue, 0];
     }
+    match.players.forEach(function (player) {
+        // This is stored statically so it's available even if data on past
+        // matches isn't. Be sure to safely decrement it when deleting match
+        // history.
+        player.matchCount += 1;
+    });
     return match;
 }
 
