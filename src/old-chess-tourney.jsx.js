@@ -5,7 +5,7 @@ import demoRoster from "./demo-players.json";
 import {last} from "lodash";
 
 function MainRoster({tourney, loadFunc}) {
-    const [roster, setRoster] = useState(tourney.roster.all);
+    const [roster, setRoster] = useState(tourney.players.roster);
     const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
     const newPlayer = {firstName: "", lastName: "", rating: 1200};
     const handleSubmit = (event) => {
@@ -16,27 +16,27 @@ function MainRoster({tourney, loadFunc}) {
                 "lastName": newPlayer["lastName"],
                 "rating": newPlayer["rating"]
             });
-        tourney.roster.importPlayer(player.id);
-        setRoster([].concat(tourney.roster.all));
+        roster.players.importPlayer(player.id);
+        setRoster([].concat(tourney.players.roster));
     };
     const updateField = (event) => {
         newPlayer[event.target.name] = event.target.value;
     };
     const loadDemo = () => {
         let players = globalRoster.addPlayers(demoRoster.slice(0,16));
-        tourney.roster.importPlayers(players.map((p) => p.id));
-        setRoster([].concat(tourney.roster.all));
+        roster.players.importPlayers(players.map((p) => p.id));
+        setRoster([].concat(tourney.players.roster));
     };
     const deactivatePlayer = (player) => {
-        var removed = tourney.roster.removePlayer(player);
+        var removed = roster.players.removePlayer(player);
         if (!removed) {
-            tourney.roster.deactivatePlayer(player);
+            roster.players.deactivatePlayer(player);
         }
-        setRoster([].concat(tourney.roster.all));
+        setRoster([].concat(tourney.players.roster));
     };
     const activatePlayer = (player) => {
-        tourney.roster.activatePlayer(player);
-        setRoster([].concat(tourney.roster.all));
+        roster.players.activatePlayer(player);
+        setRoster([].concat(tourney.players.roster));
     };
     const byeSignUp = (player) => {
         tourney.addPlayerToByeQueue(player);
@@ -63,20 +63,20 @@ function MainRoster({tourney, loadFunc}) {
             <tbody>
                 { roster.map((player, i) =>
                 <tr key={i} 
-                    className={tourney.roster.inactive.includes(player) ? "inactive" : "active"}>
+                    className={roster.players.inactive.includes(player) ? "inactive" : "active"}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__number">{player.rating}</td>
                     <td className="table__number">
                     {tourney.getMatchesByPlayer(player).length}
                     </td>
                     <td>
-                    {tourney.roster.inactive.includes(player)
+                    {roster.players.inactive.includes(player)
                     ? <button onClick={() => activatePlayer(player)}>Activate</button>
                     : <button onClick={() => deactivatePlayer(player)}>x</button>
                     }
                     </td>
                     <td>
-                    {tourney.roster.getActive().length % 2 !== 0 &&
+                    {roster.players.getActive().length % 2 !== 0 &&
                         (tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
                         ? <button disabled>Bye</button>
                         : <button onClick={() => byeSignUp(player)}>Bye</button>)

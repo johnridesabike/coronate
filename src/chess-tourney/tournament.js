@@ -1,9 +1,9 @@
-import createRoster from "./roster";
 import createRound from "./round";
+import {createPlayerManager} from "./player";
 import {last, times, cloneDeep} from "lodash";
 import config from "./default-config.json";
 
-function createTournament(importObj = "") {
+function createTournament(importObj = "", playerSource = null) {
     let name;
     if (typeof importObj === "string") {
         name = importObj;
@@ -33,7 +33,7 @@ function createTournament(importObj = "") {
         /**
          * @property {object} roster The roster object.
          */
-        roster: null,
+        players: importObj.players || null,
         tieBreak: cloneDeep(config.tieBreak),
         /**
          * Get if a new round is ready or not.
@@ -44,7 +44,7 @@ function createTournament(importObj = "") {
             if (tourney.roundList.length > 0) {
                 isReady = last(tourney.roundList).isComplete();
             } else {
-                isReady = (tourney.roster.all.length > 0);
+                isReady = (tourney.players.roster.length > 0);
             }
             return isReady;
         },
@@ -62,7 +62,7 @@ function createTournament(importObj = "") {
             times(roundId + 1, function (i) {
                 if (tourney.roundList[i] !== undefined) {
                     tourney.roundList[i].matches.forEach(function (match) {
-                        if (match.players.indexOf(player) !== -1) {
+                        if (match.roster.indexOf(player) !== -1) {
                             matches.push(match);
                         }
                     });
@@ -81,7 +81,7 @@ function createTournament(importObj = "") {
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
                     players = players.concat(
-                        match.players.filter(
+                        match.roster.filter(
                             (player) => player !== opponent
                         )
                     );
@@ -95,7 +95,7 @@ function createTournament(importObj = "") {
          */
         getNumOfRounds() {
             let roundId = Math.ceil(
-                Math.log2(tourney.roster.getActive().length)
+                Math.log2(tourney.players.getActive().length)
             );
             if (roundId === -Infinity) {
                 roundId = 0;
@@ -118,7 +118,7 @@ function createTournament(importObj = "") {
             if (typeof round === "number" || typeof round === "string") {
                 round = tourney.roundList[round];
             }
-            if (round !== last(tourney.roundList)) {
+            if (tourney.canRemoveRound(round)) {
                 throw new Error("You can only remove the last round");
             }
             round.matches.forEach(function (match) {
@@ -126,6 +126,9 @@ function createTournament(importObj = "") {
             });
             tourney.roundList = tourney.roundList.filter((r) => r !== round);
             return tourney;
+        },
+        canRemoveRound(round) {
+            return round !== last(tourney.roundList);
         },
         /**
          * Add a player to the bye queue.
@@ -154,13 +157,14 @@ function createTournament(importObj = "") {
     if (typeof importObj === "object") {
         Object.assign(tourney, importObj);
     }
-    if (tourney.roster) {
+    if (tourney.players) {
         // If roster data was imported, then init it.
-        tourney.roster = createRoster(tourney, tourney.roster);
+        tourney.players = createPlayerManager(tourney.players, playerSource);
     } else {
         // create a blank roster
-        tourney.roster = createRoster(tourney);
+        tourney.players = createPlayerManager({}, playerSource);
     }
+    tourney.players.ref_tourney = tourney;
     if (tourney.roundList.length >= 0) {
         // If round data was imported, then init it.
         tourney.roundList = tourney.roundList.reduce(

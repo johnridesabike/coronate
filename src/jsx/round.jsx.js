@@ -56,7 +56,8 @@ function Round({round, setRoundList}) {
             </table>
             <h2>Actions</h2>
             <button
-                onClick={delRound}>
+                onClick={delRound}
+                disabled={tourney.canRemoveRound(round)}>
                 Delete round
             </button>
         </Fragment>
@@ -99,7 +100,7 @@ function RoundMatch({match}) {
             <tr className={match.isBye() ? "inactive" : ""}>
                 <td className="table__number">{match.id + 1}</td>
                 <td className="table__player">
-                    {white.player.firstName}
+                    {white.player.firstName} {white.player.lastName}
                 </td>
                 <td className="table__input">
                     <input 
@@ -123,7 +124,7 @@ function RoundMatch({match}) {
                         onChange={() => setResult([0, 1])} />
                 </td>
                 <td className="table__player">
-                    {black.player.firstName}
+                    {black.player.firstName} {black.player.lastName}
                 </td>
                 <td>
                     <button onClick={() => setInfoBox(!infoBox)}>
@@ -133,15 +134,24 @@ function RoundMatch({match}) {
                 </td>
             </tr>
             {infoBox &&
-            <tr>
-                <td colSpan="3">
-                    <PlayerInfo player={white} ratingDiff={ratingDiff[0]}/>
-                </td>
-                <td>Match ideal: {numeral(match.ideal).format("00%")}</td>
-                <td colSpan="3">
-                    <PlayerInfo player={black} ratingDiff={ratingDiff[1]}/>
-                </td>
-            </tr>
+                <Fragment>
+                <tr>
+                    <td></td>
+                    <td colSpan="2">
+                        <PlayerInfo player={white} ratingDiff={ratingDiff[0]}/>
+                    </td>
+                    <td></td>
+                    <td colSpan="2">
+                        <PlayerInfo player={black} ratingDiff={ratingDiff[1]}/>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colSpan="7" style={{textAlign: "center"}}>
+                        Match ideal: {numeral(match.ideal).format("00%")}
+                    </td>
+                </tr>
+            </Fragment>
             }
         </Fragment>
     );
@@ -168,10 +178,6 @@ function PlayerInfo({player, ratingDiff}) {
                     </li>  
                 )}
                 </ol>
-            </dd>
-            <dt>Match ideal</dt>
-            <dd>
-                {}
             </dd>
         </dl>
 

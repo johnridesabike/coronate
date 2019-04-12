@@ -83,10 +83,95 @@ const dummyPlayer = Object.freeze(
     )
 );
 
-function createPlayerManager(importObj = {}) {
+function createPlayerManager(importObj = {}, playerSource = null) {
     const roster = {
-        roster: importObj.roster || [],
+        roster: [], // this gets added later
         lastId: importObj.lastId || -1,
+        /**
+         * @property {object} ref_tourney A reference to the tournemnt
+         * containing this match.
+         */
+        ref_tourney: importObj.tourney || null,
+        /**
+         * @param {array} inactive A list of the players who won't be paired in
+         * future rounds.
+         */
+        inactive: [],
+        /**
+         * Get a list of players to be paired.
+         * @returns {array} A list of the active players.
+         */
+        getActive() {
+            return roster.roster.filter((i) => !roster.inactive.includes(i));
+        },
+        importPlayerById(fromRoster, playerId) {
+            let player = fromRoster.getPlayerById(playerId);
+            roster.roster.push(player);
+            return roster;
+        },
+        importPlayerIdsList(playerIdList) {
+            playerIdList.map((id) => roster.importPlayer(id));
+            return roster;
+        },
+        importPlayerList(playerList) {
+            roster.roster = playerList;
+            return roster;
+        },
+        /**
+         * Remove a player from the active roster. This player won't be placed
+         * in future rounds.
+         * @param {object} player The player object.
+         * @returns {object} This roster object.
+         */
+        deactivatePlayer(player) {
+            roster.inactive.push(player);
+            return roster;
+        },
+        /**
+         * Move an inactive player to the active roster to be placed in future
+         * rounds.
+         * @param {object} player The player object.
+         * @returns {object} This roster object.
+         */
+        activatePlayer(player) {
+            roster.inactive.splice(roster.inactive.indexOf(player), 1);
+            return roster;
+        },
+        /**
+         * Remove a player from the roster completely.
+         * @param {object} player The player object.
+         * @returns {object} This roster object.
+         */
+        removePlayer(player) {
+            if (roster.canRemovePlayer(player)) {
+                return null; // TODO: add a helpful error message
+            }
+            delete roster.roster[roster.roster.indexOf(player)];
+            return roster;
+        },
+        removePlayerById(playerId) {
+            roster.removePlayer(roster.getPlayerById(playerId));
+            return roster;
+        },
+        getPlayerById(id) {
+            if (id === -1) {
+                return dummyPlayer;
+            }
+            return roster.roster.filter((p) => p.id === id)[0];
+        },
+        canRemovePlayer(player) {
+            return (roster.ref_tourney.getMatchesByPlayer(player).length > 0);
+        },
+        canRemovePlayerById(id) {
+            return roster.canRemovePlayer(roster.getPlayerById(id));
+        },
+        setByIdList(playerManager, list) {
+            const currentIds = roster.roster.map((p) => p.id);
+            const toAdd = list.filter((id) => !currentIds.includes(id));
+            const toRemove = currentIds.filter((id) => !list.includes(id));
+            toAdd.forEach((id) => roster.importPlayerById(playerManager, id));
+            toRemove.forEach((id) => roster.removePlayerById(id));
+        },
         /**
          * Add a player to the roster.
          * @param {object} player The player object to add.
@@ -110,9 +195,6 @@ function createPlayerManager(importObj = {}) {
             );
             return newPlayerList;
         },
-        getPlayerById(id) {
-            return roster.roster.filter((p) => p.id === id)[0];
-        },
         loadPlayerData(data) {
             roster.roster = data.map(
                 (player) => createPlayer(player)
@@ -131,8 +213,14 @@ function createPlayerManager(importObj = {}) {
             return player;
         }
     };
-    if (importObj.playerData) {
-        roster.roster = roster.addPlayers(importObj.playerData);
+    if (importObj.roster) {
+        importObj.roster.forEach(function (player) {
+            if (typeof player === "number") {
+                roster.importPlayerById(playerSource, player);
+            } else {
+                roster.addPlayer(player);
+            }
+        });
     }
     return roster;
 }

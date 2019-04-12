@@ -1,4 +1,4 @@
-import {createPlayer} from "./player";
+// import {createPlayer} from "./player";
 /**
  * Create a roster object which manages a tournament's players.
  * @param {object} tourney The roster's tournament.
@@ -26,11 +26,11 @@ function createRoster(tourney, importObj = null) {
          * @returns {array} A list of the active players.
          */
         getActive() {
-            return roster.all.filter((i) => !roster.inactive.includes(i));
+            return roster.roster.filter((i) => !roster.inactive.includes(i));
         },
         importPlayerById(globalRoster, playerId) {
             let player = globalRoster.getPlayerById(playerId);
-            roster.all.push(player);
+            roster.roster.push(player);
             return roster;
         },
         importPlayerIdsList(playerIdList) {
@@ -38,7 +38,7 @@ function createRoster(tourney, importObj = null) {
             return roster;
         },
         importPlayerList(playerList) {
-            roster.all = playerList;
+            roster.roster = playerList;
             return roster;
         },
         /**
@@ -70,7 +70,7 @@ function createRoster(tourney, importObj = null) {
             if (roster.canRemovePlayer(player)) {
                 return null; // TODO: add a helpful error message
             }
-            delete roster.all[roster.all.indexOf(player)];
+            delete roster.roster[roster.roster.indexOf(player)];
             return roster;
         },
         removePlayerById(playerId) {
@@ -78,7 +78,7 @@ function createRoster(tourney, importObj = null) {
             return roster;
         },
         getPlayerById(id) {
-            return roster.all.filter((p) => p.id === id)[0];
+            return roster.roster.filter((p) => p.id === id)[0];
         },
         canRemovePlayer(player) {
             return (roster.ref_tourney.getMatchesByPlayer(player).length > 0);
@@ -87,7 +87,7 @@ function createRoster(tourney, importObj = null) {
             return roster.canRemovePlayer(roster.getPlayerById(id));
         },
         setByIdList(playerManager, list) {
-            const currentIds = roster.all.map((p) => p.id);
+            const currentIds = roster.roster.map((p) => p.id);
             const toAdd = list.filter((id) => !currentIds.includes(id));
             const toRemove = currentIds.filter((id) => !list.includes(id));
             toAdd.forEach((id) => roster.importPlayerById(playerManager, id));

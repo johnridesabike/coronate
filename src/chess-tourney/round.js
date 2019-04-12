@@ -25,7 +25,7 @@ function createRound(tourney, importObj = {}) {
         /**
          * @property {array} roster The list of players in this round.
          */
-        roster: importObj.roster || tourney.roster.getActive(),
+        roster: importObj.roster || tourney.players.getActive(),
         /**
          * @property {object} prevRound The round previous to this one.
          */
@@ -51,7 +51,7 @@ function createRound(tourney, importObj = {}) {
         getMatchByPlayer(player) {
             let theMatch = null;
             round.matches.forEach(function (match) {
-                if (match.players.includes(player)) {
+                if (match.roster.includes(player)) {
                     theMatch = match;
                 }
             });
@@ -99,7 +99,7 @@ function createRound(tourney, importObj = {}) {
                 match = round.matches[match];
             }
             match.resetResult();
-            match.players.forEach(function (player) {
+            match.roster.forEach(function (player) {
                 player.matchCount -= 1;
             });
             round.matches = round.matches.filter((m) => m !== match);
@@ -115,7 +115,7 @@ function createRound(tourney, importObj = {}) {
     };
     round.roster = round.roster.map(function (player) {
         if (typeof player === "number") {
-            return tourney.roster.getPlayerById(player);
+            return tourney.players.getPlayerById(player);
         } else {
             return player;
         }

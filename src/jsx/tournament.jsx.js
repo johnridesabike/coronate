@@ -66,7 +66,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
 }
 
 function Tournament({tourney, playerManager, setOpenTourney}) {
-    const [playerList, setPlayerList] = useState(tourney.roster.all);
+    const [playerList, setPlayerList] = useState(tourney.players.roster);
     const [roundNums, setRoundNums] = useState(
         [...Array(tourney.getNumOfRounds()).keys()]
     );

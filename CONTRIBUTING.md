@@ -19,6 +19,8 @@ To-dos:
 - Add a way to manually match/unmatch players.
 - Add pages for managing a global roster outside of individual tournaments.
 - Add pages for editing a player and displaying their stats.
+- Add reording of bye signups.
+- Finalize the import/export screen.
 
 ## Housekeeping
 

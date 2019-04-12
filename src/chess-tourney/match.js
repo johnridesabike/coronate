@@ -5,8 +5,8 @@
  * @returns {object} The `match` object.
  */
 function calcRatings(match) {
-    let whiteElo = match.players[0].getEloRank();
-    let blackElo = match.players[1].getEloRank();
+    let whiteElo = match.roster[0].getEloRank();
+    let blackElo = match.roster[1].getEloRank();
     const FLOOR = 100;
     let scoreExpected = [
         whiteElo.getExpected(match.origRating[0], match.origRating[1]),
@@ -31,7 +31,7 @@ function calcRatings(match) {
             : rating
         )
     );
-    match.players.forEach(function (player, i) {
+    match.roster.forEach(function (player, i) {
         player.rating = match.newRating[i];
     });
     return match;
@@ -44,14 +44,22 @@ function calcRatings(match) {
  * @param {object} white The `player` object for black.
  */
 function createMatch(round, importObj) {
+    let black;
+    let white;
     let tourney = round.ref_tourney;
-    let [black, white] = importObj.players;
+    if (importObj.roster) {
+        [white, black] = importObj.roster;
+    } else {
+        // if it's an array
+        white = importObj[0];
+        black = importObj[1];
+    }
     // If the players are ID numbers, get their referant objects.
     if (typeof black === "number") {
-        black = tourney.roster.getPlayerById(black);
+        black = tourney.players.getPlayerById(black);
     }
     if (typeof white === "number") {
-        white = tourney.roster.getPlayerById(white);
+        white = tourney.players.getPlayerById(white);
     }
     const match = {
         id: importObj.id || 0,
@@ -74,7 +82,7 @@ function createMatch(round, importObj) {
          * @property {array} players The pair of `Player` objects. White is at
          * index `0` and black is at index `1`.
          */
-        players: [white, black],
+        roster: [white, black],
         /**
          * @property {array} result the scores for the match. A loss is `0`, a
          * win is `1`, and a draw is `0.5`. White is at index `0` and black is
@@ -101,7 +109,7 @@ function createMatch(round, importObj) {
          * @returns {object} This `match` object.
          */
         reverse() {
-            match.players.reverse();
+            match.roster.reverse();
             match.result.reverse();
             match.origRating.reverse();
             match.newRating.reverse();
@@ -152,8 +160,8 @@ function createMatch(round, importObj) {
         resetResult() {
             match.result = [0, 0];
             match.newRating = [...match.origRating];
-            match.players[0].rating = match.newRating[0];
-            match.players[1].rating = match.newRating[1];
+            match.roster[0].rating = match.newRating[0];
+            match.roster[1].rating = match.newRating[1];
             return match;
         },
         /**
@@ -168,7 +176,7 @@ function createMatch(round, importObj) {
          * @returns {bool} `True` if it's a bye match, `false` if not.
          */
         isBye() {
-            let dummies = match.players.map((p) => p.dummy);
+            let dummies = match.roster.map((p) => p.dummy);
             return dummies.includes(true);
         },
         /**
@@ -179,7 +187,7 @@ function createMatch(round, importObj) {
          */
         getColorInfo(color) {
             return {
-                player: match.players[color],
+                player: match.roster[color],
                 result: match.result[color],
                 origRating: match.origRating[color],
                 newRating: match.newRating[color]
@@ -192,7 +200,7 @@ function createMatch(round, importObj) {
          * player isn't found in the match.
          */
         getPlayerColor(player) {
-            return match.players.indexOf(player);
+            return match.roster.indexOf(player);
         },
         /**
          * A shortcut for using `match.getPlayerColor()` and
@@ -218,17 +226,30 @@ function createMatch(round, importObj) {
             return match.getColorInfo(1);
         }
     };
+    // match.roster = match.roster.map(function (player) {
+    //     if (typeof player === "number") {
+    //         if (player === -1) {
+    //             return dummyPlayer;
+    //         } else {
+    //             return tourney.players.getPlayerById(player);
+    //         }
+    //     } else {
+    //         return player;
+    //     }
+    // });
     // set bye rounds
-    if (match.players[0].dummy) {
+    if (match.roster[0].dummy) {
         match.result = [0, tourney.byeValue];
-    } else if (match.players[1].dummy) {
+    } else if (match.roster[1].dummy) {
         match.result = [tourney.byeValue, 0];
     }
-    match.players.forEach(function (player) {
+    match.roster.forEach(function (player) {
         // This is stored statically so it's available even if data on past
         // matches isn't. Be sure to safely decrement it when deleting match
         // history.
-        player.matchCount += 1;
+        if (!player.dummy && !Object.isFrozen(player)) {
+            player.matchCount += 1;
+        }
     });
     return match;
 }

@@ -31,5 +31,15 @@ config.noCircRefs = function (key, value) {
     }
 };
 
+config.JSONretriever = function (key, value) {
+    if (key.startsWith("ref_")) {
+        return undefined;
+    } else if (key === "roster") {
+        return value.map((p) => p.id);
+    } else {
+        return value;
+    }
+};
+
 
 export default Object.freeze(config);

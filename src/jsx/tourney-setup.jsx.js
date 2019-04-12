@@ -19,10 +19,10 @@ export function TourneySetup({tourney, playerManager, playerList, setPlayerList}
 }
 
 function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
-    const [pImports, setPImports] = useState(tourney.roster.all.map((p) => p.id));
+    const [pImports, setPImports] = useState(tourney.players.roster.map((p) => p.id));
     useEffect(function () {
-        tourney.roster.setByIdList(playerManager, pImports);
-        setPlayerList([...tourney.roster.all])
+        tourney.players.setByIdList(playerManager, pImports);
+        setPlayerList([...tourney.players.roster])
     }, [pImports]);
     const toggleCheck = function (event) {
         const id = Number(event.target.dataset.id);
@@ -44,7 +44,7 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
                     <input type="checkbox" data-id={player.id}
                         onChange={toggleCheck}
                         checked={pImports.includes(player.id)}
-                        disabled={tourney.roster.canRemovePlayerById(player.id)} />
+                        disabled={tourney.players.canRemovePlayerById(player.id)} />
                     {player.firstName} {player.lastName}
                 </li>    
             )}
@@ -71,7 +71,7 @@ export function TourneyManager({tourney, setIsSelecting}) {
         setByeQueue(byeQueue.filter((p) => p !== player));
     };
     useEffect(function () {
-        tourney.setByeQueue(byeQueue.map((id) => tourney.roster.getPlayerById(id)));
+        tourney.setByeQueue(byeQueue.map((id) => tourney.players.getPlayerById(id)));
     }, [byeQueue]);
     let byeList = "";
     if (byeQueue.length > 0) {
@@ -106,17 +106,16 @@ export function TourneyManager({tourney, setIsSelecting}) {
                 </tr>
             </thead>
             <tbody>
-                {tourney.roster.all.map((player) =>
+                {tourney.players.roster.map((player) =>
                 <tr key={player.id} 
-                    className={tourney.roster.inactive.includes(player) ? "inactive" : "active"}>
+                    className={tourney.players.inactive.includes(player) ? "inactive" : "active"}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__number">{player.rating}</td>
                     <td className="table__number">
                     {tourney.getMatchesByPlayer(player).length}
                     </td>
                     <td>
-                    {tourney.roster.getActive().length % 2 !== 0 &&
-                        (tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
+                    {(tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
                         ? <button disabled>Bye</button>
                         : <button onClick={() => byeSignUp(player)}>Bye</button>)
                     }

@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import "./App.css";
-import {MainNav, NavItem} from "./jsx/utility.jsx.js"
+import {MainNav, NavItem} from "./jsx/utility.jsx"
 import {createPlayerManager} from "./chess-tourney";
-import {Players} from "./jsx/players.jsx.js";
-import {TournamentList} from "./jsx/tournament.jsx.js";
+import {Players} from "./jsx/players.jsx";
+import {TournamentList} from "./jsx/tournament.jsx";
+import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
 
 // const defaultTournament = createTournament("CVL Winter Open");
-const demoData = {playerData: demoRoster.slice(0,16)}
+const demoData = {roster: demoRoster.slice(0,16)}
 
 function App() {
     const [tourneylist, setTourneyList] = useState([]);
     const [openTourney, setOpenTourney] = useState(null);
+    // eslint-disable-next-line no-unused-vars
     const [playerManager, setPlayerManager] = useState(
         createPlayerManager(demoData)
     );
@@ -21,7 +23,9 @@ function App() {
         <Players playerManager={playerManager} />,
         <TournamentList playerManager={playerManager}
             tourneyList={tourneylist} setTourneyList={setTourneyList}
-            openTourney={openTourney} setOpenTourney={setOpenTourney} />
+            openTourney={openTourney} setOpenTourney={setOpenTourney} />,
+        <Options playerManager={playerManager} tourneyList={tourneylist}
+            setTourneyList={setTourneyList} />
     ];
     return (
         <main>
@@ -30,6 +34,8 @@ function App() {
                     action={() => setViewList(0)} isOpen={currentView === 0} />
                 <NavItem name="Tournaments"
                     action={() => setViewList(1)} isOpen={currentView === 1} />
+                <NavItem name="Options"
+                    action={() => setViewList(2)} isOpen={currentView === 2} />
             </MainNav>
             {viewList[currentView]}
         </main>

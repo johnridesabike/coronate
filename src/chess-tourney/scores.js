@@ -6,7 +6,7 @@ import {firstBy} from "thenby";
  */
 function playerScoreList(tourney, player, roundId = null) {
     return tourney.getMatchesByPlayer(player, roundId).map(
-        (match) => match.result[match.players.indexOf(player)]
+        (match) => match.result[match.roster.indexOf(player)]
     );
 }
 
@@ -18,7 +18,7 @@ function playerScoreListNoByes(tourney, player, roundId = null) {
     ).filter(
         (match) => !match.isBye()
     ).map(
-        (match) => match.result[match.players.indexOf(player)]
+        (match) => match.result[match.roster.indexOf(player)]
     );
 }
 
@@ -69,9 +69,9 @@ function playerColorBalance(tourney, player, roundId = null) {
         (match) => !match.isBye()
     ).forEach(
         function (match) {
-            if (match.players[0] === player) {
+            if (match.roster[0] === player) {
                 color += -1;
-            } else if (match.players[1] === player) {
+            } else if (match.roster[1] === player) {
                 color += 1;
             }
         }
@@ -160,7 +160,7 @@ function getTbFunc(funcName) {
  */
 function calcStandings(tourney, roundId = null) {
     const tieBreaks = tourney.tieBreak.filter((m) => m.active);
-    const standingsFlat = tourney.roster.all.map(function (player) {
+    const standingsFlat = tourney.players.roster.map(function (player) {
         var standing = {
             player: player,
             score: playerScore(tourney, player, roundId)

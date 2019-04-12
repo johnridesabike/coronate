@@ -1,14 +1,11 @@
 /**
  * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
  */
-import {
-    createTournament,
-    globalRoster
-} from "./chess-tourney";
+import {createTournament, createPlayerManager} from "./chess-tourney";
 import demoPlayers from "./demo-players.json";
 import {sortBy, times, random} from "lodash";
 
-globalRoster.addPlayers(demoPlayers);
+const globalRoster = createPlayerManager({roster: demoPlayers.slice(0, 16)});
 
 function randomMatches(match) {
     if (!match.isBye()) {
@@ -49,13 +46,13 @@ function randomRoundsDraws(tourney) {
 
 it("A tournament can run without crashing", function () {
     const tourney = createTournament("A battle for the ages");
-    tourney.roster.importPlayers(globalRoster.roster.slice(0, 16));
+    tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
     randomRounds(tourney);
 });
 
 it("A tournament can run with drawen rounds without crashing", function () {
     const tourney = createTournament("A battle for the ages");
-    tourney.roster.importPlayers(globalRoster.roster.slice(0, 16));
+    tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
     randomRoundsDraws(tourney);
 });
 
@@ -67,10 +64,10 @@ it("No players face each other more than once", function () {
     times(tourneyNum, function () {
         let playerOppCount = [];
         let tourney = createTournament();
-        tourney.roster.importPlayers(globalRoster.roster.slice(0, 16));
+        tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
         randomRoundsDraws(tourney);
         playerOppCount = playerOppCount.concat(
-            tourney.roster.all.map(
+            tourney.players.roster.map(
                 (p) => new Set(tourney.getPlayersByOpponent(p)).size
             )
         );
@@ -87,10 +84,10 @@ it("A tournament can pair an odd number of players correctly", function () {
     times(tourneyNum, function () {
         let playerOppCount = [];
         let tourney = createTournament();
-        tourney.roster.importPlayers(globalRoster.roster.slice(0, 19));
+        tourney.players.importPlayerList(globalRoster.roster.slice(0, 19));
         randomRoundsDraws(tourney);
         playerOppCount = playerOppCount.concat(
-            tourney.roster.all.map(
+            tourney.players.roster.map(
                 (p) => new Set(tourney.getPlayersByOpponent(p)).size
             )
         );
@@ -108,25 +105,25 @@ it("A tournament doesn't crash when players are removed", function () {
     };
     times(50, function () {
         const tourney = createTournament();
-        tourney.roster.importPlayers(globalRoster.roster.slice(0, 17));
+        tourney.players.importPlayerList(globalRoster.roster.slice(0, 17));
 
         tourney.newRound().matches.forEach((match) => randomMatches(match));
 
-        tourney.roster.deactivatePlayer(
-            randomPlayer(tourney.roster.getActive())
+        tourney.players.deactivatePlayer(
+            randomPlayer(tourney.players.getActive())
         );
-        tourney.roster.deactivatePlayer(
-            randomPlayer(tourney.roster.getActive())
+        tourney.players.deactivatePlayer(
+            randomPlayer(tourney.players.getActive())
         );
 
         tourney.newRound().matches.forEach((match) => randomMatches(match));
         tourney.newRound().matches.forEach((match) => randomMatches(match));
 
-        tourney.roster.deactivatePlayer(
-            randomPlayer(tourney.roster.getActive())
+        tourney.players.deactivatePlayer(
+            randomPlayer(tourney.players.getActive())
         );
-        tourney.roster.deactivatePlayer(
-            randomPlayer(tourney.roster.getActive())
+        tourney.players.deactivatePlayer(
+            randomPlayer(tourney.players.getActive())
         );
 
         tourney.newRound().matches.forEach((match) => randomMatches(match));
