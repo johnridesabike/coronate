@@ -21,6 +21,7 @@ To-dos:
 - Add pages for editing a player and displaying their stats.
 - Add reording of bye signups.
 - Finalize the import/export screen.
+- Improve adding/removing players after the tournament has begun.
 
 ## Housekeeping
 
