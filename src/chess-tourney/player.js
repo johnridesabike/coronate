@@ -1,4 +1,31 @@
+// @flow
 import EloRank from "elo-rank";
+/*::
+import type {tournament} from "./tournament";
+export type player = {
+    id: number,
+    firstName: string,
+    lastName: string,
+    rating: number,
+    dummy: boolean,
+    matchCount: number,
+    isReference: boolean
+};
+
+export type playerManager = {
+    roster: Array<player>,
+    lastId: number,
+    ref_tourney: tournament,
+    inactive: Array<player>,
+    getPlayerById: function,
+    canRemovePlayer: function,
+    removePlayer: function,
+    importPlayerById: function,
+    removePlayerById: function,
+    addPlayer: function,
+    getActive: function
+};
+*/
 
 /**
  * Represents an indivudal player. Call it with `createPlayer("John", ...)` or
@@ -9,8 +36,9 @@ import EloRank from "elo-rank";
  * @param {string} lastName  The person's last name.
  * @param {int}    rating    The person's Elo rating.
  */
-function createPlayer(importObj = {}) {
-    const player = {
+
+function createPlayer(importObj/*:player*/ = {}) {
+    const player/*:player*/ = {
         /**
          * @property {number} id The ID number of the player. Used mainly for
          * JSON serialization.
@@ -54,10 +82,10 @@ function createPlayer(importObj = {}) {
          * @returns {bool} True if the player has had a bye round, false if not.
          * TODO: move this to the tournament object?
          */
-        hasHadBye(tourney) {
+        hasHadBye(tourney/*:tournament*/) {
             return tourney.getPlayersByOpponent(player).includes(dummyPlayer);
         },
-        toJSON(key) {
+        toJSON(key/*:string*/) {
             if (key && player.isReference) {
                 return player.id;
             } else {
@@ -77,21 +105,27 @@ const dummyPlayer = Object.freeze(
         {
             id: -1,
             firstName: "Bye",
+            lastName: "",
             dummy: true,
-            rating: 0
+            rating: 0,
+            isReference: false,
+            matchCount: 0
         }
     )
 );
 
-function createPlayerManager(importObj = {}, playerSource = null) {
-    const roster = {
+function createPlayerManager(
+    importObj/*:playerManager*/ = {},
+    playerSource/*:?playerManager*/ = null
+) {
+    const pManager/*:playerManager*/ = {
         roster: [], // this gets added later
         lastId: importObj.lastId || -1,
         /**
          * @property {object} ref_tourney A reference to the tournemnt
          * containing this match.
          */
-        ref_tourney: importObj.tourney || null,
+        ref_tourney: importObj.ref_tourney || null,
         /**
          * @param {array} inactive A list of the players who won't be paired in
          * future rounds.
@@ -102,30 +136,30 @@ function createPlayerManager(importObj = {}, playerSource = null) {
          * @returns {array} A list of the active players.
          */
         getActive() {
-            return roster.roster.filter((i) => !roster.inactive.includes(i));
+            return pManager.roster.filter((i) => !pManager.inactive.includes(i));
         },
-        importPlayerById(fromRoster, playerId) {
+        importPlayerById(fromRoster/*:playerManager*/, playerId/*:number*/) {
             let player = fromRoster.getPlayerById(playerId);
-            roster.roster.push(player);
-            return roster;
+            pManager.roster.push(player);
+            return pManager;
         },
-        importPlayerIdsList(playerIdList) {
-            playerIdList.map((id) => roster.importPlayer(id));
-            return roster;
-        },
-        importPlayerList(playerList) {
-            roster.roster = playerList;
-            return roster;
+        // importPlayerIdsList(playerIdList/*:Array<number>*/) {
+        //     playerIdList.map((id) => pManager.importPlayer(id));
+        //     return pManager;
+        // },
+        importPlayerList(playerList/*:Array<player>*/) {
+            pManager.roster = playerList;
+            return pManager;
         },
         /**
-         * Remove a player from the active roster. This player won't be placed
+         * Remove a player from the active pManager. This player won't be placed
          * in future rounds.
          * @param {object} player The player object.
          * @returns {object} This roster object.
          */
-        deactivatePlayer(player) {
-            roster.inactive.push(player);
-            return roster;
+        deactivatePlayer(player/*:player*/) {
+            pManager.inactive.push(player);
+            return pManager;
         },
         /**
          * Move an inactive player to the active roster to be placed in future
@@ -133,9 +167,9 @@ function createPlayerManager(importObj = {}, playerSource = null) {
          * @param {object} player The player object.
          * @returns {object} This roster object.
          */
-        activatePlayer(player) {
-            roster.inactive.splice(roster.inactive.indexOf(player), 1);
-            return roster;
+        activatePlayer(player/*:player*/) {
+            pManager.inactive.splice(pManager.inactive.indexOf(player), 1);
+            return pManager;
         },
         /**
          * Remove a player from the roster completely.
@@ -143,65 +177,65 @@ function createPlayerManager(importObj = {}, playerSource = null) {
          * @returns {object} This roster object.
          */
         removePlayer(player) {
-            if (roster.canRemovePlayer(player)) {
+            if (pManager.canRemovePlayer(player)) {
                 return null; // TODO: add a helpful error message
             }
-            delete roster.roster[roster.roster.indexOf(player)];
-            return roster;
+            delete pManager.roster[pManager.roster.indexOf(player)];
+            return pManager;
         },
         removePlayerById(playerId) {
-            roster.removePlayer(roster.getPlayerById(playerId));
-            return roster;
+            pManager.removePlayer(pManager.getPlayerById(playerId));
+            return pManager;
         },
         getPlayerById(id) {
             if (id === -1) {
                 return dummyPlayer;
             }
-            return roster.roster.filter((p) => p.id === id)[0];
+            return pManager.roster.filter((p) => p.id === id)[0];
         },
         canRemovePlayer(player) {
-            return (roster.ref_tourney.getMatchesByPlayer(player).length > 0);
+            return (pManager.ref_tourney.getMatchesByPlayer(player).length > 0);
         },
         canRemovePlayerById(id) {
-            return roster.canRemovePlayer(roster.getPlayerById(id));
+            return pManager.canRemovePlayer(pManager.getPlayerById(id));
         },
         setByIdList(playerManager, list) {
-            const currentIds = roster.roster.map((p) => p.id);
+            const currentIds = pManager.roster.map((p) => p.id);
             const toAdd = list.filter((id) => !currentIds.includes(id));
             const toRemove = currentIds.filter((id) => !list.includes(id));
-            toAdd.forEach((id) => roster.importPlayerById(playerManager, id));
-            toRemove.forEach((id) => roster.removePlayerById(id));
+            toAdd.forEach((id) => pManager.importPlayerById(playerManager, id));
+            toRemove.forEach((id) => pManager.removePlayerById(id));
         },
         /**
-         * Add a player to the roster.
+         * Add a player to the pManager.
          * @param {object} player The player object to add.
          * @returns {object} This created player object.
          */
         addPlayer(playerData) {
-            playerData.id = roster.lastId + 1;
-            roster.lastId = playerData.id;
+            playerData.id = pManager.lastId + 1;
+            pManager.lastId = playerData.id;
             let player = createPlayer(playerData);
-            roster.roster.push(player);
+            pManager.roster.push(player);
             return player;
         },
         /**
-         * Add a list of players to the roster.
+         * Add a list of players to the pManager.
          * @param {array} players A list of players to add.
          * @returns {array} The list of created player objects.
          */
         addPlayers(playersData) {
             let newPlayerList = playersData.map(
-                (player) => roster.addPlayer(player)
+                (player) => pManager.addPlayer(player)
             );
             return newPlayerList;
         },
         loadPlayerData(data) {
-            roster.roster = data.map(
+            pManager.roster = data.map(
                 (player) => createPlayer(player)
             );
         },
         delPlayer(playerId) {
-            let index = roster.roster.map(
+            let index = pManager.roster.map(
                 (p) => p.id
             ).indexOf(
                 Number(playerId)
@@ -209,20 +243,20 @@ function createPlayerManager(importObj = {}, playerSource = null) {
             if (index === -1) {
                 return null;
             }
-            let player = roster.roster.splice(index, 1);
+            let player = pManager.roster.splice(index, 1);
             return player;
         }
     };
     if (importObj.roster) {
         importObj.roster.forEach(function (player) {
             if (typeof player === "number") {
-                roster.importPlayerById(playerSource, player);
+                pManager.importPlayerById(playerSource, player);
             } else {
-                roster.addPlayer(player);
+                pManager.addPlayer(player);
             }
         });
     }
-    return roster;
+    return pManager;
 }
 
 export {dummyPlayer, createPlayer, createPlayerManager};

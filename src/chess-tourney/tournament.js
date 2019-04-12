@@ -1,16 +1,37 @@
+// @flow
 import createRound from "./round";
 import {createPlayerManager} from "./player";
 import {last, times, cloneDeep} from "lodash";
 import config from "./default-config.json";
 
-function createTournament(importObj = "", playerSource = null) {
+/*::
+import type {playerManager} from "./player";
+import type {round} from "./round";
+export type tournament = {
+    id: number,
+    name: string,
+    roundList: Array<round>,
+    byeValue: number,
+    byeQueue: Array<mixed>,
+    players: ?playerManager,
+    tieBreak: config,
+    getPlayersByOpponent: function,
+    getMatchesByPlayer: function,
+    canRemoveRound: function
+}
+*/
+
+function createTournament(
+    importObj/*:tournament | string*/ = "",
+    playerSource/*:?playerManager*/ = null
+) {
     let name;
     if (typeof importObj === "string") {
         name = importObj;
     } else {
         name = importObj.name;
     }
-    const tourney = {
+    const tourney/*:tournament*/ = {
         id: 0,
         /**
          * @property {string} name The display name of the tournament.

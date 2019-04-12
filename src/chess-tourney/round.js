@@ -1,14 +1,26 @@
+// @flow
 import {dummyPlayer} from "./player";
 import {last} from "lodash";
 import pairPlayers from "./pairing";
 import createMatch from "./match";
+/*::
+import type {tournament} from "./tournament";
+import type {player} from "./player";
+import type {match} from "./match";
+export type round = {
+    id: number,
+    roster: Array<player>,
+    ref_prevRound: round,
+    matches: Array<match>
+};
+*/
 
 /**
  * Create an object to represent a round in a tournament.
  * @param {object} tourney The tournament containing the round.
  */
-function createRound(tourney, importObj = {}) {
-    const round = {
+function createRound(tourney/*:tournament*/, importObj/*:round*/ = {}) {
+    const round/*:round*/ = {
         /**
          * @property {number} id The ID number of the round.
          */
