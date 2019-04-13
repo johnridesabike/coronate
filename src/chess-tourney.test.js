@@ -1,11 +1,11 @@
 /**
  * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
  */
-import {createTournament, createPlayerManager} from "./chess-tourney";
+import {createTournament, createPlayerManager, playerList} from "./chess-tourney";
 import demoPlayers from "./demo-players.json";
 import {sortBy, times, random} from "lodash";
 
-const globalRoster = createPlayerManager({roster: demoPlayers.slice(0, 16)});
+const globalRoster = createPlayerManager(playerList(demoPlayers.slice(0, 16)));
 
 function randomMatches(match) {
     if (!match.isBye()) {
@@ -107,7 +107,7 @@ it("A tournament doesn't crash when players are removed", function () {
         const tourney = createTournament();
         tourney.players.importPlayerList(globalRoster.roster.slice(0, 17));
 
-        tourney.newRound().matches.forEach((match) => randomMatches(match));
+        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
 
         tourney.players.deactivatePlayer(
             randomPlayer(tourney.players.getActive())
@@ -116,8 +116,8 @@ it("A tournament doesn't crash when players are removed", function () {
             randomPlayer(tourney.players.getActive())
         );
 
-        tourney.newRound().matches.forEach((match) => randomMatches(match));
-        tourney.newRound().matches.forEach((match) => randomMatches(match));
+        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
+        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
 
         tourney.players.deactivatePlayer(
             randomPlayer(tourney.players.getActive())
@@ -126,6 +126,6 @@ it("A tournament doesn't crash when players are removed", function () {
             randomPlayer(tourney.players.getActive())
         );
 
-        tourney.newRound().matches.forEach((match) => randomMatches(match));
+        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
     });
 });
