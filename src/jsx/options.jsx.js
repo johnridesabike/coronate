@@ -1,12 +1,12 @@
 import React, {useState} from "react";
-import {createTournament, config} from "../chess-tourney";
+import {createTournament, JSONretriever} from "../chess-tourney";
 
 export function Options({playerManager, tourneyList, setTourneyList}) {
     const [outputPlayers, setOutputPlayers] = useState(
-        JSON.stringify(playerManager.roster, config.JSONretriever, 2)
+        JSON.stringify(playerManager.roster, JSONretriever, 2)
     );
     const [outputTourney, setOutputTourney] = useState(
-        JSON.stringify(tourneyList, config.JSONretriever, 2)
+        JSON.stringify(tourneyList, JSONretriever, 2)
     );
     const loadPlayers = (event) => {
         event.preventDefault();

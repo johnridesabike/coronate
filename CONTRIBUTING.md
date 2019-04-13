@@ -8,6 +8,7 @@ Other API to-dos:
 
 - Add player match restrictions (don't pair family members, etc.).
 - Clean up player management methods & improve communication between global player management and tournament-local player management.
+- Configure flow types.
 
 ## Front-end
 

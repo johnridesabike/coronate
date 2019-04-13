@@ -1,61 +1,58 @@
 // @flow
 import createRound from "./round";
-import {createPlayerManager} from "./player";
-import {last, times, cloneDeep} from "lodash";
-import config from "./default-config.json";
+import {createPlayerManager, defaultPlayerManager} from "./player";
+import {last, times} from "lodash";
+import {createDefaultConfig} from "./config";
 
 /*::
-import type {playerManager} from "./player";
-import type {round} from "./round";
-export type tournament = {
-    id: number,
-    name: string,
-    roundList: Array<round>,
-    byeValue: number,
-    byeQueue: Array<mixed>,
-    players: ?playerManager,
-    tieBreak: config,
-    getPlayersByOpponent: function,
-    getMatchesByPlayer: function,
-    canRemoveRound: function
-}
+import type {
+    player,
+    playerManager,
+    round,
+    defaultTourney,
+    tournament,
+} from "./flow-types";
 */
 
+const defaultProps/*:defaultTourney */ = {
+    id: 0,
+    name: "",
+    roundList: [],
+    byeValue: 0,
+    byeQueue: [],
+    players: defaultPlayerManager,
+    tieBreak: createDefaultConfig().tieBreak
+};
+
 function createTournament(
-    importObj/*:tournament | string*/ = "",
+    importObj/*:defaultTourney*/ = defaultProps,
     playerSource/*:?playerManager*/ = null
 ) {
-    let name;
-    if (typeof importObj === "string") {
-        name = importObj;
-    } else {
-        name = importObj.name;
-    }
     const tourney/*:tournament*/ = {
-        id: 0,
+        id: importObj.id || defaultProps.id,
         /**
          * @property {string} name The display name of the tournament.
          */
-        name: name,
+        name: importObj.name || defaultProps.name,
         /**
          * @property {array} roundList The list of rounds.
          */
-        roundList: [],
+        roundList: importObj.roundList || defaultProps.roundList,
         /**
          * @property {number} byeValue How many points a bye is worth. USCF
          * suggests either 1 or 0.5.
          */
-        byeValue: 1,
+        byeValue: importObj.byeValue || defaultProps.byeValue,
         /**
          * @property {array} byeQueue A list of players signed up for bye
          * rounds, if byes are necessary.
          */
-        byeQueue: [],
+        byeQueue: importObj.byeQueue || defaultProps.byeQueue,
         /**
          * @property {object} roster The roster object.
          */
-        players: importObj.players || null,
-        tieBreak: cloneDeep(config.tieBreak),
+        players: importObj.players || defaultProps.players,
+        tieBreak: importObj.tieBreak || createDefaultConfig().tieBreak,
         /**
          * Get if a new round is ready or not.
          * @returns {bool} `True` if a round is ready, `false` if not.
@@ -75,7 +72,7 @@ function createTournament(
          * @param {number} roundId The round to fetch up to.
          * @returns {array} The list of matches.
          */
-        getMatchesByPlayer(player, roundId = null) {
+        getMatchesByPlayer(player/*:player*/, roundId = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
@@ -97,7 +94,7 @@ function createTournament(
          * @param {number} roundId The round to fetch up to.
          * @returns {array} A list of player objects.
          */
-        getPlayersByOpponent(opponent, roundId = null) {
+        getPlayersByOpponent(opponent/*:player*/, roundId = null) {
             let players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
@@ -170,7 +167,7 @@ function createTournament(
             return tourney;
         },
         setByeQueue(playerList) {
-            tourney.byQueue = playerList;
+            tourney.byeQueue = playerList;
             return tourney;
         }
     };
@@ -178,13 +175,14 @@ function createTournament(
     if (typeof importObj === "object") {
         Object.assign(tourney, importObj);
     }
-    if (tourney.players) {
-        // If roster data was imported, then init it.
-        tourney.players = createPlayerManager(tourney.players, playerSource);
-    } else {
-        // create a blank roster
-        tourney.players = createPlayerManager({}, playerSource);
-    }
+    // if (tourney.players) {
+    //     // If roster data was imported, then init it.
+    //     tourney.players = createPlayerManager(tourney.players, playerSource);
+    // } else {
+    //     // create a blank roster
+    //     tourney.players = createPlayerManager({}, playerSource);
+    // }
+    tourney.players = createPlayerManager(tourney.players, playerSource);
     tourney.players.ref_tourney = tourney;
     if (tourney.roundList.length >= 0) {
         // If round data was imported, then init it.

@@ -7,7 +7,6 @@ import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
 
-// const defaultTournament = createTournament("CVL Winter Open");
 const demoData = {roster: demoRoster.slice(0,16)}
 
 function App() {

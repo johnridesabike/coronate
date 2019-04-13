@@ -4,15 +4,7 @@ import {last} from "lodash";
 import pairPlayers from "./pairing";
 import createMatch from "./match";
 /*::
-import type {tournament} from "./tournament";
-import type {player} from "./player";
-import type {match} from "./match";
-export type round = {
-    id: number,
-    roster: Array<player>,
-    ref_prevRound: round,
-    matches: Array<match>
-};
+import type {tournament, player, match, round} from "./flow-types";
 */
 
 /**
@@ -135,7 +127,9 @@ function createRound(tourney/*:tournament*/, importObj/*:round*/ = {}) {
     if (round.matches) {
         // If match data was imported, then init it.
         round.matches = round.matches.map(
-            (matchData) => createMatch(round, matchData)
+            (matchData) => createMatch(
+                Object.assign(matchData, {ref_round: round})
+            )
         );
     } else {
         round.matches = pairPlayers(round);

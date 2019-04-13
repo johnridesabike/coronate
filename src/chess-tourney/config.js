@@ -1,45 +1,52 @@
-import config from "./default-config.json";
+// @flow
+/*::
+import type {config, configItem, player} from "./flow-types";
+*/
 
-/**
- * Moves a specific tie-break method to a new priority.
- * @function moveTieBreak
- * @param {number} methodId The key ID for the target tie-break method.
- * @param {number} newPos The new position to move the method do.
- * @returns {?array} The modified array of tie-break methods if successful, or
- * null on failure.
- */
-config.moveTieBreak = function (methodId, newPos) {
-    if (newPos < 0 || newPos > config.tieBreak.length - 1) {
-        return null;
-    }
-    if (!config.tieBreak[methodId]) {
-        return null;
-    }
-    let movedMethod = config.tieBreak.splice(methodId, 1)[0];
-    config.tieBreak.splice(newPos, 0, movedMethod);
-    return config.tieBreak;
-};
+function createDefaultConfig() {
+    const defaultConfig/*:config*/ = {
+        tieBreak: [
+            {
+                "name": "Modified median",
+                "funcName": "modifiedMedian",
+                "active": true
+            },
+            {
+                "name": "Solkoff",
+                "funcName": "solkoff",
+                "active": true
+            },
+            {
+                "name": "Cumulative score",
+                "funcName": "playerScoreCum",
+                "active": true
+            },
+            {
+                "name": "Cumulative of opposition",
+                "funcName": "playerOppScoreCum",
+                "active": true
+            },
+            {
+                "name": "Most black",
+                "funcName": "playerColorBalance",
+                "active": false
+            }
+        ]
+    };
+    return defaultConfig;
+}
 
-/**
- * Removes circular references with `JSON.stringify()`.
- */
-config.noCircRefs = function (key, value) {
-    if (key.startsWith("ref_")) {
-        return undefined;
-    } else {
-        return value;
-    }
-};
-
-config.JSONretriever = function (key, value) {
+function JSONretriever(key/*:string*/, value/*:Array<player>*/) {
     if (key.startsWith("ref_")) {
         return undefined;
     } else if (key === "roster") {
-        return value.map((p) => p.id);
+        return value.map((p/*:player*/)/*:number*/ => p.id);
     } else {
         return value;
     }
+}
+
+export {
+    JSONretriever,
+    createDefaultConfig
 };
-
-
-export default Object.freeze(config);

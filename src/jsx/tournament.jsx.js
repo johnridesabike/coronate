@@ -10,7 +10,8 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
     const newTourney = function(event) {
         event.preventDefault();
-        let tourney = createTournament(event.target.name.value);
+        let tourney = createTournament();
+        tourney.name = event.target.name.value;
         tourney.id = tourneyList.length;
         setTourneyList([...tourneyList,...[tourney]])
         setNewTourneyData(newTourneyDefaults);

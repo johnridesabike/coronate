@@ -1,12 +1,13 @@
+// @flow
 import createMatch from "./match";
 import {createPlayer, createPlayerManager} from "./player";
 import createRound from "./round";
 import scores from "./scores";
 import createTournament from "./tournament";
-import config from "./config";
+import {JSONretriever} from "./config";
 
 export {
-    config,
+    JSONretriever,
     createMatch,
     createPlayer,
     createRound,

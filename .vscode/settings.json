@@ -8,7 +8,9 @@
     "jslint.exclude": {
         "**/*.jsx.*": true,
         "**/node_modules/*": true,
-        "**/build/**": true
+        "**/build/**": true,
+        "**/flow-typed/**": true,
+        "**/flow-types.js": true
     },
     "jslint.options": {
         "devel": true,

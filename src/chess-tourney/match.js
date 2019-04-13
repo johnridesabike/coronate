@@ -1,10 +1,20 @@
+// @flow
+/*::
+import type {
+    round,
+    tournament,
+    player,
+    match,
+    defaultMatch
+} from "./flow-types";
+*/
 /**
  * Update the ratings for a match based on their ratings when the match began
  * and the match result. See the `elo-rank` NPM package for more information.
  * @param {object} match The `match` object.
  * @returns {object} The `match` object.
  */
-function calcRatings(match) {
+function calcRatings(match/*:match*/) {
     let whiteElo = match.roster[0].getEloRank();
     let blackElo = match.roster[1].getEloRank();
     const FLOOR = 100;
@@ -43,36 +53,33 @@ function calcRatings(match) {
  * @param {object} black The `player` object for white.
  * @param {object} white The `player` object for black.
  */
-function createMatch(round, importObj) {
-    let black;
-    let white;
-    let tourney = round.ref_tourney;
-    if (importObj.roster) {
-        [white, black] = importObj.roster;
-    } else {
-        // if it's an array
-        white = importObj[0];
-        black = importObj[1];
-    }
+function createMatch(importObj/*:defaultMatch*/) {
+    let black/*:player*/;
+    let white/*:player*/;
+    let tourney = importObj.ref_round.ref_tourney;
     // If the players are ID numbers, get their referant objects.
-    if (typeof black === "number") {
-        black = tourney.players.getPlayerById(black);
-    }
-    if (typeof white === "number") {
+    if (typeof importObj.roster[0] === "number") {
         white = tourney.players.getPlayerById(white);
+    } else {
+        white = importObj.roster[0];
     }
-    const match = {
+    if (typeof importObj.roster[1] === "number") {
+        black = tourney.players.getPlayerById(black);
+    } else {
+        black = importObj.roster[1];
+    }
+    const match/*:match*/ = {
         id: importObj.id || 0,
         /**
          * @property {object} ref_round A reference to the round containing
          * this match.
          */
-        ref_round: round,
+        ref_round: importObj.ref_round,
         /**
          * @property {object} ref_tourney A reference to the tournament
          * containing this match.
          */
-        ref_tourney: tourney,
+        ref_tourney: importObj.ref_round.ref_tourney,
         /**
          * @property {string} warnings Any warnings about the match, e.g. if
          * there was a pairing error.

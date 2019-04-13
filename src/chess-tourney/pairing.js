@@ -1,9 +1,13 @@
+// @flow
 import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
 import createMatch from "./match";
 import scores from "./scores";
 import {dummyPlayer} from "./player";
+/*::
+import type {match, round, player} from "./flow-types";
+*/
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -48,12 +52,12 @@ const maxPriority = (
  * @param {object} round The round object.
  * @returns {array} The list of matches.
  */
-function pairPlayers(round) {
-    let byeMatch;
+function pairPlayers(round/*:round*/) {
+    let byeMatch/*:?match*/;
     let potentialMatches;
-    let matches;
-    let results;
-    let reducedResults;
+    let matches/*:Array<match>*/;
+    let blossomResults/*:Array<number>*/;
+    let reducedResults/*:Array<Array<player>>*/;
     const tourney = round.ref_tourney;
     const dueColor = function (player) {
         if (!round.ref_prevRound) {
@@ -150,7 +154,10 @@ function pairPlayers(round) {
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
-        byeMatch = createMatch(round, [byePlayerData.player, dummyPlayer]);
+        byeMatch = createMatch({
+            ref_round: round,
+            roster: [byePlayerData.player, dummyPlayer]
+        });
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
@@ -174,9 +181,9 @@ function pairPlayers(round) {
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
-    results = blossom(potentialMatches);
+    blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
-    reducedResults = results.reduce(
+    reducedResults = blossomResults.reduce(
         function (matches, p1Id, p2Id) {
             // Filter out unmatched players. (Even though we removed the byes
             // from the list, blossom will automatically include their missing
@@ -215,7 +222,10 @@ function pairPlayers(round) {
             const player1 = pair[0];
             const player2 = pair[1];
             const ideal = pair[2];
-            const match = createMatch(round, [player1.player, player2.player]);
+            const match = createMatch({
+                ref_round: round,
+                roster: [player1.player, player2.player]
+            });
             match.ideal = ideal / maxPriority;
             // A quick-and-easy way to keep colors mostly equal.
             if (player1.colorBalance > player2.colorBalance) {

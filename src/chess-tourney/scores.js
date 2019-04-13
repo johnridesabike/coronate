@@ -1,10 +1,18 @@
+// @flow
 import {firstBy} from "thenby";
+/*::
+import type {tournament, player, configItem} from "./flow-types";
+*/
 /**
  * Get a list of all of a player's scores from each match.
  * @param {Player} player
  * @returns {array} the list of scores
  */
-function playerScoreList(tourney, player, roundId = null) {
+function playerScoreList(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     return tourney.getMatchesByPlayer(player, roundId).map(
         (match) => match.result[match.roster.indexOf(player)]
     );
@@ -27,7 +35,11 @@ function playerScoreListNoByes(tourney, player, roundId = null) {
  * @param {Player} player
  * @param {number} roundId
  */
-function playerScore(tourney, player, roundId = null) {
+function playerScore(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     var score = 0;
     var scoreList = playerScoreList(tourney, player, roundId);
     if (scoreList.length > 0) {
@@ -41,7 +53,11 @@ function playerScore(tourney, player, roundId = null) {
  * @param {Player} player
  * @param {number} roundId
  */
-function playerScoreCum(tourney, player, roundId = null) {
+function playerScoreCum(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     var runningScore = 0;
     var cumScores = [];
     var scores = playerScoreListNoByes(tourney, player, roundId);
@@ -63,7 +79,11 @@ function playerScoreCum(tourney, player, roundId = null) {
  * @returns {Int} A negative number means they played as white more. A positive
  * number means they played as black more.
  */
-function playerColorBalance(tourney, player, roundId = null) {
+function playerColorBalance(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     var color = 0;
     tourney.getMatchesByPlayer(player, roundId).filter(
         (match) => !match.isBye()
@@ -84,7 +104,12 @@ function playerColorBalance(tourney, player, roundId = null) {
  * @param {Player} player
  * @param {number} roundId
  */
-function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
+function modifiedMedian(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null,
+    solkoff/*:boolean*/ = false
+) {
     // get all of the opponent's scores
     var scores = tourney.getPlayersByOpponent(
         player,
@@ -112,11 +137,19 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
  * @param {Player} player
  * @param {number} roundId
  */
-function solkoff(tourney, player, roundId = null) {
+function solkoff(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     return modifiedMedian(tourney, player, roundId, true);
 }
 
-function playerOppScoreCum(tourney, player, roundId = null) {
+function playerOppScoreCum(
+    tourney/*:tournament*/,
+    player/*:player*/,
+    roundId/*:?number*/ = null
+) {
     const opponents = tourney.getPlayersByOpponent(
         player,
         roundId
@@ -158,8 +191,11 @@ function getTbFunc(funcName) {
  * @param {number} roundId
  * @returns {Array} The sorted list of players
  */
-function calcStandings(tourney, roundId = null) {
-    const tieBreaks = tourney.tieBreak.filter((m) => m.active);
+function calcStandings(
+    tourney/*:tournament*/,
+    roundId/*:?number*/ = null
+) {
+    const tieBreaks = tourney.tieBreak.filter((m/*:configItem*/) => m.active);
     const standingsFlat = tourney.players.roster.map(function (player) {
         var standing = {
             player: player,
