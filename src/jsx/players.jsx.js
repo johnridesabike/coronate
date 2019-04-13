@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, Fragment} from "react";
 
 export function Players({playerManager}) {
     const [roster, setRoster] = useState(playerManager.roster);
@@ -19,7 +19,7 @@ export function Players({playerManager}) {
         playerManager.delPlayer(event.target.dataset.id);
         setRoster([...playerManager.roster]);
     };
-    let rosterTable = "";
+    let rosterTable = <Fragment></Fragment>;
     if (roster.length > 0) {
         rosterTable = 
         <table>

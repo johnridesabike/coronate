@@ -1,6 +1,6 @@
 // @ts-check
 import createRound from "./round";
-import {createPlayerManager, defPManager} from "./player";
+import {createPlayerManager, playerList} from "./player";
 import {last, times} from "lodash";
 import {createDefaultConfig} from "./config";
 /**
@@ -50,7 +50,7 @@ const defaultProps = {
     roundList: [],
     byeValue: 0,
     byeQueue: [],
-    players: createPlayerManager(defPManager),
+    players: createPlayerManager(playerList([])),
     tieBreak: createDefaultConfig().tieBreak
 };
 

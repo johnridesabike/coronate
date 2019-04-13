@@ -233,4 +233,20 @@ function createPlayerManager(importObj = defPManager, playerSource = null) {
     return pManager;
 }
 
-export {dummyPlayer, createPlayer, createPlayerManager, defPManager};
+/**
+ * Prepares a raw list of player data to be used in `createPlayerManager`
+ * @param {Object[]} list
+ * @returns {defaultPlayerManager}
+ */
+function playerList(list) {
+    const newObs = Object.create(defPManager);
+    newObs.roster = list;
+    return newObs;
+}
+
+export {
+    dummyPlayer,
+    createPlayer,
+    createPlayerManager,
+    playerList
+};

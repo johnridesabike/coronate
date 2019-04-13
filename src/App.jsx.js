@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import "./App.css";
 import {MainNav, NavItem} from "./jsx/utility.jsx"
-import {createPlayerManager} from "./chess-tourney";
+import {createPlayerManager, playerList} from "./chess-tourney";
 import {Players} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
+// @ts-ignore
 import demoRoster from "./demo-players.json";
 
-const demoData = {roster: demoRoster.slice(0,16), test: "Test"}
+const demoData = demoRoster.slice(0,16);
 
 function App() {
     const [tourneylist, setTourneyList] = useState([]);
     const [openTourney, setOpenTourney] = useState(null);
     // eslint-disable-next-line no-unused-vars
     const [playerManager, setPlayerManager] = useState(
-        createPlayerManager(demoData)
+        createPlayerManager(playerList(demoData))
     );
     const [currentView, setCurrentView] = useState(0);
     const setViewList = (id) => setCurrentView(id);

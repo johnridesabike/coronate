@@ -41,9 +41,9 @@ function Round({round, setRoundList}) {
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th colSpan="2">White</th>
+                    <th colSpan={2}>White</th>
                     <th>Draw</th>
-                    <th colSpan="2">Black</th>
+                    <th colSpan={2}>Black</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -137,17 +137,17 @@ function RoundMatch({match}) {
                 <Fragment>
                 <tr>
                     <td></td>
-                    <td colSpan="2">
+                    <td colSpan={2}>
                         <PlayerInfo player={white} ratingDiff={ratingDiff[0]}/>
                     </td>
                     <td></td>
-                    <td colSpan="2">
+                    <td colSpan={2}>
                         <PlayerInfo player={black} ratingDiff={ratingDiff[1]}/>
                     </td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td colSpan="7" style={{textAlign: "center"}}>
+                    <td colSpan={7} style={{textAlign: "center"}}>
                         Match ideal: {numeral(match.ideal).format("00%")}
                     </td>
                 </tr>

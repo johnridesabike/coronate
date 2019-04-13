@@ -26,7 +26,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
         const id = event.target.dataset.id;
         setOpenTourney(tourneyList[id])
     };
-    let content = "";
+    let content = <Fragment></Fragment>;
     if (openTourney) {
         content = 
         <Tournament 
@@ -41,7 +41,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
             ?
                 <ol>
                     {tourneyList.map((tourney, i) => 
-                        <li key={i} data-id={i}  tabIndex="0" role="menuitem"
+                        <li key={i} data-id={i}  tabIndex={0} role="menuitem"
                             onClick={selectTourney} onKeyPress={selectTourney}>
                             {tourney.name}
                         </li>    
