@@ -5,7 +5,6 @@ import {createPlayerManager, playerList} from "./chess-tourney";
 import {Players} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
-// @ts-ignore
 import demoRoster from "./demo-players.json";
 
 const demoData = demoRoster.slice(0,16);
@@ -13,7 +12,6 @@ const demoData = demoRoster.slice(0,16);
 function App() {
     const [tourneylist, setTourneyList] = useState([]);
     const [openTourney, setOpenTourney] = useState(null);
-    // eslint-disable-next-line no-unused-vars
     const [playerManager, setPlayerManager] = useState(
         createPlayerManager(playerList(demoData))
     );
@@ -25,7 +23,7 @@ function App() {
             tourneyList={tourneylist} setTourneyList={setTourneyList}
             openTourney={openTourney} setOpenTourney={setOpenTourney} />,
         <Options playerManager={playerManager} tourneyList={tourneylist}
-            setTourneyList={setTourneyList} />
+            setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
     ];
     return (
         <main>

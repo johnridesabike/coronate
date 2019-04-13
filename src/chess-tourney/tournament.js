@@ -1,15 +1,14 @@
 // @ts-check
 import createRound from "./round";
-import {createPlayerManager, playerList} from "./player";
+import {createPlayerManager, playerList} from "./player-manager";
 import {last, times} from "lodash";
 import {createDefaultConfig} from "./config";
 /**
- * @typedef { import("./player").player } player
- * @typedef { import("./player").playerManager } playerManager
- * @typedef { import("./player").defaultPlayerManager } defaultPlayerManager
- * @typedef { import("./round").round } round
- * @typedef { import("./match").match } match
- * @typedef { import("./config").configItem } configItem
+ * @typedef {import("./player").player} player
+ * @typedef {import("./player-manager").playerManager } playerManager
+ * @typedef {import("./round").round} round
+ * @typedef {import("./match").match} match
+ * @typedef {import("./config").configItem} configItem
  */
 /**
  * @typedef {Object} tournament
@@ -21,7 +20,7 @@ import {createDefaultConfig} from "./config";
  * @property {playerManager} players
  * @property {configItem[]} tieBreak
  * @property {function(): boolean} isNewRoundReady
- * @property {(player, number) => match[]} getMatchesByPlayer
+ * @property {function(player, number): match[]} getMatchesByPlayer
  * @property {function(player, number): Array<player>} getPlayersByOpponent
  * @property {function(): number} getNumOfRounds
  * @property {function(): (round | false)} newRound
@@ -32,7 +31,7 @@ import {createDefaultConfig} from "./config";
  * @property {function(Array<player>)} setByeQueue
 */
 /**
- * @typedef {Object} defaultTourney
+ * @typedef {Object} tourneyProps
  * @property {number} id
  * @property {string} name
  * @property {Array<round>} roundList
@@ -42,7 +41,7 @@ import {createDefaultConfig} from "./config";
  * @property {configItem[]} tieBreak
  */
 /**
- * @type {defaultTourney}
+ * @type {tourneyProps}
  */
 const defaultProps = {
     id: 0,
@@ -56,7 +55,7 @@ const defaultProps = {
 
 /**
  *
- * @param {defaultTourney} importObj
+ * @param {tourneyProps} importObj
  * @param {?playerManager} playerSource
  * @returns {tournament}
  */
@@ -85,6 +84,9 @@ function createTournament(importObj = defaultProps, playerSource = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
+            /**
+             * @type {match[]}
+             */
             let matches = [];
             times(roundId + 1, function (i) {
                 if (tourney.roundList[i] !== undefined) {
@@ -98,6 +100,9 @@ function createTournament(importObj = defaultProps, playerSource = null) {
             return matches;
         },
         getPlayersByOpponent(opponent, roundId = null) {
+            /**
+             * @type {player[]}
+             */
             let players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
@@ -156,17 +161,6 @@ function createTournament(importObj = defaultProps, playerSource = null) {
             return tourney;
         }
     };
-    // Importing JSON-parsed data
-    if (typeof importObj === "object") {
-        Object.assign(tourney, importObj);
-    }
-    // if (tourney.players) {
-    //     // If roster data was imported, then init it.
-    //     tourney.players = createPlayerManager(tourney.players, playerSource);
-    // } else {
-    //     // create a blank roster
-    //     tourney.players = createPlayerManager({}, playerSource);
-    // }
     tourney.players = createPlayerManager(tourney.players, playerSource);
     tourney.players.ref_tourney = tourney;
     if (tourney.roundList.length >= 0) {

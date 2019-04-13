@@ -15,7 +15,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
         tourney.id = tourneyList.length;
         setTourneyList([...tourneyList,...[tourney]])
         setNewTourneyData(newTourneyDefaults);
-        setOpenTourney(tourney)
+        setOpenTourney(tourney); // reset this so stale data is wiped
     };
     const updateField = function (event) {
         let update = {};

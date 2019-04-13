@@ -39,6 +39,11 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@types/elo-rank": "^1.0.0",
+    "@types/lodash": "^4.14.123",
+    "@types/numeral": "0.0.25",
+    "@types/react": "^16.8.13",
+    "@types/react-tabs": "^2.3.1",
     "gh-pages": "^2.0.1",
     "jslint": "^0.12.1"
   }

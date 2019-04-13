@@ -4,9 +4,9 @@ import {last} from "lodash";
 import pairPlayers from "./pairing";
 import createMatch from "./match";
 /**
- * @typedef { import("./tournament").tournament } tournament
- * @typedef { import("./player").player } player
- * @typedef { import("./match").match } match
+ * @typedef {import("./tournament").tournament} tournament
+ * @typedef {import("./player").player} player
+ * @typedef {import("./match").match} match
  */
 /**
  * @typedef {Object} round

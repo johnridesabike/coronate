@@ -7,10 +7,10 @@ import scores from "./scores";
 import {dummyPlayer} from "./player";
 
 /**
- * @typedef { import("./player").player } player
- * @typedef { import("./round").round } round
- * @typedef { import("./match").match } match
- * @typedef { import("./tournament").tournament } tournament
+ * @typedef {import("./player").player} player
+ * @typedef {import("./round").round} round
+ * @typedef {import("./match").match} match
+ * @typedef {import("./tournament").tournament} tournament
  */
 /**
  * @typedef {Object} playerDataType
@@ -89,7 +89,7 @@ function pairPlayers(round) {
      */
     let blossomResults;
     /**
-     * @type {Array<playerDataType>}
+     * @type {Array<[playerDataType, playerDataType, number]>}
      */
     let reducedResults;
     /**

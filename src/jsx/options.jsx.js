@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {createTournament, JSONretriever} from "../chess-tourney";
 
-export function Options({playerManager, tourneyList, setTourneyList}) {
+export function Options({playerManager, tourneyList, setTourneyList, setOpenTourney}) {
     const [outputPlayers, setOutputPlayers] = useState(
         JSON.stringify(playerManager.roster, JSONretriever, 2)
     );
@@ -20,6 +20,7 @@ export function Options({playerManager, tourneyList, setTourneyList}) {
         event.preventDefault();
         let tourneyData = JSON.parse(event.target.tourneyData.value);
         setTourneyList(tourneyData.map((t) => createTournament(t, playerManager)));
+        setOpenTourney(null);
     };
     return (
         <section>

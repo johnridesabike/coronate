@@ -1,8 +1,8 @@
 // @ts-check
 /**
- * @typedef { import("./player").player } player
-* @typedef { import("./round").round } round
-* @typedef { import("./tournament").tournament } tournament
+ * @typedef {import("./player").player} player
+ * @typedef {import("./round").round} round
+ * @typedef {import("./tournament").tournament} tournament
  */
 /**
  * @typedef {Object} match
@@ -22,7 +22,7 @@
  * @property {function} blackWon
  * @property {function} whiteWon
  * @property {function} draw
- * @property {function} setResult
+ * @property {function(number[])} setResult
  * @property {function} resetResult
  * @property {function(): boolean} isComplete
  * @property {function(): boolean} isBye
@@ -41,6 +41,10 @@
  * @property {number} newRating
  */
 
+/**
+ *
+ * @param {match} match
+ */
 function calcRatings(match) {
     let whiteElo = match.roster[0].getEloRank();
     let blackElo = match.roster[1].getEloRank();
@@ -74,9 +78,9 @@ function calcRatings(match) {
     return match;
 }
 
-function createMatch(importObj/*:defaultMatch*/) {
-    let black/*:player*/;
-    let white/*:player*/;
+function createMatch(importObj) {
+    let black;
+    let white;
     let tourney = importObj.ref_round.ref_tourney;
     // If the players are ID numbers, get their referant objects.
     if (typeof importObj.roster[0] === "number") {

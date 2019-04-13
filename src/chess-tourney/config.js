@@ -1,5 +1,7 @@
 // @ts-check
-
+/**
+ * @typedef {import("./player").player} player
+ */
 /**
  * @typedef {Object} configItem
  * @property {string} name
@@ -9,6 +11,9 @@
 /**
  * @typedef {Object} configType
  * @property {configItem[]} tieBreak
+ */
+/**
+ * @returns {configType}
  */
 function createDefaultConfig() {
     /**
@@ -46,11 +51,21 @@ function createDefaultConfig() {
     return defaultConfig;
 }
 
-function JSONretriever(key/*:string*/, value/*:Array<player>*/) {
+/**
+ * @param {string} key
+ * @param {*} value
+ * @returns {*}
+ */
+function JSONretriever(key, value) {
     if (key.startsWith("ref_")) {
         return undefined;
-    } else if (key === "roster") {
-        return value.map((p/*:player*/)/*:number*/ => p.id);
+    } else if (key === "roster" && Array.isArray(value)) {
+        return value.map(
+            /**
+             * @param {player} p
+             */
+            (p) => p.id
+        );
     } else {
         return value;
     }

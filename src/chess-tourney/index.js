@@ -1,6 +1,7 @@
-// @flow
+// @ts-check
 import createMatch from "./match";
-import {createPlayer, createPlayerManager, playerList} from "./player";
+import {createPlayer} from "./player";
+import {createPlayerManager, playerList} from "./player-manager";
 import createRound from "./round";
 import scores from "./scores";
 import createTournament from "./tournament";
