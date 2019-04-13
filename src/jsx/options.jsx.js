@@ -27,8 +27,8 @@ export function Options({playerManager, tourneyList, setTourneyList}) {
             <form onSubmit={loadTourney}>
                 <textarea 
                     className="json"
-                    rows="25"
-                    cols="50" 
+                    rows={25}
+                    cols={50}
                     value={outputTourney}
                     onChange={(event) => setOutputTourney(event.target.value)}
                     name="tourneyData"
@@ -39,8 +39,8 @@ export function Options({playerManager, tourneyList, setTourneyList}) {
             <form onSubmit={loadPlayers}>
                 <textarea
                     className="json"
-                    rows="25"
-                    cols="50"
+                    rows={25}
+                    cols={50}
                     value={outputPlayers}
                     name="playerdata"
                     onChange={changedPlayers} />

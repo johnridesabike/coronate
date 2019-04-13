@@ -7,7 +7,7 @@ import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
 
-const demoData = {roster: demoRoster.slice(0,16)}
+const demoData = {roster: demoRoster.slice(0,16), test: "Test"}
 
 function App() {
     const [tourneylist, setTourneyList] = useState([]);

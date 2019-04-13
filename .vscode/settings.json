@@ -1,16 +1,11 @@
 {
     "editor.detectIndentation": false,
-    "javascript.validate.enable": false,
-    "typescript.suggest.enabled": false,
-    "typescript.suggestionActions.enabled": false,
-    "javascript.suggestionActions.enabled": false,
+    "javascript.implicitProjectConfig.checkJs": true,
     "jslint.version": "es6",
     "jslint.exclude": {
         "**/*.jsx.*": true,
-        "**/node_modules/*": true,
-        "**/build/**": true,
-        "**/flow-typed/**": true,
-        "**/flow-types.js": true
+        "**/node_modules/**": true,
+        "**/build/**": true
     },
     "jslint.options": {
         "devel": true,

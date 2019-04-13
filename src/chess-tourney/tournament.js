@@ -1,62 +1,77 @@
-// @flow
+// @ts-check
 import createRound from "./round";
-import {createPlayerManager, defaultPlayerManager} from "./player";
+import {createPlayerManager, defPManager} from "./player";
 import {last, times} from "lodash";
 import {createDefaultConfig} from "./config";
-
-/*::
-import type {
-    player,
-    playerManager,
-    round,
-    defaultTourney,
-    tournament,
-} from "./flow-types";
+/**
+ * @typedef { import("./player").player } player
+ * @typedef { import("./player").playerManager } playerManager
+ * @typedef { import("./player").defaultPlayerManager } defaultPlayerManager
+ * @typedef { import("./round").round } round
+ * @typedef { import("./match").match } match
+ * @typedef { import("./config").configItem } configItem
+ */
+/**
+ * @typedef {Object} tournament
+ * @property {number} id
+ * @property {string} name
+ * @property {Array<round>} roundList
+ * @property {number} byeValue
+ * @property {Array<player>} byeQueue
+ * @property {playerManager} players
+ * @property {configItem[]} tieBreak
+ * @property {function(): boolean} isNewRoundReady
+ * @property {(player, number) => match[]} getMatchesByPlayer
+ * @property {function(player, number): Array<player>} getPlayersByOpponent
+ * @property {function(): number} getNumOfRounds
+ * @property {function(): (round | false)} newRound
+ * @property {function(round)} removeRound
+ * @property {function(round)} canRemoveRound
+ * @property {function(player)} addPlayerToByeQueue
+ * @property {function(player)} removePlayerFromByeQueue
+ * @property {function(Array<player>)} setByeQueue
 */
-
-const defaultProps/*:defaultTourney */ = {
+/**
+ * @typedef {Object} defaultTourney
+ * @property {number} id
+ * @property {string} name
+ * @property {Array<round>} roundList
+ * @property {number} byeValue
+ * @property {Array<player>} byeQueue
+ * @property {playerManager} players
+ * @property {configItem[]} tieBreak
+ */
+/**
+ * @type {defaultTourney}
+ */
+const defaultProps = {
     id: 0,
     name: "",
     roundList: [],
     byeValue: 0,
     byeQueue: [],
-    players: defaultPlayerManager,
+    players: createPlayerManager(defPManager),
     tieBreak: createDefaultConfig().tieBreak
 };
 
-function createTournament(
-    importObj/*:defaultTourney*/ = defaultProps,
-    playerSource/*:?playerManager*/ = null
-) {
-    const tourney/*:tournament*/ = {
+/**
+ *
+ * @param {defaultTourney} importObj
+ * @param {?playerManager} playerSource
+ * @returns {tournament}
+ */
+function createTournament(importObj = defaultProps, playerSource = null) {
+   /**
+    * @type {tournament}
+    */
+    const tourney = {
         id: importObj.id || defaultProps.id,
-        /**
-         * @property {string} name The display name of the tournament.
-         */
         name: importObj.name || defaultProps.name,
-        /**
-         * @property {array} roundList The list of rounds.
-         */
         roundList: importObj.roundList || defaultProps.roundList,
-        /**
-         * @property {number} byeValue How many points a bye is worth. USCF
-         * suggests either 1 or 0.5.
-         */
         byeValue: importObj.byeValue || defaultProps.byeValue,
-        /**
-         * @property {array} byeQueue A list of players signed up for bye
-         * rounds, if byes are necessary.
-         */
         byeQueue: importObj.byeQueue || defaultProps.byeQueue,
-        /**
-         * @property {object} roster The roster object.
-         */
         players: importObj.players || defaultProps.players,
         tieBreak: importObj.tieBreak || createDefaultConfig().tieBreak,
-        /**
-         * Get if a new round is ready or not.
-         * @returns {bool} `True` if a round is ready, `false` if not.
-         */
         isNewRoundReady() {
             let isReady = false;
             if (tourney.roundList.length > 0) {
@@ -66,13 +81,7 @@ function createTournament(
             }
             return isReady;
         },
-        /**
-         * Get a list of matches containing a particular player.
-         * @param {object} player The specified player.
-         * @param {number} roundId The round to fetch up to.
-         * @returns {array} The list of matches.
-         */
-        getMatchesByPlayer(player/*:player*/, roundId = null) {
+        getMatchesByPlayer(player, roundId = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
@@ -88,13 +97,7 @@ function createTournament(
             });
             return matches;
         },
-        /**
-         * Get a list of players who have played a specified player.
-         * @param {object} player The specified player.
-         * @param {number} roundId The round to fetch up to.
-         * @returns {array} A list of player objects.
-         */
-        getPlayersByOpponent(opponent/*:player*/, roundId = null) {
+        getPlayersByOpponent(opponent, roundId = null) {
             let players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
@@ -107,10 +110,6 @@ function createTournament(
             );
             return players;
         },
-        /**
-         * Get the minimum number of rounds based on the number of players.
-         * @returns {number} The number of rounds.
-         */
         getNumOfRounds() {
             let roundId = Math.ceil(
                 Math.log2(tourney.players.getActive().length)
@@ -120,10 +119,6 @@ function createTournament(
             }
             return roundId;
         },
-        /**
-         * Create a new round and add it to the round list.
-         * @returns {object} The new round object.
-         */
         newRound() {
             if (!tourney.isNewRoundReady()) {
                 return false;
@@ -148,20 +143,10 @@ function createTournament(
         canRemoveRound(round) {
             return round !== last(tourney.roundList);
         },
-        /**
-         * Add a player to the bye queue.
-         * @param {object} player The player object.
-         * @returns {object} This tournament object.
-         */
         addPlayerToByeQueue(player) {
             tourney.byeQueue.push(player);
             return tourney;
         },
-        /**
-         * Remove a player from the bye queue.
-         * @param {object} player The player object.
-         * @returns {object} This tournament object.
-         */
         removePlayerFromByeQueue(player) {
             tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
             return tourney;

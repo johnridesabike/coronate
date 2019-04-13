@@ -27,8 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "flow": "flow"
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -40,7 +39,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "flow-bin": "^0.97.0",
     "gh-pages": "^2.0.1",
     "jslint": "^0.12.1"
   }

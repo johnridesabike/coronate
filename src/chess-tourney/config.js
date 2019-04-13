@@ -1,10 +1,20 @@
-// @flow
-/*::
-import type {config, configItem, player} from "./flow-types";
-*/
+// @ts-check
 
+/**
+ * @typedef {Object} configItem
+ * @property {string} name
+ * @property {string} funcName
+ * @property {boolean} active
+ */
+/**
+ * @typedef {Object} configType
+ * @property {configItem[]} tieBreak
+ */
 function createDefaultConfig() {
-    const defaultConfig/*:config*/ = {
+    /**
+     * @type {configType}
+     */
+    const defaultConfig = {
         tieBreak: [
             {
                 "name": "Modified median",

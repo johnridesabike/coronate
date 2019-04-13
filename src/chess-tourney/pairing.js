@@ -1,13 +1,27 @@
-// @flow
+// @ts-check
 import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
 import createMatch from "./match";
 import scores from "./scores";
 import {dummyPlayer} from "./player";
-/*::
-import type {match, round, player} from "./flow-types";
-*/
+
+/**
+ * @typedef { import("./player").player } player
+ * @typedef { import("./round").round } round
+ * @typedef { import("./match").match } match
+ * @typedef { import("./tournament").tournament } tournament
+ */
+/**
+ * @typedef {Object} playerDataType
+ * @property {player} player
+ * @property {number} id
+ * @property {number} score
+ * @property {(number | null)} dueColor
+ * @property {number} colorBalance
+ * @property {player[]} opponentHistory
+ * @property {boolean} upperHalf
+ */
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -15,6 +29,7 @@ import type {match, round, player} from "./flow-types";
 /**
  * @constant avoidMeetingTwicePriority The weight given to avoid players
  * meeting twice. This is the highest priority. (USCF § 27A1)
+ * @type {number}
  */
 const avoidMeetingTwicePriority = 20;
 /**
@@ -24,20 +39,25 @@ const avoidMeetingTwicePriority = 20;
  * scoring 0, 1, 2, and 3, and if a player scoring 1 gets compared with a
  * player scoring 3, then their `sameScoresPriority` will be reduced by 50%.
  * (`(3 - 1) / 4 = 0.5`) (USCF § 27A2)
+ * @type {number}
  */
 const sameScoresPriority = 16;
 /**
  * @constant differentHalfPriority The weight given to match players in lower
  * versus upper halves. This is only applied to players being matched within
  * the same score group. (USCF § 27A3)
+ * @type {number}
  */
 const differentHalfPriority = 2;
 /**
  * @constant differentDueColorPriority The weight given to match players with
  * opposite due colors. (USCF § 27A4 and § 27A5)
+ * @type {number}
  */
 const differentDueColorPriority = 1;
-
+/**
+ * @type {number}
+ */
 const maxPriority = (
     avoidMeetingTwicePriority
     + sameScoresPriority
@@ -49,16 +69,37 @@ const maxPriority = (
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
- * @param {object} round The round object.
- * @returns {array} The list of matches.
+ * @param {round} round The round object.
  */
-function pairPlayers(round/*:round*/) {
-    let byeMatch/*:?match*/;
+function pairPlayers(round) {
+    /**
+     * @type {match}
+     */
+    let byeMatch;
+    /**
+     * @type {Array<Array<number>>}
+     */
     let potentialMatches;
-    let matches/*:Array<match>*/;
-    let blossomResults/*:Array<number>*/;
-    let reducedResults/*:Array<Array<player>>*/;
+    /**
+     * @type {match[]}
+     */
+    let matches;
+    /**
+     * @type {number[]}
+     */
+    let blossomResults;
+    /**
+     * @type {Array<playerDataType>}
+     */
+    let reducedResults;
+    /**
+     * @type {tournament}
+     */
     const tourney = round.ref_tourney;
+    /**
+     * @param {player} player
+     * @returns {number | null}
+     */
     const dueColor = function (player) {
         if (!round.ref_prevRound) {
             return null;
@@ -70,6 +111,9 @@ function pairPlayers(round/*:round*/) {
         }
         return color;
     };
+    /**
+     * @type {playerDataType[]}
+     */
     let playerData = round.roster.map(function (player, id) {
         return {
             player: player,
@@ -77,7 +121,7 @@ function pairPlayers(round/*:round*/) {
             score: scores.playerScore(tourney, player, round.id),
             dueColor: dueColor(player),
             colorBalance: scores.playerColorBalance(tourney, player),
-            opponentHistory: tourney.getPlayersByOpponent(player),
+            opponentHistory: tourney.getPlayersByOpponent(player, null),
             upperHalf: false
         };
     });
@@ -194,6 +238,9 @@ function pairPlayers(round/*:round*/) {
                 let ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
+                /**
+                 * @type {Array}
+                 */
                 let matched = matches.map((pair) => pair[0]);
                 // let matched = matches.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this
@@ -228,7 +275,7 @@ function pairPlayers(round/*:round*/) {
             });
             match.ideal = ideal / maxPriority;
             // A quick-and-easy way to keep colors mostly equal.
-            if (player1.colorBalance > player2.colorBalance) {
+            if (player1.colorBalance < player2.colorBalance) {
                 match.reverse();
             }
             // When the match isn't ideal, include a warning.
