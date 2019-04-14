@@ -1,23 +1,35 @@
 // @ts-check
 import React, {useState, Fragment} from "react";
+/**
+ * @typedef {import("react")} React
+ * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
+ */
 
-export function Players({playerManager}) {
+export function Players(props) {
+    /** @type {PlayerManager} */
+    const playerManager = props.playerManager;
     const [roster, setRoster] = useState(playerManager.roster);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
+    /** @param {React.FormEvent<HTMLElement>} event */
     const handleSubmit = function (event) {
         event.preventDefault();
         playerManager.addPlayer(newPlayer);
         setNewPlayer(newPlayerDefault);
         setRoster([...playerManager.roster]);
     };
+    /** @param {React.FormEvent<HTMLInputElement>} event */
     const updateField = function (event) {
+        event.preventDefault();
+        /** @type {Object<string, string>} */
         let update = {};
-        update[event.target.name] = event.target.value
+        update[event.currentTarget.name] = event.currentTarget.value
         setNewPlayer(Object.assign({}, newPlayer, update));
     };
+    /** @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event */
     const delPlayer = function (event) {
-        playerManager.delPlayer(event.target.dataset.id);
+        event.preventDefault();
+        playerManager.delPlayer(Number(event.currentTarget.dataset.id));
         setRoster([...playerManager.roster]);
     };
     let rosterTable = <Fragment></Fragment>;

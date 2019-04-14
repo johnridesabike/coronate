@@ -173,8 +173,8 @@ function PlayerInfo({player, ratingDiff}) {
             <dt>Opponent history</dt>
             <dd>
                 <ol>
-                {player.oppList.map((opponent, i) =>
-                    <li key={i}>
+                {player.oppList.map((opponent) =>
+                    <li key={opponent.id}>
                     {opponent.firstName}
                     </li>  
                 )}

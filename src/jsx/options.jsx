@@ -1,6 +1,9 @@
 // @ts-check
 import React, {useState} from "react";
 import {createTournament, JSONretriever} from "../chess-tourney";
+/**
+ * @typedef {import("react")} React
+ */
 
 export function Options({playerManager, tourneyList, setTourneyList, setOpenTourney}) {
     const [outputPlayers, setOutputPlayers] = useState(
@@ -9,14 +12,17 @@ export function Options({playerManager, tourneyList, setTourneyList, setOpenTour
     const [outputTourney, setOutputTourney] = useState(
         JSON.stringify(tourneyList, JSONretriever, 2)
     );
+    /** @param {React.FormEvent<HTMLElement>} event */
     const loadPlayers = (event) => {
         event.preventDefault();
         let players = JSON.parse(event.target.playerdata.value);
         playerManager.loadPlayerData(players);
     };
+    /** @param {React.FormEvent<HTMLElement>} event */
     const changedPlayers = (event) => {
         setOutputPlayers(event.target.value);
     };
+    /** @param {React.FormEvent<HTMLElement>} event */
     const loadTourney = function (event) {
         event.preventDefault();
         let tourneyData = JSON.parse(event.target.tourneyData.value);

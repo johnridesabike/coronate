@@ -61,9 +61,7 @@ function JSONretriever(key, value) {
         return undefined;
     } else if (key === "roster" && Array.isArray(value)) {
         return value.map(
-            /**
-             * @param {Player} p
-             */
+            /** @param {Player} p */
             (p) => p.id
         );
     } else {

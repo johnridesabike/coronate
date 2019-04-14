@@ -5,6 +5,9 @@ import "react-tabs/style/react-tabs.css";
 import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx"
 import {RoundContainer} from "./round.jsx";
+/**
+ * @typedef {import("../chess-tourney").Tournament} Tournament
+ */
 
 export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
@@ -128,14 +131,14 @@ export function Standings({tourney}) {
         </thead>
         {scores.calcStandings(tourney).map((rank, i) => 
           <tbody key={i}>
-            {rank.map((player, j) => 
-              <tr key={j}>
+            {rank.map((standing) => 
+              <tr key={standing.id}>
                   <td>{i + 1}</td>
-                  <td>{player.player.firstName}</td>
-                  <td className="table__number">{player.score}</td>
+                  <td>{standing.player.firstName}</td>
+                  <td className="table__number">{standing.scores.score}</td>
                   {tourney.tieBreak.filter((m) => m.active).map((method, i) =>
                       <td className="table__number" key={i}>
-                          {player[method.name]}
+                          {standing.scores[method.name]}
                       </td>
                   )}
               </tr>

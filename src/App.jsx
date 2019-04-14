@@ -17,6 +17,7 @@ function App() {
         createPlayerManager({roster: demoData})
     );
     const [currentView, setCurrentView] = useState(0);
+    /** @param {number} id */
     const setViewList = (id) => setCurrentView(id);
     const viewList = [
         <Players playerManager={playerManager} />,
@@ -39,33 +40,6 @@ function App() {
             {viewList[currentView]}
         </main>
     );
-    // return (
-    //     <div className="tournament">
-    //     <nav className="tabbar">
-    //         <ul>
-    //         {tabList.map((tab, i) => 
-    //             <li key={i}>
-    //             <button
-    //                 className="tab"
-    //                 onClick={() => setCurrentTab(tab)}
-    //                 disabled={currentTab === tab} >
-    //                 {tab.name}
-    //             </button>
-    //             </li>
-    //         )}
-    //         <li>
-    //             <button 
-    //             className="tab new_round"
-    //             onClick={newRound} >
-    //             New Round
-    //             </button>
-    //         </li>
-    //         </ul>
-    //     </nav>
-    //     <h1>Chessahoochee: a chess tournament app</h1>
-    //     {currentTab.contents}
-    //     </div>
-    // );
 }
 
 function Caution() {

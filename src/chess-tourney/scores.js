@@ -4,16 +4,9 @@ import {firstBy} from "thenby";
  * @typedef {import("./player").Player} Player
  * @typedef {import("./tournament").Tournament} Tournament
  */
- /**
-  * @typedef {Object} standing
-  * @property {Player} player
-  * @property {number} score
-  * @property {number} [modifiedMedian]
-  * @property {number} [playerColorBalance]
-  * @property {number} [playerOppScoreCum]
-  * @property {number} [playerScoreCum]
-  * @property {number} [solkoff]
-  */
+/**
+ * @typedef {function(Tournament, Player, number=, boolean=): number} ScoreCalculator
+ */
 /**
  * Get a list of all of a player's scores from each match.
  * @param {Tournament} tourney
@@ -46,10 +39,7 @@ function playerScoreListNoByes(tourney, player, roundId = null) {
 
 /**
  * Get the total score of a player after a given round.
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
- * @returns {number}
+ * @type {ScoreCalculator}
  */
 function playerScore(tourney, player, roundId = null) {
     let score = 0;
@@ -62,10 +52,7 @@ function playerScore(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative score of a player
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
- * @returns {number}
+ * @type {ScoreCalculator}
  */
 function playerScoreCum(tourney, player, roundId = null) {
     let runningScore = 0;
@@ -87,9 +74,7 @@ function playerScoreCum(tourney, player, roundId = null) {
 
 /**
  * Calculate a player's color balance
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
+ * @type {ScoreCalculator}
  * @returns {number} A negative number means they played as white more. A
  * positive number means they played as black more.
  */
@@ -111,11 +96,7 @@ function playerColorBalance(tourney, player, roundId = null) {
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
- * @param {boolean=} solkoff
- * @returns {number}
+ * @type {ScoreCalculator}
  */
 function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
     // get all of the opponent's scores
@@ -142,10 +123,7 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
 
 /**
  * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
- * @returns {number}
+ * @type {ScoreCalculator}
  */
 function solkoff(tourney, player, roundId = null) {
     return modifiedMedian(tourney, player, roundId, true);
@@ -153,10 +131,7 @@ function solkoff(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative scores of a player's opponents.
- * @param {Tournament} tourney
- * @param {Player} player
- * @param {number=} roundId
- * @returns {number}
+ * @type {ScoreCalculator}
  */
 function playerOppScoreCum(tourney, player, roundId = null) {
     const opponents = tourney.getPlayersByOpponent(
@@ -174,15 +149,33 @@ function playerOppScoreCum(tourney, player, roundId = null) {
 }
 
 /**
- * @param {Object} player1
- * @param {Object} player2
+ * @type {Object<string, ScoreCalculator>}
+ */
+const tbFuncs = {
+    modifiedMedian,
+    playerColorBalance,
+    playerOppScoreCum,
+    playerScoreCum,
+    solkoff
+};
+
+/**
+ * @typedef {Object} Standing
+ * @property {Player} player
+ * @property {number} id
+ * @property {Object<string, number>} scores
+ */
+
+/**
+ * @param {Standing} standing1
+ * @param {Standing} standing2
  * @returns {boolean}
  */
-function areScoresEqual(player1, player2) {
-    const scoreTypes = Object.getOwnPropertyNames(player1);
+function areScoresEqual(standing1, standing2) {
+    const scoreTypes = Object.getOwnPropertyNames(standing1);
     let areEqual = true;
     scoreTypes.forEach(function (score) {
-        if (score !== "player" && player1[score] !== player2[score]) {
+        if (standing1.scores[score] !== standing2.scores[score]) {
             areEqual = false;
         }
     });
@@ -190,68 +183,59 @@ function areScoresEqual(player1, player2) {
 }
 
 /**
- *
- * @param {string} funcName
- * @returns {function}
- */
-function getTbFunc(funcName) {
-    /**
-     * @type {Object.<string, function>}
-     */
-    const tieBreakMethods = {
-        modifiedMedian,
-        playerColorBalance,
-        playerOppScoreCum,
-        playerScoreCum,
-        solkoff
-    };
-    return tieBreakMethods[funcName];
-}
-
-/**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {Tournament} tourney
- * @param {number=} roundId
- * @returns {Array<Array<standing>>}
+ * @param {number | null} roundId
+ * @returns {Array<Array<Standing>>}
  */
 function calcStandings(tourney, roundId = null) {
     const tieBreaks = tourney.tieBreak.filter((m) => m.active);
+    // Get a flat list of all of the players and their scores.
     const standingsFlat = tourney.players.roster.map(function (player) {
         /**
-         * @type {standing}
+         * @type {Standing}
          */
-        let newStand = {
+        let standing = {
             player: player,
-            score: playerScore(tourney, player, roundId)
+            id: player.id,
+            scores: {
+                score: playerScore(tourney, player, roundId)
+            }
         };
         tieBreaks.forEach(function (method) {
-            newStand[method.name] = getTbFunc(
-                method.funcName
-            )(tourney, player, roundId);
+            standing.scores[method.name] = tbFuncs[method.funcName](
+                tourney, player, roundId
+            );
         });
-        return newStand;
+        return standing;
     });
-    let sortFunc = firstBy((player) => player.score, -1);
+    // Create a function to sort the players
+    let sortFunc = firstBy((player) => player.scores.score, -1);
+    // For each tiebreak method, chain another `thenBy` to the function.
     tieBreaks.forEach(function (method) {
-        sortFunc = sortFunc.thenBy((player) => player[method.funcName], -1);
+        sortFunc = sortFunc.thenBy(
+            (player) => player.scores[method.funcName],
+            -1
+        );
     });
+    // Finally, sort the players.
     standingsFlat.sort(sortFunc);
     /**
-     * @type {Array<Array<standing>>}
+     * @type {Array<Array<Standing>>}
      */
     const standingsTree = [];
     let runningRank = 0;
-    standingsFlat.forEach(function (player, i, sf) {
+    standingsFlat.forEach(function (standing, i, sf) {
         if (i !== 0) { // we can't compare the first player with a previous one
             const prevPlayer = sf[i - 1];
-            if (!areScoresEqual(player, prevPlayer)) {
+            if (!areScoresEqual(standing, prevPlayer)) {
                 runningRank += 1;
             }
         }
         if (!standingsTree[runningRank]) {
             standingsTree[runningRank] = [];
         }
-        standingsTree[runningRank].push(player);
+        standingsTree[runningRank].push(standing);
     });
     return standingsTree;
 }

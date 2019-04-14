@@ -72,29 +72,17 @@ const maxPriority = (
  * @param {Round} round The round object.
  */
 function pairPlayers(round) {
-    /**
-     * @type {Match}
-     */
+    /** @type {Match} */
     let byeMatch;
-    /**
-     * @type {Array<Array<number>>}
-     */
+    /** @type {Array<Array<number>>} */
     let potentialMatches;
-    /**
-     * @type {Match[]}
-     */
+    /** @type {Match[]} */
     let matches;
-    /**
-     * @type {number[]}
-     */
+    /** @type {number[]} */
     let blossomResults;
-    /**
-     * @type {Array<[playerDataType, playerDataType, number]>}
-     */
+    /** @type {Array<[playerDataType, playerDataType, number]>} */
     let reducedResults;
-    /**
-     * @type {Tournament}
-     */
+    /** @type {Tournament} */
     const tourney = round.ref_tourney;
     /**
      * @param {Player} player
