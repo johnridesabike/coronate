@@ -9,11 +9,19 @@ import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
 
 const demoData = demoRoster.slice(0,16);
+/**
+ * @typedef {import("react")} React
+ * @typedef {import("./chess-tourney").Tournament} Tournament
+ */
 
 function App() {
-    const [tourneylist, setTourneyList] = useState([]);
-    const [openTourney, setOpenTourney] = useState(null);
-    const [playerManager, setPlayerManager] = useState(
+    /** @type {Tournament[]} */
+    const initList = [];
+    const [tourneylist, setTourneyList] = useState(initList);
+    /** @type {Tournament | null} */
+    const initOpen = null;
+    const [openTourney, setOpenTourney] = useState(initOpen);
+    const [playerManager] = useState(
         createPlayerManager({roster: demoData})
     );
     const [currentView, setCurrentView] = useState(0);

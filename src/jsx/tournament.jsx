@@ -7,8 +7,12 @@ import {TourneySetup} from "./tourney-setup.jsx"
 import {RoundContainer} from "./round.jsx";
 /**
  * @typedef {import("../chess-tourney").Tournament} Tournament
+ * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  */
 
+/**
+ * @param {Object} props
+ */
 export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
@@ -17,9 +21,10 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
         let tourney = createTournament();
         tourney.name = event.target.name.value;
         tourney.id = tourneyList.length;
-        setTourneyList([...tourneyList,...[tourney]])
+        let newTList = [tourney];
+        setTourneyList(newTList.concat(tourneyList))
         setNewTourneyData(newTourneyDefaults);
-        setOpenTourney(tourney); // reset this so stale data is wiped
+        setOpenTourney(tourney);
     };
     const updateField = function (event) {
         let update = {};

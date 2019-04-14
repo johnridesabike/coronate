@@ -5,7 +5,7 @@ import {firstBy} from "thenby";
  * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
- * @typedef {function(Tournament, Player, number=, boolean=): number} ScoreCalculator
+ * @typedef {function(Tournament, Player, number=, boolean=): number} ScoreCalc
  */
 /**
  * Get a list of all of a player's scores from each match.
@@ -39,7 +39,7 @@ function playerScoreListNoByes(tourney, player, roundId = null) {
 
 /**
  * Get the total score of a player after a given round.
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  */
 function playerScore(tourney, player, roundId = null) {
     let score = 0;
@@ -52,7 +52,7 @@ function playerScore(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative score of a player
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  */
 function playerScoreCum(tourney, player, roundId = null) {
     let runningScore = 0;
@@ -74,7 +74,7 @@ function playerScoreCum(tourney, player, roundId = null) {
 
 /**
  * Calculate a player's color balance
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  * @returns {number} A negative number means they played as white more. A
  * positive number means they played as black more.
  */
@@ -96,7 +96,7 @@ function playerColorBalance(tourney, player, roundId = null) {
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  */
 function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
     // get all of the opponent's scores
@@ -123,7 +123,7 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
 
 /**
  * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  */
 function solkoff(tourney, player, roundId = null) {
     return modifiedMedian(tourney, player, roundId, true);
@@ -131,7 +131,7 @@ function solkoff(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative scores of a player's opponents.
- * @type {ScoreCalculator}
+ * @type {ScoreCalc}
  */
 function playerOppScoreCum(tourney, player, roundId = null) {
     const opponents = tourney.getPlayersByOpponent(
@@ -149,7 +149,7 @@ function playerOppScoreCum(tourney, player, roundId = null) {
 }
 
 /**
- * @type {Object<string, ScoreCalculator>}
+ * @type {Object<string, ScoreCalc>}
  */
 const tbFuncs = {
     modifiedMedian,
@@ -204,7 +204,9 @@ function calcStandings(tourney, roundId = null) {
         };
         tieBreaks.forEach(function (method) {
             standing.scores[method.name] = tbFuncs[method.funcName](
-                tourney, player, roundId
+                tourney,
+                player,
+                roundId
             );
         });
         return standing;

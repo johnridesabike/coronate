@@ -4,10 +4,11 @@ import React, {useState, Fragment} from "react";
  * @typedef {import("react")} React
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  */
-
-export function Players(props) {
-    /** @type {PlayerManager} */
-    const playerManager = props.playerManager;
+/**
+ * @param {Object} props
+ * @param {PlayerManager} props.playerManager
+ */
+export function Players({playerManager}) {
     const [roster, setRoster] = useState(playerManager.roster);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
@@ -18,7 +19,7 @@ export function Players(props) {
         setNewPlayer(newPlayerDefault);
         setRoster([...playerManager.roster]);
     };
-    /** @param {React.FormEvent<HTMLInputElement>} event */
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
         event.preventDefault();
         /** @type {Object<string, string>} */

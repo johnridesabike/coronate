@@ -3,7 +3,16 @@ import React, {useState, useEffect, Fragment} from "react";
 import {scores} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
-
+/**
+ * @typedef {import("react")} React
+ * @typedef {import("../chess-tourney").Tournament} Tournament
+ * @typedef {import("../chess-tourney").Round} Round
+ */
+/**
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ * @param {Round} props.round
+ */
 export function RoundContainer({tourney, round, roundList, setRoundList}) {
     if (round) {
         return <Round round={round} setRoundList={setRoundList} />

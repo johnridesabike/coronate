@@ -21,7 +21,7 @@ import {createDefaultConfig} from "./config";
  * @property {ConfigItem[]} tieBreak
  * @property {function(): boolean} isNewRoundReady
  * @property {function(Player, number): Match[]} getMatchesByPlayer
- * @property {function(Player, number): Player[]} getPlayersByOpponent
+ * @property {function(Player, (number | null)=): Player[]} getPlayersByOpponent
  * @property {function(): number} getNumOfRounds
  * @property {function(): (Round | false)} newRound
  * @property {function(Round)} removeRound
@@ -33,7 +33,14 @@ import {createDefaultConfig} from "./config";
 /**
  *
  * @param {Object} importObj
- * @param {?PlayerManager} playerSource
+ * @param {number} [importObj.id]
+ * @param {string} [importObj.name]
+ * @param {Round[]} [importObj.roundList]
+ * @param {number} [importObj.byeValue]
+ * @param {Player[]} [importObj.byeQueue]
+ * @param {PlayerManager} [importObj.players]
+ * @param {ConfigItem[]} [importObj.tieBreak]
+ * @param {PlayerManager} [playerSource]
  * @returns {Tournament}
  */
 function createTournament(importObj = {}, playerSource = null) {

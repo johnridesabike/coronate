@@ -1,13 +1,23 @@
 // @ts-check
 /**
- * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
+ * These tests rely on randomness so aren"t reliable. They need to be rewritten
+ * to show consistent results.
  */
-import {createTournament, createPlayerManager, playerList} from "./chess-tourney";
+import {createTournament, createPlayerManager} from "./chess-tourney";
 import demoPlayers from "./demo-players.json";
 import {sortBy, times, random} from "lodash";
+/**
+ * @typedef {import("./chess-tourney").Match} Match
+ * @typedef {import("./chess-tourney").Tournament} Tournament
+ * @typedef {import("./chess-tourney").Player} Player
+ */
 
-const globalRoster = createPlayerManager(playerList(demoPlayers.slice(0, 16)));
+const globalRoster = createPlayerManager({roster: demoPlayers.slice(0, 16)});
 
+/**
+ *
+ * @param {Match} match
+ */
 function randomMatches(match) {
     if (!match.isBye()) {
         if (Math.random() >= 0.5) {
@@ -18,6 +28,10 @@ function randomMatches(match) {
     }
 }
 
+/**
+ *
+ * @param {Match} match
+ */
 function randomMatchesDraws(match) {
     if (!match.isBye()) {
         let rando = Math.random();
@@ -31,6 +45,10 @@ function randomMatchesDraws(match) {
     }
 }
 
+/**
+ *
+ * @param {Tournament} tourney
+ */
 function randomRounds(tourney) {
     while (tourney.roundList.length < tourney.getNumOfRounds()) {
         let round = tourney.newRound();
@@ -38,6 +56,10 @@ function randomRounds(tourney) {
     }
 }
 
+/**
+ *
+ * @param {Tournament} tourney
+ */
 function randomRoundsDraws(tourney) {
     while (tourney.roundList.length < tourney.getNumOfRounds()) {
         let round = tourney.newRound();
@@ -63,6 +85,7 @@ it("No players face each other more than once", function () {
     let pairedCorrectly = 0;
     let tourneyNum = 50;
     times(tourneyNum, function () {
+        /** @type {number[]} */
         let playerOppCount = [];
         let tourney = createTournament();
         tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
@@ -83,6 +106,7 @@ it("A tournament can pair an odd number of players correctly", function () {
     let pairedCorrectly = 0;
     let tourneyNum = 50;
     times(tourneyNum, function () {
+        /** @type {number[]} */
         let playerOppCount = [];
         let tourney = createTournament();
         tourney.players.importPlayerList(globalRoster.roster.slice(0, 19));
@@ -100,6 +124,7 @@ it("A tournament can pair an odd number of players correctly", function () {
 });
 
 it("A tournament doesn't crash when players are removed", function () {
+    /** @param {Player[]} list */
     const randomPlayer = function (list) {
         let pId = random(0, list.length);
         return list[pId];
@@ -108,7 +133,9 @@ it("A tournament doesn't crash when players are removed", function () {
         const tourney = createTournament();
         tourney.players.importPlayerList(globalRoster.roster.slice(0, 17));
 
-        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
+        tourney.newRound().matches.forEach(
+            (match) => randomMatchesDraws(match)
+        );
 
         tourney.players.deactivatePlayer(
             randomPlayer(tourney.players.getActive())
@@ -117,8 +144,12 @@ it("A tournament doesn't crash when players are removed", function () {
             randomPlayer(tourney.players.getActive())
         );
 
-        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
-        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
+        tourney.newRound().matches.forEach(
+            (match) => randomMatchesDraws(match)
+        );
+        tourney.newRound().matches.forEach(
+            (match) => randomMatchesDraws(match)
+        );
 
         tourney.players.deactivatePlayer(
             randomPlayer(tourney.players.getActive())
@@ -127,6 +158,8 @@ it("A tournament doesn't crash when players are removed", function () {
             randomPlayer(tourney.players.getActive())
         );
 
-        tourney.newRound().matches.forEach((match) => randomMatchesDraws(match));
+        tourney.newRound().matches.forEach(
+            (match) => randomMatchesDraws(match)
+        );
     });
 });
