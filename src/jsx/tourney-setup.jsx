@@ -1,3 +1,4 @@
+// @ts-check
 import React, {useState, useEffect, Fragment} from "react";
 
 export function TourneySetup({tourney, playerManager, playerList, setPlayerList}) {

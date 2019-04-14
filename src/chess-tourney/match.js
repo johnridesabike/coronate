@@ -1,16 +1,16 @@
 // @ts-check
 /**
- * @typedef {import("./player").player} player
- * @typedef {import("./round").round} round
- * @typedef {import("./tournament").tournament} tournament
+ * @typedef {import("./player").Player} Player
+ * @typedef {import("./round").Round} Round
+ * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
- * @typedef {Object} match
+ * @typedef {Object} Match
  * @property {number} id
- * @property {round} ref_round
- * @property {tournament} ref_tourney
+ * @property {Round} ref_round
+ * @property {Tournament} ref_tourney
  * @property {string} warnings
- * @property {player[]} roster
+ * @property {Player[]} roster
  * @property {number[]} result A loss is `0`, a win is `1`, and a draw is `0.5`.
  * White is at index `0` and black is at index `1`.
  * @property {number[]} origRating White is at index `0` and black is at
@@ -27,15 +27,15 @@
  * @property {function(): boolean} isComplete
  * @property {function(): boolean} isBye
  * @property {function(number): playerInfo} getColorInfo
- * @property {function(player): number} getPlayerColor
- * @property {function(player): playerInfo} getPlayerInfo
+ * @property {function(Player): number} getPlayerColor
+ * @property {function(Player): playerInfo} getPlayerInfo
  * @property {function(): playerInfo} getWhiteInfo
  * @property {function(): playerInfo} getBlackInfo
  */
 
 /**
  * @typedef {Object} playerInfo
- * @property {player} player
+ * @property {Player} player
  * @property {number} result
  * @property {number} origRating
  * @property {number} newRating
@@ -43,7 +43,7 @@
 
 /**
  *
- * @param {match} match
+ * @param {Match} match
  */
 function calcRatings(match) {
     let whiteElo = match.roster[0].getEloRank();
@@ -78,23 +78,42 @@ function calcRatings(match) {
     return match;
 }
 
+/**
+ * Create a match object.
+ * @param {Object} importObj
+ * @param {number} [importObj.id]
+ * @param {Round} importObj.ref_round
+ * @param {number[] | Player[]} [importObj.roster]
+ * @param {string} [importObj.warnings]
+ * @param {number[]} [importObj.result]
+ * @param {number[]} [importObj.origRating]
+ * @param {number[]} [importObj.newRating]
+ * @param {number} [importObj.ideal]
+ * @returns {Match}
+ */
 function createMatch(importObj) {
+    /**
+     * @type {Player}
+     */
     let black;
+    /**
+     * @type {Player}
+     */
     let white;
     let tourney = importObj.ref_round.ref_tourney;
     // If the players are ID numbers, get their referant objects.
     if (typeof importObj.roster[0] === "number") {
-        white = tourney.players.getPlayerById(white);
+        white = tourney.players.getPlayerById(importObj.roster[0]);
     } else {
         white = importObj.roster[0];
     }
     if (typeof importObj.roster[1] === "number") {
-        black = tourney.players.getPlayerById(black);
+        black = tourney.players.getPlayerById(importObj.roster[1]);
     } else {
         black = importObj.roster[1];
     }
     /**
-     * @type {match}
+     * @type {Match}
      */
     const newMatch = {
         id: importObj.id || 0,

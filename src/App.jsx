@@ -1,7 +1,8 @@
+// @ts-check
 import React, { useState } from "react";
 import "./App.css";
 import {MainNav, NavItem} from "./jsx/utility.jsx"
-import {createPlayerManager, playerList} from "./chess-tourney";
+import {createPlayerManager} from "./chess-tourney";
 import {Players} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
@@ -13,7 +14,7 @@ function App() {
     const [tourneylist, setTourneyList] = useState([]);
     const [openTourney, setOpenTourney] = useState(null);
     const [playerManager, setPlayerManager] = useState(
-        createPlayerManager(playerList(demoData))
+        createPlayerManager({roster: demoData})
     );
     const [currentView, setCurrentView] = useState(0);
     const setViewList = (id) => setCurrentView(id);

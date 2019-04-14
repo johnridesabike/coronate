@@ -1,10 +1,10 @@
 // @ts-check
 import EloRank from "elo-rank";
 /**
- * @typedef {import("./tournament").tournament} tournament
+ * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
- * @typedef {Object} player
+ * @typedef {Object} Player
  * @property {number} id
  * @property {string} firstName
  * @property {string} lastName
@@ -12,46 +12,33 @@ import EloRank from "elo-rank";
  * @property {boolean} dummy
  * @property {number} matchCount
  * @property {function(): Object} getEloRank
- * @property {function(tournament): boolean} hasHadBye
+ * @property {function(Tournament): boolean} hasHadBye
  */
 /**
  * @typedef {Object} playerProps
- * @property {number} id
- * @property {string} firstName
- * @property {string} lastName
- * @property {number} rating
- * @property {boolean} dummy
- * @property {number} matchCount
+ * @property {number} [id]
+ * @property {string} [firstName]
+ * @property {string} [lastName]
+ * @property {number} [rating]
+ * @property {boolean} [dummy]
+ * @property {number} [matchCount]
  */
-
-/**
- * @type {playerProps}
- */
-const defPlayer = {
-    id: 0,
-    firstName: "",
-    lastName: "",
-    rating: 0,
-    dummy: false,
-    matchCount: 0
-};
-
 /**
  *
  * @param {playerProps} importObj
- * @returns {player}
+ * @returns {Player}
  */
-function createPlayer(importObj = defPlayer) {
+function createPlayer(importObj = {}) {
     /**
-     * @type {player}
+     * @type {Player}
      */
     const newPlayer = {
-        id: importObj.id || defPlayer.id,
-        firstName: importObj.firstName || defPlayer.firstName,
-        lastName: importObj.lastName || defPlayer.lastName,
-        rating: importObj.rating || defPlayer.rating,
-        dummy: importObj.dummy || defPlayer.dummy,
-        matchCount: importObj.matchCount || defPlayer.matchCount,
+        id: importObj.id || 0,
+        firstName: importObj.firstName || "",
+        lastName: importObj.lastName || "",
+        rating: importObj.rating || 0,
+        dummy: importObj.dummy || false,
+        matchCount: importObj.matchCount || 0,
         getEloRank() {
             const ne = newPlayer.matchCount || 1;
             const K = (800 / ne);
@@ -68,7 +55,7 @@ function createPlayer(importObj = defPlayer) {
 }
 
 /**
- * @type {player}
+ * @type {Player}
  */
 const dummyPlayer = createPlayer();
 dummyPlayer.id = -1;

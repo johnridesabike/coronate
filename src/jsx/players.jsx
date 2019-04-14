@@ -1,3 +1,4 @@
+// @ts-check
 import React, {useState, Fragment} from "react";
 
 export function Players({playerManager}) {

@@ -4,36 +4,36 @@ import {last} from "lodash";
 import pairPlayers from "./pairing";
 import createMatch from "./match";
 /**
- * @typedef {import("./tournament").tournament} tournament
- * @typedef {import("./player").player} player
- * @typedef {import("./match").match} match
+ * @typedef {import("./tournament").Tournament} Tournament
+ * @typedef {import("./player").Player} Player
+ * @typedef {import("./match").Match} Match
  */
 /**
- * @typedef {Object} round
+ * @typedef {Object} Round
  * @property {number} id
- * @property {tournament} ref_tourney
- * @property {player[]} roster
- * @property {round} ref_prevRound
- * @property {match[]} matches
+ * @property {Tournament} ref_tourney
+ * @property {Player[]} roster
+ * @property {Round} ref_prevRound
+ * @property {Match[]} matches
  * @property {function(): boolean} isComplete
- * @property {function(player): match} getMatchByPlayer
- * @property {function(player): number} playerColor `0` for white, `1` for
+ * @property {function(Player): Match} getMatchByPlayer
+ * @property {function(Player): number} playerColor `0` for white, `1` for
  * black, or `-1` if the player wasn't found.
- * @property {function(player)} addPlayer
+ * @property {function(Player)} addPlayer
  * @property {function(): boolean} hasBye
- * @property {function(match)} removeMatch
+ * @property {function(Match)} removeMatch
  * @property {function(string)} toJSON
  */
 
 /**
  *
- * @param {tournament} tourney
+ * @param {Tournament} tourney
  * @param {Object} importObj
- * @returns {round}
+ * @returns {Round}
  */
 function createRound(tourney, importObj = {}) {
     /**
-     * @type {round}
+     * @type {Round}
      */
     const newRound = {
         id: (

@@ -7,19 +7,19 @@ import scores from "./scores";
 import {dummyPlayer} from "./player";
 
 /**
- * @typedef {import("./player").player} player
- * @typedef {import("./round").round} round
- * @typedef {import("./match").match} match
- * @typedef {import("./tournament").tournament} tournament
+ * @typedef {import("./player").Player} Player
+ * @typedef {import("./round").Round} Round
+ * @typedef {import("./match").Match} Match
+ * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
  * @typedef {Object} playerDataType
- * @property {player} player
+ * @property {Player} player
  * @property {number} id
  * @property {number} score
  * @property {(number | null)} dueColor
  * @property {number} colorBalance
- * @property {player[]} opponentHistory
+ * @property {Player[]} opponentHistory
  * @property {boolean} upperHalf
  */
 
@@ -69,11 +69,11 @@ const maxPriority = (
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
- * @param {round} round The round object.
+ * @param {Round} round The round object.
  */
 function pairPlayers(round) {
     /**
-     * @type {match}
+     * @type {Match}
      */
     let byeMatch;
     /**
@@ -81,7 +81,7 @@ function pairPlayers(round) {
      */
     let potentialMatches;
     /**
-     * @type {match[]}
+     * @type {Match[]}
      */
     let matches;
     /**
@@ -93,11 +93,11 @@ function pairPlayers(round) {
      */
     let reducedResults;
     /**
-     * @type {tournament}
+     * @type {Tournament}
      */
     const tourney = round.ref_tourney;
     /**
-     * @param {player} player
+     * @param {Player} player
      * @returns {number | null}
      */
     const dueColor = function (player) {

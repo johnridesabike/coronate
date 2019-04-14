@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * These tests rely on randomness so aren"t reliable. They need to be rewritten to show consistent results.
  */

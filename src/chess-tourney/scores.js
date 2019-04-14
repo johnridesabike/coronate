@@ -1,12 +1,12 @@
 // @ts-check
 import {firstBy} from "thenby";
 /**
- * @typedef {import("./player").player} player
- * @typedef {import("./tournament").tournament} tournament
+ * @typedef {import("./player").Player} Player
+ * @typedef {import("./tournament").Tournament} Tournament
  */
  /**
   * @typedef {Object} standing
-  * @property {player} player
+  * @property {Player} player
   * @property {number} score
   * @property {number} [modifiedMedian]
   * @property {number} [playerColorBalance]
@@ -16,8 +16,8 @@ import {firstBy} from "thenby";
   */
 /**
  * Get a list of all of a player's scores from each match.
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number[]} the list of scores
  */
@@ -29,8 +29,8 @@ function playerScoreList(tourney, player, roundId = null) {
 
 /**
  * TODO: Maybe merge this with the other function?
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  */
 function playerScoreListNoByes(tourney, player, roundId = null) {
@@ -46,8 +46,8 @@ function playerScoreListNoByes(tourney, player, roundId = null) {
 
 /**
  * Get the total score of a player after a given round.
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number}
  */
@@ -62,8 +62,8 @@ function playerScore(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative score of a player
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number}
  */
@@ -87,8 +87,8 @@ function playerScoreCum(tourney, player, roundId = null) {
 
 /**
  * Calculate a player's color balance
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number} A negative number means they played as white more. A
  * positive number means they played as black more.
@@ -111,8 +111,8 @@ function playerColorBalance(tourney, player, roundId = null) {
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @param {boolean=} solkoff
  * @returns {number}
@@ -142,8 +142,8 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
 
 /**
  * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number}
  */
@@ -153,8 +153,8 @@ function solkoff(tourney, player, roundId = null) {
 
 /**
  * Get the cumulative scores of a player's opponents.
- * @param {tournament} tourney
- * @param {player} player
+ * @param {Tournament} tourney
+ * @param {Player} player
  * @param {number=} roundId
  * @returns {number}
  */
@@ -210,7 +210,7 @@ function getTbFunc(funcName) {
 
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
- * @param {tournament} tourney
+ * @param {Tournament} tourney
  * @param {number=} roundId
  * @returns {Array<Array<standing>>}
  */

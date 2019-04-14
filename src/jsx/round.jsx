@@ -1,3 +1,4 @@
+// @ts-check
 import React, {useState, useEffect, Fragment} from "react";
 import {scores} from "../chess-tourney";
 import numeral from "numeral";

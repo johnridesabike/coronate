@@ -1,3 +1,4 @@
+// @ts-check
 import React from "react";
 
 export function MainNav({children}) {
@@ -14,7 +15,7 @@ export function NavItem({name, action, isOpen}) {
         classNames += " is-open";
     }
     return (
-        <span className={classNames} role="menuitem" tabIndex="0"
+        <span className={classNames} role="menuitem" tabIndex={0}
             onClick={action} onKeyPress={action}>
             {name}
         </span>

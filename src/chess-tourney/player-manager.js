@@ -1,31 +1,31 @@
 // @ts-check
 import {createPlayer, dummyPlayer} from "./player";
 /**
- * @typedef {import("./tournament").tournament} tournament
- * @typedef {import("./player").player} player
+ * @typedef {import("./tournament").Tournament} Tournament
+ * @typedef {import("./player").Player} Player
  * @typedef {import("./player").playerProps} playerProps
  */
 /**
- * @typedef {Object} playerManager
- * @property {Array<player>} roster
+ * @typedef {Object} PlayerManager
+ * @property {Player[]} roster
  * @property {number} lastId
- * @property {?tournament} ref_tourney
- * @property {Array<player>} inactive
- * @property {function(): Array<player>} getActive
- * @property {function(playerManager, number)} importPlayerById
- * @property {function(Array<player>)} importPlayerList
- * @property {function(player)} deactivatePlayer
- * @property {function(player)} activatePlayer
- * @property {function(player)} removePlayer
- * @property {function(number)} removePlayerById
- * @property {function(number)} getPlayerById
- * @property {function(player): boolean} canRemovePlayer
+ * @property {?Tournament} ref_tourney
+ * @property {Player[]} inactive
+ * @property {function(): Player[]} getActive
+ * @property {function(PlayerManager, number): void} importPlayerById
+ * @property {function(Player[]): void} importPlayerList
+ * @property {function(Player): void} deactivatePlayer
+ * @property {function(Player): void} activatePlayer
+ * @property {function(Player): void} removePlayer
+ * @property {function(number): void} removePlayerById
+ * @property {function(number): Player} getPlayerById
+ * @property {function(Player): boolean} canRemovePlayer
  * @property {function(number): boolean} canRemovePlayerById
- * @property {function(playerManager, Array<number>)} setByIdList
- * @property {function(playerProps)} addPlayer
- * @property {function(Array<playerProps>)} addPlayers
- * @property {function(Array<playerProps>)} loadPlayerData
- * @property {function(number)} delPlayer
+ * @property {function(PlayerManager, Array<number>): void } setByIdList
+ * @property {function(playerProps): void} addPlayer
+ * @property {function(Array<playerProps>): void} addPlayers
+ * @property {function(Array<playerProps>): void} loadPlayerData
+ * @property {function(number): void} delPlayer
  */
 /**
  * @typedef {Object} playerManagerProps
@@ -34,32 +34,25 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {?tournament} ref_tourney
  * @property {Array<player>} inactive
  */
-
-/**
- * @type {playerManagerProps}
- */
-const defPManager = {
-    roster: [],
-    lastId: -1,
-    ref_tourney: null,
-    inactive: []
-};
-
 /**
  *
- * @param {playerManagerProps} importObj
- * @param {?playerManager} playerSource
- * @returns {playerManager}
+ * @param {Object} importObj
+ * @param {playerProps[]} [importObj.roster]
+ * @param {number} [importObj.lastId]
+ * @param {Tournament | null} [importObj.ref_tourney]
+ * @param {Player[]} [importObj.inactive]
+ * @param {?PlayerManager} playerSource
+ * @returns {PlayerManager}
  */
-function createPlayerManager(importObj = defPManager, playerSource = null) {
+function createPlayerManager(importObj = {}, playerSource = null) {
     /**
-     * @type {playerManager}
+     * @type {PlayerManager}
      */
     const pManager = {
         roster: [],
-        lastId: importObj.lastId || defPManager.lastId,
-        ref_tourney: importObj.ref_tourney || defPManager.ref_tourney,
-        inactive: importObj.inactive || defPManager.inactive,
+        lastId: importObj.lastId || -1,
+        ref_tourney: importObj.ref_tourney || null,
+        inactive: importObj.inactive || [],
         getActive() {
             return pManager.roster.filter(
                 (i) => !pManager.inactive.includes(i)
@@ -162,15 +155,4 @@ function createPlayerManager(importObj = defPManager, playerSource = null) {
     return pManager;
 }
 
-/**
- * Prepares a raw list of player data to be used in `createPlayerManager`
- * @param {Object[]} list
- * @returns {playerManagerProps}
- */
-function playerList(list) {
-    const newObs = Object.create(defPManager);
-    newObs.roster = list;
-    return newObs;
-}
-
-export {createPlayerManager, playerList};
+export {createPlayerManager};

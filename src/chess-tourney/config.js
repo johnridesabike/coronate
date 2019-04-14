@@ -1,23 +1,23 @@
 // @ts-check
 /**
- * @typedef {import("./player").player} player
+ * @typedef {import("./player").Player} Player
  */
 /**
- * @typedef {Object} configItem
+ * @typedef {Object} ConfigItem
  * @property {string} name
  * @property {string} funcName
  * @property {boolean} active
  */
 /**
- * @typedef {Object} configType
- * @property {configItem[]} tieBreak
+ * @typedef {Object} ConfigType
+ * @property {ConfigItem[]} tieBreak
  */
 /**
- * @returns {configType}
+ * @returns {ConfigType}
  */
 function createDefaultConfig() {
     /**
-     * @type {configType}
+     * @type {ConfigType}
      */
     const defaultConfig = {
         tieBreak: [
@@ -62,7 +62,7 @@ function JSONretriever(key, value) {
     } else if (key === "roster" && Array.isArray(value)) {
         return value.map(
             /**
-             * @param {player} p
+             * @param {Player} p
              */
             (p) => p.id
         );

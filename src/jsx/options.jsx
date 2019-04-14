@@ -1,3 +1,4 @@
+// @ts-check
 import React, {useState} from "react";
 import {createTournament, JSONretriever} from "../chess-tourney";
 

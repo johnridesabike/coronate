@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "resolveJsonModule": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "jsx": "preserve"
     }
 }
