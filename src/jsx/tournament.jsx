@@ -6,12 +6,17 @@ import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx"
 import {RoundContainer} from "./round.jsx";
 /**
- * @typedef {import("../chess-tourney").Tournament} Tournament
+ * @typedef {import("react")} React
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
+ * @typedef {import("../chess-tourney").Tournament} Tournament
  */
-
 /**
  * @param {Object} props
+ * @param {PlayerManager} props.playerManager
+ * @param {Tournament} props.openTourney
+ * @param {Tournament[]} props.tourneyList
+ * @param {React.Dispatch<React.SetStateAction<Tournament[]>>} props.setTourneyList
+ * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
  */
 export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
@@ -27,6 +32,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
         setOpenTourney(tourney);
     };
     const updateField = function (event) {
+        /** @type {Object<string, string>} */
         let update = {};
         update[event.target.name] = event.target.value
         setNewTourneyData(Object.assign({}, newTourneyData, update));
@@ -38,11 +44,11 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
     let content = <Fragment></Fragment>;
     if (openTourney) {
         content = 
-        <Tournament 
-        key={openTourney.id}
-        tourney={openTourney}
-        playerManager={playerManager}
-        setOpenTourney={setOpenTourney} />
+        <TournamentFrame 
+            key={openTourney.id}
+            tourney={openTourney}
+            playerManager={playerManager}
+            setOpenTourney={setOpenTourney} />
     } else {
         content = 
         <Fragment>
@@ -75,7 +81,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
     );
 }
 
-function Tournament({tourney, playerManager, setOpenTourney}) {
+function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     const [playerList, setPlayerList] = useState(tourney.players.roster);
     const [roundNums, setRoundNums] = useState(
         [...Array(tourney.getNumOfRounds()).keys()]
