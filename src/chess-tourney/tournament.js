@@ -44,9 +44,7 @@ import {createDefaultConfig} from "./config";
  * @returns {Tournament}
  */
 function createTournament(importObj = {}, playerSource = null) {
-   /**
-    * @type {Tournament}
-    */
+   /** @type {Tournament} */
     const tourney = {
         id: importObj.id || 0,
         name: importObj.name || "",
@@ -68,9 +66,7 @@ function createTournament(importObj = {}, playerSource = null) {
             if (roundId === null) {
                 roundId = tourney.roundList.length;
             }
-            /**
-             * @type {Match[]}
-             */
+            /** @type {Match[]} */
             let matches = [];
             times(roundId + 1, function (i) {
                 if (tourney.roundList[i] !== undefined) {
@@ -84,9 +80,7 @@ function createTournament(importObj = {}, playerSource = null) {
             return matches;
         },
         getPlayersByOpponent(opponent, roundId = null) {
-            /**
-             * @type {Player[]}
-             */
+            /** @type {Player[]} */
             let players = [];
             tourney.getMatchesByPlayer(opponent, roundId).forEach(
                 function (match) {
@@ -159,9 +153,7 @@ function createTournament(importObj = {}, playerSource = null) {
                 roundList.push(createRound(tourney, roundData));
                 return roundList;
             },
-            /**
-             * @type {Round[]}
-             */
+            /** @type {Round[]} */
             []
         );
     }

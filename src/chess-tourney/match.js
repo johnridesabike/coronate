@@ -107,9 +107,7 @@ function createMatch(importObj) {
         ? tourney.players.getPlayerById(Number(importObj.roster[1]))
         : importObj.roster[1]
     );
-    /**
-     * @type {Match}
-     */
+    /** @type {Match} */
     const newMatch = {
         id: importObj.id || 0,
         ref_round: importObj.ref_round,

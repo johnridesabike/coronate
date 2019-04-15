@@ -9,9 +9,7 @@
  * @property {boolean} active
  */
 function createDefaultConfig() {
-    /**
-     * @type {Object<string, ConfigItem[]>}
-     */
+    /** @type {Object<string, ConfigItem[]>} */
     const defaultConfig = {
         tieBreak: [
             {

@@ -55,9 +55,7 @@ const differentHalfPriority = 2;
  * @type {number}
  */
 const differentDueColorPriority = 1;
-/**
- * @type {number}
- */
+/** @type {number} */
 const maxPriority = (
     avoidMeetingTwicePriority
     + sameScoresPriority
@@ -99,9 +97,7 @@ function pairPlayers(round) {
         }
         return color;
     };
-    /**
-     * @type {PlayerDataType[]}
-     */
+    /** @type {PlayerDataType[]} */
     let playerData = round.roster.map(function (player, id) {
         return {
             player: player,
@@ -226,9 +222,7 @@ function pairPlayers(round) {
                 let ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
-                /**
-                 * @type {Array}
-                 */
+                /** @type {Array} */
                 let matched = matches.map((pair) => pair[0]);
                 // let matched = matches.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this

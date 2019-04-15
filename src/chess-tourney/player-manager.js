@@ -45,9 +45,7 @@ import {createPlayer, dummyPlayer} from "./player";
  * @returns {PlayerManager}
  */
 function createPlayerManager(importObj = {}, playerSource = null) {
-    /**
-     * @type {PlayerManager}
-     */
+    /** @type {PlayerManager} */
     const pManager = {
         roster: [],
         lastId: importObj.lastId || -1,

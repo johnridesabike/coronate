@@ -56,9 +56,7 @@ function playerScore(tourney, player, roundId = null) {
  */
 function playerScoreCum(tourney, player, roundId = null) {
     let runningScore = 0;
-    /**
-     * @type {number[]}
-     */
+    /** @type {number[]} */
     let cumScores = [];
     let scores = playerScoreListNoByes(tourney, player, roundId);
     scores.forEach(function (score) {
@@ -148,9 +146,7 @@ function playerOppScoreCum(tourney, player, roundId = null) {
     return score;
 }
 
-/**
- * @type {Object<string, ScoreCalc>}
- */
+/** @type {Object<string, ScoreCalc>} */
 const tbFuncs = {
     modifiedMedian,
     playerColorBalance,
@@ -194,9 +190,7 @@ function calcStandings(tourney, roundId = null) {
     const tieBreaks = tourney.tieBreak.filter((m) => m.active);
     // Get a flat list of all of the players and their scores.
     const standingsFlat = tourney.players.roster.map(function (player) {
-        /**
-         * @type {Standing}
-         */
+        /** @type {Standing} */
         let standing = {
             player: player,
             id: player.id,
@@ -224,9 +218,7 @@ function calcStandings(tourney, roundId = null) {
     });
     // Finally, sort the players.
     standingsFlat.sort(sortFunc);
-    /**
-     * @type {Array<Array<Standing>>}
-     */
+    /** @type {Array<Array<Standing>>} */
     const standingsTree = [];
     let runningRank = 0;
     standingsFlat.forEach(function (standing, i, orig) {

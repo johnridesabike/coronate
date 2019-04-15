@@ -35,9 +35,7 @@ import createMatch from "./match";
  * @returns {Round}
  */
 function createRound(tourney, importObj = {}) {
-    /**
-     * @type {Round}
-     */
+    /** @type {Round} */
     const round = {
         id: (
             (importObj.id !== undefined)

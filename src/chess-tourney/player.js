@@ -29,9 +29,7 @@ import EloRank from "elo-rank";
  * @returns {Player}
  */
 function createPlayer(importObj = {}) {
-    /**
-     * @type {Player}
-     */
+    /** @type {Player} */
     const newPlayer = {
         id: importObj.id || 0,
         firstName: importObj.firstName || "",
@@ -54,9 +52,7 @@ function createPlayer(importObj = {}) {
     return newPlayer;
 }
 
-/**
- * @type {Player}
- */
+/** @type {Player} */
 const dummyPlayer = createPlayer();
 dummyPlayer.id = -1;
 dummyPlayer.firstName = "Bye";
