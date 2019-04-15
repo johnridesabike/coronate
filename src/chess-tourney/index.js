@@ -11,6 +11,7 @@ import {JSONretriever} from "./config";
  * @typedef {import("./player-manager").PlayerManager } PlayerManager
  * @typedef {import("./round").Round} Round
  * @typedef {import("./match").Match} Match
+ * @typedef {import("./match").PlayerInfo} PlayerInfo
  * @typedef {import("./config").ConfigItem} ConfigItem
  * @typedef {import("./tournament").Tournament} Tournament
  */

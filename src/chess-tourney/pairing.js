@@ -13,7 +13,7 @@ import {dummyPlayer} from "./player";
  * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
- * @typedef {Object} playerDataType
+ * @typedef {Object} PlayerDataType
  * @property {Player} player
  * @property {number} id
  * @property {number} score
@@ -80,7 +80,7 @@ function pairPlayers(round) {
     let matches;
     /** @type {number[]} */
     let blossomResults;
-    /** @type {Array<[playerDataType, playerDataType, number]>} */
+    /** @type {Array<[PlayerDataType, PlayerDataType, number]>} */
     let reducedResults;
     /** @type {Tournament} */
     const tourney = round.ref_tourney;
@@ -100,7 +100,7 @@ function pairPlayers(round) {
         return color;
     };
     /**
-     * @type {playerDataType[]}
+     * @type {PlayerDataType[]}
      */
     let playerData = round.roster.map(function (player, id) {
         return {

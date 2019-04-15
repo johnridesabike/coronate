@@ -1,7 +1,7 @@
 // @ts-check
 /**
- * These tests rely on randomness so aren"t reliable. They need to be rewritten
- * to show consistent results.
+ * These tests rely on randomness so aren't reliable. They may need to be
+ * rewritten to show consistent results.
  */
 import {createTournament, createPlayerManager} from "./chess-tourney";
 import demoPlayers from "./demo-players.json";
@@ -68,13 +68,13 @@ function randomRoundsDraws(tourney) {
 }
 
 it("A tournament can run without crashing", function () {
-    const tourney = createTournament("A battle for the ages");
+    const tourney = createTournament({name: "A battle for the ages"});
     tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
     randomRounds(tourney);
 });
 
 it("A tournament can run with drawen rounds without crashing", function () {
-    const tourney = createTournament("A battle for the ages");
+    const tourney = createTournament({name: "A battle for the ages"});
     tourney.players.importPlayerList(globalRoster.roster.slice(0, 16));
     randomRoundsDraws(tourney);
 });

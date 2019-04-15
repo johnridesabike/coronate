@@ -20,10 +20,10 @@ import {createDefaultConfig} from "./config";
  * @property {PlayerManager} players
  * @property {ConfigItem[]} tieBreak
  * @property {function(): boolean} isNewRoundReady
- * @property {function(Player, number): Match[]} getMatchesByPlayer
- * @property {function(Player, (number | null)=): Player[]} getPlayersByOpponent
+ * @property {function(Player, number=): Match[]} getMatchesByPlayer
+ * @property {function(Player, number=): Player[]} getPlayersByOpponent
  * @property {function(): number} getNumOfRounds
- * @property {function(): (Round | false)} newRound
+ * @property {function(): Round} newRound
  * @property {function(Round)} removeRound
  * @property {function(Round)} canRemoveRound
  * @property {function(Player)} addPlayerToByeQueue
@@ -110,7 +110,7 @@ function createTournament(importObj = {}, playerSource = null) {
         },
         newRound() {
             if (!tourney.isNewRoundReady()) {
-                return false;
+                throw new Error("The new round isn't ready.");
             }
             let newRound = createRound(tourney);
             tourney.roundList.push(newRound);

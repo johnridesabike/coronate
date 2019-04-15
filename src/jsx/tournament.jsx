@@ -5,8 +5,8 @@ import "react-tabs/style/react-tabs.css";
 import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx"
 import {RoundContainer} from "./round.jsx";
+import {range} from "lodash";
 /**
- * @typedef {import("react")} React
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
  */
@@ -21,24 +21,27 @@ import {RoundContainer} from "./round.jsx";
 export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
+    /** @param {React.FormEvent<HTMLFormElement>} event */
     const newTourney = function(event) {
         event.preventDefault();
         let tourney = createTournament();
-        tourney.name = event.target.name.value;
+        tourney.name = newTourneyData.name;
         tourney.id = tourneyList.length;
         let newTList = [tourney];
         setTourneyList(newTList.concat(tourneyList))
         setNewTourneyData(newTourneyDefaults);
         setOpenTourney(tourney);
     };
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
         /** @type {Object<string, string>} */
-        let update = {};
+        const update = {};
         update[event.target.name] = event.target.value
         setNewTourneyData(Object.assign({}, newTourneyData, update));
     };
+    /** @param {React.MouseEvent<HTMLLIElement, MouseEvent> | React.KeyboardEvent<HTMLLIElement>} event */
     const selectTourney = function (event) {
-        const id = event.target.dataset.id;
+        const id = Number(event.currentTarget.dataset.id);
         setOpenTourney(tourneyList[id])
     };
     let content = <Fragment></Fragment>;
@@ -81,15 +84,21 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
     );
 }
 
+/**
+ * 
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ * @param {PlayerManager} props.playerManager
+ * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
+ */
 function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     const [playerList, setPlayerList] = useState(tourney.players.roster);
-    const [roundNums, setRoundNums] = useState(
-        [...Array(tourney.getNumOfRounds()).keys()]
-    );
+    const [roundNums, setRoundNums] = useState(range(tourney.getNumOfRounds()));
     useEffect(function () {
-        setRoundNums([...Array(tourney.getNumOfRounds()).keys()]);
+        setRoundNums(range(tourney.getNumOfRounds()));
     }, [playerList]);
     const [roundList, setRoundList] = useState(tourney.roundList);
+    /** @param {number} id */
     const isRoundReady = function (id) {
         // we also return if it's the next available round so the user can begin it
         return roundList[id] || id === roundList.length;
@@ -126,6 +135,11 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     );
 }
 
+/**
+ * 
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ */
 export function Standings({tourney}) {
     return (
       <table>

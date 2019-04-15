@@ -26,19 +26,22 @@
  * @property {function} resetResult
  * @property {function(): boolean} isComplete
  * @property {function(): boolean} isBye
- * @property {function(number): playerInfo} getColorInfo
+ * @property {function(number): PlayerInfo} getColorInfo
  * @property {function(Player): number} getPlayerColor
- * @property {function(Player): playerInfo} getPlayerInfo
- * @property {function(): playerInfo} getWhiteInfo
- * @property {function(): playerInfo} getBlackInfo
+ * @property {function(Player): PlayerInfo} getPlayerInfo
+ * @property {function(): PlayerInfo} getWhiteInfo
+ * @property {function(): PlayerInfo} getBlackInfo
  */
 
 /**
- * @typedef {Object} playerInfo
+ * @typedef {Object} PlayerInfo
  * @property {Player} player
  * @property {number} result
  * @property {number} origRating
  * @property {number} newRating
+ * @property {number | string} [colorBalance]
+ * @property {number} [score]
+ * @property {Player[]} [oppList]
  */
 
 /**
@@ -92,26 +95,18 @@ function calcRatings(match) {
  * @returns {Match}
  */
 function createMatch(importObj) {
-    /**
-     * @type {Player}
-     */
-    let black;
-    /**
-     * @type {Player}
-     */
-    let white;
-    let tourney = importObj.ref_round.ref_tourney;
+    const tourney = importObj.ref_round.ref_tourney;
     // If the players are ID numbers, get their referant objects.
-    if (typeof importObj.roster[0] === "number") {
-        white = tourney.players.getPlayerById(importObj.roster[0]);
-    } else {
-        white = importObj.roster[0];
-    }
-    if (typeof importObj.roster[1] === "number") {
-        black = tourney.players.getPlayerById(importObj.roster[1]);
-    } else {
-        black = importObj.roster[1];
-    }
+    const white = /** @type {Player} */ (
+        (typeof importObj.roster[0] === "number")
+        ? tourney.players.getPlayerById(Number(importObj.roster[0]))
+        : importObj.roster[0]
+    );
+    const black = /** @type {Player} */ (
+        (typeof importObj.roster[1] === "number")
+        ? tourney.players.getPlayerById(Number(importObj.roster[1]))
+        : importObj.roster[1]
+    );
     /**
      * @type {Match}
      */

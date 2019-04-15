@@ -22,20 +22,23 @@ import createMatch from "./match";
  * @property {function(Player)} addPlayer
  * @property {function(): boolean} hasBye
  * @property {function(Match)} removeMatch
- * @property {function(string)} toJSON
+ * @property {function(): Match[]} autoPair
  */
 
 /**
  *
  * @param {Tournament} tourney
  * @param {Object} importObj
+ * @param {number} [importObj.id]
+ * @param {Player[]} [importObj.roster]
+ * @param {Match[]} [importObj.matches]
  * @returns {Round}
  */
 function createRound(tourney, importObj = {}) {
     /**
      * @type {Round}
      */
-    const newRound = {
+    const round = {
         id: (
             (importObj.id !== undefined)
             ? importObj.id
@@ -43,14 +46,14 @@ function createRound(tourney, importObj = {}) {
         ),
         ref_tourney: tourney,
         roster: importObj.roster || tourney.players.getActive(),
-        ref_prevRound: importObj.ref_prevRound || last(tourney.roundList),
-        matches: importObj.matches || null,
+        ref_prevRound: last(tourney.roundList),
+        matches: importObj.matches || [],
         isComplete() {
-            return !newRound.matches.map((m) => m.isComplete()).includes(false);
+            return !round.matches.map((m) => m.isComplete()).includes(false);
         },
         getMatchByPlayer(player) {
             let theMatch = null;
-            newRound.matches.forEach(function (match) {
+            round.matches.forEach(function (match) {
                 if (match.roster.includes(player)) {
                     theMatch = match;
                 }
@@ -59,59 +62,52 @@ function createRound(tourney, importObj = {}) {
         },
         playerColor(player) {
             let color = -1;
-            const match = newRound.getMatchByPlayer(player);
+            const match = round.getMatchByPlayer(player);
             if (match) {
                 color = match.getPlayerColor(player);
             }
             return color;
         },
         addPlayer(player) {
-            newRound.roster.push(player);
-            return newRound;
+            round.roster.push(player);
+            return round;
         },
         hasBye() {
-            return newRound.roster.includes(dummyPlayer);
+            return round.roster.includes(dummyPlayer);
         },
         removeMatch(match) {
             if (typeof match === "number") {
-                match = newRound.matches[match];
+                match = round.matches[match];
             }
             match.resetResult();
             match.roster.forEach(function (player) {
                 player.matchCount -= 1;
             });
-            newRound.matches = newRound.matches.filter((m) => m !== match);
-            return newRound;
+            round.matches = round.matches.filter((m) => m !== match);
+            return round;
         },
-        toJSON(key) {
-            if (key === "prevRound") {
-                return newRound.id;
-            } else {
-                return newRound;
-            }
+        autoPair() {
+            round.matches = pairPlayers(round);
+            round.matches.forEach(function (match, index) {
+                match.id = index;
+            });
+            return round.matches;
         }
     };
-    newRound.roster = newRound.roster.map(function (player) {
+    round.roster = round.roster.map(function (player) {
         if (typeof player === "number") {
             return tourney.players.getPlayerById(player);
         } else {
             return player;
         }
     });
-    if (newRound.matches) {
-        // If match data was imported, then init it.
-        newRound.matches = newRound.matches.map(
-            (matchData) => createMatch(
-                Object.assign(matchData, {ref_round: newRound})
-            )
-        );
-    } else {
-        newRound.matches = pairPlayers(newRound);
-    }
-    newRound.matches.forEach(function (match, index) {
-        match.id = index;
-    });
-    return newRound;
+    // If match data was imported, then init it.
+    round.matches = round.matches.map(
+        (matchData) => createMatch(
+            Object.assign(matchData, {ref_round: round})
+        )
+    );
+    return round;
 }
 
 export default Object.freeze(createRound);

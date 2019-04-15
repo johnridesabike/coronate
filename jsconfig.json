@@ -1,7 +1,12 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "*": ["types/*"] },
         "resolveJsonModule": true,
         "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictFunctionTypes": true,
+        "noEmit": true,
         "jsx": "preserve"
     }
 }

@@ -8,16 +8,9 @@
  * @property {string} funcName
  * @property {boolean} active
  */
-/**
- * @typedef {Object} ConfigType
- * @property {ConfigItem[]} tieBreak
- */
-/**
- * @returns {ConfigType}
- */
 function createDefaultConfig() {
     /**
-     * @type {ConfigType}
+     * @type {Object<string, ConfigItem[]>}
      */
     const defaultConfig = {
         tieBreak: [

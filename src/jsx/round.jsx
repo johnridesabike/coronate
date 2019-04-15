@@ -4,26 +4,36 @@ import {scores} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
 /**
- * @typedef {import("react")} React
  * @typedef {import("../chess-tourney").Tournament} Tournament
  * @typedef {import("../chess-tourney").Round} Round
+ * @typedef {import("../chess-tourney").Match} Match
+ * @typedef {import("../chess-tourney").PlayerInfo} PlayerInfo
+ * @typedef {import("../chess-tourney").Player} Player
  */
 /**
  * @param {Object} props
  * @param {Tournament} props.tourney
  * @param {Round} props.round
+ * @param {Round[]} props.roundList
+ * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
  */
 export function RoundContainer({tourney, round, roundList, setRoundList}) {
     if (round) {
-        return <Round round={round} setRoundList={setRoundList} />
+        return <RoundManage round={round} setRoundList={setRoundList} />
     } else {
         return <NewRound tourney={tourney} setRoundList={setRoundList} />
     }
 }
 
+/**
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
+ */
 function NewRound({tourney, setRoundList}) {
     const makeRound = function () {
-        tourney.newRound();
+        const round = tourney.newRound();
+        round.autoPair();
         setRoundList([...tourney.roundList]);
     };
     if (tourney.isNewRoundReady()) {
@@ -37,9 +47,14 @@ function NewRound({tourney, setRoundList}) {
     }
 }
 
-function Round({round, setRoundList}) {
+/**
+ * @param {Object} props
+ * @param {Round} props.round
+ * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
+ */
+function RoundManage({round, setRoundList}) {
     const tourney = round.ref_tourney;
-    const [matches, setMatches] = useState(round.matches);
+    const [matches] = useState(round.matches);
     const delRound = function () {
         tourney.removeRound(round);
         setRoundList([...tourney.roundList]);
@@ -74,6 +89,11 @@ function Round({round, setRoundList}) {
     );
 }
 
+/**
+ * 
+ * @param {Object} props
+ * @param {Match} props.match
+ */
 function RoundMatch({match}) {
     // Getting info for the toggleable box
     const round = match.ref_round;
@@ -148,11 +168,11 @@ function RoundMatch({match}) {
                 <tr>
                     <td></td>
                     <td colSpan={2}>
-                        <PlayerInfo player={white} ratingDiff={ratingDiff[0]}/>
+                        <PlayerInfoBox player={white} ratingDiff={ratingDiff[0]}/>
                     </td>
                     <td></td>
                     <td colSpan={2}>
-                        <PlayerInfo player={black} ratingDiff={ratingDiff[1]}/>
+                        <PlayerInfoBox player={black} ratingDiff={ratingDiff[1]}/>
                     </td>
                     <td></td>
                 </tr>
@@ -167,7 +187,13 @@ function RoundMatch({match}) {
     );
 }
 
-function PlayerInfo({player, ratingDiff}) {
+/**
+ * 
+ * @param {Object} props
+ * @param {PlayerInfo} props.player
+ * @param {number} props.ratingDiff
+ */
+function PlayerInfoBox({player, ratingDiff}) {
     return (
         <dl className="player-card">
             <dt>Score</dt>

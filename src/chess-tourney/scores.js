@@ -172,8 +172,10 @@ const tbFuncs = {
  * @returns {boolean}
  */
 function areScoresEqual(standing1, standing2) {
-    const scoreTypes = Object.getOwnPropertyNames(standing1);
+    // Get the list of tiebreak types
+    const scoreTypes = Object.getOwnPropertyNames(standing1.scores);
     let areEqual = true;
+    // Check if any of them aren't equal
     scoreTypes.forEach(function (score) {
         if (standing1.scores[score] !== standing2.scores[score]) {
             areEqual = false;
@@ -212,11 +214,11 @@ function calcStandings(tourney, roundId = null) {
         return standing;
     });
     // Create a function to sort the players
-    let sortFunc = firstBy((player) => player.scores.score, -1);
+    let sortFunc = firstBy((standing) => standing.scores.score, -1);
     // For each tiebreak method, chain another `thenBy` to the function.
     tieBreaks.forEach(function (method) {
         sortFunc = sortFunc.thenBy(
-            (player) => player.scores[method.funcName],
+            (standing) => standing.scores[method.funcName],
             -1
         );
     });
@@ -227,9 +229,9 @@ function calcStandings(tourney, roundId = null) {
      */
     const standingsTree = [];
     let runningRank = 0;
-    standingsFlat.forEach(function (standing, i, sf) {
+    standingsFlat.forEach(function (standing, i, orig) {
         if (i !== 0) { // we can't compare the first player with a previous one
-            const prevPlayer = sf[i - 1];
+            const prevPlayer = orig[i - 1];
             if (!areScoresEqual(standing, prevPlayer)) {
                 runningRank += 1;
             }

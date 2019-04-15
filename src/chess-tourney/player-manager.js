@@ -22,8 +22,8 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {function(Player): boolean} canRemovePlayer
  * @property {function(number): boolean} canRemovePlayerById
  * @property {function(PlayerManager, Array<number>): void } setByIdList
- * @property {function(playerProps): void} addPlayer
- * @property {function(Array<playerProps>): void} addPlayers
+ * @property {function(playerProps): Player} addPlayer
+ * @property {function(Array<playerProps>): Player[]} addPlayers
  * @property {function(Array<playerProps>): void} loadPlayerData
  * @property {function(number): void} delPlayer
  */
@@ -120,10 +120,9 @@ function createPlayerManager(importObj = {}, playerSource = null) {
             return player;
         },
         addPlayers(playersData) {
-            let newPlayerList = playersData.map(
+            return playersData.map(
                 (player) => pManager.addPlayer(player)
             );
-            return newPlayerList;
         },
         loadPlayerData(data) {
             pManager.roster = data.map(

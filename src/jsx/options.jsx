@@ -30,6 +30,7 @@ export function Options({playerManager, tourneyList, setTourneyList, setOpenTour
     const loadTourney = function (event) {
         event.preventDefault();
         let tourneyData = JSON.parse(outputTourney);
+        // @ts-ignore // Don't type-check the JSON-parsed data pls.
         setTourneyList(tourneyData.map((t) => createTournament(t, playerManager)));
         setOpenTourney(null); // reset this so stale data doesn't persist
     };

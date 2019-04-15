@@ -1,6 +1,17 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
-
+/**
+ * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
+ * @typedef {import("../chess-tourney").Tournament} Tournament
+ * @typedef {import("../chess-tourney").Player} Player
+ */
+/**
+ * @param {Object} props
+ * @param {PlayerManager} props.playerManager
+ * @param {Tournament} props.tourney
+ * @param {Player[]} props.playerList
+ * @param {React.Dispatch<React.SetStateAction<Player[]>>} props.setPlayerList
+ */
 export function TourneySetup({tourney, playerManager, playerList, setPlayerList}) {
     const [isSelecting, setIsSelecting] = useState(playerList.length === 0);
     if (isSelecting) {
@@ -19,14 +30,22 @@ export function TourneySetup({tourney, playerManager, playerList, setPlayerList}
     }
 }
 
+/**
+ * @param {Object} props
+ * @param {PlayerManager} props.playerManager
+ * @param {Tournament} props.tourney
+ * @param {React.Dispatch<React.SetStateAction<Player[]>>} props.setPlayerList
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsSelecting
+ */
 function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
     const [pImports, setPImports] = useState(tourney.players.roster.map((p) => p.id));
     useEffect(function () {
         tourney.players.setByIdList(playerManager, pImports);
         setPlayerList([...tourney.players.roster])
     }, [pImports]);
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const toggleCheck = function (event) {
-        const id = Number(event.target.dataset.id);
+        const id = Number(event.currentTarget.dataset.id);
         if (pImports.includes(id)) {
             setPImports(pImports.filter((i) => i!== id));
         } else {
@@ -62,19 +81,26 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
         </Fragment>
     );
 }
-
+/**
+ *
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsSelecting
+ */
 export function TourneyManager({tourney, setIsSelecting}) {
     const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
+    /** @param {Player} player */
     const byeSignUp = (player) => {
         setByeQueue([...byeQueue,...[player]]);
     };
+    /** @param {Player} player */
     const byeDrop = (player) => {
         setByeQueue(byeQueue.filter((p) => p !== player));
     };
     useEffect(function () {
-        tourney.setByeQueue(byeQueue.map((id) => tourney.players.getPlayerById(id)));
+        tourney.setByeQueue(byeQueue.map((p) => tourney.players.getPlayerById(p.id)));
     }, [byeQueue]);
-    let byeList = "";
+    let byeList = <Fragment></Fragment>;
     if (byeQueue.length > 0) {
         byeList = (
             <Fragment>
@@ -141,13 +167,25 @@ export function TourneyManager({tourney, setIsSelecting}) {
     );
 }
 
+/**
+ * 
+ * @param {Object} props
+ * @param {Tournament} props.tourney
+ */
 function Options({tourney}) {
     const [tbOptions, setTbOptions] = useState(tourney.tieBreak);
-    const tbToggle = (event) => {
-        let id = event.target.dataset.pos;
-        tbOptions[id].active = event.target.checked;
+    /**
+     * @param {React.ChangeEvent<HTMLInputElement>} event
+     * @param {number} pos
+     * */
+    const tbToggle = (event, pos) => {
+        tbOptions[pos].active = event.target.checked;
         setTbOptions([...tbOptions]);
     };
+    /**
+     * @param {number} pos
+     * @param {1 | -1} dir
+     * */
     const tbMove = (pos, dir) => {
         const newPos = pos + dir;
         const newTbOptions = [...tbOptions];
@@ -167,9 +205,8 @@ function Options({tourney}) {
                 <li key={method.funcName}>
                     <input 
                         type="checkbox"
-                        data-pos={i} 
                         checked={method.active} 
-                        onChange={tbToggle}/>
+                        onChange={(event) => tbToggle(event, i)}/>
                     {method.name}
                     <button onClick={() => tbMove(i, -1)} disabled={i === 0}>
                         <span role="img" aria-label="Move up">↑</span>
