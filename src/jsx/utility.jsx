@@ -2,7 +2,6 @@
 import React from "react";
 
 /**
- * 
  * @param {Object} props
  * @param {JSX.Element[]} props.children
  */
@@ -15,7 +14,6 @@ export function MainNav({children}) {
 }
 
 /**
- * 
  * @param {Object} props
  * @param {string} props.name
  * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action

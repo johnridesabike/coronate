@@ -16,19 +16,20 @@ import {createDefaultConfig} from "./config";
  * @property {string} name
  * @property {Round[]} roundList
  * @property {number} byeValue
- * @property {Player[]} byeQueue
+ * @property {number[]} byeQueue
  * @property {PlayerManager} players
+ * @property {number[]} roster
+ * @property {number[]} inactive
  * @property {ConfigItem[]} tieBreak
+ * @property {function(): number[]} getActive
  * @property {function(): boolean} isNewRoundReady
- * @property {function(Player, number=): Match[]} getMatchesByPlayer
- * @property {function(Player, number=): Player[]} getPlayersByOpponent
+ * @property {function(number, number=): Match[]} getMatchesByPlayer
+ * @property {function(number, number=): number[]} getPlayersByOpponent
  * @property {function(): number} getNumOfRounds
  * @property {function(): Round} newRound
  * @property {function(Round)} removeRound
- * @property {function(Round)} canRemoveRound
- * @property {function(Player)} addPlayerToByeQueue
- * @property {function(Player)} removePlayerFromByeQueue
- * @property {function(Player[])} setByeQueue
+ * @property {function(Round): boolean} canRemoveRound
+ * @property {function(number[])} setByeQueue
 */
 /**
  *
@@ -37,9 +38,11 @@ import {createDefaultConfig} from "./config";
  * @param {string} [importObj.name]
  * @param {Round[]} [importObj.roundList]
  * @param {number} [importObj.byeValue]
- * @param {Player[]} [importObj.byeQueue]
+ * @param {number[]} [importObj.byeQueue]
  * @param {PlayerManager} [importObj.players]
  * @param {ConfigItem[]} [importObj.tieBreak]
+ * @param {number[]} [importObj.roster]
+ * @param {number[]} [importObj.inactive]
  * @param {PlayerManager} [playerSource]
  * @returns {Tournament}
  */
@@ -53,6 +56,13 @@ function createTournament(importObj = {}, playerSource = null) {
         byeQueue: importObj.byeQueue || [],
         players: importObj.players || createPlayerManager(),
         tieBreak: importObj.tieBreak || createDefaultConfig().tieBreak,
+        roster: importObj.roster || [],
+        inactive: importObj.inactive || [],
+        getActive() {
+            return tourney.roster.filter(
+                (id) => !tourney.inactive.includes(id)
+            );
+        },
         isNewRoundReady() {
             let isReady = false;
             if (tourney.roundList.length > 0) {
@@ -80,18 +90,26 @@ function createTournament(importObj = {}, playerSource = null) {
             return matches;
         },
         getPlayersByOpponent(opponent, roundId = null) {
-            /** @type {Player[]} */
-            let players = [];
-            tourney.getMatchesByPlayer(opponent, roundId).forEach(
-                function (match) {
-                    players = players.concat(
-                        match.roster.filter(
-                            (player) => player !== opponent
-                        )
-                    );
-                }
+            // /** @type {Player[]} */
+            // let players = [];
+            // tourney.getMatchesByPlayer(opponent, roundId).forEach(
+            //     function (match) {
+            //         players = players.concat(
+            //             match.roster.filter(
+            //                 (player) => player !== opponent
+            //             )
+            //         );
+            //     }
+            // );
+            return tourney.getMatchesByPlayer(
+                opponent,
+                roundId
+            ).reduce(
+                (accumulator, match) => accumulator.concat(match.roster),
+                []
+            ).filter(
+                (player) => player !== opponent
             );
-            return players;
         },
         getNumOfRounds() {
             let roundId = Math.ceil(
@@ -126,14 +144,14 @@ function createTournament(importObj = {}, playerSource = null) {
         canRemoveRound(round) {
             return round !== last(tourney.roundList);
         },
-        addPlayerToByeQueue(player) {
-            tourney.byeQueue.push(player);
-            return tourney;
-        },
-        removePlayerFromByeQueue(player) {
-            tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
-            return tourney;
-        },
+        // addPlayerToByeQueue(player) {
+        //     tourney.byeQueue.push(player);
+        //     return tourney;
+        // },
+        // removePlayerFromByeQueue(player) {
+        //     tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
+        //     return tourney;
+        // },
         setByeQueue(playerList) {
             tourney.byeQueue = playerList;
             return tourney;

@@ -30,7 +30,7 @@ export function TournamentList({
     /** @param {React.FormEvent<HTMLFormElement>} event */
     const newTourney = function(event) {
         event.preventDefault();
-        let tourney = createTournament();
+        let tourney = createTournament({players: playerManager});
         tourney.name = newTourneyData.name;
         tourney.id = tourneyList.length;
         let newTList = [tourney];
@@ -98,7 +98,7 @@ export function TournamentList({
  * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
  */
 function TournamentFrame({tourney, playerManager, setOpenTourney}) {
-    const [playerList, setPlayerList] = useState(tourney.players.roster);
+    const [playerList, setPlayerList] = useState(tourney.roster);
     const [roundNums, setRoundNums] = useState(range(tourney.getNumOfRounds()));
     useEffect(function () {
         setRoundNums(range(tourney.getNumOfRounds()));

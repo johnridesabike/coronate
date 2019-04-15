@@ -5,12 +5,17 @@ import {firstBy} from "thenby";
  * @typedef {import("./tournament").Tournament} Tournament
  */
 /**
- * @typedef {function(Tournament, Player, number=, boolean=): number} ScoreCalc
+ * @callback ScoreCalc
+ * @param {Tournament} tourney
+ * @param {number} player
+ * @param {number} [roundId]
+ * @param {boolean} [solkoff]
+ * @returns {number}
  */
 /**
  * Get a list of all of a player's scores from each match.
  * @param {Tournament} tourney
- * @param {Player} player
+ * @param {number} player
  * @param {number=} roundId
  * @returns {number[]} the list of scores
  */
@@ -23,7 +28,7 @@ function playerScoreList(tourney, player, roundId = null) {
 /**
  * TODO: Maybe merge this with the other function?
  * @param {Tournament} tourney
- * @param {Player} player
+ * @param {number} player
  * @param {number=} roundId
  */
 function playerScoreListNoByes(tourney, player, roundId = null) {
@@ -102,7 +107,7 @@ function modifiedMedian(tourney, player, roundId = null, solkoff = false) {
         player,
         roundId
     ).filter(
-        (opponent) => !opponent.dummy
+        (opponent) => !tourney.players.getPlayerById(opponent).dummy
     ).map(
         (opponent) => playerScore(tourney, opponent, roundId)
     );
@@ -136,7 +141,7 @@ function playerOppScoreCum(tourney, player, roundId = null) {
         player,
         roundId
     ).filter(
-        (opponent) => !opponent.dummy
+        (opponent) => !tourney.players.getPlayerById(opponent).dummy
     );
     let oppScores = opponents.map((p) => playerScoreCum(tourney, p, roundId));
     let score = 0;
@@ -189,19 +194,19 @@ function areScoresEqual(standing1, standing2) {
 function calcStandings(tourney, roundId = null) {
     const tieBreaks = tourney.tieBreak.filter((m) => m.active);
     // Get a flat list of all of the players and their scores.
-    const standingsFlat = tourney.players.roster.map(function (player) {
+    const standingsFlat = tourney.roster.map(function (id) {
         /** @type {Standing} */
         let standing = {
-            player: player,
-            id: player.id,
+            player: tourney.players.getPlayerById(id),
+            id: id,
             scores: {
-                score: playerScore(tourney, player, roundId)
+                score: playerScore(tourney, id, roundId)
             }
         };
         tieBreaks.forEach(function (method) {
             standing.scores[method.name] = tbFuncs[method.funcName](
                 tourney,
-                player,
+                id,
                 roundId
             );
         });

@@ -19,7 +19,7 @@ import {dummyPlayer} from "./player";
  * @property {number} score
  * @property {(number | null)} dueColor
  * @property {number} colorBalance
- * @property {Player[]} opponentHistory
+ * @property {number[]} opponentHistory
  * @property {boolean} upperHalf
  */
 
@@ -84,32 +84,30 @@ function pairPlayers(round) {
     /** @type {Tournament} */
     const tourney = round.ref_tourney;
     /**
-     * @param {Player} player
+     * @param {number} id
      * @returns {number | null}
      */
-    const dueColor = function (player) {
+    const dueColor = function (id) {
         if (!round.ref_prevRound) {
             return null;
         }
         let color = 0;
-        let prevColor = round.ref_prevRound.playerColor(player);
+        let prevColor = round.ref_prevRound.playerColor(id);
         if (prevColor === 0) {
             color = 1;
         }
         return color;
     };
     /** @type {PlayerDataType[]} */
-    let playerData = round.roster.map(function (player, id) {
-        return {
-            player: player,
-            id: id,
-            score: scores.playerScore(tourney, player, round.id),
-            dueColor: dueColor(player),
-            colorBalance: scores.playerColorBalance(tourney, player),
-            opponentHistory: tourney.getPlayersByOpponent(player, null),
-            upperHalf: false
-        };
-    });
+    let playerData = round.roster.map((id) => ({
+        player: tourney.players.getPlayerById(id),
+        id: id,
+        score: scores.playerScore(tourney, id, round.id),
+        dueColor: dueColor(id),
+        colorBalance: scores.playerColorBalance(tourney, id),
+        opponentHistory: tourney.getPlayersByOpponent(id, null),
+        upperHalf: false
+    }));
     const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
     scoreList.sort();
     // Sort the data so matchups default to order by score and rating.
@@ -131,7 +129,7 @@ function pairPlayers(round) {
         const playerMatches = opponents.map(function (player2) {
             let priority = 0;
             let scoreDiff;
-            const metBefore = player1.opponentHistory.includes(player2.player);
+            const metBefore = player1.opponentHistory.includes(player2.id);
             const mustAvoid = tourney.players.getPlayerAvoidList(
                 player1.player
             ).includes(player2.player);
@@ -168,10 +166,10 @@ function pairPlayers(round) {
     if (playerData.length % 2 !== 0) {
         // Get the next person in line from bye signups.
         let byePlayer = tourney.byeQueue.filter(
-            (p) => !p.hasHadBye(tourney)
+            (p) => !tourney.players.getPlayerById(p).hasHadBye(tourney)
         )[0];
         let byePlayerData = playerData.filter(
-            (pd) => pd.player === byePlayer
+            (pd) => pd.id === byePlayer
         )[0];
         // If there isn't anyone on the list, assign a bye to the lowest-rated
         // player in the lowest score group. (USCF § 29L2.)
@@ -189,7 +187,7 @@ function pairPlayers(round) {
         }
         byeMatch = createMatch({
             ref_round: round,
-            roster: [byePlayerData.player, dummyPlayer]
+            roster: [byePlayerData.id, dummyPlayer.id]
         });
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
@@ -259,7 +257,7 @@ function pairPlayers(round) {
             const ideal = pair[2];
             const match = createMatch({
                 ref_round: round,
-                roster: [player1.player, player2.player]
+                roster: [player1.id, player2.id]
             });
             match.ideal = ideal / maxPriority;
             // A quick-and-easy way to keep colors mostly equal.
@@ -267,7 +265,7 @@ function pairPlayers(round) {
                 match.reverse();
             }
             // When the match isn't ideal, include a warning.
-            if (player1.opponentHistory.includes(player2.player)) {
+            if (player1.opponentHistory.includes(player2.id)) {
                 match.warnings += (
                     " " + player1.player.firstName
                     + " and " + player2.player.firstName

@@ -12,14 +12,13 @@ import createMatch from "./match";
  * @typedef {Object} Round
  * @property {number} id
  * @property {Tournament} ref_tourney
- * @property {Player[]} roster
+ * @property {number[]} roster
  * @property {Round} ref_prevRound
  * @property {Match[]} matches
  * @property {function(): boolean} isComplete
- * @property {function(Player): Match} getMatchByPlayer
- * @property {function(Player): number} playerColor `0` for white, `1` for
+ * @property {(player: number) => Match} getMatchByPlayer
+ * @property {(player: number) => number} playerColor `0` for white, `1` for
  * black, or `-1` if the player wasn't found.
- * @property {function(Player)} addPlayer
  * @property {function(): boolean} hasBye
  * @property {function(Match)} removeMatch
  * @property {function(): Match[]} autoPair
@@ -30,11 +29,13 @@ import createMatch from "./match";
  * @param {Tournament} tourney
  * @param {Object} importObj
  * @param {number} [importObj.id]
- * @param {Player[]} [importObj.roster]
+ * @param {number[]} [importObj.roster]
  * @param {Match[]} [importObj.matches]
  * @returns {Round}
  */
 function createRound(tourney, importObj = {}) {
+    /** @param {number} id */
+    const getPlayer = (id) => tourney.players.getPlayerById(id);
     /** @type {Round} */
     const round = {
         id: (
@@ -43,7 +44,7 @@ function createRound(tourney, importObj = {}) {
             : tourney.roundList.length
         ),
         ref_tourney: tourney,
-        roster: importObj.roster || tourney.players.getActive(),
+        roster: importObj.roster || tourney.getActive(),
         ref_prevRound: last(tourney.roundList),
         matches: importObj.matches || [],
         isComplete() {
@@ -66,20 +67,20 @@ function createRound(tourney, importObj = {}) {
             }
             return color;
         },
-        addPlayer(player) {
-            round.roster.push(player);
-            return round;
-        },
+        // addPlayer(player) {
+        //     round.roster.push(player);
+        //     return round;
+        // },
         hasBye() {
-            return round.roster.includes(dummyPlayer);
+            return round.roster.includes(dummyPlayer.id);
         },
         removeMatch(match) {
             if (typeof match === "number") {
                 match = round.matches[match];
             }
             match.resetResult();
-            match.roster.forEach(function (player) {
-                player.matchCount -= 1;
+            match.roster.forEach(function (id) {
+                getPlayer(id).matchCount -= 1;
             });
             round.matches = round.matches.filter((m) => m !== match);
             return round;
@@ -92,13 +93,13 @@ function createRound(tourney, importObj = {}) {
             return round.matches;
         }
     };
-    round.roster = round.roster.map(function (player) {
-        if (typeof player === "number") {
-            return tourney.players.getPlayerById(player);
-        } else {
-            return player;
-        }
-    });
+    // round.roster = round.roster.map(function (player) {
+    //     if (typeof player === "number") {
+    //         return tourney.players.getPlayerById(player);
+    //     } else {
+    //         return player;
+    //     }
+    // });
     // If match data was imported, then init it.
     round.matches = round.matches.map(
         (matchData) => createMatch(

@@ -103,7 +103,7 @@ function RoundMatch({match}) {
     [white, black].forEach(function (info) {
         let rawBalance = scores.playerColorBalance(
             tourney,
-            info.player,
+            info.player.id,
             round.id
         );
         let colorBalance = "Even";
@@ -113,8 +113,11 @@ function RoundMatch({match}) {
             colorBalance = "Black +" + rawBalance;
         }
         info.colorBalance = colorBalance;
-        info.score = scores.playerScore(tourney, info.player, round.id);
-        info.oppList = tourney.getPlayersByOpponent(info.player, round.id);
+        info.score = scores.playerScore(tourney, info.player.id, round.id);
+        info.oppList = tourney.getPlayersByOpponent(
+            info.player.id,
+            round.id
+        ).map((id) => tourney.players.getPlayerById(id));
     });
     const [result, setResult] = useState(match.result);
     const [infoBox, setInfoBox] = useState(false);

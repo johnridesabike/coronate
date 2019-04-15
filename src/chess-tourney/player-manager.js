@@ -95,12 +95,10 @@ function createPlayerManager(importObj = {}, playerSource = null) {
             return pManager;
         },
         getPlayerById(id) {
-            let player;
             if (id === -1) {
-                player = dummyPlayer;
+                return dummyPlayer;
             }
-            player = pManager.roster.filter((p) => p.id === id)[0];
-            return player;
+            return pManager.roster.filter((p) => p.id === id)[0];
         },
         canRemovePlayer(player) {
             return (

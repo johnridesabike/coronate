@@ -48,9 +48,9 @@ function createPlayer(importObj = {}) {
         },
         hasHadBye(tourney) {
             return tourney.getPlayersByOpponent(
-                player,
+                player.id,
                 null
-            ).includes(dummyPlayer);
+            ).includes(dummyPlayer.id);
         }
     };
     return player;
