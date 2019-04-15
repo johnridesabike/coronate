@@ -45,9 +45,8 @@ export function TournamentList({
         update[event.target.name] = event.target.value;
         setNewTourneyData(Object.assign({}, newTourneyData, update));
     };
-    /** @param {React.MouseEvent<HTMLLIElement, MouseEvent> | React.KeyboardEvent<HTMLLIElement>} event */
-    const selectTourney = function (event) {
-        const id = Number(event.currentTarget.dataset.id);
+    /** @param {number} id */
+    const selectTourney = function (id) {
         setOpenTourney(tourneyList[id]);
     };
     let content = <Fragment></Fragment>;
@@ -65,8 +64,9 @@ export function TournamentList({
             ?
                 <ol>
                     {tourneyList.map((tourney, i) =>
-                        <li key={i} data-id={i}  tabIndex={0} role="menuitem"
-                            onClick={selectTourney} onKeyPress={selectTourney}>
+                        <li key={i} tabIndex={0} role="menuitem"
+                            onClick={() => selectTourney(i)}
+                            onKeyPress={() => selectTourney(i)}>
                             {tourney.name}
                         </li>
                     )}

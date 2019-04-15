@@ -48,16 +48,15 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
         tourney.roster = pImports;
         setPlayerList([...tourney.roster]);
     }, [pImports]);
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
-    const toggleCheck = function (event) {
-        const id = Number(event.currentTarget.dataset.id);
+    /** @param {number} id */
+    const toggleCheck = function (id) {
         if (pImports.includes(id)) {
             setPImports(pImports.filter((i) => i !== id));
         } else {
             setPImports([id].concat(pImports));
         }
     };
-    const globalRoster = playerManager.roster;
+    const globalRoster = playerManager.playerList;
     return (
         <Fragment>
             <p>
@@ -66,11 +65,11 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
             <ul>
             {globalRoster.map((player) =>
                 <li key={player.id}>
-                    <input type="checkbox" data-id={player.id}
-                        onChange={toggleCheck}
+                    <input type="checkbox"
+                        onChange={() => toggleCheck(player.id)}
                         checked={pImports.includes(player.id)}
                         disabled={
-                            tourney.players.canRemovePlayerById(player.id)
+                            tourney.canRemovePlayer(player.id)
                 } />
                     {player.firstName} {player.lastName}
                 </li>
@@ -203,6 +202,7 @@ function Options({tourney}) {
      * @param {number} pos
      * */
     const tbToggle = (event, pos) => {
+        event.preventDefault();
         tbOptions[pos].active = event.target.checked;
         setTbOptions([...tbOptions]);
     };

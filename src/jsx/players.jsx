@@ -9,7 +9,7 @@ import React, {useState, Fragment} from "react";
  * @param {PlayerManager} props.playerManager
  */
 export function Players({playerManager}) {
-    const [roster, setRoster] = useState(playerManager.roster);
+    const [roster, setRoster] = useState(playerManager.playerList);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
     /** @type {boolean[]} */
@@ -20,7 +20,7 @@ export function Players({playerManager}) {
         event.preventDefault();
         playerManager.addPlayer(newPlayer);
         setNewPlayer(newPlayerDefault);
-        setRoster([...playerManager.roster]);
+        setRoster([...playerManager.playerList]);
     };
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
@@ -37,7 +37,7 @@ export function Players({playerManager}) {
     const delPlayer = function (event, id) {
         event.preventDefault();
         playerManager.delPlayer(id);
-        setRoster([...playerManager.roster]);
+        setRoster([...playerManager.playerList]);
     };
     /** @param {number} id */
     const toggleOpenPlayer = function(id) {
@@ -143,7 +143,7 @@ function PlayerInfoBox({player, playerManager}) {
     const [avoidList] = useState(
         playerManager.getPlayerAvoidList(player)
     );
-    const notAvoidList = playerManager.roster.filter(
+    const notAvoidList = playerManager.playerList.filter(
         (p) => !avoidList.includes(p) && player !== p
     );
     return (

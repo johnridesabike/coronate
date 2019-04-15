@@ -194,19 +194,19 @@ function areScoresEqual(standing1, standing2) {
 function calcStandings(tourney, roundId = null) {
     const tieBreaks = tourney.tieBreak.filter((m) => m.active);
     // Get a flat list of all of the players and their scores.
-    const standingsFlat = tourney.roster.map(function (id) {
+    const standingsFlat = tourney.roster.map(function (pId) {
         /** @type {Standing} */
-        let standing = {
-            player: tourney.players.getPlayerById(id),
-            id: id,
+        const standing = {
+            player: tourney.players.getPlayerById(pId),
+            id: pId,
             scores: {
-                score: playerScore(tourney, id, roundId)
+                score: playerScore(tourney, pId, roundId)
             }
         };
         tieBreaks.forEach(function (method) {
             standing.scores[method.name] = tbFuncs[method.funcName](
                 tourney,
-                id,
+                pId,
                 roundId
             );
         });
@@ -217,13 +217,13 @@ function calcStandings(tourney, roundId = null) {
     // For each tiebreak method, chain another `thenBy` to the function.
     tieBreaks.forEach(function (method) {
         sortFunc = sortFunc.thenBy(
-            (standing) => standing.scores[method.funcName],
+            (standing) => standing.scores[method.name],
             -1
         );
     });
     // Finally, sort the players.
     standingsFlat.sort(sortFunc);
-    /** @type {Array<Array<Standing>>} */
+    /** @type {Standing[][]} */
     const standingsTree = [];
     let runningRank = 0;
     standingsFlat.forEach(function (standing, i, orig) {

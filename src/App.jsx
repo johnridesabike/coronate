@@ -7,12 +7,9 @@ import {Players} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
-
 /**
- * @typedef {import("react")} React
  * @typedef {import("./chess-tourney").Tournament} Tournament
  */
-
 function App() {
     /** @type {Tournament[]} */
     const initList = [];

@@ -1,5 +1,5 @@
 {
-    "roster": [
+    "playerList": [
         {"id": 0,"firstName": "Matthew", "lastName": "A", "rating": 800},
         {"id": 1,"firstName": "Mark", "lastName": "B", "rating": 850},
         {"id": 2,"firstName": "Luke", "lastName": "C", "rating": 900},

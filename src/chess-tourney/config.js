@@ -50,14 +50,8 @@ function createDefaultConfig() {
 function JSONretriever(key, value) {
     // When a player object is stored in one of these keys, return a list of
     // their IDs instead of the original objects.
-    const playerRefKeys = ["roster", "avoidList"];
     if (key.startsWith("ref_")) {
         return undefined;
-    } else if (playerRefKeys.includes(key) && Array.isArray(value)) {
-        return value.map(
-            /** @param {Player} p */
-            (p) => p.id
-        );
     } else {
         return value;
     }

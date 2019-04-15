@@ -30,6 +30,10 @@ import {createDefaultConfig} from "./config";
  * @property {function(Round)} removeRound
  * @property {function(Round): boolean} canRemoveRound
  * @property {function(number[])} setByeQueue
+ * @property {function(number): void} deactivatePlayer
+ * @property {function(number): void} activatePlayer
+ * @property {function(number): void} removePlayer
+ * @property {function(number): boolean} canRemovePlayer
 */
 /**
  *
@@ -43,10 +47,9 @@ import {createDefaultConfig} from "./config";
  * @param {ConfigItem[]} [importObj.tieBreak]
  * @param {number[]} [importObj.roster]
  * @param {number[]} [importObj.inactive]
- * @param {PlayerManager} [playerSource]
  * @returns {Tournament}
  */
-function createTournament(importObj = {}, playerSource = null) {
+function createTournament(importObj = {}) {
    /** @type {Tournament} */
     const tourney = {
         id: importObj.id || 0,
@@ -68,7 +71,7 @@ function createTournament(importObj = {}, playerSource = null) {
             if (tourney.roundList.length > 0) {
                 isReady = last(tourney.roundList).isComplete();
             } else {
-                isReady = (tourney.players.roster.length > 0);
+                isReady = (tourney.players.playerList.length > 0);
             }
             return isReady;
         },
@@ -113,7 +116,7 @@ function createTournament(importObj = {}, playerSource = null) {
         },
         getNumOfRounds() {
             let roundId = Math.ceil(
-                Math.log2(tourney.players.getActive().length)
+                Math.log2(tourney.getActive().length)
             );
             if (roundId === -Infinity) {
                 roundId = 0;
@@ -155,10 +158,29 @@ function createTournament(importObj = {}, playerSource = null) {
         setByeQueue(playerList) {
             tourney.byeQueue = playerList;
             return tourney;
+        },
+        deactivatePlayer(player) {
+            tourney.inactive.push(player);
+        },
+        activatePlayer(player) {
+            tourney.inactive.splice(tourney.inactive.indexOf(player), 1);
+        },
+        canRemovePlayer(id) {
+            return (
+                tourney.getMatchesByPlayer(
+                    id,
+                    null
+                ).length > 0
+            );
+        },
+        removePlayer(player) {
+            if (tourney.canRemovePlayer(player)) {
+                throw new Error("Can't remove player " + player);
+            }
+            delete tourney.roster[tourney.roster.indexOf(player)];
         }
     };
-    tourney.players = createPlayerManager(tourney.players, playerSource);
-    tourney.players.ref_tourney = tourney;
+    tourney.players = createPlayerManager(tourney.players);
     if (tourney.roundList.length >= 0) {
         // If round data was imported, then init it.
         tourney.roundList = tourney.roundList.reduce(
