@@ -13,7 +13,12 @@ import {createTournament, JSONretriever} from "../chess-tourney";
  * @param {React.Dispatch<React.SetStateAction<Tournament[]>>} props.setTourneyList
  * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
  */
-export function Options({playerManager, tourneyList, setTourneyList, setOpenTourney}) {
+export function Options({
+    playerManager,
+    tourneyList,
+    setTourneyList,
+    setOpenTourney
+}) {
     const [outputPlayers, setOutputPlayers] = useState(
         JSON.stringify(playerManager.roster, JSONretriever, 2)
     );
@@ -30,15 +35,17 @@ export function Options({playerManager, tourneyList, setTourneyList, setOpenTour
     const loadTourney = function (event) {
         event.preventDefault();
         let tourneyData = JSON.parse(outputTourney);
-        // @ts-ignore // Don't type-check the JSON-parsed data pls.
-        setTourneyList(tourneyData.map((t) => createTournament(t, playerManager)));
+        setTourneyList(
+            // @ts-ignore // Don't type-check the JSON-parsed data pls.
+            tourneyData.map((t) => createTournament(t, playerManager))
+        );
         setOpenTourney(null); // reset this so stale data doesn't persist
     };
     return (
         <section>
             <h2>Export tournament data</h2>
             <form onSubmit={loadTourney}>
-                <textarea 
+                <textarea
                     className="json"
                     rows={25}
                     cols={50}
@@ -56,7 +63,8 @@ export function Options({playerManager, tourneyList, setTourneyList, setOpenTour
                     cols={50}
                     value={outputPlayers}
                     name="playerdata"
-                    onChange={(event) => setOutputPlayers(event.target.value)} />
+                    onChange={(event) => setOutputPlayers(event.target.value)}
+                />
                 <input type="submit" value="Load" />
             </form>
         </section>

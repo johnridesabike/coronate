@@ -11,6 +11,7 @@ import EloRank from "elo-rank";
  * @property {number} rating
  * @property {boolean} dummy
  * @property {number} matchCount
+ * @property {function(): number} getKFactor
  * @property {function(): Object} getEloRank
  * @property {function(Tournament): boolean} hasHadBye
  */
@@ -22,6 +23,7 @@ import EloRank from "elo-rank";
  * @property {number} [rating]
  * @property {boolean} [dummy]
  * @property {number} [matchCount]
+ * @property {number[]} [avoidList]
  */
 /**
  *
@@ -30,26 +32,28 @@ import EloRank from "elo-rank";
  */
 function createPlayer(importObj = {}) {
     /** @type {Player} */
-    const newPlayer = {
+    const player = {
         id: importObj.id || 0,
         firstName: importObj.firstName || "",
         lastName: importObj.lastName || "",
         rating: importObj.rating || 0,
         dummy: importObj.dummy || false,
         matchCount: importObj.matchCount || 0,
+        getKFactor() {
+            const ne = player.matchCount || 1;
+            return (800 / ne);
+        },
         getEloRank() {
-            const ne = newPlayer.matchCount || 1;
-            const K = (800 / ne);
-            return new EloRank(K);
+            return new EloRank(player.getKFactor());
         },
         hasHadBye(tourney) {
             return tourney.getPlayersByOpponent(
-                newPlayer,
+                player,
                 null
             ).includes(dummyPlayer);
         }
     };
-    return newPlayer;
+    return player;
 }
 
 /** @type {Player} */

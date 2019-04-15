@@ -12,21 +12,26 @@ import React, {useState, useEffect, Fragment} from "react";
  * @param {Player[]} props.playerList
  * @param {React.Dispatch<React.SetStateAction<Player[]>>} props.setPlayerList
  */
-export function TourneySetup({tourney, playerManager, playerList, setPlayerList}) {
+export function TourneySetup({
+    tourney,
+    playerManager,
+    playerList,
+    setPlayerList
+}) {
     const [isSelecting, setIsSelecting] = useState(playerList.length === 0);
     if (isSelecting) {
         return <PlayerSelect
             key={tourney.id}
-            tourney={tourney} 
+            tourney={tourney}
             playerManager={playerManager}
             setIsSelecting={setIsSelecting}
             setPlayerList={setPlayerList}
-            />
+            />;
     } else {
         return <TourneyManager
             key={tourney.id}
             tourney={tourney}
-            setIsSelecting={setIsSelecting} />
+            setIsSelecting={setIsSelecting} />;
     }
 }
 
@@ -38,16 +43,18 @@ export function TourneySetup({tourney, playerManager, playerList, setPlayerList}
  * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsSelecting
  */
 function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
-    const [pImports, setPImports] = useState(tourney.players.roster.map((p) => p.id));
+    const [pImports, setPImports] = useState(
+        tourney.players.roster.map((p) => p.id)
+    );
     useEffect(function () {
         tourney.players.setByIdList(playerManager, pImports);
-        setPlayerList([...tourney.players.roster])
+        setPlayerList([...tourney.players.roster]);
     }, [pImports]);
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const toggleCheck = function (event) {
         const id = Number(event.currentTarget.dataset.id);
         if (pImports.includes(id)) {
-            setPImports(pImports.filter((i) => i!== id));
+            setPImports(pImports.filter((i) => i !== id));
         } else {
             setPImports([id].concat(pImports));
         }
@@ -64,9 +71,11 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
                     <input type="checkbox" data-id={player.id}
                         onChange={toggleCheck}
                         checked={pImports.includes(player.id)}
-                        disabled={tourney.players.canRemovePlayerById(player.id)} />
+                        disabled={
+                            tourney.players.canRemovePlayerById(player.id)
+                } />
                     {player.firstName} {player.lastName}
-                </li>    
+                </li>
             )}
             </ul>
             <button onClick={() => setPImports(globalRoster.map((p) => p.id))}>
@@ -98,17 +107,27 @@ export function TourneyManager({tourney, setIsSelecting}) {
         setByeQueue(byeQueue.filter((p) => p !== player));
     };
     useEffect(function () {
-        tourney.setByeQueue(byeQueue.map((p) => tourney.players.getPlayerById(p.id)));
+        tourney.setByeQueue(
+            byeQueue.map((p) => tourney.players.getPlayerById(p.id))
+        );
     }, [byeQueue]);
+    /** @param {Player} player */
+    const canBye = (player) => (
+        tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
+    );
     let byeList = <Fragment></Fragment>;
     if (byeQueue.length > 0) {
         byeList = (
             <Fragment>
                 <h2>Bye signups:</h2>
                 <ol>
-                {byeQueue.map((player) =>  
+                {byeQueue.map((player) =>
                     <li key={player.id}
-                        className={player.hasHadBye(tourney) ? "inactive" : "active"}>
+                        className={(
+                            (player.hasHadBye(tourney))
+                            ? "inactive"
+                            : "active"
+                        )}>
                         {player.firstName}
                         <button
                             onClick={() => byeDrop(player)}
@@ -119,7 +138,7 @@ export function TourneyManager({tourney, setIsSelecting}) {
                 )}
                 </ol>
             </Fragment>
-        )
+        );
     }
     let rosterTable = (
         <table>
@@ -134,18 +153,26 @@ export function TourneyManager({tourney, setIsSelecting}) {
             </thead>
             <tbody>
                 {tourney.players.roster.map((player) =>
-                <tr key={player.id} 
-                    className={tourney.players.inactive.includes(player) ? "inactive" : "active"}>
+                <tr key={player.id}
+                    className={(
+                        (tourney.players.inactive.includes(player))
+                        ? "inactive"
+                        : "active"
+                    )}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__number">{player.rating}</td>
                     <td className="table__number">
                     {tourney.getMatchesByPlayer(player).length}
                     </td>
                     <td>
-                    {(tourney.byeQueue.includes(player) || player.hasHadBye(tourney)
+                    {(
+                        (canBye(player))
                         ? <button disabled>Bye</button>
-                        : <button onClick={() => byeSignUp(player)}>Bye</button>)
-                    }
+                        : <button onClick={() => byeSignUp(player)}
+                        >
+                        Bye
+                        </button>
+                    )}
                     </td>
                 </tr>
                 )}
@@ -168,7 +195,7 @@ export function TourneyManager({tourney, setIsSelecting}) {
 }
 
 /**
- * 
+ *
  * @param {Object} props
  * @param {Tournament} props.tourney
  */
@@ -194,18 +221,18 @@ function Options({tourney}) {
         setTbOptions(newTbOptions);
     };
     useEffect(function () {
-        tourney.tieBreak = tbOptions
+        tourney.tieBreak = tbOptions;
     });
     return (
         <section>
             <h3>Options</h3>
             <h3>Tie break priority</h3>
             <ol>
-            {tbOptions.map((method, i) => 
+            {tbOptions.map((method, i) =>
                 <li key={method.funcName}>
-                    <input 
+                    <input
                         type="checkbox"
-                        checked={method.active} 
+                        checked={method.active}
                         onChange={(event) => tbToggle(event, i)}/>
                     {method.name}
                     <button onClick={() => tbMove(i, -1)} disabled={i === 0}>

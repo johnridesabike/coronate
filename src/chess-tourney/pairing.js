@@ -28,7 +28,8 @@ import {dummyPlayer} from "./player";
  */
 /**
  * @constant avoidMeetingTwicePriority The weight given to avoid players
- * meeting twice. This is the highest priority. (USCF § 27A1)
+ * meeting twice. This same weight is given to avoid matching players on each
+ * other's "avoid" list. This is the highest priority. (USCF § 27A1)
  * @type {number}
  */
 const avoidMeetingTwicePriority = 20;
@@ -120,17 +121,21 @@ function pairPlayers(round) {
      * an array of each potential match, formatted like so: [idOfPlayer1,
      * idOfPlayer2, priority]. A higher priority means a more likely matchup.
      * Use it in `Array.prototype.reduce()`.
-     * @param {array} allMatches The running list of all possible matchups.
-     * @param {object} player1 The data for the first player.
+     * @param {number[][]} allMatches The running list of all possible matchups.
+     * @param {PlayerDataType} player1 The data for the first player.
      * @param {number} ignore The index of the player.
-     * @param {array} src The original array.
+     * @param {PlayerDataType[]} src The original array.
      */
     const matchupReducer = function (allMatches, player1, ignore, src) {
-        let opponents = src.filter((p) => p !== player1);
-        let playerMatches = opponents.map(function (player2) {
+        const opponents = src.filter((p) => p !== player1);
+        const playerMatches = opponents.map(function (player2) {
             let priority = 0;
             let scoreDiff;
-            if (!player1.opponentHistory.includes(player2.player)) {
+            const metBefore = player1.opponentHistory.includes(player2.player);
+            const mustAvoid = tourney.players.getPlayerAvoidList(
+                player1.player
+            ).includes(player2.player);
+            if (!metBefore && !mustAvoid) {
                 priority += avoidMeetingTwicePriority;
             }
             // Calculate the "distance" between their scores and multiply that
@@ -209,6 +214,7 @@ function pairPlayers(round) {
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
+    /**@type {number[]} */
     blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
     reducedResults = blossomResults.reduce(

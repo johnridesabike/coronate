@@ -1,14 +1,13 @@
 // @ts-check
 import React, { useState } from "react";
 import "./App.css";
-import {MainNav, NavItem} from "./jsx/utility.jsx"
+import {MainNav, NavItem} from "./jsx/utility.jsx";
 import {createPlayerManager} from "./chess-tourney";
 import {Players} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
 
-const demoData = demoRoster.slice(0,16);
 /**
  * @typedef {import("react")} React
  * @typedef {import("./chess-tourney").Tournament} Tournament
@@ -22,7 +21,7 @@ function App() {
     const initOpen = null;
     const [openTourney, setOpenTourney] = useState(initOpen);
     const [playerManager] = useState(
-        createPlayerManager({roster: demoData})
+        createPlayerManager(demoRoster)
     );
     const [currentView, setCurrentView] = useState(0);
     /** @param {number} id */
@@ -57,7 +56,9 @@ function Caution() {
             This is an unstable demo build!
             Want to help make it better? Head to the&nbsp;
             <span role="img" aria-label="finger pointing right">👉</span>&nbsp;
-            <a href="https://github.com/johnridesabike/chessahoochee">Git repository</a>.
+            <a href="https://github.com/johnridesabike/chessahoochee">
+                Git repository
+            </a>.
         </p>
     );
 }

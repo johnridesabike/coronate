@@ -3,7 +3,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import {createTournament, scores} from "../chess-tourney";
-import {TourneySetup} from "./tourney-setup.jsx"
+import {TourneySetup} from "./tourney-setup.jsx";
 import {RoundContainer} from "./round.jsx";
 import {range} from "lodash";
 /**
@@ -18,7 +18,13 @@ import {range} from "lodash";
  * @param {React.Dispatch<React.SetStateAction<Tournament[]>>} props.setTourneyList
  * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
  */
-export function TournamentList({playerManager, tourneyList, setTourneyList, openTourney, setOpenTourney}) {
+export function TournamentList({
+    playerManager,
+    tourneyList,
+    setTourneyList,
+    openTourney,
+    setOpenTourney
+}) {
     const newTourneyDefaults = {name: "The most epic tournament"};
     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
     /** @param {React.FormEvent<HTMLFormElement>} event */
@@ -28,7 +34,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
         tourney.name = newTourneyData.name;
         tourney.id = tourneyList.length;
         let newTList = [tourney];
-        setTourneyList(newTList.concat(tourneyList))
+        setTourneyList(newTList.concat(tourneyList));
         setNewTourneyData(newTourneyDefaults);
         setOpenTourney(tourney);
     };
@@ -36,33 +42,33 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
     const updateField = function (event) {
         /** @type {Object<string, string>} */
         const update = {};
-        update[event.target.name] = event.target.value
+        update[event.target.name] = event.target.value;
         setNewTourneyData(Object.assign({}, newTourneyData, update));
     };
     /** @param {React.MouseEvent<HTMLLIElement, MouseEvent> | React.KeyboardEvent<HTMLLIElement>} event */
     const selectTourney = function (event) {
         const id = Number(event.currentTarget.dataset.id);
-        setOpenTourney(tourneyList[id])
+        setOpenTourney(tourneyList[id]);
     };
     let content = <Fragment></Fragment>;
     if (openTourney) {
-        content = 
-        <TournamentFrame 
+        content =
+        <TournamentFrame
             key={openTourney.id}
             tourney={openTourney}
             playerManager={playerManager}
-            setOpenTourney={setOpenTourney} />
+            setOpenTourney={setOpenTourney} />;
     } else {
-        content = 
+        content =
         <Fragment>
             {(tourneyList.length > 0)
             ?
                 <ol>
-                    {tourneyList.map((tourney, i) => 
+                    {tourneyList.map((tourney, i) =>
                         <li key={i} data-id={i}  tabIndex={0} role="menuitem"
                             onClick={selectTourney} onKeyPress={selectTourney}>
                             {tourney.name}
-                        </li>    
+                        </li>
                     )}
                 </ol>
             :
@@ -75,7 +81,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
                     onChange={updateField} required />
                 <input type="submit" value="New Tournament" />
             </form>
-        </Fragment>
+        </Fragment>;
     }
     return (
         <main>
@@ -85,7 +91,7 @@ export function TournamentList({playerManager, tourneyList, setTourneyList, open
 }
 
 /**
- * 
+ *
  * @param {Object} props
  * @param {Tournament} props.tourney
  * @param {PlayerManager} props.playerManager
@@ -102,7 +108,7 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     const isRoundReady = function (id) {
         // we also return if it's the next available round so the user can begin it
         return roundList[id] || id === roundList.length;
-    }
+    };
     return (
         <Tabs>
             <button onClick={() => setOpenTourney(null)}>&lt; back</button>
@@ -110,10 +116,10 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
             <TabList>
                 <Tab>Setup</Tab>
                 <Tab disabled={playerList.length === 0}>Standings</Tab>
-                {roundNums.map((roundNum) => 
+                {roundNums.map((roundNum) =>
                     <Tab key={roundNum} disabled={!isRoundReady(roundNum)}>
                         Round {roundNum + 1}
-                    </Tab>    
+                    </Tab>
                 )}
             </TabList>
             <TabPanel>
@@ -124,7 +130,7 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
             <TabPanel>
                 <Standings tourney={tourney} />
             </TabPanel>
-            {roundNums.map((roundNum) => 
+            {roundNums.map((roundNum) =>
                 <TabPanel key={roundNum}>
                     <RoundContainer key={roundNum} tourney={tourney}
                         round={roundList[roundNum]} roundList={roundList}
@@ -136,7 +142,7 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
 }
 
 /**
- * 
+ *
  * @param {Object} props
  * @param {Tournament} props.tourney
  */
@@ -154,9 +160,9 @@ export function Standings({tourney}) {
             )}
           </tr>
         </thead>
-        {scores.calcStandings(tourney).map((rank, i) => 
+        {scores.calcStandings(tourney).map((rank, i) =>
           <tbody key={i}>
-            {rank.map((standing) => 
+            {rank.map((standing) =>
               <tr key={standing.id}>
                   <td>{i + 1}</td>
                   <td>{standing.player.firstName}</td>

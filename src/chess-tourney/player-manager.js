@@ -11,7 +11,9 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {number} lastId
  * @property {?Tournament} ref_tourney
  * @property {Player[]} inactive
+ * @property {number[][]} avoidList
  * @property {function(): Player[]} getActive
+ * @property {(id: number) => Player} exportPlayerById
  * @property {function(PlayerManager, number): void} importPlayerById
  * @property {function(Player[]): void} importPlayerList
  * @property {function(Player): void} deactivatePlayer
@@ -26,6 +28,7 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {function(Array<playerProps>): Player[]} addPlayers
  * @property {function(Array<playerProps>): void} loadPlayerData
  * @property {function(number): void} delPlayer
+ * @property {(player: Player) => Player[]} getPlayerAvoidList
  */
 /**
  * @typedef {Object} playerManagerProps
@@ -41,6 +44,7 @@ import {createPlayer, dummyPlayer} from "./player";
  * @param {number} [importObj.lastId]
  * @param {Tournament | null} [importObj.ref_tourney]
  * @param {Player[]} [importObj.inactive]
+ * @param {number[][]} [importObj.avoidList]
  * @param {?PlayerManager} playerSource
  * @returns {PlayerManager}
  */
@@ -51,10 +55,16 @@ function createPlayerManager(importObj = {}, playerSource = null) {
         lastId: importObj.lastId || -1,
         ref_tourney: importObj.ref_tourney || null,
         inactive: importObj.inactive || [],
+        avoidList: importObj.avoidList || [],
         getActive() {
             return pManager.roster.filter(
                 (i) => !pManager.inactive.includes(i)
             );
+        },
+        exportPlayerById(id) {
+            const player = pManager.getPlayerById(id);
+            const clone = createPlayer(player);
+            return clone;
         },
         importPlayerById(fromRoster, playerId) {
             let player = fromRoster.getPlayerById(playerId);
@@ -109,10 +119,15 @@ function createPlayerManager(importObj = {}, playerSource = null) {
             const toRemove = currentIds.filter((id) => !list.includes(id));
             toAdd.forEach((id) => pManager.importPlayerById(playerManager, id));
             toRemove.forEach((id) => pManager.removePlayerById(id));
+            pManager.avoidList = playerManager.avoidList;
         },
         addPlayer(playerData) {
-            playerData.id = pManager.lastId + 1;
-            pManager.lastId = playerData.id;
+            if (!playerData.id) {
+                playerData.id = pManager.lastId + 1;
+            }
+            if (playerData.id > pManager.lastId) {
+                pManager.lastId = playerData.id;
+            }
             let player = createPlayer(playerData);
             pManager.roster.push(player);
             return player;
@@ -138,6 +153,18 @@ function createPlayerManager(importObj = {}, playerSource = null) {
             }
             let player = pManager.roster.splice(index, 1);
             return player;
+        },
+        getPlayerAvoidList(player) {
+            return pManager.avoidList.filter( // get pairings with the player
+                (pair) => pair.includes(player.id)
+            ).reduce( // Flatten the array
+                (accumulator, pair) => pair.concat(accumulator),
+                []
+            ).filter( // filter out the player's id
+                (id) => id !== player.id
+            ).map( // turn the ids into player objects
+                (id) => pManager.getPlayerById(id)
+            );
         }
     };
     if (importObj.roster) {

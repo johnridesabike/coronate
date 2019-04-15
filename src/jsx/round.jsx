@@ -19,9 +19,9 @@ import "../round.css";
  */
 export function RoundContainer({tourney, round, roundList, setRoundList}) {
     if (round) {
-        return <RoundManage round={round} setRoundList={setRoundList} />
+        return <RoundManage round={round} setRoundList={setRoundList} />;
     } else {
-        return <NewRound tourney={tourney} setRoundList={setRoundList} />
+        return <NewRound tourney={tourney} setRoundList={setRoundList} />;
     }
 }
 
@@ -43,7 +43,7 @@ function NewRound({tourney, setRoundList}) {
                 Make new round
             </button>);
     } else {
-        return <p>Complete the last round first.</p>
+        return <p>Complete the last round first.</p>;
     }
 }
 
@@ -90,7 +90,7 @@ function RoundManage({round, setRoundList}) {
 }
 
 /**
- * 
+ *
  * @param {Object} props
  * @param {Match} props.match
  */
@@ -101,7 +101,11 @@ function RoundMatch({match}) {
     const white = match.getWhiteInfo();
     const black = match.getBlackInfo();
     [white, black].forEach(function (info) {
-        let rawBalance = scores.playerColorBalance(tourney, info.player, round.id);
+        let rawBalance = scores.playerColorBalance(
+            tourney,
+            info.player,
+            round.id
+        );
         let colorBalance = "Even";
         if (rawBalance < 0) {
             colorBalance = "White +" + Math.abs(rawBalance);
@@ -109,7 +113,7 @@ function RoundMatch({match}) {
             colorBalance = "Black +" + rawBalance;
         }
         info.colorBalance = colorBalance;
-        info.score = scores.playerScore(tourney, info.player, round.id)
+        info.score = scores.playerScore(tourney, info.player, round.id);
         info.oppList = tourney.getPlayersByOpponent(info.player, round.id);
     });
     const [result, setResult] = useState(match.result);
@@ -117,37 +121,40 @@ function RoundMatch({match}) {
     const [ratingDiff, setRatingDiff] = useState([
         white.newRating - white.origRating,
         black.newRating - black.origRating
-    ])
+    ]);
     useEffect(function () {
         match.setResult(result);
         setRatingDiff([
             match.getWhiteInfo().newRating - match.getWhiteInfo().origRating,
             match.getBlackInfo().newRating - match.getBlackInfo().origRating
-        ])
+        ]);
     }, [result]);
     return (
         <Fragment>
-            <tr className={match.isBye() ? "inactive" : ""}>
+            <tr className={(
+                (match.isBye())
+                ? "inactive"
+                : "")}>
                 <td className="table__number">{match.id + 1}</td>
                 <td className="table__player">
                     {white.player.firstName} {white.player.lastName}
                 </td>
                 <td className="table__input">
-                    <input 
+                    <input
                     type="radio"
                     checked={result[0] === 1}
                     disabled={match.isBye()}
                     onChange={() => setResult([1,0])} />
                 </td>
                 <td className="table__input">
-                    <input 
+                    <input
                         type="radio"
                         checked={result[0] === 0.5}
                         disabled={match.isBye()}
                         onChange={() => setResult([0.5, 0.5])} />
                 </td>
                 <td className="table__input">
-                    <input 
+                    <input
                         type="radio"
                         checked={result[1] === 1}
                         disabled={match.isBye()}
@@ -168,11 +175,13 @@ function RoundMatch({match}) {
                 <tr>
                     <td></td>
                     <td colSpan={2}>
-                        <PlayerInfoBox player={white} ratingDiff={ratingDiff[0]}/>
+                        <PlayerRoundInfo player={white}
+                            ratingDiff={ratingDiff[0]}/>
                     </td>
                     <td></td>
                     <td colSpan={2}>
-                        <PlayerInfoBox player={black} ratingDiff={ratingDiff[1]}/>
+                        <PlayerRoundInfo player={black}
+                            ratingDiff={ratingDiff[1]}/>
                     </td>
                     <td></td>
                 </tr>
@@ -188,12 +197,12 @@ function RoundMatch({match}) {
 }
 
 /**
- * 
+ *
  * @param {Object} props
  * @param {PlayerInfo} props.player
  * @param {number} props.ratingDiff
  */
-function PlayerInfoBox({player, ratingDiff}) {
+function PlayerRoundInfo({player, ratingDiff}) {
     return (
         <dl className="player-card">
             <dt>Score</dt>
@@ -211,7 +220,7 @@ function PlayerInfoBox({player, ratingDiff}) {
                 {player.oppList.map((opponent) =>
                     <li key={opponent.id}>
                     {opponent.firstName}
-                    </li>  
+                    </li>
                 )}
                 </ol>
             </dd>
