@@ -1,11 +1,12 @@
 // @ts-check
 import React, { useState } from "react";
 import "./App.css";
-import {MainNav, NavItem} from "./jsx/utility.jsx";
+// import {MainNav, NavItem} from "./jsx/utility.jsx";
 import {createPlayerManager} from "./chess-tourney";
 import {PlayerView} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import demoRoster from "./demo-players.json";
 /**
  * @typedef {import("./chess-tourney").Tournament} Tournament
@@ -20,29 +21,38 @@ function App() {
     const [playerManager] = useState(
         createPlayerManager(demoRoster)
     );
-    const [currentView, setCurrentView] = useState(0);
-    /** @param {number} id */
-    const setViewList = (id) => setCurrentView(id);
-    const viewList = [
-        <PlayerView playerManager={playerManager} />,
-        <TournamentList playerManager={playerManager}
-            tourneyList={tourneylist} setTourneyList={setTourneyList}
-            openTourney={openTourney} setOpenTourney={setOpenTourney} />,
-        <Options playerManager={playerManager} tourneyList={tourneylist}
-            setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
-    ];
+    // const [currentView, setCurrentView] = useState(0);
+    // /** @param {number} id */
+    // const setViewList = (id) => setCurrentView(id);
+    // const viewList = [
+    //     <PlayerView playerManager={playerManager} />,
+    //     <TournamentList playerManager={playerManager}
+    //         tourneyList={tourneylist} setTourneyList={setTourneyList}
+    //         openTourney={openTourney} setOpenTourney={setOpenTourney} />,
+    //     <Options playerManager={playerManager} tourneyList={tourneylist}
+    //         setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
+    // ];
     return (
-        <main>
-            <MainNav>
-                <NavItem name="Players"
-                    action={() => setViewList(0)} isOpen={currentView === 0} />
-                <NavItem name="Tournaments"
-                    action={() => setViewList(1)} isOpen={currentView === 1} />
-                <NavItem name="Options"
-                    action={() => setViewList(2)} isOpen={currentView === 2} />
-            </MainNav>
-            {viewList[currentView]}
-        </main>
+        <Tabs defaultIndex={1}>
+            <TabList>
+                <Tab>Players</Tab>
+                <Tab>Tournaments</Tab>
+                <Tab>Options</Tab>
+            </TabList>
+            <TabPanel>
+                <PlayerView playerManager={playerManager} />
+            </TabPanel>
+            <TabPanel>
+                <TournamentList playerManager={playerManager}
+                    tourneyList={tourneylist} setTourneyList={setTourneyList}
+                    openTourney={openTourney} setOpenTourney={setOpenTourney} />
+            </TabPanel>
+            <TabPanel>
+                <Options playerManager={playerManager} tourneyList={tourneylist}
+                    setTourneyList={setTourneyList}
+                    setOpenTourney={setOpenTourney} />
+            </TabPanel>
+        </Tabs>
     );
 }
 

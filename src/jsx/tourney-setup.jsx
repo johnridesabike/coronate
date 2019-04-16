@@ -181,8 +181,6 @@ export function TourneyManager({tourney, setIsSelecting, newRound}) {
     );
     return (
         <Fragment>
-            {rosterTable}
-            {byeList}
             <button onClick={() => setIsSelecting(true)}>
                 Select players
             </button>
@@ -190,6 +188,8 @@ export function TourneyManager({tourney, setIsSelecting, newRound}) {
                 disabled={!tourney.isNewRoundReady()}>
                 New round
             </button>
+            {rosterTable}
+            {byeList}
             <Options key={tourney.id} tourney={tourney} />
         </Fragment>
     );

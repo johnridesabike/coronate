@@ -54,6 +54,7 @@ function RoundManage({round, newRound, setRoundList}) {
     const getPlayer = tourney.players.getPlayerById;
     const [matches, setMatches] = useState(round.matches);
     const [unMatched, setUnmatched] = useState(round.getUnmatchedPlayers());
+    const [canMakeNewRound, setCanMakeNewRound] = useState(round.isComplete());
     /** @type {[number[], React.Dispatch<React.SetStateAction<number[]>>]} */
     const [toPair, setToPair] = useState([]);
     function delRound() {
@@ -71,6 +72,12 @@ function RoundManage({round, newRound, setRoundList}) {
         setUnmatched(round.getUnmatchedPlayers());
         setToPair([]);
     }
+    /** @param {number} id */
+    function rmMatch(id) {
+        round.removeMatch(id);
+        setMatches(round.matches);
+        setUnmatched(round.getUnmatchedPlayers());
+    }
     return (
         <Fragment>
             <table className="table__roster">
@@ -81,13 +88,13 @@ function RoundManage({round, newRound, setRoundList}) {
                     <th colSpan={2}>White</th>
                     <th>Draw</th>
                     <th colSpan={2}>Black</th>
-                    <th></th>
+                    <th colSpan={2}></th>
                 </tr>
                 </thead>
                 <tbody>
                 {matches.map((match) =>
-                    <RoundMatch
-                        key={match.id} match={match} />
+                    <RoundMatch key={match.id} match={match} rmMatch={rmMatch}
+                        setCanMakeNewRound={setCanMakeNewRound}/>
                 )}
                 </tbody>
             </table>
@@ -105,7 +112,7 @@ function RoundManage({round, newRound, setRoundList}) {
             <button onClick={() => pairChecked()}>Pair checked</button>
             <button onClick={autoPair}>Auto pair</button>
             <button onClick={() => newRound()}
-                disabled={!tourney.isNewRoundReady()}>
+                disabled={!canMakeNewRound}>
                 Next round
             </button>
             <button
@@ -121,8 +128,10 @@ function RoundManage({round, newRound, setRoundList}) {
  *
  * @param {Object} props
  * @param {Match} props.match
+ * @param {function} props.rmMatch
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setCanMakeNewRound
  */
-function RoundMatch({match}) {
+function RoundMatch({match, rmMatch, setCanMakeNewRound}) {
     // Getting info for the toggleable box
     const round = match.ref_round;
     const tourney = match.ref_tourney;
@@ -159,6 +168,7 @@ function RoundMatch({match}) {
             match.getWhiteInfo().newRating - match.getWhiteInfo().origRating,
             match.getBlackInfo().newRating - match.getBlackInfo().origRating
         ]);
+        setCanMakeNewRound(round.isComplete());
     }, [result]);
     return (
         <Fragment>
@@ -200,6 +210,11 @@ function RoundMatch({match}) {
                     </button>
                     {match.warnings}
                 </td>
+                <td>
+                    <button onClick={() => rmMatch(match.id)}>
+                        x
+                    </button>
+                </td>
             </tr>
             {infoBox &&
                 <Fragment>
@@ -218,7 +233,7 @@ function RoundMatch({match}) {
                 </tr>
                 <tr>
                     <td colSpan={7} style={{textAlign: "center"}}>
-                        Match ideal: {numeral(match.ideal).format("00%")}
+                        Match ideal: {numeral(match.ideal).format("0%")}
                     </td>
                 </tr>
             </Fragment>

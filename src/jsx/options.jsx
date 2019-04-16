@@ -20,7 +20,7 @@ export function Options({
     setOpenTourney
 }) {
     const [outputPlayers, setOutputPlayers] = useState(
-        JSON.stringify(playerManager.roster, JSONretriever, 2)
+        JSON.stringify(playerManager, JSONretriever, 2)
     );
     const [outputTourney, setOutputTourney] = useState(
         JSON.stringify(tourneyList, JSONretriever, 2)

@@ -128,7 +128,7 @@ function createTournament(importObj = {}) {
                 throw new Error("You can only remove the last round");
             }
             round.matches.forEach(function (match) {
-                round.removeMatch(match);
+                round.removeMatch(match.id);
             });
             tourney.roundList = tourney.roundList.filter((r) => r !== round);
             return tourney;
