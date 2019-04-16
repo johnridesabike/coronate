@@ -6,7 +6,7 @@
  */
 /**
  * @typedef {Object} Match
- * @property {number} id
+ * @property {string} id
  * @property {Round} ref_round
  * @property {Tournament} ref_tourney
  * @property {string} warnings
@@ -86,7 +86,7 @@ function calcRatings(match) {
 /**
  * Create a match object.
  * @param {Object} importObj
- * @param {number} [importObj.id]
+ * @param {string} [importObj.id]
  * @param {Round} importObj.ref_round
  * @param {number[]} importObj.roster
  * @param {string} [importObj.warnings]
@@ -103,7 +103,7 @@ function createMatch(importObj) {
     const black = getPlayer(importObj.roster[1]);
     /** @type {Match} */
     const match = {
-        id: importObj.id || 0,
+        id: importObj.id || white.id + "." + black.id,
         ref_round: importObj.ref_round,
         ref_tourney: importObj.ref_round.ref_tourney,
         warnings: importObj.warnings || "",

@@ -1,9 +1,12 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
+import {List, arrayMove} from "react-movable";
+import {FaArrowsAltV} from "react-icons/fa";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
  * @typedef {import("../chess-tourney").Player} Player
+ * @typedef {import("../chess-tourney").ConfigItem} ConfigItem
  */
 /**
  * @param {Object} props
@@ -204,24 +207,25 @@ function Options({tourney}) {
     const [tbOptions, setTbOptions] = useState(tourney.tieBreak);
     /**
      * @param {React.ChangeEvent<HTMLInputElement>} event
-     * @param {number} pos
+     * @param {string} funcName
      * */
-    const tbToggle = (event, pos) => {
-        event.preventDefault();
-        tbOptions[pos].active = event.target.checked;
+    const tbToggle = (event, funcName) => {
+        // event.preventDefault();
+        const item = tbOptions.filter((x) => x.funcName === funcName)[0];
+        item.active = event.target.checked;
         setTbOptions([...tbOptions]);
     };
-    /**
-     * @param {number} pos
-     * @param {1 | -1} dir
-     * */
-    const tbMove = (pos, dir) => {
-        const newPos = pos + dir;
-        const newTbOptions = [...tbOptions];
-        const movedMethod = newTbOptions.splice(pos, 1)[0];
-        newTbOptions.splice(newPos, 0, movedMethod);
-        setTbOptions(newTbOptions);
-    };
+    // /**
+    //  * @param {number} pos
+    //  * @param {1 | -1} dir
+    //  * */
+    // const tbMove = (pos, dir) => {
+    //     const newPos = pos + dir;
+    //     const newTbOptions = [...tbOptions];
+    //     const movedMethod = newTbOptions.splice(pos, 1)[0];
+    //     newTbOptions.splice(newPos, 0, movedMethod);
+    //     setTbOptions(newTbOptions);
+    // };
     useEffect(function () {
         tourney.tieBreak = tbOptions;
     });
@@ -229,7 +233,7 @@ function Options({tourney}) {
         <section>
             <h3>Options</h3>
             <h3>Tie break priority</h3>
-            <ol>
+            {/* <ol>
             {tbOptions.map((method, i) =>
                 <li key={method.funcName}>
                     <input
@@ -246,7 +250,65 @@ function Options({tourney}) {
                     </button>
                 </li>
             )}
-            </ol>
+            </ol> */}
+            <List
+                values={tbOptions.map(
+                    (x) => <OptionItem item={x} action={tbToggle}/>
+                )}
+                onChange={({ oldIndex, newIndex }) =>
+                    setTbOptions((prevState) => (
+                        arrayMove(prevState, oldIndex, newIndex)
+                    ))
+                }
+                renderList={({ children, props, isDragged }) => (
+                    <ol
+                    {...props}
+                    style={{
+                        cursor: isDragged ? 'grabbing' : 'inherit'
+                    }}
+                    >
+                        {children}
+                    </ol>
+                )}
+                renderItem={({ value, props, isDragged, isSelected }) => (
+                    <li
+                    {...props}
+                    style={{
+                        ...props.style,
+                        cursor: isDragged ? 'grabbing' : 'inherit',
+                        backgroundColor: (
+                            (isDragged || isSelected)
+                            ? '#EEE'
+                            : '#FFF'
+                        )
+                    }}>
+                        <FaArrowsAltV
+                            style={{
+                                cursor: isDragged ? 'grabbing' : 'grab',
+                            }}
+                            tabIndex={-1}/>
+                        {value}
+                    </li>
+                )}
+            />
         </section>
+    );
+}
+
+/**
+ *
+ * @param {Object} props
+ * @param {ConfigItem} props.item
+ * @param {function} props.action
+ */
+function OptionItem({item, action}) {
+    return (
+        <Fragment>
+            <input
+                type="checkbox"
+                checked={item.active}
+                onChange={(event) => action(event, item.funcName)}/>
+            {item.name}
+        </Fragment>
     );
 }

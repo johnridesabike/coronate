@@ -10,7 +10,6 @@
             }
         ],
         "no-var": 1,
-        "multiline-ternary": 1,
         "semi": "warn",
         "arrow-parens": "warn",
         "space-infix-ops": "warn",

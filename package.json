@@ -17,6 +17,8 @@
     "numeral": "^2.0.6",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
+    "react-icons": "^3.6.1",
+    "react-movable": "^2.0.1",
     "react-scripts": "2.1.8",
     "react-tabs": "^3.0.0",
     "thenby": "^1.3.0"

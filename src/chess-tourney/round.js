@@ -90,9 +90,6 @@ function createRound(tourney, importObj = {}) {
         },
         autoPair() {
             round.matches = pairPlayers(round);
-            round.matches.forEach(function (match, index) {
-                match.id = index;
-            });
             return round.matches;
         },
         getUnmatchedPlayers() {
@@ -110,8 +107,7 @@ function createRound(tourney, importObj = {}) {
         setPair(white, black) {
             const match = createMatch({
                 roster: [white, black],
-                ref_round: round,
-                id: round.matches.length
+                ref_round: round
             });
             round.matches.push(match);
             return match;

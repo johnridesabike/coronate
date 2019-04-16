@@ -92,8 +92,9 @@ function RoundManage({round, newRound, setRoundList}) {
                 </tr>
                 </thead>
                 <tbody>
-                {matches.map((match) =>
-                    <RoundMatch key={match.id} match={match} rmMatch={rmMatch}
+                {matches.map((match, i) =>
+                    <RoundMatch key={match.id} pos={i} match={match}
+                        rmMatch={rmMatch}
                         setCanMakeNewRound={setCanMakeNewRound}/>
                 )}
                 </tbody>
@@ -129,9 +130,10 @@ function RoundManage({round, newRound, setRoundList}) {
  * @param {Object} props
  * @param {Match} props.match
  * @param {function} props.rmMatch
+ * @param {number} props.pos
  * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setCanMakeNewRound
  */
-function RoundMatch({match, rmMatch, setCanMakeNewRound}) {
+function RoundMatch({match, pos, rmMatch, setCanMakeNewRound}) {
     // Getting info for the toggleable box
     const round = match.ref_round;
     const tourney = match.ref_tourney;
@@ -176,7 +178,7 @@ function RoundMatch({match, rmMatch, setCanMakeNewRound}) {
                 (match.isBye())
                 ? "inactive"
                 : "")}>
-                <td className="table__number">{match.id + 1}</td>
+                <td className="table__number">{pos + 1}</td>
                 <td className="table__player">
                     {white.player.firstName} {white.player.lastName}
                 </td>
