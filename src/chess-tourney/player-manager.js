@@ -14,9 +14,11 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {function(playerProps): Player} addPlayer
  * @property {function(playerProps[]): void} loadPlayerData
  * @property {function(number): void} delPlayer
- * @property {(player: Player) => Player[]} getPlayerAvoidList
+ * @property {(player: Player) => number[]} getPlayerAvoidList
  * @property {function(Player): void} removePlayer
  * @property {function(number): void} removePlayerById
+ * @property {(player1: number, player2: number) => void} avoidListAdd
+ * @property {(player1: number, player2: number) => void} avoidListRemove
  */
 /**
  * @typedef {Object} playerManagerProps
@@ -136,9 +138,19 @@ function createPlayerManager(importObj = {}) {
                 []
             ).filter( // filter out the player's id
                 (id) => id !== player.id
-            ).map( // turn the ids into player objects
-                (id) => manager.getPlayerById(id)
             );
+        },
+        avoidListAdd(player1, player2) {
+            // This probably needs to be made smarter to avoid duplicates
+            const pair = [player1, player2];
+            pair.sort();
+            manager.avoidList = manager.avoidList.concat([pair]);
+        },
+        avoidListRemove(player1, player2) {
+            let newList = manager.avoidList.filter(
+                (pair) => !(pair.includes(player1) && pair.includes(player2))
+            );
+            manager.avoidList = newList;
         }
     };
     if (importObj.playerList) {

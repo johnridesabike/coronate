@@ -93,17 +93,6 @@ function createTournament(importObj = {}) {
             return matches;
         },
         getPlayersByOpponent(opponent, roundId = null) {
-            // /** @type {Player[]} */
-            // let players = [];
-            // tourney.getMatchesByPlayer(opponent, roundId).forEach(
-            //     function (match) {
-            //         players = players.concat(
-            //             match.roster.filter(
-            //                 (player) => player !== opponent
-            //             )
-            //         );
-            //     }
-            // );
             return tourney.getMatchesByPlayer(
                 opponent,
                 roundId

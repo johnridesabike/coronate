@@ -1,5 +1,5 @@
 // @ts-check
-import React, {useState, Fragment} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Player} Player
@@ -140,12 +140,28 @@ export function Players({playerManager}) {
  * @param {PlayerManager} props.playerManager
  */
 function PlayerInfoBox({player, playerManager}) {
-    const [avoidList] = useState(
+    const getPlayer = playerManager.getPlayerById;
+    const [avoidList, setAvoidList] = useState(
         playerManager.getPlayerAvoidList(player)
     );
-    const notAvoidList = playerManager.playerList.filter(
-        (p) => !avoidList.includes(p) && player !== p
+    const unAvoided = () => playerManager.playerList.filter(
+        (p) => !avoidList.includes(p.id) && player !== p
     );
+    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0].id);
+    /** @param {React.FormEvent<HTMLFormElement>} event */
+    const avoidAdd = function(event) {
+        event.preventDefault();
+        playerManager.avoidListAdd(player.id, selectedAvoider);
+        setAvoidList(playerManager.getPlayerAvoidList(player));
+    };
+    /** @param {number} avoidPlayer */
+    const avoidRemove = function(avoidPlayer) {
+        playerManager.avoidListRemove(player.id, avoidPlayer);
+        setAvoidList(playerManager.getPlayerAvoidList(player));
+    };
+    useEffect(function () {
+        setSelectedAvoider(unAvoided()[0].id);
+    }, [avoidList]);
     return (
         <Fragment>
             <dl>
@@ -156,9 +172,12 @@ function PlayerInfoBox({player, playerManager}) {
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>
-                    {avoidList.map((p) =>
-                        <li key={p.id}>
-                            {p.firstName} {p.lastName}
+                    {avoidList.map((pId) =>
+                        <li key={pId}>
+                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                            <button onClick={() => avoidRemove(pId)}>
+                                x
+                            </button>
                         </li>
                     )}
                     {(avoidList.length === 0) &&
@@ -167,16 +186,18 @@ function PlayerInfoBox({player, playerManager}) {
                     </ul>
                 </dd>
             </dl>
-            <p>
+            <form onSubmit={(event) => avoidAdd(event)}>
                 Add player to avoid
                 <select>
-                {notAvoidList.map((player) =>
-                    <option key={player.id}>
+                {unAvoided().map((player) =>
+                    <option key={player.id} value={player.id}
+                        onBlur={() => setSelectedAvoider(player.id)}>
                         {player.firstName} {player.lastName}
                     </option>
                 )}
                 </select>
-            </p>
+                <input type="submit" value="Add"/>
+            </form>
         </Fragment>
     );
 }

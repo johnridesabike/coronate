@@ -98,8 +98,7 @@ function calcRatings(match) {
  */
 function createMatch(importObj) {
     const tourney = importObj.ref_round.ref_tourney;
-    /** @param {number} id */
-    const getPlayer = (id) => tourney.players.getPlayerById(id);
+    const getPlayer = tourney.players.getPlayerById;
     const white = getPlayer(importObj.roster[0]);
     const black = getPlayer(importObj.roster[1]);
     /** @type {Match} */

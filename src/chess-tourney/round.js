@@ -34,8 +34,7 @@ import createMatch from "./match";
  * @returns {Round}
  */
 function createRound(tourney, importObj = {}) {
-    /** @param {number} id */
-    const getPlayer = (id) => tourney.players.getPlayerById(id);
+    const getPlayer = tourney.players.getPlayerById;
     /** @type {Round} */
     const round = {
         id: (
