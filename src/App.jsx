@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "./App.css";
 import {MainNav, NavItem} from "./jsx/utility.jsx";
 import {createPlayerManager} from "./chess-tourney";
-import {Players} from "./jsx/players.jsx";
+import {PlayerView} from "./jsx/players.jsx";
 import {TournamentList} from "./jsx/tournament.jsx";
 import {Options} from "./jsx/options.jsx";
 import demoRoster from "./demo-players.json";
@@ -24,7 +24,7 @@ function App() {
     /** @param {number} id */
     const setViewList = (id) => setCurrentView(id);
     const viewList = [
-        <Players playerManager={playerManager} />,
+        <PlayerView playerManager={playerManager} />,
         <TournamentList playerManager={playerManager}
             tourneyList={tourneylist} setTourneyList={setTourneyList}
             openTourney={openTourney} setOpenTourney={setOpenTourney} />,

@@ -6,6 +6,7 @@ import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx";
 import {RoundContainer} from "./round.jsx";
 import {range} from "lodash";
+import {BackButton} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
@@ -105,13 +106,16 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     }, [playerList]);
     const [roundList, setRoundList] = useState(tourney.roundList);
     /** @param {number} id */
-    const isRoundReady = function (id) {
-        // we also return if it's the next available round so the user can begin it
-        return roundList[id] || id === roundList.length;
+    function isRoundReady(id) {
+        return roundList[id];
     };
+    function newRound() {
+        tourney.newRound();
+        setRoundList([...tourney.roundList]);
+    }
     return (
         <Tabs>
-            <button onClick={() => setOpenTourney(null)}>&lt; back</button>
+            <BackButton action={() => setOpenTourney(null)} />
             <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Setup</Tab>
@@ -124,7 +128,7 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
             </TabList>
             <TabPanel>
                 <TourneySetup key={tourney.id} setPlayerList={setPlayerList}
-                    playerList={playerList}
+                    playerList={playerList} newRound={newRound}
                     tourney={tourney} playerManager={playerManager}/>
             </TabPanel>
             <TabPanel>
@@ -132,9 +136,9 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
             </TabPanel>
             {roundNums.map((roundNum) =>
                 <TabPanel key={roundNum}>
-                    <RoundContainer key={roundNum} tourney={tourney}
-                        round={roundList[roundNum]} roundList={roundList}
-                        setRoundList={setRoundList} />
+                    <RoundContainer key={roundNum}
+                        round={roundList[roundNum]}
+                        setRoundList={setRoundList} newRound={newRound} />
                 </TabPanel>
             )}
         </Tabs>

@@ -1,20 +1,37 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
+import {BackButton, OpenButton} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Player} Player
  */
+
 /**
  * @param {Object} props
  * @param {PlayerManager} props.playerManager
  */
-export function Players({playerManager}) {
+export function PlayerView({playerManager}) {
+    /** @type {[number, React.Dispatch<React.SetStateAction<number>>]} */
+    const [openPlayer, setOpenPlayer] = useState(null);
+    if (openPlayer !== null) {
+        return <PlayerInfoBox key={openPlayer}
+            playerId={openPlayer} setOpenPlayer={setOpenPlayer}
+            playerManager={playerManager} />;
+    } else {
+        return <PlayerList playerManager={playerManager}
+            setOpenPlayer={setOpenPlayer} />;
+    }
+}
+
+/**
+ * @param {Object} props
+ * @param {PlayerManager} props.playerManager
+ * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
+ */
+export function PlayerList({playerManager, setOpenPlayer}) {
     const [roster, setRoster] = useState(playerManager.playerList);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
-    /** @type {boolean[]} */
-    const defOpen = [];
-    const [openPlayers, setOpenPlayers] = useState(defOpen);
     /** @param {React.FormEvent<HTMLElement>} event */
     const handleSubmit = function (event) {
         event.preventDefault();
@@ -39,12 +56,6 @@ export function Players({playerManager}) {
         playerManager.delPlayer(id);
         setRoster([...playerManager.playerList]);
     };
-    /** @param {number} id */
-    const toggleOpenPlayer = function(id) {
-        const newOpenPlayers = [...openPlayers];
-        newOpenPlayers[id] = !openPlayers[id];
-        setOpenPlayers(newOpenPlayers);
-    };
     let rosterTable = <Fragment></Fragment>;
     if (roster.length > 0) {
         rosterTable =
@@ -60,36 +71,23 @@ export function Players({playerManager}) {
                 </tr>
             </thead>
             <tbody>
-                {roster.map((player) =>
-                <Fragment key={player.id}>
-                    <tr>
-                        <td className="table__player">{player.firstName}</td>
-                        <td className="table__player">{player.lastName}</td>
-                        <td className="table__number">{player.rating}</td>
-                        <td>
-                            <button
-                                onClick={(event) =>
-                                    delPlayer(event, player.id)
-                                }>
-                                x
-                            </button>
-                        </td>
-                        <td>
-                            <button
-                                onClick={() => toggleOpenPlayer(player.id)}>
-                                ?
-                            </button>
-                        </td>
-                    </tr>
-                    {openPlayers[player.id] &&
-                    <tr>
-                        <td colSpan={5}>
-                            <PlayerInfoBox player={player}
-                                playerManager={playerManager} />
-                        </td>
-                    </tr>
-                    }
-                </Fragment>
+            {roster.map((player) =>
+                <tr key={player.id}>
+                    <td className="table__player">{player.firstName}</td>
+                    <td className="table__player">{player.lastName}</td>
+                    <td className="table__number">{player.rating}</td>
+                    <td>
+                        <button
+                            onClick={(event) =>
+                                delPlayer(event, player.id)
+                            }>
+                            x
+                        </button>
+                    </td>
+                    <td>
+                        <OpenButton action={() => setOpenPlayer(player.id)} />
+                    </td>
+                </tr>
                 )}
             </tbody>
         </table>;
@@ -136,39 +134,44 @@ export function Players({playerManager}) {
 /**
  *
  * @param {Object} props
- * @param {Player} props.player
+ * @param {number} props.playerId
  * @param {PlayerManager} props.playerManager
+ * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
  */
-function PlayerInfoBox({player, playerManager}) {
+function PlayerInfoBox({playerId, playerManager, setOpenPlayer}) {
     const getPlayer = playerManager.getPlayerById;
     const [avoidList, setAvoidList] = useState(
-        playerManager.getPlayerAvoidList(player)
+        playerManager.getPlayerAvoidList(playerId)
     );
     const unAvoided = () => playerManager.playerList.filter(
-        (p) => !avoidList.includes(p.id) && player !== p
+        (p) => !avoidList.includes(p.id) && playerId !== p.id
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0].id);
     /** @param {React.FormEvent<HTMLFormElement>} event */
-    const avoidAdd = function(event) {
+    function avoidAdd(event) {
         event.preventDefault();
-        playerManager.avoidListAdd(player.id, selectedAvoider);
-        setAvoidList(playerManager.getPlayerAvoidList(player));
+        playerManager.avoidListAdd(playerId, selectedAvoider);
+        setAvoidList(playerManager.getPlayerAvoidList(playerId));
     };
     /** @param {number} avoidPlayer */
-    const avoidRemove = function(avoidPlayer) {
-        playerManager.avoidListRemove(player.id, avoidPlayer);
-        setAvoidList(playerManager.getPlayerAvoidList(player));
+    function avoidRemove(avoidPlayer) {
+        playerManager.avoidListRemove(playerId, avoidPlayer);
+        setAvoidList(playerManager.getPlayerAvoidList(playerId));
     };
     useEffect(function () {
         setSelectedAvoider(unAvoided()[0].id);
     }, [avoidList]);
     return (
-        <Fragment>
+        <div>
+            <BackButton action={() => setOpenPlayer(null)}/>
+            <h2>
+                {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
+            </h2>
             <dl>
                 <dt>Matches played</dt>
-                <dd>{player.matchCount}</dd>
+                <dd>{getPlayer(playerId).matchCount}</dd>
                 <dt>K factor</dt>
-                <dd>{player.getKFactor()}</dd>
+                <dd>{getPlayer(playerId).getKFactor()}</dd>
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>
@@ -198,6 +201,6 @@ function PlayerInfoBox({player, playerManager}) {
                 </select>
                 <input type="submit" value="Add"/>
             </form>
-        </Fragment>
+        </div>
     );
 }

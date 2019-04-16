@@ -10,10 +10,12 @@ import React, {useState, useEffect, Fragment} from "react";
  * @param {PlayerManager} props.playerManager
  * @param {Tournament} props.tourney
  * @param {number[]} props.playerList
+ * @param {function} props.newRound
  * @param {React.Dispatch<React.SetStateAction<number[]>>} props.setPlayerList
  */
 export function TourneySetup({
     tourney,
+    newRound,
     playerManager,
     playerList,
     setPlayerList
@@ -31,6 +33,7 @@ export function TourneySetup({
         return <TourneyManager
             key={tourney.id}
             tourney={tourney}
+            newRound={newRound}
             setIsSelecting={setIsSelecting} />;
     }
 }
@@ -91,9 +94,10 @@ function PlayerSelect({playerManager, tourney, setIsSelecting, setPlayerList}) {
  *
  * @param {Object} props
  * @param {Tournament} props.tourney
+ * @param {function} props.newRound
  * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsSelecting
  */
-export function TourneyManager({tourney, setIsSelecting}) {
+export function TourneyManager({tourney, setIsSelecting, newRound}) {
     const getPlayer = tourney.players.getPlayerById;
     const [byeQueue, setByeQueue] = useState(tourney.byeQueue);
     /** @param {number} id */
@@ -182,7 +186,8 @@ export function TourneyManager({tourney, setIsSelecting}) {
             <button onClick={() => setIsSelecting(true)}>
                 Select players
             </button>
-            <button>
+            <button onClick={() => newRound()}
+                disabled={!tourney.isNewRoundReady()}>
                 New round
             </button>
             <Options key={tourney.id} tourney={tourney} />

@@ -14,7 +14,7 @@ import {createPlayer, dummyPlayer} from "./player";
  * @property {function(playerProps): Player} addPlayer
  * @property {function(playerProps[]): void} loadPlayerData
  * @property {function(number): void} delPlayer
- * @property {(player: Player) => number[]} getPlayerAvoidList
+ * @property {(player: number) => number[]} getPlayerAvoidList
  * @property {function(Player): void} removePlayer
  * @property {function(number): void} removePlayerById
  * @property {(player1: number, player2: number) => void} avoidListAdd
@@ -130,14 +130,14 @@ function createPlayerManager(importObj = {}) {
             let player = manager.playerList.splice(index, 1);
             return player;
         },
-        getPlayerAvoidList(player) {
+        getPlayerAvoidList(playerId) {
             return manager.avoidList.filter( // get pairings with the player
-                (pair) => pair.includes(player.id)
+                (pair) => pair.includes(playerId)
             ).reduce( // Flatten the array
                 (accumulator, pair) => pair.concat(accumulator),
                 []
             ).filter( // filter out the player's id
-                (id) => id !== player.id
+                (id) => id !== playerId
             );
         },
         avoidListAdd(player1, player2) {

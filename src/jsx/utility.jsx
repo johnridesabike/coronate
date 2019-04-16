@@ -31,3 +31,35 @@ export function NavItem({name, action, isOpen}) {
         </span>
     );
 }
+/**
+ * @param {Object} props
+ * @param {JSX.Element | string} [props.children]
+ * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
+ */
+export function Button({children, action}
+) {
+    return (
+        <nav>
+            <button onClick={action}>
+                {children}
+            </button>
+        </nav>
+    );
+}
+
+/**
+ * @param {Object} props
+ * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
+ */
+export function BackButton({action}) {
+    return <Button action={action}>&lt; Back</Button>;
+}
+
+/**
+ * @param {Object} props
+ * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
+ */
+export function OpenButton({action}) {
+    return <Button action={action}>Open &gt;</Button>;
+}
+

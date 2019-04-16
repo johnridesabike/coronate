@@ -131,8 +131,8 @@ function pairPlayers(round) {
             let scoreDiff;
             const metBefore = player1.opponentHistory.includes(player2.id);
             const mustAvoid = tourney.players.getPlayerAvoidList(
-                player1.player
-            ).includes(player2.player);
+                player1.id
+            ).includes(player2.id);
             if (!metBefore && !mustAvoid) {
                 priority += avoidMeetingTwicePriority;
             }
