@@ -24,6 +24,7 @@ import createMatch from "./match";
  * @property {function(): Match[]} autoPair
  * @property {function(): number[]} getUnmatchedPlayers
  * @property {(white: number, black: number) => Match} setPair
+ * @property {(id: string) => Match} getMatch
  */
 
 /**
@@ -111,6 +112,9 @@ function createRound(tourney, importObj = {}) {
             });
             round.matches.push(match);
             return match;
+        },
+        getMatch(id) {
+            return round.matches.filter((m) => m.id === id)[0];
         }
     };
     // round.roster = round.roster.map(function (player) {

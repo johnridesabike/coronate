@@ -57,6 +57,19 @@ function RoundManage({round, newRound, setRoundList}) {
     const [matches, setMatches] = useState(round.matches);
     const [unMatched, setUnmatched] = useState(round.getUnmatchedPlayers());
     const [canMakeNewRound, setCanMakeNewRound] = useState(round.isComplete());
+    // The UI directly gets data from the `match` object, so this is mostly just
+    // to keep the state updated.
+    const fetchResults = () => round.matches.map((m) => m.result);
+    // eslint-disable-next-line no-unused-vars
+    const [matchResults, setMatchResults] = useState(fetchResults);
+    /**
+     * @param {Match} match
+     * @param {number[]} result
+     */
+    function updateResult(match, result) {
+        match.setResult(result);
+        setMatchResults(fetchResults());
+    }
     /** @type {[number[], React.Dispatch<React.SetStateAction<number[]>>]} */
     const [toPair, setToPair] = useState([]);
     function delRound() {
@@ -66,30 +79,44 @@ function RoundManage({round, newRound, setRoundList}) {
     function autoPair() {
         round.autoPair();
         setMatches(round.matches);
-        setUnmatched(round.getUnmatchedPlayers());
     }
     function pairChecked() {
         round.setPair(toPair[0], toPair[1]);
         setMatches(round.matches);
-        setUnmatched(round.getUnmatchedPlayers());
         setToPair([]);
     }
     /** @param {number} id */
     function rmMatch(id) {
         round.removeMatch(id);
         setMatches(round.matches);
-        setUnmatched(round.getUnmatchedPlayers());
     }
     useEffect(function () {
         round.matches = matches;
+        setUnmatched(round.getUnmatchedPlayers());
+        setMatchResults(fetchResults());
     }, [matches]);
+    useEffect(function () {
+        setCanMakeNewRound(round.isComplete());
+    });
+    /** @type {[Match, React.Dispatch<React.SetStateAction<Match>>]} */
+    const [openMatch, setOpenMatch] = useState(null);
+    /** @param {Match} match */
+    function toggleOpenMatch(match) {
+        if (openMatch === match) {
+            setOpenMatch(null);
+        } else {
+            setOpenMatch(match);
+        }
+    }
     // react-movable stuff
     const optionItems = matches.map((match, i) => (
         {
             match: match,
             pos: i,
             rmMatch: rmMatch,
-            setCanMakeNewRound: setCanMakeNewRound
+            white: match.getWhiteInfo(),
+            black: match.getBlackInfo(),
+            result: match.result
         }
     ));
     // @ts-ignore
@@ -102,26 +129,73 @@ function RoundManage({round, newRound, setRoundList}) {
             <caption>Round {round.id + 1} results</caption>
             <thead>
             <tr>
-                <th>#</th>
-                <th colSpan={2}>White</th>
-                <th>Draw</th>
-                <th colSpan={2}>Black</th>
-                <th colSpan={2}></th>
+                <th className="row__id">#</th>
+                <th className="row__player">White</th>
+                <th className="row__result">Result</th>
+                <th className="row__player">Black</th>
+                <th className="row__controls"></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody {...props}>
             {children}
             </tbody>
         </table>
     );
     // @ts-ignore
-    const renderItem = ({value, props, isDragged, isSelected}) => (
-        <tr {...props}>
-            <RoundMatch pos={value.pos} match={value.match}
-                rmMatch={value.rmMatch} isDragged={isDragged}
-                setCanMakeNewRound={value.setCanMakeNewRound}/>
-        </tr>
-    );
+    function renderItem ({value, props, isDragged, isSelected}) {
+        const row = (
+            <tr {...props} className={value.match.isBye() ? "inactive" : ""}>
+                <td className="table__number row__id">
+                    {isDragged ? "" : value.pos + 1}
+                </td>
+                <td className="table__player row__player">
+                    {value.white.player.firstName} {value.white.player.lastName}
+                </td>
+                <td className="data__input row__result">
+                    <input
+                    type="radio"
+                    checked={value.result[0] === 1}
+                    disabled={value.match.isBye()}
+                    onChange={() => updateResult(value.match, [1,0])}
+                    />
+                    <input
+                        type="radio"
+                        checked={value.result[0] === 0.5}
+                        disabled={value.match.isBye()}
+                        onChange={() => updateResult(value.match, [0.5, 0.5])}
+                        />
+                    <input
+                        type="radio"
+                        checked={value.result[1] === 1}
+                        disabled={value.match.isBye()}
+                        onChange={() => updateResult(value.match, [0, 1])}
+                        />
+                </td>
+                <td className="table__player row__player">
+                    {value.black.player.firstName} {value.black.player.lastName}
+                </td>
+                <td className="data__input row__controls">
+                    <button onClick={() => toggleOpenMatch(value.match)}>
+                        ?
+                    </button>
+                    <button data-movable-handle>
+                        <DragIcon isDragged={isDragged} />
+                    </button>
+                </td>
+            </tr>
+        );
+        return (
+            (isDragged)
+             ? (
+                <table className="table__roster">
+                    <tbody>
+                        {row}
+                    </tbody>
+                </table>
+                )
+            : row
+        );
+    };
     return (
         <Fragment>
             <List
@@ -130,6 +204,7 @@ function RoundManage({round, newRound, setRoundList}) {
                 renderList={renderList}
                 renderItem={renderItem}
             />
+            {openMatch && <MatchInfo match={openMatch} />}
             <h2>Players to pair:</h2>
             <ul>
             {unMatched.map((pId) =>
@@ -160,15 +235,10 @@ function RoundManage({round, newRound, setRoundList}) {
  *
  * @param {Object} props
  * @param {Match} props.match
- * @param {function} props.rmMatch
- * @param {number} props.pos
- * @param {boolean} props.isDragged
- * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setCanMakeNewRound
  */
-function RoundMatch({match, pos, isDragged, rmMatch, setCanMakeNewRound}) {
-    // Getting info for the toggleable box
-    const round = match.ref_round;
+function MatchInfo({match}) {
     const tourney = match.ref_tourney;
+    const round = match.ref_round;
     const white = match.getWhiteInfo();
     const black = match.getBlackInfo();
     [white, black].forEach(function (info) {
@@ -190,112 +260,30 @@ function RoundMatch({match, pos, isDragged, rmMatch, setCanMakeNewRound}) {
             round.id
         ).map((id) => tourney.players.getPlayerById(id));
     });
-    const [result, setResult] = useState(match.result);
-    const [infoBox, setInfoBox] = useState(false);
-    const [ratingDiff, setRatingDiff] = useState([
-        white.newRating - white.origRating,
-        black.newRating - black.origRating
-    ]);
-    useEffect(function () {
-        match.setResult(result);
-        setRatingDiff([
-            match.getWhiteInfo().newRating - match.getWhiteInfo().origRating,
-            match.getBlackInfo().newRating - match.getBlackInfo().origRating
-        ]);
-        setCanMakeNewRound(round.isComplete());
-    }, [result]);
     return (
-        <Fragment>
-            {/* <tr className={(
-                (match.isBye())
-                ? "inactive"
-                : "")}> */}
-                <td className="table__number">{pos + 1}</td>
-                <td className="table__player">
-                    {white.player.firstName} {white.player.lastName}
-                </td>
-                <td className="table__input">
-                    <input
-                    type="radio"
-                    checked={result[0] === 1}
-                    disabled={match.isBye()}
-                    onChange={() => setResult([1,0])} />
-                </td>
-                <td className="table__input">
-                    <input
-                        type="radio"
-                        checked={result[0] === 0.5}
-                        disabled={match.isBye()}
-                        onChange={() => setResult([0.5, 0.5])} />
-                </td>
-                <td className="table__input">
-                    <input
-                        type="radio"
-                        checked={result[1] === 1}
-                        disabled={match.isBye()}
-                        onChange={() => setResult([0, 1])} />
-                </td>
-                <td className="table__player">
-                    {black.player.firstName} {black.player.lastName}
-                </td>
-                <td>
-                    <button onClick={() => setInfoBox(!infoBox)}>
-                        ?
-                    </button>
-                    {match.warnings}
-                </td>
-                <td>
-                    <button onClick={() => rmMatch(match.id)}>
-                        x
-                    </button>
-                </td>
-                <td>
-                    <button>
-                        <DragIcon isDragged={isDragged} />
-                    </button>
-                </td>
-            {/* </tr> */}
-            {infoBox &&
-                <Fragment>
-                <tr>
-                    <td></td>
-                    <td colSpan={2}>
-                        <PlayerRoundInfo player={white}
-                            ratingDiff={ratingDiff[0]}/>
-                    </td>
-                    <td></td>
-                    <td colSpan={2}>
-                        <PlayerRoundInfo player={black}
-                            ratingDiff={ratingDiff[1]}/>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colSpan={7} style={{textAlign: "center"}}>
-                        Match ideal: {numeral(match.ideal).format("0%")}
-                    </td>
-                </tr>
-            </Fragment>
-            }
-        </Fragment>
+        <div>
+            <h2>Match info</h2>
+            <PlayerRoundInfo player={white} />
+            <PlayerRoundInfo player={black} />
+        </div>
     );
 }
-
 /**
  *
  * @param {Object} props
  * @param {PlayerInfo} props.player
- * @param {number} props.ratingDiff
  */
-function PlayerRoundInfo({player, ratingDiff}) {
+function PlayerRoundInfo({player}) {
     return (
         <dl className="player-card">
+            <h3>{player.player.firstName} {player.player.lastName}</h3>
             <dt>Score</dt>
             <dd>{player.score}</dd>
             <dt>Rating</dt>
             <dd>
                 {player.origRating}
-                &nbsp;({numeral(ratingDiff).format("+0")})
+                &nbsp;
+                ({numeral(player.newRating - player.origRating).format("+0")})
             </dd>
             <dt>Color balance</dt>
             <dd>{player.colorBalance}</dd>

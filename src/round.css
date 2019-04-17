@@ -1,7 +1,37 @@
+.table__roster {
+    table-layout: fixed;
+    width: 100%;
+}
+
 th {
     text-align: center;
 }
 
-.table__input {
+td {
+  vertical-align: top;
+}
+
+.table__roster tbody,
+.table__roster tr {
+    width: 100%;
+}
+
+.data__input {
     text-align:center;
+}
+
+.row__id {
+    width: 10%;
+}
+
+.row__player {
+    width: 25%; /* x2 */
+}
+
+.row__controls {
+    width: 20%;
+}
+
+.row__result {
+    width: 20%;
 }

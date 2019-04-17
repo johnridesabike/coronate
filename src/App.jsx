@@ -33,25 +33,37 @@ function App() {
     //         setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
     // ];
     return (
-        <Tabs defaultIndex={1}>
-            <TabList>
-                <Tab>Players</Tab>
-                <Tab>Tournaments</Tab>
-                <Tab>Options</Tab>
-            </TabList>
-            <TabPanel>
-                <PlayerView playerManager={playerManager} />
-            </TabPanel>
-            <TabPanel>
-                <TournamentList playerManager={playerManager}
-                    tourneyList={tourneylist} setTourneyList={setTourneyList}
-                    openTourney={openTourney} setOpenTourney={setOpenTourney} />
-            </TabPanel>
-            <TabPanel>
-                <Options playerManager={playerManager} tourneyList={tourneylist}
-                    setTourneyList={setTourneyList}
-                    setOpenTourney={setOpenTourney} />
-            </TabPanel>
+        <Tabs defaultIndex={1} className="app">
+            <header  className="header">
+                <TabList>
+                    <Tab>Players</Tab>
+                    <Tab>Tournaments</Tab>
+                    <Tab>Options</Tab>
+                </TabList>
+            </header>
+            <div className="body">
+                <TabPanel>
+                    <PlayerView playerManager={playerManager} />
+                </TabPanel>
+                <TabPanel>
+                    <TournamentList
+                        playerManager={playerManager}
+                        tourneyList={tourneylist}
+                        setTourneyList={setTourneyList}
+                        openTourney={openTourney}
+                        setOpenTourney={setOpenTourney} />
+                </TabPanel>
+                <TabPanel>
+                    <Options
+                        playerManager={playerManager}
+                        tourneyList={tourneylist}
+                        setTourneyList={setTourneyList}
+                        setOpenTourney={setOpenTourney} />
+                </TabPanel>
+            </div>
+            <footer className="caution footer">
+                <Caution />
+            </footer>
         </Tabs>
     );
 }

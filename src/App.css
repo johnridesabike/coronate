@@ -1,41 +1,53 @@
-.App {
-  text-align: center;
+.app {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: 2.5em auto 3em;
+    grid-template-columns: auto;
+    grid-template-areas: 
+      "header"
+      "body"
+      "footer";
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.header {
+    grid-area: header;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.body {
+    grid-area: body;
+    padding: 0 1em 0 1em;
+    overflow: auto;
 }
 
-.App-link {
-  color: #61dafb;
+.caution {
+    grid-area: footer;
+    width: 100%;
+    background-repeat: repeat;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    font-weight: 700;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  
+.caution p {
+    margin: 0;
+    padding: 2px;
+    background-color: black;
+    color: white;
 }
-
-#root {
-  padding: 0 1em 0 1em;
-  overflow:auto;
-  grid-area: root;
+  
+.caution a,
+.caution a:visited {
+    color: skyblue;
+}
+  
+.caution a:active,
+.caution a:focus,
+.caution a:hover {
+    color: blue;
 }
 
 h1 {
@@ -44,18 +56,6 @@ h1 {
   text-align: center;
 }
 
-table {
-  margin: 2em auto 0 auto;
-}
-
-td,
-th {
-  padding: 0.25em 1em;
-}
-
-th {
-  text-align: left;
-}
 
 caption {
   font-size: 1.125em;
@@ -68,48 +68,12 @@ caption {
   text-align: right;
 }
 
+td {
+    padding: 0 0.5em;
+}
+
 .center {
   text-align: center;
-}
-
-.tabbar {
-  background-color: #fff;
-  width: 100%;
-}
-
-.tabbar ul {
-  list-style: none;
-}
-
-.tabbar li {
-  display: inline-block;
-}
-
-.tab {
-  background-color: transparent;
-  color: green;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-}
-
-.tab:hover {
-  color: lightgreen;
-}
-
-.tab:disabled {
-  color: #aaa;
-  cursor: default;
-}
-
-.new_round {
-  color: white;
-  background-color: green;
-  border-radius: 0.5em;
-}
-
-.new_round:hover {
-  color: lightgray;
 }
 
 .inactive .table__player,
@@ -122,23 +86,6 @@ li.inactive {
   font-style: italic;
 }
 
-.table__roster td {
-  vertical-align: top;
-}
-
 textarea.json {
     font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
-}
-
-.main-nav {
-    font-size: 20px;
-}
-
-[role="menuitem"] {
-    cursor: pointer;
-    margin: 0 0.5em;
-}
-
-.is-open {
-    border-bottom: 1px black solid;
 }
