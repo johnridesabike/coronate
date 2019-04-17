@@ -1,7 +1,7 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
 import {List, arrayMove} from "react-movable";
-import {FaArrowsAltV} from "react-icons/fa";
+import {DragIcon} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
@@ -215,81 +215,60 @@ function Options({tourney}) {
         item.active = event.target.checked;
         setTbOptions([...tbOptions]);
     };
-    // /**
-    //  * @param {number} pos
-    //  * @param {1 | -1} dir
-    //  * */
-    // const tbMove = (pos, dir) => {
-    //     const newPos = pos + dir;
-    //     const newTbOptions = [...tbOptions];
-    //     const movedMethod = newTbOptions.splice(pos, 1)[0];
-    //     newTbOptions.splice(newPos, 0, movedMethod);
-    //     setTbOptions(newTbOptions);
-    // };
     useEffect(function () {
         tourney.tieBreak = tbOptions;
     });
+    // react-movable stuff
+    const optionItems = tbOptions.map(
+        (x) => <OptionItem item={x} action={tbToggle}/>
+    );
+    // @ts-ignore
+    function moveOption({oldIndex, newIndex}) {
+        setTbOptions((prevState) => arrayMove(prevState, oldIndex, newIndex));
+    };
+    // @ts-ignore
+    const renderList = ({children, props, isDragged}) => (
+        <ol
+        {...props}
+        style={{
+            cursor: isDragged ? 'grabbing' : 'inherit',
+            display: "inline-block"
+        }}
+        >
+            {children}
+        </ol>
+    );
+    // @ts-ignore
+    const renderItem = ({value, props, isDragged, isSelected}) => (
+        <li {...props}
+            style={{
+                ...props.style,
+                cursor: isDragged ? 'grabbing' : 'inherit',
+                backgroundColor: (
+                    (isDragged || isSelected)
+                    ? '#EEE'
+                    : '#FFF'
+                ),
+                padding: "0.25em 0"
+            }
+        }>
+            <div style={{display:"Flex", justifyContent:"space-between"}}>
+                <span>
+                    {value}
+                </span>
+                <DragIcon isDragged={isDragged} />
+            </div>
+        </li>
+    );
     return (
         <section>
             <h3>Options</h3>
             <h3>Tie break priority</h3>
-            {/* <ol>
-            {tbOptions.map((method, i) =>
-                <li key={method.funcName}>
-                    <input
-                        type="checkbox"
-                        checked={method.active}
-                        onChange={(event) => tbToggle(event, i)}/>
-                    {method.name}
-                    <button onClick={() => tbMove(i, -1)} disabled={i === 0}>
-                        <span role="img" aria-label="Move up">↑</span>
-                    </button>
-                    <button onClick={() => tbMove(i, 1)}
-                        disabled={i === tbOptions.length - 1} >
-                        <span role="img" aria-label="Move down">↓</span>
-                    </button>
-                </li>
-            )}
-            </ol> */}
             <List
-                values={tbOptions.map(
-                    (x) => <OptionItem item={x} action={tbToggle}/>
-                )}
-                onChange={({ oldIndex, newIndex }) =>
-                    setTbOptions((prevState) => (
-                        arrayMove(prevState, oldIndex, newIndex)
-                    ))
-                }
-                renderList={({ children, props, isDragged }) => (
-                    <ol
-                    {...props}
-                    style={{
-                        cursor: isDragged ? 'grabbing' : 'inherit'
-                    }}
-                    >
-                        {children}
-                    </ol>
-                )}
-                renderItem={({ value, props, isDragged, isSelected }) => (
-                    <li
-                    {...props}
-                    style={{
-                        ...props.style,
-                        cursor: isDragged ? 'grabbing' : 'inherit',
-                        backgroundColor: (
-                            (isDragged || isSelected)
-                            ? '#EEE'
-                            : '#FFF'
-                        )
-                    }}>
-                        <FaArrowsAltV
-                            style={{
-                                cursor: isDragged ? 'grabbing' : 'grab',
-                            }}
-                            tabIndex={-1}/>
-                        {value}
-                    </li>
-                )}
+                values={optionItems}
+                onChange={moveOption}
+                renderList={renderList}
+                renderItem={renderItem}
             />
         </section>
     );

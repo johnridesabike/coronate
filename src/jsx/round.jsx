@@ -3,6 +3,8 @@ import React, {useState, useEffect, Fragment} from "react";
 import {scores} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
+import {DragIcon} from "./utility";
+import {List, arrayMove} from "react-movable";
 /**
  * @typedef {import("../chess-tourney").Tournament} Tournament
  * @typedef {import("../chess-tourney").Round} Round
@@ -78,27 +80,56 @@ function RoundManage({round, newRound, setRoundList}) {
         setMatches(round.matches);
         setUnmatched(round.getUnmatchedPlayers());
     }
+    useEffect(function () {
+        round.matches = matches;
+    }, [matches]);
+    // react-movable stuff
+    const optionItems = matches.map((match, i) => (
+        {
+            match: match,
+            pos: i,
+            rmMatch: rmMatch,
+            setCanMakeNewRound: setCanMakeNewRound
+        }
+    ));
+    // @ts-ignore
+    function moveOption({oldIndex, newIndex}) {
+        setMatches((prevState) => arrayMove(prevState, oldIndex, newIndex));
+    };
+    // @ts-ignore
+    const renderList = ({children, props, isDragged}) => (
+        <table className="table__roster">
+            <caption>Round {round.id + 1} results</caption>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th colSpan={2}>White</th>
+                <th>Draw</th>
+                <th colSpan={2}>Black</th>
+                <th colSpan={2}></th>
+            </tr>
+            </thead>
+            <tbody>
+            {children}
+            </tbody>
+        </table>
+    );
+    // @ts-ignore
+    const renderItem = ({value, props, isDragged, isSelected}) => (
+        <tr {...props}>
+            <RoundMatch pos={value.pos} match={value.match}
+                rmMatch={value.rmMatch} isDragged={isDragged}
+                setCanMakeNewRound={value.setCanMakeNewRound}/>
+        </tr>
+    );
     return (
         <Fragment>
-            <table className="table__roster">
-                <caption>Round {round.id + 1} results</caption>
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th colSpan={2}>White</th>
-                    <th>Draw</th>
-                    <th colSpan={2}>Black</th>
-                    <th colSpan={2}></th>
-                </tr>
-                </thead>
-                <tbody>
-                {matches.map((match, i) =>
-                    <RoundMatch key={match.id} pos={i} match={match}
-                        rmMatch={rmMatch}
-                        setCanMakeNewRound={setCanMakeNewRound}/>
-                )}
-                </tbody>
-            </table>
+            <List
+                values={optionItems}
+                onChange={moveOption}
+                renderList={renderList}
+                renderItem={renderItem}
+            />
             <h2>Players to pair:</h2>
             <ul>
             {unMatched.map((pId) =>
@@ -131,9 +162,10 @@ function RoundManage({round, newRound, setRoundList}) {
  * @param {Match} props.match
  * @param {function} props.rmMatch
  * @param {number} props.pos
+ * @param {boolean} props.isDragged
  * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setCanMakeNewRound
  */
-function RoundMatch({match, pos, rmMatch, setCanMakeNewRound}) {
+function RoundMatch({match, pos, isDragged, rmMatch, setCanMakeNewRound}) {
     // Getting info for the toggleable box
     const round = match.ref_round;
     const tourney = match.ref_tourney;
@@ -174,10 +206,10 @@ function RoundMatch({match, pos, rmMatch, setCanMakeNewRound}) {
     }, [result]);
     return (
         <Fragment>
-            <tr className={(
+            {/* <tr className={(
                 (match.isBye())
                 ? "inactive"
-                : "")}>
+                : "")}> */}
                 <td className="table__number">{pos + 1}</td>
                 <td className="table__player">
                     {white.player.firstName} {white.player.lastName}
@@ -217,7 +249,12 @@ function RoundMatch({match, pos, rmMatch, setCanMakeNewRound}) {
                         x
                     </button>
                 </td>
-            </tr>
+                <td>
+                    <button>
+                        <DragIcon isDragged={isDragged} />
+                    </button>
+                </td>
+            {/* </tr> */}
             {infoBox &&
                 <Fragment>
                 <tr>
