@@ -1,7 +1,6 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
-import {List, arrayMove} from "react-movable";
-import {DragIcon} from "./utility";
+import {moveArrItem} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
@@ -209,67 +208,41 @@ function Options({tourney}) {
      * @param {React.ChangeEvent<HTMLInputElement>} event
      * @param {string} funcName
      * */
-    const tbToggle = (event, funcName) => {
-        // event.preventDefault();
+    function tbToggle (event, funcName) {
         const item = tbOptions.filter((x) => x.funcName === funcName)[0];
         item.active = event.target.checked;
         setTbOptions([...tbOptions]);
-    };
+    }
+    /**
+     * @param {number} pos
+     * @param {1 | -1} dir
+     * */
+    function tbMove(pos, dir) {
+        setTbOptions(moveArrItem(tbOptions, pos, dir));
+    }
     useEffect(function () {
         tourney.tieBreak = tbOptions;
     });
-    // react-movable stuff
-    const optionItems = tbOptions.map(
-        (x) => <OptionItem item={x} action={tbToggle}/>
-    );
-    // @ts-ignore
-    function moveOption({oldIndex, newIndex}) {
-        setTbOptions((prevState) => arrayMove(prevState, oldIndex, newIndex));
-    };
-    // @ts-ignore
-    const renderList = ({children, props, isDragged}) => (
-        <ol
-        {...props}
-        style={{
-            cursor: isDragged ? 'grabbing' : 'inherit',
-            display: "inline-block"
-        }}
-        >
-            {children}
-        </ol>
-    );
-    // @ts-ignore
-    const renderItem = ({value, props, isDragged, isSelected}) => (
-        <li {...props}
-            style={{
-                ...props.style,
-                cursor: isDragged ? 'grabbing' : 'inherit',
-                backgroundColor: (
-                    (isDragged || isSelected)
-                    ? '#EEE'
-                    : '#FFF'
-                ),
-                padding: "0.25em 0"
-            }
-        }>
-            <div style={{display:"Flex", justifyContent:"space-between"}}>
-                <span>
-                    {value}
-                </span>
-                <DragIcon isDragged={isDragged} />
-            </div>
-        </li>
-    );
     return (
         <section>
             <h3>Options</h3>
             <h3>Tie break priority</h3>
-            <List
-                values={optionItems}
-                onChange={moveOption}
-                renderList={renderList}
-                renderItem={renderItem}
-            />
+            <ol style={{display: "inline-block"}}>
+            {tbOptions.map((tb, i) =>
+                <OptionItem key={tb.funcName} item={tb} toggleAction={tbToggle}>
+                    <button
+                        disabled={i === 0}
+                        onClick={() => tbMove(i, -1)}>
+                        move up
+                    </button>
+                    <button
+                        disabled={i === tbOptions.length - 1}
+                        onClick={() => tbMove(i, 1)}>
+                        move down
+                    </button>
+                </OptionItem>
+            )}
+            </ol>
         </section>
     );
 }
@@ -278,16 +251,25 @@ function Options({tourney}) {
  *
  * @param {Object} props
  * @param {ConfigItem} props.item
- * @param {function} props.action
+ * @param {function} props.toggleAction
+ * @param {React.ReactNode} [props.children]
  */
-function OptionItem({item, action}) {
+function OptionItem({item, toggleAction, children}) {
     return (
-        <Fragment>
-            <input
-                type="checkbox"
-                checked={item.active}
-                onChange={(event) => action(event, item.funcName)}/>
-            {item.name}
-        </Fragment>
+        <li>
+        <div style={{display:"Flex", justifyContent:"space-between"}}>
+            <span>
+                <input
+                    type="checkbox"
+                    checked={item.active}
+                    onChange={(event) =>
+                        toggleAction(event, item.funcName)}/>
+                {item.name}
+            </span>
+            <span>
+                {children}
+            </span>
+        </div>
+        </li>
     );
 }

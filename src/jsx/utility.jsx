@@ -76,3 +76,15 @@ export function DragIcon({isDragged}) {
 
 }
 
+/**
+ * @param {*[]} arr
+ * @param {number} pos
+ * @param {number} dir
+ */
+export function moveArrItem(arr, pos, dir) {
+    const newPos = pos + dir;
+    const newArr = [...arr];
+    const movedMethod = newArr.splice(pos, 1)[0];
+    newArr.splice(newPos, 0, movedMethod);
+    return newArr;
+}

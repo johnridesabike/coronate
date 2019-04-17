@@ -3,8 +3,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import {scores} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
-import {DragIcon} from "./utility";
-import {List, arrayMove} from "react-movable";
+import {moveArrItem} from "./utility";
 /**
  * @typedef {import("../chess-tourney").Tournament} Tournament
  * @typedef {import("../chess-tourney").Round} Round
@@ -22,28 +21,6 @@ export function RoundContainer({round, newRound, setRoundList}) {
     return <RoundManage round={round} newRound={newRound}
         setRoundList={setRoundList} />;
 }
-
-// /**
-//  * @param {Object} props
-//  * @param {Tournament} props.tourney
-//  * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
-//  */
-// function NewRound({tourney, setRoundList}) {
-//     const makeRound = function () {
-//         const round = tourney.newRound();
-//         round.autoPair();
-//         setRoundList([...tourney.roundList]);
-//     };
-//     if (tourney.isNewRoundReady()) {
-//         return (
-//             <button
-//                 onClick={makeRound}>
-//                 Make new round
-//             </button>);
-//     } else {
-//         return <p>Complete the last round first.</p>;
-//     }
-// }
 
 /**
  * @param {Object} props
@@ -85,9 +62,9 @@ function RoundManage({round, newRound, setRoundList}) {
         setMatches(round.matches);
         setToPair([]);
     }
-    /** @param {number} id */
-    function rmMatch(id) {
-        round.removeMatch(id);
+    /** @param {number} position */
+    function rmMatch(position) {
+        round.removeMatch(position);
         setMatches(round.matches);
     }
     useEffect(function () {
@@ -108,102 +85,80 @@ function RoundManage({round, newRound, setRoundList}) {
             setOpenMatch(match);
         }
     }
-    // react-movable stuff
-    const optionItems = matches.map((match, i) => (
-        {
-            match: match,
-            pos: i,
-            rmMatch: rmMatch,
-            white: match.getWhiteInfo(),
-            black: match.getBlackInfo(),
-            result: match.result
-        }
-    ));
-    // @ts-ignore
-    function moveOption({oldIndex, newIndex}) {
-        setMatches((prevState) => arrayMove(prevState, oldIndex, newIndex));
-    };
-    // @ts-ignore
-    const renderList = ({children, props, isDragged}) => (
-        <table className="table__roster">
-            <caption>Round {round.id + 1} results</caption>
-            <thead>
-            <tr>
-                <th className="row__id">#</th>
-                <th className="row__player">White</th>
-                <th className="row__result">Result</th>
-                <th className="row__player">Black</th>
-                <th className="row__controls"></th>
-            </tr>
-            </thead>
-            <tbody {...props}>
-            {children}
-            </tbody>
-        </table>
-    );
-    // @ts-ignore
-    function renderItem ({value, props, isDragged, isSelected}) {
-        const row = (
-            <tr {...props} className={value.match.isBye() ? "inactive" : ""}>
-                <td className="table__number row__id">
-                    {isDragged ? "" : value.pos + 1}
-                </td>
-                <td className="table__player row__player">
-                    {value.white.player.firstName} {value.white.player.lastName}
-                </td>
-                <td className="data__input row__result">
-                    <input
-                    type="radio"
-                    checked={value.result[0] === 1}
-                    disabled={value.match.isBye()}
-                    onChange={() => updateResult(value.match, [1,0])}
-                    />
-                    <input
-                        type="radio"
-                        checked={value.result[0] === 0.5}
-                        disabled={value.match.isBye()}
-                        onChange={() => updateResult(value.match, [0.5, 0.5])}
-                        />
-                    <input
-                        type="radio"
-                        checked={value.result[1] === 1}
-                        disabled={value.match.isBye()}
-                        onChange={() => updateResult(value.match, [0, 1])}
-                        />
-                </td>
-                <td className="table__player row__player">
-                    {value.black.player.firstName} {value.black.player.lastName}
-                </td>
-                <td className="data__input row__controls">
-                    <button onClick={() => toggleOpenMatch(value.match)}>
-                        ?
-                    </button>
-                    <button data-movable-handle>
-                        <DragIcon isDragged={isDragged} />
-                    </button>
-                </td>
-            </tr>
-        );
-        return (
-            (isDragged)
-             ? (
-                <table className="table__roster">
-                    <tbody>
-                        {row}
-                    </tbody>
-                </table>
-                )
-            : row
-        );
-    };
+    /**
+     * @param {number} pos
+     * @param {number} dir
+     */
+    function moveMatch(pos, dir) {
+        setMatches(moveArrItem(matches, pos, dir));
+    }
     return (
         <Fragment>
-            <List
-                values={optionItems}
-                onChange={moveOption}
-                renderList={renderList}
-                renderItem={renderItem}
-            />
+            <table className="table__roster">
+                <caption>Round {round.id + 1} results</caption>
+                <thead>
+                <tr>
+                    <th className="row__id">#</th>
+                    <th className="row__player">White</th>
+                    <th className="row__result">Result</th>
+                    <th className="row__player">Black</th>
+                    <th className="row__controls"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {matches.map((match, pos) =>
+                    <tr className={match.isBye() ? "inactive" : ""}>
+                        <td className="table__number row__id">{pos + 1}</td>
+                        <td className="table__player row__player">
+                            {match.getWhiteInfo().player.firstName}&nbsp;
+                            {match.getWhiteInfo().player.lastName}
+                        </td>
+                        <td className="data__input row__result">
+                            <input
+                            type="radio"
+                            checked={match.result[0] === 1}
+                            disabled={match.isBye()}
+                            onChange={() => updateResult(match, [1,0])}
+                            />
+                            <input
+                                type="radio"
+                                checked={match.result[0] === 0.5}
+                                disabled={match.isBye()}
+                                onChange={() => updateResult(match, [0.5, 0.5])}
+                                />
+                            <input
+                                type="radio"
+                                checked={match.result[1] === 1}
+                                disabled={match.isBye()}
+                                onChange={() => updateResult(match, [0, 1])}
+                                />
+                        </td>
+                        <td className="table__player row__player">
+                            {match.getBlackInfo().player.firstName}&nbsp;
+                            {match.getBlackInfo().player.lastName}
+                        </td>
+                        <td className="data__input row__controls">
+                            <button onClick={() => toggleOpenMatch(match)}>
+                                ?
+                            </button>
+                            <button onClick={() => rmMatch(pos)}>
+                                x
+                            </button>
+                            <button
+                                disabled={pos === 0}
+                                onClick={() => moveMatch(pos, -1)}>
+                                move up
+                            </button>
+                            <button
+                                disabled={pos === matches.length - 1}
+                                onClick={() => moveMatch(pos, 1)}>
+                                move down
+                            </button>
+                        </td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
             {openMatch && <MatchInfo match={openMatch} />}
             <h2>Players to pair:</h2>
             <ul>

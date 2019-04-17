@@ -20,7 +20,7 @@ import createMatch from "./match";
  * @property {(player: number) => number} playerColor `0` for white, `1` for
  * black, or `-1` if the player wasn't found.
  * @property {function(): boolean} hasBye
- * @property {(matchId: number) => Match[]} removeMatch
+ * @property {(position: number) => Match[]} removeMatch
  * @property {function(): Match[]} autoPair
  * @property {function(): number[]} getUnmatchedPlayers
  * @property {(white: number, black: number) => Match} setPair
@@ -80,8 +80,8 @@ function createRound(tourney, importObj = {}) {
         hasBye() {
             return round.roster.includes(dummyPlayer.id);
         },
-        removeMatch(matchId) {
-            const match = round.matches[matchId];
+        removeMatch(position) {
+            const match = round.matches[position];
             match.resetResult();
             match.roster.forEach(function (id) {
                 getPlayer(id).matchCount -= 1;
