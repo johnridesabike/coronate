@@ -1,6 +1,6 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
-import {moveArrItem} from "./utility";
+import {PanelContainer, Panel, moveArrItem} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
@@ -182,18 +182,22 @@ export function TourneyManager({tourney, setIsSelecting, newRound}) {
         </table>
     );
     return (
-        <Fragment>
-            <button onClick={() => setIsSelecting(true)}>
-                Select players
-            </button>
-            <button onClick={() => newRound()}
-                disabled={!tourney.isNewRoundReady()}>
-                New round
-            </button>
-            {rosterTable}
-            {byeList}
-            <Options key={tourney.id} tourney={tourney} />
-        </Fragment>
+        <PanelContainer>
+            <Panel>
+                <button onClick={() => setIsSelecting(true)}>
+                    Select players
+                </button>
+                <button onClick={() => newRound()}
+                    disabled={!tourney.isNewRoundReady()}>
+                    New round
+                </button>
+                {rosterTable}
+            </Panel>
+            <Panel>
+                {byeList}
+                <Options key={tourney.id} tourney={tourney} />
+            </Panel>
+        </PanelContainer>
     );
 }
 

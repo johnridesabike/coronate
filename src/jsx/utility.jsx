@@ -2,36 +2,6 @@
 import React from "react";
 import {FaArrowsAltV} from "react-icons/fa";
 
-// /**
-//  * @param {Object} props
-//  * @param {JSX.Element[]} props.children
-//  */
-// export function MainNav({children}) {
-//     return (
-//         <nav className="main-nav">
-//             {children}
-//         </nav>
-//     );
-// }
-
-// /**
-//  * @param {Object} props
-//  * @param {string} props.name
-//  * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
-//  * @param {boolean} props.isOpen
-//  */
-// export function NavItem({name, action, isOpen}) {
-//     let classNames = "main-nav__item";
-//     if (isOpen) {
-//         classNames += " is-open";
-//     }
-//     return (
-//         <span className={classNames} role="menuitem" tabIndex={0}
-//             onClick={action} onKeyPress={action}>
-//             {name}
-//         </span>
-//     );
-// }
 /**
  * @param {Object} props
  * @param {JSX.Element | string} [props.children]
@@ -87,4 +57,30 @@ export function moveArrItem(arr, pos, dir) {
     const movedMethod = newArr.splice(pos, 1)[0];
     newArr.splice(newPos, 0, movedMethod);
     return newArr;
+}
+
+/**
+ * @param {object} props
+ * @param {React.ReactNode} props.children
+ * @param {React.CSSProperties} [props.style]
+ */
+export function Panel({children, style}) {
+    return (
+        <div style={{...style}}>
+            {children}
+        </div>
+    );
+}
+
+/**
+ *
+ * @param {object} props
+ * @param {typeof Panel} props.children
+ */
+export function PanelContainer({children}) {
+    return (
+        <div style={{display: "flex"}}>
+            {React.Children.map(children, (child) => child)}
+        </div>
+    );
 }

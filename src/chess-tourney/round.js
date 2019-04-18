@@ -22,7 +22,7 @@ import createMatch from "./match";
  * @property {function(): boolean} hasBye
  * @property {(position: number) => Match[]} removeMatch
  * @property {function(): Match[]} autoPair
- * @property {function(): number[]} getUnmatchedPlayers
+ * @property {(addDummy?: boolean) => number[]} getUnmatchedPlayers
  * @property {(white: number, black: number) => Match} setPair
  * @property {(id: string) => Match} getMatch
  */
@@ -84,23 +84,26 @@ function createRound(tourney, importObj = {}) {
             const match = round.matches[position];
             match.resetResult();
             match.roster.forEach(function (id) {
-                getPlayer(id).matchCount -= 1;
+                if (id !== -1) {
+                    getPlayer(id).matchCount -= 1;
+                }
             });
             round.matches = round.matches.filter((m) => m !== match);
             return round.matches;
         },
         autoPair() {
-            round.matches = pairPlayers(round);
+            const players = round.getUnmatchedPlayers(false);
+            round.matches = round.matches.concat(pairPlayers(round, players));
             return round.matches;
         },
-        getUnmatchedPlayers() {
+        getUnmatchedPlayers(addDummy = true) {
             /** @type {number[]} */
             const matched = round.matches.reduce(
                 (accumulator, match) => accumulator.concat(match.roster),
                 []
             );
             const unMatched = difference(round.roster, matched);
-            if (unMatched.length % 2 !== 0) {
+            if (unMatched.length % 2 !== 0 && addDummy) {
                 unMatched.push(-1);
             }
             return unMatched;

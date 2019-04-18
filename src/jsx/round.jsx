@@ -3,7 +3,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import {scores} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
-import {moveArrItem} from "./utility";
+import {PanelContainer, Panel, moveArrItem} from "./utility";
 /**
  * @typedef {import("../chess-tourney").Tournament} Tournament
  * @typedef {import("../chess-tourney").Round} Round
@@ -71,8 +71,6 @@ function RoundManage({round, newRound, setRoundList}) {
         round.matches = matches;
         setUnmatched(round.getUnmatchedPlayers());
         setMatchResults(fetchResults());
-    }, [matches]);
-    useEffect(function () {
         setCanMakeNewRound(round.isComplete());
     });
     /** @type {[Match, React.Dispatch<React.SetStateAction<Match>>]} */
@@ -93,7 +91,8 @@ function RoundManage({round, newRound, setRoundList}) {
         setMatches(moveArrItem(matches, pos, dir));
     }
     return (
-        <Fragment>
+        <PanelContainer>
+            <Panel style={{width: "50%"}}>
             <table className="table__roster">
                 <caption>Round {round.id + 1} results</caption>
                 <thead>
@@ -107,7 +106,8 @@ function RoundManage({round, newRound, setRoundList}) {
                 </thead>
                 <tbody>
                 {matches.map((match, pos) =>
-                    <tr className={match.isBye() ? "inactive" : ""}>
+                    <tr key={match.id}
+                        className={match.isBye() ? "inactive" : ""}>
                         <td className="table__number row__id">{pos + 1}</td>
                         <td className="table__player row__player">
                             {match.getWhiteInfo().player.firstName}&nbsp;
@@ -159,17 +159,23 @@ function RoundManage({round, newRound, setRoundList}) {
                 )}
                 </tbody>
             </table>
+            </Panel>
+            <Panel>
             {openMatch && <MatchInfo match={openMatch} />}
-            <h2>Players to pair:</h2>
-            <ul>
-            {unMatched.map((pId) =>
-                <li key={pId}>
-                    <input type="checkbox" checked={toPair.includes(pId)}
-                        onChange={() => setToPair([pId, toPair[0]])}/>
-                    {getPlayer(pId).firstName} {getPlayer(pId).lastName}
-                </li>
+            {unMatched.length > 0 && (
+                <Fragment>
+                <h2>Players to pair:</h2>
+                <ul>
+                {unMatched.map((pId) =>
+                    <li key={pId}>
+                        <input type="checkbox" checked={toPair.includes(pId)}
+                            onChange={() => setToPair([pId, toPair[0]])}/>
+                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                    </li>
+                )}
+                </ul>
+                </Fragment>
             )}
-            </ul>
             <h2>Actions</h2>
             <button onClick={() => pairChecked()}>Pair checked</button>
             <button onClick={autoPair}>Auto pair</button>
@@ -182,7 +188,8 @@ function RoundManage({round, newRound, setRoundList}) {
                 disabled={tourney.canRemoveRound(round)}>
                 Delete round
             </button>
-        </Fragment>
+            </Panel>
+        </PanelContainer>
     );
 }
 

@@ -1,6 +1,5 @@
 .table__roster {
-    table-layout: fixed;
-    width: 100%;
+    table-layout: auto;
 }
 
 th {
@@ -13,7 +12,6 @@ td {
 
 .table__roster tbody,
 .table__roster tr {
-    width: 100%;
 }
 
 .data__input {
@@ -21,17 +19,13 @@ td {
 }
 
 .row__id {
-    width: 10%;
 }
 
 .row__player {
-    width: 25%; /* x2 */
 }
 
-.row__controls {
-    width: 20%;
+.row__controls {;
 }
 
 .row__result {
-    width: 20%;
 }

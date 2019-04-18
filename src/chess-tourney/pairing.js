@@ -69,8 +69,9 @@ const maxPriority = (
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
  * @param {Round} round The round object.
+ * @param {number[]} players
  */
-function pairPlayers(round) {
+function pairPlayers(round, players) {
     /** @type {Match} */
     let byeMatch;
     /** @type {Array<Array<number>>} */
@@ -99,7 +100,7 @@ function pairPlayers(round) {
         return color;
     };
     /** @type {PlayerDataType[]} */
-    let playerData = round.roster.map((id) => ({
+    let playerData = players.map((id) => ({
         player: tourney.players.getPlayerById(id),
         id: id,
         score: scores.playerScore(tourney, id, round.id),
@@ -212,7 +213,6 @@ function pairPlayers(round) {
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
-    /**@type {number[]} */
     blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
     reducedResults = blossomResults.reduce(

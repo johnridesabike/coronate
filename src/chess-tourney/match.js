@@ -148,8 +148,11 @@ function createMatch(importObj) {
         resetResult() {
             match.result = [0, 0];
             match.newRating = [...match.origRating];
-            getPlayer(match.roster[0]).rating = match.newRating[0];
-            getPlayer(match.roster[1]).rating = match.newRating[1];
+            match.roster.forEach(function (id, i) {
+                if (id !== -1) {
+                    getPlayer(id).rating = match.newRating[i];
+                }
+            });
             return match;
         },
         isComplete() {
