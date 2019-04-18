@@ -2,9 +2,10 @@
 import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
-import createMatch from "./match";
+// import createMatch from "./match";
 import scores from "./scores";
 import {dummyPlayer} from "./player";
+import {playerColor} from "./round";
 
 /**
  * @typedef {import("./player").Player} Player
@@ -68,32 +69,32 @@ const maxPriority = (
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
- * @param {Round} round The round object.
+ * @param {Match[][]} roundList
+ * @param {number} roundId
  * @param {number[]} players
+ * @param {Tournament} tourney
  */
-function pairPlayers(round, players) {
-    /** @type {Match} */
+function pairPlayers(players, roundId, roundList, tourney) {
+    /** @type {number[]} */
     let byeMatch;
-    /** @type {Array<Array<number>>} */
+    /** @type {number[][]} */
     let potentialMatches;
-    /** @type {Match[]} */
+    /** @type {Number[][]} */
     let matches;
     /** @type {number[]} */
     let blossomResults;
     /** @type {Array<[PlayerDataType, PlayerDataType, number]>} */
     let reducedResults;
-    /** @type {Tournament} */
-    const tourney = round.ref_tourney;
     /**
      * @param {number} id
      * @returns {number | null}
      */
     const dueColor = function (id) {
-        if (!round.ref_prevRound) {
+        if (!roundList[roundId - 1]) {
             return null;
         }
         let color = 0;
-        let prevColor = round.ref_prevRound.playerColor(id);
+        let prevColor = playerColor(id, roundList[roundId - 1]);
         if (prevColor === 0) {
             color = 1;
         }
@@ -103,7 +104,7 @@ function pairPlayers(round, players) {
     let playerData = players.map((id) => ({
         player: tourney.players.getPlayerById(id),
         id: id,
-        score: scores.playerScore(tourney, id, round.id),
+        score: scores.playerScore(tourney, id, roundId),
         dueColor: dueColor(id),
         colorBalance: scores.playerColorBalance(tourney, id),
         opponentHistory: tourney.getPlayersByOpponent(id, null),
@@ -186,10 +187,11 @@ function pairPlayers(round, players) {
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
-        byeMatch = createMatch({
-            ref_round: round,
-            roster: [byePlayerData.id, dummyPlayer.id]
-        });
+        // byeMatch = createMatch({
+        //     ref_round: round,
+        //     roster: [byePlayerData.id, dummyPlayer.id]
+        // });
+        byeMatch = [byePlayerData.id, dummyPlayer.id];
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
@@ -254,32 +256,33 @@ function pairPlayers(round, players) {
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
-            const ideal = pair[2];
-            const match = createMatch({
-                ref_round: round,
-                roster: [player1.id, player2.id]
-            });
-            match.ideal = ideal / maxPriority;
+            // const ideal = pair[2];
+            const match = [player1.id, player2.id];
+            // const match = createMatch({
+            //     ref_round: round,
+            //     roster: [player1.id, player2.id]
+            // });
+            // match.ideal = ideal / maxPriority;
             // A quick-and-easy way to keep colors mostly equal.
             if (player1.colorBalance < player2.colorBalance) {
                 match.reverse();
             }
-            // When the match isn't ideal, include a warning.
-            if (player1.opponentHistory.includes(player2.id)) {
-                match.warnings += (
-                    " " + player1.player.firstName
-                    + " and " + player2.player.firstName
-                    + " have played previously."
-                );
-            }
-            [player1, player2].forEach(function (player) {
-                if (Math.abs(player.colorBalance) > 2) {
-                    match.warnings += (
-                        " " + player.player.firstName
-                        + "'s color balance is off"
-                    );
-                }
-            });
+            // // When the match isn't ideal, include a warning.
+            // if (player1.opponentHistory.includes(player2.id)) {
+            //     match.warnings += (
+            //         " " + player1.player.firstName
+            //         + " and " + player2.player.firstName
+            //         + " have played previously."
+            //     );
+            // }
+            // [player1, player2].forEach(function (player) {
+            //     if (Math.abs(player.colorBalance) > 2) {
+            //         match.warnings += (
+            //             " " + player.player.firstName
+            //             + "'s color balance is off"
+            //         );
+            //     }
+            // });
             return match;
         }
     );

@@ -39,14 +39,6 @@ function createPlayerManager(importObj = {}) {
         playerList: [],
         lastId: importObj.lastId || -1,
         avoidList: importObj.avoidList || [],
-        // removePlayer(player) {
-        //     delete manager.playerList[manager.playerList.indexOf(player)];
-        //     return manager;
-        // },
-        // removePlayerById(id) {
-        //     manager.removePlayer(manager.getPlayerById(id));
-        //     return manager;
-        // },
         getPlayerById(id) {
             if (id === -1) {
                 return dummyPlayer;

@@ -1,4 +1,5 @@
 // @ts-check
+import {dummyPlayer} from "./player";
 /**
  * @typedef {import("./player").Player} Player
  * @typedef {import("./round").Round} Round
@@ -7,8 +8,8 @@
 /**
  * @typedef {Object} Match
  * @property {string} id
- * @property {Round} ref_round
- * @property {Tournament} ref_tourney
+ * @property {Round} [ref_round]
+ * @property {Tournament} [ref_tourney]
  * @property {string} warnings
  * @property {number[]} roster
  * @property {number[]} result A loss is `0`, a win is `1`, and a draw is `0.5`.
@@ -24,6 +25,7 @@
  * @property {function} draw
  * @property {function(number[])} setResult
  * @property {function} resetResult
+ * @property {() => Match} cancel Prepare the match for deletion.
  * @property {function(): boolean} isComplete
  * @property {function(): boolean} isBye
  * @property {(id: number) => PlayerInfo} getColorInfo
@@ -49,7 +51,7 @@
  * @param {Match} match
  */
 function calcRatings(match) {
-    const tourney = match.ref_tourney;
+    const tourney = match.ref_tourney || null;
     const white = tourney.players.getPlayerById(match.roster[0]);
     const black = tourney.players.getPlayerById(match.roster[1]);
     let whiteElo = white.getEloRank();
@@ -87,7 +89,7 @@ function calcRatings(match) {
  * Create a match object.
  * @param {Object} importObj
  * @param {string} [importObj.id]
- * @param {Round} importObj.ref_round
+ * @param {Round} [importObj.ref_round]
  * @param {number[]} importObj.roster
  * @param {string} [importObj.warnings]
  * @param {number[]} [importObj.result]
@@ -96,15 +98,15 @@ function calcRatings(match) {
  * @param {number} [importObj.ideal]
  * @returns {Match}
  */
-function createMatch(importObj) {
-    const tourney = importObj.ref_round.ref_tourney;
-    const getPlayer = tourney.players.getPlayerById;
+function createMatch(importObj, playerManager) {
+    const tourney = null; //importObj.ref_round.ref_tourney || null;
+    const getPlayer = playerManager.getPlayerById;
     const white = getPlayer(importObj.roster[0]);
     const black = getPlayer(importObj.roster[1]);
     /** @type {Match} */
     const match = {
         id: importObj.id || white.id + "." + black.id,
-        ref_round: importObj.ref_round,
+        ref_round: importObj.ref_round || null,
         ref_tourney: importObj.ref_round.ref_tourney,
         warnings: importObj.warnings || "",
         roster: importObj.roster,
@@ -149,8 +151,17 @@ function createMatch(importObj) {
             match.result = [0, 0];
             match.newRating = [...match.origRating];
             match.roster.forEach(function (id, i) {
-                if (id !== -1) {
+                if (id !== dummyPlayer.id) {
                     getPlayer(id).rating = match.newRating[i];
+                }
+            });
+            return match;
+        },
+        cancel() {
+            match.resetResult();
+            match.roster.forEach(function (id) {
+                if (id !== dummyPlayer.id) {
+                    getPlayer(id).matchCount -= 1;
                 }
             });
             return match;
@@ -183,17 +194,6 @@ function createMatch(importObj) {
             return match.getColorInfo(1);
         }
     };
-    // match.roster = match.roster.map(function (player) {
-    //     if (typeof player === "number") {
-    //         if (player === -1) {
-    //             return dummyPlayer;
-    //         } else {
-    //             return tourney.players.getPlayerById(player);
-    //         }
-    //     } else {
-    //         return player;
-    //     }
-    // });
     // set bye rounds
     if (getPlayer(match.roster[0]).dummy) {
         match.result = [0, tourney.byeValue];

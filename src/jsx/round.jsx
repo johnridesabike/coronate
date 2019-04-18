@@ -1,6 +1,6 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
-import {scores} from "../chess-tourney";
+import {scores, pairPlayers, createMatch} from "../chess-tourney";
 import numeral from "numeral";
 import "../round.css";
 import {PanelContainer, Panel, moveArrItem} from "./utility";
@@ -13,33 +13,31 @@ import {PanelContainer, Panel, moveArrItem} from "./utility";
  */
 /**
  * @param {Object} props
- * @param {Round} props.round
+ * @param {number} props.roundId
  * @param {function} props.newRound
- * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
+ * @param {Match[][]} props.roundList
+ * @param {Tournament} props.tourney
+ * @param {React.Dispatch<React.SetStateAction<Match[][]>>} props.setRoundList
  */
-export function RoundContainer({round, newRound, setRoundList}) {
-    return <RoundManage round={round} newRound={newRound}
-        setRoundList={setRoundList} />;
-}
-
-/**
- * @param {Object} props
- * @param {Round} props.round
- * @param {function} props.newRound
- * @param {React.Dispatch<React.SetStateAction<Round[]>>} props.setRoundList
- */
-function RoundManage({round, newRound, setRoundList}) {
-    const tourney = round.ref_tourney;
+export function RoundManage({
+    roundId,
+    newRound,
+    roundList,
+    setRoundList,
+    tourney
+}) {
+    const round = roundList[roundId];
     const getPlayer = tourney.players.getPlayerById;
-    const [matches, setMatches] = useState(round.matches);
-    const [unMatched, setUnmatched] = useState(round.getUnmatchedPlayers());
-    const [canMakeNewRound, setCanMakeNewRound] = useState(round.isComplete());
+    /** @type {Match[]} */
+    const defaultMatches = [];
+    const [matches, setMatches] = useState(defaultMatches);
+    const [unMatched, setUnmatched] = useState(tourney.roster);
     /** @type {number[]} */
     const defaultToPair = [];
     const [toPair, setToPair] = useState(defaultToPair);
     // The UI directly gets data from the `match` object, so this is mostly just
     // to keep the state updated.
-    const fetchResults = () => round.matches.map((m) => m.result);
+    const fetchResults = () => matches.map((m) => m.result);
     // eslint-disable-next-line no-unused-vars
     const [matchResults, setMatchResults] = useState(fetchResults);
     /**
@@ -51,29 +49,45 @@ function RoundManage({round, newRound, setRoundList}) {
         setMatchResults(fetchResults());
     }
     function delRound() {
-        tourney.removeRound(round);
-        setRoundList([...tourney.roundList]);
+        // tourney.removeRound(round);
+        matches.forEach(function (match) {
+            match.cancel();
+        });
+        setRoundList([...roundList.filter((r) => r !== round)]);
     };
     function autoPair() {
-        round.autoPair();
-        setMatches(round.matches);
+        const players = tourney.roster; //round.getUnmatchedPlayers(false);
+        const newMatches = pairPlayers(
+            players,
+            roundId,
+            roundList,
+            tourney
+        ).map(
+            (pair) => createMatch({roster: pair}, tourney.players)
+        );
+        // round.matches = round.matches.concat();
+        setMatches(matches.concat(newMatches));
     }
     function pairChecked() {
-        round.setPair(toPair[0], toPair[1]);
-        setMatches(round.matches);
+        const match = createMatch(
+            {roster: [toPair[0], toPair[1]]},
+            tourney.players
+        );
+        matches.push(match);
+        setMatches(matches);
         setToPair([]);
     }
     /** @param {number} position */
     function rmMatch(position) {
-        round.removeMatch(position);
-        setMatches(round.matches);
+        const removed = matches[position].cancel();
+        setMatches(matches.filter((m) => m !== removed));
     }
-    useEffect(function () {
-        round.matches = matches;
-        setUnmatched(round.getUnmatchedPlayers());
-        setMatchResults(fetchResults());
-        setCanMakeNewRound(round.isComplete());
-    });
+    // useEffect(function () {
+    //     round.matches = matches;
+    //     setUnmatched(round.getUnmatchedPlayers());
+    //     setMatchResults(fetchResults());
+    //     setCanMakeNewRound(round.isComplete());
+    // });
     /** @type {[Match, React.Dispatch<React.SetStateAction<Match>>]} */
     const [openMatch, setOpenMatch] = useState(null);
     /** @param {Match} match */
@@ -95,7 +109,7 @@ function RoundManage({round, newRound, setRoundList}) {
         <PanelContainer>
             <Panel style={{width: "50%"}}>
             <table className="table__roster">
-                <caption>Round {round.id + 1} results</caption>
+                <caption>Round {roundId + 1} results</caption>
                 <thead>
                 <tr>
                     <th className="row__id">#</th>
@@ -180,13 +194,14 @@ function RoundManage({round, newRound, setRoundList}) {
             <h2>Actions</h2>
             <button onClick={() => pairChecked()}>Pair checked</button>
             <button onClick={autoPair}>Auto pair</button>
-            <button onClick={() => newRound()}
-                disabled={!canMakeNewRound}>
+            <button onClick={() => newRound()}>
                 Next round
             </button>
             <button
                 onClick={delRound}
-                disabled={tourney.canRemoveRound(round)}>
+                disabled={true}
+                // disabled={tourney.canRemoveRound(round)}
+                >
                 Delete round
             </button>
             </Panel>

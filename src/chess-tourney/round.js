@@ -1,7 +1,7 @@
 // @ts-check
 import {dummyPlayer} from "./player";
 import {last, difference} from "lodash";
-import pairPlayers from "./pairing";
+// import pairPlayers from "./pairing";
 import createMatch from "./match";
 /**
  * @typedef {import("./tournament").Tournament} Tournament
@@ -19,12 +19,9 @@ import createMatch from "./match";
  * @property {(player: number) => Match} getMatchByPlayer
  * @property {(player: number) => number} playerColor `0` for white, `1` for
  * black, or `-1` if the player wasn't found.
- * @property {function(): boolean} hasBye
  * @property {(position: number) => Match[]} removeMatch
- * @property {function(): Match[]} autoPair
  * @property {(addDummy?: boolean) => number[]} getUnmatchedPlayers
  * @property {(white: number, black: number) => Match} setPair
- * @property {(id: string) => Match} getMatch
  */
 
 /**
@@ -73,25 +70,23 @@ function createRound(tourney, importObj = {}) {
             }
             return color;
         },
-        hasBye() {
-            return round.roster.includes(dummyPlayer.id);
-        },
         removeMatch(position) {
             const match = round.matches[position];
             match.resetResult();
             match.roster.forEach(function (id) {
-                if (id !== -1) {
+                if (id !== dummyPlayer.id) {
                     getPlayer(id).matchCount -= 1;
                 }
             });
             round.matches = round.matches.filter((m) => m !== match);
             return round.matches;
         },
-        autoPair() {
-            const players = round.getUnmatchedPlayers(false);
-            round.matches = round.matches.concat(pairPlayers(round, players));
-            return round.matches;
-        },
+        // autoPair() {
+        //     const players = round.getUnmatchedPlayers(false);
+        //     round.matches = round.matches.concat(pairPlayers(round, players)
+        //);
+        //     return round.matches;
+        // },
         getUnmatchedPlayers(addDummy = true) {
             /** @type {number[]} */
             const matched = round.matches.reduce(
@@ -105,15 +100,12 @@ function createRound(tourney, importObj = {}) {
             return unMatched;
         },
         setPair(white, black) {
-            const match = createMatch({
-                roster: [white, black],
-                ref_round: round
-            });
+            const match = createMatch(
+                {roster: [white, black]},
+                tourney.players
+            );
             round.matches.push(match);
             return match;
-        },
-        getMatch(id) {
-            return round.matches.filter((m) => m.id === id)[0];
         }
     };
     round.matches = round.matches.map(
@@ -125,3 +117,16 @@ function createRound(tourney, importObj = {}) {
 }
 
 export default Object.freeze(createRound);
+
+/**
+ * @param {number} playerId
+ * @param {Match[]} matchList
+ */
+export function playerColor(playerId, matchList) {
+    let color = -1;
+    const match = matchList.filter((m) => m.roster.includes(playerId))[0];
+    if (match) {
+        color = match.getPlayerColor(playerId);
+    }
+    return color;
+}

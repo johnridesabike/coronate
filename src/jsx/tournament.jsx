@@ -4,12 +4,13 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import {createTournament, scores} from "../chess-tourney";
 import {TourneySetup} from "./tourney-setup.jsx";
-import {RoundContainer} from "./round.jsx";
+import {RoundManage} from "./round.jsx";
 import {range} from "lodash";
 import {BackButton} from "./utility";
 /**
  * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
  * @typedef {import("../chess-tourney").Tournament} Tournament
+ * @typedef {import("../chess-tourney").Match} Match
  */
 /**
  * @param {Object} props
@@ -104,14 +105,15 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
     useEffect(function () {
         setRoundNums(range(tourney.getNumOfRounds()));
     }, [playerList]);
-    const [roundList, setRoundList] = useState(tourney.roundList);
+    /** @type {Match[][]} */
+    const defaultRounds = [[]];
+    const [roundList, setRoundList] = useState(defaultRounds);
     /** @param {number} id */
     function isRoundReady(id) {
         return roundList[id];
     };
     function newRound() {
-        tourney.newRound();
-        setRoundList([...tourney.roundList]);
+        setRoundList(roundList.concat([]));
     }
     return (
         <Tabs>
@@ -136,9 +138,13 @@ function TournamentFrame({tourney, playerManager, setOpenTourney}) {
             </TabPanel>
             {roundNums.map((roundNum) =>
                 <TabPanel key={roundNum}>
-                    <RoundContainer key={roundNum}
-                        round={roundList[roundNum]}
-                        setRoundList={setRoundList} newRound={newRound} />
+                    <RoundManage
+                        key={roundNum}
+                        setRoundList={setRoundList}
+                        roundList={roundList}
+                        roundId={roundNum}
+                        newRound={newRound}
+                        tourney={tourney} />
                 </TabPanel>
             )}
         </Tabs>
