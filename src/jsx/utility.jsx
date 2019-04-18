@@ -75,7 +75,6 @@ export function Panel({children, style}) {
 /**
  *
  * @param {object} props
- * @param {typeof Panel} props.children
  */
 export function PanelContainer({children}) {
     return (

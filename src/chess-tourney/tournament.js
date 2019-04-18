@@ -127,8 +127,8 @@ function createTournament(importObj = {}) {
             if (tourney.canRemoveRound(round)) {
                 throw new Error("You can only remove the last round");
             }
-            round.matches.forEach(function (match) {
-                round.removeMatch(match.id);
+            round.matches.forEach(function (ignore, i) {
+                round.removeMatch(i);
             });
             tourney.roundList = tourney.roundList.filter((r) => r !== round);
             return tourney;
@@ -136,14 +136,6 @@ function createTournament(importObj = {}) {
         canRemoveRound(round) {
             return round !== last(tourney.roundList);
         },
-        // addPlayerToByeQueue(player) {
-        //     tourney.byeQueue.push(player);
-        //     return tourney;
-        // },
-        // removePlayerFromByeQueue(player) {
-        //     tourney.byeQueue = tourney.byeQueue.filter((p) => p !== player);
-        //     return tourney;
-        // },
         setByeQueue(playerList) {
             tourney.byeQueue = playerList;
             return tourney;

@@ -34,6 +34,9 @@ function RoundManage({round, newRound, setRoundList}) {
     const [matches, setMatches] = useState(round.matches);
     const [unMatched, setUnmatched] = useState(round.getUnmatchedPlayers());
     const [canMakeNewRound, setCanMakeNewRound] = useState(round.isComplete());
+    /** @type {number[]} */
+    const defaultToPair = [];
+    const [toPair, setToPair] = useState(defaultToPair);
     // The UI directly gets data from the `match` object, so this is mostly just
     // to keep the state updated.
     const fetchResults = () => round.matches.map((m) => m.result);
@@ -47,8 +50,6 @@ function RoundManage({round, newRound, setRoundList}) {
         match.setResult(result);
         setMatchResults(fetchResults());
     }
-    /** @type {[number[], React.Dispatch<React.SetStateAction<number[]>>]} */
-    const [toPair, setToPair] = useState([]);
     function delRound() {
         tourney.removeRound(round);
         setRoundList([...tourney.roundList]);

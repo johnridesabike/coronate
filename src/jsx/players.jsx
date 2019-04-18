@@ -11,8 +11,9 @@ import {BackButton, OpenButton} from "./utility";
  * @param {PlayerManager} props.playerManager
  */
 export function PlayerView({playerManager}) {
-    /** @type {[number, React.Dispatch<React.SetStateAction<number>>]} */
-    const [openPlayer, setOpenPlayer] = useState(null);
+    /** @type {number} */
+    const defaultOpen = null;
+    const [openPlayer, setOpenPlayer] = useState(defaultOpen);
     if (openPlayer !== null) {
         return <PlayerInfoBox key={openPlayer}
             playerId={openPlayer} setOpenPlayer={setOpenPlayer}

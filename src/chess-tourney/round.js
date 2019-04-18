@@ -73,10 +73,6 @@ function createRound(tourney, importObj = {}) {
             }
             return color;
         },
-        // addPlayer(player) {
-        //     round.roster.push(player);
-        //     return round;
-        // },
         hasBye() {
             return round.roster.includes(dummyPlayer.id);
         },
@@ -120,14 +116,6 @@ function createRound(tourney, importObj = {}) {
             return round.matches.filter((m) => m.id === id)[0];
         }
     };
-    // round.roster = round.roster.map(function (player) {
-    //     if (typeof player === "number") {
-    //         return tourney.players.getPlayerById(player);
-    //     } else {
-    //         return player;
-    //     }
-    // });
-    // If match data was imported, then init it.
     round.matches = round.matches.map(
         (matchData) => createMatch(
             Object.assign(matchData, {ref_round: round})
