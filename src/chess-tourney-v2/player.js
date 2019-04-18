@@ -1,14 +1,15 @@
 // @ts-check
 import EloRank from "elo-rank";
 
-function createPlayer() {
+function createPlayer(importObj = {}) {
     const player = {
-        id: 0,
-        firstName: "",
-        lastName: "",
-        rating: 0,
-        dummy: false,
-        matchCount: 0,
+        /** @type {number} */
+        id: importObj.id || 0,
+        firstName: importObj.firstName || "",
+        lastName: importObj.lastName || "",
+        rating: importObj.rating || 0,
+        dummy: importObj.dummy || false,
+        matchCount: importObj.matchCount || 0,
         getKFactor() {
             const ne = player.matchCount || 1;
             return (800 / ne);

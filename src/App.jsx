@@ -1,40 +1,36 @@
 // @ts-check
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 // import {MainNav, NavItem} from "./jsx/utility.jsx";
-import {createPlayerManager} from "./chess-tourney";
 import {PlayerView} from "./jsx/players.jsx";
-import {TournamentList} from "./jsx/tournament.jsx";
-import {Options} from "./jsx/options.jsx";
+// import {TournamentList} from "./jsx/tournament.jsx";
+// import {Options} from "./jsx/options.jsx";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 import demoRoster from "./demo-players.json";
+import createPlayer from "./chess-tourney-v2/player";
+import { cleanAvoidList } from "./chess-tourney-v2/player-manager";
 /**
  * @typedef {import("./chess-tourney").Tournament} Tournament
  */
 function App() {
-    /** @type {Tournament[]} */
-    const initList = [];
-    const [tourneylist, setTourneyList] = useState(initList);
-    /** @type {Tournament | null} */
-    const initOpen = null;
-    const [openTourney, setOpenTourney] = useState(initOpen);
-    const [playerManager] = useState(
-        createPlayerManager(demoRoster)
+    // /** @type {Tournament[]} */
+    // const initList = [];
+    // const [tourneylist, setTourneyList] = useState(initList);
+    // /** @type {Tournament | null} */
+    // const initOpen = null;
+    // const [openTourney, setOpenTourney] = useState(initOpen);
+    const [playerList, setPlayerList] = useState(
+        demoRoster.playerList.map((p) => createPlayer(p))
     );
-    // const [currentView, setCurrentView] = useState(0);
-    // /** @param {number} id */
-    // const setViewList = (id) => setCurrentView(id);
-    // const viewList = [
-    //     <PlayerView playerManager={playerManager} />,
-    //     <TournamentList playerManager={playerManager}
-    //         tourneyList={tourneylist} setTourneyList={setTourneyList}
-    //         openTourney={openTourney} setOpenTourney={setOpenTourney} />,
-    //     <Options playerManager={playerManager} tourneyList={tourneylist}
-    //         setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
-    // ];
+    const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
+    useEffect(function () {
+        // remove stale IDs
+        setAvoidList(cleanAvoidList(avoidList, playerList));
+    }, [playerList]);
     return (
-        <Tabs defaultIndex={1} className="app">
-            <header  className="header">
+        <Tabs defaultIndex={0} className="react-tabs app">
+            <header className="header">
                 <TabList>
                     <Tab>Players</Tab>
                     <Tab>Tournaments</Tab>
@@ -43,22 +39,26 @@ function App() {
             </header>
             <div className="body">
                 <TabPanel>
-                    <PlayerView playerManager={playerManager} />
+                    <PlayerView
+                        playerList={playerList}
+                        setPlayerList={setPlayerList}
+                        avoidList={avoidList}
+                        setAvoidList={setAvoidList}/>
                 </TabPanel>
                 <TabPanel>
-                    <TournamentList
+                    {/* <TournamentList
                         playerManager={playerManager}
                         tourneyList={tourneylist}
                         setTourneyList={setTourneyList}
                         openTourney={openTourney}
-                        setOpenTourney={setOpenTourney} />
+                        setOpenTourney={setOpenTourney} /> */}
                 </TabPanel>
                 <TabPanel>
-                    <Options
+                    {/* <Options
                         playerManager={playerManager}
                         tourneyList={tourneylist}
                         setTourneyList={setTourneyList}
-                        setOpenTourney={setOpenTourney} />
+                        setOpenTourney={setOpenTourney} /> */}
                 </TabPanel>
             </div>
             <footer className="caution footer">

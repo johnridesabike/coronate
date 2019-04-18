@@ -1,6 +1,4 @@
 // @ts-check
-import {dummyPlayer} from "./player";
-
 /**
  *
  * @param {object} importObj

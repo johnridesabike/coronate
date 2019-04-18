@@ -4,7 +4,7 @@
     "rules": {
         "jsx-a11y/label-has-for": "off",
         "max-len": [
-            "error", {
+            "warn", {
                 "code": 80,
                 "ignoreComments": true
             }
@@ -13,6 +13,8 @@
         "semi": "warn",
         "arrow-parens": "warn",
         "space-infix-ops": "warn",
-        "no-trailing-spaces": "warn"
+        "no-trailing-spaces": "warn",
+        "quotes": ["warn", "double"],
+        "jsx-quotes": ["warn", "prefer-double"]
     }
 }
