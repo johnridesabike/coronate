@@ -1,18 +1,14 @@
 // @ts-check
 import React, { useState, useEffect } from "react";
 import "./App.css";
-// import {MainNav, NavItem} from "./jsx/utility.jsx";
-import {PlayerView} from "./jsx/players.jsx";
-// import {TournamentList} from "./jsx/tournament.jsx";
-// import {Options} from "./jsx/options.jsx";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import demoRoster from "./demo-players.json";
 import createPlayer from "./chess-tourney-v2/player";
 import { cleanAvoidList } from "./chess-tourney-v2/player-manager";
-/**
- * @typedef {import("./chess-tourney").Tournament} Tournament
- */
+import {TournamentTabs} from "./jsx/tournament";
+import {PlayerView} from "./jsx/players.jsx";
+
 function App() {
     // /** @type {Tournament[]} */
     // const initList = [];
@@ -29,11 +25,12 @@ function App() {
         setAvoidList(cleanAvoidList(avoidList, playerList));
     }, [playerList]);
     return (
+        <React.StrictMode>
         <Tabs defaultIndex={0} className="react-tabs app">
             <header className="header">
                 <TabList>
                     <Tab>Players</Tab>
-                    <Tab>Tournaments</Tab>
+                    <Tab>Tournament</Tab>
                     <Tab>Options</Tab>
                 </TabList>
             </header>
@@ -46,25 +43,19 @@ function App() {
                         setAvoidList={setAvoidList}/>
                 </TabPanel>
                 <TabPanel>
-                    {/* <TournamentList
-                        playerManager={playerManager}
-                        tourneyList={tourneylist}
-                        setTourneyList={setTourneyList}
-                        openTourney={openTourney}
-                        setOpenTourney={setOpenTourney} /> */}
+                    <TournamentTabs playerList={playerList} />
                 </TabPanel>
                 <TabPanel>
-                    {/* <Options
-                        playerManager={playerManager}
-                        tourneyList={tourneylist}
-                        setTourneyList={setTourneyList}
-                        setOpenTourney={setOpenTourney} /> */}
+                    <p>
+                        Coming soon.
+                    </p>
                 </TabPanel>
             </div>
             <footer className="caution footer">
                 <Caution />
             </footer>
         </Tabs>
+        </React.StrictMode>
     );
 }
 
