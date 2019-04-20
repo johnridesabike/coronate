@@ -5,7 +5,6 @@ import blossom from "edmonds-blossom";
 // import createMatch from "./match";
 import scores from "./scores";
 import {dummyPlayer, getPlayerAvoidList, getPlayer} from "./player";
-import {playerColor} from "./round";
 /**
  * @typedef {Object} PlayerDataType
  * @property {number} id
@@ -35,7 +34,10 @@ function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
             return null;
         }
         let color = 0;
-        let prevColor = playerColor(playerId, roundList[roundId - 1]);
+        let prevColor = scores.playerMatchColor(
+            playerId,
+            roundList[roundId - 1]
+        );
         if (prevColor === 0) {
             color = 1;
         }

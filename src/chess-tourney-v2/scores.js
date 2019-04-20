@@ -14,6 +14,19 @@ function isBye(match) {
 }
 
 /**
+ * @param {number} playerId
+ * @param {object[]} matchList
+ */
+function playerMatchColor(playerId, matchList) {
+    let color = -1;
+    const match = matchList.filter((m) => m.players.includes(playerId))[0];
+    if (match) {
+        color = match.players.indexOf(playerId);
+    }
+    return color;
+}
+
+/**
  * @type {ScoreCalculator}
  */
 function getMatchesByPlayer(playerId, roundList, roundId = null) {
@@ -361,5 +374,6 @@ export default Object.freeze({
     playerScoreCum,
     playerScoreList,
     solkoff,
-    getPlayerMatchData
+    getPlayerMatchData,
+    playerMatchColor
 });
