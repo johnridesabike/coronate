@@ -1,98 +1,66 @@
 // @ts-check
-import React, {useState} from "react";
+import React, {Fragment, useState} from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import numeral from "numeral";
 import "react-tabs/style/react-tabs.css";
-
-
-// export function TournamentList({
-//     playerManager,
-//     tourneyList,
-//     setTourneyList,
-//     openTourney,
-//     setOpenTourney
-// }) {
-//     const newTourneyDefaults = {name: "The most epic tournament"};
-//     const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
-//     /** @param {React.FormEvent<HTMLFormElement>} event */
-//     const newTourney = function(event) {
-//         event.preventDefault();
-//         let tourney = createTournament({players: playerManager});
-//         tourney.name = newTourneyData.name;
-//         tourney.id = tourneyList.length;
-//         let newTList = [tourney];
-//         setTourneyList(newTList.concat(tourneyList));
-//         setNewTourneyData(newTourneyDefaults);
-//         setOpenTourney(tourney);
-//     };
-//     /** @param {React.ChangeEvent<HTMLInputElement>} event */
-//     const updateField = function (event) {
-//         /** @type {Object<string, string>} */
-//         const update = {};
-//         update[event.target.name] = event.target.value;
-//         setNewTourneyData(Object.assign({}, newTourneyData, update));
-//     };
-//     /** @param {number} id */
-//     const selectTourney = function (id) {
-//         setOpenTourney(tourneyList[id]);
-//     };
-//     let content = <Fragment></Fragment>;
-//     if (openTourney) {
-//         content =
-//         <TournamentFrame
-//             key={openTourney.id}
-//             tourney={openTourney}
-//             playerManager={playerManager}
-//             setOpenTourney={setOpenTourney} />;
-//     } else {
-//         content =
-//         <Fragment>
-//             {(tourneyList.length > 0)
-//             ?
-//                 <ol>
-//                     {tourneyList.map((tourney, i) =>
-//                         <li key={i} tabIndex={0} role="menuitem"
-//                             onClick={() => selectTourney(i)}
-//                             onKeyPress={() => selectTourney(i)}>
-//                             {tourney.name}
-//                         </li>
-//                     )}
-//                 </ol>
-//             :
-//                 <p>
-//                     No tournaments added yet.
-//                 </p>
-//             }
-//             <form onSubmit={newTourney}>
-//                 <input type="text" name="name" value={newTourneyData.name}
-//                     onChange={updateField} required />
-//                 <input type="submit" value="New Tournament" />
-//             </form>
-//         </Fragment>;
-//     }
-//     return (
-//         <main>
-//             {content}
-//         </main>
-//     );
-// }
-
-import demoTourney from "../demo-tourney.json";
+import demoTourneyList from "../demo-tourney.json";
 import {getPlayer} from "../chess-tourney-v2/player-manager";
 import scores from "../chess-tourney-v2/scores";
 import demoTieBreaks from "../demo-tiebreak.json";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
+
+
+export function TournamentList({playerList}) {
+    const [openTourney, setOpenTourney] = useState(null);
+    let content = <Fragment></Fragment>;
+    if (openTourney !== null) {
+        content = (
+            <TournamentTabs
+                tourneyId={openTourney}
+                playerList={playerList}
+                setOpenTourney={setOpenTourney} />
+        );
+    } else {
+        content =
+        <nav>
+        {(
+            (demoTourneyList.length > 0)
+            ?
+                <ol>
+                {demoTourneyList.map((tourney, i) =>
+                    <li key={i}>
+                        <button onClick={() => setOpenTourney(i)}>
+                            {tourney.name}
+                        </button>
+                    </li>
+                )}
+                </ol>
+            :
+                <p>
+                    No tournaments added yet.
+                </p>
+        )}
+        </nav>;
+    }
+    return (
+        <div>
+            {content}
+        </div>
+    );
+}
+
 /**
  *
  * @param {Object} props
  */
-export function TournamentTabs({playerList}) {
-    const players = demoTourney.players;
-    const roundList = demoTourney.roundList;
+export function TournamentTabs({tourneyId, playerList}) {
+    const tourney = demoTourneyList[tourneyId];
+    const players = tourney.players;
+    const roundList = tourney.roundList;
     const tieBreaks = demoTieBreaks.filter((m) => m.active);
     return (
         <Tabs>
-            <h2>{demoTourney.name}</h2>
+            <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Players</Tab>
                 <Tab>Scores</Tab>

@@ -1,48 +1,55 @@
-{
-    "name": "The most epic tournament",
-    "players": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-    "roundList": [
-        [
-            {
-                "players": [0, 1],
-                "result": [1, 0],
-                "origRating": [1000, 1200]
-            },
-            {
-                "players": [2, 3],
-                "result": [1, 0],
-                "origRating": [1200, 1250]
-            },
-            {
-                "players": [4, 5],
-                "result": [1, 0],
-                "origRating": [1430, 1230]
-            },
-            {
-                "players": [6, 7],
-                "result": [1, 0],
-                "origRating": [1500, 1600]
-            },
-            {
-                "players": [8, 9],
-                "result": [1, 0],
-                "origRating": [1003, 1203]
-            },
-            {
-                "players": [10, 11],
-                "result": [1, 0],
-                "origRating": [1044, 1250]
-            },
-            {
-                "players": [12, 13],
-                "result": [1, 0],
-                "origRating": [1340, 1288]
-            },
-            {
-                "players": [14, 15],
-                "result": [1, 0],
-                "origRating": [1345, 1244]
-            }
+[
+    {
+        "name": "The second-most epic tournament",
+        "players": [1, 3, 5, 7, 11, 13],
+        "roundList": []
+    },
+    {
+        "name": "The most epic tournament",
+        "players": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "roundList": [
+            [
+                {
+                    "players": [0, 1],
+                    "result": [1, 0],
+                    "origRating": [1000, 1200]
+                },
+                {
+                    "players": [2, 3],
+                    "result": [1, 0],
+                    "origRating": [1200, 1250]
+                },
+                {
+                    "players": [4, 5],
+                    "result": [1, 0],
+                    "origRating": [1430, 1230]
+                },
+                {
+                    "players": [6, 7],
+                    "result": [1, 0],
+                    "origRating": [1500, 1600]
+                },
+                {
+                    "players": [8, 9],
+                    "result": [1, 0],
+                    "origRating": [1003, 1203]
+                },
+                {
+                    "players": [10, 11],
+                    "result": [1, 0],
+                    "origRating": [1044, 1250]
+                },
+                {
+                    "players": [12, 13],
+                    "result": [1, 0],
+                    "origRating": [1340, 1288]
+                },
+                {
+                    "players": [14, 15],
+                    "result": [1, 0],
+                    "origRating": [1345, 1244]
+                }
+            ]
         ]
-    ]
-}
+    }
+]

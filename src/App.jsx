@@ -6,7 +6,7 @@ import "react-tabs/style/react-tabs.css";
 import demoRoster from "./demo-players.json";
 import createPlayer from "./chess-tourney-v2/player";
 import { cleanAvoidList } from "./chess-tourney-v2/player-manager";
-import {TournamentTabs} from "./jsx/tournament";
+import {TournamentList} from "./jsx/tournament";
 import {PlayerView} from "./jsx/players.jsx";
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
                         setAvoidList={setAvoidList}/>
                 </TabPanel>
                 <TabPanel>
-                    <TournamentTabs playerList={playerList} />
+                    <TournamentList playerList={playerList} />
                 </TabPanel>
                 <TabPanel>
                     <p>
