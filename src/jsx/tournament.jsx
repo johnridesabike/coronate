@@ -4,9 +4,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import numeral from "numeral";
 import "react-tabs/style/react-tabs.css";
 import demoTourneyList from "../demo-tourney.json";
-import {getPlayer} from "../chess-tourney-v2/player-manager";
+import {getPlayer} from "../chess-tourney-v2/player";
 import scores from "../chess-tourney-v2/scores";
-import demoTieBreaks from "../demo-tiebreak.json";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
 
 
@@ -21,26 +20,27 @@ export function TournamentList({playerList}) {
                 setOpenTourney={setOpenTourney} />
         );
     } else {
-        content =
-        <nav>
-        {(
-            (demoTourneyList.length > 0)
-            ?
-                <ol>
-                {demoTourneyList.map((tourney, i) =>
-                    <li key={i}>
-                        <button onClick={() => setOpenTourney(i)}>
-                            {tourney.name}
-                        </button>
-                    </li>
-                )}
-                </ol>
-            :
-                <p>
-                    No tournaments added yet.
-                </p>
-        )}
-        </nav>;
+        content = (
+            <nav>
+            {(
+                (demoTourneyList.length > 0)
+                ?
+                    <ol>
+                    {demoTourneyList.map((tourney, i) =>
+                        <li key={i}>
+                            <button onClick={() => setOpenTourney(i)}>
+                                {tourney.name}
+                            </button>
+                        </li>
+                    )}
+                    </ol>
+                :
+                    <p>
+                        No tournaments added yet.
+                    </p>
+            )}
+            </nav>
+        );
     }
     return (
         <div>
@@ -57,7 +57,10 @@ export function TournamentTabs({tourneyId, playerList}) {
     const tourney = demoTourneyList[tourneyId];
     const players = tourney.players;
     const roundList = tourney.roundList;
-    const tieBreaks = demoTieBreaks.filter((m) => m.active);
+    const [standingTree, tbMethods] = scores.calcStandings(
+        tourney.tieBreaks,
+        roundList
+    );
     return (
         <Tabs>
             <h2>{tourney.name}</h2>
@@ -85,21 +88,26 @@ export function TournamentTabs({tourneyId, playerList}) {
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Score</th>
-                                {tieBreaks.map((m) =>
-                                    <th key={m.id}>{m.name}</th>
+                                {tbMethods.map((name, i) =>
+                                    <th key={i}>{name}</th>
                                 )}
                             </tr>
                         </thead>
                         <tbody>
-                        {scores.calcStandings(roundList).map((standings, rank) =>
+                        {standingTree.map((standings, rank) =>
                             standings.map((standing) =>
                                 <tr key={standing.id}>
                                     <td>{rank + 1}</td>
-                                    <td>{getPlayer(standing.id, playerList).firstName}</td>
-                                    <td>{standing.scores.score}</td>
-                                    {tieBreaks.map((m, i) =>
+                                    <td>
+                                        {getPlayer(
+                                            standing.id,
+                                            playerList
+                                        ).firstName}
+                                    </td>
+                                    <td>{standing.score}</td>
+                                    {standing.tieBreaks.map((score, i) =>
                                         <td key={i}>
-                                            {standing.scores[m.id]}
+                                            {score}
                                         </td>
                                     )}
                                 </tr>
@@ -113,6 +121,7 @@ export function TournamentTabs({tourneyId, playerList}) {
                     <Round
                         matchList={matchList}
                         num={id}
+                        roundList={roundList}
                         playerList={playerList}/>
                 </TabPanel>
             )}
@@ -120,7 +129,7 @@ export function TournamentTabs({tourneyId, playerList}) {
     );
 }
 
-function Round({matchList, num, playerList}) {
+function Round({matchList, roundList, num, playerList}) {
     const [selectedMatch, setSelectedMatch] = useState(null);
     return (
         <PanelContainer>
@@ -183,11 +192,21 @@ function Round({matchList, num, playerList}) {
                     <PlayerMatchInfo
                         match={matchList[selectedMatch]}
                         color={0}
-                        player={getPlayer(matchList[selectedMatch].players[0], playerList)} />
+                        playerData={scores.getPlayerMatchData(
+                            matchList[selectedMatch].players[0],
+                            roundList,
+                            num
+                        )}
+                        playerList={playerList}/>
                     <PlayerMatchInfo
                         match={matchList[selectedMatch]}
                         color={1}
-                        player={getPlayer(matchList[selectedMatch].players[1], playerList)} />
+                        playerData={scores.getPlayerMatchData(
+                            matchList[selectedMatch].players[1],
+                            roundList,
+                            num
+                        )}
+                        playerList={playerList} />
                 </div>
             }
             </Panel>
@@ -195,30 +214,40 @@ function Round({matchList, num, playerList}) {
     );
 }
 
-function PlayerMatchInfo({match, color, player}) {
+function PlayerMatchInfo({match, color, playerData, playerList}) {
+    const colorBalance = playerData.colorBalance();
+    let prettyBalance = "Even";
+    if (colorBalance < 0) {
+        prettyBalance = "White +" + Math.abs(colorBalance);
+    } else if (colorBalance > 0) {
+        prettyBalance = "Black +" + colorBalance;
+    }
     return (
         <dl className="player-card">
-            <h3>{player.firstName} {player.lastName}</h3>
+            <h3>
+                {playerData.data(playerList).firstName}&nbsp;
+                {playerData.data(playerList).lastName}
+            </h3>
             <dt>Score</dt>
-            <dd>{player.score}</dd>
+            <dd>{playerData.score()}</dd>
             <dt>Rating</dt>
             <dd>
                 {match.origRating[color]}
                 &nbsp;
-                ({numeral(match.origRating[color] - match.origRating[color]).format("+0")})
+                ({numeral(match.origRating[color] - match.newRating[color]).format("+0")})
             </dd>
-            {/* <dt>Color balance</dt>
-            <dd>{player.colorBalance}</dd>
+            <dt>Color balance</dt>
+            <dd>{prettyBalance}</dd>
             <dt>Opponent history</dt>
             <dd>
                 <ol>
-                {player.oppList.map((opponent) =>
+                {playerData.opponents(playerList).map((opponent) =>
                     <li key={opponent.id}>
                     {opponent.firstName}
                     </li>
                 )}
                 </ol>
-            </dd> */}
+            </dd>
         </dl>
 
     );

@@ -1,11 +1,11 @@
 // @ts-check
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import "@reach/tabs/styles.css";
 import demoRoster from "./demo-players.json";
 import createPlayer from "./chess-tourney-v2/player";
-import { cleanAvoidList } from "./chess-tourney-v2/player-manager";
+import {cleanAvoidList} from "./chess-tourney-v2/player";
 import {TournamentList} from "./jsx/tournament";
 import {PlayerView} from "./jsx/players.jsx";
 
@@ -26,15 +26,13 @@ function App() {
     }, [playerList]);
     return (
         <React.StrictMode>
-        <Tabs defaultIndex={0} className="react-tabs app">
-            <header className="header">
-                <TabList>
-                    <Tab>Players</Tab>
-                    <Tab>Tournament</Tab>
-                    <Tab>Options</Tab>
-                </TabList>
-            </header>
-            <div className="body">
+        <Tabs>
+            <TabList>
+                <Tab>Players</Tab>
+                <Tab>Tournament</Tab>
+                <Tab>Options</Tab>
+            </TabList>
+            <TabPanels>
                 <TabPanel>
                     <PlayerView
                         playerList={playerList}
@@ -50,7 +48,7 @@ function App() {
                         Coming soon.
                     </p>
                 </TabPanel>
-            </div>
+            </TabPanels>
             <footer className="caution footer">
                 <Caution />
             </footer>

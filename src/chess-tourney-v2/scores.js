@@ -1,12 +1,21 @@
 // @ts-check
 import {firstBy} from "thenby";
-import {dummyPlayer} from "./player";
-import demoTieBreaks from "../demo-tiebreak.json";
+import {dummyPlayer, getPlayer, getPlayerAvoidList} from "./player";
+
+/**
+ * @callback ScoreCalculator
+ * @param {number} playerId
+ * @param {*[]} roundList
+ * @param {number} [roundId]
+ */
 
 function isBye(match) {
     return match.result.includes(dummyPlayer.id);
 }
 
+/**
+ * @type {ScoreCalculator}
+ */
 function getMatchesByPlayer(playerId, roundList, roundId = null) {
     let rounds;
     if (roundId === null) {
@@ -22,6 +31,9 @@ function getMatchesByPlayer(playerId, roundList, roundId = null) {
     );
 }
 
+/**
+ * @type {ScoreCalculator}
+ */
 function getPlayersByOpponent(opponent, roundList, roundId = null) {
     return getMatchesByPlayer(
         opponent,
@@ -37,9 +49,7 @@ function getPlayersByOpponent(opponent, roundList, roundId = null) {
 
 /**
  * Get a list of all of a player's scores from each match.
- * @param {number} player
- * @param {[]} roundList
- * @param {number=} roundId
+ * @type {ScoreCalculator}
  * @returns {number[]} the list of scores
  */
 function playerScoreList(player, roundList, roundId = null) {
@@ -50,6 +60,9 @@ function playerScoreList(player, roundList, roundId = null) {
 
 /**
  * TODO: Maybe merge this with the other function?
+ */
+/**
+ * @type {ScoreCalculator}
  */
 function playerScoreListNoByes(playerId, roundList, roundId = null) {
     return getMatchesByPlayer(
@@ -63,6 +76,9 @@ function playerScoreListNoByes(playerId, roundList, roundId = null) {
     );
 }
 
+/**
+ * @type {ScoreCalculator}
+ */
 function playerScore(playerId, roundList, roundId = null) {
     let score = 0;
     const scoreList = playerScoreList(playerId, roundList, roundId);
@@ -72,6 +88,9 @@ function playerScore(playerId, roundList, roundId = null) {
     return score;
 }
 
+/**
+ * @type {ScoreCalculator}
+ */
 function playerScoreCum(playerId, roundList, roundId = null) {
     let runningScore = 0;
     /** @type {number[]} */
@@ -92,6 +111,9 @@ function playerScoreCum(playerId, roundList, roundId = null) {
  * Calculate a player's color balance. A negative number means they played as
  * white more. A positive number means they played as black more.
  */
+/**
+ * @type {ScoreCalculator}
+ */
 function playerColorBalance(playerId, roundList, roundId = null) {
     let color = 0;
     getMatchesByPlayer(playerId, roundList, roundId).filter(
@@ -110,6 +132,10 @@ function playerColorBalance(playerId, roundList, roundId = null) {
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
+ */
+/**
+ * @type {ScoreCalculator}
+ * @param {boolean} [solkoff]
  */
 function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
     // get all of the opponent's scores
@@ -138,12 +164,18 @@ function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
 /**
  * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
  */
+/**
+ * @type {ScoreCalculator}
+ */
 function solkoff(playerId, roundList, roundId = null) {
     return modifiedMedian(playerId, roundList, roundId, true);
 }
 
 /**
  * Get the cumulative scores of a player's opponents.
+ */
+/**
+ * @type {ScoreCalculator}
  */
 function playerOppScoreCum(playerId, roundList, roundId = null) {
     const opponents = getPlayersByOpponent(
@@ -169,10 +201,34 @@ const tbFuncs = {
     solkoff
 };
 
+const tbMethods = [
+    {
+        name: "Modified median",
+        func: modifiedMedian
+    },
+    {
+        name: "Solkoff",
+        func: solkoff
+    },
+    {
+        name: "Cumulative score",
+        func: playerScoreCum
+    },
+    {
+        name: "Cumulative of opposition",
+        func: playerOppScoreCum
+    },
+    {
+        name: "Most black",
+        func: playerColorBalance
+    }
+];
+
 /**
  * @typedef {Object} Standing
  * @property {number} id
- * @property {Object<string, number>} scores
+ * @property {number} score
+ * @property {number[]} tieBreaks
  */
 
 /**
@@ -181,18 +237,23 @@ const tbFuncs = {
  * @returns {boolean}
  */
 function areScoresEqual(standing1, standing2) {
-    // Get the list of tiebreak types
-    const scoreTypes = Object.getOwnPropertyNames(standing1.scores);
     let areEqual = true;
     // Check if any of them aren't equal
-    scoreTypes.forEach(function (score) {
-        if (standing1.scores[score] !== standing2.scores[score]) {
+    if (standing1.score !== standing2.score) {
+        areEqual = false;
+    }
+    standing1.tieBreaks.forEach(function (score) {
+        if (standing1.tieBreaks[score] !== standing2.tieBreaks[score]) {
             areEqual = false;
         }
     });
     return areEqual;
 }
 
+/**
+ * @param {*[]} roundList
+ * @returns {number[]}
+ */
 function getAllPlayers(roundList) {
     const allPlayers = roundList.reduce( // flatten the rounds
         (acc, round) => acc.concat(round),
@@ -206,34 +267,31 @@ function getAllPlayers(roundList) {
 
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
- * @returns {Array<Array<Standing>>}
+ * @param {number[]} methods
+ * @param {*[]} roundList
+ * @param {number} [roundId]
+ * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
-function calcStandings(roundList, roundId = null) {
-    const tieBreaks = demoTieBreaks.filter((m) => m.active);
+function calcStandings(methods, roundList, roundId = null) {
+    const tieBreaks = methods.map((m) => tbMethods[m]);
     // Get a flat list of all of the players and their scores.
     const standingsFlat = getAllPlayers(roundList).map(function (pId) {
         /** @type {Standing} */
         const standing = {
             id: pId,
-            scores: {
-                score: playerScore(pId, roundList, roundId)
-            }
+            score: playerScore(pId, roundList, roundId),
+            tieBreaks: tieBreaks.map((method) => (
+                method.func(pId, roundList, roundId)
+            ))
         };
-        tieBreaks.forEach(function (method) {
-            standing.scores[method.id] = tbFuncs[method.id](
-                pId,
-                roundList,
-                roundId
-            );
-        });
         return standing;
     });
     // Create a function to sort the players
-    let sortFunc = firstBy((standing) => standing.scores.score, -1);
+    let sortFunc = firstBy((standing) => standing.score, -1);
     // For each tiebreak method, chain another `thenBy` to the function.
     tieBreaks.forEach(function (method) {
         sortFunc = sortFunc.thenBy(
-            (standing) => standing.scores[method.id],
+            (standing) => standing.tieBreaks[method.id],
             -1
         );
     });
@@ -254,7 +312,28 @@ function calcStandings(roundList, roundId = null) {
         }
         standingsTree[runningRank].push(standing);
     });
-    return standingsTree;
+    return [standingsTree, tieBreaks.map((m) => m.name)];
+}
+
+/**
+ * @type {ScoreCalculator}
+ */
+function getPlayerMatchData(playerId, roundList, roundNum = null) {
+    return {
+        data: (playerList) => getPlayer(playerId, playerList),
+        score: () => playerScore(playerId, roundList, roundNum),
+        opponents: (playerList) => (
+            getPlayersByOpponent(playerId, roundList, roundNum).map(
+                (pId) => getPlayer(pId, playerList)
+            )
+        ),
+        colorBalance: () => playerColorBalance(playerId, roundList, roundNum),
+        avoidList: (avoidList, playerList) => (
+            getPlayerAvoidList(playerId, avoidList).map(
+                (pId) => getPlayer(pId, playerList)
+            )
+        )
+    };
 }
 
 export default Object.freeze({
@@ -265,5 +344,6 @@ export default Object.freeze({
     playerScore,
     playerScoreCum,
     playerScoreList,
-    solkoff
+    solkoff,
+    getPlayerMatchData
 });

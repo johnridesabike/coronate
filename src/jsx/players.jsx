@@ -1,11 +1,10 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
 import {BackButton, OpenButton} from "./utility";
-import createPlayer from "../chess-tourney-v2/player";
-import {
+import createPlayer, {
     getPlayer,
     getPlayerAvoidList
-} from "../chess-tourney-v2/player-manager";
+} from "../chess-tourney-v2/player";
 
 /**
  * @param {Object} props
