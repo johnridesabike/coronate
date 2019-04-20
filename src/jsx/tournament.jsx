@@ -62,6 +62,7 @@ export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
     const tourney = demoTourneyList[tourneyId];
     const players = tourney.players;
     const [roundList, setRoundList] = useState(tourney.roundList);
+    const [defaultTab, setDefaultTab] = useState(0);
     const [standingTree, tbMethods] = scores.calcStandings(
         tourney.tieBreaks,
         roundList
@@ -88,11 +89,18 @@ export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
             })
         );
         setRoundList(roundList.concat([newRound]));
+        setDefaultTab(roundList.length + 1);
+    }
+    function setMatchResult(roundId, matchId, result) {
+        setRoundList(function (prevRound) {
+            const newRound = [...roundList];
+            newRound[roundId][matchId].result = result;
+            return newRound;
+        });
     }
     return (
-        <Tabs>
+        <Tabs defaultIndex={defaultTab}>
             {BackButton}
-            <button onClick={() => newRound()}>New Round</button>
             <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Players</Tab>
@@ -100,6 +108,7 @@ export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
                 {roundList.map((round, id) =>
                     <Tab key={id}>Round {id + 1}</Tab>
                 )}
+                <button onClick={() => newRound()}>New Round</button>
             </TabList>
             <TabPanels>
             <TabPanel>
@@ -153,7 +162,8 @@ export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
                         matchList={matchList}
                         num={id}
                         roundList={roundList}
-                        playerList={playerList}/>
+                        playerList={playerList}
+                        setMatchResult={setMatchResult}/>
                 </TabPanel>
             )}
             </TabPanels>
@@ -161,7 +171,7 @@ export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
     );
 }
 
-function Round({matchList, roundList, num, playerList}) {
+function Round({matchList, roundList, num, playerList, setMatchResult}) {
     const [selectedMatch, setSelectedMatch] = useState(null);
     return (
         <PanelContainer>
@@ -190,15 +200,21 @@ function Round({matchList, roundList, num, playerList}) {
                             <input
                                 type="radio"
                                 checked={match.result[0] === 1}
-                                readOnly/>
+                                onChange={
+                                    () => setMatchResult(num, pos, [1, 0])
+                                }/>
                             <input
                                 type="radio"
                                 checked={match.result[0] === 0.5}
-                                readOnly/>
+                                onChange={
+                                    () => setMatchResult(num, pos, [0.5, 0.5])
+                                }/>
                             <input
                                 type="radio"
                                 checked={match.result[1] === 1}
-                                readOnly/>
+                                onChange={
+                                    () => setMatchResult(num, pos, [0, 1])
+                                }/>
                         </td>
                         <td className="table__player row__player">
                             {getPlayer(match.players[1], playerList).firstName}

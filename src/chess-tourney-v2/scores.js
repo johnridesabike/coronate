@@ -220,14 +220,6 @@ function playerOppScoreCum(playerId, roundList, roundId = null) {
     return score;
 }
 
-const tbFuncs = {
-    modifiedMedian,
-    playerColorBalance,
-    playerOppScoreCum,
-    playerScoreCum,
-    solkoff
-};
-
 const tbMethods = [
     {
         name: "Modified median",
@@ -316,11 +308,8 @@ function calcStandings(methods, roundList, roundId = null) {
     // Create a function to sort the players
     let sortFunc = firstBy((standing) => standing.score, -1);
     // For each tiebreak method, chain another `thenBy` to the function.
-    tieBreaks.forEach(function (method) {
-        sortFunc = sortFunc.thenBy(
-            (standing) => standing.tieBreaks[method.id],
-            -1
-        );
+    tieBreaks.forEach(function (ignore, index) {
+        sortFunc = sortFunc.thenBy((standing) => standing.tieBreaks[index], -1);
     });
     // Finally, sort the players.
     standingsFlat.sort(sortFunc);
