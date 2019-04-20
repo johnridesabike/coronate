@@ -2,12 +2,14 @@
     {
         "name": "The second-most epic tournament",
         "tieBreaks": [4, 0, 1, 2],
+        "byeQueue": [3, 5],
         "players": [1, 3, 5, 7, 11, 13],
         "roundList": []
     },
     {
         "name": "The most epic tournament",
         "tieBreaks": [0, 1, 2, 3],
+        "byeQueue": [3, 5],
         "players": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "roundList": [
             [

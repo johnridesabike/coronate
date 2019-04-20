@@ -26,13 +26,13 @@ function App() {
     }, [playerList]);
     return (
         <React.StrictMode>
-        <Tabs>
-            <TabList>
+        <Tabs className="app">
+            <TabList className="header">
                 <Tab>Players</Tab>
                 <Tab>Tournament</Tab>
                 <Tab>Options</Tab>
             </TabList>
-            <TabPanels>
+            <TabPanels className="body">
                 <TabPanel>
                     <PlayerView
                         playerList={playerList}
@@ -41,7 +41,9 @@ function App() {
                         setAvoidList={setAvoidList}/>
                 </TabPanel>
                 <TabPanel>
-                    <TournamentList playerList={playerList} />
+                    <TournamentList
+                        playerList={playerList}
+                        avoidList={avoidList} />
                 </TabPanel>
                 <TabPanel>
                     <p>
@@ -56,6 +58,8 @@ function App() {
         </React.StrictMode>
     );
 }
+
+export const RedTab = (props) => <Tab {...props} style={{ color: "red" }} />;
 
 function Caution() {
     return (

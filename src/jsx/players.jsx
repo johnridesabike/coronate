@@ -52,7 +52,7 @@ export function PlayerList({
         event.preventDefault();
         const newPlayer = createPlayer(newPlayerData);
         newPlayer.id = nextId;
-        setNextId(nextId + 1);
+        setNextId((prevId) => prevId + 1);
         setNewPlayerdata(newPlayerDefault);
         setPlayerList(playerList.concat(newPlayer));
     };

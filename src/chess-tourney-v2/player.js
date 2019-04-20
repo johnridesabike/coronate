@@ -46,6 +46,7 @@ export {getPlayer};
 /**
  * @param {number} playerId
  * @param {number[][]} avoidList
+ * @returns {number[]}
  */
 function getPlayerAvoidList(playerId, avoidList) {
     return avoidList.filter( // get pairings with the player

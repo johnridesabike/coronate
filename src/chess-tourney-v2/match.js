@@ -4,14 +4,15 @@
  * @param {object} importObj
  */
 function createMatch(importObj) {
-    const [white, black] = importObj.roster;
     const match = {
-        /** @type {string} */
-        id: white + "." + black,
         /** @type {number[]} */
-        roster: importObj.roster,
+        players: importObj.players,
         /** @type {number[]} */
-        result: []
+        result: [0, 0],
+        /** @type {number[]} */
+        origRating: importObj.origRating,
+        /** @type {number[]} */
+        newRating: importObj.newRating
     };
     return match;
 }

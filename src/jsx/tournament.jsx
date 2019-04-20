@@ -1,15 +1,18 @@
 // @ts-check
 import React, {Fragment, useState} from "react";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+// import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import numeral from "numeral";
 import "react-tabs/style/react-tabs.css";
 import demoTourneyList from "../demo-tourney.json";
 import {getPlayer} from "../chess-tourney-v2/player";
 import scores from "../chess-tourney-v2/scores";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
+import pairPlayers from "../chess-tourney-v2/pairing";
+import createMatch from "../chess-tourney-v2/match";
 
 
-export function TournamentList({playerList}) {
+export function TournamentList({playerList, avoidList}) {
     const [openTourney, setOpenTourney] = useState(null);
     let content = <Fragment></Fragment>;
     if (openTourney !== null) {
@@ -17,7 +20,9 @@ export function TournamentList({playerList}) {
             <TournamentTabs
                 tourneyId={openTourney}
                 playerList={playerList}
-                setOpenTourney={setOpenTourney} />
+                setOpenTourney={setOpenTourney}
+                BackButton={<BackButton action={() => setOpenTourney(null)}/>}
+                avoidList={avoidList}/>
         );
     } else {
         content = (
@@ -53,16 +58,41 @@ export function TournamentList({playerList}) {
  *
  * @param {Object} props
  */
-export function TournamentTabs({tourneyId, playerList}) {
+export function TournamentTabs({tourneyId, playerList, BackButton, avoidList}) {
     const tourney = demoTourneyList[tourneyId];
     const players = tourney.players;
-    const roundList = tourney.roundList;
+    const [roundList, setRoundList] = useState(tourney.roundList);
     const [standingTree, tbMethods] = scores.calcStandings(
         tourney.tieBreaks,
         roundList
     );
+    function newRound() {
+        const pairs = pairPlayers(
+            players,
+            roundList.length - 1,
+            roundList,
+            playerList,
+            avoidList
+        );
+        const newRound = pairs.map(
+            (pair) => createMatch({
+                players: [pair[0], pair[1]],
+                origRating: [
+                    getPlayer(pair[0], playerList).rating,
+                    getPlayer(pair[1], playerList).rating
+                ],
+                newRating: [
+                    getPlayer(pair[0], playerList).rating,
+                    getPlayer(pair[1], playerList).rating
+                ]
+            })
+        );
+        setRoundList(roundList.concat([newRound]));
+    }
     return (
         <Tabs>
+            {BackButton}
+            <button onClick={() => newRound()}>New Round</button>
             <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Players</Tab>
@@ -71,6 +101,7 @@ export function TournamentTabs({tourneyId, playerList}) {
                     <Tab key={id}>Round {id + 1}</Tab>
                 )}
             </TabList>
+            <TabPanels>
             <TabPanel>
                 <ul>
                 {players.map((pId) =>
@@ -125,6 +156,7 @@ export function TournamentTabs({tourneyId, playerList}) {
                         playerList={playerList}/>
                 </TabPanel>
             )}
+            </TabPanels>
         </Tabs>
     );
 }
@@ -175,9 +207,9 @@ function Round({matchList, roundList, num, playerList}) {
                         </td>
                         <td className="data__input row__controls">
                         {(
-                            (selectedMatch !== pos)
-                            ? <OpenButton action={() => setSelectedMatch(pos)} />
-                            : <BackButton action={() => setSelectedMatch(null)} />
+                        (selectedMatch !== pos)
+                        ? <OpenButton action={() => setSelectedMatch(pos)} />
+                        : <BackButton action={() => setSelectedMatch(null)} />
                         )}
                         </td>
                     </tr>
@@ -207,6 +239,8 @@ function Round({matchList, roundList, num, playerList}) {
                             num
                         )}
                         playerList={playerList} />
+                    <h3>Match ideal</h3>
+                    {}
                 </div>
             }
             </Panel>
@@ -248,8 +282,8 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
                 )}
                 </ol>
             </dd>
+            <dt>Players to avoid</dt>
         </dl>
-
     );
 }
 

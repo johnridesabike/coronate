@@ -34,6 +34,20 @@ function getMatchesByPlayer(playerId, roundList, roundId = null) {
 /**
  * @type {ScoreCalculator}
  */
+function hasHadBye(playerId, roundList, roundId = null) {
+    return getMatchesByPlayer(
+        playerId,
+        roundList,
+        roundId
+    ).reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    ).includes(dummyPlayer.id);
+}
+
+/**
+ * @type {ScoreCalculator}
+ */
 function getPlayersByOpponent(opponent, roundList, roundId = null) {
     return getMatchesByPlayer(
         opponent,
@@ -338,6 +352,8 @@ function getPlayerMatchData(playerId, roundList, roundNum = null) {
 
 export default Object.freeze({
     calcStandings,
+    hasHadBye,
+    getPlayersByOpponent,
     modifiedMedian,
     playerColorBalance,
     playerOppScoreCum,
