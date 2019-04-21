@@ -156,16 +156,18 @@ function PlayerInfoBox({
     avoidList,
     setAvoidList
 }) {
-    const unAvoided = () => playerList.filter(
-        (p) => !avoidList.includes(p.id) // TODO FIX
-    );
-    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0].id);
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
     );
+    const unAvoided = () => playerList.map(
+        (player) => player.id
+    ).filter(
+        (pId) => !singAvoidList.includes(pId) && pId !== playerId
+    );
+    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
     function avoidAdd(event) {
         event.preventDefault();
-        avoidList.push([playerId, selectedAvoider]);
+        avoidList.push([playerId, Number(selectedAvoider)]);
         setAvoidList([...avoidList]);
     };
     /** @param {number} avoidPlayer */
@@ -175,7 +177,7 @@ function PlayerInfoBox({
         ));
     };
     useEffect(function () {
-        setSelectedAvoider(unAvoided()[0].id);
+        setSelectedAvoider(unAvoided()[0]);
         setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
     }, [avoidList]);
     return (
@@ -210,12 +212,12 @@ function PlayerInfoBox({
             </dl>
             <form onSubmit={(event) => avoidAdd(event)}>
                 Add player to avoid
-                <select>
-                {unAvoided().map((player) =>
-                    <option
-                        key={player.id}
-                        onBlur={() => setSelectedAvoider(player.id)}>
-                        {player.firstName} {player.lastName}
+                <select
+                    onBlur={(event) => setSelectedAvoider(event.target.value)}>
+                {unAvoided().map((pId) =>
+                    <option key={pId} value={pId}>
+                        {getPlayer(pId, playerList).firstName}&nbsp;
+                        {getPlayer(pId, playerList).lastName}
                     </option>
                 )}
                 </select>
