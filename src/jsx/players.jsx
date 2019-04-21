@@ -1,64 +1,77 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
 import {BackButton, OpenButton} from "./utility";
-/**
- * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
- * @typedef {import("../chess-tourney").Player} Player
- */
+import createPlayer, {
+    getPlayer,
+    getPlayerAvoidList,
+    kFactor
+} from "../chess-tourney/player";
 
 /**
  * @param {Object} props
- * @param {PlayerManager} props.playerManager
  */
-export function PlayerView({playerManager}) {
+export function PlayerView({
+    playerList,
+    setPlayerList,
+    avoidList,
+    setAvoidList
+}) {
     /** @type {number} */
     const defaultOpen = null;
     const [openPlayer, setOpenPlayer] = useState(defaultOpen);
     if (openPlayer !== null) {
-        return <PlayerInfoBox key={openPlayer}
-            playerId={openPlayer} setOpenPlayer={setOpenPlayer}
-            playerManager={playerManager} />;
+        return <PlayerInfoBox
+            key={openPlayer}
+            playerId={openPlayer}
+            setOpenPlayer={setOpenPlayer}
+            playerList={playerList}
+            avoidList={avoidList}
+            setAvoidList={setAvoidList} />;
     } else {
-        return <PlayerList playerManager={playerManager}
-            setOpenPlayer={setOpenPlayer} />;
+        return <PlayerList
+            playerList={playerList}
+            setPlayerList={setPlayerList}
+            setOpenPlayer={setOpenPlayer}/>;
     }
 }
 
 /**
  * @param {Object} props
- * @param {PlayerManager} props.playerManager
- * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
  */
-export function PlayerList({playerManager, setOpenPlayer}) {
-    const [roster, setRoster] = useState(playerManager.playerList);
+export function PlayerList({
+    playerList,
+    setPlayerList,
+    setOpenPlayer
+}) {
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
-    const [newPlayer, setNewPlayer] = useState(newPlayerDefault);
-    /** @param {React.FormEvent<HTMLElement>} event */
+    const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
+    const ids = playerList.map((p) => p.id);
+    ids.sort((a, b) => a - b);
+    ids.reverse();
+    const [nextId, setNextId] = useState(ids[0] + 1);
     const handleSubmit = function (event) {
         event.preventDefault();
-        playerManager.addPlayer(newPlayer);
-        setNewPlayer(newPlayerDefault);
-        setRoster([...playerManager.playerList]);
+        const newPlayer = createPlayer(newPlayerData);
+        newPlayer.id = nextId;
+        setNextId((prevId) => prevId + 1);
+        setNewPlayerdata(newPlayerDefault);
+        setPlayerList(playerList.concat(newPlayer));
     };
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
         event.preventDefault();
         /** @type {Object<string, string>} */
         let update = {};
         update[event.currentTarget.name] = event.currentTarget.value;
-        setNewPlayer(Object.assign({}, newPlayer, update));
+        setNewPlayerdata(Object.assign({}, newPlayerData, update));
     };
-    /**
-     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
-     * @param {number} id
-     */
-    const delPlayer = function (event, id) {
+    const delPlayer = function (event, player) {
         event.preventDefault();
-        playerManager.delPlayer(id);
-        setRoster([...playerManager.playerList]);
+        const index = playerList.indexOf(player);
+        playerList.splice(index, 1);
+        setPlayerList([...playerList]);
     };
     let rosterTable = <Fragment></Fragment>;
-    if (roster.length > 0) {
+    if (playerList.length > 0) {
         rosterTable =
         <table>
             <caption>Demo Roster</caption>
@@ -72,7 +85,7 @@ export function PlayerList({playerManager, setOpenPlayer}) {
                 </tr>
             </thead>
             <tbody>
-            {roster.map((player) =>
+            {playerList.map((player) =>
                 <tr key={player.id}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__player">{player.lastName}</td>
@@ -80,7 +93,7 @@ export function PlayerList({playerManager, setOpenPlayer}) {
                     <td>
                         <button
                             onClick={(event) =>
-                                delPlayer(event, player.id)
+                                delPlayer(event, player)
                             }>
                             x
                         </button>
@@ -96,16 +109,15 @@ export function PlayerList({playerManager, setOpenPlayer}) {
     return (
         <div className="roster">
             {rosterTable}
-            <p>
-                Add your own players:
-            </p>
             <form onSubmit={handleSubmit}>
+            <fieldset>
+                <legend>Add your own players</legend>
                 <p>
                     <label>
                         First name&nbsp;
                         <input type="text" name="firstName"
                             onChange={updateField}
-                            value={newPlayer.firstName} required />
+                            value={newPlayerData.firstName} required />
                     </label>
                 </p>
                 <p>
@@ -113,7 +125,7 @@ export function PlayerList({playerManager, setOpenPlayer}) {
                         Last name&nbsp;
                         <input type="text" name="lastName"
                             onChange={updateField}
-                            value={newPlayer.lastName} required />
+                            value={newPlayerData.lastName} required />
                     </label>
                 </p>
                 <p>
@@ -121,12 +133,13 @@ export function PlayerList({playerManager, setOpenPlayer}) {
                         Rating&nbsp;
                         <input type="number" name="rating"
                             onChange={updateField}
-                            value={newPlayer.rating} required />
+                            value={newPlayerData.rating} required />
                     </label>
                 </p>
                 <p>
                     <input type="submit" value="Add"/>
                 </p>
+            </fieldset>
             </form>
         </div>
     );
@@ -135,50 +148,57 @@ export function PlayerList({playerManager, setOpenPlayer}) {
 /**
  *
  * @param {Object} props
- * @param {number} props.playerId
- * @param {PlayerManager} props.playerManager
- * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
  */
-function PlayerInfoBox({playerId, playerManager, setOpenPlayer}) {
-    const getPlayer = playerManager.getPlayerById;
-    const [avoidList, setAvoidList] = useState(
-        playerManager.getPlayerAvoidList(playerId)
+function PlayerInfoBox({
+    playerId,
+    playerList,
+    setOpenPlayer,
+    avoidList,
+    setAvoidList
+}) {
+    const [singAvoidList, setSingAvoidList] = useState(
+        getPlayerAvoidList(playerId, avoidList)
     );
-    const unAvoided = () => playerManager.playerList.filter(
-        (p) => !avoidList.includes(p.id) && playerId !== p.id
+    const unAvoided = () => playerList.map(
+        (player) => player.id
+    ).filter(
+        (pId) => !singAvoidList.includes(pId) && pId !== playerId
     );
-    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0].id);
-    /** @param {React.FormEvent<HTMLFormElement>} event */
+    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
     function avoidAdd(event) {
         event.preventDefault();
-        playerManager.avoidListAdd(playerId, selectedAvoider);
-        setAvoidList(playerManager.getPlayerAvoidList(playerId));
+        avoidList.push([playerId, Number(selectedAvoider)]);
+        setAvoidList([...avoidList]);
     };
     /** @param {number} avoidPlayer */
     function avoidRemove(avoidPlayer) {
-        playerManager.avoidListRemove(playerId, avoidPlayer);
-        setAvoidList(playerManager.getPlayerAvoidList(playerId));
+        setAvoidList(avoidList.filter(
+            (pair) => !(pair.includes(playerId) && pair.includes(avoidPlayer))
+        ));
     };
     useEffect(function () {
-        setSelectedAvoider(unAvoided()[0].id);
+        setSelectedAvoider(unAvoided()[0]);
+        setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
     }, [avoidList]);
     return (
         <div>
             <BackButton action={() => setOpenPlayer(null)}/>
             <h2>
-                {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
+                {getPlayer(playerId, playerList).firstName}&nbsp;
+                {getPlayer(playerId, playerList).lastName}
             </h2>
             <dl>
                 <dt>Matches played</dt>
-                <dd>{getPlayer(playerId).matchCount}</dd>
+                <dd>{getPlayer(playerId, playerList).matchCount}</dd>
                 <dt>K factor</dt>
-                <dd>{getPlayer(playerId).getKFactor()}</dd>
+                <dd>{kFactor(getPlayer(playerId, playerList).matchCount)}</dd>
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>
-                    {avoidList.map((pId) =>
+                    {singAvoidList.map((pId) =>
                         <li key={pId}>
-                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                            {getPlayer(pId, playerList).firstName}&nbsp;
+                            {getPlayer(pId, playerList).lastName}
                             <button onClick={() => avoidRemove(pId)}>
                                 x
                             </button>
@@ -191,16 +211,19 @@ function PlayerInfoBox({playerId, playerManager, setOpenPlayer}) {
                 </dd>
             </dl>
             <form onSubmit={(event) => avoidAdd(event)}>
-                Add player to avoid
-                <select>
-                {unAvoided().map((player) =>
-                    <option key={player.id} value={player.id}
-                        onBlur={() => setSelectedAvoider(player.id)}>
-                        {player.firstName} {player.lastName}
+            <fieldset>
+                <legend>Add player to avoid</legend>
+                <select
+                    onBlur={(event) => setSelectedAvoider(event.target.value)}>
+                {unAvoided().map((pId) =>
+                    <option key={pId} value={pId}>
+                        {getPlayer(pId, playerList).firstName}&nbsp;
+                        {getPlayer(pId, playerList).lastName}
                     </option>
                 )}
                 </select>
                 <input type="submit" value="Add"/>
+            </fieldset>
             </form>
         </div>
     );

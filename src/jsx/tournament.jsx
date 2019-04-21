@@ -1,185 +1,428 @@
 // @ts-check
-import React, {useState, useEffect, Fragment} from "react";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
-import {createTournament, scores} from "../chess-tourney";
-import {TourneySetup} from "./tourney-setup.jsx";
-import {RoundContainer} from "./round.jsx";
-import {range} from "lodash";
-import {BackButton} from "./utility";
-/**
- * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
- * @typedef {import("../chess-tourney").Tournament} Tournament
- */
-/**
- * @param {Object} props
- * @param {PlayerManager} props.playerManager
- * @param {Tournament} props.openTourney
- * @param {Tournament[]} props.tourneyList
- * @param {React.Dispatch<React.SetStateAction<Tournament[]>>} props.setTourneyList
- * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
- */
+import React, {Fragment, useState} from "react";
+import numeral from "numeral";
+import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
+import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
+import {getPlayer, calcNewRatings} from "../chess-tourney/player";
+import {calcStandings, getPlayerMatchData} from "../chess-tourney/scores";
+import pairPlayers from "../chess-tourney/pairing";
+import createMatch from "../chess-tourney/match";
+import {BLACK, WHITE} from "../chess-tourney/constants";
+
+
 export function TournamentList({
-    playerManager,
+    playerList,
+    setPlayerList,
+    avoidList,
     tourneyList,
-    setTourneyList,
-    openTourney,
-    setOpenTourney
+    setTourneyList
 }) {
-    const newTourneyDefaults = {name: "The most epic tournament"};
-    const [newTourneyData, setNewTourneyData] = useState(newTourneyDefaults);
-    /** @param {React.FormEvent<HTMLFormElement>} event */
-    const newTourney = function(event) {
-        event.preventDefault();
-        let tourney = createTournament({players: playerManager});
-        tourney.name = newTourneyData.name;
-        tourney.id = tourneyList.length;
-        let newTList = [tourney];
-        setTourneyList(newTList.concat(tourneyList));
-        setNewTourneyData(newTourneyDefaults);
-        setOpenTourney(tourney);
-    };
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
-    const updateField = function (event) {
-        /** @type {Object<string, string>} */
-        const update = {};
-        update[event.target.name] = event.target.value;
-        setNewTourneyData(Object.assign({}, newTourneyData, update));
-    };
-    /** @param {number} id */
-    const selectTourney = function (id) {
-        setOpenTourney(tourneyList[id]);
-    };
+    const [openTourney, setOpenTourney] = useState(null);
     let content = <Fragment></Fragment>;
-    if (openTourney) {
-        content =
-        <TournamentFrame
-            key={openTourney.id}
-            tourney={openTourney}
-            playerManager={playerManager}
-            setOpenTourney={setOpenTourney} />;
+    if (openTourney !== null) {
+        content = (
+            <TournamentTabs
+                tourneyId={openTourney}
+                playerList={playerList}
+                setOpenTourney={setOpenTourney}
+                backButton={<BackButton action={() => setOpenTourney(null)}/>}
+                avoidList={avoidList}
+                setPlayerList={setPlayerList}
+                tourneyList={tourneyList}
+                setTourneyList={setTourneyList} />
+        );
     } else {
-        content =
-        <Fragment>
-            {(tourneyList.length > 0)
-            ?
-                <ol>
+        content = (
+            <nav>
+            {(
+                (tourneyList.length > 0)
+                ?
+                    <ol>
                     {tourneyList.map((tourney, i) =>
-                        <li key={i} tabIndex={0} role="menuitem"
-                            onClick={() => selectTourney(i)}
-                            onKeyPress={() => selectTourney(i)}>
-                            {tourney.name}
+                        <li key={i}>
+                            <button onClick={() => setOpenTourney(i)}>
+                                {tourney.name}
+                            </button>
                         </li>
                     )}
-                </ol>
-            :
-                <p>
-                    No tournaments added yet.
-                </p>
-            }
-            <form onSubmit={newTourney}>
-                <input type="text" name="name" value={newTourneyData.name}
-                    onChange={updateField} required />
-                <input type="submit" value="New Tournament" />
-            </form>
-        </Fragment>;
+                    </ol>
+                :
+                    <p>
+                        No tournaments added yet.
+                    </p>
+            )}
+            </nav>
+        );
     }
     return (
-        <main>
+        <div>
             {content}
-        </main>
+        </div>
     );
 }
 
 /**
  *
  * @param {Object} props
- * @param {Tournament} props.tourney
- * @param {PlayerManager} props.playerManager
- * @param {React.Dispatch<React.SetStateAction<Tournament>>} props.setOpenTourney
  */
-function TournamentFrame({tourney, playerManager, setOpenTourney}) {
-    const [playerList, setPlayerList] = useState(tourney.roster);
-    const [roundNums, setRoundNums] = useState(range(tourney.getNumOfRounds()));
-    useEffect(function () {
-        setRoundNums(range(tourney.getNumOfRounds()));
-    }, [playerList]);
-    const [roundList, setRoundList] = useState(tourney.roundList);
-    /** @param {number} id */
-    function isRoundReady(id) {
-        return roundList[id];
-    };
+export function TournamentTabs({
+    tourneyId,
+    playerList,
+    setPlayerList,
+    backButton,
+    avoidList,
+    tourneyList,
+    setTourneyList
+}) {
+    const tourney = tourneyList[tourneyId];
+    const players = tourney.players;
+    const [defaultTab, setDefaultTab] = useState(0);
+    const [standingTree, tbMethods] = calcStandings(
+        tourney.tieBreaks,
+        tourney.roundList
+    );
     function newRound() {
-        tourney.newRound();
-        setRoundList([...tourney.roundList]);
+        const round = [];
+        tourney.roundList = tourney.roundList.concat([round]);
+        setTourneyList([...tourneyList]);
+        setDefaultTab(tourney.roundList.length + 1);
+    }
+    function autoPair(unPairedPlayers, roundId) {
+        const pairs = pairPlayers(
+            unPairedPlayers,
+            roundId,
+            tourney.roundList,
+            playerList,
+            avoidList
+        );
+        const matchList = pairs.map(
+            (pair) => createMatch({
+                players: [pair[WHITE], pair[BLACK]],
+                origRating: [
+                    getPlayer(pair[WHITE], playerList).rating,
+                    getPlayer(pair[BLACK], playerList).rating
+                ],
+                newRating: [
+                    getPlayer(pair[WHITE], playerList).rating,
+                    getPlayer(pair[BLACK], playerList).rating
+                ]
+            })
+        );
+        tourney.roundList[roundId] = (
+            tourney.roundList[roundId].concat(matchList)
+        );
+        setTourneyList([...tourneyList]);
+    }
+    function manualPair(pair, roundId) {
+        const match = createMatch({
+            players: [pair[WHITE], pair[BLACK]],
+            origRating: [
+                getPlayer(pair[WHITE], playerList).rating,
+                getPlayer(pair[BLACK], playerList).rating
+            ],
+            newRating: [
+                getPlayer(pair[WHITE], playerList).rating,
+                getPlayer(pair[BLACK], playerList).rating
+            ]
+        });
+        tourney.roundList[roundId].push(match);
+        setTourneyList([...tourneyList]);
+    }
+    function setMatchResult(roundId, matchId, result) {
+        const match = tourney.roundList[roundId][matchId];
+        const white = getPlayer(match.players[WHITE], playerList);
+        const black = getPlayer(match.players[BLACK], playerList);
+        const [
+            whiteRating,
+            blackRating
+        ] = calcNewRatings(
+            match.origRating,
+            [white.matchCount, black.matchCount],
+            result
+        );
+        setTourneyList(function (prevTourney) {
+            const newTourney = [...prevTourney];
+            newTourney[tourneyId].roundList[roundId][matchId].result = result;
+            newTourney[tourneyId].roundList[roundId][matchId].newRating = [
+                whiteRating,
+                blackRating
+            ];
+            return newTourney;
+        });
+        white.rating = whiteRating;
+        black.rating = blackRating;
+        white.matchCount += 1;
+        black.matchCount += 1;
+        setPlayerList([...playerList]);
     }
     return (
-        <Tabs>
-            <BackButton action={() => setOpenTourney(null)} />
+        <Tabs defaultIndex={defaultTab}>
+            {backButton}
             <h2>{tourney.name}</h2>
             <TabList>
-                <Tab>Setup</Tab>
-                <Tab disabled={playerList.length === 0}>Standings</Tab>
-                {roundNums.map((roundNum) =>
-                    <Tab key={roundNum} disabled={!isRoundReady(roundNum)}>
-                        Round {roundNum + 1}
-                    </Tab>
+                <Tab>Players</Tab>
+                <Tab>Scores</Tab>
+                {tourney.roundList.map((round, id) =>
+                    <Tab key={id}>Round {id + 1}</Tab>
                 )}
             </TabList>
+            <TabPanels>
             <TabPanel>
-                <TourneySetup key={tourney.id} setPlayerList={setPlayerList}
-                    playerList={playerList} newRound={newRound}
-                    tourney={tourney} playerManager={playerManager}/>
+                <ul>
+                {players.map((pId) =>
+                    <li key={pId}>
+                        {getPlayer(pId, playerList).firstName}&nbsp;
+                        {getPlayer(pId, playerList).lastName}
+                    </li>
+                )}
+                </ul>
             </TabPanel>
             <TabPanel>
-                <Standings tourney={tourney} />
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                {tbMethods.map((name, i) =>
+                                    <th key={i}>{name}</th>
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {standingTree.map((standings, rank) =>
+                            standings.map((standing) =>
+                                <tr key={standing.id}>
+                                    <td className="table__number">
+                                        {rank + 1}
+                                    </td>
+                                    <td>
+                                        {getPlayer(
+                                            standing.id,
+                                            playerList
+                                        ).firstName}
+                                    </td>
+                                    <td className="table__number">
+                                        {standing.score}
+                                    </td>
+                                    {standing.tieBreaks.map((score, i) =>
+                                        <td key={i} className="table__number">
+                                            {score}
+                                        </td>
+                                    )}
+                                </tr>
+                            )
+                        )}
+                        </tbody>
+                    </table>
             </TabPanel>
-            {roundNums.map((roundNum) =>
-                <TabPanel key={roundNum}>
-                    <RoundContainer key={roundNum}
-                        round={roundList[roundNum]}
-                        setRoundList={setRoundList} newRound={newRound} />
+            {tourney.roundList.map((matchList, id) =>
+                <TabPanel key={id}>
+                    <Round
+                        matchList={matchList}
+                        num={id}
+                        tourney={tourney}
+                        playerList={playerList}
+                        setMatchResult={setMatchResult}
+                        autoPair={autoPair}
+                        manualPair={manualPair}/>
                 </TabPanel>
             )}
+            </TabPanels>
+            <button onClick={() => newRound()}>New Round</button>
         </Tabs>
     );
 }
 
-/**
- *
- * @param {Object} props
- * @param {Tournament} props.tourney
- */
-export function Standings({tourney}) {
+function Round({
+    matchList,
+    tourney,
+    num,
+    playerList,
+    setMatchResult,
+    autoPair,
+    manualPair
+}) {
+    const [selectedMatch, setSelectedMatch] = useState(null);
+    const [selectedPlayers, setSelectedPlayers] = useState([]);
+    function selectPlayer(event) {
+        const pId = Number(event.target.value);
+        if (event.target.checked) {
+            setSelectedPlayers(function (prevState) {
+                // stop React from adding an ID twice in a row
+                if (!prevState.includes(pId)) {
+                    prevState.push(pId);
+                }
+                // ensure that only the last two players stay selected.
+                return prevState.slice(-2);
+            });
+        } else {
+            setSelectedPlayers(selectedPlayers.filter((id) => id !== pId));
+        }
+    }
+    const roundList = tourney.roundList;
+    const matched = matchList.reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    );
+    const unMatched = tourney.players.filter(
+        (pId) => !matched.includes(pId)
+    );
     return (
-      <table>
-        <caption>Current Standings</caption>
-        <thead>
-          <tr>
-            <th></th>
-            <th>First name</th>
-            <th>Score</th>
-            {tourney.tieBreak.filter((m) => m.active).map((method, i) =>
-                <th key={i}>{method.name}</th>
+        <PanelContainer>
+            <Panel>
+            <table className="table__roster">
+                <caption>Round {num + 1} results</caption>
+                <thead>
+                <tr>
+                    <th className="row__id">#</th>
+                    <th className="row__player">White</th>
+                    <th className="row__result">Result</th>
+                    <th className="row__player">Black</th>
+                    <th className="row__controls"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {matchList.map((match, pos) =>
+                    <tr key={pos}>
+                        <td className="table__number row__id">{pos + 1}</td>
+                        <td className="table__player row__player">
+                            {getPlayer(match.players[0], playerList).firstName}
+                            &nbsp;
+                            {getPlayer(match.players[0], playerList).lastName}
+                        </td>
+                        <td className="data__input row__result">
+                            <input
+                                type="radio"
+                                checked={match.result[0] === 1}
+                                onChange={
+                                    () => setMatchResult(num, pos, [1, 0])
+                                }/>
+                            <input
+                                type="radio"
+                                checked={match.result[0] === 0.5}
+                                onChange={
+                                    () => setMatchResult(num, pos, [0.5, 0.5])
+                                }/>
+                            <input
+                                type="radio"
+                                checked={match.result[1] === 1}
+                                onChange={
+                                    () => setMatchResult(num, pos, [0, 1])
+                                }/>
+                        </td>
+                        <td className="table__player row__player">
+                            {getPlayer(match.players[1], playerList).firstName}
+                            &nbsp;
+                            {getPlayer(match.players[1], playerList).lastName}
+                        </td>
+                        <td className="data__input row__controls">
+                        {(
+                        (selectedMatch !== pos)
+                        ? <OpenButton action={() => setSelectedMatch(pos)} />
+                        : <BackButton action={() => setSelectedMatch(null)} />
+                        )}
+                        </td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+            </Panel>
+            <Panel>
+            {selectedMatch !== null &&
+                <div>
+                    <h2>Match info</h2>
+                    <PlayerMatchInfo
+                        match={matchList[selectedMatch]}
+                        color={0}
+                        playerData={getPlayerMatchData(
+                            matchList[selectedMatch].players[0],
+                            roundList,
+                            num
+                        )}
+                        playerList={playerList}/>
+                    <PlayerMatchInfo
+                        match={matchList[selectedMatch]}
+                        color={1}
+                        playerData={getPlayerMatchData(
+                            matchList[selectedMatch].players[1],
+                            roundList,
+                            num
+                        )}
+                        playerList={playerList} />
+                </div>
+            }
+            {unMatched.length > 0 && (
+                <Fragment>
+                    <h3>Unmatched players</h3>
+                    <ul>
+                        {unMatched.map((pId) =>
+                            <li key={pId}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedPlayers.includes(pId)}
+                                    value={pId}
+                                    onChange={selectPlayer}/>
+                                {getPlayer(pId, playerList).firstName}
+                            </li>
+                        )}
+                    </ul>
+                    <button
+                        onClick={() => manualPair(selectedPlayers, num)}
+                        disabled={selectedPlayers.length !== 2}>
+                        Pair checked
+                    </button>&nbsp;
+                    <button
+                        onClick={() => autoPair(unMatched, num)}
+                        disabled={unMatched.length === 0}>
+                        Auto-pair
+                    </button>
+                </Fragment>
             )}
-          </tr>
-        </thead>
-        {scores.calcStandings(tourney).map((rank, i) =>
-          <tbody key={i}>
-            {rank.map((standing) =>
-              <tr key={standing.id}>
-                  <td>{i + 1}</td>
-                  <td>{standing.player.firstName}</td>
-                  <td className="table__number">{standing.scores.score}</td>
-                  {tourney.tieBreak.filter((m) => m.active).map((method, i) =>
-                      <td className="table__number" key={i}>
-                          {standing.scores[method.name]}
-                      </td>
-                  )}
-              </tr>
-              )}
-          </tbody>
-        )}
-      </table>
+            </Panel>
+        </PanelContainer>
+    );
+}
+
+function PlayerMatchInfo({match, color, playerData, playerList}) {
+    const colorBalance = playerData.colorBalance();
+    let prettyBalance = "Even";
+    if (colorBalance < 0) {
+        prettyBalance = "White +" + Math.abs(colorBalance);
+    } else if (colorBalance > 0) {
+        prettyBalance = "Black +" + colorBalance;
+    }
+    return (
+        <dl className="player-card">
+            <h3>
+                {playerData.data(playerList).firstName}&nbsp;
+                {playerData.data(playerList).lastName}
+            </h3>
+            <dt>Score</dt>
+            <dd>{playerData.score()}</dd>
+            <dt>Rating</dt>
+            <dd>
+                {match.origRating[color]}
+                &nbsp;
+                (
+                {numeral(
+                    match.origRating[color] - match.newRating[color]
+                ).format("+0")}
+                )
+            </dd>
+            <dt>Color balance</dt>
+            <dd>{prettyBalance}</dd>
+            <dt>Opponent history</dt>
+            <dd>
+                <ol>
+                {playerData.opponents(playerList).map((opponent) =>
+                    <li key={opponent.id}>
+                    {opponent.firstName}
+                    </li>
+                )}
+                </ol>
+            </dd>
+            <dt>Players to avoid</dt>
+        </dl>
     );
 }

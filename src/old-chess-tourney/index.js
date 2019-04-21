@@ -6,6 +6,7 @@ import createRound from "./round";
 import scores from "./scores";
 import createTournament from "./tournament";
 import {JSONretriever} from "./config";
+import pairPlayers from "./pairing";
 /**
  * @typedef {import("./player").Player} Player
  * @typedef {import("./player-manager").PlayerManager } PlayerManager
@@ -23,5 +24,6 @@ export {
     createRound,
     scores,
     createTournament,
-    createPlayerManager
+    createPlayerManager,
+    pairPlayers
 };

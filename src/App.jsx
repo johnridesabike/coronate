@@ -1,72 +1,73 @@
 // @ts-check
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
-// import {MainNav, NavItem} from "./jsx/utility.jsx";
-import {createPlayerManager} from "./chess-tourney";
-import {PlayerView} from "./jsx/players.jsx";
-import {TournamentList} from "./jsx/tournament.jsx";
-import {Options} from "./jsx/options.jsx";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import "@reach/tabs/styles.css";
 import demoRoster from "./demo-players.json";
-/**
- * @typedef {import("./chess-tourney").Tournament} Tournament
- */
+import demoTourneyList from "./demo-tourney.json";
+import createPlayer from "./chess-tourney/player";
+import {cleanAvoidList} from "./chess-tourney/player";
+import {TournamentList} from "./jsx/tournament";
+import {PlayerView} from "./jsx/players.jsx";
+import {Options} from "./jsx/options";
+
 function App() {
-    /** @type {Tournament[]} */
-    const initList = [];
-    const [tourneylist, setTourneyList] = useState(initList);
-    /** @type {Tournament | null} */
-    const initOpen = null;
-    const [openTourney, setOpenTourney] = useState(initOpen);
-    const [playerManager] = useState(
-        createPlayerManager(demoRoster)
+    const [playerList, setPlayerList] = useState(
+        demoRoster.playerList.map((p) => createPlayer(p))
     );
-    // const [currentView, setCurrentView] = useState(0);
-    // /** @param {number} id */
-    // const setViewList = (id) => setCurrentView(id);
-    // const viewList = [
-    //     <PlayerView playerManager={playerManager} />,
-    //     <TournamentList playerManager={playerManager}
-    //         tourneyList={tourneylist} setTourneyList={setTourneyList}
-    //         openTourney={openTourney} setOpenTourney={setOpenTourney} />,
-    //     <Options playerManager={playerManager} tourneyList={tourneylist}
-    //         setTourneyList={setTourneyList} setOpenTourney={setOpenTourney} />
-    // ];
+    const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
+    const [tourneyList, setTourneyList] = useState(demoTourneyList);
+    useEffect(function () {
+        // remove stale IDs
+        setAvoidList(cleanAvoidList(avoidList, playerList));
+    }, [playerList]);
     return (
-        <Tabs defaultIndex={1} className="app">
-            <header  className="header">
-                <TabList>
-                    <Tab>Players</Tab>
-                    <Tab>Tournaments</Tab>
-                    <Tab>Options</Tab>
-                </TabList>
-            </header>
-            <div className="body">
+        <React.StrictMode>
+        <Tabs className="app" defaultIndex={1}>
+            <TabList className="header">
+                <Tab>Players</Tab>
+                <Tab>Tournament</Tab>
+                <Tab>Options</Tab>
+                <Tab>About</Tab>
+            </TabList>
+            <TabPanels className="body">
                 <TabPanel>
-                    <PlayerView playerManager={playerManager} />
+                    <PlayerView
+                        playerList={playerList}
+                        setPlayerList={setPlayerList}
+                        avoidList={avoidList}
+                        setAvoidList={setAvoidList}/>
                 </TabPanel>
                 <TabPanel>
                     <TournamentList
-                        playerManager={playerManager}
-                        tourneyList={tourneylist}
-                        setTourneyList={setTourneyList}
-                        openTourney={openTourney}
-                        setOpenTourney={setOpenTourney} />
+                        playerList={playerList}
+                        setPlayerList={setPlayerList}
+                        avoidList={avoidList}
+                        tourneyList={tourneyList}
+                        setTourneyList={setTourneyList}/>
                 </TabPanel>
                 <TabPanel>
                     <Options
-                        playerManager={playerManager}
-                        tourneyList={tourneylist}
-                        setTourneyList={setTourneyList}
-                        setOpenTourney={setOpenTourney} />
+                        playerList={playerList}
+                        avoidList={avoidList}
+                        tourneyList={tourneyList}
+                    />
                 </TabPanel>
-            </div>
+                <TabPanel>
+                    <p>
+                        Coming soon.
+                    </p>
+                </TabPanel>
+            </TabPanels>
             <footer className="caution footer">
                 <Caution />
             </footer>
         </Tabs>
+        </React.StrictMode>
     );
 }
+
+export const RedTab = (props) => <Tab {...props} style={{ color: "red" }} />;
 
 function Caution() {
     return (

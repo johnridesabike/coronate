@@ -2,26 +2,59 @@
 import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
-import createMatch from "./match";
-import scores from "./scores";
-import {dummyPlayer} from "./player";
-
+import {dummyPlayer, getPlayerAvoidList, getPlayer} from "./player";
+import {
+    playerScore,
+    playerColorBalance,
+    getPlayersByOpponent,
+    playerMatchColor,
+    hasHadBye
+} from "./scores";
 /**
- * @typedef {import("./player").Player} Player
- * @typedef {import("./round").Round} Round
- * @typedef {import("./match").Match} Match
- * @typedef {import("./tournament").Tournament} Tournament
+ * @typedef {import("./index").PlayerData} PlayerData
+ * @typedef {import("./index").Round} Round
+ * @typedef {import("./index").Player} Player
  */
 /**
- * @typedef {Object} PlayerDataType
- * @property {Player} player
- * @property {number} id
- * @property {number} score
- * @property {(number | null)} dueColor
- * @property {number} colorBalance
- * @property {number[]} opponentHistory
- * @property {boolean} upperHalf
+ * @param {number} playerId
+ * @param {Round[]} roundList
+ * @param {number} roundId
+ * @param {Player[]} playerList
+ * @param {number[][]} avoidList
+ * @returns {PlayerData}
  */
+function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
+    /**
+     * @param {number} pId
+     * @returns {number | null}
+     */
+    const dueColor = function (pId) {
+        if (!roundList[roundId - 1]) {
+            return null;
+        }
+        let color = 0;
+        let prevColor = playerMatchColor(
+            pId,
+            roundList[roundId - 1]
+        );
+        if (prevColor === 0) {
+            color = 1;
+        }
+        return color;
+    };
+    return {
+        rating: getPlayer(playerId, playerList).rating,
+        id: playerId,
+        score: playerScore(playerId, roundList, roundId),
+        dueColor: dueColor(playerId),
+        colorBalance: playerColorBalance(playerId, roundList, roundId),
+        opponentHistory: getPlayersByOpponent(playerId, roundList, null),
+        upperHalf: false,
+        avoidList: getPlayerAvoidList(playerId, avoidList)
+    };
+}
+Object.freeze(genPlayerData);
+export {genPlayerData};
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -56,140 +89,105 @@ const differentHalfPriority = 2;
  * @type {number}
  */
 const differentDueColorPriority = 1;
-/** @type {number} */
-const maxPriority = (
-    avoidMeetingTwicePriority
-    + sameScoresPriority
-    + differentHalfPriority
-    + differentDueColorPriority
-);
+// /** @type {number} */
+// const maxPriority = (
+//     avoidMeetingTwicePriority
+//     + sameScoresPriority
+//     + differentHalfPriority
+//     + differentDueColorPriority
+// );
+
+
+/**
+ * Create an array of blossom-compatible weighted matchups. This returns
+ * an array of each potential match, formatted like so: [idOfPlayer1,
+ * idOfPlayer2, priority]. A higher priority means a more likely matchup.
+ * @param {PlayerData} player1
+ * @param {PlayerData} player2
+ * @param {number[]} scoreList
+ * @returns {number}
+ */
+function calcPairIdeal(player1, player2, scoreList) {
+    let priority = 0;
+    let scoreDiff;
+    const metBefore = player1.opponentHistory.includes(player2.id);
+    const mustAvoid = player1.avoidList.includes(player2.id);
+    if (!metBefore && !mustAvoid) {
+        priority += avoidMeetingTwicePriority;
+    }
+    // Calculate the "distance" between their scores and multiply that
+    // against the `sameScoresPriority` constant.
+    scoreDiff = Math.abs(
+        scoreList.indexOf(player1.score)
+        - scoreList.indexOf(player2.score)
+    );
+    scoreDiff = (scoreList.length - scoreDiff) / scoreList.length;
+    priority += sameScoresPriority * scoreDiff;
+    // Only include `differentHalfPriority` if they're in the same
+    // score group.
+    if (player1.score === player2.score) {
+        if (player1.upperHalf !== player2.upperHalf) {
+            priority += differentHalfPriority;
+        }
+    }
+    if (player1.dueColor === null) {
+        priority += differentDueColorPriority;
+    } else if (player1.dueColor !== player2.dueColor) {
+        priority += differentDueColorPriority;
+    }
+    return Math.ceil(priority);
+}
+Object.freeze(calcPairIdeal);
+export {calcPairIdeal};
 
 /**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
- * @param {Round} round The round object.
+ * @param {object[][]} roundList
+ * @param {number} roundId
  * @param {number[]} players
+ * @param {object[]} playerList
+ * @param {number[][]} avoidList
  */
-function pairPlayers(round, players) {
-    /** @type {Match} */
+function pairPlayers(players, roundId, roundList, playerList, avoidList) {
+    /** @type {number[]} */
     let byeMatch;
-    /** @type {Array<Array<number>>} */
+    /** @type {number[][]} */
     let potentialMatches;
-    /** @type {Match[]} */
+    /** @type {Number[][]} */
     let matches;
     /** @type {number[]} */
     let blossomResults;
-    /** @type {Array<[PlayerDataType, PlayerDataType, number]>} */
+    /** @type {[PlayerData, PlayerData, number][]} */
     let reducedResults;
-    /** @type {Tournament} */
-    const tourney = round.ref_tourney;
-    /**
-     * @param {number} id
-     * @returns {number | null}
-     */
-    const dueColor = function (id) {
-        if (!round.ref_prevRound) {
-            return null;
-        }
-        let color = 0;
-        let prevColor = round.ref_prevRound.playerColor(id);
-        if (prevColor === 0) {
-            color = 1;
-        }
-        return color;
-    };
-    /** @type {PlayerDataType[]} */
-    let playerData = players.map((id) => ({
-        player: tourney.players.getPlayerById(id),
-        id: id,
-        score: scores.playerScore(tourney, id, round.id),
-        dueColor: dueColor(id),
-        colorBalance: scores.playerColorBalance(tourney, id),
-        opponentHistory: tourney.getPlayersByOpponent(id, null),
-        upperHalf: false
-    }));
-    const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
+    /** @type {number[]} */
+    let scoreList;
+    /** @type {PlayerData[]} */
+    let playerData = players.map((playerId) => (
+        genPlayerData(playerId, playerList, avoidList, roundList, roundId)
+    ));
+    scoreList = Array.from(new Set(playerData.map((p) => p.score)));
     scoreList.sort();
     // Sort the data so matchups default to order by score and rating.
     playerData.sort(
-        firstBy((p) => p.score, -1).thenBy((p) => p.player.rating, -1)
+        firstBy((p) => p.score, -1).thenBy((p) => p.rating, -1)
     );
-    /**
-     * Create an array of blossom-compatible weighted matchups. This returns
-     * an array of each potential match, formatted like so: [idOfPlayer1,
-     * idOfPlayer2, priority]. A higher priority means a more likely matchup.
-     * Use it in `Array.prototype.reduce()`.
-     * @param {number[][]} allMatches The running list of all possible matchups.
-     * @param {PlayerDataType} player1 The data for the first player.
-     * @param {number} ignore The index of the player.
-     * @param {PlayerDataType[]} src The original array.
-     */
-    const matchupReducer = function (allMatches, player1, ignore, src) {
-        const opponents = src.filter((p) => p !== player1);
-        const playerMatches = opponents.map(function (player2) {
-            let priority = 0;
-            let scoreDiff;
-            const metBefore = player1.opponentHistory.includes(player2.id);
-            const mustAvoid = tourney.players.getPlayerAvoidList(
-                player1.id
-            ).includes(player2.id);
-            if (!metBefore && !mustAvoid) {
-                priority += avoidMeetingTwicePriority;
-            }
-            // Calculate the "distance" between their scores and multiply that
-            // against the `sameScoresPriority` constant.
-            scoreDiff = Math.abs(
-                scoreList.indexOf(player1.score)
-                - scoreList.indexOf(player2.score)
-            );
-            scoreDiff = (scoreList.length - scoreDiff) / scoreList.length;
-            priority += sameScoresPriority * scoreDiff;
-            // Only include `differentHalfPriority` if they're in the same
-            // score group.
-            if (player1.score === player2.score) {
-                if (player1.upperHalf !== player2.upperHalf) {
-                    priority += differentHalfPriority;
-                }
-            }
-            if (player1.dueColor === null) {
-                priority += differentDueColorPriority;
-            } else if (player1.dueColor !== player2.dueColor) {
-                priority += differentDueColorPriority;
-            }
-            return [player1.id, player2.id, Math.ceil(priority)];
-        });
-        allMatches = allMatches.concat(playerMatches);
-        return allMatches;
-    };
-
     // If there's an odd number of players, time to assign a bye.
     if (playerData.length % 2 !== 0) {
-        // Get the next person in line from bye signups.
-        let byePlayer = tourney.byeQueue.filter(
-            (p) => !tourney.players.getPlayerById(p).hasHadBye(tourney)
-        )[0];
-        let byePlayerData = playerData.filter(
-            (pd) => pd.id === byePlayer
-        )[0];
-        // If there isn't anyone on the list, assign a bye to the lowest-rated
-        // player in the lowest score group. (USCF § 29L2.)
-        if (!byePlayerData) {
-            byePlayerData = last(
-                playerData.filter(
-                    (p) => !p.player.hasHadBye(tourney)
-                )
-            );
-        }
+        // Assign a bye to the lowest-rated player in the lowest score group.
+        // (USCF § 29L2.)
+        let byePlayerData = last(
+            playerData.filter( // filter out players who have had a bye already.
+                (p) => !hasHadBye(p.id, roundList, roundId)
+            )
+        );
         // In the impossible situation that *everyone* has played a bye round
         // previously, then just pick the last player.
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
-        byeMatch = createMatch({
-            ref_round: round,
-            roster: [byePlayerData.id, dummyPlayer.id]
-        });
+        byeMatch = [byePlayerData.id, dummyPlayer.id];
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
@@ -197,7 +195,7 @@ function pairPlayers(round, players) {
     // groups.
     scoreList.forEach(function (score) {
         let playersWithScore = playerData.filter((pd) => pd.score === score);
-        playersWithScore.sort((pd) => pd.player.rating).reverse();
+        playersWithScore.sort((pd) => pd.rating).reverse();
         if (playersWithScore.length > 1) {
             // The first chunk is the upper half
             chunk(
@@ -208,43 +206,57 @@ function pairPlayers(round, players) {
             });
         }
     });
-    // Run the reducer. See `matchupReducer()` for info.
-    potentialMatches = playerData.reduce(matchupReducer, []);
+    // Turn the data into blossom-compatible input.
+    potentialMatches = playerData.reduce(
+        function (acc, player1, ignore, src) {
+            const playerMatches = src.filter(
+                (player) => player !== player1
+            ).map(
+                (player2) => [
+                    player1.id,
+                    player2.id,
+                    calcPairIdeal(player1, player2, scoreList)
+                ]
+            );
+            return acc.concat(playerMatches);
+        },
+        []
+    );
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
     blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
     reducedResults = blossomResults.reduce(
-        function (matches, p1Id, p2Id) {
-            // Filter out unmatched players. (Even though we removed the byes
+        function (acc, p1Id, p2Id) {
+            // Filter out unmatched players. Even though we removed the byes
             // from the list, blossom will automatically include their missing
-            // IDs in its results.)
+            // IDs in its results.
             if (p1Id !== -1) {
-                let p1 = playerData.filter((p) => p.id === p1Id)[0];
-                let p2 = playerData.filter((p) => p.id === p2Id)[0];
-                let ideal = potentialMatches.filter(
+                const p1 = playerData.filter((p) => p.id === p1Id)[0];
+                const p2 = playerData.filter((p) => p.id === p2Id)[0];
+                const ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
-                /** @type {Array} */
-                let matched = matches.map((pair) => pair[0]);
-                // let matched = matches.map((pair) => pair[0]);
+                const matched = acc.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
                 if (!matched.includes(p1) && !matched.includes(p2)) {
-                    matches.push([p1, p2, ideal]);
+                    acc.push([p1, p2, ideal]);
                 }
             }
-            return matches;
+            return acc;
         },
         []
     );
     // Sort by net score and rating for board placement.
     reducedResults.sort(
         firstBy(
+            /** @param {[PlayerData, PlayerData, number]} pair */
             (pair) => pair[0].score + pair[1].score,
             -1
         ).thenBy(
+            /** @param {[PlayerData, PlayerData, number]} pair */
             (pair) => pair[0].rating + pair[1].rating,
             -1
         )
@@ -254,32 +266,11 @@ function pairPlayers(round, players) {
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
-            const ideal = pair[2];
-            const match = createMatch({
-                ref_round: round,
-                roster: [player1.id, player2.id]
-            });
-            match.ideal = ideal / maxPriority;
-            // A quick-and-easy way to keep colors mostly equal.
+            // const ideal = pair[2];
+            const match = [player1.id, player2.id];
             if (player1.colorBalance < player2.colorBalance) {
                 match.reverse();
             }
-            // When the match isn't ideal, include a warning.
-            if (player1.opponentHistory.includes(player2.id)) {
-                match.warnings += (
-                    " " + player1.player.firstName
-                    + " and " + player2.player.firstName
-                    + " have played previously."
-                );
-            }
-            [player1, player2].forEach(function (player) {
-                if (Math.abs(player.colorBalance) > 2) {
-                    match.warnings += (
-                        " " + player.player.firstName
-                        + "'s color balance is off"
-                    );
-                }
-            });
             return match;
         }
     );

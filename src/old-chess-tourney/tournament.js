@@ -113,17 +113,14 @@ function createTournament(importObj = {}) {
             return roundId;
         },
         newRound() {
-            if (!tourney.isNewRoundReady()) {
-                throw new Error("The new round isn't ready.");
-            }
+            // if (!tourney.isNewRoundReady()) {
+            //     throw new Error("The new round isn't ready.");
+            // }
             let newRound = createRound(tourney);
             tourney.roundList.push(newRound);
             return newRound;
         },
         removeRound(round) {
-            if (typeof round === "number" || typeof round === "string") {
-                round = tourney.roundList[round];
-            }
             if (tourney.canRemoveRound(round)) {
                 throw new Error("You can only remove the last round");
             }
