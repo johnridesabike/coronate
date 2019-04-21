@@ -4,22 +4,18 @@ import "./App.css";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import "@reach/tabs/styles.css";
 import demoRoster from "./demo-players.json";
+import demoTourneyList from "./demo-tourney.json";
 import createPlayer from "./chess-tourney-v2/player";
 import {cleanAvoidList} from "./chess-tourney-v2/player";
 import {TournamentList} from "./jsx/tournament";
 import {PlayerView} from "./jsx/players.jsx";
 
 function App() {
-    // /** @type {Tournament[]} */
-    // const initList = [];
-    // const [tourneylist, setTourneyList] = useState(initList);
-    // /** @type {Tournament | null} */
-    // const initOpen = null;
-    // const [openTourney, setOpenTourney] = useState(initOpen);
     const [playerList, setPlayerList] = useState(
         demoRoster.playerList.map((p) => createPlayer(p))
     );
     const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
+    const [tourneyList, setTourneyList] = useState(demoTourneyList);
     useEffect(function () {
         // remove stale IDs
         setAvoidList(cleanAvoidList(avoidList, playerList));
@@ -44,7 +40,9 @@ function App() {
                     <TournamentList
                         playerList={playerList}
                         setPlayerList={setPlayerList}
-                        avoidList={avoidList} />
+                        avoidList={avoidList}
+                        tourneyList={tourneyList}
+                        setTourneyList={setTourneyList}/>
                 </TabPanel>
                 <TabPanel>
                     <p>

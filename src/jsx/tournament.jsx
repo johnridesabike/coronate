@@ -4,7 +4,6 @@ import React, {Fragment, useState} from "react";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import numeral from "numeral";
 import "react-tabs/style/react-tabs.css";
-import demoTourneyList from "../demo-tourney.json";
 import {getPlayer, calcNewRatings} from "../chess-tourney-v2/player";
 import scores from "../chess-tourney-v2/scores";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
@@ -13,7 +12,13 @@ import createMatch from "../chess-tourney-v2/match";
 import {BLACK, WHITE} from "../chess-tourney-v2/constants";
 
 
-export function TournamentList({playerList, setPlayerList, avoidList}) {
+export function TournamentList({
+    playerList,
+    setPlayerList,
+    avoidList,
+    tourneyList,
+    setTourneyList
+}) {
     const [openTourney, setOpenTourney] = useState(null);
     let content = <Fragment></Fragment>;
     if (openTourney !== null) {
@@ -24,16 +29,18 @@ export function TournamentList({playerList, setPlayerList, avoidList}) {
                 setOpenTourney={setOpenTourney}
                 BackButton={<BackButton action={() => setOpenTourney(null)}/>}
                 avoidList={avoidList}
-                setPlayerList={setPlayerList} />
+                setPlayerList={setPlayerList}
+                tourneyList={tourneyList}
+                setTourneyList={setTourneyList} />
         );
     } else {
         content = (
             <nav>
             {(
-                (demoTourneyList.length > 0)
+                (tourneyList.length > 0)
                 ?
                     <ol>
-                    {demoTourneyList.map((tourney, i) =>
+                    {tourneyList.map((tourney, i) =>
                         <li key={i}>
                             <button onClick={() => setOpenTourney(i)}>
                                 {tourney.name}
@@ -65,21 +72,22 @@ export function TournamentTabs({
     playerList,
     setPlayerList,
     BackButton,
-    avoidList
+    avoidList,
+    tourneyList,
+    setTourneyList
 }) {
-    const tourney = demoTourneyList[tourneyId];
+    const tourney = tourneyList[tourneyId];
     const players = tourney.players;
-    const [roundList, setRoundList] = useState(tourney.roundList);
     const [defaultTab, setDefaultTab] = useState(0);
     const [standingTree, tbMethods] = scores.calcStandings(
         tourney.tieBreaks,
-        roundList
+        tourney.roundList
     );
     function newRound() {
         const pairs = pairPlayers(
             players,
-            roundList.length - 1,
-            roundList,
+            tourney.roundList.length - 1,
+            tourney.roundList,
             playerList,
             avoidList
         );
@@ -96,11 +104,12 @@ export function TournamentTabs({
                 ]
             })
         );
-        setRoundList(roundList.concat([newRound]));
-        setDefaultTab(roundList.length + 1);
+        tourney.roundList = tourney.roundList.concat([newRound]);
+        setTourneyList([...tourneyList]);
+        setDefaultTab(tourney.roundList.length + 1);
     }
     function setMatchResult(roundId, matchId, result) {
-        const match = roundList[roundId][matchId];
+        const match = tourney.roundList[roundId][matchId];
         const white = getPlayer(match.players[WHITE], playerList);
         const black = getPlayer(match.players[BLACK], playerList);
         const [
@@ -111,11 +120,14 @@ export function TournamentTabs({
             [white.matchCount, black.matchCount],
             result
         );
-        setRoundList(function (prevRound) {
-            const newRound = [...prevRound];
-            newRound[roundId][matchId].result = result;
-            newRound[roundId][matchId].newRating = [whiteRating, blackRating];
-            return newRound;
+        setTourneyList(function (prevTourney) {
+            const newTourney = [...prevTourney];
+            newTourney[tourneyId].roundList[roundId][matchId].result = result;
+            newTourney[tourneyId].roundList[roundId][matchId].newRating = [
+                whiteRating,
+                blackRating
+            ];
+            return newTourney;
         });
         white.rating = whiteRating;
         black.rating = blackRating;
@@ -130,7 +142,7 @@ export function TournamentTabs({
             <TabList>
                 <Tab>Players</Tab>
                 <Tab>Scores</Tab>
-                {roundList.map((round, id) =>
+                {tourney.roundList.map((round, id) =>
                     <Tab key={id}>Round {id + 1}</Tab>
                 )}
             </TabList>
@@ -180,12 +192,12 @@ export function TournamentTabs({
                         </tbody>
                     </table>
             </TabPanel>
-            {roundList.map((matchList, id) =>
+            {tourney.roundList.map((matchList, id) =>
                 <TabPanel key={id}>
                     <Round
                         matchList={matchList}
                         num={id}
-                        roundList={roundList}
+                        roundList={tourney.roundList}
                         playerList={playerList}
                         setMatchResult={setMatchResult}/>
                 </TabPanel>
@@ -307,7 +319,11 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
             <dd>
                 {match.origRating[color]}
                 &nbsp;
-                ({numeral(match.origRating[color] - match.newRating[color]).format("+0")})
+                (
+                {numeral(
+                    match.origRating[color] - match.newRating[color]
+                ).format("+0")}
+                )
             </dd>
             <dt>Color balance</dt>
             <dd>{prettyBalance}</dd>
