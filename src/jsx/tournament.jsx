@@ -2,7 +2,6 @@
 import React, {Fragment, useState} from "react";
 import numeral from "numeral";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
-import "react-tabs/style/react-tabs.css";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
 import {getPlayer, calcNewRatings} from "../chess-tourney/player";
 import {calcStandings, getPlayerMatchData} from "../chess-tourney/scores";
@@ -26,7 +25,7 @@ export function TournamentList({
                 tourneyId={openTourney}
                 playerList={playerList}
                 setOpenTourney={setOpenTourney}
-                BackButton={<BackButton action={() => setOpenTourney(null)}/>}
+                backButton={<BackButton action={() => setOpenTourney(null)}/>}
                 avoidList={avoidList}
                 setPlayerList={setPlayerList}
                 tourneyList={tourneyList}
@@ -70,7 +69,7 @@ export function TournamentTabs({
     tourneyId,
     playerList,
     setPlayerList,
-    BackButton,
+    backButton,
     avoidList,
     tourneyList,
     setTourneyList
@@ -83,8 +82,8 @@ export function TournamentTabs({
         tourney.roundList
     );
     function newRound() {
-        const newRound = [];
-        tourney.roundList = tourney.roundList.concat([newRound]);
+        const round = [];
+        tourney.roundList = tourney.roundList.concat([round]);
         setTourneyList([...tourneyList]);
         setDefaultTab(tourney.roundList.length + 1);
     }
@@ -98,18 +97,35 @@ export function TournamentTabs({
         );
         const matchList = pairs.map(
             (pair) => createMatch({
-                players: [pair[0], pair[1]],
+                players: [pair[WHITE], pair[BLACK]],
                 origRating: [
-                    getPlayer(pair[0], playerList).rating,
-                    getPlayer(pair[1], playerList).rating
+                    getPlayer(pair[WHITE], playerList).rating,
+                    getPlayer(pair[BLACK], playerList).rating
                 ],
                 newRating: [
-                    getPlayer(pair[0], playerList).rating,
-                    getPlayer(pair[1], playerList).rating
+                    getPlayer(pair[WHITE], playerList).rating,
+                    getPlayer(pair[BLACK], playerList).rating
                 ]
             })
         );
-        tourney.roundList[roundId] = tourney.roundList[roundId].concat(matchList);
+        tourney.roundList[roundId] = (
+            tourney.roundList[roundId].concat(matchList)
+        );
+        setTourneyList([...tourneyList]);
+    }
+    function manualPair(pair, roundId) {
+        const match = createMatch({
+            players: [pair[WHITE], pair[BLACK]],
+            origRating: [
+                getPlayer(pair[WHITE], playerList).rating,
+                getPlayer(pair[BLACK], playerList).rating
+            ],
+            newRating: [
+                getPlayer(pair[WHITE], playerList).rating,
+                getPlayer(pair[BLACK], playerList).rating
+            ]
+        });
+        tourney.roundList[roundId].push(match);
         setTourneyList([...tourneyList]);
     }
     function setMatchResult(roundId, matchId, result) {
@@ -141,7 +157,7 @@ export function TournamentTabs({
     }
     return (
         <Tabs defaultIndex={defaultTab}>
-            {BackButton}
+            {backButton}
             <h2>{tourney.name}</h2>
             <TabList>
                 <Tab>Players</Tab>
@@ -208,7 +224,8 @@ export function TournamentTabs({
                         tourney={tourney}
                         playerList={playerList}
                         setMatchResult={setMatchResult}
-                        autoPair={autoPair}/>
+                        autoPair={autoPair}
+                        manualPair={manualPair}/>
                 </TabPanel>
             )}
             </TabPanels>
@@ -223,9 +240,26 @@ function Round({
     num,
     playerList,
     setMatchResult,
-    autoPair
+    autoPair,
+    manualPair
 }) {
     const [selectedMatch, setSelectedMatch] = useState(null);
+    const [selectedPlayers, setSelectedPlayers] = useState([]);
+    function selectPlayer(event) {
+        const pId = Number(event.target.value);
+        if (event.target.checked) {
+            setSelectedPlayers(function (prevState) {
+                // stop React from adding an ID twice in a row
+                if (!prevState.includes(pId)) {
+                    prevState.push(pId);
+                }
+                // ensure that only the last two players stay selected.
+                return prevState.slice(-2);
+            });
+        } else {
+            setSelectedPlayers(selectedPlayers.filter((id) => id !== pId));
+        }
+    }
     const roundList = tourney.roundList;
     const matched = matchList.reduce(
         (acc, match) => acc.concat(match.players),
@@ -324,11 +358,23 @@ function Round({
                     <ul>
                         {unMatched.map((pId) =>
                             <li key={pId}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedPlayers.includes(pId)}
+                                    value={pId}
+                                    onChange={selectPlayer}/>
                                 {getPlayer(pId, playerList).firstName}
                             </li>
                         )}
                     </ul>
-                    <button onClick={() => autoPair(unMatched, num)}>
+                    <button
+                        onClick={() => manualPair(selectedPlayers, num)}
+                        disabled={selectedPlayers.length !== 2}>
+                        Pair checked
+                    </button>&nbsp;
+                    <button
+                        onClick={() => autoPair(unMatched, num)}
+                        disabled={unMatched.length === 0}>
                         Auto-pair
                     </button>
                 </Fragment>

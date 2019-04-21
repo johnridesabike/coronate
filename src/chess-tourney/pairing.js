@@ -25,16 +25,16 @@ import {
  */
 function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
     /**
-     * @param {number} playerId
+     * @param {number} pId
      * @returns {number | null}
      */
-    const dueColor = function (playerId) {
+    const dueColor = function (pId) {
         if (!roundList[roundId - 1]) {
             return null;
         }
         let color = 0;
         let prevColor = playerMatchColor(
-            playerId,
+            pId,
             roundList[roundId - 1]
         );
         if (prevColor === 0) {
@@ -228,26 +228,24 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
     reducedResults = blossomResults.reduce(
-        function (matches, p1Id, p2Id) {
+        function (acc, p1Id, p2Id) {
             // Filter out unmatched players. Even though we removed the byes
             // from the list, blossom will automatically include their missing
             // IDs in its results.
             if (p1Id !== -1) {
-                let p1 = playerData.filter((p) => p.id === p1Id)[0];
-                let p2 = playerData.filter((p) => p.id === p2Id)[0];
-                let ideal = potentialMatches.filter(
+                const p1 = playerData.filter((p) => p.id === p1Id)[0];
+                const p2 = playerData.filter((p) => p.id === p2Id)[0];
+                const ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
-                /** @type {Array} */
-                let matched = matches.map((pair) => pair[0]);
-                // let matched = matches.map((pair) => pair[0]);
+                const matched = acc.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
                 if (!matched.includes(p1) && !matched.includes(p2)) {
-                    matches.push([p1, p2, ideal]);
+                    acc.push([p1, p2, ideal]);
                 }
             }
-            return matches;
+            return acc;
         },
         []
     );

@@ -16,6 +16,8 @@
         "space-infix-ops": "warn",
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],
-        "jsx-quotes": ["warn", "prefer-double"]
+        "jsx-quotes": ["warn", "prefer-double"],
+        "no-unused-vars": "error",
+        "no-shadow": "error"
     }
 }
