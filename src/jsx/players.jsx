@@ -3,7 +3,8 @@ import React, {useState, useEffect, Fragment} from "react";
 import {BackButton, OpenButton} from "./utility";
 import createPlayer, {
     getPlayer,
-    getPlayerAvoidList
+    getPlayerAvoidList,
+    kFactor
 } from "../chess-tourney-v2/player";
 
 /**
@@ -156,7 +157,7 @@ function PlayerInfoBox({
     setAvoidList
 }) {
     const unAvoided = () => playerList.filter(
-        (p) => !avoidList.includes(p.id) && playerId !== p.id
+        (p) => !avoidList.includes(p.id) // TODO FIX
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0].id);
     const [singAvoidList, setSingAvoidList] = useState(
@@ -188,7 +189,7 @@ function PlayerInfoBox({
                 <dt>Matches played</dt>
                 <dd>{getPlayer(playerId, playerList).matchCount}</dd>
                 <dt>K factor</dt>
-                <dd>{getPlayer(playerId, playerList).getKFactor()}</dd>
+                <dd>{kFactor(getPlayer(playerId, playerList).matchCount)}</dd>
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>
@@ -211,7 +212,8 @@ function PlayerInfoBox({
                 Add player to avoid
                 <select>
                 {unAvoided().map((player) =>
-                    <option key={player.id} value={player.id}
+                    <option
+                        key={player.id}
                         onBlur={() => setSelectedAvoider(player.id)}>
                         {player.firstName} {player.lastName}
                     </option>

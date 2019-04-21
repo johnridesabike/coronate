@@ -1,5 +1,6 @@
 // @ts-check
 import EloRank from "elo-rank";
+import {WHITE, BLACK} from "./constants";
 
 function createPlayer(importObj = {}) {
     const player = {
@@ -9,14 +10,7 @@ function createPlayer(importObj = {}) {
         lastName: importObj.lastName || "",
         rating: importObj.rating || 0,
         dummy: importObj.dummy || false,
-        matchCount: importObj.matchCount || 0,
-        getKFactor() {
-            const ne = player.matchCount || 1;
-            return (800 / ne);
-        },
-        getEloRank() {
-            return new EloRank(player.getKFactor());
-        }
+        matchCount: importObj.matchCount || 0
     };
     return player;
 }
@@ -73,3 +67,44 @@ function cleanAvoidList(avoidList, playerList) {
 }
 Object.freeze(cleanAvoidList);
 export {cleanAvoidList};
+
+/**
+ * @param {number} matchCount
+ */
+function kFactor(matchCount) {
+    const ne = matchCount || 1;
+    return (800 / ne);
+}
+Object.freeze(kFactor);
+export {kFactor};
+
+function calcNewRatings(origRatings, matchCounts, result) {
+    const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
+    const blackElo = new EloRank(kFactor(matchCounts[BLACK]));
+    const FLOOR = 100;
+    const scoreExpected = [
+        whiteElo.getExpected(origRatings[WHITE], origRatings[BLACK]),
+        blackElo.getExpected(origRatings[BLACK], origRatings[WHITE])
+    ];
+    const newRating = [
+        whiteElo.updateRating(
+            scoreExpected[WHITE],
+            result[WHITE],
+            origRatings[WHITE]
+        ),
+        blackElo.updateRating(
+            scoreExpected[BLACK],
+            result[BLACK],
+            origRatings[BLACK]
+        )
+    ];
+    return newRating.map(
+        (rating) => (
+            (rating < FLOOR)
+            ? FLOOR
+            : rating
+        )
+    );
+}
+Object.freeze(calcNewRatings);
+export {calcNewRatings};

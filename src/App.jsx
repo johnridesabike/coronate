@@ -43,6 +43,7 @@ function App() {
                 <TabPanel>
                     <TournamentList
                         playerList={playerList}
+                        setPlayerList={setPlayerList}
                         avoidList={avoidList} />
                 </TabPanel>
                 <TabPanel>
