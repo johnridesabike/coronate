@@ -4,11 +4,11 @@ import numeral from "numeral";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import "react-tabs/style/react-tabs.css";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
-import {getPlayer, calcNewRatings} from "../chess-tourney-v2/player";
-import {calcStandings, getPlayerMatchData} from "../chess-tourney-v2/scores";
-import pairPlayers from "../chess-tourney-v2/pairing";
-import createMatch from "../chess-tourney-v2/match";
-import {BLACK, WHITE} from "../chess-tourney-v2/constants";
+import {getPlayer, calcNewRatings} from "../chess-tourney/player";
+import {calcStandings, getPlayerMatchData} from "../chess-tourney/scores";
+import pairPlayers from "../chess-tourney/pairing";
+import createMatch from "../chess-tourney/match";
+import {BLACK, WHITE} from "../chess-tourney/constants";
 
 
 export function TournamentList({

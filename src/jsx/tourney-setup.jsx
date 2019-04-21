@@ -2,10 +2,10 @@
 import React, {useState, useEffect, Fragment} from "react";
 import {PanelContainer, Panel, moveArrItem} from "./utility";
 /**
- * @typedef {import("../chess-tourney").PlayerManager} PlayerManager
- * @typedef {import("../chess-tourney").Tournament} Tournament
- * @typedef {import("../chess-tourney").Player} Player
- * @typedef {import("../chess-tourney").ConfigItem} ConfigItem
+ * @typedef {import("../old-chess-tourney").PlayerManager} PlayerManager
+ * @typedef {import("../old-chess-tourney").Tournament} Tournament
+ * @typedef {import("../old-chess-tourney").Player} Player
+ * @typedef {import("../old-chess-tourney").ConfigItem} ConfigItem
  */
 /**
  * @param {Object} props

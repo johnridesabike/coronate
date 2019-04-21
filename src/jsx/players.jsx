@@ -5,7 +5,7 @@ import createPlayer, {
     getPlayer,
     getPlayerAvoidList,
     kFactor
-} from "../chess-tourney-v2/player";
+} from "../chess-tourney/player";
 
 /**
  * @param {Object} props

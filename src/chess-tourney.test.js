@@ -3,13 +3,13 @@
  * These tests rely on randomness so aren't reliable. They may need to be
  * rewritten to show consistent results.
  */
-import {createTournament, createPlayerManager} from "./chess-tourney";
+import {createTournament, createPlayerManager} from "./old-chess-tourney";
 import demoPlayers from "./demo-players.json";
 import {sortBy, times, random} from "lodash";
 /**
- * @typedef {import("./chess-tourney").Match} Match
- * @typedef {import("./chess-tourney").Tournament} Tournament
- * @typedef {import("./chess-tourney").Player} Player
+ * @typedef {import("./old-chess-tourney").Match} Match
+ * @typedef {import("./old-chess-tourney").Tournament} Tournament
+ * @typedef {import("./old-chess-tourney").Player} Player
  */
 
 const globalRoster = createPlayerManager({roster: demoPlayers.slice(0, 16)});

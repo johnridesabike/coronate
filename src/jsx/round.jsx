@@ -1,15 +1,15 @@
 // @ts-check
 import React, {useState, useEffect, Fragment} from "react";
-import {scores, pairPlayers, createMatch} from "../chess-tourney";
+import {scores, pairPlayers, createMatch} from "../old-chess-tourney";
 import numeral from "numeral";
 import "../round.css";
 import {PanelContainer, Panel, moveArrItem} from "./utility";
 /**
- * @typedef {import("../chess-tourney").Tournament} Tournament
- * @typedef {import("../chess-tourney").Round} Round
- * @typedef {import("../chess-tourney").Match} Match
- * @typedef {import("../chess-tourney").PlayerInfo} PlayerInfo
- * @typedef {import("../chess-tourney").Player} Player
+ * @typedef {import("../old-chess-tourney").Tournament} Tournament
+ * @typedef {import("../old-chess-tourney").Round} Round
+ * @typedef {import("../old-chess-tourney").Match} Match
+ * @typedef {import("../old-chess-tourney").PlayerInfo} PlayerInfo
+ * @typedef {import("../old-chess-tourney").Player} Player
  */
 /**
  * @param {Object} props
