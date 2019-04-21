@@ -9,6 +9,7 @@ import createPlayer from "./chess-tourney-v2/player";
 import {cleanAvoidList} from "./chess-tourney-v2/player";
 import {TournamentList} from "./jsx/tournament";
 import {PlayerView} from "./jsx/players.jsx";
+import {Options} from "./jsx/options";
 
 function App() {
     const [playerList, setPlayerList] = useState(
@@ -22,11 +23,12 @@ function App() {
     }, [playerList]);
     return (
         <React.StrictMode>
-        <Tabs className="app">
+        <Tabs className="app" defaultIndex={1}>
             <TabList className="header">
                 <Tab>Players</Tab>
                 <Tab>Tournament</Tab>
                 <Tab>Options</Tab>
+                <Tab>About</Tab>
             </TabList>
             <TabPanels className="body">
                 <TabPanel>
@@ -43,6 +45,13 @@ function App() {
                         avoidList={avoidList}
                         tourneyList={tourneyList}
                         setTourneyList={setTourneyList}/>
+                </TabPanel>
+                <TabPanel>
+                    <Options
+                        playerList={playerList}
+                        avoidList={avoidList}
+                        tourneyList={tourneyList}
+                    />
                 </TabPanel>
                 <TabPanel>
                     <p>

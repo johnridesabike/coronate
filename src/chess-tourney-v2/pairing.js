@@ -2,27 +2,26 @@
 import {firstBy} from "thenby";
 import {chunk, last} from "lodash";
 import blossom from "edmonds-blossom";
-// import createMatch from "./match";
-import scores from "./scores";
 import {dummyPlayer, getPlayerAvoidList, getPlayer} from "./player";
+import {
+    playerScore,
+    playerColorBalance,
+    getPlayersByOpponent,
+    playerMatchColor,
+    hasHadBye
+} from "./scores";
 /**
- * @typedef {Object} PlayerDataType
- * @property {number} id
- * @property {number} score
- * @property {(number | null)} dueColor
- * @property {number} colorBalance
- * @property {number[]} opponentHistory
- * @property {boolean} upperHalf
- * @property {number} rating
- * @property {number[]} avoidList
+ * @typedef {import("./index").PlayerData} PlayerData
+ * @typedef {import("./index").Round} Round
+ * @typedef {import("./index").Player} Player
  */
 /**
  * @param {number} playerId
- * @param {object[][]} roundList
+ * @param {Round[]} roundList
  * @param {number} roundId
- * @param {object[]} playerList
+ * @param {Player[]} playerList
  * @param {number[][]} avoidList
- * @returns {PlayerDataType}
+ * @returns {PlayerData}
  */
 function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
     /**
@@ -34,7 +33,7 @@ function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
             return null;
         }
         let color = 0;
-        let prevColor = scores.playerMatchColor(
+        let prevColor = playerMatchColor(
             playerId,
             roundList[roundId - 1]
         );
@@ -46,10 +45,10 @@ function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
     return {
         rating: getPlayer(playerId, playerList).rating,
         id: playerId,
-        score: scores.playerScore(playerId, roundList, roundId),
+        score: playerScore(playerId, roundList, roundId),
         dueColor: dueColor(playerId),
-        colorBalance: scores.playerColorBalance(playerId, roundList, roundId),
-        opponentHistory: scores.getPlayersByOpponent(playerId, roundList, null),
+        colorBalance: playerColorBalance(playerId, roundList, roundId),
+        opponentHistory: getPlayersByOpponent(playerId, roundList, null),
         upperHalf: false,
         avoidList: getPlayerAvoidList(playerId, avoidList)
     };
@@ -103,8 +102,8 @@ const differentDueColorPriority = 1;
  * Create an array of blossom-compatible weighted matchups. This returns
  * an array of each potential match, formatted like so: [idOfPlayer1,
  * idOfPlayer2, priority]. A higher priority means a more likely matchup.
- * @param {PlayerDataType} player1
- * @param {PlayerDataType} player2
+ * @param {PlayerData} player1
+ * @param {PlayerData} player2
  * @param {number[]} scoreList
  * @returns {number}
  */
@@ -160,11 +159,11 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     let matches;
     /** @type {number[]} */
     let blossomResults;
-    /** @type {Array<[PlayerDataType, PlayerDataType, number]>} */
+    /** @type {[PlayerData, PlayerData, number][]} */
     let reducedResults;
     /** @type {number[]} */
     let scoreList;
-    /** @type {PlayerDataType[]} */
+    /** @type {PlayerData[]} */
     let playerData = players.map((playerId) => (
         genPlayerData(playerId, playerList, avoidList, roundList, roundId)
     ));
@@ -180,7 +179,7 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
         // (USCF § 29L2.)
         let byePlayerData = last(
             playerData.filter( // filter out players who have had a bye already.
-                (p) => !scores.hasHadBye(p.id, roundList, roundId)
+                (p) => !hasHadBye(p.id, roundList, roundId)
             )
         );
         // In the impossible situation that *everyone* has played a bye round
@@ -211,7 +210,7 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     potentialMatches = playerData.reduce(
         function (acc, player1, ignore, src) {
             const playerMatches = src.filter(
-                (p) => p !== player1
+                (player) => player !== player1
             ).map(
                 (player2) => [
                     player1.id,
@@ -255,11 +254,11 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     // Sort by net score and rating for board placement.
     reducedResults.sort(
         firstBy(
-            /** @param {[PlayerDataType, PlayerDataType, number]} pair */
+            /** @param {[PlayerData, PlayerData, number]} pair */
             (pair) => pair[0].score + pair[1].score,
             -1
         ).thenBy(
-            /** @param {[PlayerDataType, PlayerDataType, number]} pair */
+            /** @param {[PlayerData, PlayerData, number]} pair */
             (pair) => pair[0].rating + pair[1].rating,
             -1
         )

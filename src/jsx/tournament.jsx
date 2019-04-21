@@ -1,12 +1,11 @@
 // @ts-check
 import React, {Fragment, useState} from "react";
-// import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import numeral from "numeral";
+import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import "react-tabs/style/react-tabs.css";
-import {getPlayer, calcNewRatings} from "../chess-tourney-v2/player";
-import scores from "../chess-tourney-v2/scores";
 import {OpenButton, PanelContainer, Panel, BackButton} from "./utility";
+import {getPlayer, calcNewRatings} from "../chess-tourney-v2/player";
+import {calcStandings, getPlayerMatchData} from "../chess-tourney-v2/scores";
 import pairPlayers from "../chess-tourney-v2/pairing";
 import createMatch from "../chess-tourney-v2/match";
 import {BLACK, WHITE} from "../chess-tourney-v2/constants";
@@ -79,19 +78,25 @@ export function TournamentTabs({
     const tourney = tourneyList[tourneyId];
     const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
-    const [standingTree, tbMethods] = scores.calcStandings(
+    const [standingTree, tbMethods] = calcStandings(
         tourney.tieBreaks,
         tourney.roundList
     );
     function newRound() {
+        const newRound = [];
+        tourney.roundList = tourney.roundList.concat([newRound]);
+        setTourneyList([...tourneyList]);
+        setDefaultTab(tourney.roundList.length + 1);
+    }
+    function autoPair(unPairedPlayers, roundId) {
         const pairs = pairPlayers(
-            players,
-            tourney.roundList.length - 1,
+            unPairedPlayers,
+            roundId,
             tourney.roundList,
             playerList,
             avoidList
         );
-        const newRound = pairs.map(
+        const matchList = pairs.map(
             (pair) => createMatch({
                 players: [pair[0], pair[1]],
                 origRating: [
@@ -104,9 +109,8 @@ export function TournamentTabs({
                 ]
             })
         );
-        tourney.roundList = tourney.roundList.concat([newRound]);
+        tourney.roundList[roundId] = tourney.roundList[roundId].concat(matchList);
         setTourneyList([...tourneyList]);
-        setDefaultTab(tourney.roundList.length + 1);
     }
     function setMatchResult(roundId, matchId, result) {
         const match = tourney.roundList[roundId][matchId];
@@ -173,16 +177,20 @@ export function TournamentTabs({
                         {standingTree.map((standings, rank) =>
                             standings.map((standing) =>
                                 <tr key={standing.id}>
-                                    <td>{rank + 1}</td>
+                                    <td className="table__number">
+                                        {rank + 1}
+                                    </td>
                                     <td>
                                         {getPlayer(
                                             standing.id,
                                             playerList
                                         ).firstName}
                                     </td>
-                                    <td>{standing.score}</td>
+                                    <td className="table__number">
+                                        {standing.score}
+                                    </td>
                                     {standing.tieBreaks.map((score, i) =>
-                                        <td key={i}>
+                                        <td key={i} className="table__number">
                                             {score}
                                         </td>
                                     )}
@@ -197,9 +205,10 @@ export function TournamentTabs({
                     <Round
                         matchList={matchList}
                         num={id}
-                        roundList={tourney.roundList}
+                        tourney={tourney}
                         playerList={playerList}
-                        setMatchResult={setMatchResult}/>
+                        setMatchResult={setMatchResult}
+                        autoPair={autoPair}/>
                 </TabPanel>
             )}
             </TabPanels>
@@ -208,8 +217,23 @@ export function TournamentTabs({
     );
 }
 
-function Round({matchList, roundList, num, playerList, setMatchResult}) {
+function Round({
+    matchList,
+    tourney,
+    num,
+    playerList,
+    setMatchResult,
+    autoPair
+}) {
     const [selectedMatch, setSelectedMatch] = useState(null);
+    const roundList = tourney.roundList;
+    const matched = matchList.reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    );
+    const unMatched = tourney.players.filter(
+        (pId) => !matched.includes(pId)
+    );
     return (
         <PanelContainer>
             <Panel>
@@ -277,7 +301,7 @@ function Round({matchList, roundList, num, playerList, setMatchResult}) {
                     <PlayerMatchInfo
                         match={matchList[selectedMatch]}
                         color={0}
-                        playerData={scores.getPlayerMatchData(
+                        playerData={getPlayerMatchData(
                             matchList[selectedMatch].players[0],
                             roundList,
                             num
@@ -286,7 +310,7 @@ function Round({matchList, roundList, num, playerList, setMatchResult}) {
                     <PlayerMatchInfo
                         match={matchList[selectedMatch]}
                         color={1}
-                        playerData={scores.getPlayerMatchData(
+                        playerData={getPlayerMatchData(
                             matchList[selectedMatch].players[1],
                             roundList,
                             num
@@ -294,6 +318,21 @@ function Round({matchList, roundList, num, playerList, setMatchResult}) {
                         playerList={playerList} />
                 </div>
             }
+            {unMatched.length > 0 && (
+                <Fragment>
+                    <h3>Unmatched players</h3>
+                    <ul>
+                        {unMatched.map((pId) =>
+                            <li key={pId}>
+                                {getPlayer(pId, playerList).firstName}
+                            </li>
+                        )}
+                    </ul>
+                    <button onClick={() => autoPair(unMatched, num)}>
+                        Auto-pair
+                    </button>
+                </Fragment>
+            )}
             </Panel>
         </PanelContainer>
     );
@@ -341,42 +380,3 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
         </dl>
     );
 }
-
-// /**
-//  *
-//  * @param {Object} props
-//  * @param {Tournament} props.tourney
-//  */
-// export function Standings({tourney}) {
-//     return (
-//       <table>
-//         <caption>Current Standings</caption>
-//         <thead>
-//           <tr>
-//             <th></th>
-//             <th>First name</th>
-//             <th>Score</th>
-//             {tourney.tieBreak.filter((m) => m.active).map((method, i) =>
-//                 <th key={i}>{method.name}</th>
-//             )}
-//           </tr>
-//         </thead>
-//         {scores.calcStandings(tourney).map((rank, i) =>
-//           <tbody key={i}>
-//             {rank.map((standing) =>
-//               <tr key={standing.id}>
-//                   <td>{i + 1}</td>
-//                   <td>{standing.player.firstName}</td>
-//                   <td className="table__number">{standing.scores.score}</td>
-//                   {tourney.tieBreak.filter((m) => m.active).map((method, i) =>
-//                       <td className="table__number" key={i}>
-//                           {standing.scores[method.name]}
-//                       </td>
-//                   )}
-//               </tr>
-//               )}
-//           </tbody>
-//         )}
-//       </table>
-//     );
-// }

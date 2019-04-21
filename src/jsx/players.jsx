@@ -109,10 +109,9 @@ export function PlayerList({
     return (
         <div className="roster">
             {rosterTable}
-            <p>
-                Add your own players:
-            </p>
             <form onSubmit={handleSubmit}>
+            <fieldset>
+                <legend>Add your own players</legend>
                 <p>
                     <label>
                         First name&nbsp;
@@ -140,6 +139,7 @@ export function PlayerList({
                 <p>
                     <input type="submit" value="Add"/>
                 </p>
+            </fieldset>
             </form>
         </div>
     );
@@ -211,7 +211,8 @@ function PlayerInfoBox({
                 </dd>
             </dl>
             <form onSubmit={(event) => avoidAdd(event)}>
-                Add player to avoid
+            <fieldset>
+                <legend>Add player to avoid</legend>
                 <select
                     onBlur={(event) => setSelectedAvoider(event.target.value)}>
                 {unAvoided().map((pId) =>
@@ -222,6 +223,7 @@ function PlayerInfoBox({
                 )}
                 </select>
                 <input type="submit" value="Add"/>
+            </fieldset>
             </form>
         </div>
     );

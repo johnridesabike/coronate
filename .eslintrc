@@ -12,6 +12,7 @@
         "no-var": 1,
         "semi": "warn",
         "arrow-parens": "warn",
+        "arrow-body-style": ["warn", "never"],
         "space-infix-ops": "warn",
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],

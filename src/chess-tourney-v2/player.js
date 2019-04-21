@@ -1,15 +1,18 @@
 // @ts-check
 import EloRank from "elo-rank";
 import {WHITE, BLACK} from "./constants";
+/**
+ * @typedef {import("./index").Player} Player
+ * @typedef {import("./index").MatchScore} MatchScore
+ */
 
 function createPlayer(importObj = {}) {
+    /** @type {Player} */
     const player = {
-        /** @type {number} */
         id: importObj.id || 0,
         firstName: importObj.firstName || "",
         lastName: importObj.lastName || "",
         rating: importObj.rating || 0,
-        dummy: importObj.dummy || false,
         matchCount: importObj.matchCount || 0
     };
     return player;
@@ -19,14 +22,13 @@ export default Object.freeze(createPlayer);
 const dummyPlayer = createPlayer();
 dummyPlayer.id = -1;
 dummyPlayer.firstName = "Bye";
-dummyPlayer.dummy = true;
 Object.freeze(dummyPlayer);
 export {dummyPlayer};
 
 
 /**
  * @param {number} id
- * @param {object[]} playerList
+ * @param {Player[]} playerList
  */
 function getPlayer(id, playerList) {
     if (id === -1) {
@@ -57,7 +59,7 @@ export {getPlayerAvoidList};
 
 /**
  * @param {number[][]} avoidList
- * @param {object[]} playerList
+ * @param {Player[]} playerList
  */
 function cleanAvoidList(avoidList, playerList) {
     const ids = playerList.map((p) => p.id);
@@ -78,6 +80,11 @@ function kFactor(matchCount) {
 Object.freeze(kFactor);
 export {kFactor};
 
+/**
+ * @param {[number, number]} origRatings
+ * @param {[number, number]} matchCounts
+ * @param {[MatchScore, MatchScore]} result
+ */
 function calcNewRatings(origRatings, matchCounts, result) {
     const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
     const blackElo = new EloRank(kFactor(matchCounts[BLACK]));

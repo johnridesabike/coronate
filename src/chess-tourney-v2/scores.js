@@ -3,31 +3,39 @@ import {firstBy} from "thenby";
 import {dummyPlayer, getPlayer, getPlayerAvoidList} from "./player";
 
 /**
- * @callback ScoreCalculator
- * @param {number} playerId
- * @param {*[]} roundList
- * @param {number} [roundId]
+ * @typedef {import("./index").ScoreCalculator} ScoreCalculator
+ * @typedef {import("./index").Match} Match
  */
 
+/**
+ *
+ * @param {Match} match
+ * @returns {boolean}
+ */
 function isBye(match) {
-    return match.result.includes(dummyPlayer.id);
+    return match.players.includes(dummyPlayer.id);
 }
 
 /**
  * @param {number} playerId
  * @param {object[]} matchList
+ * @returns {number?}
  */
 function playerMatchColor(playerId, matchList) {
-    let color = -1;
+    /**@type {number} */
+    let color = null;
     const match = matchList.filter((m) => m.players.includes(playerId))[0];
     if (match) {
         color = match.players.indexOf(playerId);
     }
     return color;
 }
+Object.freeze(playerMatchColor);
+export {playerMatchColor};
 
 /**
  * @type {ScoreCalculator}
+ * @returns {Match[]}
  */
 function getMatchesByPlayer(playerId, roundList, roundId = null) {
     let rounds;
@@ -46,6 +54,7 @@ function getMatchesByPlayer(playerId, roundList, roundId = null) {
 
 /**
  * @type {ScoreCalculator}
+ * @returns {boolean}
  */
 function hasHadBye(playerId, roundList, roundId = null) {
     return getMatchesByPlayer(
@@ -57,31 +66,36 @@ function hasHadBye(playerId, roundList, roundId = null) {
         []
     ).includes(dummyPlayer.id);
 }
+Object.freeze(hasHadBye);
+export {hasHadBye};
 
 /**
  * @type {ScoreCalculator}
+ * @returns {number[]}
  */
-function getPlayersByOpponent(opponent, roundList, roundId = null) {
+function getPlayersByOpponent(opponentId, roundList, roundId = null) {
     return getMatchesByPlayer(
-        opponent,
+        opponentId,
         roundList,
         roundId
     ).reduce(
         (acc, match) => acc.concat(match.players),
         []
     ).filter(
-        (player) => player !== opponent
+        (playerId) => playerId !== opponentId
     );
 }
+Object.freeze(getPlayersByOpponent);
+export {getPlayersByOpponent};
 
 /**
  * Get a list of all of a player's scores from each match.
  * @type {ScoreCalculator}
  * @returns {number[]} the list of scores
  */
-function playerScoreList(player, roundList, roundId = null) {
-    return getMatchesByPlayer(player, roundList, roundId).map(
-        (match) => match.result[match.players.indexOf(player)]
+function playerScoreList(playerId, roundList, roundId = null) {
+    return getMatchesByPlayer(playerId, roundList, roundId).map(
+        (match) => match.result[match.players.indexOf(playerId)]
     );
 }
 
@@ -90,6 +104,7 @@ function playerScoreList(player, roundList, roundId = null) {
  */
 /**
  * @type {ScoreCalculator}
+ * @returns {number[]}
  */
 function playerScoreListNoByes(playerId, roundList, roundId = null) {
     return getMatchesByPlayer(
@@ -105,6 +120,7 @@ function playerScoreListNoByes(playerId, roundList, roundId = null) {
 
 /**
  * @type {ScoreCalculator}
+ * @returns {number}
  */
 function playerScore(playerId, roundList, roundId = null) {
     let score = 0;
@@ -114,9 +130,12 @@ function playerScore(playerId, roundList, roundId = null) {
     }
     return score;
 }
+Object.freeze(playerScore);
+export {playerScore};
 
 /**
  * @type {ScoreCalculator}
+ * @returns {number}
  */
 function playerScoreCum(playerId, roundList, roundId = null) {
     let runningScore = 0;
@@ -137,9 +156,8 @@ function playerScoreCum(playerId, roundList, roundId = null) {
 /**
  * Calculate a player's color balance. A negative number means they played as
  * white more. A positive number means they played as black more.
- */
-/**
  * @type {ScoreCalculator}
+ * @returns {number}
  */
 function playerColorBalance(playerId, roundList, roundId = null) {
     let color = 0;
@@ -156,13 +174,14 @@ function playerColorBalance(playerId, roundList, roundId = null) {
     );
     return color;
 }
+Object.freeze(playerColorBalance);
+export {playerColorBalance};
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
- */
-/**
  * @type {ScoreCalculator}
  * @param {boolean} [solkoff]
+ * @returns {number}
  */
 function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
     // get all of the opponent's scores
@@ -190,9 +209,8 @@ function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
 
 /**
  * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
- */
-/**
  * @type {ScoreCalculator}
+ * @returns {number}
  */
 function solkoff(playerId, roundList, roundId = null) {
     return modifiedMedian(playerId, roundList, roundId, true);
@@ -200,9 +218,8 @@ function solkoff(playerId, roundList, roundId = null) {
 
 /**
  * Get the cumulative scores of a player's opponents.
- */
-/**
  * @type {ScoreCalculator}
+ * @returns {number}
  */
 function playerOppScoreCum(playerId, roundList, roundId = null) {
     const opponents = getPlayersByOpponent(
@@ -244,10 +261,7 @@ const tbMethods = [
 ];
 
 /**
- * @typedef {Object} Standing
- * @property {number} id
- * @property {number} score
- * @property {number[]} tieBreaks
+ * @typedef {import("./index").Standing} Standing
  */
 
 /**
@@ -270,7 +284,11 @@ function areScoresEqual(standing1, standing2) {
 }
 
 /**
- * @param {*[]} roundList
+ * @typedef {import("./index").Round} Round
+ */
+
+/**
+ * @param {Round[]} roundList
  * @returns {number[]}
  */
 function getAllPlayers(roundList) {
@@ -287,7 +305,7 @@ function getAllPlayers(roundList) {
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {number[]} methods
- * @param {*[]} roundList
+ * @param {Round[]} roundList
  * @param {number} [roundId]
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
@@ -330,9 +348,13 @@ function calcStandings(methods, roundList, roundId = null) {
     });
     return [standingsTree, tieBreaks.map((m) => m.name)];
 }
+Object.freeze(calcStandings);
+export {calcStandings};
 
 /**
+ * TODO: merge this with the pairings one?
  * @type {ScoreCalculator}
+ * @returns {Object}
  */
 function getPlayerMatchData(playerId, roundList, roundNum = null) {
     return {
@@ -351,18 +373,5 @@ function getPlayerMatchData(playerId, roundList, roundNum = null) {
         )
     };
 }
-
-export default Object.freeze({
-    calcStandings,
-    hasHadBye,
-    getPlayersByOpponent,
-    modifiedMedian,
-    playerColorBalance,
-    playerOppScoreCum,
-    playerScore,
-    playerScoreCum,
-    playerScoreList,
-    solkoff,
-    getPlayerMatchData,
-    playerMatchColor
-});
+Object.freeze(getPlayerMatchData);
+export {getPlayerMatchData};
