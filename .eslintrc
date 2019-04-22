@@ -17,7 +17,8 @@
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],
         "jsx-quotes": ["warn", "prefer-double"],
-        "no-unused-vars": "error",
-        "no-shadow": "error"
+        "no-unused-vars": "warn",
+        "no-shadow": "error",
+        "camelcase": "warn"
     }
 }

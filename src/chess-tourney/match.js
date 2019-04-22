@@ -9,8 +9,9 @@
 function createMatch(importObj) {
     /** @type {Match} */
     const match = {
+        id: importObj.id,
         players: importObj.players,
-        result: [0, 0],
+        result: importObj.result || [0, 0],
         origRating: importObj.origRating,
         newRating: importObj.newRating
     };

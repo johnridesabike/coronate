@@ -1,5 +1,6 @@
 export type MatchScore = 0 | 1 | 0.5;
 export interface Match {
+    id: string,
     players: [number, number],
     result: [MatchScore, MatchScore],
     origRating: [number, number],
@@ -18,7 +19,8 @@ export interface Player {
     firstName: string,
     lastName: string,
     rating: number,
-    matchCount: number
+    matchCount: number,
+    type: string
 }
 export interface PlayerData {
     id: number,

@@ -14,48 +14,56 @@
         "roundList": [
             [
                 {
+                    "id": "0-1",
                     "players": [0, 1],
                     "result": [1, 0],
                     "origRating": [1000, 1200],
                     "newRating": [1050, 1150]
                 },
                 {
+                    "id": "2-3",
                     "players": [2, 3],
                     "result": [1, 0],
                     "origRating": [1200, 1250],
                     "newRating": [1150, 1200]
                 },
                 {
+                    "id": "4-5",
                     "players": [4, 5],
                     "result": [1, 0],
                     "origRating": [1430, 1230],
                     "newRating": [1480, 1170]
                 },
                 {
+                    "id": "6-7",
                     "players": [6, 7],
                     "result": [1, 0],
                     "origRating": [1500, 1600],
                     "newRating": [1550, 1550]
                 },
                 {
+                    "id": "8-9",
                     "players": [8, 9],
                     "result": [1, 0],
                     "origRating": [1003, 1203],
                     "newRating": [953, 1153]
                 },
                 {
+                    "id": "10-11",
                     "players": [10, 11],
                     "result": [1, 0],
                     "origRating": [1044, 1250],
                     "newRating": [994, 1250]
                 },
                 {
+                    "id": "12-13",
                     "players": [12, 13],
                     "result": [1, 0],
                     "origRating": [1340, 1288],
                     "newRating": [1290, 1238]
                 },
                 {
+                    "id": "14-15",
                     "players": [14, 15],
                     "result": [1, 0],
                     "origRating": [1345, 1244],

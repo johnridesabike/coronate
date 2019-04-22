@@ -92,10 +92,11 @@ export function PlayerList({
                     <td className="table__number">{player.rating}</td>
                     <td>
                         <button
+                            className="danger"
                             onClick={(event) =>
                                 delPlayer(event, player)
                             }>
-                            x
+                            delete
                         </button>
                     </td>
                     <td>

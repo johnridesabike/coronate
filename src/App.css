@@ -2,11 +2,11 @@
     height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-rows: 2.5em auto 3em;
-    grid-template-columns: auto;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 100%;
     grid-template-areas: 
       "header"
-      "body"
+      "content"
       "footer";
 }
 
@@ -14,9 +14,9 @@
     grid-area: header;
 }
 
-.body {
-    grid-area: body;
-    padding: 0 1em 0 1em;
+.content {
+    grid-area: content;
+    padding: 1em;
     overflow: auto;
 }
 
@@ -33,7 +33,7 @@
 }
   
 .caution p {
-    margin: 0;
+    margin: 0.5em 0;
     padding: 2px;
     background-color: black;
     color: white;
@@ -88,4 +88,55 @@ li.inactive {
 
 textarea.json {
     font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
+}
+
+.table__roster {
+    table-layout: auto;
+}
+
+th {
+    text-align: center;
+}
+
+td {
+  vertical-align: top;
+}
+
+.data__input {
+    text-align:center;
+}
+
+li.player.missing {
+    font-style: italic;
+}
+
+button,
+input {
+    font-size: 0.8em;
+}
+
+.tourney-select {
+    display: inline-block;
+    border: none;
+    padding: 0.25em 0.5em;
+    margin: 0;
+    background: none;
+    color: blue;
+    font: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-bottom: solid 1px transparent;
+}
+
+.tourney-select:hover {
+    color: skyblue;
+}
+
+.danger {
+    color: red;
+}
+
+.disabled {
+    opacity: 0.5;
 }

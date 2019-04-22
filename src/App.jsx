@@ -7,9 +7,10 @@ import demoRoster from "./demo-players.json";
 import demoTourneyList from "./demo-tourney.json";
 import createPlayer from "./chess-tourney/player";
 import {cleanAvoidList} from "./chess-tourney/player";
-import {TournamentList} from "./jsx/tournament";
+import {TournamentList} from "./jsx/tournament/index";
 import {PlayerView} from "./jsx/players.jsx";
 import {Options} from "./jsx/options";
+import demoOptions from "./demo-options.json";
 
 function App() {
     const [playerList, setPlayerList] = useState(
@@ -17,6 +18,7 @@ function App() {
     );
     const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
     const [tourneyList, setTourneyList] = useState(demoTourneyList);
+    const [options, setOptions] = useState(demoOptions);
     useEffect(function () {
         // remove stale IDs
         setAvoidList(cleanAvoidList(avoidList, playerList));
@@ -30,7 +32,7 @@ function App() {
                 <Tab>Options</Tab>
                 <Tab>About</Tab>
             </TabList>
-            <TabPanels className="body">
+            <TabPanels className="content">
                 <TabPanel>
                     <PlayerView
                         playerList={playerList}
@@ -44,13 +46,16 @@ function App() {
                         setPlayerList={setPlayerList}
                         avoidList={avoidList}
                         tourneyList={tourneyList}
-                        setTourneyList={setTourneyList}/>
+                        setTourneyList={setTourneyList}
+                        options={options}/>
                 </TabPanel>
                 <TabPanel>
                     <Options
                         playerList={playerList}
                         avoidList={avoidList}
                         tourneyList={tourneyList}
+                        options={options}
+                        setOptions={setOptions}
                     />
                 </TabPanel>
                 <TabPanel>

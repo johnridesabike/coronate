@@ -180,13 +180,13 @@ export {playerColorBalance};
 /**
  * Gets the modified median factor defined in USCF § 34E1
  * @type {ScoreCalculator}
- * @param {boolean} [solkoff]
+ * @param {boolean} [isSolkoff]
  * @returns {number}
  */
-function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
+function modifiedMedian(pId, roundList, roundId = null, isSolkoff = false) {
     // get all of the opponent's scores
     let scores = getPlayersByOpponent(
-        playerId,
+        pId,
         roundList,
         roundId
     ).filter(
@@ -196,7 +196,7 @@ function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
     );
     //sort them, then remove the first and last items
     scores.sort();
-    if (!solkoff) {
+    if (!isSolkoff) {
         scores.pop();
         scores.shift();
     }
@@ -208,7 +208,7 @@ function modifiedMedian(playerId, roundList, roundId = null, solkoff = false) {
 }
 
 /**
- * A shortcut for passing the `solkoff` variable to `modifiedMedian`.
+ * A shortcut for passing the `isSolkoff` variable to `modifiedMedian`.
  * @type {ScoreCalculator}
  * @returns {number}
  */
@@ -237,7 +237,7 @@ function playerOppScoreCum(playerId, roundList, roundId = null) {
     return score;
 }
 
-const tbMethods = [
+const tieBreakMethods = [
     {
         name: "Modified median",
         func: modifiedMedian
@@ -259,6 +259,9 @@ const tbMethods = [
         func: playerColorBalance
     }
 ];
+
+Object.freeze(tieBreakMethods);
+export {tieBreakMethods};
 
 /**
  * @typedef {import("./index").Standing} Standing
@@ -310,7 +313,7 @@ function getAllPlayers(roundList) {
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
 function calcStandings(methods, roundList, roundId = null) {
-    const tieBreaks = methods.map((m) => tbMethods[m]);
+    const tieBreaks = methods.map((m) => tieBreakMethods[m]);
     // Get a flat list of all of the players and their scores.
     const standingsFlat = getAllPlayers(roundList).map(function (pId) {
         /** @type {Standing} */

@@ -10,6 +10,7 @@ function createPlayer(importObj = {}) {
     /** @type {Player} */
     const player = {
         id: importObj.id || 0,
+        type: importObj.type || "person", // used for CSS styling etc.
         firstName: importObj.firstName || "",
         lastName: importObj.lastName || "",
         rating: importObj.rating || 0,
@@ -22,6 +23,8 @@ export default Object.freeze(createPlayer);
 const dummyPlayer = createPlayer();
 dummyPlayer.id = -1;
 dummyPlayer.firstName = "Bye";
+dummyPlayer.lastName = "Player";
+dummyPlayer.type = "dummy";
 Object.freeze(dummyPlayer);
 export {dummyPlayer};
 
@@ -29,12 +32,21 @@ export {dummyPlayer};
 /**
  * @param {number} id
  * @param {Player[]} playerList
+ * @returns {Player}
  */
 function getPlayer(id, playerList) {
     if (id === -1) {
         return dummyPlayer;
     }
-    return playerList.filter((p) => p.id === id)[0];
+    let player = playerList.filter((p) => p.id === id)[0];
+    if (!player) {
+        player = createPlayer({
+            id: id,
+            firstName: "Anonymous",
+            type: "missing"
+        });
+    }
+    return player;
 }
 Object.freeze(getPlayer);
 export {getPlayer};
