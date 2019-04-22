@@ -1,49 +1,32 @@
-This project is built using Node.js and React, so familiarity with those will come in handy. If you're interested in helping, here's my general roadmap for the different components:
+Hi, I'm John, the creator and maintainer of Chessahoochee. So far, this has been a one-person show, but I'm always happy to welcome new contributors. This project is still in early development stages, so there's a lot of work left to do before it's ready for general public usage. If you have an idea, suggestion, question, or bug report, [just open a new issue](https://github.com/johnridesabike/chessahoochee/issues).
 
-## API
+This project is built using Node.js and React, so familiarity with those will come in handy. Here are my general to-dos for the different components:
 
-The API (basically everything in [/src/chess-tourney/](/src/chess-tourney/)) is still very unstable, so I'm not actively seeking help for that until I flesh out how the final product will be organized. However, one area where I am seeking feedback is the pairing algorithm, specifically how it weights matchups. If you see any problems with its priorities, please open an issue!
+## General API
 
-Other API to-dos:
-
-- Add player match restrictions (don't pair family members, etc.).
-- Clean up player management methods & improve communication between global player management and tournament-local player management.
-- Configure flow types.
-
-## Front-end
-
-The user-facing interface currently leaves a lot to be desired, but I'm actively making significant changes to it. If you notice any problems with it, you can probably assume I'll fix them soon. I still appreciate feedback though 😁
-
-To-dos:
-
-- Improve how ranks and ties are displayed.
-- Add a way to manually match/unmatch players.
-- Add pages for managing a global roster outside of individual tournaments.
-- Add pages for editing a player and displaying their stats.
-- Add reording of bye signups.
-- Finalize the import/export screen.
-- Improve adding/removing players after the tournament has begun.
+- The matchup algorithm probably needs to be adjusted. It uses the blossom algorithm ([Wikipedia link](https://en.wikipedia.org/wiki/Blossom_algorithm)) to determine matches. I based its priorities on the USCF tiebreak options ([read about them here](http://www.uschess.org/content/view/7752/369/)), but my implementation is probably not 100% perfect. The source code at [/src/chess-tourney/pairing.js](https://github.com/johnridesabike/chessahoochee/blob/master/src/chess-tourney/pairing.js) has documentation explaining (hopefully clearly) how it currently works. Where applicable, I tagged sections of code with USCF section numbers to explain their purpose.
+- There's no real I/O to speak of right now. A v1.0 release will need a way to save, load, and back-up data.
+- Type-check coverage needs improvement.
 
 ## Housekeeping
 
-General to-dos to keep the project's quality high.
-
-- Clean up code.
-- Improve test coverage.
+- Write up-to-date tests.
 - Write documentation.
 
-## Beyond the horizon
+## React
 
-These will get done eventually, but is very low priority now.
+- This was my first React project, and it shows. I already rewrote it once to correct my bad practices, but it still needs a lot of work. Any advice or help on improving the JSX code is appreciated!
 
-- Build an awesome front-end UI.
-- Package into a standalone Electron app.
-- Improve pairing logic.
+## General UX
+
+- Improve how ranks and ties are displayed.
+- Improve the player editor screen.
+- Implement drag-and-drop.
+- MAJORLY clean up the UI.
+- Possibly implement a premade UI module (Material, Ant, Momentum, etc.)
+
+## Low-priority
+
+- Package into an offline Electron app.
 - Add round robin pairings.
-- Export API into standalone node module.
-- Improve rating calculations: provisional ratings and possibly moving to a different engine (e.g. Glicko-2).
-
-
-The code is designed to follow procedures described in the [USCF chess rulebook](http://www.uschess.org/content/view/7752/369/), which makes building it a unique challenge compared to a generic Swiss pairing system. Where applicable, code comments should cite relevant rulebook section numbers.
-
-If you have any questions or suggestions, just [open a new issue](https://github.com/johnridesabike/chessahoochee/issues) or submit a pull request.
+- Improve rating calculations: add provisional ratings and possibly move to a different engine (e.g. Glicko-2).

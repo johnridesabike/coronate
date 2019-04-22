@@ -2,7 +2,7 @@
 import React, {Fragment, useState} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {BackButton} from "../utility";
-import {getPlayer} from "../../chess-tourney/player";
+import {getPlayer, dummyPlayer} from "../../chess-tourney/player";
 import createTournament from "../../chess-tourney/tournament";
 import {calcStandings} from "../../chess-tourney/scores";
 import {calcNumOfRounds} from "../../chess-tourney/utility";
@@ -121,6 +121,7 @@ export function TournamentTabs({
         tourney.tieBreaks,
         tourney.roundList
     );
+    console.log(standingTree);
     function newRound() {
         const round = [];
         tourney.roundList = tourney.roundList.concat([round]);
@@ -186,8 +187,10 @@ export function TournamentTabs({
                             </tr>
                         </thead>
                         <tbody>
-                        {standingTree.map((standings, rank) =>
-                            standings.map((standing) =>
+                        {standingTree.map((standingsFlat, rank) =>
+                            standingsFlat.filter(
+                                (p) => p.id !== dummyPlayer.id
+                            ).map((standing) =>
                                 <tr key={standing.id}>
                                     <td className="table__number">
                                         {rank + 1}

@@ -1,5 +1,5 @@
 // @ts-check
-import React, {useState} from "react";
+import React from "react";
 
 export function Options({
     playerList,
@@ -8,12 +8,8 @@ export function Options({
     options,
     setOptions
 }) {
-    const [outputPlayers, setOutputPlayers] = useState(
-        JSON.stringify(playerList, null, 2)
-    );
-    const [outputTourney, setOutputTourney] = useState(
-        JSON.stringify(tourneyList, null, 2)
-    );
+    const outputPlayers = JSON.stringify({playerList, avoidList}, null, 2);
+    const outputTourney = JSON.stringify(tourneyList, null, 2);
     return (
         <div>
             <form>
@@ -39,7 +35,7 @@ export function Options({
                     rows={25}
                     cols={50}
                     value={outputTourney}
-                    onChange={(event) => setOutputTourney(event.target.value)}
+                    readOnly
                     name="tourneyData"
                     />
                 <input type="submit" value="load" disabled />
@@ -54,7 +50,7 @@ export function Options({
                     cols={50}
                     value={outputPlayers}
                     name="playerdata"
-                    onChange={(event) => setOutputPlayers(event.target.value)}
+                    readOnly
                 />
                 <input type="submit" value="Load" disabled />
             </fieldset>

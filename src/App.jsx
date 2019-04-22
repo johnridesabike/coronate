@@ -60,7 +60,8 @@ function App() {
                 </TabPanel>
                 <TabPanel>
                     <p>
-                        Coming soon.
+                        {/* eslint-disable-next-line max-len*/}
+                        This is an early, proof-of-concept, demo of a chess tournament manager. <a href="https://github.com/johnridesabike/chessahoochee">You can find out more here.</a>
                     </p>
                 </TabPanel>
             </TabPanels>

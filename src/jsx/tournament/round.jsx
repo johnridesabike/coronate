@@ -63,7 +63,6 @@ export default function Round({
             byeMatch = createMatch({
                 id: nextBye + "-" + dummyPlayer.id,
                 players: [nextBye, dummyPlayer.id],
-                result: [options.byeValue, 0],
                 origRating: [
                     getPlayer(nextBye, playerList).rating,
                     dummyPlayer.rating
@@ -99,6 +98,16 @@ export default function Round({
         if (byeMatch) {
             newMatchList.push(byeMatch);
         }
+        // this covers manual bye matches and auto-paired bye matches
+        newMatchList.forEach(function (match) {
+            const dummy = match.players.indexOf(dummyPlayer.id);
+            if (dummy === BLACK) {
+                match.result[WHITE] = options.byeValue;
+            }
+            if (dummy === WHITE) {
+                match.result[BLACK] = options.byeValue;
+            }
+        });
         tourney.roundList[roundId] = (
             tourney.roundList[roundId].concat(newMatchList)
         );
@@ -236,7 +245,10 @@ export default function Round({
                         <td className="data__input row__result">
                             <input
                                 type="radio"
-                                checked={match.result[0] !== 0}
+                                checked={(
+                                    match.result[0] === 1
+                                    || match.result[0] === options.byeValue
+                                )}
                                 onChange={
                                     () => setMatchResult(match.id, [1, 0])
                                 }
@@ -256,8 +268,10 @@ export default function Round({
                                     match.players.includes(dummyPlayer.id)
                                 }/>
                             <input
-                                type="radio"
-                                checked={match.result[1] !== 0}
+                                type="radio"checked={(
+                                    match.result[1] === 1
+                                    || match.result[1] === options.byeValue
+                                )}
                                 onChange={
                                     () => setMatchResult(match.id, [0, 1])
                                 }

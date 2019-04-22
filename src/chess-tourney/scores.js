@@ -278,8 +278,8 @@ function areScoresEqual(standing1, standing2) {
     if (standing1.score !== standing2.score) {
         areEqual = false;
     }
-    standing1.tieBreaks.forEach(function (score) {
-        if (standing1.tieBreaks[score] !== standing2.tieBreaks[score]) {
+    Object.keys(standing1.tieBreaks).forEach(function (index) {
+        if (standing1.tieBreaks[index] !== standing2.tieBreaks[index]) {
             areEqual = false;
         }
     });

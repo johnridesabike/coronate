@@ -1,34 +1,170 @@
 {
     "playerList": [
-        {"id": 0,"firstName": "Matthew", "lastName": "A", "rating": 800},
-        {"id": 1,"firstName": "Mark", "lastName": "B", "rating": 850},
-        {"id": 2,"firstName": "Luke", "lastName": "C", "rating": 900},
-        {"id": 3,"firstName": "John", "lastName": "D", "rating": 950},
-        {"id": 4,"firstName": "Simon", "lastName": "E", "rating": 1000},
-        {"id": 5,"firstName": "Andrew", "lastName": "F", "rating": 1050},
-        {"id": 6,"firstName": "James", "lastName": "G", "rating": 1100},
-        {"id": 7,"firstName": "Philip", "lastName": "H", "rating": 1150},
-        {"id": 8,"firstName": "Bartholomew", "lastName": "I", "rating": 1200},
-        {"id": 9,"firstName": "Thomas", "lastName": "J", "rating": 1250},
-        {"id": 10,"firstName": "Catherine", "lastName": "K", "rating": 1300},
-        {"id": 11,"firstName": "Clare", "lastName": "L", "rating": 1350},
-        {"id": 12,"firstName": "Judas", "lastName": "M", "rating": 1400},
-        {"id": 13,"firstName": "Matthias", "lastName": "N", "rating": 1450},
-        {"id": 14,"firstName": "Paul", "lastName": "O", "rating": 1500},
-        {"id": 15,"firstName": "Mary", "lastName": "P", "rating": 1600},
-        {"id": 16,"firstName": "Theresa", "lastName": "Q", "rating": 1650},
-        {"id": 17,"firstName": "Megan", "lastName": "R", "rating": 1700},
-        {"id": 18,"firstName": "Elizabeth", "lastName": "S", "rating": 1750}
+      {
+        "id": 0,
+        "type": "person",
+        "firstName": "Bruce",
+        "lastName": "Wayne",
+        "rating": 1998,
+        "matchCount": 9
+      },
+      {
+        "id": 1,
+        "type": "person",
+        "firstName": "Dick",
+        "lastName": "Grayson",
+        "rating": 1909,
+        "matchCount": 9
+      },
+      {
+        "id": 2,
+        "type": "person",
+        "firstName": "Alfred",
+        "lastName": "Pennyworth",
+        "rating": 1999,
+        "matchCount": 9
+      },
+      {
+        "id": 3,
+        "type": "person",
+        "firstName": "Barbara",
+        "lastName": "Gordon",
+        "rating": 1345,
+        "matchCount": 7
+      },
+      {
+        "id": 4,
+        "type": "person",
+        "firstName": "Kate",
+        "lastName": "Kane",
+        "rating": 1538,
+        "matchCount": 9
+      },
+      {
+        "id": 5,
+        "type": "person",
+        "firstName": "Selina",
+        "lastName": "Kyle",
+        "rating": 1495,
+        "matchCount": 9
+      },
+      {
+        "id": 6,
+        "type": "person",
+        "firstName": "Jason",
+        "lastName": "Todd",
+        "rating": 1101,
+        "matchCount": 7
+      },
+      {
+        "id": 7,
+        "type": "person",
+        "firstName": "James",
+        "lastName": "Gordon",
+        "rating": 1167,
+        "matchCount": 7
+      },
+      {
+        "id": 8,
+        "type": "person",
+        "firstName": "Helena",
+        "lastName": "Wayne",
+        "rating": 1087,
+        "matchCount": 7
+      },
+      {
+        "id": 9,
+        "type": "person",
+        "firstName": "Joker",
+        "lastName": "???",
+        "rating": 1538,
+        "matchCount": 1
+      },
+      {
+        "id": 10,
+        "type": "person",
+        "firstName": "Haley",
+        "lastName": "Quinn",
+        "rating": 1648,
+        "matchCount": 1
+      },
+      {
+        "id": 11,
+        "type": "person",
+        "firstName": "Victor",
+        "lastName": "Fries",
+        "rating": 862,
+        "matchCount": 1
+      },
+      {
+        "id": 12,
+        "type": "person",
+        "firstName": "Oswald",
+        "lastName": "Cobblepot",
+        "rating": 1812,
+        "matchCount": 1
+      },
+      {
+        "id": 13,
+        "type": "person",
+        "firstName": "Ra's",
+        "lastName": "al Ghul",
+        "rating": 1404,
+        "matchCount": 1
+      },
+      {
+        "id": 14,
+        "type": "person",
+        "firstName": "Pamela",
+        "lastName": "Isley",
+        "rating": 965,
+        "matchCount": 1
+      },
+      {
+        "id": 15,
+        "type": "person",
+        "firstName": "Edward",
+        "lastName": "Nigma",
+        "rating": 948,
+        "matchCount": 1
+      },
+      {
+        "id": 16,
+        "type": "person",
+        "firstName": "Jonathan",
+        "lastName": "Crane",
+        "rating": 899,
+        "matchCount": 1
+      },
+      {
+        "id": 17,
+        "type": "person",
+        "firstName": "Harvey",
+        "lastName": "Dent",
+        "rating": 1649,
+        "matchCount": 1
+      },
+      {
+        "id": 18,
+        "type": "person",
+        "firstName": "Hugo",
+        "lastName": "Strange",
+        "rating": 800,
+        "matchCount": 0
+      }
     ],
-    "avoidList" : [
-        [0, 7],
-        [0, 8],
-        [0, 9],
-        [0, 10],
-        [0, 11],
-        [0, 12],
-        [0, 13],
-        [0, 14],
-        [0, 15]
+    "avoidList": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        9,
+        10
+      ]
     ]
-}
+  }
