@@ -1,4 +1,4 @@
-This is a soon-to-be app for managing chess tournaments.
+This is a soon-to-be app for managing chess tournaments. I built it to help the chess players at Chattahoochee Valley Libraries, which is where the name comes from.
 
 Goals for this project include:
 
