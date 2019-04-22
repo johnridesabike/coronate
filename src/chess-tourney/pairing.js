@@ -1,6 +1,7 @@
 // @ts-check
 import {firstBy} from "thenby";
-import {chunk, last} from "lodash";
+import chunk from "lodash/chunk";
+import last from "lodash/last";
 import blossom from "edmonds-blossom";
 import {dummyPlayer, getPlayerAvoidList, getPlayer} from "./player";
 import {

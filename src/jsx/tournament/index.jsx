@@ -8,7 +8,7 @@ import {calcStandings} from "../../chess-tourney/scores";
 import {calcNumOfRounds} from "../../chess-tourney/utility";
 import Round from "./round";
 import PlayerSelect from "./player-select";
-import {last} from "lodash";
+import last from "lodash/last";
 
 
 export function TournamentList({

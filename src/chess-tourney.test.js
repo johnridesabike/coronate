@@ -5,7 +5,9 @@
  */
 import {createTournament, createPlayerManager} from "./old-chess-tourney";
 import demoPlayers from "./demo-players.json";
-import {sortBy, times, random} from "lodash";
+import sortBy from "lodash/sortBy";
+import times from "lodash/times";
+import random from "lodash/randdom";
 /**
  * @typedef {import("./old-chess-tourney").Match} Match
  * @typedef {import("./old-chess-tourney").Tournament} Tournament
