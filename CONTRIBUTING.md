@@ -16,6 +16,7 @@ This project is built using Node.js and React, so familiarity with those will co
 ## React
 
 - This was my first React project, and it shows. I already rewrote it once to correct my bad practices, but it still needs a lot of work. Any advice or help on improving the JSX code is appreciated!
+- State management probably needs to get refactored into contexts and reducers.
 
 ## User interface
 

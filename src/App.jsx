@@ -28,7 +28,7 @@ function App() {
         <Tabs className="app" defaultIndex={1}>
             <TabList className="header">
                 <Tab>Players</Tab>
-                <Tab>Tournament</Tab>
+                <Tab>Tournaments</Tab>
                 <Tab>Options</Tab>
                 <Tab>About</Tab>
             </TabList>

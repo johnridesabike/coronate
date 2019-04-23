@@ -76,14 +76,14 @@
         "id": 9,
         "type": "person",
         "firstName": "Joker",
-        "lastName": "???",
+        "lastName": "",
         "rating": 1538,
         "matchCount": 1
       },
       {
         "id": 10,
         "type": "person",
-        "firstName": "Haley",
+        "firstName": "Harley",
         "lastName": "Quinn",
         "rating": 1648,
         "matchCount": 1

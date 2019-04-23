@@ -245,10 +245,7 @@ export default function Round({
                         <td className="data__input row__result">
                             <input
                                 type="radio"
-                                checked={(
-                                    match.result[0] === 1
-                                    || match.result[0] === options.byeValue
-                                )}
+                                checked={(match.result[0] > match.result[1])}
                                 onChange={
                                     () => setMatchResult(match.id, [1, 0])
                                 }
@@ -257,10 +254,7 @@ export default function Round({
                                 }/>
                             <input
                                 type="radio"
-                                checked={(
-                                    match.result[0] === 0.5
-                                    && match.result[1] === 0.5
-                                )}
+                                checked={(match.result[0] === match.result[1])}
                                 onChange={
                                     () => setMatchResult(match.id, [0.5, 0.5])
                                 }
@@ -268,10 +262,8 @@ export default function Round({
                                     match.players.includes(dummyPlayer.id)
                                 }/>
                             <input
-                                type="radio"checked={(
-                                    match.result[1] === 1
-                                    || match.result[1] === options.byeValue
-                                )}
+                                type="radio"
+                                checked={(match.result[1] > match.result[0])}
                                 onChange={
                                     () => setMatchResult(match.id, [0, 1])
                                 }
