@@ -254,7 +254,7 @@ export default function Round({
                                 }/>
                             <input
                                 type="radio"
-                                checked={(match.result[0] === match.result[1])}
+                                checked={match.result.every((x) => x === 0.5)}
                                 onChange={
                                     () => setMatchResult(match.id, [0.5, 0.5])
                                 }
