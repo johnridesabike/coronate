@@ -1,15 +1,21 @@
 // @ts-check
-import React from "react";
+import React, {useContext} from "react";
+import {DataContext} from "../tourney-data";
 
 export function Options({
     playerList,
     avoidList,
-    tourneyList,
-    options,
-    setOptions
+    tourneyList
 }) {
+    const {options, dispatchOptions} = useContext(DataContext);
     const outputPlayers = JSON.stringify({playerList, avoidList}, null, 2);
     const outputTourney = JSON.stringify(tourneyList, null, 2);
+    function updateByeValue(event) {
+        dispatchOptions({
+            type: "SET_BYE_VALUE",
+            byeValue: Number(event.target.value)
+        });
+    }
     return (
         <div>
             <form>
@@ -19,12 +25,7 @@ export function Options({
                 <input
                     type="number"
                     value={options.byeValue}
-                    onChange={
-                        (event) => setOptions({
-                            byeValue: Number(event.target.value)
-                        })
-                    }
-                    />
+                    onChange={updateByeValue} />
             </fieldset>
             </form>
             <form onSubmit={(event) => event.preventDefault()}>

@@ -1,16 +1,15 @@
 // @ts-check
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useReducer} from "react";
 import "./App.css";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import "@reach/tabs/styles.css";
 import demoRoster from "./demo-players.json";
 import demoTourneyList from "./demo-tourney.json";
-import createPlayer from "./chess-tourney/player";
-import {cleanAvoidList} from "./chess-tourney/player";
+import createPlayer, {cleanAvoidList} from "./chess-tourney/player";
 import {TournamentList} from "./jsx/tournament/index";
 import {PlayerView} from "./jsx/players.jsx";
 import {Options} from "./jsx/options";
-import demoOptions from "./demo-options.json";
+import {defaultOptions, optionsReducer, DataContext} from "./tourney-data";
 
 function App() {
     const [playerList, setPlayerList] = useState(
@@ -18,13 +17,19 @@ function App() {
     );
     const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
     const [tourneyList, setTourneyList] = useState(demoTourneyList);
-    const [options, setOptions] = useState(demoOptions);
+    const [options, dispatchOptions] = useReducer(
+        optionsReducer,
+        defaultOptions);
     useEffect(function () {
         // remove stale IDs
         setAvoidList(cleanAvoidList(avoidList, playerList));
     }, [playerList, avoidList]);
+    useEffect(function () {
+        console.log(options);
+    }, [options]);
     return (
         <React.StrictMode>
+        <DataContext.Provider value={{options, dispatchOptions}}>
         <Tabs className="app" defaultIndex={1}>
             <TabList className="header">
                 <Tab>Players</Tab>
@@ -46,17 +51,13 @@ function App() {
                         setPlayerList={setPlayerList}
                         avoidList={avoidList}
                         tourneyList={tourneyList}
-                        setTourneyList={setTourneyList}
-                        options={options}/>
+                        setTourneyList={setTourneyList} />
                 </TabPanel>
                 <TabPanel>
                     <Options
                         playerList={playerList}
                         avoidList={avoidList}
-                        tourneyList={tourneyList}
-                        options={options}
-                        setOptions={setOptions}
-                    />
+                        tourneyList={tourneyList} />
                 </TabPanel>
                 <TabPanel>
                     <p>
@@ -69,6 +70,7 @@ function App() {
                 <Caution />
             </footer>
         </Tabs>
+        </DataContext.Provider>
         </React.StrictMode>
     );
 }
