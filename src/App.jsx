@@ -3,33 +3,26 @@ import React, {useState, useEffect, useReducer} from "react";
 import "./App.css";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import "@reach/tabs/styles.css";
-import demoRoster from "./demo-players.json";
 import demoTourneyList from "./demo-tourney.json";
-import createPlayer, {cleanAvoidList} from "./chess-tourney/player";
+// import createPlayer, {cleanAvoidList} from "./chess-tourney/player";
 import {TournamentList} from "./jsx/tournament/index";
 import {PlayerView} from "./jsx/players.jsx";
 import {Options} from "./jsx/options";
-import {defaultOptions, optionsReducer, DataContext} from "./tourney-data";
+import {defaultData, dataReducer, DataContext} from "./tourney-data";
 
 function App() {
-    const [playerList, setPlayerList] = useState(
-        demoRoster.playerList.map((p) => createPlayer(p))
-    );
-    const [avoidList, setAvoidList] = useState(demoRoster.avoidList);
     const [tourneyList, setTourneyList] = useState(demoTourneyList);
-    const [options, dispatchOptions] = useReducer(
-        optionsReducer,
-        defaultOptions);
+    const [data, dispatch] = useReducer(dataReducer, defaultData);
+    // useEffect(function () {
+    //     // remove stale IDs
+    //     setAvoidList(cleanAvoidList(avoidList, playerList));
+    // }, [playerList, avoidList]);
     useEffect(function () {
-        // remove stale IDs
-        setAvoidList(cleanAvoidList(avoidList, playerList));
-    }, [playerList, avoidList]);
-    useEffect(function () {
-        console.log(options);
-    }, [options]);
+        console.log(data);
+    }, [data]);
     return (
         <React.StrictMode>
-        <DataContext.Provider value={{options, dispatchOptions}}>
+        <DataContext.Provider value={{data, dispatch}}>
         <Tabs className="app" defaultIndex={1}>
             <TabList className="header">
                 <Tab>Players</Tab>
@@ -39,25 +32,15 @@ function App() {
             </TabList>
             <TabPanels className="content">
                 <TabPanel>
-                    <PlayerView
-                        playerList={playerList}
-                        setPlayerList={setPlayerList}
-                        avoidList={avoidList}
-                        setAvoidList={setAvoidList}/>
+                    <PlayerView />
                 </TabPanel>
                 <TabPanel>
                     <TournamentList
-                        playerList={playerList}
-                        setPlayerList={setPlayerList}
-                        avoidList={avoidList}
                         tourneyList={tourneyList}
                         setTourneyList={setTourneyList} />
                 </TabPanel>
                 <TabPanel>
-                    <Options
-                        playerList={playerList}
-                        avoidList={avoidList}
-                        tourneyList={tourneyList} />
+                    <Options tourneyList={tourneyList} />
                 </TabPanel>
                 <TabPanel>
                     <p>

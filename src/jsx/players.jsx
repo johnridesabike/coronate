@@ -1,48 +1,37 @@
 // @ts-check
-import React, {useState, useEffect, Fragment} from "react";
+import React, {Fragment, useState, useEffect, useContext} from "react";
 import {BackButton, OpenButton} from "./utility";
 import createPlayer, {
     getPlayer,
     getPlayerAvoidList,
     kFactor
 } from "../chess-tourney/player";
+import {DataContext} from "../tourney-data";
 
-/**
- * @param {Object} props
- */
-export function PlayerView({
-    playerList,
-    setPlayerList,
-    avoidList,
-    setAvoidList
-}) {
+export function PlayerView() {
     /** @type {number} */
     const defaultOpen = null;
     const [openPlayer, setOpenPlayer] = useState(defaultOpen);
     if (openPlayer !== null) {
-        return <PlayerInfoBox
-            key={openPlayer}
-            playerId={openPlayer}
-            setOpenPlayer={setOpenPlayer}
-            playerList={playerList}
-            avoidList={avoidList}
-            setAvoidList={setAvoidList} />;
+        return (
+            <PlayerInfoBox
+                key={openPlayer}
+                playerId={openPlayer}
+                setOpenPlayer={setOpenPlayer} />
+        );
     } else {
-        return <PlayerList
-            playerList={playerList}
-            setPlayerList={setPlayerList}
-            setOpenPlayer={setOpenPlayer}/>;
+        return (
+            <PlayerList setOpenPlayer={setOpenPlayer}/>
+        );
     }
 }
 
 /**
  * @param {Object} props
  */
-export function PlayerList({
-    playerList,
-    setPlayerList,
-    setOpenPlayer
-}) {
+export function PlayerList({setOpenPlayer}) {
+    const {data, dispatch} = useContext(DataContext);
+    const playerList = data.players;
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
     const ids = playerList.map((p) => p.id);
@@ -55,7 +44,7 @@ export function PlayerList({
         newPlayer.id = nextId;
         setNextId((prevId) => prevId + 1);
         setNewPlayerdata(newPlayerDefault);
-        setPlayerList(playerList.concat(newPlayer));
+        dispatch({type: "ADD_PLAYER", newPlayer: newPlayer});
     };
     const updateField = function (event) {
         event.preventDefault();
@@ -66,9 +55,10 @@ export function PlayerList({
     };
     const delPlayer = function (event, player) {
         event.preventDefault();
-        const index = playerList.indexOf(player);
-        playerList.splice(index, 1);
-        setPlayerList([...playerList]);
+        // const index = playerList.indexOf(player);
+        // playerList.splice(index, 1);
+        // setPlayerList([...playerList]);
+        dispatch({type: "DEL_PLAYER", player: player});
     };
     let rosterTable = <Fragment></Fragment>;
     if (playerList.length > 0) {
@@ -150,13 +140,10 @@ export function PlayerList({
  *
  * @param {Object} props
  */
-function PlayerInfoBox({
-    playerId,
-    playerList,
-    setOpenPlayer,
-    avoidList,
-    setAvoidList
-}) {
+function PlayerInfoBox({playerId, setOpenPlayer}) {
+    const {data, dispatch} = useContext(DataContext);
+    const playerList = data.players;
+    const avoidList = data.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
     );
@@ -168,19 +155,24 @@ function PlayerInfoBox({
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
     function avoidAdd(event) {
         event.preventDefault();
-        avoidList.push([playerId, Number(selectedAvoider)]);
-        setAvoidList([...avoidList]);
+        // avoidList.push([playerId, Number(selectedAvoider)]);
+        // setAvoidList([...avoidList]);
+        dispatch({
+            type: "ADD_AVOID_PAIR",
+            pair: [playerId, Number(selectedAvoider)]}
+        );
     };
     /** @param {number} avoidPlayer */
     function avoidRemove(avoidPlayer) {
-        setAvoidList(avoidList.filter(
-            (pair) => !(pair.includes(playerId) && pair.includes(avoidPlayer))
-        ));
+        // setAvoidList(avoidList.filter(
+        //     (pair) => !(pair.includes(playerId) && pair.includes(avoidPlayer))
+        // ));
+        dispatch({type: "DEL_AVOID_PAIR", pair: [playerId, avoidPlayer]});
     };
     useEffect(function () {
         setSelectedAvoider(unAvoided()[0]);
         setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
-    }, [avoidList]);
+    }, [avoidList, playerId]);
     return (
         <div>
             <BackButton action={() => setOpenPlayer(null)}/>

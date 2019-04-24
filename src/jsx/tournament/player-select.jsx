@@ -1,15 +1,17 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {getPlayer} from "../../chess-tourney/player";
 import {tieBreakMethods, hasHadBye} from "../../chess-tourney/scores";
 import {PanelContainer, Panel} from "../utility";
 import arrayMove from "array-move";
+import {DataContext} from "../../tourney-data";
 
 export default function PlayerSelect({
     tourneyList,
     setTourneyList,
-    tourneyId,
-    playerList
+    tourneyId
 }) {
+    const {data} = useContext(DataContext);
+    const playerList = data.players;
     const players = tourneyList[tourneyId].players;
     const tourney = tourneyList[tourneyId];
     const [isSelecting, setIsSelecting] = useState((players.length === 0));
@@ -31,7 +33,6 @@ export default function PlayerSelect({
     function moveTb(direction) {
         const tieBreaks = tourneyList[tourneyId].tieBreaks;
         const index = tieBreaks.indexOf(selectedTb);
-        console.log(tieBreaks,index, direction);
         tourneyList[tourneyId].tieBreaks = arrayMove(
             tieBreaks,
             index,

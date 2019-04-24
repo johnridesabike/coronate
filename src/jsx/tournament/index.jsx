@@ -1,5 +1,5 @@
 // @ts-check
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useContext, useState} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {BackButton} from "../utility";
 import {getPlayer, dummyPlayer} from "../../chess-tourney/player";
@@ -9,16 +9,9 @@ import {calcNumOfRounds} from "../../chess-tourney/utility";
 import Round from "./round";
 import PlayerSelect from "./player-select";
 import last from "lodash/last";
+import {DataContext} from "../../tourney-data";
 
-
-export function TournamentList({
-    playerList,
-    setPlayerList,
-    avoidList,
-    tourneyList,
-    setTourneyList,
-    options
-}) {
+export function TournamentList({tourneyList,setTourneyList}) {
     const [openTourney, setOpenTourney] = useState(null);
     const [newTourneyName, setNewTourneyName] = useState("");
     function updateNewName(event) {
@@ -35,21 +28,18 @@ export function TournamentList({
     }
     function removeTourney(index) {
         tourneyList.splice(index, 1);
-        setPlayerList([...playerList]);
+        // setPlayerList([...playerList]);
+        setTourneyList([...tourneyList]);
     }
     let content = <Fragment></Fragment>;
     if (openTourney !== null) {
         content = (
             <TournamentTabs
                 tourneyId={openTourney}
-                playerList={playerList}
                 setOpenTourney={setOpenTourney}
                 backButton={<BackButton action={() => setOpenTourney(null)}/>}
-                avoidList={avoidList}
-                setPlayerList={setPlayerList}
                 tourneyList={tourneyList}
-                setTourneyList={setTourneyList}
-                options={options} />
+                setTourneyList={setTourneyList}/>
         );
     } else {
         content = (
@@ -106,14 +96,12 @@ export function TournamentList({
  */
 export function TournamentTabs({
     tourneyId,
-    playerList,
-    setPlayerList,
     backButton,
-    avoidList,
     tourneyList,
-    setTourneyList,
-    options
+    setTourneyList
 }) {
+    const {data} = useContext(DataContext);
+    const playerList = data.players;
     const tourney = tourneyList[tourneyId];
     const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
@@ -121,7 +109,6 @@ export function TournamentTabs({
         tourney.tieBreaks,
         tourney.roundList
     );
-    console.log(standingTree);
     function newRound() {
         const round = [];
         tourney.roundList = tourney.roundList.concat([round]);
@@ -171,8 +158,7 @@ export function TournamentTabs({
                 <PlayerSelect
                     tourneyList={tourneyList}
                     setTourneyList={setTourneyList}
-                    tourneyId={tourneyId}
-                    playerList={playerList}/>
+                    tourneyId={tourneyId} />
             </TabPanel>
             <TabPanel>
                     <table>
@@ -220,13 +206,9 @@ export function TournamentTabs({
                     <Round
                         matchList={matchList}
                         roundId={id}
-                        playerList={playerList}
-                        avoidList={avoidList}
                         tourneyList={tourneyList}
                         tourneyId={tourneyId}
-                        setTourneyList={setTourneyList}
-                        setPlayerList={setPlayerList}
-                        options={options} />
+                        setTourneyList={setTourneyList} />
                 </TabPanel>
             )}
             </TabPanels>

@@ -2,18 +2,15 @@
 import React, {useContext} from "react";
 import {DataContext} from "../tourney-data";
 
-export function Options({
-    playerList,
-    avoidList,
-    tourneyList
-}) {
-    const {options, dispatchOptions} = useContext(DataContext);
-    const outputPlayers = JSON.stringify({playerList, avoidList}, null, 2);
+export function Options({tourneyList}) {
+    const {data, dispatch} = useContext(DataContext);
+    const options = data.options;
+    const outputData = JSON.stringify(data, null, 2);
     const outputTourney = JSON.stringify(tourneyList, null, 2);
-    function updateByeValue(event) {
-        dispatchOptions({
+    function updateByeValue(value) {
+        dispatch({
             type: "SET_BYE_VALUE",
-            byeValue: Number(event.target.value)
+            byeValue: value
         });
     }
     return (
@@ -22,15 +19,25 @@ export function Options({
             <fieldset>
                 <legend>Bye options</legend>
                 Select how many points a bye is worth:&nbsp;
-                <input
-                    type="number"
-                    value={options.byeValue}
-                    onChange={updateByeValue} />
+                <label>
+                    1
+                    <input
+                        type="radio"
+                        checked={options.byeValue === 1}
+                        onChange={() => updateByeValue(1)} />
+                </label>
+                <label>
+                    0.5
+                    <input
+                        type="radio"
+                        checked={options.byeValue === 0.5}
+                        onChange={() => updateByeValue(0.5)} />
+                </label>
             </fieldset>
             </form>
             <form onSubmit={(event) => event.preventDefault()}>
             <fieldset>
-                <legend>Export tournament data</legend>
+                <legend>Export tournaments</legend>
                 <textarea
                     className="json"
                     rows={25}
@@ -44,12 +51,12 @@ export function Options({
             </form>
             <form onSubmit={(event) => event.preventDefault()}>
             <fieldset>
-                <legend>Export player data</legend>
+                <legend>Export data</legend>
                 <textarea
                     className="json"
                     rows={25}
                     cols={50}
-                    value={outputPlayers}
+                    value={outputData}
                     name="playerdata"
                     readOnly
                 />

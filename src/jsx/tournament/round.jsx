@@ -1,5 +1,5 @@
 // @ts-check
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useState, useContext} from "react";
 import numeral from "numeral";
 import {OpenButton, PanelContainer, Panel, BackButton} from "../utility";
 import {
@@ -16,18 +16,19 @@ import {
     getIndexById
 } from "../../chess-tourney/utility";
 import arrayMove from "array-move";
+import {DataContext} from "../../tourney-data";
 
 export default function Round({
     matchList,
     roundId,
-    playerList,
-    avoidList,
     tourneyList,
     tourneyId,
-    setTourneyList,
-    setPlayerList,
-    options
+    setTourneyList
 }) {
+    const {data, dispatch} = useContext(DataContext);
+    const playerList = data.players;
+    const avoidList = data.avoid;
+    const options = data.options;
     const tourney = tourneyList[tourneyId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -158,13 +159,33 @@ export default function Round({
             ];
             return newTourney;
         });
-        white.rating = whiteRating;
-        black.rating = blackRating;
+        // white.rating = whiteRating;
+        // black.rating = blackRating;
+        dispatch({
+            type: "SET_PLAYER_RATING",
+            id: white.id,
+            rating: whiteRating
+        });
+        dispatch({
+            type: "SET_PLAYER_RATING",
+            id: black.id,
+            rating: blackRating
+        });
         if (isNew) {
-            white.matchCount += 1;
-            black.matchCount += 1;
+            // white.matchCount += 1;
+            // black.matchCount += 1;
+            dispatch({
+                type: "SET_PLAYER_MATCHCOUNT",
+                id: white.id,
+                matchCount: white.matchCount + 1
+            });
+            dispatch({
+                type: "SET_PLAYER_MATCHCOUNT",
+                id: black.id,
+                matchCount: black.matchCount + 1
+            });
         }
-        setPlayerList([...playerList]);
+        // setPlayerList([...playerList]);
     }
     function unMatch(matchId) {
         const match = getById(tourney.roundList[roundId], matchId);
