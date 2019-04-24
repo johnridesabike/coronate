@@ -22,7 +22,7 @@ function App() {
     useEffect(function () {
         // remove stale IDs
         setAvoidList(cleanAvoidList(avoidList, playerList));
-    }, [playerList]);
+    }, [playerList, avoidList]);
     return (
         <React.StrictMode>
         <Tabs className="app" defaultIndex={1}>
