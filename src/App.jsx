@@ -1,25 +1,15 @@
 // @ts-check
-import React, {useState, useEffect, useReducer} from "react";
+import React, {useReducer} from "react";
 import "./App.css";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import "@reach/tabs/styles.css";
-import demoTourneyList from "./demo-tourney.json";
-// import createPlayer, {cleanAvoidList} from "./chess-tourney/player";
 import {TournamentList} from "./jsx/tournament/index";
 import {PlayerView} from "./jsx/players.jsx";
 import {Options} from "./jsx/options";
-import {defaultData, dataReducer, DataContext} from "./tourney-data";
+import {defaultData, dataReducer, DataContext} from "./global-state";
 
 function App() {
-    const [tourneyList, setTourneyList] = useState(demoTourneyList);
     const [data, dispatch] = useReducer(dataReducer, defaultData);
-    // useEffect(function () {
-    //     // remove stale IDs
-    //     setAvoidList(cleanAvoidList(avoidList, playerList));
-    // }, [playerList, avoidList]);
-    useEffect(function () {
-        console.log(data);
-    }, [data]);
     return (
         <React.StrictMode>
         <DataContext.Provider value={{data, dispatch}}>
@@ -35,12 +25,10 @@ function App() {
                     <PlayerView />
                 </TabPanel>
                 <TabPanel>
-                    <TournamentList
-                        tourneyList={tourneyList}
-                        setTourneyList={setTourneyList} />
+                    <TournamentList />
                 </TabPanel>
                 <TabPanel>
-                    <Options tourneyList={tourneyList} />
+                    <Options />
                 </TabPanel>
                 <TabPanel>
                     <p>

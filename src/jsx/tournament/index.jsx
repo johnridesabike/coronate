@@ -8,10 +8,11 @@ import {calcStandings} from "../../chess-tourney/scores";
 import {calcNumOfRounds} from "../../chess-tourney/utility";
 import Round from "./round";
 import PlayerSelect from "./player-select";
-import last from "lodash/last";
-import {DataContext} from "../../tourney-data";
+import {DataContext} from "../../global-state";
 
-export function TournamentList({tourneyList,setTourneyList}) {
+export function TournamentList() {
+    const {data, dispatch} = useContext(DataContext);
+    const tourneyList = data.tourneys;
     const [openTourney, setOpenTourney] = useState(null);
     const [newTourneyName, setNewTourneyName] = useState("");
     function updateNewName(event) {
@@ -19,17 +20,22 @@ export function TournamentList({tourneyList,setTourneyList}) {
     }
     function makeTournament(event) {
         event.preventDefault();
-        setTourneyList(tourneyList.concat([
-            createTournament({
-                name: newTourneyName
-            })
-        ]));
+        // setTourneyList(tourneyList.concat([
+        //     createTournament({
+        //         name: newTourneyName
+        //     })
+        // ]));
+        dispatch({
+            type: "ADD_TOURNEY",
+            tourney: createTournament({name: newTourneyName})
+        });
         setNewTourneyName("");
     }
     function removeTourney(index) {
-        tourneyList.splice(index, 1);
+        // tourneyList.splice(index, 1);
         // setPlayerList([...playerList]);
-        setTourneyList([...tourneyList]);
+        // setTourneyList([...tourneyList]);
+        dispatch({type: "DEL_TOURNEY", index: index});
     }
     let content = <Fragment></Fragment>;
     if (openTourney !== null) {
@@ -38,8 +44,7 @@ export function TournamentList({tourneyList,setTourneyList}) {
                 tourneyId={openTourney}
                 setOpenTourney={setOpenTourney}
                 backButton={<BackButton action={() => setOpenTourney(null)}/>}
-                tourneyList={tourneyList}
-                setTourneyList={setTourneyList}/>
+                />
         );
     } else {
         content = (
@@ -94,15 +99,10 @@ export function TournamentList({tourneyList,setTourneyList}) {
  *
  * @param {Object} props
  */
-export function TournamentTabs({
-    tourneyId,
-    backButton,
-    tourneyList,
-    setTourneyList
-}) {
-    const {data} = useContext(DataContext);
+export function TournamentTabs({tourneyId, backButton}) {
+    const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
-    const tourney = tourneyList[tourneyId];
+    const tourney = data.tourneys[tourneyId];
     const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
     const [standingTree, tbMethods] = calcStandings(
@@ -110,27 +110,29 @@ export function TournamentTabs({
         tourney.roundList
     );
     function newRound() {
-        const round = [];
-        tourney.roundList = tourney.roundList.concat([round]);
-        setTourneyList([...tourneyList]);
+        // const round = [];
+        // tourney.roundList = tourney.roundList.concat([round]);
+        // setTourneyList([...tourneyList]);
+        dispatch({type: "ADD_ROUND", tourneyId: tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }
     function delLastRound() {
-        const round2Del = last(tourney.roundList);
-        // if a match hasn't been scored, then reset it.
-        round2Del.forEach(function (match) {
-            if (match.result.reduce((a, b) => a + b) !== 0) {
-               match.players.forEach(function (pId, color) {
-                    getPlayer(pId, playerList).matchCount -= 1;
-                    getPlayer(pId, playerList).rating = match.origRating[color];
-                });
-            }
-        });
-        tourney.roundList = tourney.roundList.slice(
-            0,
-            tourney.roundList.length - 1
-        );
-        setTourneyList([...tourneyList]);
+        // const round2Del = last(tourney.roundList);
+        // // if a match hasn't been scored, then reset it.
+        // round2Del.forEach(function (match) {
+        //     if (match.result.reduce((a, b) => a + b) !== 0) {
+        //        match.players.forEach(function (pId, color) {
+        //             getPlayer(pId, playerList).matchCount -= 1;
+        //             getPlayer(pId, playerList).rating = match.origRating[color];
+        //         });
+        //     }
+        // });
+        // tourney.roundList = tourney.roundList.slice(
+        //     0,
+        //     tourney.roundList.length - 1
+        // );
+        // setTourneyList([...tourneyList]);
+        dispatch({type: "DEL_LAST_ROUND", tourneyId: tourneyId});
     }
     return (
         <Tabs defaultIndex={defaultTab}>
@@ -155,10 +157,7 @@ export function TournamentTabs({
             </TabList>
             <TabPanels>
             <TabPanel>
-                <PlayerSelect
-                    tourneyList={tourneyList}
-                    setTourneyList={setTourneyList}
-                    tourneyId={tourneyId} />
+                <PlayerSelect tourneyId={tourneyId} />
             </TabPanel>
             <TabPanel>
                     <table>
@@ -206,9 +205,7 @@ export function TournamentTabs({
                     <Round
                         matchList={matchList}
                         roundId={id}
-                        tourneyList={tourneyList}
-                        tourneyId={tourneyId}
-                        setTourneyList={setTourneyList} />
+                        tourneyId={tourneyId} />
                 </TabPanel>
             )}
             </TabPanels>

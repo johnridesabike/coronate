@@ -1,12 +1,12 @@
 // @ts-check
 import React, {useContext} from "react";
-import {DataContext} from "../tourney-data";
+import {DataContext} from "../global-state";
 
-export function Options({tourneyList}) {
+export function Options() {
     const {data, dispatch} = useContext(DataContext);
     const options = data.options;
     const outputData = JSON.stringify(data, null, 2);
-    const outputTourney = JSON.stringify(tourneyList, null, 2);
+    // const outputTourney = JSON.stringify(tourneyList, null, 2);
     function updateByeValue(value) {
         dispatch({
             type: "SET_BYE_VALUE",
@@ -35,7 +35,7 @@ export function Options({tourneyList}) {
                 </label>
             </fieldset>
             </form>
-            <form onSubmit={(event) => event.preventDefault()}>
+            {/* <form onSubmit={(event) => event.preventDefault()}>
             <fieldset>
                 <legend>Export tournaments</legend>
                 <textarea
@@ -48,7 +48,7 @@ export function Options({tourneyList}) {
                     />
                 <input type="submit" value="load" disabled />
             </fieldset>
-            </form>
+            </form> */}
             <form onSubmit={(event) => event.preventDefault()}>
             <fieldset>
                 <legend>Export data</legend>

@@ -1,12 +1,13 @@
 // @ts-check
 import React, {Fragment, useState, useEffect, useContext} from "react";
 import {BackButton, OpenButton} from "./utility";
-import createPlayer, {
+import {
+    createPlayer,
     getPlayer,
     getPlayerAvoidList,
     kFactor
 } from "../chess-tourney/player";
-import {DataContext} from "../tourney-data";
+import {DataContext} from "../global-state";
 
 export function PlayerView() {
     /** @type {number} */

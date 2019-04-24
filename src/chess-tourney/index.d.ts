@@ -1,8 +1,7 @@
-export type MatchScore = 0 | 1 | 0.5;
 export interface Match {
     id: string,
     players: [number, number],
-    result: [MatchScore, MatchScore],
+    result: [number, number],
     origRating: [number, number],
     newRating: [number, number]
 }

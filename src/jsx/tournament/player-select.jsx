@@ -2,70 +2,76 @@ import React, {useContext, useState} from "react";
 import {getPlayer} from "../../chess-tourney/player";
 import {tieBreakMethods, hasHadBye} from "../../chess-tourney/scores";
 import {PanelContainer, Panel} from "../utility";
-import arrayMove from "array-move";
-import {DataContext} from "../../tourney-data";
+import {DataContext} from "../../global-state";
 
-export default function PlayerSelect({
-    tourneyList,
-    setTourneyList,
-    tourneyId
-}) {
-    const {data} = useContext(DataContext);
+export default function PlayerSelect({tourneyId}) {
+    const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
-    const players = tourneyList[tourneyId].players;
-    const tourney = tourneyList[tourneyId];
+    const players = data.tourneys[tourneyId].players;
+    const tourney = data.tourneys[tourneyId];
     const [isSelecting, setIsSelecting] = useState((players.length === 0));
     const [selectedTb, setSelectedTb] = useState(null);
     function toggleTb(id = null) {
         if (!id) {
             id = selectedTb;
         }
-        const tieBreaks = tourneyList[tourneyId].tieBreaks;
+        const tieBreaks = data.tourneys[tourneyId].tieBreaks;
         if (tieBreaks.includes(id)) {
-            tourneyList[tourneyId].tieBreaks = tieBreaks.filter(
-                (id2) => id2 !== id
-            );
+            dispatch({type: "DEL_TIEBREAK", id: id, tourneyId: tourneyId});
         } else {
-            tourneyList[tourneyId].tieBreaks = tieBreaks.concat([id]);
+            dispatch({type: "ADD_TIEBREAK", id: id, tourneyId: tourneyId});
         }
-        setTourneyList([...tourneyList]);
     }
     function moveTb(direction) {
-        const tieBreaks = tourneyList[tourneyId].tieBreaks;
-        const index = tieBreaks.indexOf(selectedTb);
-        tourneyList[tourneyId].tieBreaks = arrayMove(
-            tieBreaks,
-            index,
-            index + direction
-        );
-        setTourneyList([...tourneyList]);
+        const index = data.tourneys[tourneyId].tieBreaks.indexOf(selectedTb);
+        dispatch({
+            type: "MOVE_TIEBREAK",
+            tourneyId: tourneyId,
+            oldIndex: index,
+            newIndex: index + direction
+        });
     }
     function togglePlayer(event) {
         const id = Number(event.target.value);
         if (event.target.checked) {
-            tourneyList[tourneyId].players = players.concat([id]);
+            dispatch({
+                type: "SET_TOURNEY_PLAYERS",
+                tourneyId: tourneyId,
+                players: players.concat([id])
+            });
         } else {
-            tourneyList[tourneyId].players = players.filter(
-                (pId) => pId !== id
-            );
+            dispatch({
+                type: "SET_TOURNEY_PLAYERS",
+                tourneyId: tourneyId,
+                players: players.filter((pId) => pId !== id)
+            });
         }
-        setTourneyList([...tourneyList]);
     }
     function selectAll() {
-        tourneyList[tourneyId].players = playerList.map((p) => p.id);
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "SET_TOURNEY_PLAYERS",
+            players: playerList.map((p) => p.id)
+        });
     }
     function selectNone() {
-        tourneyList[tourneyId].players = [];
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "SET_TOURNEY_PLAYERS",
+            players: []
+        });
     }
     function addByeQueue(id) {
-        tourney.byeQueue = tourney.byeQueue.concat([id]);
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "SET_BYE_QUEUE",
+            tourneyId: tourneyId,
+            byeQueue: tourney.byeQueue.concat([id])
+        });
     }
     function removeByeQueue(id) {
-        tourney.byeQueue = tourney.byeQueue.filter((pId) => pId !== id);
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "SET_BYE_QUEUE",
+            tourneyId: tourneyId,
+            byeQueue: tourney.byeQueue.filter((pId) => pId !== id)
+        });
     }
     if (isSelecting) {
         return (

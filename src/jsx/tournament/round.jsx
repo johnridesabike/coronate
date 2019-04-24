@@ -7,29 +7,18 @@ import {
     calcNewRatings,
     dummyPlayer
 } from "../../chess-tourney/player";
-import {getPlayerMatchData, hasHadBye} from "../../chess-tourney/scores";
-import pairPlayers from "../../chess-tourney/pairing";
-import createMatch from "../../chess-tourney/match";
+import {getPlayerMatchData} from "../../chess-tourney/scores";
 import {BLACK, WHITE} from "../../chess-tourney/constants";
 import {
     getById,
     getIndexById
 } from "../../chess-tourney/utility";
-import arrayMove from "array-move";
-import {DataContext} from "../../tourney-data";
+import {DataContext} from "../../global-state";
 
-export default function Round({
-    matchList,
-    roundId,
-    tourneyList,
-    tourneyId,
-    setTourneyList
-}) {
+export default function Round({matchList, roundId, tourneyId,}) {
     const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
-    const avoidList = data.avoid;
-    const options = data.options;
-    const tourney = tourneyList[tourneyId];
+    const tourney = data.tourneys[tourneyId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     function selectPlayer(event) {
@@ -55,90 +44,24 @@ export default function Round({
     const unMatched = tourney.players.filter(
         (pId) => !matched.includes(pId)
     );
-    function autoPair(unPairedPlayers) {
-        const nextBye = tourney.byeQueue.filter(
-            (pId) => !hasHadBye(pId, tourney.roundList)
-        )[0];
-        let byeMatch = null;
-        if (nextBye >= 0) {
-            byeMatch = createMatch({
-                id: nextBye + "-" + dummyPlayer.id,
-                players: [nextBye, dummyPlayer.id],
-                origRating: [
-                    getPlayer(nextBye, playerList).rating,
-                    dummyPlayer.rating
-                ],
-                newRating: [
-                    getPlayer(nextBye, playerList).rating,
-                    dummyPlayer.rating
-                ]
-            });
-            unPairedPlayers = unPairedPlayers.filter((pId) => pId !== nextBye);
-        }
-        const pairs = pairPlayers(
-            unPairedPlayers,
-            roundId,
-            tourney.roundList,
-            playerList,
-            avoidList
-        );
-        const newMatchList = pairs.map(
-            (pair) => createMatch({
-                id: pair.join("-"),
-                players: [pair[WHITE], pair[BLACK]],
-                origRating: [
-                    getPlayer(pair[WHITE], playerList).rating,
-                    getPlayer(pair[BLACK], playerList).rating
-                ],
-                newRating: [
-                    getPlayer(pair[WHITE], playerList).rating,
-                    getPlayer(pair[BLACK], playerList).rating
-                ]
-            })
-        );
-        if (byeMatch) {
-            newMatchList.push(byeMatch);
-        }
-        // this covers manual bye matches and auto-paired bye matches
-        newMatchList.forEach(function (match) {
-            const dummy = match.players.indexOf(dummyPlayer.id);
-            if (dummy === BLACK) {
-                match.result[WHITE] = options.byeValue;
-            }
-            if (dummy === WHITE) {
-                match.result[BLACK] = options.byeValue;
-            }
+    function autoPair(unpairedPlayers) {
+        dispatch({
+            type: "AUTO_PAIR",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            unpairedPlayers: unpairedPlayers
         });
-        tourney.roundList[roundId] = (
-            tourney.roundList[roundId].concat(newMatchList)
-        );
-        setTourneyList([...tourneyList]);
     }
     function manualPair(pair) {
-        const match = createMatch({
-            id: pair.join("-"),
-            players: [pair[WHITE], pair[BLACK]],
-            origRating: [
-                getPlayer(pair[WHITE], playerList).rating,
-                getPlayer(pair[BLACK], playerList).rating
-            ],
-            newRating: [
-                getPlayer(pair[WHITE], playerList).rating,
-                getPlayer(pair[BLACK], playerList).rating
-            ]
+        dispatch({
+            type: "MANUAL_PAIR",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            unpairedPlayers: pair
         });
-        if (pair[WHITE] === dummyPlayer.id) {
-            match.result = [options.byeValue, 0];
-        }
-        if (pair[BLACK] === dummyPlayer.id) {
-            match.result = [0, options.byeValue];
-        }
-        tourney.roundList[roundId].push(match);
-        setTourneyList([...tourneyList]);
     }
     function setMatchResult(matchId, result) {
         const match = getById(tourney.roundList[roundId], matchId);
-        const mIndex = tourney.roundList[roundId].indexOf(match);
         const white = getPlayer(match.players[WHITE], playerList);
         const black = getPlayer(match.players[BLACK], playerList);
         const [
@@ -149,18 +72,6 @@ export default function Round({
             [white.matchCount, black.matchCount],
             result
         );
-        const isNew = (match.result.reduce((a, b) => a + b) === 0);
-        setTourneyList(function (prevTourney) {
-            const newTourney = [...prevTourney];
-            newTourney[tourneyId].roundList[roundId][mIndex].result = result;
-            newTourney[tourneyId].roundList[roundId][mIndex].newRating = [
-                whiteRating,
-                blackRating
-            ];
-            return newTourney;
-        });
-        // white.rating = whiteRating;
-        // black.rating = blackRating;
         dispatch({
             type: "SET_PLAYER_RATING",
             id: white.id,
@@ -171,9 +82,8 @@ export default function Round({
             id: black.id,
             rating: blackRating
         });
-        if (isNew) {
-            // white.matchCount += 1;
-            // black.matchCount += 1;
+        // if the result hasn't been scored yet, increment the matchCount
+        if (match.result.reduce((a, b) => a + b) === 0) {
             dispatch({
                 type: "SET_PLAYER_MATCHCOUNT",
                 id: white.id,
@@ -186,6 +96,13 @@ export default function Round({
             });
         }
         // setPlayerList([...playerList]);
+        dispatch({
+            type: "SET_MATCH_RESULT",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            matchId: matchId,
+            result: result
+        });
     }
     function unMatch(matchId) {
         const match = getById(tourney.roundList[roundId], matchId);
@@ -193,30 +110,45 @@ export default function Round({
             // checks if the match has been scored yet & resets the players'
             // records
             match.players.forEach(function (pId, color) {
-                getPlayer(pId, playerList).matchCount -= 1;
-                getPlayer(pId, playerList).rating = match.origRating[color];
+                dispatch({
+                    type: "SET_PLAYER_MATCHCOUNT",
+                    id: pId,
+                    matchCount: getPlayer(pId, playerList).matchCount - 1
+                });
+                dispatch({
+                    type: "SET_PLAYER_RATING",
+                    id: pId,
+                    rating: match.origRating[color]
+                });
             });
         }
-        tourneyList[tourneyId].roundList[roundId] = (
-            tourneyList[tourneyId].roundList[roundId].filter((m) => m !== match)
-        );
+        dispatch({
+            type: "DEL_MATCH",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            matchId: matchId
+        });
         setSelectedMatch(null);
-        setTourneyList([...tourneyList]);
     }
     function swapColors(matchId) {
-        const match = getById(tourney.roundList[roundId], matchId);
-        match.players.reverse();
-        match.origRating.reverse();
-        match.newRating.reverse();
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "SWAP_COLORS",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            matchId: matchId
+        });
     }
     function moveMatch(matchId, direction) {
-        const matchesRef = tourneyList[tourneyId].roundList[roundId];
+        const matchesRef = data.tourneys[tourneyId].roundList[roundId];
         const mIndex = getIndexById(matchesRef, matchId);
-        tourneyList[tourneyId].roundList[roundId] = (
-            arrayMove(matchesRef, mIndex, mIndex + direction)
-        );
-        setTourneyList([...tourneyList]);
+        dispatch({
+            type: "MOVE_MATCH",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            matchId: matchId,
+            oldIndex: mIndex,
+            newIndex: mIndex + direction
+        });
     }
     return (
         <PanelContainer>

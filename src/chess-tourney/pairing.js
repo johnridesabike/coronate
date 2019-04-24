@@ -281,5 +281,4 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     }
     return matches;
 }
-
 export default Object.freeze(pairPlayers);

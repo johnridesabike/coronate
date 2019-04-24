@@ -40,7 +40,7 @@ export function OpenButton({action}) {
  */
 export function DragIcon({isDragged}) {
     return (
-        <FaArrowsAltV style={{cursor: isDragged ? 'grabbing' : 'grab'}}
+        <FaArrowsAltV style={{cursor: isDragged ? "grabbing" : "grab"}}
         tabIndex={-1}/>
     );
 

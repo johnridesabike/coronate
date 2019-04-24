@@ -3,7 +3,6 @@ import EloRank from "elo-rank";
 import {WHITE, BLACK} from "./constants";
 /**
  * @typedef {import("./index").Player} Player
- * @typedef {import("./index").MatchScore} MatchScore
  */
 
 function createPlayer(importObj = {}) {
@@ -18,7 +17,8 @@ function createPlayer(importObj = {}) {
     };
     return player;
 }
-export default Object.freeze(createPlayer);
+Object.freeze(createPlayer);
+export {createPlayer};
 
 const dummyPlayer = createPlayer();
 dummyPlayer.id = -1;
@@ -95,7 +95,7 @@ export {kFactor};
 /**
  * @param {[number, number]} origRatings
  * @param {[number, number]} matchCounts
- * @param {[MatchScore, MatchScore]} result
+ * @param {[number, number]} result
  */
 function calcNewRatings(origRatings, matchCounts, result) {
     const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
