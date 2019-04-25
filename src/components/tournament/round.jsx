@@ -13,7 +13,7 @@ import {
     getById,
     getIndexById
 } from "../../chess-tourney/utility";
-import {DataContext} from "../../global-state";
+import {DataContext} from "../../state/global-state";
 
 export default function Round({roundId, tourneyId,}) {
     const {data, dispatch} = useContext(DataContext);

@@ -1,6 +1,6 @@
 // @ts-check
 import React, {useContext} from "react";
-import {DataContext} from "../global-state";
+import {DataContext} from "../state/global-state";
 
 export function Options() {
     const {data, dispatch} = useContext(DataContext);

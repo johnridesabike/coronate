@@ -2,8 +2,8 @@
 import React, {useReducer} from "react";
 import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
-import Round from "../jsx/tournament/round";
-import {dataReducer, defaultData, DataContext} from "../global-state";
+import Round from "../components/tournament/round";
+import {dataReducer, defaultData, DataContext} from "../state/global-state";
 
 afterEach(cleanup);
 

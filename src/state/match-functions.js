@@ -1,10 +1,10 @@
 // @ts-check
-import {BLACK, WHITE} from "./chess-tourney/constants";
-import createMatch from "./chess-tourney/match";
-import {hasHadBye} from "./chess-tourney/scores";
-import {dummyPlayer, getPlayer} from "./chess-tourney/player";
-import pairPlayers from "./chess-tourney/pairing";
-import {getById} from "./chess-tourney/utility";
+import {BLACK, WHITE} from "../chess-tourney/constants";
+import createMatch from "../chess-tourney/match";
+import {hasHadBye} from "../chess-tourney/scores";
+import {dummyPlayer, getPlayer} from "../chess-tourney/player";
+import pairPlayers from "../chess-tourney/pairing";
+import {getById} from "../chess-tourney/utility";
 /**
 * @typedef {import("./dispatch").GlobalState} GlobalState
 */

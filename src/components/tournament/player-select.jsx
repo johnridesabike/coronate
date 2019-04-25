@@ -2,7 +2,7 @@ import React, {useContext, useState} from "react";
 import {getPlayer} from "../../chess-tourney/player";
 import {tieBreakMethods, hasHadBye} from "../../chess-tourney/scores";
 import {PanelContainer, Panel} from "../utility";
-import {DataContext} from "../../global-state";
+import {DataContext} from "../../state/global-state";
 
 export default function PlayerSelect({tourneyId}) {
     const {data, dispatch} = useContext(DataContext);

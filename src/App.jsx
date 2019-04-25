@@ -3,10 +3,10 @@ import React, {useReducer} from "react";
 import "./App.css";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import "@reach/tabs/styles.css";
-import {TournamentList} from "./jsx/tournament/index";
-import {PlayerView} from "./jsx/players.jsx";
-import {Options} from "./jsx/options";
-import {defaultData, dataReducer, DataContext} from "./global-state";
+import TournamentList from "./components/tournament/list";
+import PlayerView from "./components/players/index";
+import {Options} from "./components/options";
+import {defaultData, dataReducer, DataContext} from "./state/global-state";
 
 function App() {
     const [data, dispatch] = useReducer(dataReducer, defaultData);

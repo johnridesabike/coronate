@@ -2,8 +2,8 @@
 import {createContext} from "react";
 import last from "lodash/last";
 import arrayMove from "array-move";
-import {createPlayer, getPlayer} from "./chess-tourney/player";
-import {getById} from "./chess-tourney/utility";
+import {createPlayer, getPlayer} from "../chess-tourney/player";
+import {getById} from "../chess-tourney/utility";
 import defaultOptions from "./demo-options.json";
 import defaultPlayers from "./demo-players.json";
 import defaultTourneyList from "./demo-tourney.json";
