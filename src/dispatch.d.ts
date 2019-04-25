@@ -80,7 +80,8 @@ declare interface ActionSetMatchResult {
     tourneyId: number,
     roundId: number,
     matchId: string,
-    result: result
+    result: [number, number],
+    newRating: [number, number]
 }
 declare interface ActionDelMatch {
     type: "DEL_MATCH",

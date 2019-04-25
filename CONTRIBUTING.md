@@ -10,7 +10,7 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## Housekeeping
 
-- Write up-to-date tests. See [src/__tests__](https://github.com/johnridesabike/chessahoochee/blob/master/src/__tests__) for the current test status.
+- Write up-to-date tests. See [src/\_\_tests\_\_](https://github.com/johnridesabike/chessahoochee/blob/master/src/__tests__) for the current test status.
 - Write documentation.
 - Finalize specification for data storage (see existing JSON files in `src/` for examples of what they'll look like).
 

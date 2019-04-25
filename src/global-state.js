@@ -176,6 +176,10 @@ function dataReducer(state, action) {
             tourneys[action.tourneyId].roundList[action.roundId],
             action.matchId
         ).result = action.result;
+        getById(
+            tourneys[action.tourneyId].roundList[action.roundId],
+            action.matchId
+        ).newRating = action.newRating;
         return Object.assign({}, state);
     case "DEL_MATCH":
         tourneys[action.tourneyId].roundList[action.roundId] = (

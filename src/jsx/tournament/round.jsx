@@ -65,10 +65,7 @@ export default function Round({roundId, tourneyId,}) {
         const match = getById(tourney.roundList[roundId], matchId);
         const white = getPlayer(match.players[WHITE], playerList);
         const black = getPlayer(match.players[BLACK], playerList);
-        const [
-            whiteRating,
-            blackRating
-        ] = calcNewRatings(
+        const newRating = calcNewRatings(
             match.origRating,
             [white.matchCount, black.matchCount],
             result
@@ -76,12 +73,12 @@ export default function Round({roundId, tourneyId,}) {
         dispatch({
             type: "SET_PLAYER_RATING",
             id: white.id,
-            rating: whiteRating
+            rating: newRating[WHITE]
         });
         dispatch({
             type: "SET_PLAYER_RATING",
             id: black.id,
-            rating: blackRating
+            rating: newRating[BLACK]
         });
         // if the result hasn't been scored yet, increment the matchCount
         if (match.result.reduce((a, b) => a + b) === 0) {
@@ -102,7 +99,8 @@ export default function Round({roundId, tourneyId,}) {
             tourneyId: tourneyId,
             roundId: roundId,
             matchId: matchId,
-            result: result
+            result: result,
+            newRating: newRating
         });
     }
     function unMatch(matchId) {
@@ -347,7 +345,7 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
                 &nbsp;
                 (
                 {numeral(
-                    match.origRating[color] - match.newRating[color]
+                    match.newRating[color] - match.origRating[color]
                 ).format("+0")}
                 )
             </dd>
