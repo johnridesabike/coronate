@@ -1,2 +1,0 @@
-[data-reach-tab-panel]{outline:none}[data-reach-tab-list]{display:-webkit-flex;display:flex;background:rgba(0,0,0,.05)}[data-reach-tab]{display:inline-block;padding:.25em .5em;margin:0;background:none;color:inherit;font:inherit;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;border:none;border-bottom:1px solid transparent}[data-reach-tab]:active{background:rgba(0,0,0,.05)}[data-reach-tab]:disabled{opacity:.25;cursor:default}[data-reach-tab][data-selected]{border-bottom-color:inherit}
-/*# sourceMappingURL=2.22f6dbfb.chunk.css.map */
