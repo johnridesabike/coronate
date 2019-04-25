@@ -6,13 +6,6 @@ export function Options() {
     const {data, dispatch} = useContext(DataContext);
     const options = data.options;
     const outputData = JSON.stringify(data, null, 2);
-    // const outputTourney = JSON.stringify(tourneyList, null, 2);
-    function updateByeValue(value) {
-        dispatch({
-            type: "SET_BYE_VALUE",
-            byeValue: value
-        });
-    }
     return (
         <div>
             <form>
@@ -24,14 +17,24 @@ export function Options() {
                     <input
                         type="radio"
                         checked={options.byeValue === 1}
-                        onChange={() => updateByeValue(1)} />
+                        onChange={
+                            () => dispatch({
+                                type: "SET_BYE_VALUE",
+                                byeValue: 1
+                            })
+                        } />
                 </label>
                 <label>
                     0.5
                     <input
                         type="radio"
                         checked={options.byeValue === 0.5}
-                        onChange={() => updateByeValue(0.5)} />
+                        onChange={
+                            () => dispatch({
+                                type: "SET_BYE_VALUE",
+                                byeValue: 0.5
+                            })
+                        } />
                 </label>
             </fieldset>
             </form>

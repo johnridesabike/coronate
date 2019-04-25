@@ -1,5 +1,5 @@
 .app {
-    height: 100vh;
+    /* height: 100vh;
     width: 100vw;
     display: grid;
     grid-template-rows: auto 1fr auto;
@@ -7,21 +7,25 @@
     grid-template-areas: 
       "header"
       "content"
-      "footer";
+      "footer"; */
+    overflow: visible; /* required for position:sticky */
 }
 
 .header {
-    grid-area: header;
+    /* grid-area: header; */
+    position: sticky;
+    top: 0;
+    background-color: lightgray !important;
 }
 
 .content {
-    grid-area: content;
+    /* grid-area: content; */
     padding: 1em;
     overflow: auto;
 }
 
 .caution {
-    grid-area: footer;
+    /* grid-area: footer; */
     width: 100%;
     background-repeat: repeat;
     display: flex;
@@ -37,6 +41,7 @@
     padding: 2px;
     background-color: black;
     color: white;
+    border-radius: 0.5em;
 }
   
 .caution a,

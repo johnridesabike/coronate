@@ -14,6 +14,9 @@ function App() {
         <React.StrictMode>
         <DataContext.Provider value={{data, dispatch}}>
         <Tabs className="app" defaultIndex={1}>
+            <footer className="caution footer">
+                <Caution />
+            </footer>
             <TabList className="header">
                 <Tab>Players</Tab>
                 <Tab>Tournaments</Tab>
@@ -37,9 +40,6 @@ function App() {
                     </p>
                 </TabPanel>
             </TabPanels>
-            <footer className="caution footer">
-                <Caution />
-            </footer>
         </Tabs>
         </DataContext.Provider>
         </React.StrictMode>
@@ -51,8 +51,9 @@ export const RedTab = (props) => <Tab {...props} style={{ color: "red" }} />;
 function Caution() {
     return (
         <p>
-            <span role="img" aria-label="waving hand">👋</span>&nbsp;
-            This is an unstable demo build!
+            <span role="img" aria-label="warning">⚠️</span>&nbsp;
+            This is an unstable demo build.&nbsp;
+            <span role="img" aria-label="warning">⚠️</span>&nbsp;
             Want to help make it better? Head to the&nbsp;
             <span role="img" aria-label="finger pointing right">👉</span>&nbsp;
             <a href="https://github.com/johnridesabike/chessahoochee">

@@ -1,5 +1,6 @@
 // @ts-check
 import React, {Fragment, useState, useEffect, useContext} from "react";
+import numeral from "numeral";
 import {BackButton, OpenButton} from "./utility";
 import {
     createPlayer,
@@ -184,8 +185,14 @@ function PlayerInfoBox({playerId, setOpenPlayer}) {
             <dl>
                 <dt>Matches played</dt>
                 <dd>{getPlayer(playerId, playerList).matchCount}</dd>
+                <dt>Rating</dt>
+                <dd>{getPlayer(playerId, playerList).rating}</dd>
                 <dt>K factor</dt>
-                <dd>{kFactor(getPlayer(playerId, playerList).matchCount)}</dd>
+                <dd>
+                    {numeral(
+                        kFactor(getPlayer(playerId, playerList).matchCount)
+                    ).format("00")}
+                </dd>
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>

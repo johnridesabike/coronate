@@ -10,13 +10,13 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## Housekeeping
 
-- Write up-to-date tests.
+- Write up-to-date tests. See [src/__tests__](https://github.com/johnridesabike/chessahoochee/blob/master/src/__tests__) for the current test status.
 - Write documentation.
+- Finalize specification for data storage (see existing JSON files in `src/` for examples of what they'll look like).
 
 ## React
 
 - This was my first React project, and it shows. I already rewrote it once to correct my bad practices, but it still needs a lot of work. Any advice or help on improving the JSX code is appreciated!
-- State management probably needs to get refactored into contexts and reducers.
 
 ## User interface
 

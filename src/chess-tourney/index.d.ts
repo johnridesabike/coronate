@@ -31,13 +31,13 @@ export interface PlayerData {
     rating: number,
     avoidList: number[]
 }
-export type ScoreCalculator = (
-    playerId: number,
-    roundList: Round[],
-    roundId?: number
-) => any
 export interface Standing {
     id: number,
     score: number,
     tieBreaks: number[]
 }
+export type ScoreCalculator = (
+    playerId: number,
+    roundList: Round[],
+    roundId?: number
+) => any

@@ -15,10 +15,11 @@ import {
 } from "../../chess-tourney/utility";
 import {DataContext} from "../../global-state";
 
-export default function Round({matchList, roundId, tourneyId,}) {
+export default function Round({roundId, tourneyId,}) {
     const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
     const tourney = data.tourneys[tourneyId];
+    const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     function selectPlayer(event) {

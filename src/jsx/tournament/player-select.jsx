@@ -47,32 +47,6 @@ export default function PlayerSelect({tourneyId}) {
             });
         }
     }
-    function selectAll() {
-        dispatch({
-            type: "SET_TOURNEY_PLAYERS",
-            players: playerList.map((p) => p.id)
-        });
-    }
-    function selectNone() {
-        dispatch({
-            type: "SET_TOURNEY_PLAYERS",
-            players: []
-        });
-    }
-    function addByeQueue(id) {
-        dispatch({
-            type: "SET_BYE_QUEUE",
-            tourneyId: tourneyId,
-            byeQueue: tourney.byeQueue.concat([id])
-        });
-    }
-    function removeByeQueue(id) {
-        dispatch({
-            type: "SET_BYE_QUEUE",
-            tourneyId: tourneyId,
-            byeQueue: tourney.byeQueue.filter((pId) => pId !== id)
-        });
-    }
     if (isSelecting) {
         return (
             <table>
@@ -102,10 +76,22 @@ export default function PlayerSelect({tourneyId}) {
                 <tfoot>
                     <tr>
                         <td colSpan={3}>
-                            <button onClick={() => selectAll()}>
+                            <button
+                                onClick={
+                                    () => dispatch({
+                                        type: "SET_TOURNEY_PLAYERS",
+                                        players: playerList.map((p) => p.id)
+                                    })
+                                }>
                                 Select all
                             </button>
-                            <button onClick={() => selectNone()}>
+                            <button
+                                onClick={
+                                    () => dispatch({
+                                        type: "SET_TOURNEY_PLAYERS",
+                                        players: []
+                                    })
+                                }>
                                 Select none
                             </button>
                             <button onClick={() => setIsSelecting(false)}>
@@ -139,7 +125,13 @@ export default function PlayerSelect({tourneyId}) {
                         <td>{getPlayer(pId, playerList).lastName}</td>
                         <td>
                             <button
-                                onClick={() => addByeQueue(pId)}
+                                onClick={
+                                    () => dispatch({
+                                        type: "SET_BYE_QUEUE",
+                                        tourneyId: tourneyId,
+                                        byeQueue: tourney.byeQueue.concat([pId])
+                                    })
+                                }
                                 disabled={tourney.byeQueue.includes(pId)}>
                                 Bye
                             </button>
@@ -164,7 +156,15 @@ export default function PlayerSelect({tourneyId}) {
                     {getPlayer(pId, playerList).firstName}&nbsp;
                     {getPlayer(pId, playerList).lastName}
                     <button
-                        onClick={() => removeByeQueue(pId)}>
+                        onClick={
+                            () => dispatch({
+                                type: "SET_BYE_QUEUE",
+                                tourneyId: tourneyId,
+                                byeQueue: tourney.byeQueue.filter(
+                                    (id) => pId !== id
+                                )
+                            })
+                        }>
                         Remove
                     </button>
                 </li>

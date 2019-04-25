@@ -20,22 +20,11 @@ export function TournamentList() {
     }
     function makeTournament(event) {
         event.preventDefault();
-        // setTourneyList(tourneyList.concat([
-        //     createTournament({
-        //         name: newTourneyName
-        //     })
-        // ]));
         dispatch({
             type: "ADD_TOURNEY",
             tourney: createTournament({name: newTourneyName})
         });
         setNewTourneyName("");
-    }
-    function removeTourney(index) {
-        // tourneyList.splice(index, 1);
-        // setPlayerList([...playerList]);
-        // setTourneyList([...tourneyList]);
-        dispatch({type: "DEL_TOURNEY", index: index});
     }
     let content = <Fragment></Fragment>;
     if (openTourney !== null) {
@@ -62,7 +51,12 @@ export function TournamentList() {
                             </button>
                             <button
                                 className="danger"
-                                onClick={() => removeTourney(i)}>
+                                onClick={
+                                    () => dispatch({
+                                        type: "DEL_TOURNEY",
+                                        index: i
+                                    })
+                                }>
                                 delete
                             </button>
                         </li>
@@ -110,29 +104,8 @@ export function TournamentTabs({tourneyId, backButton}) {
         tourney.roundList
     );
     function newRound() {
-        // const round = [];
-        // tourney.roundList = tourney.roundList.concat([round]);
-        // setTourneyList([...tourneyList]);
         dispatch({type: "ADD_ROUND", tourneyId: tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
-    }
-    function delLastRound() {
-        // const round2Del = last(tourney.roundList);
-        // // if a match hasn't been scored, then reset it.
-        // round2Del.forEach(function (match) {
-        //     if (match.result.reduce((a, b) => a + b) !== 0) {
-        //        match.players.forEach(function (pId, color) {
-        //             getPlayer(pId, playerList).matchCount -= 1;
-        //             getPlayer(pId, playerList).rating = match.origRating[color];
-        //         });
-        //     }
-        // });
-        // tourney.roundList = tourney.roundList.slice(
-        //     0,
-        //     tourney.roundList.length - 1
-        // );
-        // setTourneyList([...tourneyList]);
-        dispatch({type: "DEL_LAST_ROUND", tourneyId: tourneyId});
     }
     return (
         <Tabs defaultIndex={defaultTab}>
@@ -143,7 +116,12 @@ export function TournamentTabs({tourneyId, backButton}) {
                 {calcNumOfRounds(players.length)}
                 <button onClick={() => newRound()}>New Round</button>
                 <button
-                    onClick={() => delLastRound()}
+                    onClick={
+                        () => dispatch({
+                            type: "DEL_LAST_ROUND",
+                            tourneyId: tourneyId
+                        })
+                    }
                     disabled={tourney.roundList.length === 0}>
                     Remove last round
                 </button>
@@ -200,11 +178,10 @@ export function TournamentTabs({tourneyId, backButton}) {
                         </tbody>
                     </table>
             </TabPanel>
-            {tourney.roundList.map((matchList, id) =>
+            {Object.keys(tourney.roundList).map((id) =>
                 <TabPanel key={id}>
                     <Round
-                        matchList={matchList}
-                        roundId={id}
+                        roundId={Number(id)}
                         tourneyId={tourneyId} />
                 </TabPanel>
             )}
