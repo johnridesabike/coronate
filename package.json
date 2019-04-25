@@ -6,6 +6,7 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "homepage": ".",
+  "main": "src/index.jsx",
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/chessahoochee.git"
