@@ -6,13 +6,13 @@ import {
     getPlayer,
     calcNewRatings,
     dummyPlayer
-} from "../../chess-tourney/player";
-import {getPlayerMatchData} from "../../chess-tourney/scores";
-import {BLACK, WHITE} from "../../chess-tourney/constants";
+} from "../../data/player";
+import {genPlayerData} from "../../pairing-scoring/scoring";
+import {BLACK, WHITE} from "../../data/constants";
 import {
     getById,
     getIndexById
-} from "../../chess-tourney/utility";
+} from "../../data/utility";
 import {DataContext} from "../../state/global-state";
 
 export default function Round({roundId, tourneyId,}) {
@@ -37,7 +37,6 @@ export default function Round({roundId, tourneyId,}) {
             setSelectedPlayers(selectedPlayers.filter((id) => id !== pId));
         }
     }
-    const roundList = tourney.roundList;
     const matched = matchList.reduce(
         (acc, match) => acc.concat(match.players),
         []
@@ -248,33 +247,15 @@ export default function Round({roundId, tourneyId,}) {
                         <PlayerMatchInfo
                             match={getById(matchList, selectedMatch)}
                             color={0}
-                            playerData={
-                                getPlayerMatchData(
-                                    getById(
-                                        matchList,
-                                        selectedMatch
-                                    ).players[0],
-                                    roundList,
-                                    roundId
-                                )
-                            }
-                            playerList={playerList}/>
+                            tourneyId={tourneyId}
+                            roundId={roundId}/>
                     </Panel>
                     <Panel>
                         <PlayerMatchInfo
                             match={getById(matchList, selectedMatch)}
                             color={1}
-                            playerData={
-                                getPlayerMatchData(
-                                    getById(
-                                        matchList,
-                                        selectedMatch
-                                    ).players[1],
-                                    roundList,
-                                    roundId
-                                )
-                            }
-                            playerList={playerList} />
+                            tourneyId={tourneyId}
+                            roundId={roundId}/>
                     </Panel>
                 </PanelContainer>
             }
@@ -323,8 +304,17 @@ export default function Round({roundId, tourneyId,}) {
     );
 }
 
-function PlayerMatchInfo({match, color, playerData, playerList}) {
-    const colorBalance = playerData.colorBalance();
+function PlayerMatchInfo({match, color, tourneyId, roundId}) {
+    const {data} = useContext(DataContext);
+    const playerList = data.players;
+    const playerData = genPlayerData(
+        match.players[color],
+        playerList,
+        data.avoid,
+        data.tourneys[tourneyId].roundList,
+        roundId
+    );
+    const colorBalance = playerData.colorBalance;
     let prettyBalance = "Even";
     if (colorBalance < 0) {
         prettyBalance = "White +" + Math.abs(colorBalance);
@@ -334,11 +324,11 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
     return (
         <dl className="player-card">
             <h3>
-                {playerData.data(playerList).firstName}&nbsp;
-                {playerData.data(playerList).lastName}
+                {playerData.data.firstName}&nbsp;
+                {playerData.data.lastName}
             </h3>
             <dt>Score</dt>
-            <dd>{playerData.score()}</dd>
+            <dd>{playerData.score}</dd>
             <dt>Rating</dt>
             <dd>
                 {match.origRating[color]}
@@ -351,18 +341,30 @@ function PlayerMatchInfo({match, color, playerData, playerList}) {
             </dd>
             <dt>Color balance</dt>
             <dd>{prettyBalance}</dd>
+            <dt>Has had a bye round</dt>
+            <dd>{(playerData.hasHadBye) ? "Yes" : "No"}</dd>
             <dt>Opponent history</dt>
             <dd>
                 <ol>
-                {playerData.opponents(playerList).map((opponent) =>
-                    <li key={opponent.id}>
-                    {opponent.firstName}
+                {playerData.opponentHistory.map((opId) =>
+                    <li key={opId}>
+                    {getPlayer(opId, playerList).firstName}&nbsp;
+                    {getPlayer(opId, playerList).lastName}
                     </li>
                 )}
                 </ol>
             </dd>
             <dt>Players to avoid</dt>
-            <dd>TBD</dd>
+            <dd>
+                <ol>
+                {playerData.avoidList.map((pId) =>
+                    <li key={pId}>
+                        {getPlayer(pId, playerList).firstName}&nbsp;
+                        {getPlayer(pId, playerList).lastName}
+                    </li>
+                )}
+                </ol>
+            </dd>
         </dl>
     );
 }

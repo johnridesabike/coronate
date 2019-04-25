@@ -4,13 +4,13 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## General API
 
-- The matchup algorithm probably needs to be adjusted. It uses the blossom algorithm ([Wikipedia link](https://en.wikipedia.org/wiki/Blossom_algorithm)) to determine matches. I based its priorities on the USCF tiebreak options ([read about them here](http://www.uschess.org/content/view/7752/369/)), but my implementation is probably not 100% perfect. The source code at [/src/chess-tourney/pairing.js](https://github.com/johnridesabike/chessahoochee/blob/master/src/chess-tourney/pairing.js) has documentation explaining (hopefully clearly) how it currently works. Where applicable, I tagged sections of code with USCF section numbers to explain their purpose.
+- The matchup algorithm probably needs to be adjusted. It uses the blossom algorithm ([Wikipedia link](https://en.wikipedia.org/wiki/Blossom_algorithm)) to determine matches. I based its priorities on the USCF tiebreak options ([read about them here](http://www.uschess.org/content/view/7752/369/)), but my implementation is probably not 100% perfect. The source code at [/src/pairing-scoring/pairing.js](https://github.com/johnridesabike/chessahoochee/blob/master/src/pairing-scoring/pairing.js) has documentation explaining (hopefully clearly) how it currently works. Where applicable, I tagged sections of code with USCF section numbers to explain their purpose.
 - There's no real I/O to speak of right now. A v1.0 release will need a way to save, load, and back-up data.
 - Type-check coverage needs improvement.
 
 ## Housekeeping
 
-- Write up-to-date tests. See [src/\_\_tests\_\_](https://github.com/johnridesabike/chessahoochee/blob/master/src/__tests__) for the current test status.
+- Write up-to-date tests. See [/src/\_\_tests\_\_/](https://github.com/johnridesabike/chessahoochee/blob/master/src/__tests__) for the current test status.
 - Write documentation.
 - Finalize specification for data storage (see existing JSON files in `src/state/` for examples of what they'll look like).
 

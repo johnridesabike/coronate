@@ -1,4 +1,4 @@
-import {Player, Tournament} from "../chess-tourney/index";
+import {Player, Tournament} from "../data/index";
 
 declare interface ActionByeValue {
     type: "SET_BYE_VALUE",

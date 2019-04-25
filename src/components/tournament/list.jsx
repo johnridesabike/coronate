@@ -1,7 +1,7 @@
 // @ts-check
 import React, {Fragment, useContext, useState} from "react";
 import {BackButton} from "../utility";
-import createTournament from "../../chess-tourney/tournament";
+import createTournament from "../../data/tournament";
 import {DataContext} from "../../state/global-state";
 import TournamentTabs from "./tabs";
 

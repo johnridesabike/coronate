@@ -6,7 +6,7 @@ import {
     getPlayer,
     getPlayerAvoidList,
     kFactor
-} from "../../chess-tourney/player";
+} from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
 export default function PlayerInfoBox({playerId, setOpenPlayer}) {

@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
-import {getPlayer} from "../../chess-tourney/player";
-import {tieBreakMethods, hasHadBye} from "../../chess-tourney/scores";
+import {getPlayer} from "../../data/player";
+import {tieBreakMethods, hasHadBye} from "../../pairing-scoring/scoring";
 import {PanelContainer, Panel} from "../utility";
 import {DataContext} from "../../state/global-state";
 
@@ -133,7 +133,7 @@ export default function PlayerSelect({tourneyId}) {
                                     })
                                 }
                                 disabled={tourney.byeQueue.includes(pId)}>
-                                Bye
+                                Bye signup
                             </button>
                         </td>
                     </tr>

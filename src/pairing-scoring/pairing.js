@@ -3,59 +3,11 @@ import {firstBy} from "thenby";
 import chunk from "lodash/chunk";
 import last from "lodash/last";
 import blossom from "edmonds-blossom";
-import {dummyPlayer, getPlayerAvoidList, getPlayer} from "./player";
-import {
-    playerScore,
-    playerColorBalance,
-    getPlayersByOpponent,
-    playerMatchColor,
-    hasHadBye
-} from "./scores";
+import {dummyPlayer} from "../data/player";
+import {genPlayerData} from "./scoring";
 /**
- * @typedef {import("./index").PlayerData} PlayerData
- * @typedef {import("./index").Round} Round
- * @typedef {import("./index").Player} Player
+ * @typedef {import("./").PlayerData} PlayerData
  */
-/**
- * @param {number} playerId
- * @param {Round[]} roundList
- * @param {number} roundId
- * @param {Player[]} playerList
- * @param {number[][]} avoidList
- * @returns {PlayerData}
- */
-function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
-    /**
-     * @param {number} pId
-     * @returns {number | null}
-     */
-    const dueColor = function (pId) {
-        if (!roundList[roundId - 1]) {
-            return null;
-        }
-        let color = 0;
-        let prevColor = playerMatchColor(
-            pId,
-            roundList[roundId - 1]
-        );
-        if (prevColor === 0) {
-            color = 1;
-        }
-        return color;
-    };
-    return {
-        rating: getPlayer(playerId, playerList).rating,
-        id: playerId,
-        score: playerScore(playerId, roundList, roundId),
-        dueColor: dueColor(playerId),
-        colorBalance: playerColorBalance(playerId, roundList, roundId),
-        opponentHistory: getPlayersByOpponent(playerId, roundList, null),
-        upperHalf: false,
-        avoidList: getPlayerAvoidList(playerId, avoidList)
-    };
-}
-Object.freeze(genPlayerData);
-export {genPlayerData};
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -178,11 +130,8 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     if (playerData.length % 2 !== 0) {
         // Assign a bye to the lowest-rated player in the lowest score group.
         // (USCF § 29L2.)
-        let byePlayerData = last(
-            playerData.filter( // filter out players who have had a bye already.
-                (p) => !hasHadBye(p.id, roundList, roundId)
-            )
-        );
+        // filter out players who have had a bye already.
+        let byePlayerData = last(playerData.filter((p) => !p.hasHadBye));
         // In the impossible situation that *everyone* has played a bye round
         // previously, then just pick the last player.
         if (!byePlayerData) {

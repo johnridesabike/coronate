@@ -1,7 +1,7 @@
 // @ts-check
 import React, {Fragment, useState, useContext} from "react";
 import {OpenButton} from "../utility";
-import {createPlayer} from "../../chess-tourney/player";
+import {createPlayer} from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
 export default function PlayerList({setOpenPlayer}) {

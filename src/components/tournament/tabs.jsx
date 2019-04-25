@@ -1,9 +1,9 @@
 // @ts-check
 import React, {useContext, useState} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
-import {getPlayer, dummyPlayer} from "../../chess-tourney/player";
-import {calcStandings} from "../../chess-tourney/scores";
-import {calcNumOfRounds} from "../../chess-tourney/utility";
+import {getPlayer, dummyPlayer} from "../../data/player";
+import {calcStandings} from "../../pairing-scoring/scoring";
+import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round";
 import PlayerSelect from "./player-select";
 import {DataContext} from "../../state/global-state";

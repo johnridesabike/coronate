@@ -1,10 +1,17 @@
 // @ts-check
 import {firstBy} from "thenby";
-import {dummyPlayer, getPlayer, getPlayerAvoidList} from "./player";
+import {
+    dummyPlayer,
+    getPlayer,
+    getPlayerAvoidList
+} from "../data/player";
 
 /**
- * @typedef {import("./index").ScoreCalculator} ScoreCalculator
- * @typedef {import("./index").Match} Match
+ * @typedef {import("./").ScoreCalculator} ScoreCalculator
+ * @typedef {import("./").PlayerData} PlayerData
+ * @typedef {import("./").Standing} Standing
+ * @typedef {import("../data/").Match} Match
+ * @typedef {import("../data/").Player} Player
  */
 
 /**
@@ -264,10 +271,6 @@ Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
 /**
- * @typedef {import("./index").Standing} Standing
- */
-
-/**
  * @param {Standing} standing1
  * @param {Standing} standing2
  * @returns {boolean}
@@ -287,7 +290,7 @@ function areScoresEqual(standing1, standing2) {
 }
 
 /**
- * @typedef {import("./index").Round} Round
+ * @typedef {import("../data/index").Round} Round
  */
 
 /**
@@ -355,26 +358,46 @@ Object.freeze(calcStandings);
 export {calcStandings};
 
 /**
- * TODO: merge this with the pairings one?
  * @type {ScoreCalculator}
- * @returns {Object}
+ * @returns {number?} 0 for white, 1 for black, null if no color history
  */
-function getPlayerMatchData(playerId, roundList, roundNum = null) {
+function dueColor(playerId, roundList, roundId = null) {
+    if (!roundList[roundId - 1]) {
+        return null;
+    }
+    let color = 0;
+    let prevColor = playerMatchColor(
+        playerId,
+        roundList[roundId - 1]
+    );
+    if (prevColor === 0) {
+        color = 1;
+    }
+    return color;
+}
+
+/**
+ * @param {number} playerId
+ * @param {Round[]} roundList
+ * @param {number} roundId
+ * @param {Player[]} playerList
+ * @param {number[][]} avoidList
+ * @returns {PlayerData}
+ */
+function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
+    const player = getPlayer(playerId, playerList);
     return {
-        data: (playerList) => getPlayer(playerId, playerList),
-        score: () => playerScore(playerId, roundList, roundNum),
-        opponents: (playerList) => (
-            getPlayersByOpponent(playerId, roundList, roundNum).map(
-                (pId) => getPlayer(pId, playerList)
-            )
-        ),
-        colorBalance: () => playerColorBalance(playerId, roundList, roundNum),
-        avoidList: (avoidList, playerList) => (
-            getPlayerAvoidList(playerId, avoidList).map(
-                (pId) => getPlayer(pId, playerList)
-            )
-        )
+        data: player,
+        rating: player.rating,
+        id: playerId,
+        score: playerScore(playerId, roundList, roundId),
+        dueColor: dueColor(playerId, roundList, roundId),
+        colorBalance: playerColorBalance(playerId, roundList, roundId),
+        opponentHistory: getPlayersByOpponent(playerId, roundList, null),
+        upperHalf: false,
+        avoidList: getPlayerAvoidList(playerId, avoidList),
+        hasHadBye: hasHadBye(playerId, roundList, roundId)
     };
 }
-Object.freeze(getPlayerMatchData);
-export {getPlayerMatchData};
+Object.freeze(genPlayerData);
+export {genPlayerData};
