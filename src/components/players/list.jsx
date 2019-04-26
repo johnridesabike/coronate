@@ -4,6 +4,10 @@ import {OpenButton} from "../utility";
 import {createPlayer} from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
+/**
+ * @param {Object} props
+ * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
+ */
 export default function PlayerList({setOpenPlayer}) {
     const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
@@ -13,6 +17,7 @@ export default function PlayerList({setOpenPlayer}) {
     ids.sort((a, b) => a - b);
     ids.reverse();
     const [nextId, setNextId] = useState(ids[0] + 1);
+    /** @param {React.FormEvent<HTMLFormElement>} event */
     const handleSubmit = function (event) {
         event.preventDefault();
         const newPlayer = createPlayer(newPlayerData);
@@ -21,6 +26,7 @@ export default function PlayerList({setOpenPlayer}) {
         setNewPlayerdata(newPlayerDefault);
         dispatch({type: "ADD_PLAYER", newPlayer: newPlayer});
     };
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
         event.preventDefault();
         /** @type {Object<string, string>} */
@@ -28,11 +34,12 @@ export default function PlayerList({setOpenPlayer}) {
         update[event.currentTarget.name] = event.currentTarget.value;
         setNewPlayerdata(Object.assign({}, newPlayerData, update));
     };
+    /**
+     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
+     * @param {number} player
+     */
     const delPlayer = function (event, player) {
         event.preventDefault();
-        // const index = playerList.indexOf(player);
-        // playerList.splice(index, 1);
-        // setPlayerList([...playerList]);
         dispatch({type: "DEL_PLAYER", player: player});
     };
     let rosterTable = <Fragment></Fragment>;
@@ -49,8 +56,7 @@ export default function PlayerList({setOpenPlayer}) {
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
-            {playerList.map((player) =>
+            <tbody>{playerList.map((player) =>
                 <tr key={player.id}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__player">{player.lastName}</td>
@@ -65,47 +71,53 @@ export default function PlayerList({setOpenPlayer}) {
                         </button>
                     </td>
                     <td>
-                        <OpenButton action={() => setOpenPlayer(player.id)} />
+                        <OpenButton
+                            action={() => setOpenPlayer(player.id)} />
                     </td>
                 </tr>
-                )}
-            </tbody>
+            )}</tbody>
         </table>;
     }
     return (
         <div className="roster">
             {rosterTable}
             <form onSubmit={handleSubmit}>
-            <fieldset>
-                <legend>Add your own players</legend>
-                <p>
-                    <label>
-                        First name&nbsp;
-                        <input type="text" name="firstName"
-                            onChange={updateField}
-                            value={newPlayerData.firstName} required />
-                    </label>
-                </p>
-                <p>
-                    <label>
-                        Last name&nbsp;
-                        <input type="text" name="lastName"
-                            onChange={updateField}
-                            value={newPlayerData.lastName} required />
-                    </label>
-                </p>
-                <p>
-                    <label>
-                        Rating&nbsp;
-                        <input type="number" name="rating"
-                            onChange={updateField}
-                            value={newPlayerData.rating} required />
-                    </label>
-                </p>
-                <p>
-                    <input type="submit" value="Add"/>
-                </p>
-            </fieldset>
+                <fieldset>
+                    <legend>Add your own players</legend>
+                    <p>
+                        <label>
+                            First name
+                            {" "}
+                            <input type="text" name="firstName"
+                                onChange={updateField}
+                                value={newPlayerData.firstName} required />
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            Last name
+                            {" "}
+                            <input type="text" name="lastName"
+                                onChange={updateField}
+                                value={newPlayerData.lastName} required />
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            Rating
+                            {" "}
+                            <input
+                                type="number"
+                                name="rating"
+                                onChange={updateField}
+                                value={newPlayerData.rating}
+                                required />
+                        </label>
+                    </p>
+                    <p>
+                        <input type="submit" value="Add"/>
+                    </p>
+                </fieldset>
             </form>
         </div>
     );

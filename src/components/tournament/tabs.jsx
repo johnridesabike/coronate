@@ -31,6 +31,7 @@ export default function TournamentTabs({tourneyId, backButton}) {
                 {calcNumOfRounds(players.length)}
                 <button onClick={() => newRound()}>New Round</button>
                 <button
+                    className="danger"
                     onClick={
                         () => dispatch({
                             type: "DEL_LAST_ROUND",
@@ -49,10 +50,10 @@ export default function TournamentTabs({tourneyId, backButton}) {
                 )}
             </TabList>
             <TabPanels>
-            <TabPanel>
-                <PlayerSelect tourneyId={tourneyId} />
-            </TabPanel>
-            <TabPanel>
+                <TabPanel>
+                    <PlayerSelect tourneyId={tourneyId} />
+                </TabPanel>
+                <TabPanel>
                     <table>
                         <thead>
                             <tr>
@@ -64,8 +65,7 @@ export default function TournamentTabs({tourneyId, backButton}) {
                                 )}
                             </tr>
                         </thead>
-                        <tbody>
-                        {standingTree.map((standingsFlat, rank) =>
+                        <tbody>{standingTree.map((standingsFlat, rank) =>
                             standingsFlat.filter(
                                 (p) => p.id !== dummyPlayer.id
                             ).map((standing) =>
@@ -83,23 +83,24 @@ export default function TournamentTabs({tourneyId, backButton}) {
                                         {standing.score}
                                     </td>
                                     {standing.tieBreaks.map((score, i) =>
-                                        <td key={i} className="table__number">
+                                        <td
+                                            key={i}
+                                            className="table__number">
                                             {score}
                                         </td>
                                     )}
                                 </tr>
                             )
-                        )}
-                        </tbody>
+                        )}</tbody>
                     </table>
-            </TabPanel>
-            {Object.keys(tourney.roundList).map((id) =>
-                <TabPanel key={id}>
-                    <Round
-                        roundId={Number(id)}
-                        tourneyId={tourneyId} />
                 </TabPanel>
-            )}
+                {Object.keys(tourney.roundList).map((id) =>
+                    <TabPanel key={id}>
+                        <Round
+                            roundId={Number(id)}
+                            tourneyId={tourneyId} />
+                    </TabPanel>
+                )}
             </TabPanels>
         </Tabs>
     );

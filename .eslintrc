@@ -19,6 +19,7 @@
         "jsx-quotes": ["warn", "prefer-double"],
         "no-unused-vars": "warn",
         "no-shadow": "error",
-        "camelcase": "warn"
+        "camelcase": "warn",
+        "indent": ["warn", 4]
     }
 }

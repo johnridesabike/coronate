@@ -9,6 +9,11 @@ import {
 } from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
+/**
+ * @param {Object} props
+ * @param {number} props.playerId
+ * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
+ */
 export default function PlayerInfoBox({playerId, setOpenPlayer}) {
     const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
@@ -22,6 +27,7 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
         (pId) => !singAvoidList.includes(pId) && pId !== playerId
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
+    /** @param {React.FormEvent<HTMLFormElement>} event */
     function avoidAdd(event) {
         event.preventDefault();
         setSelectedAvoider(unAvoided()[0]);
@@ -37,7 +43,8 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
         <div>
             <BackButton action={() => setOpenPlayer(null)}/>
             <h2>
-                {getPlayer(playerId, playerList).firstName}&nbsp;
+                {getPlayer(playerId, playerList).firstName}
+                {" "}
                 {getPlayer(playerId, playerList).lastName}
             </h2>
             <dl>
@@ -54,41 +61,46 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
                 <dt>Players to avoid</dt>
                 <dd>
                     <ul>
-                    {singAvoidList.map((pId) =>
-                        <li key={pId}>
-                            {getPlayer(pId, playerList).firstName}&nbsp;
-                            {getPlayer(pId, playerList).lastName}
-                            <button
-                                onClick={
-                                    () => dispatch({
-                                        type: "DEL_AVOID_PAIR",
-                                        pair: [playerId, pId]
-                                    })
-                                }>
-                                x
-                            </button>
-                        </li>
-                    )}
-                    {(avoidList.length === 0) &&
+                        {singAvoidList.map((pId) =>
+                            <li key={pId}>
+                                {getPlayer(pId, playerList).firstName}
+                                {" "}
+                                {getPlayer(pId, playerList).lastName}
+                                <button
+                                    className="danger"
+                                    onClick={
+                                        () => dispatch({
+                                            type: "DEL_AVOID_PAIR",
+                                            pair: [playerId, pId]
+                                        })
+                                    }>
+                                remove
+                                </button>
+                            </li>
+                        )}
+                        {(avoidList.length === 0) &&
                         <li>None</li>
-                    }
+                        }
                     </ul>
                 </dd>
             </dl>
             <form onSubmit={(event) => avoidAdd(event)}>
-            <fieldset>
-                <legend>Add player to avoid</legend>
-                <select
-                    onBlur={(event) => setSelectedAvoider(event.target.value)}>
-                {unAvoided().map((pId) =>
-                    <option key={pId} value={pId}>
-                        {getPlayer(pId, playerList).firstName}&nbsp;
-                        {getPlayer(pId, playerList).lastName}
-                    </option>
-                )}
-                </select>
-                <input type="submit" value="Add"/>
-            </fieldset>
+                <fieldset>
+                    <legend>Add player to avoid</legend>
+                    <select
+                        onBlur={
+                            (event) => setSelectedAvoider(event.target.value)
+                        }>
+                        {unAvoided().map((pId) =>
+                            <option key={pId} value={pId}>
+                                {getPlayer(pId, playerList).firstName}
+                                {" "}
+                                {getPlayer(pId, playerList).lastName}
+                            </option>
+                        )}
+                    </select>
+                    <input type="submit" value="Add"/>
+                </fieldset>
             </form>
         </div>
     );

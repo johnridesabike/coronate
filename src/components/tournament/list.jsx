@@ -8,11 +8,15 @@ import TournamentTabs from "./tabs";
 export default function TournamentList() {
     const {data, dispatch} = useContext(DataContext);
     const tourneyList = data.tourneys;
-    const [openTourney, setOpenTourney] = useState(null);
+    /** @type {number} */
+    const defaultTourney = null;
+    const [openTourney, setOpenTourney] = useState(defaultTourney);
     const [newTourneyName, setNewTourneyName] = useState("");
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function updateNewName(event) {
         setNewTourneyName(event.target.value);
     }
+    /** @param {React.FormEvent<HTMLFormElement>} event */
     function makeTournament(event) {
         event.preventDefault();
         dispatch({
@@ -27,16 +31,14 @@ export default function TournamentList() {
             <TournamentTabs
                 tourneyId={openTourney}
                 backButton={<BackButton action={() => setOpenTourney(null)}/>}
-                />
+            />
         );
     } else {
         content = (
             <div>
-            {(
-                (tourneyList.length > 0)
-                ?
-                    <ol>
-                    {tourneyList.map((tourney, i) =>
+                {(tourneyList.length > 0)
+                    ?
+                    <ol>{tourneyList.map((tourney, i) =>
                         <li key={i}>
                             <button
                                 className="tourney-select"
@@ -54,13 +56,10 @@ export default function TournamentList() {
                                 delete
                             </button>
                         </li>
-                    )}
-                    </ol>
-                :
-                    <p>
-                        No tournaments added yet.
-                    </p>
-            )}
+                    )}</ol>
+                    :
+                    <p>No tournaments added yet.</p>
+                }
                 <form onSubmit={makeTournament}>
                     <fieldset>
                         <legend>Make a new tournament</legend>

@@ -2,26 +2,29 @@
 import React, {Fragment, useState, useContext} from "react";
 import numeral from "numeral";
 import {OpenButton, PanelContainer, Panel, BackButton} from "../utility";
-import {
-    getPlayer,
-    calcNewRatings,
-    dummyPlayer
-} from "../../data/player";
+import {getPlayer, calcNewRatings, dummyPlayer} from "../../data/player";
 import {genPlayerData} from "../../pairing-scoring/scoring";
 import {BLACK, WHITE} from "../../data/constants";
-import {
-    getById,
-    getIndexById
-} from "../../data/utility";
+import {getById, getIndexById} from "../../data/utility";
 import {DataContext} from "../../state/global-state";
 
+/**
+ * @param {Object} props
+ * @param {number} props.roundId
+ * @param {number} props.tourneyId
+ */
 export default function Round({roundId, tourneyId,}) {
     const {data, dispatch} = useContext(DataContext);
     const playerList = data.players;
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
-    const [selectedMatch, setSelectedMatch] = useState(null);
-    const [selectedPlayers, setSelectedPlayers] = useState([]);
+    /** @type {number} */
+    const defaultMatch = null;
+    const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
+    /** @type {number[]} */
+    const defaultPlayers = [];
+    const [selectedPlayers, setSelectedPlayers] = useState(defaultPlayers);
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function selectPlayer(event) {
         const pId = Number(event.target.value);
         if (event.target.checked) {
@@ -44,6 +47,7 @@ export default function Round({roundId, tourneyId,}) {
     const unMatched = tourney.players.filter(
         (pId) => !matched.includes(pId)
     );
+    /** @param {number[]} unpairedPlayers */
     function autoPair(unpairedPlayers) {
         dispatch({
             type: "AUTO_PAIR",
@@ -52,6 +56,7 @@ export default function Round({roundId, tourneyId,}) {
             unpairedPlayers: unpairedPlayers
         });
     }
+    /** @param {number[]} pair */
     function manualPair(pair) {
         dispatch({
             type: "MANUAL_PAIR",
@@ -60,6 +65,10 @@ export default function Round({roundId, tourneyId,}) {
             unpairedPlayers: pair
         });
     }
+    /**
+     * @param {number} matchId
+     * @param {[number, number]} result
+     */
     function setMatchResult(matchId, result) {
         const match = getById(tourney.roundList[roundId], matchId);
         const white = getPlayer(match.players[WHITE], playerList);
@@ -102,6 +111,7 @@ export default function Round({roundId, tourneyId,}) {
             newRating: newRating
         });
     }
+    /** @param {number} matchId */
     function unMatch(matchId) {
         const match = getById(tourney.roundList[roundId], matchId);
         if (match.result.reduce((a, b) => a + b) !== 0) {
@@ -136,6 +146,10 @@ export default function Round({roundId, tourneyId,}) {
             matchId: matchId
         });
     }
+    /**
+     * @param {number} matchId
+     * @param {number} direction
+     */
     function moveMatch(matchId, direction) {
         const matchesRef = data.tourneys[tourneyId].roundList[roundId];
         const mIndex = getIndexById(matchesRef, matchId);
@@ -151,52 +165,60 @@ export default function Round({roundId, tourneyId,}) {
     return (
         <PanelContainer>
             <Panel>
-            <div className="toolbar">
-                <button
-                    onClick={() => unMatch(selectedMatch)}
-                    disabled={selectedMatch === null}>
-                    Unmatch
-                </button>
-                <button
-                    onClick={() => swapColors(selectedMatch)}
-                    disabled={selectedMatch === null}>
-                    Swap colors
-                </button>
-                <button
-                    onClick={() => moveMatch(selectedMatch, -1)}
-                    disabled={selectedMatch === null}>
-                    Move up
-                </button>
-                <button
-                    onClick={() => moveMatch(selectedMatch, 1)}
-                    disabled={selectedMatch === null}>
-                    Move down
-                </button>
-            </div>
-            <table className="table__roster">
-                <caption>Round {roundId + 1} results</caption>
-                <thead>
-                <tr>
-                    <th className="row__id">#</th>
-                    <th className="row__player">White</th>
-                    <th className="row__result">Result</th>
-                    <th className="row__player">Black</th>
-                    <th className="row__controls"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {matchList.map((match, pos) =>
-                    <tr key={match.id}>
-                        <td className="table__number row__id">{pos + 1}</td>
+                <div className="toolbar">
+                    <button
+                        className="danger"
+                        onClick={() => unMatch(selectedMatch)}
+                        disabled={selectedMatch === null}>
+                        Unmatch
+                    </button>
+                    <button
+                        onClick={() => swapColors(selectedMatch)}
+                        disabled={selectedMatch === null}>
+                        Swap colors
+                    </button>
+                    <button
+                        onClick={() => moveMatch(selectedMatch, -1)}
+                        disabled={selectedMatch === null}>
+                        Move up
+                    </button>
+                    <button
+                        onClick={() => moveMatch(selectedMatch, 1)}
+                        disabled={selectedMatch === null}>
+                        Move down
+                    </button>
+                </div>
+                <table className="table__roster">
+                    <caption>Round {roundId + 1} results</caption>
+                    <thead>
+                        <tr>
+                            <th className="row__id">#</th>
+                            <th className="row__player">White</th>
+                            <th className="row__result">Result</th>
+                            <th className="row__player">Black</th>
+                            <th className="row__controls"></th>
+                        </tr>
+                    </thead>
+                    <tbody>{matchList.map((match, pos) => <tr key={match.id}>
+                        <td className="table__number row__id">
+                            {pos + 1}
+                        </td>
                         <td className="table__player row__player">
-                            {getPlayer(match.players[0], playerList).firstName}
-                            &nbsp;
-                            {getPlayer(match.players[0], playerList).lastName}
+                            {getPlayer(
+                                match.players[0],
+                                playerList
+                            ).firstName}
+                            {" "}
+                            {getPlayer(
+                                match.players[0],
+                                playerList
+                            ).lastName}
                         </td>
                         <td className="data__input row__result">
                             <input
                                 type="radio"
-                                checked={(match.result[0] > match.result[1])}
+                                checked={
+                                    (match.result[0] > match.result[1])}
                                 onChange={
                                     () => setMatchResult(match.id, [1, 0])
                                 }
@@ -224,24 +246,24 @@ export default function Round({roundId, tourneyId,}) {
                         </td>
                         <td className="table__player row__player">
                             {getPlayer(match.players[1], playerList).firstName}
-                            &nbsp;
+                            {" "}
                             {getPlayer(match.players[1], playerList).lastName}
                         </td>
                         <td className="data__input row__controls">
-                        {(
-                        (selectedMatch !== match.id)
-                        ? <OpenButton
-                            action={() => setSelectedMatch(match.id)} />
-                        : <BackButton action={() => setSelectedMatch(null)} />
-                        )}
+                            {(selectedMatch !== match.id)
+                                ? <OpenButton
+                                    action={
+                                        () => setSelectedMatch(match.id)
+                                    } />
+                                : <BackButton
+                                    action={() => setSelectedMatch(null)} />
+                            }
                         </td>
-                    </tr>
-                )}
-                </tbody>
-            </table>
+                    </tr>)}</tbody>
+                </table>
             </Panel>
             <Panel>
-            {selectedMatch !== null &&
+                {selectedMatch !== null &&
                 <PanelContainer>
                     <Panel>
                         <PlayerMatchInfo
@@ -258,23 +280,24 @@ export default function Round({roundId, tourneyId,}) {
                             roundId={roundId}/>
                     </Panel>
                 </PanelContainer>
-            }
-            {unMatched.length > 0 && (
-                <Fragment>
-                    <h3>Unmatched players</h3>
-                    <ul>
-                        {unMatched.map((pId) =>
-                            <li key={pId}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedPlayers.includes(pId)}
-                                    value={pId}
-                                    onChange={selectPlayer}/>
-                                {getPlayer(pId, playerList).firstName}&nbsp;
-                                {getPlayer(pId, playerList).lastName}
-                            </li>
-                        )}
-                        {(unMatched.length % 2 !== 0) &&
+                }
+                {unMatched.length > 0 && (
+                    <Fragment>
+                        <h3>Unmatched players</h3>
+                        <ul>
+                            {unMatched.map((pId) =>
+                                <li key={pId}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedPlayers.includes(pId)}
+                                        value={pId}
+                                        onChange={selectPlayer}/>
+                                    {getPlayer(pId, playerList).firstName}
+                                    {" "}
+                                    {getPlayer(pId, playerList).lastName}
+                                </li>
+                            )}
+                            {(unMatched.length % 2 !== 0) &&
                             <li>
                                 <input
                                     type="checkbox"
@@ -285,20 +308,21 @@ export default function Round({roundId, tourneyId,}) {
                                     onChange={selectPlayer}/>
                                 {dummyPlayer.firstName} {dummyPlayer.lastName}
                             </li>
-                        }
-                    </ul>
-                    <button
-                        onClick={() => manualPair(selectedPlayers)}
-                        disabled={selectedPlayers.length !== 2}>
-                        Pair checked
-                    </button>&nbsp;
-                    <button
-                        onClick={() => autoPair(unMatched)}
-                        disabled={unMatched.length === 0}>
-                        Auto-pair
-                    </button>
-                </Fragment>
-            )}
+                            }
+                        </ul>
+                        <button
+                            onClick={() => manualPair(selectedPlayers)}
+                            disabled={selectedPlayers.length !== 2}>
+                            Pair checked
+                        </button>
+                        {" "}
+                        <button
+                            onClick={() => autoPair(unMatched)}
+                            disabled={unMatched.length === 0}>
+                            Auto-pair
+                        </button>
+                    </Fragment>
+                )}
             </Panel>
         </PanelContainer>
     );
@@ -324,7 +348,8 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     return (
         <dl className="player-card">
             <h3>
-                {playerData.data.firstName}&nbsp;
+                {playerData.data.firstName}
+                {" "}
                 {playerData.data.lastName}
             </h3>
             <dt>Score</dt>
@@ -332,7 +357,7 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
             <dt>Rating</dt>
             <dd>
                 {match.origRating[color]}
-                &nbsp;
+                {" "}
                 (
                 {numeral(
                     match.newRating[color] - match.origRating[color]
@@ -346,23 +371,25 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
             <dt>Opponent history</dt>
             <dd>
                 <ol>
-                {playerData.opponentHistory.map((opId) =>
-                    <li key={opId}>
-                    {getPlayer(opId, playerList).firstName}&nbsp;
-                    {getPlayer(opId, playerList).lastName}
-                    </li>
-                )}
+                    {playerData.opponentHistory.map((opId) =>
+                        <li key={opId}>
+                            {getPlayer(opId, playerList).firstName}
+                            {" "}
+                            {getPlayer(opId, playerList).lastName}
+                        </li>
+                    )}
                 </ol>
             </dd>
             <dt>Players to avoid</dt>
             <dd>
                 <ol>
-                {playerData.avoidList.map((pId) =>
-                    <li key={pId}>
-                        {getPlayer(pId, playerList).firstName}&nbsp;
-                        {getPlayer(pId, playerList).lastName}
-                    </li>
-                )}
+                    {playerData.avoidList.map((pId) =>
+                        <li key={pId}>
+                            {getPlayer(pId, playerList).firstName}
+                            {" "}
+                            {getPlayer(pId, playerList).lastName}
+                        </li>
+                    )}
                 </ol>
             </dd>
         </dl>

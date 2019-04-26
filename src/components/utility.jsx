@@ -1,7 +1,5 @@
 // @ts-check
 import React from "react";
-import {FaArrowsAltV} from "react-icons/fa";
-
 /**
  * @param {Object} props
  * @param {JSX.Element | string} [props.children]
@@ -32,18 +30,6 @@ export function BackButton({action}) {
  */
 export function OpenButton({action}) {
     return <Button action={action}>Open &gt;</Button>;
-}
-
-/**
- * @param {Object} props
- * @param {boolean} props.isDragged
- */
-export function DragIcon({isDragged}) {
-    return (
-        <FaArrowsAltV style={{cursor: isDragged ? "grabbing" : "grab"}}
-        tabIndex={-1}/>
-    );
-
 }
 
 /**
