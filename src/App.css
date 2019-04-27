@@ -24,37 +24,6 @@
     overflow: auto;
 }
 
-.caution {
-    /* grid-area: footer; */
-    width: 100%;
-    background-repeat: repeat;
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    font-weight: 700;
-}
-  
-.caution p {
-    margin: 0.5em 0;
-    padding: 2px;
-    background-color: black;
-    color: white;
-    border-radius: 0.5em;
-}
-  
-.caution a,
-.caution a:visited {
-    color: skyblue;
-}
-  
-.caution a:active,
-.caution a:focus,
-.caution a:hover {
-    color: blue;
-}
-
 h1 {
   font-size: 1.5em;
   font-weight: 400;

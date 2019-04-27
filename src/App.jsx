@@ -6,6 +6,7 @@ import "@reach/tabs/styles.css";
 import TournamentList from "./components/tournament/list";
 import PlayerView from "./components/players/index";
 import {Options} from "./components/options";
+import Caution from "./components/caution";
 import {defaultData, dataReducer, DataContext} from "./state/global-state";
 
 function App() {
@@ -14,9 +15,7 @@ function App() {
         <React.StrictMode>
             <DataContext.Provider value={{data, dispatch}}>
                 <Tabs className="app" defaultIndex={1}>
-                    <footer className="caution footer">
-                        <Caution />
-                    </footer>
+                    <Caution />
                     <TabList className="header">
                         <Tab>Players</Tab>
                         <Tab>Tournaments</Tab>
@@ -46,24 +45,4 @@ function App() {
     );
 }
 
-function Caution() {
-    return (
-        <p>
-            <span role="img" aria-label="warning">⚠️</span>
-            {" "}
-            This is an unstable demo build.
-            {" "}
-            <span role="img" aria-label="warning">⚠️</span>
-            {" "}
-            Want to help make it better? Head to the
-            {" "}
-            <span role="img" aria-label="finger pointing right">👉</span>
-            {" "}
-            <a href="https://github.com/johnridesabike/chessahoochee">
-                Git repository
-            </a>.
-        </p>
-    );
-}
-
-export {App, Caution};
+export default App;
