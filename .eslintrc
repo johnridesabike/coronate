@@ -17,9 +17,10 @@
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],
         "jsx-quotes": ["warn", "prefer-double"],
-        "no-unused-vars": "warn",
+        "no-unused-vars": "error",
         "no-shadow": "error",
         "camelcase": "warn",
-        "indent": ["warn", 4]
+        "indent": ["warn", 4],
+        "comma-dangle": ["warn", "never"]
     }
 }
