@@ -1,5 +1,6 @@
 import React, {useContext, useState} from "react";
-import {getPlayer} from "../../data/player";
+import curry from "ramda/src/curry";
+import {getPlayerById} from "../../data/player";
 import {tieBreakMethods, hasHadBye} from "../../pairing-scoring/scoring";
 import {PanelContainer, Panel} from "../utility";
 import {DataContext} from "../../state/global-state";
@@ -10,7 +11,8 @@ import {DataContext} from "../../state/global-state";
  */
 export default function PlayerSelect({tourneyId}) {
     const {data, dispatch} = useContext(DataContext);
-    const playerList = data.players;
+    // const playerList = data.players;
+    const getPlayer = curry(getPlayerById)(data.players);
     const players = data.tourneys[tourneyId].players;
     const tourney = data.tourneys[tourneyId];
     const [isSelecting, setIsSelecting] = useState((players.length === 0));
@@ -66,7 +68,7 @@ export default function PlayerSelect({tourneyId}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {playerList.map((p) =>
+                    {data.players.map((p) =>
                         <tr key={p.id}>
                             <td>{p.firstName}</td>
                             <td>{p.lastName}</td>
@@ -87,7 +89,7 @@ export default function PlayerSelect({tourneyId}) {
                                 onClick={
                                     () => dispatch({
                                         type: "SET_TOURNEY_PLAYERS",
-                                        players: playerList.map((p) => p.id)
+                                        players: data.players.map((p) => p.id)
                                     })
                                 }>
                                 Select all
@@ -124,15 +126,12 @@ export default function PlayerSelect({tourneyId}) {
                         <tbody>{players.map((pId) =>
                             <tr
                                 key={pId}
-                                className={
-                                    (getPlayer(pId, playerList).type
-                                        + " player")
-                                }>
+                                className={getPlayer(pId).type + " player"}>
                                 <td>
-                                    {getPlayer(pId, playerList).firstName}
+                                    {getPlayer(pId).firstName}
                                 </td>
                                 <td>
-                                    {getPlayer(pId, playerList).lastName}
+                                    {getPlayer(pId).lastName}
                                 </td>
                                 <td>
                                     <button
@@ -165,9 +164,9 @@ export default function PlayerSelect({tourneyId}) {
                                     ? "disabled"
                                     : ""
                             )}>
-                            {getPlayer(pId, playerList).firstName}
+                            {getPlayer(pId).firstName}
                             {" "}
-                            {getPlayer(pId, playerList).lastName}
+                            {getPlayer(pId).lastName}
                             <button
                                 onClick={
                                     () => dispatch({

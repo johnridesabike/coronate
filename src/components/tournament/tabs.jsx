@@ -1,7 +1,8 @@
 // @ts-check
 import React, {useContext, useState} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
-import {getPlayer, dummyPlayer} from "../../data/player";
+import curry from "ramda/src/curry";
+import {getPlayerById, dummyPlayer} from "../../data/player";
 import {calcStandings} from "../../pairing-scoring/scoring";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round";
@@ -10,7 +11,8 @@ import {DataContext} from "../../state/global-state";
 
 export default function TournamentTabs({tourneyId, backButton}) {
     const {data, dispatch} = useContext(DataContext);
-    const playerList = data.players;
+    // const playerList = data.players;
+    const getPlayer = curry(getPlayerById)(data.players);
     const tourney = data.tourneys[tourneyId];
     const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
@@ -74,10 +76,7 @@ export default function TournamentTabs({tourneyId, backButton}) {
                                         {rank + 1}
                                     </td>
                                     <td>
-                                        {getPlayer(
-                                            standing.id,
-                                            playerList
-                                        ).firstName}
+                                        {getPlayer(standing.id).firstName}
                                     </td>
                                     <td className="table__number">
                                         {standing.score}

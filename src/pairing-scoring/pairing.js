@@ -1,7 +1,7 @@
 // @ts-check
 import {firstBy} from "thenby";
-import chunk from "lodash/chunk";
-import last from "lodash/last";
+import splitAt from "ramda/src/splitAt";
+import last from "ramda/src/last";
 import blossom from "edmonds-blossom";
 import {dummyPlayer} from "../data/player";
 import {genPlayerData} from "./scoring";
@@ -147,10 +147,9 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
         let playersWithScore = playerData.filter((pd) => pd.score === score);
         playersWithScore.sort((pd) => pd.rating).reverse();
         if (playersWithScore.length > 1) {
-            // The first chunk is the upper half
-            chunk(
-                playersWithScore,
-                playersWithScore.length / 2
+            splitAt(
+                playersWithScore.length / 2,
+                playersWithScore
             )[0].forEach(function (playerDatum) {
                 playerDatum.upperHalf = true;
             });

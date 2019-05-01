@@ -1,8 +1,9 @@
 // @ts-check
 import React, {Fragment, useState, useContext} from "react";
 import numeral from "numeral";
+import curry from "ramda/src/curry";
 import {OpenButton, PanelContainer, Panel, BackButton} from "../utility";
-import {getPlayer, calcNewRatings, dummyPlayer} from "../../data/player";
+import {getPlayerById, calcNewRatings, dummyPlayer} from "../../data/player";
 import {genPlayerData} from "../../pairing-scoring/scoring";
 import {BLACK, WHITE} from "../../data/constants";
 import {getById, getIndexById} from "../../data/utility";
@@ -13,9 +14,10 @@ import {DataContext} from "../../state/global-state";
  * @param {number} props.roundId
  * @param {number} props.tourneyId
  */
-export default function Round({roundId, tourneyId,}) {
+export default function Round({roundId, tourneyId}) {
     const {data, dispatch} = useContext(DataContext);
-    const playerList = data.players;
+    // const playerList = data.players;
+    const getPlayer = curry(getPlayerById)(data.players);
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {number} */
@@ -71,8 +73,8 @@ export default function Round({roundId, tourneyId,}) {
      */
     function setMatchResult(matchId, result) {
         const match = getById(tourney.roundList[roundId], matchId);
-        const white = getPlayer(match.players[WHITE], playerList);
-        const black = getPlayer(match.players[BLACK], playerList);
+        const white = getPlayer(match.players[WHITE]);
+        const black = getPlayer(match.players[BLACK]);
         const newRating = calcNewRatings(
             match.origRating,
             [white.matchCount, black.matchCount],
@@ -121,7 +123,7 @@ export default function Round({roundId, tourneyId,}) {
                 dispatch({
                     type: "SET_PLAYER_MATCHCOUNT",
                     id: pId,
-                    matchCount: getPlayer(pId, playerList).matchCount - 1
+                    matchCount: getPlayer(pId).matchCount - 1
                 });
                 dispatch({
                     type: "SET_PLAYER_RATING",
@@ -204,15 +206,9 @@ export default function Round({roundId, tourneyId,}) {
                             {pos + 1}
                         </td>
                         <td className="table__player row__player">
-                            {getPlayer(
-                                match.players[0],
-                                playerList
-                            ).firstName}
+                            {getPlayer(match.players[0]).firstName}
                             {" "}
-                            {getPlayer(
-                                match.players[0],
-                                playerList
-                            ).lastName}
+                            {getPlayer(match.players[0]).lastName}
                         </td>
                         <td className="data__input row__result">
                             <input
@@ -245,9 +241,9 @@ export default function Round({roundId, tourneyId,}) {
                                 }/>
                         </td>
                         <td className="table__player row__player">
-                            {getPlayer(match.players[1], playerList).firstName}
+                            {getPlayer(match.players[1]).firstName}
                             {" "}
-                            {getPlayer(match.players[1], playerList).lastName}
+                            {getPlayer(match.players[1]).lastName}
                         </td>
                         <td className="data__input row__controls">
                             {(selectedMatch !== match.id)
@@ -292,9 +288,9 @@ export default function Round({roundId, tourneyId,}) {
                                         checked={selectedPlayers.includes(pId)}
                                         value={pId}
                                         onChange={selectPlayer}/>
-                                    {getPlayer(pId, playerList).firstName}
+                                    {getPlayer(pId).firstName}
                                     {" "}
-                                    {getPlayer(pId, playerList).lastName}
+                                    {getPlayer(pId).lastName}
                                 </li>
                             )}
                             {(unMatched.length % 2 !== 0) &&
@@ -330,10 +326,11 @@ export default function Round({roundId, tourneyId,}) {
 
 function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     const {data} = useContext(DataContext);
-    const playerList = data.players;
+    // const playerList = data.players;
+    const getPlayer = curry(getPlayerById)(data.players);
     const playerData = genPlayerData(
         match.players[color],
-        playerList,
+        data.players,
         data.avoid,
         data.tourneys[tourneyId].roundList,
         roundId
@@ -373,9 +370,9 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
                 <ol>
                     {playerData.opponentHistory.map((opId) =>
                         <li key={opId}>
-                            {getPlayer(opId, playerList).firstName}
+                            {getPlayer(opId).firstName}
                             {" "}
-                            {getPlayer(opId, playerList).lastName}
+                            {getPlayer(opId).lastName}
                         </li>
                     )}
                 </ol>
@@ -385,9 +382,9 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
                 <ol>
                     {playerData.avoidList.map((pId) =>
                         <li key={pId}>
-                            {getPlayer(pId, playerList).firstName}
+                            {getPlayer(pId).firstName}
                             {" "}
-                            {getPlayer(pId, playerList).lastName}
+                            {getPlayer(pId).lastName}
                         </li>
                     )}
                 </ol>

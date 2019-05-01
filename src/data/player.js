@@ -30,11 +30,11 @@ export {dummyPlayer};
 
 
 /**
- * @param {number} id
  * @param {Player[]} playerList
+ * @param {number} id
  * @returns {Player}
  */
-function getPlayer(id, playerList) {
+function getPlayerById(playerList, id) {
     if (id === -1) {
         return dummyPlayer;
     }
@@ -48,8 +48,8 @@ function getPlayer(id, playerList) {
     }
     return player;
 }
-Object.freeze(getPlayer);
-export {getPlayer};
+Object.freeze(getPlayerById);
+export {getPlayerById};
 
 /**
  * @param {number} playerId

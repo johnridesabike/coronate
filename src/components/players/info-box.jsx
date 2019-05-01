@@ -1,9 +1,10 @@
 // @ts-check
 import React, {useState, useEffect, useContext} from "react";
 import numeral from "numeral";
+import curry from "ramda/src/curry";
 import {BackButton} from "../utility";
 import {
-    getPlayer,
+    getPlayerById,
     getPlayerAvoidList,
     kFactor
 } from "../../data/player";
@@ -16,12 +17,13 @@ import {DataContext} from "../../state/global-state";
  */
 export default function PlayerInfoBox({playerId, setOpenPlayer}) {
     const {data, dispatch} = useContext(DataContext);
-    const playerList = data.players;
+    // const playerList = data.players;
+    const getPlayer = curry(getPlayerById)(data.players);
     const avoidList = data.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
     );
-    const unAvoided = () => playerList.map(
+    const unAvoided = () => data.players.map(
         (player) => player.id
     ).filter(
         (pId) => !singAvoidList.includes(pId) && pId !== playerId
@@ -43,19 +45,19 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
         <div>
             <BackButton action={() => setOpenPlayer(null)}/>
             <h2>
-                {getPlayer(playerId, playerList).firstName}
+                {getPlayer(playerId).firstName}
                 {" "}
-                {getPlayer(playerId, playerList).lastName}
+                {getPlayer(playerId).lastName}
             </h2>
             <dl>
                 <dt>Matches played</dt>
-                <dd>{getPlayer(playerId, playerList).matchCount}</dd>
+                <dd>{getPlayer(playerId).matchCount}</dd>
                 <dt>Rating</dt>
-                <dd>{getPlayer(playerId, playerList).rating}</dd>
+                <dd>{getPlayer(playerId).rating}</dd>
                 <dt>K factor</dt>
                 <dd>
                     {numeral(
-                        kFactor(getPlayer(playerId, playerList).matchCount)
+                        kFactor(getPlayer(playerId).matchCount)
                     ).format("00")}
                 </dd>
                 <dt>Players to avoid</dt>
@@ -63,9 +65,9 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
                     <ul>
                         {singAvoidList.map((pId) =>
                             <li key={pId}>
-                                {getPlayer(pId, playerList).firstName}
+                                {getPlayer(pId).firstName}
                                 {" "}
-                                {getPlayer(pId, playerList).lastName}
+                                {getPlayer(pId).lastName}
                                 <button
                                     className="danger"
                                     onClick={
@@ -93,9 +95,9 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
                         }>
                         {unAvoided().map((pId) =>
                             <option key={pId} value={pId}>
-                                {getPlayer(pId, playerList).firstName}
+                                {getPlayer(pId).firstName}
                                 {" "}
-                                {getPlayer(pId, playerList).lastName}
+                                {getPlayer(pId).lastName}
                             </option>
                         )}
                     </select>

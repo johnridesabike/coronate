@@ -1,8 +1,9 @@
 // @ts-check
 import {createContext} from "react";
-import last from "lodash/last";
+import last from "ramda/src/last";
+import curry from "ramda/src/curry";
 import arrayMove from "array-move";
-import {createPlayer, getPlayer} from "../data/player";
+import {createPlayer, getPlayerById} from "../data/player";
 import {getById} from "../data/utility";
 import defaultOptions from "./demo-options.json";
 import defaultPlayers from "./demo-players.json";
@@ -32,6 +33,7 @@ export {defaultData};
  */
 function dataReducer(state, action) {
     const {avoid, players, options, tourneys} = state;
+    const getPlayer = curry(getPlayerById)(players);
     switch (action.type) {
     // Options
     case "SET_BYE_VALUE":
@@ -110,8 +112,8 @@ function dataReducer(state, action) {
         ).forEach(function (match) {
             if (match.result.reduce((a, b) => a + b) !== 0) {
                 match.players.forEach(function (pId, color) {
-                    getPlayer(pId, players).matchCount -= 1;
-                    getPlayer(pId, players).rating = (
+                    getPlayer(pId).matchCount -= 1;
+                    getPlayer(pId).rating = (
                         match.origRating[color]
                     );
                 });

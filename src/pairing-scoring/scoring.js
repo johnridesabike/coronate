@@ -2,7 +2,7 @@
 import {firstBy} from "thenby";
 import {
     dummyPlayer,
-    getPlayer,
+    getPlayerById,
     getPlayerAvoidList
 } from "../data/player";
 
@@ -385,7 +385,7 @@ function dueColor(playerId, roundList, roundId = null) {
  * @returns {PlayerData}
  */
 function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
-    const player = getPlayer(playerId, playerList);
+    const player = getPlayerById(playerList, playerId);
     return {
         data: player,
         rating: player.rating,

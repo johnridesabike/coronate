@@ -1,8 +1,9 @@
 // @ts-check
+import curry from "ramda/src/curry";
 import {BLACK, WHITE} from "../data/constants";
 import createMatch from "../data/match";
 import {hasHadBye} from "../pairing-scoring/scoring";
-import {dummyPlayer, getPlayer} from "../data/player";
+import {dummyPlayer, getPlayerById} from "../data/player";
 import pairPlayers from "../pairing-scoring/pairing";
 import {getById} from "../data/utility";
 /**
@@ -18,6 +19,7 @@ import {getById} from "../data/utility";
 function autoPair(state, tourneyId, roundId, unPairedPlayers) {
     const tourney = state.tourneys[tourneyId];
     const roundList = tourney.roundList;
+    const getPlayer = curry(getPlayerById)(state.players);
     const nextBye = tourney.byeQueue.filter(
         (pId) => !hasHadBye(pId, roundList)
     )[0];
@@ -27,11 +29,11 @@ function autoPair(state, tourneyId, roundId, unPairedPlayers) {
             id: nextBye + "-" + dummyPlayer.id,
             players: [nextBye, dummyPlayer.id],
             origRating: [
-                getPlayer(nextBye, state.players).rating,
+                getPlayer(nextBye).rating,
                 dummyPlayer.rating
             ],
             newRating: [
-                getPlayer(nextBye, state.players).rating,
+                getPlayer(nextBye).rating,
                 dummyPlayer.rating
             ]
         });
@@ -49,12 +51,12 @@ function autoPair(state, tourneyId, roundId, unPairedPlayers) {
             id: pair.join("-"),
             players: [pair[WHITE], pair[BLACK]],
             origRating: [
-                getPlayer(pair[WHITE], state.players).rating,
-                getPlayer(pair[BLACK], state.players).rating
+                getPlayer(pair[WHITE]).rating,
+                getPlayer(pair[BLACK]).rating
             ],
             newRating: [
-                getPlayer(pair[WHITE], state.players).rating,
-                getPlayer(pair[BLACK], state.players).rating
+                getPlayer(pair[WHITE]).rating,
+                getPlayer(pair[BLACK]).rating
             ]
         })
     );
@@ -81,16 +83,17 @@ export {autoPair};
  * @param {number[]} pair
  */
 function manualPair(state, pair) {
+    const getPlayer = curry(getPlayerById)(state.players);
     const match = createMatch({
         id: pair.join("-"),
         players: [pair[WHITE], pair[BLACK]],
         origRating: [
-            getPlayer(pair[WHITE], state.players).rating,
-            getPlayer(pair[BLACK], state.players).rating
+            getPlayer(pair[WHITE]).rating,
+            getPlayer(pair[BLACK]).rating
         ],
         newRating: [
-            getPlayer(pair[WHITE], state.players).rating,
-            getPlayer(pair[BLACK], state.players).rating
+            getPlayer(pair[WHITE]).rating,
+            getPlayer(pair[BLACK]).rating
         ]
     });
     if (pair[WHITE] === dummyPlayer.id) {
