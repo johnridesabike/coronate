@@ -343,11 +343,10 @@ function MatchRow({
                     <MenuButton
                         disabled={match.players.includes(dummyPlayer.id)}
                     >
-                        Set result{" "}
                         <VisuallyHidden>
-                            for {whiteName} versus {blackName}
+                            Set result for {whiteName} versus {blackName}
                         </VisuallyHidden>
-                        <span aria-hidden>▾</span>
+                        <span aria-hidden>Set result ▾</span>
                     </MenuButton>
                     <MenuList>
                         <MenuItem

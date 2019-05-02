@@ -1,11 +1,12 @@
 // @ts-check
 import React, {useReducer} from "react";
+import "../__mocks__/getComputedStyle.mock";
 import {render, cleanup, fireEvent, getNodeText} from "react-testing-library";
-import "jest-dom/extend-expect";
 import PlayerInfoBox from "../components/players/info-box";
 import Round from "../components/tournament/round";
 import TournamentTabs from "../components/tournament/tabs";
 import {dataReducer, defaultData, DataContext} from "../state/global-state";
+
 
 afterEach(cleanup);
 
@@ -21,15 +22,6 @@ function TestApp({children}) {
         </DataContext.Provider>
     );
 }
-
-it("renders without crashing", function() {
-    const tree = (
-        <TestApp>
-            <Round tourneyId={1} roundId={0} />
-        </TestApp>
-    );
-    render(tree);
-});
 
 it("Ratings are updated after a match is scored.", function() {
     const batmanInfo = (
@@ -70,7 +62,9 @@ it("Ratings are updated after a match is scored.", function() {
     fireEvent.click(round.getByText("Bruce Wayne"));
     fireEvent.click(round.getByText("Dick Grayson"));
     fireEvent.click(round.getByText("Pair checked"));
-    fireEvent.click(round.getByText("for Bruce Wayne versus Dick Grayson"));
+    fireEvent.click(
+        round.getByText("Set result for Bruce Wayne versus Dick Grayson")
+    );
     fireEvent.click(round.getByText("Bruce Wayne won"));
     cleanup();
     const newRatingBatman = getNodeText(

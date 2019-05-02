@@ -8,11 +8,9 @@ import React from "react";
 export function Button({children, action}
 ) {
     return (
-        <nav>
-            <button onClick={action}>
-                {children}
-            </button>
-        </nav>
+        <button onClick={action}>
+            {children}
+        </button>
     );
 }
 
