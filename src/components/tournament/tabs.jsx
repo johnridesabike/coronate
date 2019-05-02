@@ -9,6 +9,11 @@ import Round from "./round";
 import PlayerSelect from "./player-select";
 import {DataContext} from "../../state/global-state";
 
+/**
+ * @param {Object} props
+ * @param {number} props.tourneyId
+ * @param {React.ReactNode} [props.backButton]
+ */
 export default function TournamentTabs({tourneyId, backButton}) {
     const {data, dispatch} = useContext(DataContext);
     // const playerList = data.players;
@@ -26,30 +31,31 @@ export default function TournamentTabs({tourneyId, backButton}) {
     }
     return (
         <Tabs defaultIndex={defaultTab}>
-            {backButton}
             <div>
+                {backButton}
                 <h2>{tourney.name}</h2>
                 Round progress: {tourney.roundList.length}/
-                {calcNumOfRounds(players.length)}
-                <button onClick={() => newRound()}>New Round</button>
+                {calcNumOfRounds(players.length)}{" "}
+                <button onClick={() => newRound()}>New round</button>{" "}
                 <button
                     className="danger"
-                    onClick={
-                        () => dispatch({
+                    onClick={() =>
+                        dispatch({
                             type: "DEL_LAST_ROUND",
                             tourneyId: tourneyId
                         })
                     }
-                    disabled={tourney.roundList.length === 0}>
+                    disabled={tourney.roundList.length === 0}
+                >
                     Remove last round
                 </button>
             </div>
             <TabList>
                 <Tab>Players</Tab>
                 <Tab>Scores</Tab>
-                {Object.keys(tourney.roundList).map((id) =>
+                {Object.keys(tourney.roundList).map((id) => (
                     <Tab key={id}>Round {Number(id) + 1}</Tab>
-                )}
+                ))}
             </TabList>
             <TabPanels>
                 <TabPanel>
@@ -62,44 +68,50 @@ export default function TournamentTabs({tourneyId, backButton}) {
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Score</th>
-                                {tbMethods.map((name, i) =>
+                                {tbMethods.map((name, i) => (
                                     <th key={i}>{name}</th>
-                                )}
+                                ))}
                             </tr>
                         </thead>
-                        <tbody>{standingTree.map((standingsFlat, rank) =>
-                            standingsFlat.filter(
-                                (p) => p.id !== dummyPlayer.id
-                            ).map((standing) =>
-                                <tr key={standing.id}>
-                                    <td className="table__number">
-                                        {rank + 1}
-                                    </td>
-                                    <td>
-                                        {getPlayer(standing.id).firstName}
-                                    </td>
-                                    <td className="table__number">
-                                        {standing.score}
-                                    </td>
-                                    {standing.tieBreaks.map((score, i) =>
-                                        <td
-                                            key={i}
-                                            className="table__number">
-                                            {score}
-                                        </td>
-                                    )}
-                                </tr>
-                            )
-                        )}</tbody>
+                        <tbody>
+                            {standingTree.map((standingsFlat, rank) =>
+                                standingsFlat
+                                    .filter((p) => p.id !== dummyPlayer.id)
+                                    .map((standing) => (
+                                        <tr key={standing.id}>
+                                            <td className="table__number">
+                                                {rank + 1}
+                                            </td>
+                                            <td>
+                                                {
+                                                    getPlayer(standing.id)
+                                                        .firstName
+                                                }
+                                            </td>
+                                            <td className="table__number">
+                                                {standing.score}
+                                            </td>
+                                            {standing.tieBreaks.map(
+                                                (score, i) => (
+                                                    <td
+                                                        key={i}
+                                                        className="table__number"
+                                                    >
+                                                        {score}
+                                                    </td>
+                                                )
+                                            )}
+                                        </tr>
+                                    ))
+                            )}
+                        </tbody>
                     </table>
                 </TabPanel>
-                {Object.keys(tourney.roundList).map((id) =>
+                {Object.keys(tourney.roundList).map((id) => (
                     <TabPanel key={id}>
-                        <Round
-                            roundId={Number(id)}
-                            tourneyId={tourneyId} />
+                        <Round roundId={Number(id)} tourneyId={tourneyId} />
                     </TabPanel>
-                )}
+                ))}
             </TabPanels>
         </Tabs>
     );

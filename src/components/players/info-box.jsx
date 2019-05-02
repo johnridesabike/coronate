@@ -13,7 +13,7 @@ import {DataContext} from "../../state/global-state";
 /**
  * @param {Object} props
  * @param {number} props.playerId
- * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
+ * @param {React.Dispatch<React.SetStateAction<number>>} [props.setOpenPlayer]
  */
 export default function PlayerInfoBox({playerId, setOpenPlayer}) {
     const {data, dispatch} = useContext(DataContext);
@@ -52,8 +52,8 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
             <dl>
                 <dt>Matches played</dt>
                 <dd>{getPlayer(playerId).matchCount}</dd>
-                <dt>Rating</dt>
-                <dd>{getPlayer(playerId).rating}</dd>
+                <dt id="rating">Rating</dt>
+                <dd aria-labelledby="rating">{getPlayer(playerId).rating}</dd>
                 <dt>K factor</dt>
                 <dd>
                     {numeral(

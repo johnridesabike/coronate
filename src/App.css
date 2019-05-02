@@ -107,7 +107,7 @@ input {
     color: skyblue;
 }
 
-.danger {
+.danger:not([disabled]) {
     color: red;
 }
 
