@@ -1,0 +1,36 @@
+.table {
+    border-collapse: collapse;
+}
+
+.table caption {
+    font-size: 1.125em;
+    font-weight: 700;
+}
+
+.table thead th {
+    vertical-align: bottom;
+}
+
+.table {
+    width: min-content;
+}
+
+.table td,
+.table th {
+    padding: 0.25em;
+}
+
+.row td,
+.row th {
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+.playerName {
+    text-align: left;
+}
+
+.rank {
+    text-align: center;
+}

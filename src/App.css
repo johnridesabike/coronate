@@ -31,20 +31,20 @@ h1 {
 }
 
 
-caption {
+/* caption {
   font-size: 1.125em;
   font-weight: 700;
-}
+} */
 
 .table__number {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Fira Code", source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   text-align: right;
 }
 
-td {
+/* td {
     padding: 0 0.5em;
-}
+} */
 
 .center {
   text-align: center;
@@ -61,9 +61,9 @@ li.inactive {
 }
 
 textarea.json {
-    font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
+    font-family: "Fira Code", Menlo, Monaco, 'Courier New', monospace;
 }
-
+/* 
 .table__roster {
     table-layout: auto;
 }
@@ -74,7 +74,7 @@ th {
 
 td {
   vertical-align: top;
-}
+} */
 
 .data__input {
     text-align:center;

@@ -2,7 +2,6 @@
 
 Write tests to check for...
 
-- When a match is scored, the players' match-counts are updated.
 - When players are auto-paired, they are paired as expected (this will require some inspection of the pairPlayers() priorities).
 - When players are auto-paired, and there's a bye-queue, the next player on the bye-queue gets paired with the dummy player.
 - When players are auto-paired without the bye-queue, the lowest-ranking, lowest-rated player get paired with the dummy player.
