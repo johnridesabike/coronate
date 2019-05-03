@@ -7,7 +7,6 @@ import Round from "../components/tournament/round";
 import TournamentTabs from "../components/tournament/tabs";
 import {dataReducer, defaultData, DataContext} from "../state/global-state";
 
-
 afterEach(cleanup);
 
 /**
@@ -22,27 +21,40 @@ function TestApp({children}) {
         </DataContext.Provider>
     );
 }
+const batmanInfo = (
+    <TestApp>
+        <PlayerInfoBox playerId={0} />
+    </TestApp>
+);
+const robinInfo = (
+    <TestApp>
+        <PlayerInfoBox playerId={1} />
+    </TestApp>
+);
+function getRating(node) {
+    return getNodeText(render(node).getByLabelText(/rating/i));
+}
+function getMatchCount(node) {
+    return getNodeText(render(node).getByLabelText(/matches played/i));
+}
+
+let origRatingBatman;
+let origRatingRobin;
+
+it("Original ratings are shown correctly.", function() {
+    // get the initial ratings
+    origRatingBatman = getRating(batmanInfo);
+    cleanup();
+    origRatingRobin = getRating(robinInfo);
+    expect(origRatingBatman).toBe("1998"); // from demo-players.json
+    expect(origRatingRobin).toBe("1909"); // from demo-players.json
+});
+
+it("Original match counts are shown correctly.", function() {
+    expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
+});
 
 it("Ratings are updated after a match is scored.", function() {
-    const batmanInfo = (
-        <TestApp>
-            <PlayerInfoBox playerId={0} />
-        </TestApp>
-    );
-    const robinInfo = (
-        <TestApp>
-            <PlayerInfoBox playerId={1} />
-        </TestApp>
-    );
-    // get the initial ratings
-    const origRatingBatman = getNodeText(
-        render(batmanInfo).getByLabelText(/rating/i)
-    );
-    cleanup();
-    const origRatingRobin = getNodeText(
-        render(robinInfo).getByLabelText(/rating/i)
-    );
-    cleanup();
     const container = render(
         <TestApp>
             <TournamentTabs tourneyId={1} />
@@ -67,13 +79,13 @@ it("Ratings are updated after a match is scored.", function() {
     );
     fireEvent.click(round.getByText("Bruce Wayne won"));
     cleanup();
-    const newRatingBatman = getNodeText(
-        render(batmanInfo).getByLabelText(/rating/i)
-    );
+    const newRatingBatman = getRating(batmanInfo);
     cleanup();
-    const newRatingRobin = getNodeText(
-        render(robinInfo).getByLabelText(/rating/i)
-    );
+    const newRatingRobin = getRating(robinInfo);
     expect(Number(newRatingBatman)).toBeGreaterThan(Number(origRatingBatman));
     expect(Number(newRatingRobin)).toBeLessThan(Number(origRatingRobin));
+});
+
+it("Match counts are updated.", function() {
+    expect(getMatchCount(batmanInfo)).toBe("10");
 });
