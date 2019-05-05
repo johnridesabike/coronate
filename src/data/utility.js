@@ -13,8 +13,10 @@ Object.freeze(calcNumOfRounds);
 export {calcNumOfRounds};
 
 /**
- * @param {Object[]} list
+ * @template {object} T
+ * @param {T[]} list
  * @param {number | string} id
+ * @returns {T}
  */
 function getById(list, id) {
     return list.filter((x) => x.id === id)[0];

@@ -5,6 +5,9 @@ import {WHITE, BLACK} from "./constants";
  * @typedef {import("./index").Player} Player
  */
 
+/**
+ * @param {Object} importObj
+ */
 function createPlayer(importObj = {}) {
     /** @type {Player} */
     const player = {
@@ -96,6 +99,7 @@ export {kFactor};
  * @param {[number, number]} origRatings
  * @param {[number, number]} matchCounts
  * @param {[number, number]} result
+ * @returns {[number, number]}
  */
 function calcNewRatings(origRatings, matchCounts, result) {
     const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
@@ -105,6 +109,7 @@ function calcNewRatings(origRatings, matchCounts, result) {
         whiteElo.getExpected(origRatings[WHITE], origRatings[BLACK]),
         blackElo.getExpected(origRatings[BLACK], origRatings[WHITE])
     ];
+    /** @type {[number, number]} */
     const newRating = [
         whiteElo.updateRating(
             scoreExpected[WHITE],
@@ -117,6 +122,7 @@ function calcNewRatings(origRatings, matchCounts, result) {
             origRatings[BLACK]
         )
     ];
+    // @ts-ignore
     return newRating.map(
         (rating) => (
             rating < FLOOR

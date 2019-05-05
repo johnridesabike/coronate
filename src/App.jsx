@@ -1,7 +1,7 @@
 // @ts-check
 import React, {useReducer} from "react";
 import "./App.css";
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import "@reach/tabs/styles.css";
 import TournamentList from "./components/tournament/list";
 import PlayerView from "./components/players/index";
@@ -34,8 +34,11 @@ function App() {
                         </TabPanel>
                         <TabPanel>
                             <p>
+                                This is an early, proof-of-concept, demo of a
+                                chess tournament manager.{" "}
                                 {/* eslint-disable-next-line max-len*/}
-                                This is an early, proof-of-concept, demo of a chess tournament manager. <a href="https://github.com/johnridesabike/chessahoochee">You can find out more here.</a>
+                                <a href="https://github.com/johnridesabike/chessahoochee">
+                                You can find out more here.</a>
                             </p>
                         </TabPanel>
                     </TabPanels>

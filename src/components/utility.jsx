@@ -3,36 +3,30 @@ import React, {useReducer} from "react";
 import {dataReducer, defaultData, DataContext} from "../state/global-state";
 
 /**
- * @param {Object} props
- * @param {JSX.Element | string} [props.children]
- * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
+ * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
  */
-export function Button({children, action}
-) {
-    return (
-        <button onClick={action}>
-            {children}
-        </button>
-    );
-}
 
-/**
- * @param {Object} props
- * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
- */
+/** @param {{children: JSX.Element | string, action: Action}} props */
+export const Button = ({children, action}) => (
+    <button onClick={action}>
+        {children}
+    </button>
+);
+
+/** @param {{action: Action}} action */
 export const BackButton = ({action}) => (
     <Button action={action}>&lt; Back</Button>
 );
 
-/**
- * @param {Object} props
- * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
- */
+/** @param {{action: Action}} action */
 export const OpenButton = ({action}) => (
     <Button action={action}>Open &gt;</Button>
 );
 
-export const InfoButton = ({action}) => <Button action={action}>Info</Button>;
+/** @param {{action: Action}} props */
+export const InfoButton = ({action}) => (
+    <Button action={action}>Info</Button>
+);
 
 /**
  * @param {*[]} arr

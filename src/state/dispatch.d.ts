@@ -73,7 +73,7 @@ declare interface ActionManualPair {
     type: "MANUAL_PAIR",
     tourneyId: number,
     roundId: number,
-    pair: [number, number]
+    pair: number[]
 }
 declare interface ActionSetMatchResult {
     type: "SET_MATCH_RESULT",
@@ -89,7 +89,7 @@ declare interface ActionDelMatch {
     roundId: number,
     matchId: string
 }
-declare interface ActionDelMatch {
+declare interface ActionSwapColors {
     type: "SWAP_COLORS",
     tourneyId: number,
     roundId: number,
@@ -103,12 +103,26 @@ declare interface ActionMoveMatch {
     newIndex: number
 }
 export type Action = (
-    ActionByeValue | ActionAddPlayer | ActionDelPlayer | ActionSetMatchcount
-    | ActionSetRating | ActionAvoidPair | ActionAddTourney | ActionDelTourney
-    | ActionAddRound | ActionDelLastRound | ActionAddRemoveTieBreak
-    | ActionMoveTieBreak | ActionSetTourneyPlayers | ActionSetByeQueue
-    | ActionAutoPair | ActionManualPair | ActionSetMatchResult | ActionDelMatch
-    | SWAP_COLORS | ActionMoveMatch
+    ActionByeValue
+    | ActionAddPlayer
+    | ActionDelPlayer
+    | ActionSetMatchcount
+    | ActionSetRating
+    | ActionAvoidPair
+    | ActionAddTourney
+    | ActionDelTourney
+    | ActionAddRound
+    | ActionDelLastRound
+    | ActionAddRemoveTieBreak
+    | ActionMoveTieBreak
+    | ActionSetTourneyPlayers
+    | ActionSetByeQueue
+    | ActionAutoPair
+    | ActionManualPair
+    | ActionSetMatchResult
+    | ActionDelMatch
+    | ActionSwapColors
+    | ActionMoveMatch
 );
 
 export interface GlobalState {

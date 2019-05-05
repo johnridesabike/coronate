@@ -111,7 +111,7 @@ export {manualPair};
  * @param {GlobalState} state
  * @param {number} tourneyId
  * @param {number} roundId
- * @param {number} matchId
+ * @param {string} matchId
  */
 function swapColors(state, tourneyId, roundId, matchId) {
     const round = state.tourneys[tourneyId].roundList[roundId];

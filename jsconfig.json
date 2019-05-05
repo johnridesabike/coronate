@@ -3,7 +3,7 @@
         "baseUrl": "src",
         "paths": { "*": ["types/*"] },
         "resolveJsonModule": true,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "noImplicitThis": true,
         "strictFunctionTypes": true,
         "noEmit": true,

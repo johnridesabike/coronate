@@ -2,6 +2,9 @@
 /**
  * @typedef {import("./index").Tournament} Tournament
  */
+/**
+ * @param {Object} importObj
+ */
 function createTournament(importObj) {
     /** @type {Tournament} */
     const tourney = {

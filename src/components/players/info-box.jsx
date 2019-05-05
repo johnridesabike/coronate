@@ -19,10 +19,13 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
     );
-    const unAvoided = () =>
-        data.players
-            .map((player) => player.id)
-            .filter((pId) => !singAvoidList.includes(pId) && pId !== playerId);
+    const unAvoided = () => (
+        data.players.map(
+            (player) => player.id
+        ).filter(
+            (pId) => !singAvoidList.includes(pId) && pId !== playerId
+        )
+    );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
     /** @param {React.FormEvent<HTMLFormElement>} event */
     function avoidAdd(event) {
@@ -87,7 +90,7 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
                     <legend>Add player to avoid</legend>
                     <select
                         onBlur={(event) =>
-                            setSelectedAvoider(event.target.value)
+                            setSelectedAvoider(Number(event.target.value))
                         }
                     >
                         {unAvoided().map((pId) => (

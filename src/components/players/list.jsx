@@ -2,7 +2,7 @@
 import React, {Fragment, useState, useContext} from "react";
 import {OpenButton} from "../utility";
 import {createPlayer} from "../../data/player";
-import {DataContext} from "../../state/global-state"; 
+import {DataContext} from "../../state/global-state";
 
 /**
  * @param {Object} props
@@ -10,10 +10,9 @@ import {DataContext} from "../../state/global-state";
  */
 export default function PlayerList({setOpenPlayer}) {
     const {data, dispatch} = useContext(DataContext);
-    const playerList = data.players;
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
-    const ids = playerList.map((p) => p.id);
+    const ids = data.players.map((p) => p.id);
     ids.sort((a, b) => a - b);
     ids.reverse();
     const [nextId, setNextId] = useState(ids[0] + 1);
@@ -36,14 +35,14 @@ export default function PlayerList({setOpenPlayer}) {
     };
     /**
      * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
-     * @param {number} player
+     * @param {number} id
      */
-    const delPlayer = function (event, player) {
+    const delPlayer = function (event, id) {
         event.preventDefault();
-        dispatch({type: "DEL_PLAYER", player: player});
+        dispatch({type: "DEL_PLAYER", id: id});
     };
     let rosterTable = <Fragment></Fragment>;
-    if (playerList.length > 0) {
+    if (data.players.length > 0) {
         rosterTable =
         <table>
             <caption>Demo Roster</caption>
@@ -56,7 +55,7 @@ export default function PlayerList({setOpenPlayer}) {
                     <th></th>
                 </tr>
             </thead>
-            <tbody>{playerList.map((player) =>
+            <tbody>{data.players.map((player) =>
                 <tr key={player.id}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__player">{player.lastName}</td>
@@ -65,7 +64,7 @@ export default function PlayerList({setOpenPlayer}) {
                         <button
                             className="danger"
                             onClick={(event) =>
-                                delPlayer(event, player)
+                                delPlayer(event, player.id)
                             }>
                             delete
                         </button>

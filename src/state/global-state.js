@@ -207,5 +207,7 @@ function dataReducer(state, action) {
 Object.freeze(dataReducer);
 export {dataReducer};
 
-const DataContext = createContext(null);
+/** @type {{data: GlobalState, dispatch: React.Dispatch<Action>}} */
+const defaultContext = null;
+const DataContext = createContext(defaultContext);
 export {DataContext};

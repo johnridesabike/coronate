@@ -23,56 +23,10 @@ export default function Round({roundId, tourneyId}) {
     const getPlayer = curry(getPlayerById)(data.players);
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
-    /** @type {number} */
+    /** @type {string} */
     const defaultMatch = null;
     const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
-    /**
-     * @param {number} matchId
-     * @param {[number, number]} result
-     */
-    function setMatchResult(matchId, result) {
-        const match = getById(tourney.roundList[roundId], matchId);
-        const white = getPlayer(match.players[WHITE]);
-        const black = getPlayer(match.players[BLACK]);
-        const newRating = calcNewRatings(
-            match.origRating,
-            [white.matchCount, black.matchCount],
-            result
-        );
-        dispatch({
-            type: "SET_PLAYER_RATING",
-            id: white.id,
-            rating: newRating[WHITE]
-        });
-        dispatch({
-            type: "SET_PLAYER_RATING",
-            id: black.id,
-            rating: newRating[BLACK]
-        });
-        // if the result hasn't been scored yet, increment the matchCount
-        if (match.result.reduce((a, b) => a + b) === 0) {
-            dispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
-                id: white.id,
-                matchCount: white.matchCount + 1
-            });
-            dispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
-                id: black.id,
-                matchCount: black.matchCount + 1
-            });
-        }
-        // setPlayerList([...playerList]);
-        dispatch({
-            type: "SET_MATCH_RESULT",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            matchId: matchId,
-            result: result,
-            newRating: newRating
-        });
-    }
-    /** @param {number} matchId */
+    /** @param {string} matchId */
     function unMatch(matchId) {
         const match = getById(tourney.roundList[roundId], matchId);
         if (match.result.reduce((a, b) => a + b) !== 0) {
@@ -99,6 +53,7 @@ export default function Round({roundId, tourneyId}) {
         });
         setSelectedMatch(null);
     }
+    /** @param {string} matchId */
     function swapColors(matchId) {
         dispatch({
             type: "SWAP_COLORS",
@@ -108,7 +63,7 @@ export default function Round({roundId, tourneyId}) {
         });
     }
     /**
-     * @param {number} matchId
+     * @param {string} matchId
      * @param {number} direction
      */
     function moveMatch(matchId, direction) {
@@ -118,7 +73,6 @@ export default function Round({roundId, tourneyId}) {
             type: "MOVE_MATCH",
             tourneyId: tourneyId,
             roundId: roundId,
-            matchId: matchId,
             oldIndex: mIndex,
             newIndex: mIndex + direction
         });
@@ -170,7 +124,8 @@ export default function Round({roundId, tourneyId}) {
                                 key={match.id}
                                 pos={pos}
                                 match={match}
-                                setMatchResult={setMatchResult}
+                                tourneyId={tourneyId}
+                                roundId={roundId}
                                 selectedMatch={selectedMatch}
                                 setSelectedMatch={setSelectedMatch}
                             />
@@ -208,14 +163,29 @@ export default function Round({roundId, tourneyId}) {
     );
 }
 
+/**
+ * @typedef {import("../../data/").Match} Match
+ */
+
+/**
+ * @param {Object} props
+ * @param {number} props.pos
+ * @param {Match} props.match
+ * @param {number} props.tourneyId
+ * @param {number} props.roundId
+ * @param {string} props.selectedMatch
+ * @param {React.Dispatch<React.SetStateAction<string>>} props.setSelectedMatch
+ */
 function MatchRow({
     pos,
     match,
-    setMatchResult,
+    tourneyId,
+    roundId,
     selectedMatch,
     setSelectedMatch
 }) {
-    const {data} = useContext(DataContext);
+    const {data, dispatch} = useContext(DataContext);
+    const tourney = data.tourneys[tourneyId];
     const getPlayer = curry(getPlayerById)(data.players);
     const whiteWon = match.result[0] > match.result[1];
     const blackWon = match.result[1] > match.result[0];
@@ -230,6 +200,53 @@ function MatchRow({
         + " "
         + getPlayer(match.players[1]).lastName
     );
+
+    /**
+     * @param {string} matchId
+     * @param {[number, number]} result
+     */
+    function setMatchResult(matchId, result) {
+        const theMatch = getById(tourney.roundList[roundId], matchId);
+        const white = getPlayer(theMatch.players[WHITE]);
+        const black = getPlayer(theMatch.players[BLACK]);
+        const newRating = calcNewRatings(
+            theMatch.origRating,
+            [white.matchCount, black.matchCount],
+            result
+        );
+        dispatch({
+            type: "SET_PLAYER_RATING",
+            id: white.id,
+            rating: newRating[WHITE]
+        });
+        dispatch({
+            type: "SET_PLAYER_RATING",
+            id: black.id,
+            rating: newRating[BLACK]
+        });
+        // if the result hasn't been scored yet, increment the matchCount
+        if (theMatch.result.reduce((a, b) => a + b) === 0) {
+            dispatch({
+                type: "SET_PLAYER_MATCHCOUNT",
+                id: white.id,
+                matchCount: white.matchCount + 1
+            });
+            dispatch({
+                type: "SET_PLAYER_MATCHCOUNT",
+                id: black.id,
+                matchCount: black.matchCount + 1
+            });
+        }
+        // setPlayerList([...playerList]);
+        dispatch({
+            type: "SET_MATCH_RESULT",
+            tourneyId: tourneyId,
+            roundId: roundId,
+            matchId: matchId,
+            result: result,
+            newRating: newRating
+        });
+    }
     return (
         <tr>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
@@ -294,6 +311,13 @@ function MatchRow({
     );
 }
 
+/**
+ * @param {Object} props
+ * @param {Match} props.match
+ * @param {number} props.color
+ * @param {number} props.tourneyId
+ * @param {number} props.roundId
+ */
 function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     const {data} = useContext(DataContext);
     // const playerList = data.players;
@@ -356,6 +380,11 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     );
 }
 
+/**
+ * @param {Object} props
+ * @param {number} props.tourneyId
+ * @param {number} props.roundId
+ */
 function PairPicker({tourneyId, roundId}) {
     const {data, dispatch} = useContext(DataContext);
     const getPlayer = curry(getPlayerById)(data.players);
@@ -392,13 +421,13 @@ function PairPicker({tourneyId, roundId}) {
                 {unMatched.map((pId) => (
                     <li key={pId}>
                         <input
-                            id={pId}
+                            id={`${pId}`}
                             type="checkbox"
                             checked={selectedPlayers.includes(pId)}
                             value={pId}
                             onChange={selectPlayer}
                         />{" "}
-                        <label htmlFor={pId}>
+                        <label htmlFor={`${pId}`}>
                             {getPlayer(pId).firstName} {getPlayer(pId).lastName}
                         </label>
                     </li>

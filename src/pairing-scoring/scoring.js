@@ -45,6 +45,7 @@ export {playerMatchColor};
  * @returns {Match[]}
  */
 function getMatchesByPlayer(playerId, roundList, roundId = null) {
+    /** @type {Match[]} */
     let rounds;
     if (roundId === null) {
         rounds = roundList;
@@ -282,7 +283,8 @@ function areScoresEqual(standing1, standing2) {
         areEqual = false;
     }
     Object.keys(standing1.tieBreaks).forEach(function (index) {
-        if (standing1.tieBreaks[index] !== standing2.tieBreaks[index]) {
+        const i = Number(index);
+        if (standing1.tieBreaks[i] !== standing2.tieBreaks[i]) {
             areEqual = false;
         }
     });
