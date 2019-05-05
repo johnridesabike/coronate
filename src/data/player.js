@@ -119,7 +119,7 @@ function calcNewRatings(origRatings, matchCounts, result) {
     ];
     return newRating.map(
         (rating) => (
-            (rating < FLOOR)
+            rating < FLOOR
             ? FLOOR
             : rating
         )

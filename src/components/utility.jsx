@@ -1,5 +1,7 @@
 // @ts-check
-import React from "react";
+import React, {useReducer} from "react";
+import {dataReducer, defaultData, DataContext} from "../state/global-state";
+
 /**
  * @param {Object} props
  * @param {JSX.Element | string} [props.children]
@@ -18,17 +20,19 @@ export function Button({children, action}
  * @param {Object} props
  * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
  */
-export function BackButton({action}) {
-    return <Button action={action}>&lt; Back</Button>;
-}
+export const BackButton = ({action}) => (
+    <Button action={action}>&lt; Back</Button>
+);
 
 /**
  * @param {Object} props
  * @param {(event: React.MouseEvent | React.KeyboardEvent) => void} props.action
  */
-export function OpenButton({action}) {
-    return <Button action={action}>Open &gt;</Button>;
-}
+export const OpenButton = ({action}) => (
+    <Button action={action}>Open &gt;</Button>
+);
+
+export const InfoButton = ({action}) => <Button action={action}>Info</Button>;
 
 /**
  * @param {*[]} arr
@@ -65,5 +69,18 @@ export function PanelContainer({children}) {
         <div style={{display: "flex"}}>
             {React.Children.map(children, (child) => child)}
         </div>
+    );
+}
+
+/**
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ */
+export function TestApp({children}) {
+    const [data, dispatch] = useReducer(dataReducer, defaultData);
+    return (
+        <DataContext.Provider value={{data, dispatch}}>
+            {children}
+        </DataContext.Provider>
     );
 }

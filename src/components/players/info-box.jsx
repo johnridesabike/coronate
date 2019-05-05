@@ -34,7 +34,7 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
         });
     }
     useEffect(
-        function() {
+        function () {
             setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
         },
         [avoidList, playerId]

@@ -5,7 +5,6 @@ import {DataContext} from "../state/global-state";
 export function Options() {
     const {data, dispatch} = useContext(DataContext);
     const options = data.options;
-    const outputData = JSON.stringify(data, null, 2);
     return (
         <div>
             <form>
@@ -60,7 +59,7 @@ export function Options() {
                         className="json"
                         rows={25}
                         cols={50}
-                        value={outputData}
+                        value={JSON.stringify(data, null, 2)}
                         name="playerdata"
                         readOnly />
                     <input type="submit" value="Load" disabled />

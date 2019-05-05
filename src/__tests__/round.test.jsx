@@ -1,26 +1,14 @@
 // @ts-check
-import React, {useReducer} from "react";
+import React from "react";
 import "../__mocks__/getComputedStyle.mock";
 import {render, cleanup, fireEvent, getNodeText} from "react-testing-library";
 import PlayerInfoBox from "../components/players/info-box";
 import Round from "../components/tournament/round";
 import TournamentTabs from "../components/tournament/tabs";
-import {dataReducer, defaultData, DataContext} from "../state/global-state";
+import {TestApp} from "../components/utility";
 
 afterEach(cleanup);
 
-/**
- * @param {Object} props
- * @param {React.ReactNode} props.children
- */
-function TestApp({children}) {
-    const [data, dispatch] = useReducer(dataReducer, defaultData);
-    return (
-        <DataContext.Provider value={{data, dispatch}}>
-            {children}
-        </DataContext.Provider>
-    );
-}
 const batmanInfo = (
     <TestApp>
         <PlayerInfoBox playerId={0} />
@@ -41,7 +29,7 @@ function getMatchCount(node) {
 let origRatingBatman;
 let origRatingRobin;
 
-it("Original ratings are shown correctly.", function() {
+it("Original ratings are shown correctly.", function () {
     // get the initial ratings
     origRatingBatman = getRating(batmanInfo);
     cleanup();
@@ -50,11 +38,11 @@ it("Original ratings are shown correctly.", function() {
     expect(origRatingRobin).toBe("1909"); // from demo-players.json
 });
 
-it("Original match counts are shown correctly.", function() {
+it("Original match counts are shown correctly.", function () {
     expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
 });
 
-it("Ratings are updated after a match is scored.", function() {
+it("Ratings are updated after a match is scored.", function () {
     const container = render(
         <TestApp>
             <TournamentTabs tourneyId={1} />
@@ -86,6 +74,6 @@ it("Ratings are updated after a match is scored.", function() {
     expect(Number(newRatingRobin)).toBeLessThan(Number(origRatingRobin));
 });
 
-it("Match counts are updated.", function() {
+it("Match counts are updated.", function () {
     expect(getMatchCount(batmanInfo)).toBe("10");
 });

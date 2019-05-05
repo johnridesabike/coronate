@@ -1,0 +1,36 @@
+{
+    "extends": ["react-app", "plugin:jsx-a11y/recommended"],
+    "plugins": ["jsx-a11y"],
+    "rules": {
+        "max-len": [
+            "warn", {
+                "code": 80,
+                "ignoreComments": true
+            }
+        ],
+        "space-infix-ops": "warn",
+        "semi": "warn",
+        "no-trailing-spaces": "warn",
+        "quotes": ["warn", "double"],
+        "jsx-quotes": ["warn", "prefer-double"],
+        "camelcase": "warn",
+        "indent": ["warn", 4, {"ignoredNodes": ["ConditionalExpression"]}],
+        "comma-dangle": ["warn", "never"],
+        "array-bracket-spacing": ["warn", "never"],
+        "object-curly-spacing": ["warn", "never"],
+        "eol-last": ["warn", "always"],
+        "block-spacing": ["warn", "never"],
+        "computed-property-spacing": ["warn", "never"],
+        "space-before-function-paren": ["warn", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+        "no-unused-vars": "error",
+        "no-shadow": "error",
+        "no-var": 1,
+        "arrow-parens": "warn",
+        "arrow-body-style": ["warn", "never"]
+
+    }
+}

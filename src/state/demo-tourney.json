@@ -1,231 +1,250 @@
 [
-  {
-    "name": "Wayne Manor Open",
-    "tieBreaks": [0, 1, 2, 3],
-    "byeQueue": [],
-    "players": [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    "roundList": [
-      [
-        {
-          "id": "6-1",
-          "players": [6, 1],
-          "result": [0, 1],
-          "origRating": [1238, 2108],
-          "newRating": [1236, 2109]
-        },
-        {
-          "id": "7-2",
-          "players": [7, 2],
-          "result": [0, 1],
-          "origRating": [1049, 2260],
-          "newRating": [1049, 2260]
-        },
-        {
-          "id": "4-3",
-          "players": [4, 3],
-          "result": [1, 0],
-          "origRating": [1527, 1755],
-          "newRating": [1685, 1545]
-        },
-        {
-          "id": "5-0",
-          "players": [5, 0],
-          "result": [0, 1],
-          "origRating": [1284, 1881],
-          "newRating": [1278, 1887]
-        },
-        {
-          "id": "8--1",
-          "players": [8, -1],
-          "result": [1, 0],
-          "origRating": [831, 0],
-          "newRating": [831, 0]
-        }
-      ],
-      [
-        {
-          "id": "1-4",
-          "players": [1, 4],
-          "result": [1, 0],
-          "origRating": [2109, 1685],
-          "newRating": [2122, 1672]
-        },
-        {
-          "id": "0-8",
-          "players": [0, 8],
-          "result": [1, 0],
-          "origRating": [1887, 831],
-          "newRating": [1887, 830]
-        },
-        {
-          "id": "2-5",
-          "players": [2, 5],
-          "result": [0, 1],
-          "origRating": [2260, 1278],
-          "newRating": [2101, 1437]
-        },
-        {
-          "id": "3-6",
-          "players": [3, 6],
-          "result": [1, 0],
-          "origRating": [1545, 1236],
-          "newRating": [1574, 1207]
-        },
-        {
-          "id": "7--1",
-          "players": [7, -1],
-          "result": [1, 0],
-          "origRating": [1049, 0],
-          "newRating": [1049, 0]
-        }
-      ],
-      [
-        {
-          "id": "2-0",
-          "players": [2, 0],
-          "result": [0, 1],
-          "origRating": [2101, 1887],
-          "newRating": [1998, 1990]
-        },
-        {
-          "id": "8-1",
-          "players": [8, 1],
-          "result": [1, 0],
-          "origRating": [830, 2122],
-          "newRating": [990, 2008]
-        },
-        {
-          "id": "5-3",
-          "players": [5, 3],
-          "result": [1, 0],
-          "origRating": [1437, 1574],
-          "newRating": [1529, 1464]
-        },
-        {
-          "id": "4-7",
-          "players": [4, 7],
-          "result": [0, 1],
-          "origRating": [1672, 1049],
-          "newRating": [1542, 1244]
-        },
-        {
-          "id": "6--1",
-          "players": [6, -1],
-          "result": [1, 0],
-          "origRating": [1207, 0],
-          "newRating": [1207, 0]
-        }
-      ],
-      [
-        {
-          "id": "0-4",
-          "players": [0, 4],
-          "result": [1, 0],
-          "origRating": [1990, 1542],
-          "newRating": [1998, 1534]
-        },
-        {
-          "id": "1-7",
-          "players": [1, 7],
-          "result": [1, 0],
-          "origRating": [2008, 1244],
-          "newRating": [2009, 1242]
-        },
-        {
-          "id": "8-5",
-          "players": [8, 5],
-          "result": [0, 1],
-          "origRating": [990, 1529],
-          "newRating": [983, 1534]
-        },
-        {
-          "id": "6-2",
-          "players": [6, 2],
-          "result": [0, 1],
-          "origRating": [1207, 1998],
-          "newRating": [1205, 1999]
-        },
-        {
-          "id": "3--1",
-          "players": [3, -1],
-          "result": [1, 0],
-          "origRating": [1464, 0],
-          "newRating": [1464, 0]
-        }
-      ]
-    ]
-  },
-  {
-    "name": "The Battle for Gotham City",
-    "tieBreaks": [0, 1, 2, 3],
-    "byeQueue": [],
-    "players": [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 7],
-    "roundList": [
-      [
-        {
-          "id": "15-0",
-          "players": [15, 0],
-          "result": [0, 1],
-          "origRating": [950, 1998],
-          "newRating": [948, 1998]
-        },
-        {
-          "id": "16-2",
-          "players": [16, 2],
-          "result": [0, 1],
-          "origRating": [900, 1999],
-          "newRating": [899, 1999]
-        },
-        {
-          "id": "17-1",
-          "players": [17, 1],
-          "result": [1, 0],
-          "origRating": [850, 2009],
-          "newRating": [1649, 1909]
-        },
-        {
-          "id": "13-5",
-          "players": [13, 5],
-          "result": [0.5, 0.5],
-          "origRating": [1050, 1534],
-          "newRating": [1404, 1495]
-        },
-        {
-          "id": "12-3",
-          "players": [12, 3],
-          "result": [1, 0],
-          "origRating": [1100, 1464],
-          "newRating": [1812, 1345]
-        },
-        {
-          "id": "14-4",
-          "players": [14, 4],
-          "result": [0, 1],
-          "origRating": [1000, 1534],
-          "newRating": [965, 1538]
-        },
-        {
-          "id": "10-7",
-          "players": [10, 7],
-          "result": [1, 0],
-          "origRating": [1200, 1242],
-          "newRating": [1648, 1167]
-        },
-        {
-          "id": "11-9",
-          "players": [11, 9],
-          "result": [0, 1],
-          "origRating": [1150, 1250],
-          "newRating": [862, 1538]
-        },
-        {
-          "id": "8-6",
-          "players": [8, 6],
-          "result": [1, 0],
-          "origRating": [983, 1205],
-          "newRating": [1087, 1101]
-        }
-      ]
-    ]
-  }
+    {
+        "name": "Wayne Manor Open",
+        "tieBreaks": [0, 1, 2, 3],
+        "byeQueue": [],
+        "players": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "roundList": [
+            [
+                {
+                    "id": "6-1",
+                    "players": [6, 1],
+                    "result": [0, 1],
+                    "origRating": [1238, 2108],
+                    "newRating": [1236, 2109]
+                },
+                {
+                    "id": "7-2",
+                    "players": [7, 2],
+                    "result": [0, 1],
+                    "origRating": [1049, 2260],
+                    "newRating": [1049, 2260]
+                },
+                {
+                    "id": "4-3",
+                    "players": [4, 3],
+                    "result": [0.5, 0.5],
+                    "origRating": [1527, 1755],
+                    "newRating": [1553, 1722]
+                },
+                {
+                    "id": "5-0",
+                    "players": [5, 0],
+                    "result": [0, 1],
+                    "origRating": [1284, 1881],
+                    "newRating": [1278, 1887]
+                },
+                {
+                    "id": "8--1",
+                    "players": [8, -1],
+                    "result": [1, 0],
+                    "origRating": [831, 0],
+                    "newRating": [831, 0]
+                }
+            ],
+            [
+                {
+                    "id": "1-4",
+                    "players": [1, 4],
+                    "result": [1, 0],
+                    "origRating": [2109, 1685],
+                    "newRating": [2122, 1672]
+                },
+                {
+                    "id": "0-8",
+                    "players": [0, 8],
+                    "result": [1, 0],
+                    "origRating": [1887, 831],
+                    "newRating": [1887, 830]
+                },
+                {
+                    "id": "2-5",
+                    "players": [2, 5],
+                    "result": [0, 1],
+                    "origRating": [2260, 1278],
+                    "newRating": [2101, 1437]
+                },
+                {
+                    "id": "3-6",
+                    "players": [3, 6],
+                    "result": [1, 0],
+                    "origRating": [1545, 1236],
+                    "newRating": [1574, 1207]
+                },
+                {
+                    "id": "7--1",
+                    "players": [7, -1],
+                    "result": [1, 0],
+                    "origRating": [1049, 0],
+                    "newRating": [1049, 0]
+                }
+            ],
+            [
+                {
+                    "id": "2-0",
+                    "players": [2, 0],
+                    "result": [0, 1],
+                    "origRating": [2101, 1887],
+                    "newRating": [1998, 1990]
+                },
+                {
+                    "id": "8-1",
+                    "players": [8, 1],
+                    "result": [1, 0],
+                    "origRating": [830, 2122],
+                    "newRating": [990, 2008]
+                },
+                {
+                    "id": "5-3",
+                    "players": [5, 3],
+                    "result": [1, 0],
+                    "origRating": [1437, 1574],
+                    "newRating": [1529, 1464]
+                },
+                {
+                    "id": "4-7",
+                    "players": [4, 7],
+                    "result": [0, 1],
+                    "origRating": [1672, 1049],
+                    "newRating": [1542, 1244]
+                },
+                {
+                    "id": "6--1",
+                    "players": [6, -1],
+                    "result": [1, 0],
+                    "origRating": [1207, 0],
+                    "newRating": [1207, 0]
+                }
+            ],
+            [
+                {
+                    "id": "0-4",
+                    "players": [0, 4],
+                    "result": [1, 0],
+                    "origRating": [1990, 1542],
+                    "newRating": [1998, 1534]
+                },
+                {
+                    "id": "1-7",
+                    "players": [1, 7],
+                    "result": [1, 0],
+                    "origRating": [2008, 1244],
+                    "newRating": [2009, 1243]
+                },
+                {
+                    "id": "8-5",
+                    "players": [8, 5],
+                    "result": [0, 1],
+                    "origRating": [990, 1529],
+                    "newRating": [983, 1534]
+                },
+                {
+                    "id": "6-2",
+                    "players": [6, 2],
+                    "result": [0, 1],
+                    "origRating": [1207, 1998],
+                    "newRating": [1205, 1999]
+                },
+                {
+                    "id": "3--1",
+                    "players": [3, -1],
+                    "result": [1, 0],
+                    "origRating": [1464, 0],
+                    "newRating": [1464, 0]
+                }
+            ]
+        ]
+    },
+    {
+        "name": "The Battle for Gotham City",
+        "tieBreaks": [0, 1, 2, 3],
+        "byeQueue": [],
+        "players": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            7
+        ],
+        "roundList": [
+            [
+                {
+                    "id": "15-0",
+                    "players": [15, 0],
+                    "result": [0, 1],
+                    "origRating": [950, 1998],
+                    "newRating": [948, 1998]
+                },
+                {
+                    "id": "16-2",
+                    "players": [16, 2],
+                    "result": [0, 1],
+                    "origRating": [900, 1999],
+                    "newRating": [899, 1999]
+                },
+                {
+                    "id": "17-1",
+                    "players": [17, 1],
+                    "result": [1, 0],
+                    "origRating": [850, 2009],
+                    "newRating": [1649, 1909]
+                },
+                {
+                    "id": "13-5",
+                    "players": [13, 5],
+                    "result": [0.5, 0.5],
+                    "origRating": [1050, 1534],
+                    "newRating": [1404, 1495]
+                },
+                {
+                    "id": "12-3",
+                    "players": [12, 3],
+                    "result": [1, 0],
+                    "origRating": [1100, 1464],
+                    "newRating": [1812, 1345]
+                },
+                {
+                    "id": "14-4",
+                    "players": [14, 4],
+                    "result": [0, 1],
+                    "origRating": [1000, 1534],
+                    "newRating": [965, 1538]
+                },
+                {
+                    "id": "10-7",
+                    "players": [10, 7],
+                    "result": [1, 0],
+                    "origRating": [1200, 1242],
+                    "newRating": [1648, 1167]
+                },
+                {
+                    "id": "11-9",
+                    "players": [11, 9],
+                    "result": [0, 1],
+                    "origRating": [1150, 1250],
+                    "newRating": [862, 1538]
+                },
+                {
+                    "id": "8-6",
+                    "players": [8, 6],
+                    "result": [1, 0],
+                    "origRating": [983, 1205],
+                    "newRating": [1087, 1101]
+                }
+            ]
+        ]
+    }
 ]

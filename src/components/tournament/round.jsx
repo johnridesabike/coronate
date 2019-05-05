@@ -1,16 +1,17 @@
 // @ts-check
-import React, {Fragment, useState, useContext} from "react";
+import React, {useState, useContext} from "react";
 import {Menu, MenuList, MenuButton, MenuItem} from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
 import VisuallyHidden from "@reach/visually-hidden";
 import numeral from "numeral";
 import curry from "ramda/src/curry";
-import {OpenButton, PanelContainer, Panel, BackButton} from "../utility";
+import {InfoButton, PanelContainer, Panel, BackButton} from "../utility";
 import {getPlayerById, calcNewRatings, dummyPlayer} from "../../data/player";
 import {genPlayerData} from "../../pairing-scoring/scoring";
 import {BLACK, WHITE} from "../../data/constants";
 import {getById, getIndexById} from "../../data/utility";
 import {DataContext} from "../../state/global-state";
+import style from "./round.module.css";
 
 /**
  * @param {Object} props
@@ -19,55 +20,12 @@ import {DataContext} from "../../state/global-state";
  */
 export default function Round({roundId, tourneyId}) {
     const {data, dispatch} = useContext(DataContext);
-    // const playerList = data.players;
     const getPlayer = curry(getPlayerById)(data.players);
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {number} */
     const defaultMatch = null;
     const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
-    /** @type {number[]} */
-    const defaultPlayers = [];
-    const [selectedPlayers, setSelectedPlayers] = useState(defaultPlayers);
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
-    function selectPlayer(event) {
-        const pId = Number(event.target.value);
-        if (event.target.checked) {
-            setSelectedPlayers(function(prevState) {
-                // stop React from adding an ID twice in a row
-                if (!prevState.includes(pId)) {
-                    prevState.push(pId);
-                }
-                // ensure that only the last two players stay selected.
-                return prevState.slice(-2);
-            });
-        } else {
-            setSelectedPlayers(selectedPlayers.filter((id) => id !== pId));
-        }
-    }
-    const matched = matchList.reduce(
-        (acc, match) => acc.concat(match.players),
-        []
-    );
-    const unMatched = tourney.players.filter((pId) => !matched.includes(pId));
-    /** @param {number[]} unpairedPlayers */
-    function autoPair(unpairedPlayers) {
-        dispatch({
-            type: "AUTO_PAIR",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            unpairedPlayers: unpairedPlayers
-        });
-    }
-    /** @param {number[]} pair */
-    function manualPair(pair) {
-        dispatch({
-            type: "MANUAL_PAIR",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            pair: pair
-        });
-    }
     /**
      * @param {number} matchId
      * @param {[number, number]} result
@@ -120,7 +78,7 @@ export default function Round({roundId, tourneyId}) {
         if (match.result.reduce((a, b) => a + b) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
-            match.players.forEach(function(pId, color) {
+            match.players.forEach(function (pId, color) {
                 dispatch({
                     type: "SET_PLAYER_MATCHCOUNT",
                     id: pId,
@@ -195,18 +153,18 @@ export default function Round({roundId, tourneyId}) {
                         Move down
                     </button>
                 </div>
-                <table className="table__roster">
+                <table className={style.table}>
                     <caption>Round {roundId + 1} results</caption>
-                    <thead>
-                        <tr>
-                            <th className="row__id">#</th>
-                            <th className="row__player">White</th>
-                            <th className="row__result">Result</th>
-                            <th className="row__player">Black</th>
-                            <th className="row__controls" />
-                        </tr>
-                    </thead>
                     <tbody>
+                        <tr>
+                            <th className="row__id" scope="col">#</th>
+                            <th className="row__player" scope="col">White</th>
+                            <th className="row__player" scope="col">Black</th>
+                            <th className="row__result" scope="col">Result</th>
+                            <th className="row__controls" scope="col">
+                                Controls
+                            </th>
+                        </tr>
                         {matchList.map((match, pos) => (
                             <MatchRow
                                 key={match.id}
@@ -241,54 +199,10 @@ export default function Round({roundId, tourneyId}) {
                         </Panel>
                     </PanelContainer>
                 )}
-                {unMatched.length > 0 && (
-                    <Fragment>
-                        <h3>Unmatched players</h3>
-                        <ul>
-                            {unMatched.map((pId) => (
-                                <li key={pId}>
-                                    <input
-                                        id={pId}
-                                        type="checkbox"
-                                        checked={selectedPlayers.includes(pId)}
-                                        value={pId}
-                                        onChange={selectPlayer}
-                                    />{" "}
-                                    <label htmlFor={pId}>
-                                        {getPlayer(pId).firstName}{" "}
-                                        {getPlayer(pId).lastName}
-                                    </label>
-                                </li>
-                            ))}
-                            {unMatched.length % 2 !== 0 && (
-                                <li>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedPlayers.includes(
-                                            dummyPlayer.id
-                                        )}
-                                        value={dummyPlayer.id}
-                                        onChange={selectPlayer}
-                                    />
-                                    {dummyPlayer.firstName}{" "}
-                                    {dummyPlayer.lastName}
-                                </li>
-                            )}
-                        </ul>
-                        <button
-                            onClick={() => manualPair(selectedPlayers)}
-                            disabled={selectedPlayers.length !== 2}
-                        >
-                            Pair checked
-                        </button>{" "}
-                        <button
-                            onClick={() => autoPair(unMatched)}
-                            disabled={unMatched.length === 0}
-                        >
-                            Auto-pair
-                        </button>
-                    </Fragment>
-                )}
+                <PairPicker
+                    tourneyId={tourneyId}
+                    roundId={roundId}
+                />
             </Panel>
         </PanelContainer>
     );
@@ -306,17 +220,19 @@ function MatchRow({
     const whiteWon = match.result[0] > match.result[1];
     const blackWon = match.result[1] > match.result[0];
     const draw = match.result.every((x) => x === 0.5);
-    const whiteName =
-        getPlayer(match.players[0]).firstName +
-        " " +
-        getPlayer(match.players[0]).lastName;
-    const blackName =
-        getPlayer(match.players[1]).firstName +
-        " " +
-        getPlayer(match.players[1]).lastName;
+    const whiteName = (
+        getPlayer(match.players[0]).firstName
+        + " "
+        + getPlayer(match.players[0]).lastName
+    );
+    const blackName = (
+        getPlayer(match.players[1]).firstName
+        + " "
+        + getPlayer(match.players[1]).lastName
+    );
     return (
         <tr>
-            <td className="table__number row__id">{pos + 1}</td>
+            <th className="table__number row__id" scope="row">{pos + 1}</th>
             <td className="table__player row__player">
                 {whiteName}{" "}
                 {whiteWon && (
@@ -325,11 +241,6 @@ function MatchRow({
                     </span>
                 )}
             </td>
-            <td className="data__input row__result">
-                {whiteWon && "White"}
-                {blackWon && "Black"}
-                {draw && "Draw"}
-            </td>
             <td className="table__player row__player">
                 {blackName}{" "}
                 {blackWon && (
@@ -337,6 +248,11 @@ function MatchRow({
                         🏆
                     </span>
                 )}
+            </td>
+            <td className="row__result">
+                {whiteWon && "White won"}
+                {blackWon && "Black won"}
+                {draw && "Draw"}
             </td>
             <td className="data__input row__controls">
                 <Menu>
@@ -369,7 +285,7 @@ function MatchRow({
                     </MenuList>
                 </Menu>{" "}
                 {selectedMatch !== match.id ? (
-                    <OpenButton action={() => setSelectedMatch(match.id)} />
+                    <InfoButton action={() => setSelectedMatch(match.id)} />
                 ) : (
                     <BackButton action={() => setSelectedMatch(null)} />
                 )}
@@ -437,5 +353,92 @@ function PlayerMatchInfo({match, color, tourneyId, roundId}) {
                 </ol>
             </dd>
         </dl>
+    );
+}
+
+function PairPicker({tourneyId, roundId}) {
+    const {data, dispatch} = useContext(DataContext);
+    const getPlayer = curry(getPlayerById)(data.players);
+    const tourney = data.tourneys[tourneyId];
+    const matchList = tourney.roundList[roundId];
+    /** @type {number[]} */
+    const defaultPlayers = [];
+    const [selectedPlayers, setSelectedPlayers] = useState(defaultPlayers);
+    /** @param {React.ChangeEvent<HTMLInputElement>} event */
+    function selectPlayer(event) {
+        const pId = Number(event.target.value);
+        if (event.target.checked) {
+            setSelectedPlayers(function (prevState) {
+                // stop React from adding an ID twice in a row
+                if (!prevState.includes(pId)) {
+                    prevState.push(pId);
+                }
+                // ensure that only the last two players stay selected.
+                return prevState.slice(-2);
+            });
+        } else {
+            setSelectedPlayers(selectedPlayers.filter((id) => id !== pId));
+        }
+    }
+    const matched = matchList.reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    );
+    const unMatched = tourney.players.filter((pId) => !matched.includes(pId));
+    return (
+        <div>
+            <h3>Unmatched players</h3>
+            <ul>
+                {unMatched.map((pId) => (
+                    <li key={pId}>
+                        <input
+                            id={pId}
+                            type="checkbox"
+                            checked={selectedPlayers.includes(pId)}
+                            value={pId}
+                            onChange={selectPlayer}
+                        />{" "}
+                        <label htmlFor={pId}>
+                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                        </label>
+                    </li>
+                ))}
+                {unMatched.length % 2 !== 0 && (
+                    <li>
+                        <input
+                            type="checkbox"
+                            checked={selectedPlayers.includes(
+                                dummyPlayer.id
+                            )}
+                            value={dummyPlayer.id}
+                            onChange={selectPlayer}
+                        />
+                        {dummyPlayer.firstName} {dummyPlayer.lastName}
+                    </li>
+                )}
+            </ul>
+            <button
+                onClick={() => dispatch({
+                    type: "MANUAL_PAIR",
+                    tourneyId: tourneyId,
+                    roundId: roundId,
+                    pair: selectedPlayers
+                })}
+                disabled={selectedPlayers.length !== 2}
+            >
+                Pair checked
+            </button>{" "}
+            <button
+                onClick={() => dispatch({
+                    type: "AUTO_PAIR",
+                    tourneyId: tourneyId,
+                    roundId: roundId,
+                    unpairedPlayers: unMatched
+                })}
+                disabled={unMatched.length === 0}
+            >
+                Auto-pair
+            </button>
+        </div>
     );
 }

@@ -2,7 +2,7 @@
 import React, {Fragment, useState, useContext} from "react";
 import {OpenButton} from "../utility";
 import {createPlayer} from "../../data/player";
-import {DataContext} from "../../state/global-state";
+import {DataContext} from "../../state/global-state"; 
 
 /**
  * @param {Object} props
