@@ -19,14 +19,17 @@ const robinInfo = (
         <PlayerInfoBox playerId={1} />
     </TestApp>
 );
+/** @param {JSX.Element} node */
 function getRating(node) {
     return getNodeText(render(node).getByLabelText(/rating/i));
 }
+/** @param {JSX.Element} node */
 function getMatchCount(node) {
     return getNodeText(render(node).getByLabelText(/matches played/i));
 }
-
+/** @type {string} */
 let origRatingBatman;
+/** @type {string} */
 let origRatingRobin;
 
 it("Original ratings are shown correctly.", function () {

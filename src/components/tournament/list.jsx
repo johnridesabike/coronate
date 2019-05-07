@@ -63,12 +63,15 @@ export default function TournamentList() {
                 <form onSubmit={makeTournament}>
                     <fieldset>
                         <legend>Make a new tournament</legend>
-                        <input
-                            type="text"
-                            placeholder="tournament name"
-                            value={newTourneyName}
-                            onChange={updateNewName}
-                            required={true}/>
+                        <label>Name{" "}
+                            <input
+                                type="text"
+                                placeholder="tournament name"
+                                value={newTourneyName}
+                                onChange={updateNewName}
+                                required={true}
+                            />
+                        </label>
                         <input type="submit" value="Create" />
                     </fieldset>
                 </form>
