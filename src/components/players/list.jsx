@@ -1,4 +1,3 @@
-// @ts-check
 import React, {Fragment, useState, useContext} from "react";
 import {OpenButton} from "../utility";
 import {createPlayer} from "../../data/player";
@@ -23,7 +22,7 @@ export default function PlayerList({setOpenPlayer}) {
         newPlayer.id = nextId;
         setNextId((prevId) => prevId + 1);
         setNewPlayerdata(newPlayerDefault);
-        dispatch({type: "ADD_PLAYER", newPlayer: newPlayer});
+        dispatch({type: "ADD_PLAYER", newPlayer});
     };
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
@@ -39,7 +38,7 @@ export default function PlayerList({setOpenPlayer}) {
      */
     const delPlayer = function (event, id) {
         event.preventDefault();
-        dispatch({type: "DEL_PLAYER", id: id});
+        dispatch({type: "DEL_PLAYER", id});
     };
     let rosterTable = <Fragment></Fragment>;
     if (data.players.length > 0) {

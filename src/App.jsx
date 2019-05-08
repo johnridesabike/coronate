@@ -1,4 +1,3 @@
-// @ts-check
 import React, {useReducer} from "react";
 import "./App.css";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";

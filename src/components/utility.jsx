@@ -1,4 +1,3 @@
-// @ts-check
 import React, {useReducer} from "react";
 import {dataReducer, defaultData, DataContext} from "../state/global-state";
 
@@ -23,23 +22,11 @@ export const OpenButton = ({action}) => (
     <Button action={action}>Open &gt;</Button>
 );
 
-/** @param {{action: Action}} props */
-export const InfoButton = ({action}) => (
-    <Button action={action}>Info</Button>
-);
+// /** @param {{action: Action}} props */
+// export const InfoButton = ({action}) => (
+//     <Button action={action}>Info</Button>
+// );
 
-/**
- * @param {*[]} arr
- * @param {number} pos
- * @param {number} dir
- */
-export function moveArrItem(arr, pos, dir) {
-    const newPos = pos + dir;
-    const newArr = [...arr];
-    const movedMethod = newArr.splice(pos, 1)[0];
-    newArr.splice(newPos, 0, movedMethod);
-    return newArr;
-}
 
 /**
  * @param {object} props

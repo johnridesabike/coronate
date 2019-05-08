@@ -1,4 +1,3 @@
-// @ts-check
 import curry from "ramda/src/curry";
 import {BLACK, WHITE} from "../data/constants";
 import createMatch from "../data/match";

@@ -2,8 +2,8 @@ import React from "react";
 import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
 import dashify from "dashify";
-import {TestApp} from "../components/utility";
-import Scores from "../components/tournament/scores";
+import {TestApp} from "../utility";
+import Scores from "../tournament/scores";
 
 afterEach(cleanup);
 
@@ -13,6 +13,7 @@ it("The tie break scores calculate correctly", function () {
             <Scores tourneyId={0} />
         </TestApp>
     );
+    /** @param {string} score */
     const batman = (score) => getByTestId(dashify("Bruce Wayne " + score));
     expect(batman("Modified median")).toHaveTextContent("4");
     expect(batman("Solkoff")).toHaveTextContent("7½");

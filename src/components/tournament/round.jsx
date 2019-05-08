@@ -1,11 +1,16 @@
-// @ts-check
 import React, {useState, useContext} from "react";
 import {Menu, MenuList, MenuButton, MenuItem} from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
 import VisuallyHidden from "@reach/visually-hidden";
 import numeral from "numeral";
 import curry from "ramda/src/curry";
-import {InfoButton, PanelContainer, Panel, BackButton} from "../utility";
+import Repeat from "react-feather/dist/icons/repeat";
+import Trash from "react-feather/dist/icons/trash-2";
+import ArrowUp from "react-feather/dist/icons/arrow-up";
+import ArrowDown from "react-feather/dist/icons/arrow-down";
+import More from "react-feather/dist/icons/more-horizontal";
+import Close from "react-feather/dist/icons/x";
+import {PanelContainer, Panel} from "../utility";
 import {getPlayerById, calcNewRatings, dummyPlayer} from "../../data/player";
 import {genPlayerData} from "../../pairing-scoring/scoring";
 import {BLACK, WHITE} from "../../data/constants";
@@ -45,22 +50,12 @@ export default function Round({roundId, tourneyId}) {
                 });
             });
         }
-        dispatch({
-            type: "DEL_MATCH",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            matchId: matchId
-        });
+        dispatch({type: "DEL_MATCH", tourneyId, roundId, matchId});
         setSelectedMatch(null);
     }
     /** @param {string} matchId */
     function swapColors(matchId) {
-        dispatch({
-            type: "SWAP_COLORS",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            matchId: matchId
-        });
+        dispatch({type: "SWAP_COLORS", tourneyId, roundId, matchId});
     }
     /**
      * @param {string} matchId
@@ -68,14 +63,13 @@ export default function Round({roundId, tourneyId}) {
      */
     function moveMatch(matchId, direction) {
         const matchesRef = data.tourneys[tourneyId].roundList[roundId];
-        const mIndex = getIndexById(matchesRef, matchId);
-        dispatch({
-            type: "MOVE_MATCH",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            oldIndex: mIndex,
-            newIndex: mIndex + direction
-        });
+        const oldIndex = getIndexById(matchesRef, matchId);
+        const newIndex = (
+            (oldIndex + direction >= 0)
+            ? oldIndex + direction
+            : 0
+        );
+        dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
     }
     return (
         <PanelContainer>
@@ -86,39 +80,58 @@ export default function Round({roundId, tourneyId}) {
                         onClick={() => unMatch(selectedMatch)}
                         disabled={selectedMatch === null}
                     >
-                        Unmatch
+                        <Trash />
+                        <VisuallyHidden>Unmatch</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => swapColors(selectedMatch)}
                         disabled={selectedMatch === null}
                     >
-                        Swap colors
+                        <Repeat />
+                        <VisuallyHidden>Swap colors</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => moveMatch(selectedMatch, -1)}
                         disabled={selectedMatch === null}
                     >
-                        Move up
+                        <ArrowUp />
+                        <VisuallyHidden>Move up</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => moveMatch(selectedMatch, 1)}
                         disabled={selectedMatch === null}
                     >
-                        Move down
+                        <ArrowDown/>
+                        <VisuallyHidden>Move down</VisuallyHidden>
                     </button>
                 </div>
+                {(matchList.length === 0) &&
+                    <p>No players matched yet.</p>
+                }
                 <table className={style.table}>
-                    <caption>Round {roundId + 1} results</caption>
+                    {(matchList.length > 0) &&
+                        <caption>Round {roundId + 1} results</caption>
+                    }
                     <tbody>
-                        <tr>
-                            <th className="row__id" scope="col">#</th>
-                            <th className="row__player" scope="col">White</th>
-                            <th className="row__player" scope="col">Black</th>
-                            <th className="row__result" scope="col">Result</th>
-                            <th className="row__controls" scope="col">
-                                Controls
-                            </th>
-                        </tr>
+                        {(matchList.length > 0) &&
+                            <tr>
+                                <th className="row__id" scope="col">
+                                    #
+                                </th>
+                                <th className="row__player" scope="col">
+                                    White
+                                </th>
+                                <th className="row__player" scope="col">
+                                    Black
+                                </th>
+                                <th className="row__result" scope="col">
+                                    Result
+                                </th>
+                                <th className="row__controls" scope="col">
+                                    Controls
+                                </th>
+                            </tr>
+                        }
                         {matchList.map((match, pos) => (
                             <MatchRow
                                 key={match.id}
@@ -237,20 +250,22 @@ function MatchRow({
                 matchCount: black.matchCount + 1
             });
         }
-        // setPlayerList([...playerList]);
         dispatch({
             type: "SET_MATCH_RESULT",
-            tourneyId: tourneyId,
-            roundId: roundId,
-            matchId: matchId,
-            result: result,
-            newRating: newRating
+            tourneyId,
+            roundId,
+            matchId,
+            result,
+            newRating
         });
     }
     return (
         <tr>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
-            <td className="table__player row__player">
+            <td
+                className="table__player row__player"
+                data-testid={`match-${pos}-white`}
+            >
                 {whiteName}{" "}
                 {whiteWon && (
                     <span role="img" aria-label="Winner">
@@ -258,7 +273,10 @@ function MatchRow({
                     </span>
                 )}
             </td>
-            <td className="table__player row__player">
+            <td
+                className="table__player row__player"
+                data-testid={`match-${pos}-black`}
+            >
                 {blackName}{" "}
                 {blackWon && (
                     <span role="img" aria-label="Winner">
@@ -292,20 +310,28 @@ function MatchRow({
                         >
                             {blackName} won
                         </MenuItem>
-                        <MenuItem
-                            onSelect={() =>
-                                setMatchResult(match.id, [0.5, 0.5])
-                            }
-                        >
+                        <MenuItem onSelect={() =>
+                            setMatchResult(match.id, [0.5, 0.5])
+                        }>
                             Draw
                         </MenuItem>
                     </MenuList>
                 </Menu>{" "}
-                {selectedMatch !== match.id ? (
-                    <InfoButton action={() => setSelectedMatch(match.id)} />
-                ) : (
-                    <BackButton action={() => setSelectedMatch(null)} />
-                )}
+                {(selectedMatch !== match.id)
+                ?
+                    <button onClick={() => setSelectedMatch(match.id)}>
+                        <More />
+                        <VisuallyHidden>
+                            More information and options for {whiteName} versus
+                            {" "}{blackName}
+                        </VisuallyHidden>
+                    </button>
+                :
+                    <button onClick={() => setSelectedMatch(null)}>
+                        <Close/>
+                        <VisuallyHidden>Close information.</VisuallyHidden>
+                    </button>
+                }
             </td>
         </tr>
     );
@@ -414,6 +440,9 @@ function PairPicker({tourneyId, roundId}) {
         []
     );
     const unMatched = tourney.players.filter((pId) => !matched.includes(pId));
+    if (unMatched.length === 0) {
+        return null;
+    }
     return (
         <div>
             <h3>Unmatched players</h3>
@@ -449,9 +478,9 @@ function PairPicker({tourneyId, roundId}) {
             <button
                 onClick={() => dispatch({
                     type: "MANUAL_PAIR",
-                    tourneyId: tourneyId,
-                    roundId: roundId,
-                    pair: selectedPlayers
+                    pair: selectedPlayers,
+                    tourneyId,
+                    roundId
                 })}
                 disabled={selectedPlayers.length !== 2}
             >
@@ -460,9 +489,9 @@ function PairPicker({tourneyId, roundId}) {
             <button
                 onClick={() => dispatch({
                     type: "AUTO_PAIR",
-                    tourneyId: tourneyId,
-                    roundId: roundId,
-                    unpairedPlayers: unMatched
+                    unpairedPlayers: unMatched,
+                    tourneyId,
+                    roundId
                 })}
                 disabled={unMatched.length === 0}
             >

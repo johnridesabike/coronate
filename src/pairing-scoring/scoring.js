@@ -1,4 +1,3 @@
-// @ts-check
 import {firstBy} from "thenby";
 import {
     dummyPlayer,

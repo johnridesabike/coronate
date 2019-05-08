@@ -20,14 +20,14 @@ export default function PlayerSelect({tourneyId}) {
         if (event.target.checked) {
             dispatch({
                 type: "SET_TOURNEY_PLAYERS",
-                tourneyId: tourneyId,
-                players: players.concat([id])
+                players: players.concat([id]),
+                tourneyId
             });
         } else {
             dispatch({
                 type: "SET_TOURNEY_PLAYERS",
-                tourneyId: tourneyId,
-                players: players.filter((pId) => pId !== id)
+                players: players.filter((pId) => pId !== id),
+                tourneyId
             });
         }
     }
@@ -65,7 +65,8 @@ export default function PlayerSelect({tourneyId}) {
                                 onClick={() =>
                                     dispatch({
                                         type: "SET_TOURNEY_PLAYERS",
-                                        players: data.players.map((p) => p.id)
+                                        players: data.players.map((p) => p.id),
+                                        tourneyId
                                     })
                                 }
                             >
@@ -75,7 +76,8 @@ export default function PlayerSelect({tourneyId}) {
                                 onClick={() =>
                                     dispatch({
                                         type: "SET_TOURNEY_PLAYERS",
-                                        players: []
+                                        players: [],
+                                        tourneyId
                                     })
                                 }
                             >
@@ -113,11 +115,11 @@ export default function PlayerSelect({tourneyId}) {
                                         onClick={() =>
                                             dispatch({
                                                 type: "SET_BYE_QUEUE",
-                                                tourneyId: tourneyId,
                                                 // eslint-disable-next-line max-len
                                                 byeQueue: tourney.byeQueue.concat(
                                                     [pId]
-                                                )
+                                                ),
+                                                tourneyId
                                             })
                                         }
                                         disabled={tourney.byeQueue.includes(
@@ -151,10 +153,10 @@ export default function PlayerSelect({tourneyId}) {
                                 onClick={() =>
                                     dispatch({
                                         type: "SET_BYE_QUEUE",
-                                        tourneyId: tourneyId,
                                         byeQueue: tourney.byeQueue.filter(
                                             (id) => pId !== id
-                                        )
+                                        ),
+                                        tourneyId
                                     })
                                 }
                             >

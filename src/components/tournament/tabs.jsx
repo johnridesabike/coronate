@@ -1,5 +1,4 @@
-// @ts-check
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round";
@@ -18,9 +17,19 @@ export default function TournamentTabs({tourneyId, backButton}) {
     const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
     function newRound() {
-        dispatch({type: "ADD_ROUND", tourneyId: tourneyId});
+        dispatch({type: "ADD_ROUND", tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }
+    useEffect(
+        function () {
+            const origTitle = document.title;
+            document.title = tourney.name;
+            return function () {
+                document.title = origTitle;
+            };
+        },
+        [tourney.name]
+    );
     return (
         <Tabs defaultIndex={defaultTab}>
             <div>
@@ -32,10 +41,7 @@ export default function TournamentTabs({tourneyId, backButton}) {
                 <button
                     className="danger"
                     onClick={() =>
-                        dispatch({
-                            type: "DEL_LAST_ROUND",
-                            tourneyId: tourneyId
-                        })
+                        dispatch({type: "DEL_LAST_ROUND", tourneyId})
                     }
                     disabled={tourney.roundList.length === 0}
                 >

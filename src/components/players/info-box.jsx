@@ -1,4 +1,3 @@
-// @ts-check
 import React, {useState, useEffect, useContext} from "react";
 import numeral from "numeral";
 import curry from "ramda/src/curry";

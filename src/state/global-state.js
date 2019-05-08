@@ -1,8 +1,7 @@
-// @ts-check
 import {createContext} from "react";
 import last from "ramda/src/last";
 import curry from "ramda/src/curry";
-import arrayMove from "array-move";
+import move from "ramda/src/move";
 import {createPlayer, getPlayerById} from "../data/player";
 import {getById} from "../data/utility";
 import defaultOptions from "./demo-options.json";
@@ -139,10 +138,10 @@ function dataReducer(state, action) {
         );
         return Object.assign({}, state);
     case "MOVE_TIEBREAK":
-        tourneys[action.tourneyId].tieBreaks = arrayMove(
-            tourneys[action.tourneyId].tieBreaks,
+        tourneys[action.tourneyId].tieBreaks = move(
             action.oldIndex,
-            action.newIndex
+            action.newIndex,
+            tourneys[action.tourneyId].tieBreaks
         );
         return Object.assign({}, state);
     case "SET_TOURNEY_PLAYERS":
@@ -194,10 +193,10 @@ function dataReducer(state, action) {
         swapColors(state, action.tourneyId, action.roundId, action.matchId);
         return Object.assign({}, state);
     case "MOVE_MATCH":
-        tourneys[action.tourneyId].roundList[action.roundId] = arrayMove(
-            tourneys[action.tourneyId].roundList[action.roundId],
+        tourneys[action.tourneyId].roundList[action.roundId] = move(
             action.oldIndex,
-            action.newIndex
+            action.newIndex,
+            tourneys[action.tourneyId].roundList[action.roundId]
         );
         return Object.assign({}, state);
     default:

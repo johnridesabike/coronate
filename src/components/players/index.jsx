@@ -1,4 +1,3 @@
-// @ts-check
 import React, {useState} from "react";
 import PlayerList from "./list";
 import PlayerInfoBox from "./info-box";

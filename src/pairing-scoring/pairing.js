@@ -1,4 +1,3 @@
-// @ts-check
 import {firstBy} from "thenby";
 import splitAt from "ramda/src/splitAt";
 import last from "ramda/src/last";

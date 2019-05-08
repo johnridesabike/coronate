@@ -4,7 +4,7 @@ import numeral from "numeral";
 import dashify from "dashify";
 import {PanelContainer, Panel} from "../utility";
 import {dummyPlayer, getPlayerById} from "../../data/player";
-import {DataContext} from "state/global-state";
+import {DataContext} from "../../state/global-state";
 import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 
@@ -15,7 +15,9 @@ numeral.register("format", "half", {
         unformat: /(1\/2)/
     },
     format: function (value, format, roundingFunction) {
+        /** @type {number | string} */
         let whole = Math.floor(value);
+        /** @type {number | string} */
         let remainder = value - whole;
         if (remainder === 0.5) {
             remainder = "½";
@@ -28,6 +30,9 @@ numeral.register("format", "half", {
         // let output = numeral._.numberToFormat(value, format, roundingFunction);
         // return output;
         return String(whole) + remainder;
+    },
+    unformat: function (value) {
+        return Number(value); // doesn't work... todo?
     }
 });
 
@@ -110,6 +115,10 @@ function ScoreList({tourneyId}) {
     );
 }
 
+/**
+ * @param {Object} props
+ * @param {number} props.tourneyId
+ */
 function SelectTieBreaks({tourneyId}) {
     const {data, dispatch} = useContext(DataContext);
     const tourney = data.tourneys[tourneyId];
@@ -121,9 +130,9 @@ function SelectTieBreaks({tourneyId}) {
         }
         const tieBreaks = data.tourneys[tourneyId].tieBreaks;
         if (tieBreaks.includes(id)) {
-            dispatch({type: "DEL_TIEBREAK", id: id, tourneyId: tourneyId});
+            dispatch({type: "DEL_TIEBREAK", id, tourneyId});
         } else {
-            dispatch({type: "ADD_TIEBREAK", id: id, tourneyId: tourneyId});
+            dispatch({type: "ADD_TIEBREAK", id, tourneyId});
         }
     }
     /** @param {number} direction */
@@ -131,9 +140,9 @@ function SelectTieBreaks({tourneyId}) {
         const index = data.tourneys[tourneyId].tieBreaks.indexOf(selectedTb);
         dispatch({
             type: "MOVE_TIEBREAK",
-            tourneyId: tourneyId,
             oldIndex: index,
-            newIndex: index + direction
+            newIndex: index + direction,
+            tourneyId
         });
     }
     return (
@@ -209,6 +218,10 @@ function SelectTieBreaks({tourneyId}) {
     );
 }
 
+/**
+ * @param {Object} props
+ * @param {number} props.tourneyId
+ */
 const Scores = ({tourneyId}) => (
     <PanelContainer>
         <Panel>

@@ -1,4 +1,3 @@
-// @ts-check
 import EloRank from "elo-rank";
 import {WHITE, BLACK} from "./constants";
 /**

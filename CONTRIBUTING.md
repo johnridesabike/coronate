@@ -14,6 +14,14 @@ This project is built using Node.js and React, so familiarity with those will co
 - Write documentation.
 - Finalize specification for data storage (see existing JSON files in `src/state/` for examples of what they'll look like).
 
+## Test coverage to-dos
+
+- When players are auto-paired, and there's a bye-queue, the next player on the bye-queue gets paired with the dummy player.
+- When players are auto-paired without the bye-queue, the lowest-ranking, lowest-rated player get paired with the dummy player.
+- There is only ever one dummy player per round.
+- No player plays the dummy player more than once per tournament.
+- Removing a round resets all of the matches within the round.
+
 ## React
 
 - This was my first React project, and it shows. I already rewrote it once to correct my bad practices, but it still needs a lot of work. Any advice or help on improving the JSX code is appreciated!

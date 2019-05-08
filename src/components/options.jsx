@@ -1,4 +1,3 @@
-// @ts-check
 import React, {useContext} from "react";
 import {DataContext} from "../state/global-state";
 
