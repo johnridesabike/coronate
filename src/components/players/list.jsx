@@ -1,13 +1,14 @@
 import React, {Fragment, useState, useContext} from "react";
-import {OpenButton} from "../utility";
+import {Link} from "@reach/router";
+import VisuallyHidden from "@reach/visually-hidden";
+import ChevronRight from "react-feather/dist/icons/chevron-right";
 import {createPlayer} from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
 /**
  * @param {Object} props
- * @param {React.Dispatch<React.SetStateAction<number>>} props.setOpenPlayer
  */
-export default function PlayerList({setOpenPlayer}) {
+export default function PlayerList(props) {
     const {data, dispatch} = useContext(DataContext);
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
@@ -66,11 +67,19 @@ export default function PlayerList({setOpenPlayer}) {
                                 delPlayer(event, player.id)
                             }>
                             delete
+                            <VisuallyHidden>
+                                {" "}{player.firstName} {player.lastName}
+                            </VisuallyHidden>
                         </button>
                     </td>
                     <td>
-                        <OpenButton
-                            action={() => setOpenPlayer(player.id)} />
+                        <Link to={String(player.id)}>
+                            Open
+                            <VisuallyHidden>
+                                {" "}{player.firstName} {player.lastName}
+                            </VisuallyHidden>
+                            {" "}<ChevronRight />
+                        </Link>
                     </td>
                 </tr>
             )}</tbody>

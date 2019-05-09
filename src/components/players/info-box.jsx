@@ -1,18 +1,19 @@
 import React, {useState, useEffect, useContext} from "react";
 import numeral from "numeral";
 import curry from "ramda/src/curry";
-import {BackButton} from "../utility";
+import {Link} from "@reach/router";
+import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import {getPlayerById, getPlayerAvoidList, kFactor} from "../../data/player";
 import {DataContext} from "../../state/global-state";
 
 /**
  * @param {Object} props
- * @param {number} props.playerId
- * @param {React.Dispatch<React.SetStateAction<number>>} [props.setOpenPlayer]
+ * @param {string | number} [props.playerId]
+ * @param {string} [props.path]
  */
-export default function PlayerInfoBox({playerId, setOpenPlayer}) {
+export default function PlayerInfoBox(props) {
+    const playerId = Number(props.playerId);
     const {data, dispatch} = useContext(DataContext);
-    // const playerList = data.players;
     const getPlayer = curry(getPlayerById)(data.players);
     const avoidList = data.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
@@ -43,7 +44,7 @@ export default function PlayerInfoBox({playerId, setOpenPlayer}) {
     );
     return (
         <div>
-            <BackButton action={() => setOpenPlayer(null)} />
+            <Link to="/players"><ChevronLeft /> Back</Link>
             <h2>
                 {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
             </h2>

@@ -17,6 +17,7 @@
     "@reach/tabs": "^0.1.5",
     "@reach/tooltip": "^0.2.0",
     "@reach/visually-hidden": "^0.1.4",
+    "classnames": "^2.2.6",
     "dashify": "^2.0.0",
     "edmonds-blossom": "^1.0.0",
     "elo-rank": "^1.0.3",
@@ -55,6 +56,7 @@
     "@types/elo-rank": "^1.0.0",
     "@types/jest": "^24.0.12",
     "@types/numeral": "0.0.25",
+    "@types/reach__router": "^1.2.4",
     "@types/react": "^16.8.17",
     "@types/react-tabs": "^2.3.1",
     "gh-pages": "^2.0.1"

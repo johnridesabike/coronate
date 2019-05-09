@@ -63,3 +63,7 @@ input {
 .disabled {
     opacity: 0.5;
 }
+
+svg {
+    vertical-align: middle;
+}
