@@ -2,7 +2,10 @@ import React, {useState} from "react";
 import PlayerList from "./list";
 import PlayerInfoBox from "./info-box";
 
-export default function PlayerView() {
+/**
+ * @param {Object} props
+ */
+export default function PlayerView(props) {
     /** @type {number} */
     const defaultOpen = null;
     const [openPlayer, setOpenPlayer] = useState(defaultOpen);

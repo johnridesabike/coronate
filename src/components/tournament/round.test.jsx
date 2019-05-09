@@ -4,7 +4,7 @@ import "jest-dom/extend-expect";
 import "../../__mocks__/getComputedStyle.mock";
 import PlayerInfoBox from "../players/info-box";
 import Round from "../tournament/round";
-import TournamentTabs from "../tournament/tabs";
+import Tournament from "./tournament";
 import {TestApp} from "../utility";
 
 afterEach(cleanup);
@@ -48,7 +48,7 @@ it("Original match counts are shown correctly.", function () {
 it("Ratings are updated after a match is scored.", function () {
     const container = render(
         <TestApp>
-            <TournamentTabs tourneyId={1} />
+            <Tournament tourneyId={1} />
         </TestApp>
     );
     fireEvent.click(container.getByText("New round"));

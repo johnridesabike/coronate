@@ -1,17 +1,20 @@
 import React, {useContext, useState, useEffect} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
+import {Link} from "@reach/router";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round";
 import PlayerSelect from "./player-select";
 import {DataContext} from "../../state/global-state";
 import Scores from "./scores";
+import ChevronLeft from "react-feather/dist/icons/chevron-left";
+import "@reach/tabs/styles.css";
 
 /**
  * @param {Object} props
- * @param {number} props.tourneyId
- * @param {React.ReactNode} [props.backButton]
+ * @param {string} [props.path]
+ * @param {number} [props.tourneyId]
  */
-export default function TournamentTabs({tourneyId, backButton}) {
+export default function Tournament({tourneyId, path}) {
     const {data, dispatch} = useContext(DataContext);
     const tourney = data.tourneys[tourneyId];
     const players = tourney.players;
@@ -33,7 +36,9 @@ export default function TournamentTabs({tourneyId, backButton}) {
     return (
         <Tabs defaultIndex={defaultTab}>
             <div>
-                {backButton}
+                <Link to="/">
+                    <ChevronLeft/> Back
+                </Link>
                 <h2>{tourney.name}</h2>
                 Round progress: {tourney.roundList.length}/
                 {calcNumOfRounds(players.length)}{" "}

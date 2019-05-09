@@ -35,21 +35,3 @@ it("Deleting all tournaments displays a message", function () {
     fireEvent.click(getByText(/delete “the battle for gotham city”/i));
     expect(getByText(/No tournaments added yet./i)).toBeTruthy();
 });
-
-it("Opening a tournament works.", function () {
-    const {getByText} = render(
-        <TestApp><TournamentList/></TestApp>
-    );
-    fireEvent.click(getByText(/^wayne manor open$/i));
-    expect(document.title).toBe("Wayne Manor Open");
-});
-
-it("Closing a tournament works.", function () {
-    const {getByText, queryByText} = render(
-        <TestApp><TournamentList/></TestApp>
-    );
-    fireEvent.click(getByText(/^wayne manor open$/i));
-    fireEvent.click(getByText(/back/i));
-    expect(queryByText(/tournament list/i)).toBeInTheDocument();
-});
-

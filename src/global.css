@@ -1,25 +1,14 @@
 .app {
-    /* height: 100vh;
-    width: 100vw;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    grid-template-columns: 100%;
-    grid-template-areas: 
-      "header"
-      "content"
-      "footer"; */
     overflow: visible; /* required for position:sticky */
 }
 
 .header {
-    /* grid-area: header; */
     position: sticky;
     top: 0;
     background-color: lightgray !important;
 }
 
 .content {
-    /* grid-area: content; */
     padding: 1em;
     overflow: auto;
 }
@@ -30,21 +19,11 @@ h1 {
   text-align: center;
 }
 
-
-/* caption {
-  font-size: 1.125em;
-  font-weight: 700;
-} */
-
 .table__number {
   font-family: "Fira Code", source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   text-align: right;
 }
-
-/* td {
-    padding: 0 0.5em;
-} */
 
 .center {
   text-align: center;
@@ -63,18 +42,6 @@ li.inactive {
 textarea.json {
     font-family: "Fira Code", Menlo, Monaco, 'Courier New', monospace;
 }
-/* 
-.table__roster {
-    table-layout: auto;
-}
-
-th {
-    text-align: center;
-}
-
-td {
-  vertical-align: top;
-} */
 
 .data__input {
     text-align:center;
@@ -87,24 +54,6 @@ li.player.missing {
 button,
 input {
     font-size: 0.8em;
-}
-
-.tourney-select {
-    display: inline-block;
-    border: none;
-    padding: 0.25em 0.5em;
-    margin: 0;
-    background: none;
-    color: blue;
-    font: inherit;
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    border-bottom: solid 1px transparent;
-}
-
-.tourney-select:hover {
-    color: skyblue;
 }
 
 .danger:not([disabled]) {
