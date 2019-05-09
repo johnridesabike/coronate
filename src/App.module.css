@@ -4,6 +4,6 @@
     padding: 0.25em 0;
 }
 
-.current {
+.link[aria-current="page"] {
     border-bottom: 2px solid blue;
 }

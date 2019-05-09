@@ -2,12 +2,10 @@ import React, {useReducer} from "react";
 import {
     Router,
     Link,
-    Location,
     LocationProvider,
     createHistory
 } from "@reach/router";
 import createHashSource from "hash-source";
-import classnames from "classnames";
 import TournamentList from "./components/tournament/list";
 import Players from "./components/players/index";
 import PlayerList from "./components/players/list";
@@ -18,25 +16,11 @@ import {defaultData, dataReducer, DataContext} from "./state/global-state";
 import Tournament from "./components/tournament/tournament";
 import "./global.css";
 // @ts-ignore
-import {link, current} from "./App.module.css";
+import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
 // @ts-ignore
 let history = createHistory(source);
-
-/**
- * @param {import("@reach/router").WindowLocation} location
- * @param {string} path
- */
-function linkClasses(location, path) {
-    const isCurrent = (
-        location.pathname === path || location.pathname.slice(1) === path
-    );
-    return classnames(
-        link,
-        {[`${current}`]: isCurrent}
-    );
-}
 
 /**
  * @param {Object} props
@@ -56,36 +40,20 @@ function App() {
         <div className="app">
             <Caution />
             <LocationProvider history={history}>
-                <Location>
-                    {({location}) => (
-                        <nav className="header">
-                            <Link
-                                to="/"
-                                className={linkClasses(location, "/")}
-                            >
-                                Tournaments
-                            </Link>
-                            <Link
-                                to="players"
-                                className={linkClasses(location, "players")}
-                            >
-                                Players
-                            </Link>
-                            <Link
-                                to="options"
-                                className={linkClasses(location, "options")}
-                            >
-                                Options
-                            </Link>
-                            <Link
-                                to="about"
-                                className={linkClasses(location, "about")}
-                            >
-                                About
-                            </Link>
-                        </nav>
-                    )}
-                </Location>
+                <nav className="header">
+                    <Link to="/" className={link}>
+                        Tournaments
+                    </Link>
+                    <Link to="players" className={link}>
+                        Players
+                    </Link>
+                    <Link to="options" className={link}>
+                        Options
+                    </Link>
+                    <Link to="about" className={link}>
+                        About
+                    </Link>
+                </nav>
                 <main className="content">
                     <DataContext.Provider value={{data, dispatch}}>
                         <Router>

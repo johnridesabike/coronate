@@ -17,7 +17,6 @@
     "@reach/tabs": "^0.1.5",
     "@reach/tooltip": "^0.2.0",
     "@reach/visually-hidden": "^0.1.4",
-    "classnames": "^2.2.6",
     "dashify": "^2.0.0",
     "edmonds-blossom": "^1.0.0",
     "elo-rank": "^1.0.3",
