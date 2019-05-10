@@ -1,12 +1,12 @@
 import React, {useContext} from "react";
-import VisuallyHidden from "@reach/visually-hidden";
 import curry from "ramda/src/curry";
 import More from "react-feather/dist/icons/more-horizontal";
 import Close from "react-feather/dist/icons/x";
 import {getPlayerById, calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
-import {getById} from "../../../data/utility";
 import {DataContext} from "../../../state/global-state";
+// @ts-ignore
+import {winnerSelect} from "./round.module.css";
 
 /**
  * @typedef {import("../../../data").Match} Match
@@ -30,19 +30,17 @@ export default function MatchRow({
     setSelectedMatch
 }) {
     const {data, dispatch} = useContext(DataContext);
-    const tourney = data.tourneys[tourneyId];
     const getPlayer = curry(getPlayerById)(data.players);
-    const isWhiteWinner = match.result[0] > match.result[1];
-    const isBlackWinner = match.result[1] > match.result[0];
-    const isDraw = match.result.every((x) => x === 0.5);
     /** @type {string} */
     let resultCode;
-    if (isWhiteWinner) {
+    if (match.result[0] > match.result[1]) {
         resultCode = "WHITE";
-    } else if (isBlackWinner) {
+    } else if (match.result[1] > match.result[0]) {
         resultCode = "BLACK";
-    } else {
+    } else if (match.result.every((x) => x === 0.5)) {
         resultCode = "DRAW";
+    } else {
+        resultCode = "NOTSET";
     }
     const whiteName = (
         getPlayer(match.players[0]).firstName
@@ -59,7 +57,6 @@ export default function MatchRow({
      * @param {React.FocusEvent<HTMLSelectElement>} event
      */
     function setMatchResult(event) {
-        console.log(event.currentTarget.value);
         /** @type {[number, number]} */
         let result;
         switch (event.currentTarget.value) {
@@ -72,16 +69,22 @@ export default function MatchRow({
         case "DRAW":
             result = [0.5, 0.5];
             break;
+        case "NOTSET":
+            result = [0, 0];
+            break;
         default:
             throw new Error();
         }
-        const theMatch = getById(tourney.roundList[roundId], match.id);
-        const white = getPlayer(theMatch.players[WHITE]);
-        const black = getPlayer(theMatch.players[BLACK]);
-        const newRating = calcNewRatings(
-            theMatch.origRating,
-            [white.matchCount, black.matchCount],
-            result
+        const white = getPlayer(match.players[WHITE]);
+        const black = getPlayer(match.players[BLACK]);
+        const newRating = (
+            (event.currentTarget.value === "NOTSET")
+            ? match.origRating
+            : calcNewRatings(
+                match.origRating,
+                [white.matchCount, black.matchCount],
+                result
+            )
         );
         dispatch({
             type: "SET_PLAYER_RATING",
@@ -94,7 +97,7 @@ export default function MatchRow({
             rating: newRating[BLACK]
         });
         // if the result hasn't been scored yet, increment the matchCount
-        if (theMatch.result.reduce((a, b) => a + b) === 0) {
+        if (match.result.reduce((a, b) => a + b) === 0) {
             dispatch({
                 type: "SET_PLAYER_MATCHCOUNT",
                 id: white.id,
@@ -123,7 +126,7 @@ export default function MatchRow({
                 data-testid={`match-${pos}-white`}
             >
                 {whiteName}{" "}
-                {isWhiteWinner && (
+                {resultCode === "WHITE" && (
                     <span role="img" aria-label="Winner">
                         🏆
                     </span>
@@ -134,23 +137,23 @@ export default function MatchRow({
                 data-testid={`match-${pos}-black`}
             >
                 {blackName}{" "}
-                {isBlackWinner && (
+                {resultCode === "BLACK" && (
                     <span role="img" aria-label="Winner">
                         🏆
                     </span>
                 )}
             </td>
-            <td className="row__result">
-                {isWhiteWinner && "White won"}
-                {isBlackWinner && "Black won"}
-                {isDraw && "Draw"}
-            </td>
             <td className="data__input row__controls">
                 <select
                     onBlur={setMatchResult}
+                    onChange={setMatchResult}
                     disabled={match.players.includes(dummyPlayer.id)}
                     defaultValue={resultCode}
+                    className={winnerSelect}
                 >
+                    <option value="NOTSET">
+                        Select a winner
+                    </option>
                     <option value="WHITE">
                         {whiteName} won
                     </option>
@@ -161,21 +164,32 @@ export default function MatchRow({
                         Draw
                     </option>
                 </select>
+            </td>
+            <td className="data__input row__controls">
                 {(selectedMatch !== match.id)
-                ?
-                    <button onClick={() => setSelectedMatch(match.id)}>
+                ? (
+                    <button
+                        title={
+                            // eslint-disable-next-line max-len
+                            `Open information for ${whiteName} versus ${blackName}.`
+                        }
+                        aria-label={
+                            // eslint-disable-next-line max-len
+                            `Open information for ${whiteName} versus ${blackName}.`
+                        }
+                        onClick={() => setSelectedMatch(match.id)}
+                    >
                         <More />
-                        <VisuallyHidden>
-                            More information and options for {whiteName} versus
-                            {" "}{blackName}
-                        </VisuallyHidden>
                     </button>
-                :
-                    <button onClick={() => setSelectedMatch(null)}>
+                ) : (
+                    <button
+                        title="Close information."
+                        aria-label="Close information."
+                        onClick={() => setSelectedMatch(null)}
+                    >
                         <Close/>
-                        <VisuallyHidden>Close information.</VisuallyHidden>
                     </button>
-                }
+                )}
             </td>
         </tr>
     );

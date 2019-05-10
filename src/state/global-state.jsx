@@ -1,4 +1,4 @@
-import {createContext} from "react";
+import React, {createContext, useReducer, useMemo, useCallback} from "react";
 import last from "ramda/src/last";
 import curry from "ramda/src/curry";
 import move from "ramda/src/move";
@@ -31,6 +31,7 @@ export {defaultData};
  * @returns {GlobalState}
  */
 function dataReducer(state, action) {
+    console.log("dispatch'd", action);
     const {avoid, players, options, tourneys} = state;
     const getPlayer = curry(getPlayerById)(players);
     switch (action.type) {
@@ -210,3 +211,25 @@ export {dataReducer};
 const defaultContext = null;
 const DataContext = createContext(defaultContext);
 export {DataContext};
+
+// TODO the reducer is firing twice which leads to unexpected behavior (e.g.
+// "new round" will create two rounds). I'm investigating what's going on and
+// looking for ways to fix it.
+// https://stackoverflow.com/questions/54892403/usereducer-action-dispatched-twice
+
+function useDataReducer() {
+    const [data, dispatch] = useReducer(dataReducer, defaultData);
+    return [data, dispatch];
+}
+
+/**
+ * @param {Object} props
+ */
+export function DataProvider(props) {
+    const [data, dispatch] = useDataReducer();
+    return (
+        <DataContext.Provider value={{data, dispatch}}>
+            {props.children}
+        </DataContext.Provider>
+    );
+}

@@ -65,10 +65,8 @@ it("Ratings are updated after a match is scored.", function () {
     fireEvent.click(round.getByText("Bruce Wayne"));
     fireEvent.click(round.getByText("Dick Grayson"));
     fireEvent.click(round.getByText("Pair checked"));
-    fireEvent.click(
-        round.getByText("Set result for Bruce Wayne versus Dick Grayson")
-    );
-    fireEvent.click(round.getByText("Bruce Wayne won"));
+    // fireEvent.change(round.getByDisplayValue(/select a winner/i), {value: "WHITE"});
+    fireEvent.blur(round.getByDisplayValue(/select a winner/i));
     cleanup();
     const newRatingBatman = getRating(batmanInfo);
     cleanup();
@@ -82,32 +80,32 @@ it("Match counts are updated.", function () {
 });
 
 it("Swapping players colors works.", function () {
-    const {getByText, getByTestId} = render(
+    const {getByLabelText, getByTestId} = render(
         <TestApp>
             <Round tourneyId={1} roundId={1} />
         </TestApp>
     );
     fireEvent.click(
-        getByText(
-            /more information and options for Bruce Wayne versus Dick Grayson/i
+        getByLabelText(
+            /open information for Bruce Wayne versus Dick Grayson/i
         )
     );
-    fireEvent.click(getByText(/^swap colors$/i));
+    fireEvent.click(getByLabelText(/^swap colors$/i));
     expect(getByTestId("match-0-white")).toHaveTextContent(/dick grayson/i);
 });
 
 it("Unmatching players works.", function () {
-    const {getByText, queryByText} = render(
+    const {getByLabelText, queryByText} = render(
         <TestApp>
             <Round tourneyId={1} roundId={1} />
         </TestApp>
     );
     fireEvent.click(
-        getByText(
-            /more information and options for Dick Grayson versus Bruce Wayne/i
+        getByLabelText(
+            /open information for Dick Grayson versus Bruce Wayne/i
         )
     );
-    fireEvent.click(getByText(/^unmatch$/i));
+    fireEvent.click(getByLabelText(/^unmatch$/i));
     expect(queryByText(/No players matched yet./i)).toBeInTheDocument();
 });
 
@@ -144,28 +142,28 @@ it("Players are auto-paired correctly", function () {
 });
 
 it("Moving matches works.", function () {
-    const {getByText, getByTestId} = render(
+    const {getByLabelText, getByTestId} = render(
         <TestApp>
             <Round tourneyId={1} roundId={1} />
         </TestApp>
     );
     fireEvent.click(
-        getByText(
-            /more information and options for Bruce Wayne versus Harley Quinn/i
+        getByLabelText(
+            /open information for Bruce Wayne versus Harley Quinn/i
         )
     );
-    fireEvent.click(getByText(/^move up$/i)); // shouldn't change
+    fireEvent.click(getByLabelText(/^move up$/i)); // shouldn't change
     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
-    fireEvent.click(getByText(/^move down$/i));
+    fireEvent.click(getByLabelText(/^move down$/i));
     expect(getByTestId("match-1-white")).toHaveTextContent("Bruce Wayne");
-    fireEvent.click(getByText(/^move up$/i));
+    fireEvent.click(getByLabelText(/^move up$/i));
     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
     fireEvent.click(
-        getByText(
-            /more information and options for James Gordon versus Pamela Isley/i
+        getByLabelText(
+            /open information for James Gordon versus Pamela Isley/i
         )
     );
-    fireEvent.click(getByText(/^move down$/i)); // shouldn't change
+    fireEvent.click(getByLabelText(/^move down$/i)); // shouldn't change
     expect(getByTestId("match-8-white")).toHaveTextContent("James Gordon");
 });
 

@@ -1,10 +1,9 @@
-import React, {useReducer} from "react";
+import React from "react";
 import {
     Router,
     Link,
     LocationProvider,
-    createHistory,
-    Redirect
+    createHistory
 } from "@reach/router";
 import createHashSource from "hash-source";
 import About from "./components/about";
@@ -14,7 +13,7 @@ import {TournamentList, Tournament} from "./components/tournament";
 import Players, {PlayerList, PlayerInfo} from "./components/players";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
-import {defaultData, dataReducer, DataContext} from "./state/global-state";
+import {DataProvider} from "./state/global-state";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";
@@ -24,7 +23,6 @@ let source = createHashSource();
 let history = createHistory(source);
 
 function App() {
-    const [data, dispatch] = useReducer(dataReducer, defaultData);
     return (
         <div className="app">
             <Caution />
@@ -44,12 +42,11 @@ function App() {
                     </Link>
                 </nav>
                 <main className="content">
-                    <DataContext.Provider value={{data, dispatch}}>
+                    <DataProvider>
                         <Router>
-                            <Redirect from="/" to="tourney" />
-                            <TournamentIndex path="tourney">
+                            <TournamentIndex path="/">
                                 <TournamentList path="/" />
-                                <Tournament path=":tourneyId" />
+                                <Tournament path="tourney/:tourneyId" />
                             </TournamentIndex>
                             <Players path="players">
                                 <PlayerList path="/"/>
@@ -59,7 +56,7 @@ function App() {
                             <About path="about" />
                             <NotFound default />
                         </Router>
-                    </DataContext.Provider>
+                    </DataProvider>
                 </main>
             </LocationProvider>
         </div>

@@ -1,6 +1,7 @@
 import React, {useContext, useState, useEffect} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {Link} from "@reach/router";
+import last from "ramda/src/last";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round/";
 import PlayerSelect from "./player-select";
@@ -17,9 +18,27 @@ import "@reach/tabs/styles.css";
 export default function Tournament({tourneyId, path}) {
     const {data, dispatch} = useContext(DataContext);
     const tourney = data.tourneys[tourneyId];
-    const players = tourney.players;
     const [defaultTab, setDefaultTab] = useState(0);
+    function isNewRoundReady() {
+        const lastRound = last(tourney.roundList);
+        if (!lastRound) {
+            return true;
+        }
+        const matchedPlayers = lastRound.reduce(
+            /** @param {number[]} acc */
+            (acc, match) => acc.concat(match.players),
+            []
+        );
+        const unMatchedPlayers = tourney.players.filter(
+            (pId) => !matchedPlayers.includes(pId)
+        );
+        const results = lastRound.map(
+            (match) => match.result[0] + match.result[1]
+        );
+        return (unMatchedPlayers.length === 0 && !results.includes(0));
+    }
     function newRound() {
+        console.log("clicked");
         dispatch({type: "ADD_ROUND", tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }
@@ -41,8 +60,13 @@ export default function Tournament({tourneyId, path}) {
                 </Link>
                 <h2>{tourney.name}</h2>
                 Round progress: {tourney.roundList.length}/
-                {calcNumOfRounds(players.length)}{" "}
-                <button onClick={() => newRound()}>New round</button>{" "}
+                {calcNumOfRounds(tourney.players.length)}{" "}
+                <button
+                    onClick={newRound}
+                    disabled={!isNewRoundReady()}
+                >
+                    New round
+                </button>{" "}
                 <button
                     className="danger"
                     onClick={() =>

@@ -20,18 +20,18 @@ it("Creating a new tournament works.", function () {
 });
 
 it("Deleting a tournament works.", function () {
-    const {getByText, queryByText} = render(
+    const {getByLabelText, queryByText} = render(
         <TestApp><TournamentList/></TestApp>
     );
-    fireEvent.click(getByText(/delete “wayne manor open”/i));
+    fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     expect(queryByText(/wayne manor open/i)).toBeFalsy();
 });
 
 it("Deleting all tournaments displays a message", function () {
-    const {getByText} = render(
+    const {getByText, getByLabelText} = render(
         <TestApp><TournamentList/></TestApp>
     );
-    fireEvent.click(getByText(/delete “wayne manor open”/i));
-    fireEvent.click(getByText(/delete “the battle for gotham city”/i));
+    fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
+    fireEvent.click(getByLabelText(/delete “the battle for gotham city”/i));
     expect(getByText(/No tournaments added yet./i)).toBeTruthy();
 });

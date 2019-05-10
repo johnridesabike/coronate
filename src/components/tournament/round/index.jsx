@@ -1,6 +1,5 @@
 import React, {useState, useContext} from "react";
 import "@reach/menu-button/styles.css";
-import VisuallyHidden from "@reach/visually-hidden";
 import curry from "ramda/src/curry";
 import Repeat from "react-feather/dist/icons/repeat";
 import Trash from "react-feather/dist/icons/trash-2";
@@ -76,30 +75,34 @@ export default function Round({roundId, tourneyId}) {
                         className="danger"
                         onClick={() => unMatch(selectedMatch)}
                         disabled={selectedMatch === null}
+                        title="Unmatch"
+                        aria-label="Unmatch"
                     >
                         <Trash />
-                        <VisuallyHidden>Unmatch</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => swapColors(selectedMatch)}
                         disabled={selectedMatch === null}
+                        title="Swap colors"
+                        aria-label="Swap colors"
                     >
                         <Repeat />
-                        <VisuallyHidden>Swap colors</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => moveMatch(selectedMatch, -1)}
                         disabled={selectedMatch === null}
+                        title="Move up"
+                        aria-label="Move up"
                     >
                         <ArrowUp />
-                        <VisuallyHidden>Move up</VisuallyHidden>
                     </button>
                     <button
                         onClick={() => moveMatch(selectedMatch, 1)}
                         disabled={selectedMatch === null}
+                        title="Move down"
+                        aria-label="Move down"
                     >
                         <ArrowDown/>
-                        <VisuallyHidden>Move down</VisuallyHidden>
                     </button>
                 </div>
                 {(matchList.length === 0) &&

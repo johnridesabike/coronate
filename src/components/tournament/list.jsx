@@ -1,11 +1,8 @@
 import React, {useContext, useState} from "react";
 import Trash from "react-feather/dist/icons/trash-2";
-import Tooltip from "@reach/tooltip";
 import {Link} from "@reach/router";
-import VisuallyHidden from "@reach/visually-hidden";
 import createTournament from "../../data/tournament";
 import {DataContext} from "../../state/global-state";
-import "@reach/tooltip/styles.css";
 
 /**
  * @param {Object} props
@@ -37,30 +34,21 @@ export default function TournamentList(props) {
                 <ol>
                     {tourneyList.map((tourney, i) =>
                         <li key={i}>
-                            <Link to={String(i)}>
+                            <Link to={`tourney/${i}`}>
                                 {tourney.name}
                             </Link>
-                            <Tooltip
-                                label={`Delete “${tourney.name}”`}
-                                aria-label={`Delete “${tourney.name}”`}>
-                                <button
-                                    className="danger"
-                                    onClick={
-                                        () => dispatch({
-                                            type: "DEL_TOURNEY",
-                                            index: i
-                                        })
-                                    }>
-                                    <Trash />
-                                    <VisuallyHidden>
-                                        {/* Does the tooltip make this
-                                            redundant? react-testing-library
-                                            can't query the tooltips AFAIK.
-                                        */}
-                                        Delete “{tourney.name}”
-                                    </VisuallyHidden>
-                                </button>
-                            </Tooltip>
+                            <button
+                                title={`Delete “${tourney.name}”`}
+                                aria-label={`Delete “${tourney.name}”`}
+                                className="danger"
+                                onClick={
+                                    () => dispatch({
+                                        type: "DEL_TOURNEY",
+                                        index: i
+                                    })
+                                }>
+                                <Trash />
+                            </button>
                         </li>
                     )}
                 </ol>
