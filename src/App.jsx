@@ -3,17 +3,18 @@ import {
     Router,
     Link,
     LocationProvider,
-    createHistory
+    createHistory,
+    Redirect
 } from "@reach/router";
 import createHashSource from "hash-source";
-import TournamentList from "./components/tournament/list";
-import Players from "./components/players/index";
-import PlayerList from "./components/players/list";
-import PlayerInfo from "./components/players/info-box";
+import About from "./components/about";
+import NotFound from "./components/404";
+import TournamentIndex from "./components/tournament";
+import {TournamentList, Tournament} from "./components/tournament";
+import Players, {PlayerList, PlayerInfo} from "./components/players";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
 import {defaultData, dataReducer, DataContext} from "./state/global-state";
-import Tournament from "./components/tournament/tournament";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";
@@ -21,18 +22,6 @@ import {link} from "./App.module.css";
 let source = createHashSource();
 // @ts-ignore
 let history = createHistory(source);
-
-/**
- * @param {Object} props
- */
-const About = (props) => (
-    <p>
-        This is an early, proof-of-concept, demo of a
-        chess tournament manager.{" "}
-        <a href="https://github.com/johnridesabike/chessahoochee">
-        You can find out more here.</a>
-    </p>
-);
 
 function App() {
     const [data, dispatch] = useReducer(dataReducer, defaultData);
@@ -57,14 +46,18 @@ function App() {
                 <main className="content">
                     <DataContext.Provider value={{data, dispatch}}>
                         <Router>
-                            <TournamentList path="/" />
+                            <Redirect from="/" to="tourney" />
+                            <TournamentIndex path="tourney">
+                                <TournamentList path="/" />
+                                <Tournament path=":tourneyId" />
+                            </TournamentIndex>
                             <Players path="players">
                                 <PlayerList path="/"/>
                                 <PlayerInfo path=":playerId" />
                             </Players>
                             <Options path="options" />
                             <About path="about" />
-                            <Tournament path="tourney/:tourneyId" />
+                            <NotFound default />
                         </Router>
                     </DataContext.Provider>
                 </main>

@@ -1,11 +1,11 @@
 import React from "react";
 import {render, cleanup, fireEvent, getNodeText} from "react-testing-library";
 import "jest-dom/extend-expect";
-import "../../__mocks__/getComputedStyle.mock";
-import PlayerInfoBox from "../players/info-box";
-import Round from "../tournament/round";
-import Tournament from "./tournament";
-import {TestApp} from "../utility";
+import "../../../__mocks__/getComputedStyle.mock";
+import PlayerInfoBox from "../../players/info-box";
+import Round from "./index";
+import Tournament from "../tournament";
+import {TestApp} from "../../utility";
 
 afterEach(cleanup);
 

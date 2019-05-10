@@ -37,7 +37,7 @@ export default function TournamentList(props) {
                 <ol>
                     {tourneyList.map((tourney, i) =>
                         <li key={i}>
-                            <Link to={`tourney/${i}`}>
+                            <Link to={String(i)}>
                                 {tourney.name}
                             </Link>
                             <Tooltip

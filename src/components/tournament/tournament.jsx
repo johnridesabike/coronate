@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {Link} from "@reach/router";
 import {calcNumOfRounds} from "../../data/utility";
-import Round from "./round";
+import Round from "./round/";
 import PlayerSelect from "./player-select";
 import {DataContext} from "../../state/global-state";
 import Scores from "./scores";
