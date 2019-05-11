@@ -38,6 +38,7 @@ export default function Tournament({tourneyId, path}) {
         return (unMatchedPlayers.length === 0 && !results.includes(0));
     }
     function newRound() {
+        console.log("Clicked new round.");
         dispatch({type: "ADD_ROUND", tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }

@@ -2,6 +2,13 @@ import React from "react";
 // import last from "ramda/src/last";
 // import curry from "ramda/src/curry";
 import move from "ramda/src/move";
+import lensPath from "ramda/src/lensPath";
+import lensProp from "ramda/src/lensProp";
+import lensIndex from "ramda/src/lensIndex";
+import set from "ramda/src/set";
+import view from "ramda/src/view";
+import remove from "ramda/src/remove";
+import append from "ramda/src/append";
 // import {createPlayer, getPlayerById} from "../data/player";
 import {getById} from "../data/utility";
 import defaultOptions from "./demo-options.json";
@@ -33,6 +40,7 @@ function dataReducer(state, action) {
     console.groupEnd();
     const {options, tourneys} = state;
     // const getPlayer = curry(getPlayerById)(players);
+    const setTourneys = set(lensPath(["tourneys"]));
     switch (action.type) {
     // Options
     case "SET_BYE_VALUE":
@@ -40,22 +48,47 @@ function dataReducer(state, action) {
         return Object.assign({}, state);
     // Tournaments
     case "ADD_TOURNEY":
-        return Object.assign(
-            {},
-            state,
-            {tourneys: tourneys.concat([action.tourney])}
+        // return Object.assign(
+        //     {},
+        //     state,
+        //     {tourneys: tourneys.concat([action.tourney])}
+        // );
+        return setTourneys(
+            append(action.tourney, state.tourneys),
+            state
         );
     case "DEL_TOURNEY":
-        return Object.assign(
-            {},
-            state,
-            {tourneys: tourneys.filter((ignore, i) => i !== action.index)}
+        // return Object.assign(
+        //     {},
+        //     state,
+        //     {tourneys: tourneys.filter((ignore, i) => i !== action.index)}
+        // );
+        return setTourneys(
+            state.tourneys.filter((ignore, i) => i !== action.index),
+            state
         );
     case "ADD_ROUND":
-        tourneys[action.tourneyId].roundList = (
-            tourneys[action.tourneyId].roundList.concat([[]])
+        // tourneys[action.tourneyId].roundList = (
+        //     tourneys[action.tourneyId].roundList.concat([[]])
+        // );
+        // return Object.assign({}, state);
+        console.log(
+            action.tourneyId,
+            state.tourneys,
+            view(
+                lensIndex(action.tourneyId),
+                state.tourneys
+            )
         );
-        return Object.assign({}, state);
+        const test = set(
+            lensPath(["tourneys", action.tourneyId, "roundlist"]),
+            append([], state.tourneys[action.tourneyId].roundList),
+            state
+        );
+        // console.log(test);
+        // console.log(state);
+        // console.log(append([], state.tourneys[action.tourneyId].roundList));
+        return test;
     case "DEL_LAST_ROUND":
         // if a match has been scored, then reset it.
         // last(
@@ -70,13 +103,19 @@ function dataReducer(state, action) {
         //         });
         //     }
         // });
-        tourneys[action.tourneyId].roundList = (
-            tourneys[action.tourneyId].roundList.slice(
-                0,
-                tourneys[action.tourneyId].roundList.length - 1
-            )
+        // tourneys[action.tourneyId].roundList = (
+        //     tourneys[action.tourneyId].roundList.slice(
+        //         0,
+        //         tourneys[action.tourneyId].roundList.length - 1
+        //     )
+        // );
+        // return Object.assign({}, state);
+        console.log(remove(-1, 1, state.tourneys[action.tourneyId].roundList));
+        return set(
+            lensPath(["tourneys", action.tourneyId, "roundlist"]),
+            remove(-1, 1, state.tourneys[action.tourneyId].roundList),
+            state
         );
-        return Object.assign({}, state);
     case "ADD_TIEBREAK":
         tourneys[action.tourneyId].tieBreaks = (
             tourneys[action.tourneyId].tieBreaks.concat([action.id])
@@ -180,7 +219,18 @@ export function useData() {
  */
 export function DataProvider(props) {
     const [data, dispatch] = useDataReducer();
-    React.useEffect(function () {console.log("rendered data.");});
+    React.useEffect(
+        function () {
+            console.log("rendered data.");
+        },
+        [data]
+    );
+    React.useEffect(
+        function () {
+            console.log("New data dispatch!!!!!");
+        },
+        [dispatch]
+    );
     return (
         <DataContext.Provider value={{data, dispatch}}>
             {props.children}

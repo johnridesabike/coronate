@@ -36,7 +36,7 @@ export default function TournamentList(props) {
                         <li key={i}>
                             <Link to={`tourney/${i}`}>
                                 {tourney.name}
-                            </Link>
+                            </Link>{" "}
                             <button
                                 title={`Delete “${tourney.name}”`}
                                 aria-label={`Delete “${tourney.name}”`}
