@@ -14,6 +14,7 @@ import Players, {PlayerList, PlayerInfo} from "./components/players";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
 import {DataProvider} from "./state/global-state";
+import {PlayersProvider} from "./state/player-state";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";
@@ -42,21 +43,23 @@ function App() {
                     </Link>
                 </nav>
                 <main className="content">
-                    <DataProvider>
-                        <Router>
-                            <TournamentIndex path="/">
-                                <TournamentList path="/" />
-                                <Tournament path="tourney/:tourneyId" />
-                            </TournamentIndex>
-                            <Players path="players">
-                                <PlayerList path="/"/>
-                                <PlayerInfo path=":playerId" />
-                            </Players>
-                            <Options path="options" />
-                            <About path="about" />
-                            <NotFound default />
-                        </Router>
-                    </DataProvider>
+                    <PlayersProvider>
+                        <DataProvider>
+                            <Router>
+                                <TournamentIndex path="/">
+                                    <TournamentList path="/" />
+                                    <Tournament path="tourney/:tourneyId" />
+                                </TournamentIndex>
+                                <Players path="players">
+                                    <PlayerList path="/"/>
+                                    <PlayerInfo path=":playerId" />
+                                </Players>
+                                <Options path="options" />
+                                <About path="about" />
+                                <NotFound default />
+                            </Router>
+                        </DataProvider>
+                    </PlayersProvider>
                 </main>
             </LocationProvider>
         </div>

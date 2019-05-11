@@ -1,11 +1,11 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import {Link} from "@reach/router";
 import last from "ramda/src/last";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round/";
 import PlayerSelect from "./player-select";
-import {DataContext} from "../../state/global-state";
+import {useData} from "../../state/global-state";
 import Scores from "./scores";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import "@reach/tabs/styles.css";
@@ -16,7 +16,7 @@ import "@reach/tabs/styles.css";
  * @param {number} [props.tourneyId]
  */
 export default function Tournament({tourneyId, path}) {
-    const {data, dispatch} = useContext(DataContext);
+    const {data, dispatch} = useData();
     const tourney = data.tourneys[tourneyId];
     const [defaultTab, setDefaultTab] = useState(0);
     function isNewRoundReady() {
@@ -38,7 +38,6 @@ export default function Tournament({tourneyId, path}) {
         return (unMatchedPlayers.length === 0 && !results.includes(0));
     }
     function newRound() {
-        console.log("clicked");
         dispatch({type: "ADD_ROUND", tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }
@@ -51,6 +50,11 @@ export default function Tournament({tourneyId, path}) {
             };
         },
         [tourney.name]
+    );
+    useEffect(
+        function () {
+            console.log("rendering tournament.");
+        }
     );
     return (
         <Tabs defaultIndex={defaultTab}>

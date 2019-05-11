@@ -1,10 +1,11 @@
-import React, {useContext} from "react";
+import React from "react";
 import "@reach/menu-button/styles.css";
 import numeral from "numeral";
 import curry from "ramda/src/curry";
 import {getPlayerById} from "../../../data/player";
 import {genPlayerData} from "../../../pairing-scoring/scoring";
-import {DataContext} from "../../../state/global-state";
+import {useData} from "../../../state/global-state";
+import {usePlayers} from "../../../state/player-state";
 
 /**
  * @typedef {import("../../../data").Match} Match
@@ -18,13 +19,13 @@ import {DataContext} from "../../../state/global-state";
  * @param {number} props.roundId
  */
 export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
-    const {data} = useContext(DataContext);
-    // const playerList = data.players;
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {data} = useData();
+    const {playerState} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const playerData = genPlayerData(
         match.players[color],
-        data.players,
-        data.avoid,
+        playerState.players,
+        playerState.avoid,
         data.tourneys[tourneyId].roundList,
         roundId
     );

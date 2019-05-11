@@ -1,11 +1,11 @@
-import React, {useContext} from "react";
-import {DataContext} from "../state/global-state";
+import React from "react";
+import {useData} from "../state/global-state";
 
 /**
  * @param {Object} props
  */
 export function Options(props) {
-    const {data, dispatch} = useContext(DataContext);
+    const {data, dispatch} = useData();
     const options = data.options;
     return (
         <div>

@@ -1,16 +1,18 @@
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import curry from "ramda/src/curry";
 import {getPlayerById} from "../../data/player";
 import {hasHadBye} from "../../pairing-scoring/scoring";
-import {DataContext} from "../../state/global-state";
+import {useData} from "../../state/global-state";
+import {usePlayers} from "../../state/player-state";
 
 /**
  * @param {Object} props
  * @param {number} props.tourneyId
  */
 export default function PlayerSelect({tourneyId}) {
-    const {data, dispatch} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {data, dispatch} = useData();
+    const {playerState} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const players = data.tourneys[tourneyId].players;
     const tourney = data.tourneys[tourneyId];
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
@@ -43,7 +45,7 @@ export default function PlayerSelect({tourneyId}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.players.map((p) => (
+                    {playerState.players.map((p) => (
                         <tr key={p.id}>
                             <td>{p.firstName}</td>
                             <td>{p.lastName}</td>
@@ -65,7 +67,9 @@ export default function PlayerSelect({tourneyId}) {
                                 onClick={() =>
                                     dispatch({
                                         type: "SET_TOURNEY_PLAYERS",
-                                        players: data.players.map((p) => p.id),
+                                        players: playerState.players.map(
+                                            (p) => p.id
+                                        ),
                                         tourneyId
                                     })
                                 }

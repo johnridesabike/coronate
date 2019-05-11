@@ -1,5 +1,4 @@
-import React, {useReducer} from "react";
-import {dataReducer, defaultData, DataContext} from "../state/global-state";
+import React from "react";
 
 /**
  * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
@@ -21,12 +20,6 @@ export const BackButton = ({action}) => (
 export const OpenButton = ({action}) => (
     <Button action={action}>Open &gt;</Button>
 );
-
-// /** @param {{action: Action}} props */
-// export const InfoButton = ({action}) => (
-//     <Button action={action}>Info</Button>
-// );
-
 
 /**
  * @param {object} props
@@ -50,18 +43,5 @@ export function PanelContainer({children}) {
         <div style={{display: "flex"}}>
             {React.Children.map(children, (child) => child)}
         </div>
-    );
-}
-
-/**
- * @param {Object} props
- * @param {React.ReactNode} props.children
- */
-export function TestApp({children}) {
-    const [data, dispatch] = useReducer(dataReducer, defaultData);
-    return (
-        <DataContext.Provider value={{data, dispatch}}>
-            {children}
-        </DataContext.Provider>
     );
 }

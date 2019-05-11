@@ -1,10 +1,11 @@
-import React, {useContext} from "react";
+import React from "react";
 import curry from "ramda/src/curry";
 import More from "react-feather/dist/icons/more-horizontal";
 import Close from "react-feather/dist/icons/x";
 import {getPlayerById, calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
-import {DataContext} from "../../../state/global-state";
+import {useData} from "../../../state/global-state";
+import {usePlayers} from "../../../state/player-state";
 // @ts-ignore
 import {winnerSelect} from "./round.module.css";
 
@@ -29,8 +30,9 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    const {data, dispatch} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {dispatch} = useData();
+    const {playerState, playerDispatch} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     /** @type {string} */
     let resultCode;
     if (match.result[0] > match.result[1]) {
@@ -86,24 +88,24 @@ export default function MatchRow({
                 result
             )
         );
-        dispatch({
+        playerDispatch({
             type: "SET_PLAYER_RATING",
             id: white.id,
             rating: newRating[WHITE]
         });
-        dispatch({
+        playerDispatch({
             type: "SET_PLAYER_RATING",
             id: black.id,
             rating: newRating[BLACK]
         });
         // if the result hasn't been scored yet, increment the matchCount
         if (match.result.reduce((a, b) => a + b) === 0) {
-            dispatch({
+            playerDispatch({
                 type: "SET_PLAYER_MATCHCOUNT",
                 id: white.id,
                 matchCount: white.matchCount + 1
             });
-            dispatch({
+            playerDispatch({
                 type: "SET_PLAYER_MATCHCOUNT",
                 id: black.id,
                 matchCount: black.matchCount + 1

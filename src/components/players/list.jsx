@@ -1,18 +1,18 @@
-import React, {Fragment, useState, useContext} from "react";
+import React, {Fragment, useState} from "react";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
 import {createPlayer} from "../../data/player";
-import {DataContext} from "../../state/global-state";
+import {usePlayers} from "../../state/player-state";
 
 /**
  * @param {Object} props
  */
 export default function PlayerList(props) {
-    const {data, dispatch} = useContext(DataContext);
+    const {playerState, playerDispatch} = usePlayers();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
-    const ids = data.players.map((p) => p.id);
+    const ids = playerState.players.map((p) => p.id);
     ids.sort((a, b) => a - b);
     ids.reverse();
     const [nextId, setNextId] = useState(ids[0] + 1);
@@ -23,7 +23,7 @@ export default function PlayerList(props) {
         newPlayer.id = nextId;
         setNextId((prevId) => prevId + 1);
         setNewPlayerdata(newPlayerDefault);
-        dispatch({type: "ADD_PLAYER", newPlayer});
+        playerDispatch({type: "ADD_PLAYER", newPlayer});
     };
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     const updateField = function (event) {
@@ -39,10 +39,10 @@ export default function PlayerList(props) {
      */
     const delPlayer = function (event, id) {
         event.preventDefault();
-        dispatch({type: "DEL_PLAYER", id});
+        playerDispatch({type: "DEL_PLAYER", id});
     };
     let rosterTable = <Fragment></Fragment>;
-    if (data.players.length > 0) {
+    if (playerState.players.length > 0) {
         rosterTable =
         <table>
             <caption>Demo Roster</caption>
@@ -55,7 +55,7 @@ export default function PlayerList(props) {
                     <th></th>
                 </tr>
             </thead>
-            <tbody>{data.players.map((player) =>
+            <tbody>{playerState.players.map((player) =>
                 <tr key={player.id}>
                     <td className="table__player">{player.firstName}</td>
                     <td className="table__player">{player.lastName}</td>

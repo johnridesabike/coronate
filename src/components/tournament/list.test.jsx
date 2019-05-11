@@ -1,7 +1,7 @@
 import React from "react";
 import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
-import {TestApp} from "../utility";
+import {DataProvider} from "../../state/global-state";
 import TournamentList from "./list";
 import "../../__mocks__/getComputedStyle.mock";
 
@@ -9,7 +9,7 @@ afterEach(cleanup);
 
 it("Creating a new tournament works.", function () {
     const {getByText, getByLabelText} = render(
-        <TestApp><TournamentList/></TestApp>
+        <DataProvider><TournamentList/></DataProvider>
     );
     fireEvent.change(
         getByLabelText(/name/i),
@@ -21,7 +21,7 @@ it("Creating a new tournament works.", function () {
 
 it("Deleting a tournament works.", function () {
     const {getByLabelText, queryByText} = render(
-        <TestApp><TournamentList/></TestApp>
+        <DataProvider><TournamentList/></DataProvider>
     );
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     expect(queryByText(/wayne manor open/i)).toBeFalsy();
@@ -29,7 +29,7 @@ it("Deleting a tournament works.", function () {
 
 it("Deleting all tournaments displays a message", function () {
     const {getByText, getByLabelText} = render(
-        <TestApp><TournamentList/></TestApp>
+        <DataProvider><TournamentList/></DataProvider>
     );
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     fireEvent.click(getByLabelText(/delete “the battle for gotham city”/i));

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import "@reach/menu-button/styles.css";
 import curry from "ramda/src/curry";
 import Repeat from "react-feather/dist/icons/repeat";
@@ -11,7 +11,8 @@ import PairPicker from "./pair-picker";
 import {PanelContainer, Panel} from "../../utility";
 import {getPlayerById} from "../../../data/player";
 import {getById, getIndexById} from "../../../data/utility";
-import {DataContext} from "../../../state/global-state";
+import {useData} from "../../../state/global-state";
+import {usePlayers} from "../../../state/player-state";
 import style from "./round.module.css";
 
 /**
@@ -20,8 +21,9 @@ import style from "./round.module.css";
  * @param {number} props.tourneyId
  */
 export default function Round({roundId, tourneyId}) {
-    const {data, dispatch} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {data, dispatch} = useData();
+    const {playerState, playerDispatch} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {string} */
@@ -34,12 +36,12 @@ export default function Round({roundId, tourneyId}) {
             // checks if the match has been scored yet & resets the players'
             // records
             match.players.forEach(function (pId, color) {
-                dispatch({
+                playerDispatch({
                     type: "SET_PLAYER_MATCHCOUNT",
                     id: pId,
                     matchCount: getPlayer(pId).matchCount - 1
                 });
-                dispatch({
+                playerDispatch({
                     type: "SET_PLAYER_RATING",
                     id: pId,
                     rating: match.origRating[color]

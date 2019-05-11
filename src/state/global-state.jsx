@@ -1,11 +1,10 @@
-import React, {createContext, useReducer, useMemo, useCallback} from "react";
-import last from "ramda/src/last";
-import curry from "ramda/src/curry";
+import React from "react";
+// import last from "ramda/src/last";
+// import curry from "ramda/src/curry";
 import move from "ramda/src/move";
-import {createPlayer, getPlayerById} from "../data/player";
+// import {createPlayer, getPlayerById} from "../data/player";
 import {getById} from "../data/utility";
 import defaultOptions from "./demo-options.json";
-import defaultPlayers from "./demo-players.json";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair, swapColors} from "./match-functions";
 /**
@@ -18,12 +17,9 @@ import {autoPair, manualPair, swapColors} from "./match-functions";
  */
 const defaultData = {
     options: defaultOptions,
-    players: defaultPlayers.playerList.map((p) => createPlayer(p)),
-    avoid: defaultPlayers.avoidList,
     // @ts-ignore
     tourneys: defaultTourneyList
 };
-export {defaultData};
 
 /**
  * @param {GlobalState} state
@@ -31,62 +27,17 @@ export {defaultData};
  * @returns {GlobalState}
  */
 function dataReducer(state, action) {
-    console.log("dispatch'd", action);
-    const {avoid, players, options, tourneys} = state;
-    const getPlayer = curry(getPlayerById)(players);
+    console.group("data dispatched");
+    console.log("previous data", state);
+    console.log("data action", action);
+    console.groupEnd();
+    const {options, tourneys} = state;
+    // const getPlayer = curry(getPlayerById)(players);
     switch (action.type) {
     // Options
     case "SET_BYE_VALUE":
         options.byeValue = action.byeValue;
         return Object.assign({}, state);
-    // Players
-    case "ADD_PLAYER":
-        return Object.assign(
-            {},
-            state,
-            {players: players.concat([action.newPlayer])}
-        );
-    case "DEL_PLAYER":
-        return Object.assign(
-            {},
-            state,
-            {
-                players: players.filter((p) => p.id !== action.id),
-                avoid: avoid.filter(
-                    (pair) => !pair.includes(action.id)
-                )
-            }
-        );
-    case "SET_PLAYER_MATCHCOUNT":
-        Object.assign(
-            players[players.map((p) => p.id).indexOf(action.id)],
-            {matchCount: action.matchCount}
-        );
-        return Object.assign({}, state);
-    case "SET_PLAYER_RATING":
-        Object.assign(
-            players[players.map((p) => p.id).indexOf(action.id)],
-            {rating: action.rating}
-        );
-        return Object.assign({}, state);
-    // Avoid
-    case "ADD_AVOID_PAIR":
-        return Object.assign(
-            {},
-            state,
-            {avoid: avoid.concat([action.pair])}
-        );
-    case "DEL_AVOID_PAIR":
-        return Object.assign(
-            {},
-            state,
-            {avoid: avoid.filter(
-                (pair) => !(
-                    pair.includes(action.pair[0])
-                    && pair.includes(action.pair[1])
-                )
-            )}
-        );
     // Tournaments
     case "ADD_TOURNEY":
         return Object.assign(
@@ -107,18 +58,18 @@ function dataReducer(state, action) {
         return Object.assign({}, state);
     case "DEL_LAST_ROUND":
         // if a match has been scored, then reset it.
-        last(
-            tourneys[action.tourneyId].roundList
-        ).forEach(function (match) {
-            if (match.result.reduce((a, b) => a + b) !== 0) {
-                match.players.forEach(function (pId, color) {
-                    getPlayer(pId).matchCount -= 1;
-                    getPlayer(pId).rating = (
-                        match.origRating[color]
-                    );
-                });
-            }
-        });
+        // last(
+        //     tourneys[action.tourneyId].roundList
+        // ).forEach(function (match) {
+        //     if (match.result.reduce((a, b) => a + b) !== 0) {
+        //         match.players.forEach(function (pId, color) {
+        //             getPlayer(pId).matchCount -= 1;
+        //             getPlayer(pId).rating = (
+        //                 match.origRating[color]
+        //             );
+        //         });
+        //     }
+        // });
         tourneys[action.tourneyId].roundList = (
             tourneys[action.tourneyId].roundList.slice(
                 0,
@@ -156,6 +107,7 @@ function dataReducer(state, action) {
             tourneys[action.tourneyId].roundList[action.roundId].concat(
                 autoPair(
                     state,
+                    action.playerState,
                     action.tourneyId,
                     action.roundId,
                     action.unpairedPlayers
@@ -168,6 +120,7 @@ function dataReducer(state, action) {
             tourneys[action.tourneyId].roundList[action.roundId].concat([
                 manualPair(
                     state,
+                    action.players,
                     action.pair
                 )
             ])
@@ -204,13 +157,10 @@ function dataReducer(state, action) {
         throw new Error("Unexpected action type");
     }
 }
-Object.freeze(dataReducer);
-export {dataReducer};
 
 /** @type {{data: GlobalState, dispatch: React.Dispatch<Action>}} */
 const defaultContext = null;
-const DataContext = createContext(defaultContext);
-export {DataContext};
+const DataContext = React.createContext(defaultContext);
 
 // TODO the reducer is firing twice which leads to unexpected behavior (e.g.
 // "new round" will create two rounds). I'm investigating what's going on and
@@ -218,8 +168,11 @@ export {DataContext};
 // https://stackoverflow.com/questions/54892403/usereducer-action-dispatched-twice
 
 function useDataReducer() {
-    const [data, dispatch] = useReducer(dataReducer, defaultData);
-    return [data, dispatch];
+    return React.useReducer(dataReducer, defaultData);
+}
+
+export function useData() {
+    return React.useContext(DataContext);
 }
 
 /**
@@ -227,6 +180,7 @@ function useDataReducer() {
  */
 export function DataProvider(props) {
     const [data, dispatch] = useDataReducer();
+    React.useEffect(function () {console.log("rendered data.");});
     return (
         <DataContext.Provider value={{data, dispatch}}>
             {props.children}

@@ -1,14 +1,14 @@
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import Trash from "react-feather/dist/icons/trash-2";
 import {Link} from "@reach/router";
 import createTournament from "../../data/tournament";
-import {DataContext} from "../../state/global-state";
+import {useData} from "../../state/global-state";
 
 /**
  * @param {Object} props
  */
 export default function TournamentList(props) {
-    const {data, dispatch} = useContext(DataContext);
+    const {data, dispatch} = useData();
     const tourneyList = data.tourneys;
     const [newTourneyName, setNewTourneyName] = useState("");
     /** @param {React.ChangeEvent<HTMLInputElement>} event */

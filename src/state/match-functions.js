@@ -6,19 +6,21 @@ import {dummyPlayer, getPlayerById} from "../data/player";
 import pairPlayers from "../pairing-scoring/pairing";
 import {getById} from "../data/utility";
 /**
-* @typedef {import("./dispatch").GlobalState} GlobalState
+ * @typedef {import("./dispatch").GlobalState} GlobalState
+ * @typedef {import("../data/index").Player} Player
 */
 
 /**
  * @param {GlobalState} state
  * @param {number} tourneyId
  * @param {number} roundId
+ * @param {import("./dispatch").PlayerState} playerState
  * @param {number[]} unPairedPlayers
  */
-function autoPair(state, tourneyId, roundId, unPairedPlayers) {
+function autoPair(state, playerState, tourneyId, roundId, unPairedPlayers) {
     const tourney = state.tourneys[tourneyId];
     const roundList = tourney.roundList;
-    const getPlayer = curry(getPlayerById)(state.players);
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const nextBye = tourney.byeQueue.filter(
         (pId) => !hasHadBye(pId, roundList)
     )[0];
@@ -42,8 +44,8 @@ function autoPair(state, tourneyId, roundId, unPairedPlayers) {
         unPairedPlayers,
         roundId,
         roundList,
-        state.players,
-        state.avoid
+        playerState.players,
+        playerState.avoid
     );
     const newMatchList = pairs.map(
         (pair) => createMatch({
@@ -79,10 +81,11 @@ export {autoPair};
 
 /**
  * @param {GlobalState} state
+ * @param {Player[]} players
  * @param {number[]} pair
  */
-function manualPair(state, pair) {
-    const getPlayer = curry(getPlayerById)(state.players);
+function manualPair(state, players, pair) {
+    const getPlayer = curry(getPlayerById)(players);
     const match = createMatch({
         id: pair.join("-"),
         players: [pair[WHITE], pair[BLACK]],

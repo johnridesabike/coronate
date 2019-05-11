@@ -1,8 +1,9 @@
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import "@reach/menu-button/styles.css";
 import curry from "ramda/src/curry";
 import {getPlayerById, dummyPlayer} from "../../../data/player";
-import {DataContext} from "../../../state/global-state";
+import {useData} from "../../../state/global-state";
+import {usePlayers} from "../../../state/player-state";
 
 /**
  * @param {Object} props
@@ -10,8 +11,9 @@ import {DataContext} from "../../../state/global-state";
  * @param {number} props.roundId
  */
 export default function PairPicker({tourneyId, roundId}) {
-    const {data, dispatch} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {data, dispatch} = useData();
+    const {playerState} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {number[]} */
@@ -78,7 +80,8 @@ export default function PairPicker({tourneyId, roundId}) {
                     type: "MANUAL_PAIR",
                     pair: selectedPlayers,
                     tourneyId,
-                    roundId
+                    roundId,
+                    players: playerState.players
                 })}
                 disabled={selectedPlayers.length !== 2}
             >
@@ -89,7 +92,8 @@ export default function PairPicker({tourneyId, roundId}) {
                     type: "AUTO_PAIR",
                     unpairedPlayers: unMatched,
                     tourneyId,
-                    roundId
+                    roundId,
+                    playerState
                 })}
                 disabled={unMatched.length === 0}
             >

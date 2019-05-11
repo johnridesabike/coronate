@@ -1,10 +1,11 @@
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 import curry from "ramda/src/curry";
 import numeral from "numeral";
 import dashify from "dashify";
 import {PanelContainer, Panel} from "../utility";
 import {dummyPlayer, getPlayerById} from "../../data/player";
-import {DataContext} from "../../state/global-state";
+import {useData} from "../../state/global-state";
+import {usePlayers} from "../../state/player-state";
 import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 
@@ -41,8 +42,9 @@ numeral.register("format", "half", {
  * @param {number} props.tourneyId
  */
 function ScoreList({tourneyId}) {
-    const {data} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
+    const {data} = useData();
+    const {playerState} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
     const tourney = data.tourneys[tourneyId];
     const [standingTree, tbMethods] = calcStandings(
         tourney.tieBreaks,
@@ -120,7 +122,7 @@ function ScoreList({tourneyId}) {
  * @param {number} props.tourneyId
  */
 function SelectTieBreaks({tourneyId}) {
-    const {data, dispatch} = useContext(DataContext);
+    const {data, dispatch} = useData();
     const tourney = data.tourneys[tourneyId];
     const [selectedTb, setSelectedTb] = useState(null);
     /** @param {number} [id] */

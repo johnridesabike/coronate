@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useMemo, useState, useEffect} from "react";
 import numeral from "numeral";
 import curry from "ramda/src/curry";
 import {Link} from "@reach/router";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import {getPlayerById, getPlayerAvoidList, kFactor} from "../../data/player";
-import {DataContext} from "../../state/global-state";
+import {usePlayers} from "../../state/player-state";
 
 /**
  * @param {Object} props
@@ -13,25 +13,27 @@ import {DataContext} from "../../state/global-state";
  */
 export default function PlayerInfoBox(props) {
     const playerId = Number(props.playerId);
-    const {data, dispatch} = useContext(DataContext);
-    const getPlayer = curry(getPlayerById)(data.players);
-    const avoidList = data.avoid;
+    const {playerState, playerDispatch} = usePlayers();
+    const getPlayer = curry(getPlayerById)(playerState.players);
+    const avoidList = playerState.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
     );
-    const unAvoided = () => (
-        data.players.map(
-            (player) => player.id
-        ).filter(
-            (pId) => !singAvoidList.includes(pId) && pId !== playerId
-        )
+    const unAvoided = useMemo(
+        () => (
+            playerState.players.map(
+                (player) => player.id
+            ).filter(
+                (pId) => !singAvoidList.includes(pId) && pId !== playerId
+            )
+        ),
+        [playerState.players, playerId, singAvoidList]
     );
-    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided()[0]);
+    const [selectedAvoider, setSelectedAvoider] = useState(unAvoided[0]);
     /** @param {React.FormEvent<HTMLFormElement>} event */
     function avoidAdd(event) {
         event.preventDefault();
-        setSelectedAvoider(unAvoided()[0]);
-        dispatch({
+        playerDispatch({
             type: "ADD_AVOID_PAIR",
             pair: [playerId, Number(selectedAvoider)]
         });
@@ -41,6 +43,12 @@ export default function PlayerInfoBox(props) {
             setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
         },
         [avoidList, playerId]
+    );
+    useEffect(
+        function () {
+            setSelectedAvoider(unAvoided[0]);
+        },
+        [setSelectedAvoider, unAvoided]
     );
     return (
         <div>
@@ -71,7 +79,7 @@ export default function PlayerInfoBox(props) {
                                 <button
                                     className="danger"
                                     onClick={() =>
-                                        dispatch({
+                                        playerDispatch({
                                             type: "DEL_AVOID_PAIR",
                                             pair: [playerId, pId]
                                         })
@@ -93,7 +101,7 @@ export default function PlayerInfoBox(props) {
                             setSelectedAvoider(Number(event.target.value))
                         }
                     >
-                        {unAvoided().map((pId) => (
+                        {unAvoided.map((pId) => (
                             <option key={pId} value={pId}>
                                 {getPlayer(pId).firstName}{" "}
                                 {getPlayer(pId).lastName}
