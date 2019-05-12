@@ -24,6 +24,9 @@ export default function Round({roundId, tourneyId}) {
     /** @type {string} */
     const defaultMatch = null;
     const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
+    if (!matchList) {
+        throw new Error("Round " + roundId + " does not exist.");
+    }
     /** @param {string} matchId */
     function unMatch(matchId) {
         const match = getById(roundList[roundId], matchId);
@@ -65,7 +68,7 @@ export default function Round({roundId, tourneyId}) {
         dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
     }
     return (
-        <PanelContainer>
+        <PanelContainer data-testid={"round-" + roundId}>
             <Panel>
                 <div className={style.toolbar}>
                     <button

@@ -42,10 +42,10 @@ export function Panel({children, style}) {
  *
  * @param {object} props
  */
-export function PanelContainer({children}) {
+export function PanelContainer(props) {
     return (
-        <div className={styles.panels}>
-            {React.Children.map(children, (child) => child)}
+        <div {...props} className={styles.panels}>
+            {React.Children.map(props.children, (child) => child)}
         </div>
     );
 }
