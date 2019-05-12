@@ -1,11 +1,9 @@
 import React, {useState} from "react";
-import curry from "ramda/src/curry";
 import numeral from "numeral";
 import dashify from "dashify";
 import {PanelContainer, Panel} from "../utility";
-import {dummyPlayer, getPlayerById} from "../../data/player";
-import {useTournament} from "../../state/tourneys-state";
-import {usePlayers} from "../../state/player-state";
+import {dummyPlayer} from "../../data/player";
+import {useTournament, usePlayers} from "../../state";
 import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 
@@ -15,6 +13,7 @@ numeral.register("format", "half", {
         format: /(1\/2)/,
         unformat: /(1\/2)/
     },
+    // eslint-disable-next-line no-unused-vars
     format: function (value, format, roundingFunction) {
         /** @type {number | string} */
         let whole = Math.floor(value);
@@ -44,8 +43,7 @@ numeral.register("format", "half", {
 function ScoreList({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
+    const getPlayer = usePlayers()[2];
     const [standingTree, tbMethods] = calcStandings(
         tourney.tieBreaks,
         tourney.roundList
@@ -123,14 +121,13 @@ function ScoreList({tourneyId}) {
  */
 function SelectTieBreaks({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
-    const [tourney, dispatch] = useTournament(tourneyId);
+    const [{tieBreaks}, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);
     /** @param {number} [id] */
     function toggleTb(id = null) {
         if (!id) {
             id = selectedTb;
         }
-        const tieBreaks = tourney.tieBreaks;
         if (tieBreaks.includes(id)) {
             dispatch({type: "DEL_TIEBREAK", id, tourneyId});
         } else {
@@ -139,7 +136,7 @@ function SelectTieBreaks({tourneyId}) {
     }
     /** @param {number} direction */
     function moveTb(direction) {
-        const index = tourney.tieBreaks.indexOf(selectedTb);
+        const index = tieBreaks.indexOf(selectedTb);
         dispatch({
             type: "MOVE_TIEBREAK",
             oldIndex: index,
@@ -177,7 +174,7 @@ function SelectTieBreaks({tourneyId}) {
                 </button>
             </div>
             <ol>
-                {tourney.tieBreaks.map((id) => (
+                {tieBreaks.map((id) => (
                     <li key={id}>
                         {tieBreakMethods[id].name}
                         <button
@@ -201,14 +198,14 @@ function SelectTieBreaks({tourneyId}) {
                     <li key={i}>
                         <span
                             className={
-                                tourney.tieBreaks.includes(i)
+                                tieBreaks.includes(i)
                                     ? "enabled"
                                     : "disabled"
                             }
                         >
                             {method.name}
                         </span>
-                        {!tourney.tieBreaks.includes(i) && (
+                        {!tieBreaks.includes(i) && (
                             <button onClick={() => toggleTb(i)}>
                                 Add
                             </button>

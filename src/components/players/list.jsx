@@ -4,13 +4,14 @@ import VisuallyHidden from "@reach/visually-hidden";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
 import Trash from "react-feather/dist/icons/trash-2";
 import {createPlayer} from "../../data/player";
-import {usePlayers} from "../../state/player-state";
+import {usePlayers} from "../../state";
+import {PlayerLink} from "../utility";
 
 /**
  * @param {Object} props
  */
 export default function PlayerList(props) {
-    const {playerState, playerDispatch} = usePlayers();
+    const [playerState, playerDispatch] = usePlayers();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
     const ids = playerState.players.map((p) => p.id);
@@ -58,8 +59,12 @@ export default function PlayerList(props) {
             </thead>
             <tbody>{playerState.players.map((player) =>
                 <tr key={player.id}>
-                    <td className="table__player">{player.firstName}</td>
-                    <td className="table__player">{player.lastName}</td>
+                    <td className="table__player">
+                        <PlayerLink id={player.id} firstName />
+                    </td>
+                    <td className="table__player">
+                        <PlayerLink id={player.id} lastName />
+                    </td>
                     <td className="table__number">{player.rating}</td>
                     <td>
                         <button

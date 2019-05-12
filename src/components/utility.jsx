@@ -1,4 +1,7 @@
 import React from "react";
+import {Link} from "@reach/router";
+import {usePlayers} from "../state";
+import {dummyPlayer} from "../data/player";
 import styles from "./utility.module.css";
 
 /**
@@ -44,5 +47,27 @@ export function PanelContainer({children}) {
         <div className={styles.panels}>
             {React.Children.map(children, (child) => child)}
         </div>
+    );
+}
+
+/**
+ * @param {Object} props
+ */
+export function PlayerLink({id, firstName, lastName}) {
+    const getPlayer = usePlayers()[2];
+    let name = "";
+    if (firstName) {
+        name += getPlayer(id).firstName + " ";
+    }
+    if (lastName) {
+        name += getPlayer(id).lastName;
+    }
+    if (id === dummyPlayer.id) {
+        return <span>{name}</span>; // there's no bye player profile
+    }
+    return (
+        <Link to={"/players/" + id}>
+            {name}
+        </Link>
     );
 }

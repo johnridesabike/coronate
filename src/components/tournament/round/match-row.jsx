@@ -1,12 +1,10 @@
 import React from "react";
-import {Link} from "@reach/router";
-import curry from "ramda/src/curry";
 import More from "react-feather/dist/icons/more-horizontal";
 import Close from "react-feather/dist/icons/x";
-import {getPlayerById, calcNewRatings, dummyPlayer} from "../../../data/player";
+import {PlayerLink} from "../../utility";
+import {calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
-import {useTournaments} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {useTournaments, usePlayers} from "../../../state";
 // @ts-ignore
 import {winnerSelect} from "./round.module.css";
 
@@ -31,11 +29,9 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    // @ts-ignore
+    const dispatch = useTournaments()[1];
     // eslint-disable-next-line no-unused-vars
-    const [ignore, dispatch] = useTournaments();
-    const {playerState, playerDispatch} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
+    const [ignore, playerDispatch, getPlayer] = usePlayers();
     /** @type {string} */
     let resultCode;
     if (match.result[0] > match.result[1]) {
@@ -130,9 +126,7 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-white`}
             >
-                <Link to={"/players/" + match.players[0]}>
-                    {whiteName}
-                </Link>{" "}
+                <PlayerLink id={match.players[0]} firstName lastName/>{" "}
                 {resultCode === "WHITE" && (
                     <span role="img" aria-label="Winner">
                         🏆
@@ -143,9 +137,7 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-black`}
             >
-                <Link to={"/players/" + match.players[1]}>
-                    {blackName}
-                </Link>{" "}
+                <PlayerLink id={match.players[1]} firstName lastName/>{" "}
                 {resultCode === "BLACK" && (
                     <span role="img" aria-label="Winner">
                         🏆

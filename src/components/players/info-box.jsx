@@ -1,11 +1,10 @@
 import React, {useMemo, useState, useEffect} from "react";
 import numeral from "numeral";
-import curry from "ramda/src/curry";
 import {Link} from "@reach/router";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import Trash from "react-feather/dist/icons/trash-2";
-import {getPlayerById, getPlayerAvoidList, kFactor} from "../../data/player";
-import {usePlayers} from "../../state/player-state";
+import {getPlayerAvoidList, kFactor} from "../../data/player";
+import {usePlayers} from "../../state";
 
 /**
  * @param {Object} props
@@ -14,8 +13,7 @@ import {usePlayers} from "../../state/player-state";
  */
 export default function PlayerInfoBox(props) {
     const playerId = Number(props.playerId);
-    const {playerState, playerDispatch} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
+    const [playerState, playerDispatch, getPlayer] = usePlayers();
     const avoidList = playerState.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)

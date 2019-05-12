@@ -1,9 +1,6 @@
 import React, {useState} from "react";
-import "@reach/menu-button/styles.css";
-import curry from "ramda/src/curry";
-import {getPlayerById, dummyPlayer} from "../../../data/player";
-import {useTournament} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {dummyPlayer} from "../../../data/player";
+import {useTournament, usePlayers, useOptions} from "../../../state";
 
 /**
  * @param {Object} props
@@ -12,10 +9,11 @@ import {usePlayers} from "../../../state/player-state";
  */
 export default function PairPicker({tourneyId, roundId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
-    const [tourney, dispatch] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
-    const matchList = tourney.roundList[roundId];
+    const [{roundList, players}, dispatch] = useTournament(tourneyId);
+    // eslint-disable-next-line no-unused-vars
+    const [playerState, ignore, getPlayer] = usePlayers();
+    const [{byeValue}] = useOptions();
+    const matchList = roundList[roundId];
     /** @type {number[]} */
     const defaultPlayers = [];
     const [selectedPlayers, setSelectedPlayers] = useState(defaultPlayers);
@@ -39,7 +37,7 @@ export default function PairPicker({tourneyId, roundId}) {
         (acc, match) => acc.concat(match.players),
         []
     );
-    const unMatched = tourney.players.filter((pId) => !matched.includes(pId));
+    const unMatched = players.filter((pId) => !matched.includes(pId));
     if (unMatched.length === 0) {
         return null;
     }
@@ -81,6 +79,7 @@ export default function PairPicker({tourneyId, roundId}) {
                     pair: selectedPlayers,
                     tourneyId,
                     roundId,
+                    byeValue,
                     players: playerState.players
                 })}
                 disabled={selectedPlayers.length !== 2}
@@ -93,7 +92,8 @@ export default function PairPicker({tourneyId, roundId}) {
                     unpairedPlayers: unMatched,
                     tourneyId,
                     roundId,
-                    playerState
+                    playerState,
+                    byeValue
                 })}
                 disabled={unMatched.length === 0}
             >

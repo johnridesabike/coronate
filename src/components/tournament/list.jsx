@@ -2,11 +2,12 @@ import React, {useState} from "react";
 import Trash from "react-feather/dist/icons/trash-2";
 import {Link} from "@reach/router";
 import createTournament from "../../data/tournament";
-import {useTournaments} from "../../state/tourneys-state";
+import {useTournaments} from "../../state";
 
 /**
  * @param {Object} props
  */
+// eslint-disable-next-line no-unused-vars
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useTournaments();
     const [newTourneyName, setNewTourneyName] = useState("");

@@ -1,18 +1,14 @@
 import React from "react";
-import curry from "ramda/src/curry";
-import {PanelContainer, Panel} from "../../utility";
-import {getPlayerById} from "../../../data/player";
+import {PanelContainer, Panel, PlayerLink} from "../../utility";
 import {hasHadBye} from "../../../pairing-scoring/scoring";
-import {useTournament} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {useTournament, usePlayers} from "../../../state";
 
 /**
  * @param {Object} props
  */
 export default function Roster({tourneyId, setIsSelecting}) {
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
+    const getPlayer = usePlayers()[2];
     return (
         <PanelContainer>
             <Panel>
@@ -34,8 +30,8 @@ export default function Roster({tourneyId, setIsSelecting}) {
                                 key={pId}
                                 className={getPlayer(pId).type + " player"}
                             >
-                                <td>{getPlayer(pId).firstName}</td>
-                                <td>{getPlayer(pId).lastName}</td>
+                                <td><PlayerLink id={pId} firstName /></td>
+                                <td><PlayerLink id={pId} lastName /></td>
                                 <td>
                                     <button
                                         onClick={() =>

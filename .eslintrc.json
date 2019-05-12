@@ -26,7 +26,7 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-        "no-unused-vars": "error",
+        "no-unused-vars": ["error", {"varsIgnorePattern": "[iI]gnore"}],
         "no-shadow": "error",
         "no-var": 1,
         "arrow-parens": "warn",

@@ -3,6 +3,7 @@ import React from "react";
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
     append,
+    curry,
     lensPath,
     filter,
     findIndex,
@@ -10,10 +11,11 @@ import {
     propEq,
     set
 } from "ramda";
-import {createPlayer} from "../data/player";
+import {createPlayer, getPlayerById} from "../data/player";
 import demoPlayers from "./demo-players.json";
 /**
  * @typedef {import("./dispatch").Action} Action
+ * @typedef {import("../data/index").Player} Player
  * @typedef {import("./dispatch").PlayerAction} PlayerAction
  */
 
@@ -86,7 +88,7 @@ function playersReducer(state, action ) {
     }
 }
 
-/** @type {{playerState: typeof defaultPlayers, playerDispatch: React.Dispatch<PlayerAction>}} */
+/** @type {[typeof defaultPlayers, React.Dispatch<PlayerAction>]} */
 const defaultContext = null;
 const PlayerContext = React.createContext(defaultContext);
 
@@ -94,8 +96,13 @@ function usePlayerReducer() {
     return React.useReducer(playersReducer, defaultPlayers);
 }
 
+/**
+ * @returns {[typeof defaultPlayers, React.Dispatch<PlayerAction>, Curry.Curry<(id: number) => Player>]}
+ */
 export function usePlayers() {
-    return React.useContext(PlayerContext);
+    const [state, dispatch] = React.useContext(PlayerContext);
+    const getPlayer = curry(getPlayerById)(state.players);
+    return [state, dispatch, getPlayer];
 }
 
 /**
@@ -104,7 +111,7 @@ export function usePlayers() {
 export function PlayersProvider(props) {
     const [playerState, playerDispatch] = usePlayerReducer();
     return (
-        <PlayerContext.Provider value={{playerState, playerDispatch}}>
+        <PlayerContext.Provider value={[playerState, playerDispatch]}>
             {props.children}
         </PlayerContext.Provider>
     );

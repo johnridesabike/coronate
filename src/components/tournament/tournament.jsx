@@ -1,17 +1,16 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import Tooltip from "@reach/tooltip";
-import {Link} from "@reach/router";
+import {Link, Redirect} from "@reach/router";
 import last from "ramda/src/last";
 import Check from "react-feather/dist/icons/check-circle";
 import Alert from "react-feather/dist/icons/alert-circle";
-import {calcNumOfRounds} from "../../data/utility";
-import Round from "./round/";
-import PlayerSelect from "./player-select/index";
-import {useTournament} from "../../state/tourneys-state";
-import {usePlayers} from "../../state/player-state";
-import Scores from "./scores";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
+import Round from "./round/";
+import Scores from "./scores";
+import PlayerSelect from "./player-select/index";
+import {useTournament, usePlayers} from "../../state";
+import {calcNumOfRounds} from "../../data/utility";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 
@@ -20,14 +19,17 @@ import "@reach/tooltip/styles.css";
  * @param {string} [props.path]
  * @param {number} [props.tourneyId]
  */
-export default function Tournament({tourneyId, path}) {
+export default function Tournament({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
+    const [playerState] = usePlayers();
     const [defaultTab, setDefaultTab] = useState(0);
-    // This isn't that expensive, but why not memoize it?
+    // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
+            if (!tourney) {
+                return false;
+            }
             const lastRound = last(tourney.roundList);
             if (!lastRound) {
                 return true;
@@ -45,7 +47,7 @@ export default function Tournament({tourneyId, path}) {
             );
             return (unMatchedPlayers.length === 0 && !results.includes(0));
         },
-        [tourney.players, tourney.roundList]
+        [tourney]
     );
     useEffect(
         function () {
@@ -55,7 +57,7 @@ export default function Tournament({tourneyId, path}) {
                 document.title = origTitle;
             };
         },
-        [tourney.name]
+        [tourney]
     );
     function newRound() {
         dispatch({type: "ADD_ROUND", tourneyId});
@@ -69,6 +71,9 @@ export default function Tournament({tourneyId, path}) {
                 tourneyId
             });
         }
+    }
+    if (!tourney) {
+        return <Redirect to="/" />;
     }
     return (
         <Tabs defaultIndex={defaultTab}>
@@ -93,7 +98,7 @@ export default function Tournament({tourneyId, path}) {
                         : "You must complete the last round before beginning a new one."
                     )}
                 >
-                    <span>
+                    <span className="helpIcon">
                         {(
                             (isNewRoundReady)
                             ? <Check />

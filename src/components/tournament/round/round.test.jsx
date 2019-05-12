@@ -5,8 +5,7 @@ import "../../../__mocks__/getComputedStyle.mock";
 import PlayerInfoBox from "../../players/info-box";
 import Round from "./index";
 import Tournament from "../tournament";
-import {TournamentProvider} from "../../../state/tourneys-state";
-import {PlayersProvider} from "../../../state/player-state";
+import {TournamentProvider, PlayersProvider} from "../../../state";
 
 afterEach(cleanup);
 

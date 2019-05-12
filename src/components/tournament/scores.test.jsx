@@ -2,8 +2,7 @@ import React from "react";
 import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
 import dashify from "dashify";
-import {TournamentProvider} from "../../state/tourneys-state";
-import {PlayersProvider} from "../../state/player-state";
+import {TournamentProvider, PlayersProvider} from "../../state";
 import Scores from "../tournament/scores";
 
 afterEach(cleanup);

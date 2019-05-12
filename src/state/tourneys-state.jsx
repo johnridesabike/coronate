@@ -17,7 +17,6 @@ import {
     set
 } from "ramda";
 import {getPlayerById} from "../data/player";
-// import defaultOptions from "./demo-options.json";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
 /**
@@ -35,13 +34,7 @@ const defaultData = defaultTourneyList;
  * @returns {Tournament[]}
  */
 function tourneysReducer(state, action) {
-    // const getPlayer = curry(getPlayerById)(players);
     switch (action.type) {
-    // Options
-    // case "SET_BYE_VALUE":
-    //     options.byeValue = action.byeValue;
-    //     return Object.assign({}, state);
-    // Tournaments
     case "ADD_TOURNEY":
         return append(action.tourney, state);
     case "DEL_TOURNEY":
@@ -116,7 +109,8 @@ function tourneysReducer(state, action) {
                     state[action.tourneyId],
                     action.playerState,
                     action.roundId,
-                    action.unpairedPlayers
+                    action.unpairedPlayers,
+                    action.byeValue
                 )
             ),
             state
@@ -124,7 +118,7 @@ function tourneysReducer(state, action) {
     case "MANUAL_PAIR":
         return over(
             lensPath([action.tourneyId, "roundList", action.roundId]),
-            append(manualPair(action.players, action.pair)),
+            append(manualPair(action.players, action.pair, action.byeValue)),
             state
         );
     case "SET_MATCH_RESULT":

@@ -1,26 +1,26 @@
 import React from "react";
-import {useTournament} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {useTournament, usePlayers} from "../../../state";
+import {PlayerLink} from "../../utility";
 
 /**
  * @param {Object} props
  */
 export default function Selecting({tourneyId, setIsSelecting}) {
-    const [tourney, dispatch] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
+    const [{players}, dispatch] = useTournament(tourneyId);
+    const [playerState] = usePlayers();
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function togglePlayer(event) {
         const id = Number(event.target.value);
         if (event.target.checked) {
             dispatch({
                 type: "SET_TOURNEY_PLAYERS",
-                players: tourney.players.concat([id]),
+                players: players.concat([id]),
                 tourneyId
             });
         } else {
             dispatch({
                 type: "SET_TOURNEY_PLAYERS",
-                players: tourney.players.filter((pId) => pId !== id),
+                players: players.filter((pId) => pId !== id),
                 tourneyId
             });
         }
@@ -64,15 +64,15 @@ export default function Selecting({tourneyId, setIsSelecting}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {playerState.players.map((p) => (
-                        <tr key={p.id}>
-                            <td>{p.firstName}</td>
-                            <td>{p.lastName}</td>
+                    {playerState.players.map(({id}) => (
+                        <tr key={id}>
+                            <td><PlayerLink id={id} firstName /></td>
+                            <td><PlayerLink id={id} lastName /></td>
                             <td>
                                 <input
                                     type="checkbox"
-                                    value={p.id}
-                                    checked={tourney.players.includes(p.id)}
+                                    value={id}
+                                    checked={players.includes(id)}
                                     onChange={togglePlayer}
                                 />
                             </td>

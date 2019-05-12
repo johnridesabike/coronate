@@ -1,11 +1,7 @@
 import React from "react";
-import "@reach/menu-button/styles.css";
 import numeral from "numeral";
-import curry from "ramda/src/curry";
-import {getPlayerById} from "../../../data/player";
 import {genPlayerData} from "../../../pairing-scoring/scoring";
-import {useTournaments} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {useTournaments, usePlayers} from "../../../state";
 
 /**
  * @typedef {import("../../../data").Match} Match
@@ -20,8 +16,8 @@ import {usePlayers} from "../../../state/player-state";
  */
 export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     const [tourneys] = useTournaments();
-    const {playerState} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
+    // eslint-disable-next-line no-unused-vars
+    const [playerState, ignore, getPlayer] = usePlayers();
     const playerData = genPlayerData(
         match.players[color],
         playerState.players,

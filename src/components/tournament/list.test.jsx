@@ -1,7 +1,7 @@
 import React from "react";
 import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
-import {TournamentProvider} from "../../state/tourneys-state";
+import {TournamentProvider} from "../../state";
 import TournamentList from "./list";
 
 afterEach(cleanup);

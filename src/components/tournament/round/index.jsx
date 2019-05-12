@@ -1,6 +1,4 @@
 import React, {useState} from "react";
-import "@reach/menu-button/styles.css";
-import curry from "ramda/src/curry";
 import Repeat from "react-feather/dist/icons/repeat";
 import Trash from "react-feather/dist/icons/trash-2";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
@@ -9,10 +7,8 @@ import MatchRow from "./match-row";
 import PlayerMatchInfo from "./player-match-info";
 import PairPicker from "./pair-picker";
 import {PanelContainer, Panel} from "../../utility";
-import {getPlayerById} from "../../../data/player";
 import {getById, getIndexById} from "../../../data/utility";
-import {useTournament} from "../../../state/tourneys-state";
-import {usePlayers} from "../../../state/player-state";
+import {useTournament, usePlayers} from "../../../state";
 import style from "./round.module.css";
 
 /**
@@ -21,16 +17,16 @@ import style from "./round.module.css";
  * @param {number} props.tourneyId
  */
 export default function Round({roundId, tourneyId}) {
-    const [tourney, dispatch] = useTournament(tourneyId);
-    const {playerState, playerDispatch} = usePlayers();
-    const getPlayer = curry(getPlayerById)(playerState.players);
-    const matchList = tourney.roundList[roundId];
+    const [{roundList}, dispatch] = useTournament(tourneyId);
+    // eslint-disable-next-line no-unused-vars
+    const [ignore, playerDispatch, getPlayer] = usePlayers();
+    const matchList = roundList[roundId];
     /** @type {string} */
     const defaultMatch = null;
     const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
     /** @param {string} matchId */
     function unMatch(matchId) {
-        const match = getById(tourney.roundList[roundId], matchId);
+        const match = getById(roundList[roundId], matchId);
         if (match.result.reduce((a, b) => a + b) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
@@ -59,7 +55,7 @@ export default function Round({roundId, tourneyId}) {
      * @param {number} direction
      */
     function moveMatch(matchId, direction) {
-        const matchesRef = tourney.roundList[roundId];
+        const matchesRef = roundList[roundId];
         const oldIndex = getIndexById(matchesRef, matchId);
         const newIndex = (
             (oldIndex + direction >= 0)

@@ -1,5 +1,12 @@
 import {Player, Tournament} from "../data/index";
 
+declare interface ActionByeValue {
+    type: "SET_BYE_VALUE",
+    byeValue: number
+}
+
+export type OptionAction = ActionByeValue;
+
 declare interface ActionAddPlayer {
     type: "ADD_PLAYER",
     newPlayer: Player
@@ -36,10 +43,6 @@ export interface PlayerState {
     avoid: number[][],
 }
 
-declare interface ActionByeValue {
-    type: "SET_BYE_VALUE",
-    byeValue: number
-}
 declare interface ActionAddTourney {
     type: "ADD_TOURNEY",
     tourney: Tournament
@@ -83,14 +86,16 @@ declare interface ActionAutoPair {
     tourneyId: number,
     roundId: number,
     unpairedPlayers: number[],
-    playerState: PlayerState
+    playerState: PlayerState,
+    byeValue: number
 }
 declare interface ActionManualPair {
     type: "MANUAL_PAIR",
     tourneyId: number,
     roundId: number,
     pair: number[],
-    players: Player[]
+    players: Player[],
+    byeValue: number
 }
 declare interface ActionSetMatchResult {
     type: "SET_MATCH_RESULT",

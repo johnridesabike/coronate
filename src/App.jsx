@@ -14,8 +14,7 @@ import {TournamentList, Tournament} from "./components/tournament";
 import Players, {PlayerList, PlayerInfo} from "./components/players";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
-import {TournamentProvider} from "./state/tourneys-state";
-import {PlayersProvider} from "./state/player-state";
+import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";
@@ -30,7 +29,7 @@ function App() {
             <Caution />
             <LocationProvider history={history}>
                 <nav className="header">
-                    <Link to="/" className={link}>
+                    <Link to="tourneys" className={link}>
                         Tournaments
                     </Link>
                     <Link to="players" className={link}>
@@ -44,24 +43,27 @@ function App() {
                     </Link>
                 </nav>
                 <main className="content">
-                    <PlayersProvider>
-                        <TournamentProvider>
-                            <Router>
-                                <TournamentIndex path="tourneys">
-                                    <TournamentList path="/" />
-                                    <Tournament path=":tourneyId" />
-                                </TournamentIndex>
-                                <Players path="players">
-                                    <PlayerList path="/"/>
-                                    <PlayerInfo path=":playerId" />
-                                </Players>
-                                <Options path="options" />
-                                <About path="about" />
-                                <NotFound default />
-                                <Redirect from="/" to="tourneys" noThrow />
-                            </Router>
-                        </TournamentProvider>
-                    </PlayersProvider>
+                    {/* Lots of nested contexts. Is there a better way? */}
+                    <OptionsProvider>
+                        <PlayersProvider>
+                            <TournamentProvider>
+                                <Router>
+                                    <TournamentIndex path="tourneys">
+                                        <TournamentList path="/" />
+                                        <Tournament path=":tourneyId" />
+                                    </TournamentIndex>
+                                    <Players path="players">
+                                        <PlayerList path="/"/>
+                                        <PlayerInfo path=":playerId" />
+                                    </Players>
+                                    <Options path="options" />
+                                    <About path="about" />
+                                    <NotFound default />
+                                    <Redirect from="/" to="tourneys" noThrow />
+                                </Router>
+                            </TournamentProvider>
+                        </PlayersProvider>
+                    </OptionsProvider>
                 </main>
             </LocationProvider>
         </div>

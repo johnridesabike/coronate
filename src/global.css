@@ -78,3 +78,7 @@ svg {
 .iconButton svg {
     margin: 0.25em;
 }
+
+.helpIcon {
+    cursor: help;
+}
