@@ -3,7 +3,8 @@ import {
     Router,
     Link,
     LocationProvider,
-    createHistory
+    createHistory,
+    Redirect
 } from "@reach/router";
 import createHashSource from "hash-source";
 import About from "./components/about";
@@ -46,9 +47,9 @@ function App() {
                     <PlayersProvider>
                         <TournamentProvider>
                             <Router>
-                                <TournamentIndex path="/">
+                                <TournamentIndex path="tourneys">
                                     <TournamentList path="/" />
-                                    <Tournament path="tourney/:tourneyId" />
+                                    <Tournament path=":tourneyId" />
                                 </TournamentIndex>
                                 <Players path="players">
                                     <PlayerList path="/"/>
@@ -57,6 +58,7 @@ function App() {
                                 <Options path="options" />
                                 <About path="about" />
                                 <NotFound default />
+                                <Redirect from="/" to="tourneys" noThrow />
                             </Router>
                         </TournamentProvider>
                     </PlayersProvider>

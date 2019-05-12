@@ -51,6 +51,19 @@ export default function PlayerInfoBox(props) {
         },
         [setSelectedAvoider, unAvoided]
     );
+    useEffect(
+        function () {
+            const origTitle = document.title;
+            document.title = (
+                getPlayer(playerId).firstName
+                + " " + getPlayer(playerId).lastName
+            );
+            return function () {
+                document.title = origTitle;
+            };
+        },
+        [playerId, getPlayer]
+    );
     return (
         <div>
             <Link to="/players"><ChevronLeft /> Back</Link>

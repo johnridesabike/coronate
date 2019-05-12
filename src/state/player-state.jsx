@@ -1,4 +1,15 @@
 import React from "react";
+// This will cause Webpack to import the entire Ramda library, but we're using
+// so much of it that cherry-picking individual files has virtually no benefit.
+import {
+    append,
+    lensPath,
+    filter,
+    findIndex,
+    over,
+    propEq,
+    set
+} from "ramda";
 import {createPlayer} from "../data/player";
 import demoPlayers from "./demo-players.json";
 /**
@@ -16,55 +27,59 @@ const defaultPlayers = {
  * @param {PlayerAction} action
  */
 function playersReducer(state, action ) {
-    const {players, avoid} = state;
     switch (action.type) {
     // Players
     case "ADD_PLAYER":
-        return Object.assign(
-            {},
-            state,
-            {players: players.concat([action.newPlayer])}
+        return over(
+            lensPath(["players"]),
+            append(action.newPlayer),
+            state
         );
     case "DEL_PLAYER":
-        return Object.assign(
-            {},
-            state,
-            {
-                players: players.filter((p) => p.id !== action.id),
-                avoid: avoid.filter(
-                    (pair) => !pair.includes(action.id)
-                )
-            }
+        return over(
+            lensPath(["players"]),
+            filter((p) => p.id !== action.id),
+            set(
+                lensPath(["avoid"]),
+                filter((pair) => !pair.includes(action.id)),
+                state
+            )
         );
     case "SET_PLAYER_MATCHCOUNT":
-        Object.assign(
-            players[players.map((p) => p.id).indexOf(action.id)],
-            {matchCount: action.matchCount}
+        return set(
+            lensPath([
+                "players",
+                findIndex(propEq("id", action.id), state.players),
+                "matchCount"
+            ]),
+            action.matchCount,
+            state
         );
-        return Object.assign({}, state);
     case "SET_PLAYER_RATING":
-        Object.assign(
-            players[players.map((p) => p.id).indexOf(action.id)],
-            {rating: action.rating}
+        return set(
+            lensPath([
+                "players",
+                findIndex(propEq("id", action.id), state.players),
+                "rating"
+            ]),
+            action.rating,
+            state
         );
-        return Object.assign({}, state);
     // Avoid
     case "ADD_AVOID_PAIR":
-        return Object.assign(
-            {},
-            state,
-            {avoid: avoid.concat([action.pair])}
+        return over(
+            lensPath(["avoid"]),
+            append(action.pair),
+            state
         );
     case "DEL_AVOID_PAIR":
-        return Object.assign(
-            {},
-            state,
-            {avoid: avoid.filter(
-                (pair) => !(
-                    pair.includes(action.pair[0])
-                    && pair.includes(action.pair[1])
-                )
-            )}
+        return over(
+            lensPath(["avoid"]),
+            filter((pair) => !(
+                pair.includes(action.pair[0])
+                && pair.includes(action.pair[1])
+            )),
+            state
         );
     default:
         throw new Error("Unexpected action type");

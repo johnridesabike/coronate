@@ -3,7 +3,6 @@ import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
 import {TournamentProvider} from "../../state/tourneys-state";
 import TournamentList from "./list";
-import "../../__mocks__/getComputedStyle.mock";
 
 afterEach(cleanup);
 

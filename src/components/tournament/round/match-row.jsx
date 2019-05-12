@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "@reach/router";
 import curry from "ramda/src/curry";
 import More from "react-feather/dist/icons/more-horizontal";
 import Close from "react-feather/dist/icons/x";
@@ -129,7 +130,9 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-white`}
             >
-                {whiteName}{" "}
+                <Link to={"/players/" + match.players[0]}>
+                    {whiteName}
+                </Link>{" "}
                 {resultCode === "WHITE" && (
                     <span role="img" aria-label="Winner">
                         🏆
@@ -140,7 +143,9 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-black`}
             >
-                {blackName}{" "}
+                <Link to={"/players/" + match.players[1]}>
+                    {blackName}
+                </Link>{" "}
                 {resultCode === "BLACK" && (
                     <span role="img" aria-label="Winner">
                         🏆
@@ -173,6 +178,7 @@ export default function MatchRow({
                 {(selectedMatch !== match.id)
                 ? (
                     <button
+                        className="iconButton"
                         title={
                             // eslint-disable-next-line max-len
                             `Open information for ${whiteName} versus ${blackName}.`

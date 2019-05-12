@@ -15,6 +15,7 @@
     "@reach/menu-button": "^0.1.17",
     "@reach/router": "^1.2.1",
     "@reach/tabs": "^0.1.5",
+    "@reach/tooltip": "^0.2.0",
     "@reach/visually-hidden": "^0.1.4",
     "dashify": "^2.0.0",
     "edmonds-blossom": "^1.0.0",

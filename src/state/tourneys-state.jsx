@@ -1,17 +1,21 @@
 import React from "react";
-import __ from "ramda/src/__";
-import append from "ramda/src/append";
-import concat from "ramda/src/concat";
-import last from "ramda/src/last";
-import lensPath from "ramda/src/lensPath";
-import filter from "ramda/src/filter";
-import findIndex from "ramda/src/findIndex";
-import move from "ramda/src/move";
-import over from "ramda/src/over";
-import propEq from "ramda/src/propEq";
-import remove from "ramda/src/remove";
-import reverse from "ramda/src/reverse";
-import set from "ramda/src/set";
+// This will cause Webpack to import the entire Ramda library, but we're using
+// so much of it that cherry-picking individual files has virtually no benefit.
+import {
+    __,
+    append,
+    concat,
+    last,
+    lensPath,
+    filter,
+    findIndex,
+    move,
+    over,
+    propEq,
+    remove,
+    reverse,
+    set
+} from "ramda";
 import {getPlayerById} from "../data/player";
 // import defaultOptions from "./demo-options.json";
 import defaultTourneyList from "./demo-tourney.json";
@@ -50,7 +54,7 @@ function tourneysReducer(state, action) {
         );
     case "DEL_LAST_ROUND":
         // If a match has been scored, then reset it.
-        // TODO: This logic should probably be in the player state dispatch?
+        // TODO: This logic should probably be somewhere else?
         last(
             state[action.tourneyId].roundList
         ).forEach(
