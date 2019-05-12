@@ -16,7 +16,6 @@ const defaultPlayers = {
  * @param {PlayerAction} action
  */
 function playersReducer(state, action ) {
-    console.log("dispatched players", action);
     const {players, avoid} = state;
     switch (action.type) {
     // Players
@@ -89,7 +88,6 @@ export function usePlayers() {
  */
 export function PlayersProvider(props) {
     const [playerState, playerDispatch] = usePlayerReducer();
-    React.useEffect(function () {console.log("rendered players.");});
     return (
         <PlayerContext.Provider value={{playerState, playerDispatch}}>
             {props.children}

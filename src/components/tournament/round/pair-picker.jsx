@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "@reach/menu-button/styles.css";
 import curry from "ramda/src/curry";
 import {getPlayerById, dummyPlayer} from "../../../data/player";
-import {useData} from "../../../state/global-state";
+import {useTournament} from "../../../state/tourneys-state";
 import {usePlayers} from "../../../state/player-state";
 
 /**
@@ -11,10 +11,10 @@ import {usePlayers} from "../../../state/player-state";
  * @param {number} props.roundId
  */
 export default function PairPicker({tourneyId, roundId}) {
-    const {data, dispatch} = useData();
+    tourneyId = Number(tourneyId); // reach router passes a string instead.
+    const [tourney, dispatch] = useTournament(tourneyId);
     const {playerState} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {number[]} */
     const defaultPlayers = [];

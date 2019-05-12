@@ -11,7 +11,7 @@ import PairPicker from "./pair-picker";
 import {PanelContainer, Panel} from "../../utility";
 import {getPlayerById} from "../../../data/player";
 import {getById, getIndexById} from "../../../data/utility";
-import {useData} from "../../../state/global-state";
+import {useTournament} from "../../../state/tourneys-state";
 import {usePlayers} from "../../../state/player-state";
 import style from "./round.module.css";
 
@@ -21,10 +21,9 @@ import style from "./round.module.css";
  * @param {number} props.tourneyId
  */
 export default function Round({roundId, tourneyId}) {
-    const {data, dispatch} = useData();
+    const [tourney, dispatch] = useTournament(tourneyId);
     const {playerState, playerDispatch} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const tourney = data.tourneys[tourneyId];
     const matchList = tourney.roundList[roundId];
     /** @type {string} */
     const defaultMatch = null;
@@ -60,7 +59,7 @@ export default function Round({roundId, tourneyId}) {
      * @param {number} direction
      */
     function moveMatch(matchId, direction) {
-        const matchesRef = data.tourneys[tourneyId].roundList[roundId];
+        const matchesRef = tourney.roundList[roundId];
         const oldIndex = getIndexById(matchesRef, matchId);
         const newIndex = (
             (oldIndex + direction >= 0)
@@ -72,9 +71,9 @@ export default function Round({roundId, tourneyId}) {
     return (
         <PanelContainer>
             <Panel>
-                <div className="toolbar">
+                <div className={style.toolbar}>
                     <button
-                        className="danger"
+                        className="danger iconButton"
                         onClick={() => unMatch(selectedMatch)}
                         disabled={selectedMatch === null}
                         title="Unmatch"
@@ -83,6 +82,7 @@ export default function Round({roundId, tourneyId}) {
                         <Trash />
                     </button>
                     <button
+                        className="iconButton"
                         onClick={() => swapColors(selectedMatch)}
                         disabled={selectedMatch === null}
                         title="Swap colors"
@@ -91,6 +91,7 @@ export default function Round({roundId, tourneyId}) {
                         <Repeat />
                     </button>
                     <button
+                        className="iconButton"
                         onClick={() => moveMatch(selectedMatch, -1)}
                         disabled={selectedMatch === null}
                         title="Move up"
@@ -99,6 +100,7 @@ export default function Round({roundId, tourneyId}) {
                         <ArrowUp />
                     </button>
                     <button
+                        className="iconButton"
                         onClick={() => moveMatch(selectedMatch, 1)}
                         disabled={selectedMatch === null}
                         title="Move down"

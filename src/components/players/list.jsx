@@ -2,6 +2,7 @@ import React, {Fragment, useState} from "react";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
+import Trash from "react-feather/dist/icons/trash-2";
 import {createPlayer} from "../../data/player";
 import {usePlayers} from "../../state/player-state";
 
@@ -62,14 +63,16 @@ export default function PlayerList(props) {
                     <td className="table__number">{player.rating}</td>
                     <td>
                         <button
-                            className="danger"
+                            className="danger iconButton"
                             onClick={(event) =>
                                 delPlayer(event, player.id)
-                            }>
-                            delete
-                            <VisuallyHidden>
-                                {" "}{player.firstName} {player.lastName}
-                            </VisuallyHidden>
+                            }
+                            // eslint-disable-next-line max-len
+                            title={`Delete ${player.firstName} ${player.lastName}`}
+                            // eslint-disable-next-line max-len
+                            aria-label={`Delete ${player.firstName} ${player.lastName}`}
+                        >
+                            <Trash />
                         </button>
                     </td>
                     <td>

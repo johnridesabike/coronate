@@ -52,7 +52,8 @@ li.player.missing {
 }
 
 button,
-input {
+input,
+select {
     font-size: 0.8em;
 }
 
@@ -66,4 +67,10 @@ input {
 
 svg {
     vertical-align: middle;
+    height: 1em;
+    width: auto;
+}
+
+.iconButton {
+    padding: 0;
 }

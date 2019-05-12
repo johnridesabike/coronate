@@ -2,14 +2,13 @@ import React, {useState} from "react";
 import Trash from "react-feather/dist/icons/trash-2";
 import {Link} from "@reach/router";
 import createTournament from "../../data/tournament";
-import {useData} from "../../state/global-state";
+import {useTournaments} from "../../state/tourneys-state";
 
 /**
  * @param {Object} props
  */
 export default function TournamentList(props) {
-    const {data, dispatch} = useData();
-    const tourneyList = data.tourneys;
+    const [tourneys, dispatch] = useTournaments();
     const [newTourneyName, setNewTourneyName] = useState("");
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function updateNewName(event) {
@@ -26,13 +25,13 @@ export default function TournamentList(props) {
     }
     return (
         <div>
-            {(tourneyList.length > 0) &&
+            {(tourneys.length > 0) &&
                 <h2>Tournament list</h2>
             }
-            {(tourneyList.length > 0)
+            {(tourneys.length > 0)
                 ?
                 <ol>
-                    {tourneyList.map((tourney, i) =>
+                    {tourneys.map((tourney, i) =>
                         <li key={i}>
                             <Link to={`tourney/${i}`}>
                                 {tourney.name}
@@ -40,7 +39,7 @@ export default function TournamentList(props) {
                             <button
                                 title={`Delete “${tourney.name}”`}
                                 aria-label={`Delete “${tourney.name}”`}
-                                className="danger"
+                                className="danger iconButton"
                                 onClick={
                                     () => dispatch({
                                         type: "DEL_TOURNEY",
@@ -57,7 +56,7 @@ export default function TournamentList(props) {
             <form onSubmit={makeTournament}>
                 <fieldset>
                     <legend>Make a new tournament</legend>
-                    <label>Name{" "}
+                    <label>Name:{" "}
                         <input
                             type="text"
                             placeholder="tournament name"

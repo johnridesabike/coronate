@@ -54,7 +54,8 @@ declare interface ActionAddRound {
 }
 declare interface ActionDelLastRound {
     type: "DEL_LAST_ROUND",
-    tourneyId: number
+    tourneyId: number,
+    players: Player[]
 }
 declare interface ActionAddRemoveTieBreak {
     type: "ADD_TIEBREAK" | "DEL_TIEBREAK",
@@ -136,9 +137,9 @@ export type Action = (
     | ActionMoveMatch
 );
 
-export interface GlobalState {
-    options: {
-        byeValue: number
-    },
-    tourneys: Tournament[]
-}
+// export interface GlobalState {
+//     options: {
+//         byeValue: number
+//     },
+//     tourneys: Tournament[]
+// }

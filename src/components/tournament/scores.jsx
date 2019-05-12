@@ -4,7 +4,7 @@ import numeral from "numeral";
 import dashify from "dashify";
 import {PanelContainer, Panel} from "../utility";
 import {dummyPlayer, getPlayerById} from "../../data/player";
-import {useData} from "../../state/global-state";
+import {useTournament} from "../../state/tourneys-state";
 import {usePlayers} from "../../state/player-state";
 import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
@@ -42,10 +42,10 @@ numeral.register("format", "half", {
  * @param {number} props.tourneyId
  */
 function ScoreList({tourneyId}) {
-    const {data} = useData();
+    tourneyId = Number(tourneyId); // reach router passes a string instead.
+    const [tourney] = useTournament(tourneyId);
     const {playerState} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const tourney = data.tourneys[tourneyId];
     const [standingTree, tbMethods] = calcStandings(
         tourney.tieBreaks,
         tourney.roundList
@@ -122,15 +122,15 @@ function ScoreList({tourneyId}) {
  * @param {number} props.tourneyId
  */
 function SelectTieBreaks({tourneyId}) {
-    const {data, dispatch} = useData();
-    const tourney = data.tourneys[tourneyId];
+    tourneyId = Number(tourneyId); // reach router passes a string instead.
+    const [tourney, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);
     /** @param {number} [id] */
     function toggleTb(id = null) {
         if (!id) {
             id = selectedTb;
         }
-        const tieBreaks = data.tourneys[tourneyId].tieBreaks;
+        const tieBreaks = tourney.tieBreaks;
         if (tieBreaks.includes(id)) {
             dispatch({type: "DEL_TIEBREAK", id, tourneyId});
         } else {
@@ -139,7 +139,7 @@ function SelectTieBreaks({tourneyId}) {
     }
     /** @param {number} direction */
     function moveTb(direction) {
-        const index = data.tourneys[tourneyId].tieBreaks.indexOf(selectedTb);
+        const index = tourney.tieBreaks.indexOf(selectedTb);
         dispatch({
             type: "MOVE_TIEBREAK",
             oldIndex: index,

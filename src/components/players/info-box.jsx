@@ -3,6 +3,7 @@ import numeral from "numeral";
 import curry from "ramda/src/curry";
 import {Link} from "@reach/router";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
+import Trash from "react-feather/dist/icons/trash-2";
 import {getPlayerById, getPlayerAvoidList, kFactor} from "../../data/player";
 import {usePlayers} from "../../state/player-state";
 
@@ -75,17 +76,21 @@ export default function PlayerInfoBox(props) {
                         {singAvoidList.map((pId) => (
                             <li key={pId}>
                                 {getPlayer(pId).firstName}{" "}
-                                {getPlayer(pId).lastName}
+                                {getPlayer(pId).lastName}{" "}
                                 <button
-                                    className="danger"
+                                    className="danger iconButton"
                                     onClick={() =>
                                         playerDispatch({
                                             type: "DEL_AVOID_PAIR",
                                             pair: [playerId, pId]
                                         })
                                     }
+                                    title={`Remove ${getPlayer(pId).firstName}
+${getPlayer(pId).lastName}`}
+                                    arial-label={`Remove 
+${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
                                 >
-                                    remove
+                                    <Trash />
                                 </button>
                             </li>
                         ))}
@@ -107,7 +112,7 @@ export default function PlayerInfoBox(props) {
                                 {getPlayer(pId).lastName}
                             </option>
                         ))}
-                    </select>
+                    </select>{" "}
                     <input type="submit" value="Add" />
                 </fieldset>
             </form>

@@ -4,7 +4,7 @@ import More from "react-feather/dist/icons/more-horizontal";
 import Close from "react-feather/dist/icons/x";
 import {getPlayerById, calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
-import {useData} from "../../../state/global-state";
+import {useTournaments} from "../../../state/tourneys-state";
 import {usePlayers} from "../../../state/player-state";
 // @ts-ignore
 import {winnerSelect} from "./round.module.css";
@@ -30,7 +30,9 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    const {dispatch} = useData();
+    // @ts-ignore
+    // eslint-disable-next-line no-unused-vars
+    const [ignore, dispatch] = useTournaments();
     const {playerState, playerDispatch} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
     /** @type {string} */

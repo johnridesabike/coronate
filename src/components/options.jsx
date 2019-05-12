@@ -1,12 +1,15 @@
 import React from "react";
-import {useData} from "../state/global-state";
+import {useTournaments} from "../state/tourneys-state";
 
 /**
  * @param {Object} props
  */
 export function Options(props) {
-    const {data, dispatch} = useData();
-    const options = data.options;
+    const [tourneys] = useTournaments();
+    // const options = data.options;
+    const options = {byeValue: 1};
+    // @ts-ignore
+    const dispatch = (o) => null;
     return (
         <div>
             <form>
@@ -61,7 +64,7 @@ export function Options(props) {
                         className="json"
                         rows={25}
                         cols={50}
-                        value={JSON.stringify(data, null, 2)}
+                        value={JSON.stringify(tourneys, null, 2)}
                         name="playerdata"
                         readOnly />
                     <input type="submit" value="Load" disabled />

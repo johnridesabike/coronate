@@ -4,7 +4,7 @@ import numeral from "numeral";
 import curry from "ramda/src/curry";
 import {getPlayerById} from "../../../data/player";
 import {genPlayerData} from "../../../pairing-scoring/scoring";
-import {useData} from "../../../state/global-state";
+import {useTournaments} from "../../../state/tourneys-state";
 import {usePlayers} from "../../../state/player-state";
 
 /**
@@ -19,14 +19,14 @@ import {usePlayers} from "../../../state/player-state";
  * @param {number} props.roundId
  */
 export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
-    const {data} = useData();
+    const [tourneys] = useTournaments();
     const {playerState} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
     const playerData = genPlayerData(
         match.players[color],
         playerState.players,
         playerState.avoid,
-        data.tourneys[tourneyId].roundList,
+        tourneys[tourneyId].roundList,
         roundId
     );
     const colorBalance = playerData.colorBalance;

@@ -13,7 +13,7 @@ import {TournamentList, Tournament} from "./components/tournament";
 import Players, {PlayerList, PlayerInfo} from "./components/players";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
-import {DataProvider} from "./state/global-state";
+import {TournamentProvider} from "./state/tourneys-state";
 import {PlayersProvider} from "./state/player-state";
 import "./global.css";
 // @ts-ignore
@@ -44,7 +44,7 @@ function App() {
                 </nav>
                 <main className="content">
                     <PlayersProvider>
-                        <DataProvider>
+                        <TournamentProvider>
                             <Router>
                                 <TournamentIndex path="/">
                                     <TournamentList path="/" />
@@ -58,7 +58,7 @@ function App() {
                                 <About path="about" />
                                 <NotFound default />
                             </Router>
-                        </DataProvider>
+                        </TournamentProvider>
                     </PlayersProvider>
                 </main>
             </LocationProvider>

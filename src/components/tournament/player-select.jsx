@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import curry from "ramda/src/curry";
 import {getPlayerById} from "../../data/player";
 import {hasHadBye} from "../../pairing-scoring/scoring";
-import {useData} from "../../state/global-state";
+import {useTournament} from "../../state/tourneys-state";
 import {usePlayers} from "../../state/player-state";
 
 /**
@@ -10,11 +10,11 @@ import {usePlayers} from "../../state/player-state";
  * @param {number} props.tourneyId
  */
 export default function PlayerSelect({tourneyId}) {
-    const {data, dispatch} = useData();
+    tourneyId = Number(tourneyId); // reach router passes a string instead.
+    const [tourney, dispatch] = useTournament(tourneyId);
     const {playerState} = usePlayers();
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const players = data.tourneys[tourneyId].players;
-    const tourney = data.tourneys[tourneyId];
+    const players = tourney.players;
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function togglePlayer(event) {

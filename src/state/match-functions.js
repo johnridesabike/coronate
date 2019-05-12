@@ -4,21 +4,18 @@ import createMatch from "../data/match";
 import {hasHadBye} from "../pairing-scoring/scoring";
 import {dummyPlayer, getPlayerById} from "../data/player";
 import pairPlayers from "../pairing-scoring/pairing";
-import {getById} from "../data/utility";
 /**
- * @typedef {import("./dispatch").GlobalState} GlobalState
  * @typedef {import("../data/index").Player} Player
+ * @typedef {import("../data/index").Tournament} Tournament
 */
 
 /**
- * @param {GlobalState} state
- * @param {number} tourneyId
+ * @param {Tournament} tourney
  * @param {number} roundId
  * @param {import("./dispatch").PlayerState} playerState
  * @param {number[]} unPairedPlayers
  */
-function autoPair(state, playerState, tourneyId, roundId, unPairedPlayers) {
-    const tourney = state.tourneys[tourneyId];
+function autoPair(tourney, playerState, roundId, unPairedPlayers) {
     const roundList = tourney.roundList;
     const getPlayer = curry(getPlayerById)(playerState.players);
     const nextBye = tourney.byeQueue.filter(
@@ -68,10 +65,10 @@ function autoPair(state, playerState, tourneyId, roundId, unPairedPlayers) {
     newMatchList.forEach(function (match) {
         const dummy = match.players.indexOf(dummyPlayer.id);
         if (dummy === BLACK) {
-            match.result[WHITE] = state.options.byeValue;
+            match.result[WHITE] = 1; //state.options.byeValue; // TODO
         }
         if (dummy === WHITE) {
-            match.result[BLACK] = state.options.byeValue;
+            match.result[BLACK] = 1; // state.options.byeValue; // TODO
         }
     });
     return newMatchList;
@@ -80,11 +77,10 @@ Object.freeze(autoPair);
 export {autoPair};
 
 /**
- * @param {GlobalState} state
  * @param {Player[]} players
  * @param {number[]} pair
  */
-function manualPair(state, players, pair) {
+function manualPair(players, pair) {
     const getPlayer = curry(getPlayerById)(players);
     const match = createMatch({
         id: pair.join("-"),
@@ -99,28 +95,27 @@ function manualPair(state, players, pair) {
         ]
     });
     if (pair[WHITE] === dummyPlayer.id) {
-        match.result = [state.options.byeValue, 0];
+        match.result = [1, 0]; // [state.options.byeValue, 0]; // TODO
     }
     if (pair[BLACK] === dummyPlayer.id) {
-        match.result = [0, state.options.byeValue];
+        match.result = [0, 1]; //[0, state.options.byeValue]; // TODO
     }
     return match;
 }
 Object.freeze(manualPair);
 export {manualPair};
 
-/**
- * @param {GlobalState} state
- * @param {number} tourneyId
- * @param {number} roundId
- * @param {string} matchId
- */
-function swapColors(state, tourneyId, roundId, matchId) {
-    const round = state.tourneys[tourneyId].roundList[roundId];
-    const match = getById(round, matchId);
-    match.players.reverse();
-    match.origRating.reverse();
-    match.newRating.reverse();
-}
-Object.freeze(swapColors);
-export {swapColors};
+// /**
+//  * @param {Tournament} tourney
+//  * @param {number} roundId
+//  * @param {string} matchId
+//  */
+// function swapColors(tourney, roundId, matchId) {
+//     const round = tourney.roundList[roundId];
+//     const match = getById(round, matchId);
+//     match.players.reverse();
+//     match.origRating.reverse();
+//     match.newRating.reverse();
+// }
+// Object.freeze(swapColors);
+// export {swapColors};

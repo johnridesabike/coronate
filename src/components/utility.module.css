@@ -1,0 +1,8 @@
+.panels {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.panel:not(:last-child) {
+    margin-right: 1em;
+}

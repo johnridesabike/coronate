@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./utility.module.css";
 
 /**
  * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
@@ -28,7 +29,7 @@ export const OpenButton = ({action}) => (
  */
 export function Panel({children, style}) {
     return (
-        <div style={{...style}}>
+        <div style={{...style}} className={styles.panel}>
             {children}
         </div>
     );
@@ -40,7 +41,7 @@ export function Panel({children, style}) {
  */
 export function PanelContainer({children}) {
     return (
-        <div style={{display: "flex"}}>
+        <div className={styles.panels}>
             {React.Children.map(children, (child) => child)}
         </div>
     );

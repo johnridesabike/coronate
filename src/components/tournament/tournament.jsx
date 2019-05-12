@@ -5,7 +5,8 @@ import last from "ramda/src/last";
 import {calcNumOfRounds} from "../../data/utility";
 import Round from "./round/";
 import PlayerSelect from "./player-select";
-import {useData} from "../../state/global-state";
+import {useTournament} from "../../state/tourneys-state";
+import {usePlayers} from "../../state/player-state";
 import Scores from "./scores";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import "@reach/tabs/styles.css";
@@ -16,8 +17,9 @@ import "@reach/tabs/styles.css";
  * @param {number} [props.tourneyId]
  */
 export default function Tournament({tourneyId, path}) {
-    const {data, dispatch} = useData();
-    const tourney = data.tourneys[tourneyId];
+    tourneyId = Number(tourneyId); // reach router passes a string instead.
+    const [tourney, dispatch] = useTournament(tourneyId);
+    const {playerState} = usePlayers();
     const [defaultTab, setDefaultTab] = useState(0);
     function isNewRoundReady() {
         const lastRound = last(tourney.roundList);
@@ -38,7 +40,6 @@ export default function Tournament({tourneyId, path}) {
         return (unMatchedPlayers.length === 0 && !results.includes(0));
     }
     function newRound() {
-        console.log("Clicked new round.");
         dispatch({type: "ADD_ROUND", tourneyId});
         setDefaultTab(tourney.roundList.length + 1);
     }
@@ -51,11 +52,6 @@ export default function Tournament({tourneyId, path}) {
             };
         },
         [tourney.name]
-    );
-    useEffect(
-        function () {
-            console.log("rendering tournament.");
-        }
     );
     return (
         <Tabs defaultIndex={defaultTab}>
@@ -75,7 +71,11 @@ export default function Tournament({tourneyId, path}) {
                 <button
                     className="danger"
                     onClick={() =>
-                        dispatch({type: "DEL_LAST_ROUND", tourneyId})
+                        dispatch({
+                            type: "DEL_LAST_ROUND",
+                            players: playerState.players,
+                            tourneyId
+                        })
                     }
                     disabled={tourney.roundList.length === 0}
                 >

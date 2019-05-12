@@ -2,7 +2,7 @@ import React from "react";
 import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
 import dashify from "dashify";
-import {DataProvider} from "../../state/global-state";
+import {TournamentProvider} from "../../state/tourneys-state";
 import {PlayersProvider} from "../../state/player-state";
 import Scores from "../tournament/scores";
 
@@ -11,9 +11,9 @@ afterEach(cleanup);
 it("The tie break scores calculate correctly", function () {
     const {getByTestId} = render(
         <PlayersProvider>
-            <DataProvider>
+            <TournamentProvider>
                 <Scores tourneyId={0} />
-            </DataProvider>
+            </TournamentProvider>
         </PlayersProvider>
     );
     /** @param {string} score */
@@ -27,9 +27,9 @@ it("The tie break scores calculate correctly", function () {
 it("The players are ranked correctly", function () {
     const {getByTestId} = render(
         <PlayersProvider>
-            <DataProvider>
+            <TournamentProvider>
                 <Scores tourneyId={0} />
-            </DataProvider>
+            </TournamentProvider>
         </PlayersProvider>
     );
     expect(getByTestId("0")).toHaveTextContent("Bruce Wayne");
@@ -46,9 +46,9 @@ it("The players are ranked correctly", function () {
 it("Half-scores are rendered correctly", function () {
     const {getByTestId} = render(
         <PlayersProvider>
-            <DataProvider>
+            <TournamentProvider>
                 <Scores tourneyId={0} />
-            </DataProvider>
+            </TournamentProvider>
         </PlayersProvider>
     );
     expect(getByTestId("barbara-gordon-score")).toHaveTextContent("2½");

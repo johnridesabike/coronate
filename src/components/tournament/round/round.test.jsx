@@ -5,24 +5,29 @@ import "../../../__mocks__/getComputedStyle.mock";
 import PlayerInfoBox from "../../players/info-box";
 import Round from "./index";
 import Tournament from "../tournament";
-import {DataProvider} from "../../../state/global-state";
+import {TournamentProvider} from "../../../state/tourneys-state";
 import {PlayersProvider} from "../../../state/player-state";
 
 afterEach(cleanup);
 
-const batmanInfo = (
+/** @param {Object} props */
+const TestApp = ({children}) => (
     <PlayersProvider>
-        <DataProvider>
-            <PlayerInfoBox playerId={0} />
-        </DataProvider>
+        <TournamentProvider>
+            {children}
+        </TournamentProvider>
     </PlayersProvider>
 );
+
+const batmanInfo = (
+    <TestApp>
+        <PlayerInfoBox playerId={0} />
+    </TestApp>
+);
 const robinInfo = (
-    <PlayersProvider>
-        <DataProvider>
-            <PlayerInfoBox playerId={1} />
-        </DataProvider>
-    </PlayersProvider>
+    <TestApp>
+        <PlayerInfoBox playerId={1} />
+    </TestApp>
 );
 /** @param {JSX.Element} node */
 function getRating(node) {
@@ -52,11 +57,9 @@ it("Original match counts are shown correctly.", function () {
 
 it("Ratings are updated after a match is scored.", function () {
     const container = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Tournament tourneyId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Tournament tourneyId={1} />
+        </TestApp>
     );
     fireEvent.click(container.getByText("New round"));
     fireEvent.click(container.getByText("Round 2"));
@@ -65,11 +68,9 @@ it("Ratings are updated after a match is scored.", function () {
     // tab, not just the selected one.
     cleanup();
     const round = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Round tourneyId={1} roundId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Round tourneyId={1} roundId={1} />
+        </TestApp>
     );
     fireEvent.click(round.getByText("Bruce Wayne"));
     fireEvent.click(round.getByText("Dick Grayson"));
@@ -90,11 +91,9 @@ it("Match counts are updated.", function () {
 
 it("Swapping players colors works.", function () {
     const {getByLabelText, getByTestId} = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Round tourneyId={1} roundId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Round tourneyId={1} roundId={1} />
+        </TestApp>
     );
     fireEvent.click(
         getByLabelText(
@@ -107,11 +106,9 @@ it("Swapping players colors works.", function () {
 
 it("Unmatching players works.", function () {
     const {getByLabelText, queryByText} = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Round tourneyId={1} roundId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Round tourneyId={1} roundId={1} />
+        </TestApp>
     );
     fireEvent.click(
         getByLabelText(
@@ -129,11 +126,9 @@ it("Match counts are updated after matches are removed.", function () {
 it("Players are auto-paired correctly", function () {
     // This will need to be updated as the pairing algorithm changes.
     const {getByText, getByTestId} = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Round tourneyId={1} roundId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Round tourneyId={1} roundId={1} />
+        </TestApp>
     );
     fireEvent.click(getByText(/auto-pair/i));
     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
@@ -158,11 +153,9 @@ it("Players are auto-paired correctly", function () {
 
 it("Moving matches works.", function () {
     const {getByLabelText, getByTestId} = render(
-        <PlayersProvider>
-            <DataProvider>
-                <Round tourneyId={1} roundId={1} />
-            </DataProvider>
-        </PlayersProvider>
+        <TestApp>
+            <Round tourneyId={1} roundId={1} />
+        </TestApp>
     );
     fireEvent.click(
         getByLabelText(
