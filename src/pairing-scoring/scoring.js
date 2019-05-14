@@ -382,7 +382,7 @@ export function genPlayerData(
 ) {
     const player = getPlayerById(playerList, playerId);
     return {
-        data: player,
+        profile: player,
         rating: player.rating,
         id: playerId,
         score: playerScore(playerId, roundList, roundId),

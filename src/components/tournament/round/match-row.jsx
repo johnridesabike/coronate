@@ -1,12 +1,16 @@
-import React from "react";
-import More from "react-feather/dist/icons/more-horizontal";
+import React, {useState} from "react";
+import {Dialog} from "@reach/dialog";
+import Edit from "react-feather/dist/icons/edit";
+import Info from "react-feather/dist/icons/info";
 import Close from "react-feather/dist/icons/x";
-import {PlayerLink} from "../../utility";
+import {PanelContainer, Panel} from "../../utility";
 import {calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
-import {useTournaments, usePlayers} from "../../../state";
+import {useRound, usePlayers} from "../../../state";
+import PlayerMatchInfo from "./player-match-info";
 // @ts-ignore
 import {winnerSelect} from "./round.module.css";
+import "@reach/dialog/styles.css";
 
 /**
  * @typedef {import("../../../data").Match} Match
@@ -29,9 +33,9 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    const dispatch = useTournaments()[1];
-    // eslint-disable-next-line no-unused-vars
-    const [ignore, playerDispatch, getPlayer] = usePlayers();
+    const {tourney, dispatch} = useRound(tourneyId, roundId);
+    const {playerDispatch, getPlayer} = usePlayers();
+    const [openModal, setOpenModal] = useState(false);
     /** @type {string} */
     let resultCode;
     if (match.result[0] > match.result[1]) {
@@ -53,7 +57,6 @@ export default function MatchRow({
         + " "
         + getPlayer(match.players[1]).lastName
     );
-
     /**
      * @param {React.FocusEvent<HTMLSelectElement>} event
      */
@@ -126,7 +129,7 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-white`}
             >
-                <PlayerLink id={match.players[0]} firstName lastName/>{" "}
+                {whiteName}{" "}
                 {resultCode === "WHITE" && (
                     <span role="img" aria-label="Winner">
                         🏆
@@ -137,7 +140,7 @@ export default function MatchRow({
                 className="table__player row__player"
                 data-testid={`match-${pos}-black`}
             >
-                <PlayerLink id={match.players[1]} firstName lastName/>{" "}
+                {blackName}{" "}
                 {resultCode === "BLACK" && (
                     <span role="img" aria-label="Winner">
                         🏆
@@ -171,27 +174,49 @@ export default function MatchRow({
                 ? (
                     <button
                         className="iconButton"
-                        title={
-                            // eslint-disable-next-line max-len
-                            `Open information for ${whiteName} versus ${blackName}.`
-                        }
-                        aria-label={
-                            // eslint-disable-next-line max-len
-                            `Open information for ${whiteName} versus ${blackName}.`
-                        }
                         onClick={() => setSelectedMatch(match.id)}
                     >
-                        <More />
+                        <Edit />
                     </button>
                 ) : (
                     <button
-                        title="Close information."
-                        aria-label="Close information."
+                        className="iconButton"
                         onClick={() => setSelectedMatch(null)}
                     >
                         <Close/>
                     </button>
                 )}
+                <button
+                    className="iconButton"
+                    onClick={() => setOpenModal(true)}
+                >
+                    <Info />
+                </button>
+                <Dialog isOpen={openModal}>
+                    <button onClick={() => setOpenModal(false)}>
+                        close
+                    </button>
+                    <h2>{tourney.name}</h2>
+                    <p>Round {roundId + 1}, match # {pos + 1}</p>
+                    <PanelContainer>
+                        <Panel>
+                            <PlayerMatchInfo
+                                matchId={match.id}
+                                color={0}
+                                tourneyId={tourneyId}
+                                roundId={roundId}
+                            />
+                        </Panel>
+                        <Panel>
+                            <PlayerMatchInfo
+                                matchId={match.id}
+                                color={1}
+                                tourneyId={tourneyId}
+                                roundId={roundId}
+                            />
+                        </Panel>
+                    </PanelContainer>
+                </Dialog>
             </td>
         </tr>
     );

@@ -1,7 +1,8 @@
 import React from "react";
 import numeral from "numeral";
 import {genPlayerData} from "../../../pairing-scoring/scoring";
-import {useTournaments, usePlayers} from "../../../state";
+import {useRound, usePlayers} from "../../../state";
+import {getById} from "../../../data/utility";
 
 /**
  * @typedef {import("../../../data").Match} Match
@@ -9,20 +10,20 @@ import {useTournaments, usePlayers} from "../../../state";
 
 /**
  * @param {Object} props
- * @param {Match} props.match
+ * @param {string} props.matchId
  * @param {number} props.color
  * @param {number} props.tourneyId
  * @param {number} props.roundId
  */
-export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
-    const [tourneys] = useTournaments();
-    // eslint-disable-next-line no-unused-vars
-    const [playerState, ignore, getPlayer] = usePlayers();
+export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
+    const {tourney, matchList} = useRound(tourneyId, roundId);
+    const {playerState, getPlayer} = usePlayers();
+    const match = getById(matchList, matchId);
     const playerData = genPlayerData(
         match.players[color],
         playerState.players,
         playerState.avoid,
-        tourneys[tourneyId].roundList,
+        tourney.roundList,
         roundId
     );
     const colorBalance = playerData.colorBalance;
@@ -35,7 +36,7 @@ export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
     return (
         <dl className="player-card">
             <h3>
-                {playerData.data.firstName} {playerData.data.lastName}
+                {playerData.profile.firstName} {playerData.profile.lastName}
             </h3>
             <dt>Score</dt>
             <dd>{playerData.score}</dd>
@@ -58,16 +59,6 @@ export default function PlayerMatchInfo({match, color, tourneyId, roundId}) {
                         <li key={opId}>
                             {getPlayer(opId).firstName}{" "}
                             {getPlayer(opId).lastName}
-                        </li>
-                    ))}
-                </ol>
-            </dd>
-            <dt>Players to avoid</dt>
-            <dd>
-                <ol>
-                    {playerData.avoidList.map((pId) => (
-                        <li key={pId}>
-                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
                         </li>
                     ))}
                 </ol>

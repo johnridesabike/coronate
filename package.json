@@ -12,6 +12,7 @@
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
   "dependencies": {
+    "@reach/dialog": "^0.2.8",
     "@reach/router": "^1.2.1",
     "@reach/tabs": "^0.1.5",
     "@reach/tooltip": "^0.2.0",

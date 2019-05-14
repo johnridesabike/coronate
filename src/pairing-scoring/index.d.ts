@@ -1,5 +1,5 @@
 export interface PlayerData {
-    data: Player,
+    profile: Player,
     id: number,
     score: number,
     dueColor?: number,

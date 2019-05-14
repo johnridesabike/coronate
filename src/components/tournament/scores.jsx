@@ -42,12 +42,9 @@ numeral.register("format", "half", {
  */
 function ScoreList({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
-    const [tourney] = useTournament(tourneyId);
-    const getPlayer = usePlayers()[2];
-    const [standingTree, tbMethods] = calcStandings(
-        tourney.tieBreaks,
-        tourney.roundList
-    );
+    const [{tieBreaks, roundList}] = useTournament(tourneyId);
+    const {getPlayer} = usePlayers();
+    const [standingTree, tbMethods] = calcStandings(tieBreaks, roundList);
     return (
         <table className={style.table}>
             <caption>Standings</caption>

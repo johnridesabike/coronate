@@ -8,8 +8,8 @@ import {useTournaments, useOptions, usePlayers} from "../state";
 export function Options(props) {
     const [tourneys] = useTournaments();
     const [options, dispatch] = useOptions();
-    const [players] = usePlayers();
-    const exportData = {options, tourneys, players};
+    const {playerState} = usePlayers();
+    const exportData = {options, tourneys, playerState};
     return (
         <div>
             <form>

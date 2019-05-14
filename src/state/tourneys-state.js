@@ -5,9 +5,10 @@ import {
     __,
     append,
     concat,
+    difference,
     last,
     lensPath,
-    merge,
+    mergeRight,
     filter,
     findIndex,
     move,
@@ -167,7 +168,7 @@ function tourneysReducer(state, action) {
                     state[action.tourneyId].roundList[action.roundId]
                 )
             ]),
-            (match) => merge(
+            (match) => mergeRight(
                 match,
                 {
                     players: reverse(match.players),
@@ -192,6 +193,10 @@ function tourneysReducer(state, action) {
 const defaultContext = null;
 const TournamentContext = createContext(defaultContext);
 
+export function useTournaments() {
+    return useContext(TournamentContext);
+}
+
 /**
  * @param {number} [tourneyId]
  * @returns {[Tournament, React.Dispatch<Action>]}
@@ -201,8 +206,19 @@ export function useTournament(tourneyId) {
     return [tourneys[tourneyId], dispatch];
 }
 
-export function useTournaments() {
-    return useContext(TournamentContext);
+/**
+ * @param {number} tourneyId
+ * @param {number} roundId
+ */
+export function useRound(tourneyId, roundId) {
+    const [tourney, dispatch] = useTournament(tourneyId);
+    const matchList = tourney.roundList[roundId];
+    const matched = matchList.reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    );
+    const unmatched = difference(tourney.players, matched);
+    return {tourney, dispatch, unmatched, matchList};
 }
 
 /**

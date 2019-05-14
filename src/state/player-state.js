@@ -92,13 +92,10 @@ function playersReducer(state, action ) {
 const defaultContext = null;
 const PlayerContext = createContext(defaultContext);
 
-/**
- * @returns {[typeof defaultPlayers, React.Dispatch<PlayerAction>, Curry.Curry<(id: number) => Player>]}
- */
 export function usePlayers() {
-    const [state, dispatch] = useContext(PlayerContext);
-    const getPlayer = curry(getPlayerById)(state.players);
-    return [state, dispatch, getPlayer];
+    const [playerState, playerDispatch] = useContext(PlayerContext);
+    const getPlayer = curry(getPlayerById)(playerState.players);
+    return {playerState, playerDispatch, getPlayer};
 }
 
 /**

@@ -16,17 +16,14 @@ export default function Stage({
     stagedPlayers,
     setStagedPlayers
 }) {
-    // eslint-disable-next-line no-unused-vars
-    const [{players}, ignore, getPlayer] = usePlayers();
+    const {playerState, getPlayer} = usePlayers();
+    const {players} = playerState;
     const dispatch = useTournament(tourneyId)[1];
     const [{byeValue}] = useOptions();
     const [white, black] = stagedPlayers;
     /** @param {typeof WHITE | typeof BLACK} color */
     function unstage(color) {
         setStagedPlayers((prevState) => set(lensIndex(color), null, prevState));
-    }
-    function swap() {
-        setStagedPlayers((prevState) => ([prevState[BLACK], prevState[WHITE]]));
     }
     function match() {
         dispatch({
@@ -44,7 +41,7 @@ export default function Stage({
             <h2>Selected for matching:</h2>
             <p>
                 White:{" "}
-                {white &&
+                {white !== null &&
                     <Fragment>
                         {getPlayer(white).firstName}{" "}
                         {getPlayer(white).lastName}
@@ -56,7 +53,7 @@ export default function Stage({
             </p>
             <p>
                 Black:{" "}
-                {black &&
+                {black !== null &&
                     <Fragment>
                         {getPlayer(black).firstName}{" "}
                         {getPlayer(black).lastName}
@@ -67,7 +64,9 @@ export default function Stage({
                 }
             </p>
             <button
-                onClick={swap}
+                onClick={() => setStagedPlayers(
+                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
+                )}
                 disabled={
                     stagedPlayers.every((id) => id === null)
                 }

@@ -1,7 +1,7 @@
 import React, {useMemo, useState, useEffect} from "react";
 import numeral from "numeral";
-import {Link} from "@reach/router";
-import ChevronLeft from "react-feather/dist/icons/chevron-left";
+// import {Link} from "@reach/router";
+// import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import Trash from "react-feather/dist/icons/trash-2";
 import {getPlayerAvoidList, kFactor} from "../../data/player";
 import {usePlayers} from "../../state";
@@ -13,7 +13,7 @@ import {usePlayers} from "../../state";
  */
 export default function PlayerInfoBox(props) {
     const playerId = Number(props.playerId);
-    const [playerState, playerDispatch, getPlayer] = usePlayers();
+    const {playerState, playerDispatch, getPlayer} = usePlayers();
     const avoidList = playerState.avoid;
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, avoidList)
@@ -64,7 +64,7 @@ export default function PlayerInfoBox(props) {
     );
     return (
         <div>
-            <Link to="/players"><ChevronLeft /> Back</Link>
+            {/* <Link to="/players"><ChevronLeft /> Back</Link> */}
             <h2>
                 {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
             </h2>

@@ -10,8 +10,9 @@ import {PlayerLink} from "../utility";
 /**
  * @param {Object} props
  */
+// eslint-disable-next-line no-unused-vars
 export default function PlayerList(props) {
-    const [playerState, playerDispatch] = usePlayers();
+    const {playerState, playerDispatch} = usePlayers();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
     const ids = playerState.players.map((p) => p.id);

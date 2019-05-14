@@ -54,7 +54,7 @@ export function PanelContainer(props) {
  * @param {Object} props
  */
 export function PlayerLink({id, firstName, lastName}) {
-    const getPlayer = usePlayers()[2];
+    const {getPlayer} = usePlayers();
     let name = "";
     if (firstName) {
         name += getPlayer(id).firstName + " ";

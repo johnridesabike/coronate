@@ -23,8 +23,8 @@ export default function Tournament({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
-    const [playerState] = usePlayers();
-    const [defaultTab, setDefaultTab] = useState(0);
+    const {playerState} = usePlayers();
+    const [openTab, setOpenTab] = useState(0);
     // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
@@ -60,6 +60,14 @@ export default function Tournament({tourneyId}) {
         },
         [name]
     );
+    useEffect(
+        function () {
+            if (roundList.length > 0) {
+                setOpenTab(roundList.length + 1);
+            }
+        },
+        [roundList.length]
+    );
     const isItOver = roundList.length >= calcNumOfRounds(players.length);
     let tooltipText = "";
     let tooltipWarn = false;
@@ -84,7 +92,7 @@ export default function Tournament({tourneyId}) {
             }
         }
         dispatch({type: "ADD_ROUND", tourneyId});
-        setDefaultTab(roundList.length + 1);
+        setOpenTab(roundList.length + 1);
         return;
     }
     function delLastRound() {
@@ -100,7 +108,7 @@ export default function Tournament({tourneyId}) {
         return <Redirect to="/" />;
     }
     return (
-        <Tabs defaultIndex={defaultTab}>
+        <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
             <div>
                 <Link to="/">
                     <ChevronLeft/> Back

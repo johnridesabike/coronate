@@ -5,9 +5,9 @@ import {PlayerLink} from "../../utility";
 /**
  * @param {Object} props
  */
-export default function Selecting({tourneyId, setIsSelecting}) {
+export default function Selecting({tourneyId}) {
     const [{players}, dispatch] = useTournament(tourneyId);
-    const [playerState] = usePlayers();
+    const {playerState} = usePlayers();
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function togglePlayer(event) {
         const id = Number(event.target.value);
@@ -51,9 +51,9 @@ export default function Selecting({tourneyId, setIsSelecting}) {
             >
                 Select none
             </button>
-            <button onClick={() => setIsSelecting(false)}>
+            {/* <button onClick={() => setIsSelecting(false)}>
                 Done
-            </button>
+            </button> */}
             <table>
                 <caption>Select players</caption>
                 <thead>
