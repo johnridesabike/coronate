@@ -2,14 +2,14 @@ import React, {useState} from "react";
 import {Dialog} from "@reach/dialog";
 import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
-import Close from "react-feather/dist/icons/x";
+import Check from "react-feather/dist/icons/check";
 import {PanelContainer, Panel} from "../../utility";
 import {calcNewRatings, dummyPlayer} from "../../../data/player";
 import {BLACK, WHITE} from "../../../data/constants";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
 // @ts-ignore
-import {winnerSelect} from "./round.module.css";
+import {winnerSelect, selected} from "./round.module.css";
 import "@reach/dialog/styles.css";
 
 /**
@@ -123,7 +123,7 @@ export default function MatchRow({
         });
     }
     return (
-        <tr>
+        <tr className={match.id === selectedMatch ? selected : ""}>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
             <td
                 className="table__player row__player"
@@ -152,7 +152,7 @@ export default function MatchRow({
                     onBlur={setMatchResult}
                     onChange={setMatchResult}
                     disabled={match.players.includes(dummyPlayer.id)}
-                    defaultValue={resultCode}
+                    value={resultCode}
                     className={winnerSelect}
                 >
                     <option value="NOTSET">
@@ -175,6 +175,7 @@ export default function MatchRow({
                     <button
                         className="iconButton"
                         onClick={() => setSelectedMatch(match.id)}
+                        title="Edit match"
                     >
                         <Edit />
                     </button>
@@ -182,13 +183,15 @@ export default function MatchRow({
                     <button
                         className="iconButton"
                         onClick={() => setSelectedMatch(null)}
+                        title="End editing match"
                     >
-                        <Close/>
+                        <Check />
                     </button>
                 )}
                 <button
                     className="iconButton"
                     onClick={() => setOpenModal(true)}
+                    title="Open match information."
                 >
                     <Info />
                 </button>
@@ -196,8 +199,8 @@ export default function MatchRow({
                     <button onClick={() => setOpenModal(false)}>
                         close
                     </button>
-                    <h2>{tourney.name}</h2>
-                    <p>Round {roundId + 1}, match # {pos + 1}</p>
+                    <p>{tourney.name}</p>
+                    <p>Round {roundId + 1}, match {pos + 1}</p>
                     <PanelContainer>
                         <Panel>
                             <PlayerMatchInfo

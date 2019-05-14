@@ -1,13 +1,12 @@
 import React from "react";
 import {useTournament, usePlayers} from "../../../state";
-import {PlayerLink} from "../../utility";
 
 /**
  * @param {Object} props
  */
 export default function Selecting({tourneyId}) {
     const [{players}, dispatch] = useTournament(tourneyId);
-    const {playerState} = usePlayers();
+    const {playerState, getPlayer} = usePlayers();
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function togglePlayer(event) {
         const id = Number(event.target.value);
@@ -66,8 +65,8 @@ export default function Selecting({tourneyId}) {
                 <tbody>
                     {playerState.players.map(({id}) => (
                         <tr key={id}>
-                            <td><PlayerLink id={id} firstName /></td>
-                            <td><PlayerLink id={id} lastName /></td>
+                            <td>{getPlayer(id).firstName}</td>
+                            <td>{getPlayer(id).lastName}</td>
                             <td>
                                 <input
                                     type="checkbox"

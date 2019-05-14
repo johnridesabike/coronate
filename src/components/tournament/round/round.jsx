@@ -72,45 +72,38 @@ export default function Round({roundId, tourneyId, setIsPickView}) {
                         className="iconButton"
                         onClick={() => setIsPickView(true)}
                         disabled={unmatched.length === 0}
+                        title="View unmatched players."
                     >
-                        <Users />{" "}
+                        <Users /> View unmatched players{" "}
                         {unmatched.length > 0 && `(${unmatched.length})`}
                     </button>
                     <button
                         className="danger iconButton"
                         onClick={() => unMatch(selectedMatch)}
                         disabled={selectedMatch === null}
-                        title="Unmatch"
-                        aria-label="Unmatch"
                     >
-                        <Trash />
+                        <Trash /> Unmatch
                     </button>
                     <button
                         className="iconButton"
                         onClick={() => swapColors(selectedMatch)}
                         disabled={selectedMatch === null}
-                        title="Swap colors"
-                        aria-label="Swap colors"
                     >
-                        <Repeat />
+                        <Repeat /> Swap colors
                     </button>
                     <button
                         className="iconButton"
                         onClick={() => moveMatch(selectedMatch, -1)}
                         disabled={selectedMatch === null}
-                        title="Move up"
-                        aria-label="Move up"
                     >
-                        <ArrowUp />
+                        <ArrowUp /> Move up
                     </button>
                     <button
                         className="iconButton"
                         onClick={() => moveMatch(selectedMatch, 1)}
                         disabled={selectedMatch === null}
-                        title="Move down"
-                        aria-label="Move down"
                     >
-                        <ArrowDown/>
+                        <ArrowDown/> Move down
                     </button>
                 </div>
                 {(matchList.length === 0) &&

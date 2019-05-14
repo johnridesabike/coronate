@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Dialog} from "@reach/dialog";
 import Selecting from "./selecting";
 import {useTournament, usePlayers} from "../../../state";
-import {PanelContainer, Panel, PlayerLink} from "../../utility";
+import {PanelContainer, Panel} from "../../utility";
 import {hasHadBye} from "../../../pairing-scoring/scoring";
 
 /**
@@ -13,15 +13,6 @@ export default function PlayerSelect({tourneyId}) {
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
-    // if (isSelecting) {
-    //     return (
-    //         <Selecting tourneyId={tourneyId} setIsSelecting={setIsSelecting} />
-    //     );
-    // } else {
-    //     return (
-    //         <Roster tourneyId={tourneyId} setIsSelecting={setIsSelecting} />
-    //     );
-    // }
     return (
         <PanelContainer>
             <Panel>
@@ -43,8 +34,8 @@ export default function PlayerSelect({tourneyId}) {
                                 key={pId}
                                 className={getPlayer(pId).type + " player"}
                             >
-                                <td><PlayerLink id={pId} firstName /></td>
-                                <td><PlayerLink id={pId} lastName /></td>
+                                <td>{getPlayer(pId).firstName}</td>
+                                <td>{getPlayer(pId).lastName}</td>
                                 <td>
                                     <button
                                         onClick={() =>

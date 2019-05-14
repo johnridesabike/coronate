@@ -72,11 +72,7 @@ svg {
 }
 
 .iconButton {
-    padding: 0;
-}
-
-.iconButton svg {
-    margin: 0.25em;
+    padding: 0.125em 0.25em;
 }
 
 .helpIcon {

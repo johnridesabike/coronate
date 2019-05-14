@@ -171,6 +171,7 @@ function tourneysReducer(state, action) {
             (match) => mergeRight(
                 match,
                 {
+                    result: reverse(match.result),
                     players: reverse(match.players),
                     origRating: reverse(match.origRating),
                     newRating: reverse(match.newRating)
