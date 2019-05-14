@@ -1,4 +1,4 @@
-import React from "react";
+import {createContext, createElement, useContext, useReducer} from "react";
 // This will cause Webpack to import the entire Ramda library, but we're using
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
@@ -7,6 +7,7 @@ import {
     concat,
     last,
     lensPath,
+    merge,
     filter,
     findIndex,
     move,
@@ -129,7 +130,8 @@ function tourneysReducer(state, action) {
                 action.roundId,
                 findIndex(
                     propEq("id", action.matchId),
-                    state[action.tourneyId].roundList[action.roundId]),
+                    state[action.tourneyId].roundList[action.roundId]
+                ),
                 "result"
             ]),
             action.result,
@@ -140,7 +142,8 @@ function tourneysReducer(state, action) {
                     action.roundId,
                     findIndex(
                         propEq("id", action.matchId),
-                        state[action.tourneyId].roundList[action.roundId]),
+                        state[action.tourneyId].roundList[action.roundId]
+                    ),
                     "newRating"
                 ]),
                 action.newRating,
@@ -164,12 +167,14 @@ function tourneysReducer(state, action) {
                     state[action.tourneyId].roundList[action.roundId]
                 )
             ]),
-            (match) => ({
-                ...match,
-                players: reverse(match.players),
-                origRating: reverse(match.origRating),
-                newRating: reverse(match.newRating)
-            }),
+            (match) => merge(
+                match,
+                {
+                    players: reverse(match.players),
+                    origRating: reverse(match.origRating),
+                    newRating: reverse(match.newRating)
+                }
+            ),
             state
         );
     case "MOVE_MATCH":
@@ -185,33 +190,31 @@ function tourneysReducer(state, action) {
 
 /** @type {[Tournament[], React.Dispatch<Action>]} */
 const defaultContext = null;
-const TournamentContext = React.createContext(defaultContext);
-
-function useTournamentReducer() {
-    return React.useReducer(tourneysReducer, defaultData);
-}
+const TournamentContext = createContext(defaultContext);
 
 /**
  * @param {number} [tourneyId]
- * @return {[Tournament, React.Dispatch<Action>]}
+ * @returns {[Tournament, React.Dispatch<Action>]}
  */
 export function useTournament(tourneyId) {
-    const [tourneys, dispatch] = React.useContext(TournamentContext);
+    const [tourneys, dispatch] = useContext(TournamentContext);
     return [tourneys[tourneyId], dispatch];
 }
 
 export function useTournaments() {
-    return React.useContext(TournamentContext);
+    return useContext(TournamentContext);
 }
 
 /**
  * @param {Object} props
  */
 export function TournamentProvider(props) {
-    const [data, dispatch] = useTournamentReducer();
+    const [state, dispatch] = useReducer(tourneysReducer, defaultData);
     return (
-        <TournamentContext.Provider value={[data, dispatch]}>
-            {props.children}
-        </TournamentContext.Provider>
+        createElement(
+            TournamentContext.Provider,
+            {value: [state, dispatch]},
+            props.children
+        )
     );
 }

@@ -7,7 +7,7 @@ import {WHITE, BLACK} from "./constants";
 /**
  * @param {Object} importObj
  */
-function createPlayer(importObj = {}) {
+export function createPlayer(importObj = {}) {
     /** @type {Player} */
     const player = {
         id: importObj.id || 0,
@@ -19,14 +19,13 @@ function createPlayer(importObj = {}) {
     };
     return player;
 }
-Object.freeze(createPlayer);
-export {createPlayer};
 
-const dummyPlayer = createPlayer();
-dummyPlayer.id = -1;
-dummyPlayer.firstName = "Bye";
-dummyPlayer.lastName = "Player";
-dummyPlayer.type = "dummy";
+const dummyPlayer = createPlayer({
+    id: -1,
+    firstName: "Bye",
+    lastName: "Player",
+    type: "dummy"
+});
 Object.freeze(dummyPlayer);
 export {dummyPlayer};
 
@@ -36,7 +35,7 @@ export {dummyPlayer};
  * @param {number} id
  * @returns {Player}
  */
-function getPlayerById(playerList, id) {
+export function getPlayerById(playerList, id) {
     if (id === -1) {
         return dummyPlayer;
     }
@@ -50,15 +49,13 @@ function getPlayerById(playerList, id) {
     }
     return player;
 }
-Object.freeze(getPlayerById);
-export {getPlayerById};
 
 /**
  * @param {number} playerId
  * @param {number[][]} avoidList
  * @returns {number[]}
  */
-function getPlayerAvoidList(playerId, avoidList) {
+export function getPlayerAvoidList(playerId, avoidList) {
     return avoidList.filter( // get pairings with the player
         (pair) => pair.includes(playerId)
     ).reduce( // Flatten the array
@@ -68,31 +65,25 @@ function getPlayerAvoidList(playerId, avoidList) {
         (id) => id !== playerId
     );
 }
-Object.freeze(getPlayerAvoidList);
-export {getPlayerAvoidList};
 
 /**
  * @param {number[][]} avoidList
  * @param {Player[]} playerList
  */
-function cleanAvoidList(avoidList, playerList) {
+export function cleanAvoidList(avoidList, playerList) {
     const ids = playerList.map((p) => p.id);
     return avoidList.filter(
         (pairs) => (ids.includes(pairs[0]) && ids.includes(pairs[1]))
     );
 }
-Object.freeze(cleanAvoidList);
-export {cleanAvoidList};
 
 /**
  * @param {number} matchCount
  */
-function kFactor(matchCount) {
+export function kFactor(matchCount) {
     const ne = matchCount || 1;
     return (800 / ne);
 }
-Object.freeze(kFactor);
-export {kFactor};
 
 /**
  * @param {[number, number]} origRatings
@@ -100,7 +91,7 @@ export {kFactor};
  * @param {[number, number]} result
  * @returns {[number, number]}
  */
-function calcNewRatings(origRatings, matchCounts, result) {
+export function calcNewRatings(origRatings, matchCounts, result) {
     const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
     const blackElo = new EloRank(kFactor(matchCounts[BLACK]));
     const FLOOR = 100;
@@ -130,5 +121,3 @@ function calcNewRatings(origRatings, matchCounts, result) {
         )
     );
 }
-Object.freeze(calcNewRatings);
-export {calcNewRatings};

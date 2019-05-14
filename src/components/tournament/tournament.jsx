@@ -22,6 +22,7 @@ import "@reach/tooltip/styles.css";
 export default function Tournament({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
+    const {name, players, roundList} = tourney;
     const [playerState] = usePlayers();
     const [defaultTab, setDefaultTab] = useState(0);
     // This isn't expensive, but why not memoize it?
@@ -30,7 +31,7 @@ export default function Tournament({tourneyId}) {
             if (!tourney) {
                 return false;
             }
-            const lastRound = last(tourney.roundList);
+            const lastRound = last(roundList);
             if (!lastRound) {
                 return true;
             }
@@ -39,7 +40,7 @@ export default function Tournament({tourneyId}) {
                 (acc, match) => acc.concat(match.players),
                 []
             );
-            const unMatchedPlayers = tourney.players.filter(
+            const unMatchedPlayers = players.filter(
                 (pId) => !matchedPlayers.includes(pId)
             );
             const results = lastRound.map(
@@ -47,21 +48,44 @@ export default function Tournament({tourneyId}) {
             );
             return (unMatchedPlayers.length === 0 && !results.includes(0));
         },
-        [tourney]
+        [tourney, players, roundList]
     );
     useEffect(
         function () {
             const origTitle = document.title;
-            document.title = tourney.name;
+            document.title = name;
             return function () {
                 document.title = origTitle;
             };
         },
-        [tourney]
+        [name]
     );
+    const isItOver = roundList.length >= calcNumOfRounds(players.length);
+    let tooltipText = "";
+    let tooltipWarn = false;
+    if (!isNewRoundReady) {
+        tooltipText = `You must complete the last round before beginning a new
+        one.`;
+        tooltipWarn = true;
+    } else if (isItOver) {
+        tooltipText = "All necessary rounds have completed.";
+        tooltipWarn = true;
+    } else {
+        tooltipText = "Ready to begin a new round.";
+    }
     function newRound() {
+        const confirmText = (
+            "All rounds have completed. Are you sure you want to begin a new "
+            + "one?"
+        );
+        if (isItOver) {
+            if (!window.confirm(confirmText)) {
+                return;
+            }
+        }
         dispatch({type: "ADD_ROUND", tourneyId});
-        setDefaultTab(tourney.roundList.length + 1);
+        setDefaultTab(roundList.length + 1);
+        return;
     }
     function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
@@ -81,35 +105,24 @@ export default function Tournament({tourneyId}) {
                 <Link to="/">
                     <ChevronLeft/> Back
                 </Link>
-                <h2>{tourney.name}</h2>
-                Round progress: {tourney.roundList.length}/
-                {calcNumOfRounds(tourney.players.length)}{" "}
+                <h2>{name}</h2>
+                Round progress: {roundList.length}/
+                {calcNumOfRounds(players.length)}{" "}
                 <button
                     onClick={newRound}
                     disabled={!isNewRoundReady}
                 >
                     New round
                 </button>{" "}
-                <Tooltip
-                    label={(
-                        (isNewRoundReady)
-                        ? "Ready to begin a new round."
-                        // eslint-disable-next-line max-len
-                        : "You must complete the last round before beginning a new one."
-                    )}
-                >
+                <Tooltip label={tooltipText}>
                     <span className="helpIcon">
-                        {(
-                            (isNewRoundReady)
-                            ? <Check />
-                            : <Alert />
-                        )}
+                        {(tooltipWarn) ? <Alert /> : <Check />}
                     </span>
                 </Tooltip>{" "}
                 <button
                     className="danger"
                     onClick={delLastRound}
-                    disabled={tourney.roundList.length === 0}
+                    disabled={roundList.length === 0}
                 >
                     Remove last round
                 </button>
@@ -117,7 +130,7 @@ export default function Tournament({tourneyId}) {
             <TabList>
                 <Tab>Players</Tab>
                 <Tab>Scores</Tab>
-                {Object.keys(tourney.roundList).map((id) => (
+                {Object.keys(roundList).map((id) => (
                     <Tab key={id}>Round {Number(id) + 1}</Tab>
                 ))}
             </TabList>
@@ -128,7 +141,7 @@ export default function Tournament({tourneyId}) {
                 <TabPanel>
                     <Scores tourneyId={tourneyId} />
                 </TabPanel>
-                {Object.keys(tourney.roundList).map((id) => (
+                {Object.keys(roundList).map((id) => (
                     <TabPanel key={id}>
                         <Round roundId={Number(id)} tourneyId={tourneyId} />
                     </TabPanel>

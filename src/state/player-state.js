@@ -1,4 +1,4 @@
-import React from "react";
+import {createContext, createElement, useContext, useReducer} from "react";
 // This will cause Webpack to import the entire Ramda library, but we're using
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
@@ -90,17 +90,13 @@ function playersReducer(state, action ) {
 
 /** @type {[typeof defaultPlayers, React.Dispatch<PlayerAction>]} */
 const defaultContext = null;
-const PlayerContext = React.createContext(defaultContext);
-
-function usePlayerReducer() {
-    return React.useReducer(playersReducer, defaultPlayers);
-}
+const PlayerContext = createContext(defaultContext);
 
 /**
  * @returns {[typeof defaultPlayers, React.Dispatch<PlayerAction>, Curry.Curry<(id: number) => Player>]}
  */
 export function usePlayers() {
-    const [state, dispatch] = React.useContext(PlayerContext);
+    const [state, dispatch] = useContext(PlayerContext);
     const getPlayer = curry(getPlayerById)(state.players);
     return [state, dispatch, getPlayer];
 }
@@ -109,10 +105,12 @@ export function usePlayers() {
  * @param {Object} props
  */
 export function PlayersProvider(props) {
-    const [playerState, playerDispatch] = usePlayerReducer();
+    const [state, dispatch] = useReducer(playersReducer, defaultPlayers);
     return (
-        <PlayerContext.Provider value={[playerState, playerDispatch]}>
-            {props.children}
-        </PlayerContext.Provider>
+        createElement(
+            PlayerContext.Provider,
+            {value: [state, dispatch]},
+            props.children
+        )
     );
 }

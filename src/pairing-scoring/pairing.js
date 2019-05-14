@@ -59,7 +59,7 @@ const differentDueColorPriority = 1;
  * @param {number[]} scoreList
  * @returns {number}
  */
-function calcPairIdeal(player1, player2, scoreList) {
+export function calcPairIdeal(player1, player2, scoreList) {
     let priority = 0;
     let scoreDiff;
     const metBefore = player1.opponentHistory.includes(player2.id);
@@ -89,8 +89,6 @@ function calcPairIdeal(player1, player2, scoreList) {
     }
     return Math.ceil(priority);
 }
-Object.freeze(calcPairIdeal);
-export {calcPairIdeal};
 
 /**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
@@ -102,7 +100,13 @@ export {calcPairIdeal};
  * @param {object[]} playerList
  * @param {number[][]} avoidList
  */
-function pairPlayers(players, roundId, roundList, playerList, avoidList) {
+export default function pairPlayers(
+    players,
+    roundId,
+    roundList,
+    playerList,
+    avoidList
+) {
     /** @type {number[]} */
     let byeMatch;
     /** @type {number[][]} */
@@ -228,4 +232,3 @@ function pairPlayers(players, roundId, roundList, playerList, avoidList) {
     }
     return matches;
 }
-export default Object.freeze(pairPlayers);

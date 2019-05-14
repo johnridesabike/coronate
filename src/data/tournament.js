@@ -4,7 +4,7 @@
 /**
  * @param {Object} importObj
  */
-function createTournament(importObj) {
+export default function createTournament(importObj) {
     /** @type {Tournament} */
     const tourney = {
         name: importObj.name || "",
@@ -15,4 +15,3 @@ function createTournament(importObj) {
     };
     return tourney;
 }
-export default Object.freeze(createTournament);

@@ -1,6 +1,10 @@
 {
-    "extends": ["react-app", "plugin:jsx-a11y/recommended"],
-    "plugins": ["jsx-a11y"],
+    "extends": [
+        "react-app",
+        "plugin:jsx-a11y/recommended",
+        "plugin:ramda/recommended"
+    ],
+    "plugins": ["jsx-a11y", "ramda"],
     "rules": {
         "max-len": [
             "warn", {
@@ -31,6 +35,5 @@
         "no-var": 1,
         "arrow-parens": "warn",
         "arrow-body-style": ["warn", "never"]
-
     }
 }

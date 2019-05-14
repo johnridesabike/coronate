@@ -1,12 +1,13 @@
 import {Player, Tournament} from "../data/index";
 
+// Options
 declare interface ActionByeValue {
     type: "SET_BYE_VALUE",
     byeValue: number
 }
-
 export type OptionAction = ActionByeValue;
 
+// Players
 declare interface ActionAddPlayer {
     type: "ADD_PLAYER",
     newPlayer: Player
@@ -29,7 +30,6 @@ declare interface ActionAvoidPair {
     type: "ADD_AVOID_PAIR" | "DEL_AVOID_PAIR",
     pair: number[]
 }
-
 export type PlayerAction = (
     ActionAddPlayer
     | ActionDelPlayer
@@ -37,12 +37,12 @@ export type PlayerAction = (
     | ActionSetRating
     | ActionAvoidPair
 );
-
 export interface PlayerState {
     players: Player[],
     avoid: number[][],
 }
 
+// Tournaments
 declare interface ActionAddTourney {
     type: "ADD_TOURNEY",
     tourney: Tournament
@@ -141,10 +141,3 @@ export type Action = (
     | ActionSwapColors
     | ActionMoveMatch
 );
-
-// export interface GlobalState {
-//     options: {
-//         byeValue: number
-//     },
-//     tourneys: Tournament[]
-// }

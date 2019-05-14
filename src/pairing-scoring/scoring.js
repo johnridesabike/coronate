@@ -27,7 +27,7 @@ function isBye(match) {
  * @param {object[]} matchList
  * @returns {number?}
  */
-function playerMatchColor(playerId, matchList) {
+export function playerMatchColor(playerId, matchList) {
     /**@type {number} */
     let color = null;
     const match = matchList.filter((m) => m.players.includes(playerId))[0];
@@ -36,8 +36,6 @@ function playerMatchColor(playerId, matchList) {
     }
     return color;
 }
-Object.freeze(playerMatchColor);
-export {playerMatchColor};
 
 /**
  * @type {ScoreCalculator}
@@ -63,7 +61,7 @@ function getMatchesByPlayer(playerId, roundList, roundId = null) {
  * @type {ScoreCalculator}
  * @returns {boolean}
  */
-function hasHadBye(playerId, roundList, roundId = null) {
+export function hasHadBye(playerId, roundList, roundId = null) {
     return getMatchesByPlayer(
         playerId,
         roundList,
@@ -73,14 +71,12 @@ function hasHadBye(playerId, roundList, roundId = null) {
         []
     ).includes(dummyPlayer.id);
 }
-Object.freeze(hasHadBye);
-export {hasHadBye};
 
 /**
  * @type {ScoreCalculator}
  * @returns {number[]}
  */
-function getPlayersByOpponent(opponentId, roundList, roundId = null) {
+export function getPlayersByOpponent(opponentId, roundList, roundId = null) {
     return getMatchesByPlayer(
         opponentId,
         roundList,
@@ -92,8 +88,6 @@ function getPlayersByOpponent(opponentId, roundList, roundId = null) {
         (playerId) => playerId !== opponentId
     );
 }
-Object.freeze(getPlayersByOpponent);
-export {getPlayersByOpponent};
 
 /**
  * Get a list of all of a player's scores from each match.
@@ -129,7 +123,7 @@ function playerScoreListNoByes(playerId, roundList, roundId = null) {
  * @type {ScoreCalculator}
  * @returns {number}
  */
-function playerScore(playerId, roundList, roundId = null) {
+export function playerScore(playerId, roundList, roundId = null) {
     let score = 0;
     const scoreList = playerScoreList(playerId, roundList, roundId);
     if (scoreList.length > 0) {
@@ -137,8 +131,6 @@ function playerScore(playerId, roundList, roundId = null) {
     }
     return score;
 }
-Object.freeze(playerScore);
-export {playerScore};
 
 /**
  * @type {ScoreCalculator}
@@ -166,7 +158,7 @@ function playerScoreCum(playerId, roundList, roundId = null) {
  * @type {ScoreCalculator}
  * @returns {number}
  */
-function playerColorBalance(playerId, roundList, roundId = null) {
+export function playerColorBalance(playerId, roundList, roundId = null) {
     let color = 0;
     getMatchesByPlayer(playerId, roundList, roundId).filter(
         (match) => !isBye(match)
@@ -181,8 +173,6 @@ function playerColorBalance(playerId, roundList, roundId = null) {
     );
     return color;
 }
-Object.freeze(playerColorBalance);
-export {playerColorBalance};
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
@@ -316,7 +306,7 @@ function getAllPlayers(roundList) {
  * @param {number} [roundId]
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
-function calcStandings(methods, roundList, roundId = null) {
+export function calcStandings(methods, roundList, roundId = null) {
     const tieBreaks = methods.map((m) => tieBreakMethods[m]);
     // Get a flat list of all of the players and their scores.
     const standingsFlat = getAllPlayers(roundList).map(function (pId) {
@@ -355,8 +345,6 @@ function calcStandings(methods, roundList, roundId = null) {
     });
     return [standingsTree, tieBreaks.map((m) => m.name)];
 }
-Object.freeze(calcStandings);
-export {calcStandings};
 
 /**
  * @type {ScoreCalculator}
@@ -385,7 +373,13 @@ function dueColor(playerId, roundList, roundId = null) {
  * @param {number[][]} avoidList
  * @returns {PlayerData}
  */
-function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
+export function genPlayerData(
+    playerId,
+    playerList,
+    avoidList,
+    roundList,
+    roundId
+) {
     const player = getPlayerById(playerList, playerId);
     return {
         data: player,
@@ -400,5 +394,3 @@ function genPlayerData(playerId, playerList, avoidList, roundList, roundId) {
         hasHadBye: hasHadBye(playerId, roundList, roundId)
     };
 }
-Object.freeze(genPlayerData);
-export {genPlayerData};

@@ -5,7 +5,7 @@
  *
  * @param {object} importObj
  */
-function createMatch(importObj) {
+export default function createMatch(importObj) {
     /** @type {Match} */
     const match = {
         id: importObj.id,
@@ -16,4 +16,3 @@ function createMatch(importObj) {
     };
     return match;
 }
-export default Object.freeze(createMatch);

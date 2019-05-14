@@ -12,11 +12,17 @@ import pairPlayers from "../pairing-scoring/pairing";
 /**
  * @param {Tournament} tourney
  * @param {number} roundId
- * @param {import("./dispatch").PlayerState} playerState
+ * @param {import(".").PlayerState} playerState
  * @param {number[]} unPairedPlayers
  * @param {number} byeValue
  */
-function autoPair(tourney, playerState, roundId, unPairedPlayers, byeValue) {
+export function autoPair(
+    tourney,
+    playerState,
+    roundId,
+    unPairedPlayers,
+    byeValue
+) {
     const roundList = tourney.roundList;
     const getPlayer = curry(getPlayerById)(playerState.players);
     const nextBye = tourney.byeQueue.filter(
@@ -74,15 +80,13 @@ function autoPair(tourney, playerState, roundId, unPairedPlayers, byeValue) {
     });
     return newMatchList;
 }
-Object.freeze(autoPair);
-export {autoPair};
 
 /**
  * @param {Player[]} players
  * @param {number[]} pair
  * @param {number} byeValue
  */
-function manualPair(players, pair, byeValue) {
+export function manualPair(players, pair, byeValue) {
     const getPlayer = curry(getPlayerById)(players);
     const match = createMatch({
         id: pair.join("-"),
@@ -104,5 +108,3 @@ function manualPair(players, pair, byeValue) {
     }
     return match;
 }
-Object.freeze(manualPair);
-export {manualPair};

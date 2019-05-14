@@ -1,4 +1,4 @@
-import React from "react";
+import {createContext, createElement, useContext, useReducer} from "react";
 import {lensPath, set} from "ramda";
 import defaultOptions from "./demo-options.json";
 /**
@@ -24,25 +24,22 @@ function reducer(state, action) {
 
 /** @type {[typeof defaultOptions, React.Dispatch<OptionAction>]} */
 const defaultContext = null;
-const OptionsContext = React.createContext(defaultContext);
-
-function useOptionsReducer() {
-    return React.useReducer(reducer, defaultOptions);
-}
-
+const OptionsContext = createContext(defaultContext);
 
 export function useOptions() {
-    return React.useContext(OptionsContext);
+    return useContext(OptionsContext);
 }
 
 /**
  * @param {Object} props
  */
 export function OptionsProvider(props) {
-    const [data, dispatch] = useOptionsReducer();
+    const [data, dispatch] = useReducer(reducer, defaultOptions);
     return (
-        <OptionsContext.Provider value={[data, dispatch]}>
-            {props.children}
-        </OptionsContext.Provider>
+        createElement(
+            OptionsContext.Provider,
+            {value: [data, dispatch]},
+            props.children
+        )
     );
 }
