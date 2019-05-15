@@ -1,3 +1,5 @@
+import {Match} from "../data/";
+
 export interface PlayerData {
     profile: Player,
     id: number,
@@ -17,6 +19,6 @@ export interface Standing {
 }
 export type ScoreCalculator = (
     playerId: number,
-    roundList: Round[],
+    roundList: Match[][],
     roundId?: number
 ) => any

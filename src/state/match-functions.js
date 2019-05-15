@@ -1,6 +1,6 @@
 import {curry} from "ramda";
 import {BLACK, WHITE} from "../data/constants";
-import createMatch from "../data/match";
+import {createMatch} from "../data/factories";
 import {dummyPlayer, getPlayerById} from "../data/player";
 import {hasHadBye} from "../pairing-scoring/scoring";
 import pairPlayers from "../pairing-scoring/pairing";
@@ -12,7 +12,7 @@ import pairPlayers from "../pairing-scoring/pairing";
 /**
  * @param {Tournament} tourney
  * @param {number} roundId
- * @param {import(".").PlayerState} playerState
+ * @param {import("./dispatch").PlayerState} playerState
  * @param {number[]} unPairedPlayers
  * @param {number} byeValue
  */

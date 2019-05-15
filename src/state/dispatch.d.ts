@@ -1,4 +1,4 @@
-import {Player, Tournament} from "../data/index";
+import {Player} from "../data/index";
 
 // Options
 declare interface ActionByeValue {
@@ -45,7 +45,7 @@ export interface PlayerState {
 // Tournaments
 declare interface ActionAddTourney {
     type: "ADD_TOURNEY",
-    tourney: Tournament
+    name: string
 }
 declare interface ActionDelTourney {
     type: "DEL_TOURNEY",

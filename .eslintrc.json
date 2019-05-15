@@ -4,7 +4,7 @@
         "plugin:jsx-a11y/recommended",
         "plugin:ramda/recommended"
     ],
-    "plugins": ["jsx-a11y", "ramda"],
+    "plugins": ["jsx-a11y", "ramda", "fp"],
     "rules": {
         "max-len": [
             "warn", {
@@ -34,6 +34,15 @@
         "no-shadow": "error",
         "no-var": 1,
         "arrow-parens": "warn",
-        "arrow-body-style": ["warn", "never"]
+        "arrow-body-style": ["warn", "never"],
+        "no-unused-expressions": "error",
+        "fp/no-this": "error",
+        "fp/no-class": "error",
+        "fp/no-delete": "error",
+        "fp/no-mutation": [
+            "warn",
+            {"exceptions": {"object": "document"}}
+        ],
+        "fp/no-mutating-methods": "warn"
     }
 }

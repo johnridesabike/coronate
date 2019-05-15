@@ -2,11 +2,12 @@
  * @param {number} playerCount
  */
 export function calcNumOfRounds(playerCount) {
-    let roundId = Math.ceil(Math.log2(playerCount));
-    if (!Number.isFinite(roundId)) {
-        roundId = 0;
-    }
-    return roundId;
+    const rounds = Math.ceil(Math.log2(playerCount));
+    return (
+        (Number.isFinite(rounds))
+        ? rounds
+        : 0
+    );
 }
 
 /**

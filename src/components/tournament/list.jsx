@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import Trash from "react-feather/dist/icons/trash-2";
 import {Link} from "@reach/router";
-import createTournament from "../../data/tournament";
 import {useTournaments} from "../../state";
 
 /**
@@ -20,7 +19,7 @@ export default function TournamentList(props) {
         event.preventDefault();
         dispatch({
             type: "ADD_TOURNEY",
-            tourney: createTournament({name: newTourneyName})
+            name: newTourneyName
         });
         setNewTourneyName("");
     }

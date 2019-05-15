@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import numeral from "numeral";
 import dashify from "dashify";
 import {PanelContainer, Panel} from "../utility";
-import {dummyPlayer} from "../../data/player";
+import {DUMMY_ID} from "../../data/constants";
 import {useTournament, usePlayers} from "../../state";
 import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
@@ -61,7 +61,7 @@ function ScoreList({tourneyId}) {
                 </tr>
                 {standingTree.map((standingsFlat, rank) =>
                     standingsFlat.filter(
-                        (p) => p.id !== dummyPlayer.id
+                        (p) => p.id !== DUMMY_ID
                     ).map((standing, j, src) => (
                         <tr key={standing.id} className={style.row}>
                             {j === 0 && ( // Only display the rank once

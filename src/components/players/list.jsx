@@ -3,7 +3,7 @@ import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
 import Trash from "react-feather/dist/icons/trash-2";
-import {createPlayer} from "../../data/player";
+import {createPlayer} from "../../data/factories";
 import {usePlayers} from "../../state";
 import {PlayerLink} from "../utility";
 

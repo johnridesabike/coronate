@@ -21,6 +21,8 @@ import {
 import {getPlayerById} from "../data/player";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
+import {createTournament} from "../data/factories";
+import {DUMMY_ID} from "../data/constants";
 /**
  * @typedef {import("./dispatch").Action} Action
  * @typedef {import("../data/index").Tournament} Tournament
@@ -38,7 +40,7 @@ const defaultData = defaultTourneyList;
 function tourneysReducer(state, action) {
     switch (action.type) {
     case "ADD_TOURNEY":
-        return append(action.tourney, state);
+        return append(createTournament({name: action.name}), state);
     case "DEL_TOURNEY":
         return state.filter((ignore, i) => i !== action.index);
     case "ADD_ROUND":
@@ -57,6 +59,9 @@ function tourneysReducer(state, action) {
                 if (match.result[0] + match.result[1] !== 0) {
                     match.players.forEach(
                         function (pId, color) {
+                            if (pId === DUMMY_ID) {
+                                return; // don't try to set the dummy
+                            }
                             getPlayerById(action.players, pId).matchCount -= 1;
                             getPlayerById(action.players, pId).rating = (
                                 match.origRating[color]

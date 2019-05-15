@@ -1,24 +1,9 @@
 import EloRank from "elo-rank";
-import {WHITE, BLACK} from "./constants";
+import {WHITE, BLACK, DUMMY_ID} from "./constants";
+import {createPlayer} from "./factories";
 /**
  * @typedef {import("./index").Player} Player
- */
-
-/**
- * @param {Object} importObj
- */
-export function createPlayer(importObj = {}) {
-    /** @type {Player} */
-    const player = {
-        id: importObj.id || 0,
-        type: importObj.type || "person", // used for CSS styling etc.
-        firstName: importObj.firstName || "",
-        lastName: importObj.lastName || "",
-        rating: importObj.rating || 0,
-        matchCount: importObj.matchCount || 0
-    };
-    return player;
-}
+*/
 
 const dummyPlayer = createPlayer({
     id: -1,
@@ -36,18 +21,19 @@ export {dummyPlayer};
  * @returns {Player}
  */
 export function getPlayerById(playerList, id) {
-    if (id === -1) {
+    if (id === DUMMY_ID) {
         return dummyPlayer;
     }
-    let player = playerList.filter((p) => p.id === id)[0];
-    if (!player) {
-        player = createPlayer({
+    const player = playerList.filter((p) => p.id === id)[0];
+    return (
+        (player)
+        ? player
+        : createPlayer({
             id: id,
             firstName: "Anonymous",
             type: "missing"
-        });
-    }
-    return player;
+        })
+    );
 }
 
 /**

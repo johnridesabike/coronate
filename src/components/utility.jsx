@@ -1,8 +1,8 @@
 import React from "react";
 import {Link} from "@reach/router";
 import {usePlayers} from "../state";
-import {dummyPlayer} from "../data/player";
 import styles from "./utility.module.css";
+import {DUMMY_ID} from "../data/constants";
 
 /**
  * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
@@ -55,19 +55,18 @@ export function PanelContainer(props) {
  */
 export function PlayerLink({id, firstName, lastName}) {
     const {getPlayer} = usePlayers();
-    let name = "";
-    if (firstName) {
-        name += getPlayer(id).firstName + " ";
-    }
-    if (lastName) {
-        name += getPlayer(id).lastName;
-    }
-    if (id === dummyPlayer.id) {
-        return <span>{name}</span>; // there's no bye player profile
+    if (id === DUMMY_ID) {
+        return ( // there's no bye player profile
+            <span>
+                {firstName && getPlayer(id).firstName}{" "}
+                {lastName && getPlayer(id).lastName}
+            </span>
+        );
     }
     return (
         <Link to={"/players/" + id}>
-            {name}
+            {firstName && getPlayer(id).firstName}{" "}
+            {lastName && getPlayer(id).lastName}
         </Link>
     );
 }

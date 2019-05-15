@@ -1,8 +1,7 @@
 import React from "react";
-import {set, lensIndex} from "ramda";
-import {dummyPlayer} from "../../../../data/player";
+import {set, lensIndex, append} from "ramda";
 import {useRound, usePlayers, useOptions} from "../../../../state";
-import {WHITE, BLACK} from "../../../../data/constants";
+import {WHITE, BLACK, DUMMY_ID} from "../../../../data/constants";
 
 /**
  * @param {Object} props
@@ -34,9 +33,12 @@ export default function PairPicker({
         }
         // else... nothing happens
     }
-    if (unmatched.length % 2 !== 0) {
-        unmatched.push(dummyPlayer.id);
-    }
+    // make a new list so as not to affect auto-pairing
+    const unmatchedWithDummy = (
+        (unmatched.length % 2 !== 0)
+        ? append(DUMMY_ID, unmatched)
+        : unmatched
+    );
     if (unmatched.length === 0) {
         return null;
     }
@@ -57,7 +59,7 @@ export default function PairPicker({
                 Auto-pair unmatched players
             </button>
             <ul>
-                {unmatched.map((pId) => (
+                {unmatchedWithDummy.map((pId) => (
                     <li key={pId}>
                         {stagedPlayers.includes(pId)
                         ? <button disabled>Added</button>

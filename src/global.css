@@ -19,6 +19,11 @@ h1 {
   text-align: center;
 }
 
+caption {
+    font-size: 1.25em;
+    font-weight: 700;
+}
+
 .table__number {
   font-family: "Fira Code", source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

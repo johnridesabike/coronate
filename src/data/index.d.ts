@@ -5,13 +5,13 @@ export interface Match {
     origRating: [number, number],
     newRating: [number, number]
 }
-export type Round = Match[];
+
 export interface Tournament {
     name: string,
     tieBreaks: number[],
     byeQueue: number[],
     players: number[],
-    roundList: Round[]
+    roundList: Match[][]
 }
 export interface Player {
     id: number,

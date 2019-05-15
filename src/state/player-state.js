@@ -11,7 +11,8 @@ import {
     propEq,
     set
 } from "ramda";
-import {createPlayer, getPlayerById} from "../data/player";
+import {getPlayerById} from "../data/player";
+import {createPlayer} from "../data/factories";
 import demoPlayers from "./demo-players.json";
 /**
  * @typedef {import("./dispatch").Action} Action

@@ -1,16 +1,13 @@
 import {firstBy} from "thenby";
-import {
-    dummyPlayer,
-    getPlayerById,
-    getPlayerAvoidList
-} from "../data/player";
+import {getPlayerById, getPlayerAvoidList} from "../data/player";
+import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
 
 /**
  * @typedef {import("./").ScoreCalculator} ScoreCalculator
  * @typedef {import("./").PlayerData} PlayerData
  * @typedef {import("./").Standing} Standing
- * @typedef {import("../data/").Match} Match
- * @typedef {import("../data/").Player} Player
+ * @typedef {import("../data").Match} Match
+ * @typedef {import("../data").Player} Player
  */
 
 /**
@@ -19,22 +16,21 @@ import {
  * @returns {boolean}
  */
 function isBye(match) {
-    return match.players.includes(dummyPlayer.id);
+    return match.players.includes(DUMMY_ID);
 }
 
 /**
  * @param {number} playerId
  * @param {object[]} matchList
- * @returns {number?}
+ * @returns {typeof WHITE | typeof BLACK?}
  */
 export function playerMatchColor(playerId, matchList) {
-    /**@type {number} */
-    let color = null;
     const match = matchList.filter((m) => m.players.includes(playerId))[0];
-    if (match) {
-        color = match.players.indexOf(playerId);
-    }
-    return color;
+    return (
+        (match)
+        ? match.players.indexOf(playerId)
+        : null
+    );
 }
 
 /**
@@ -42,13 +38,11 @@ export function playerMatchColor(playerId, matchList) {
  * @returns {Match[]}
  */
 function getMatchesByPlayer(playerId, roundList, roundId = null) {
-    /** @type {Match[]} */
-    let rounds;
-    if (roundId === null) {
-        rounds = roundList;
-    } else {
-        rounds = roundList.slice(0, roundId + 1);
-    }
+    const rounds = (
+        (roundId === null)
+        ? roundList
+        : roundList.slice(0, roundId + 1)
+    );
     return rounds.reduce( // flatten the rounds to just the matches
         (acc, round) => acc.concat(round),
         []
@@ -69,7 +63,7 @@ export function hasHadBye(playerId, roundList, roundId = null) {
     ).reduce(
         (acc, match) => acc.concat(match.players),
         []
-    ).includes(dummyPlayer.id);
+    ).includes(DUMMY_ID);
 }
 
 /**
@@ -124,12 +118,12 @@ function playerScoreListNoByes(playerId, roundList, roundId = null) {
  * @returns {number}
  */
 export function playerScore(playerId, roundList, roundId = null) {
-    let score = 0;
     const scoreList = playerScoreList(playerId, roundList, roundId);
-    if (scoreList.length > 0) {
-        score = scoreList.reduce((a, b) => a + b);
-    }
-    return score;
+    return (
+        (scoreList.length > 0)
+        ? scoreList.reduce((a, b) => a + b)
+        : 0
+    );
 }
 
 /**
@@ -145,11 +139,11 @@ function playerScoreCum(playerId, roundList, roundId = null) {
         runningScore += score;
         cumScores.push(runningScore);
     });
-    let totalScore = 0;
-    if (cumScores.length !== 0) {
-        totalScore = cumScores.reduce((a, b) => a + b);
-    }
-    return totalScore;
+    return (
+        (cumScores.length !== 0)
+        ? cumScores.reduce((a, b) => a + b)
+        : 0
+    );
 }
 
 /**
@@ -159,19 +153,25 @@ function playerScoreCum(playerId, roundList, roundId = null) {
  * @returns {number}
  */
 export function playerColorBalance(playerId, roundList, roundId = null) {
-    let color = 0;
-    getMatchesByPlayer(playerId, roundList, roundId).filter(
+    return getMatchesByPlayer(
+        playerId,
+        roundList,
+        roundId
+    ).filter(
         (match) => !isBye(match)
-    ).forEach(
-        function (match) {
-            if (match.players[0] === playerId) {
-                color += -1;
-            } else if (match.players[1] === playerId) {
-                color += 1;
-            }
-        }
+    ).reduce(
+        function (acc, match) {
+            return (
+                (match.players[WHITE] === playerId)
+                ? acc.concat(-1) // White = -1
+                : acc.concat(1) // Black = +1
+            );
+        },
+        []
+    ).reduce(
+        (acc, num) => acc + num,
+        0
     );
-    return color;
 }
 
 /**
@@ -187,7 +187,7 @@ function modifiedMedian(pId, roundList, roundId = null, isSolkoff = false) {
         roundList,
         roundId
     ).filter(
-        (opponent) => opponent !== dummyPlayer.id
+        (opponent) => opponent !== DUMMY_ID
     ).map(
         (opponent) => playerScore(opponent, roundList, roundId)
     );
@@ -197,11 +197,11 @@ function modifiedMedian(pId, roundList, roundId = null, isSolkoff = false) {
         scores.pop();
         scores.shift();
     }
-    let finalScore = 0;
-    if (scores.length > 0) {
-        finalScore = scores.reduce((a, b) => a + b);
-    }
-    return finalScore;
+    return (
+        (scores.length > 0)
+        ? scores.reduce((a, b) => a + b)
+        : 0
+    );
 }
 
 /**
@@ -224,14 +224,14 @@ function playerOppScoreCum(playerId, roundList, roundId = null) {
         roundList,
         roundId
     ).filter(
-        (opponent) => opponent !== dummyPlayer.id
+        (opponent) => opponent !== DUMMY_ID
     );
     let oppScores = opponents.map((p) => playerScoreCum(p, roundList, roundId));
-    let score = 0;
-    if (oppScores.length !== 0) {
-        score = oppScores.reduce((a, b) => a + b);
-    }
-    return score;
+    return (
+        (oppScores.length !== 0)
+        ? oppScores.reduce((a, b) => a + b)
+        : 0
+    );
 }
 
 const tieBreakMethods = [
@@ -266,26 +266,22 @@ export {tieBreakMethods};
  * @returns {boolean}
  */
 function areScoresEqual(standing1, standing2) {
-    let areEqual = true;
     // Check if any of them aren't equal
     if (standing1.score !== standing2.score) {
-        areEqual = false;
+        return false;
     }
-    Object.keys(standing1.tieBreaks).forEach(function (index) {
-        const i = Number(index);
-        if (standing1.tieBreaks[i] !== standing2.tieBreaks[i]) {
-            areEqual = false;
-        }
-    });
-    return areEqual;
+    // Check if any values are not equal
+    return !(
+        standing1.tieBreaks.reduce(
+            /** @param {boolean[]} acc */
+            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
+            []
+        ).includes(true)
+    );
 }
 
 /**
- * @typedef {import("../data/index").Round} Round
- */
-
-/**
- * @param {Round[]} roundList
+ * @param {Match[][]} roundList
  * @returns {number[]}
  */
 function getAllPlayers(roundList) {
@@ -302,7 +298,7 @@ function getAllPlayers(roundList) {
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {number[]} methods
- * @param {Round[]} roundList
+ * @param {Match[][]} roundList
  * @param {number} [roundId]
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
@@ -348,26 +344,26 @@ export function calcStandings(methods, roundList, roundId = null) {
 
 /**
  * @type {ScoreCalculator}
- * @returns {number?} 0 for white, 1 for black, null if no color history
+ * @returns {typeof WHITE | typeof BLACK?}
  */
 function dueColor(playerId, roundList, roundId = null) {
     if (!roundList[roundId - 1]) {
         return null;
     }
-    let color = 0;
     let prevColor = playerMatchColor(
         playerId,
         roundList[roundId - 1]
     );
-    if (prevColor === 0) {
-        color = 1;
-    }
-    return color;
+    return ( // return the opposite color
+        (prevColor === WHITE)
+        ? BLACK
+        : WHITE
+    );
 }
 
 /**
  * @param {number} playerId
- * @param {Round[]} roundList
+ * @param {Match[][]} roundList
  * @param {number} roundId
  * @param {Player[]} playerList
  * @param {number[][]} avoidList
@@ -388,7 +384,7 @@ export function genPlayerData(
         score: playerScore(playerId, roundList, roundId),
         dueColor: dueColor(playerId, roundList, roundId),
         colorBalance: playerColorBalance(playerId, roundList, roundId),
-        opponentHistory: getPlayersByOpponent(playerId, roundList, null),
+        opponentHistory: getPlayersByOpponent(playerId, roundList, roundId),
         upperHalf: false,
         avoidList: getPlayerAvoidList(playerId, avoidList),
         hasHadBye: hasHadBye(playerId, roundList, roundId)

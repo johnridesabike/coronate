@@ -4,8 +4,8 @@ import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
 import Check from "react-feather/dist/icons/check";
 import {PanelContainer, Panel} from "../../utility";
-import {calcNewRatings, dummyPlayer} from "../../../data/player";
-import {BLACK, WHITE} from "../../../data/constants";
+import {calcNewRatings} from "../../../data/player";
+import {BLACK, WHITE, DUMMY_ID} from "../../../data/constants";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
 // @ts-ignore
@@ -36,17 +36,19 @@ export default function MatchRow({
     const {tourney, dispatch} = useRound(tourneyId, roundId);
     const {playerDispatch, getPlayer} = usePlayers();
     const [openModal, setOpenModal] = useState(false);
-    /** @type {string} */
-    let resultCode;
-    if (match.result[0] > match.result[1]) {
-        resultCode = "WHITE";
-    } else if (match.result[1] > match.result[0]) {
-        resultCode = "BLACK";
-    } else if (match.result.every((x) => x === 0.5)) {
-        resultCode = "DRAW";
-    } else {
-        resultCode = "NOTSET";
-    }
+    const resultCode = (
+        function () {
+            if (match.result[0] > match.result[1]) {
+                return "WHITE";
+            } else if (match.result[1] > match.result[0]) {
+                return "BLACK";
+            } else if (match.result.every((x) => x === 0.5)) {
+                return "DRAW";
+            } else {
+                return "NOTSET";
+            }
+        }())
+    ;
     const whiteName = (
         getPlayer(match.players[0]).firstName
         + " "
@@ -62,23 +64,22 @@ export default function MatchRow({
      */
     function setMatchResult(event) {
         /** @type {[number, number]} */
-        let result;
-        switch (event.currentTarget.value) {
-        case "WHITE":
-            result = [1, 0];
-            break;
-        case "BLACK":
-            result = [0, 1];
-            break;
-        case "DRAW":
-            result = [0.5, 0.5];
-            break;
-        case "NOTSET":
-            result = [0, 0];
-            break;
-        default:
-            throw new Error();
-        }
+        const result = (
+            function () {
+                switch (event.currentTarget.value) {
+                case "WHITE":
+                    return [1, 0];
+                case "BLACK":
+                    return [0, 1];
+                case "DRAW":
+                    return [0.5, 0.5];
+                case "NOTSET":
+                    return [0, 0];
+                default:
+                    throw new Error();
+                }
+            }()
+        );
         const white = getPlayer(match.players[WHITE]);
         const black = getPlayer(match.players[BLACK]);
         const newRating = (
@@ -151,7 +152,7 @@ export default function MatchRow({
                 <select
                     onBlur={setMatchResult}
                     onChange={setMatchResult}
-                    disabled={match.players.includes(dummyPlayer.id)}
+                    disabled={match.players.includes(DUMMY_ID)}
                     value={resultCode}
                     className={winnerSelect}
                 >

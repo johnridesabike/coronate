@@ -2,8 +2,8 @@ import {firstBy} from "thenby";
 import splitAt from "ramda/src/splitAt";
 import last from "ramda/src/last";
 import blossom from "edmonds-blossom";
-import {dummyPlayer} from "../data/player";
 import {genPlayerData} from "./scoring";
+import {DUMMY_ID} from "../data/constants";
 /**
  * @typedef {import("./").PlayerData} PlayerData
  */
@@ -107,23 +107,12 @@ export default function pairPlayers(
     playerList,
     avoidList
 ) {
-    /** @type {number[]} */
+    /** @type {[number, number]} */
     let byeMatch;
-    /** @type {number[][]} */
-    let potentialMatches;
-    /** @type {Number[][]} */
-    let matches;
-    /** @type {number[]} */
-    let blossomResults;
-    /** @type {[PlayerData, PlayerData, number][]} */
-    let reducedResults;
-    /** @type {number[]} */
-    let scoreList;
-    /** @type {PlayerData[]} */
     let playerData = players.map((playerId) => (
         genPlayerData(playerId, playerList, avoidList, roundList, roundId)
     ));
-    scoreList = Array.from(new Set(playerData.map((p) => p.score)));
+    const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
     scoreList.sort();
     // Sort the data so matchups default to order by score and rating.
     playerData.sort(
@@ -140,7 +129,7 @@ export default function pairPlayers(
         if (!byePlayerData) {
             byePlayerData = last(playerData);
         }
-        byeMatch = [byePlayerData.id, dummyPlayer.id];
+        byeMatch = [byePlayerData.id, DUMMY_ID];
         // Remove the bye'd player from the list so they won't be matched again.
         playerData = playerData.filter((p) => p !== byePlayerData);
     }
@@ -159,7 +148,7 @@ export default function pairPlayers(
         }
     });
     // Turn the data into blossom-compatible input.
-    potentialMatches = playerData.reduce(
+    const potentialMatches = playerData.reduce(
         function (acc, player1, ignore, src) {
             const playerMatches = src.filter(
                 (player) => player !== player1
@@ -177,9 +166,10 @@ export default function pairPlayers(
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
-    blossomResults = blossom(potentialMatches);
+    const blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
-    reducedResults = blossomResults.reduce(
+    /** @type {[PlayerData, PlayerData, number][]} */
+    const reducedResults = blossomResults.reduce(
         function (acc, p1Id, p2Id) {
             // Filter out unmatched players. Even though we removed the byes
             // from the list, blossom will automatically include their missing
@@ -214,7 +204,7 @@ export default function pairPlayers(
         )
     );
     // Turn the results into new match objects.
-    matches = reducedResults.map(
+    const matches = reducedResults.map(
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
