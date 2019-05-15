@@ -1,6 +1,6 @@
 .topToolbar {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
 }
 
 .toolbarItem:not(:last-child) {

@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Dialog} from "@reach/dialog";
+import Hidden from "@reach/visually-hidden";
 import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
 import Check from "react-feather/dist/icons/check";
@@ -191,6 +192,10 @@ export default function MatchRow({
                     title="Open match information."
                 >
                     <Info />
+                    <Hidden>
+                        View information for match:{" "}
+                        {whiteName} versus {blackName}
+                    </Hidden>
                 </button>
                 <Dialog isOpen={openModal}>
                     <button onClick={() => setOpenModal(false)}>

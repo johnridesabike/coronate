@@ -44,7 +44,7 @@ export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
             <dt>Score</dt>
             <dd>{playerData.score}</dd>
             <dt>Rating</dt>
-            <dd>
+            <dd data-testid={`rating-${playerData.id}`}>
                 {match.origRating[color]} (
                 {numeral(
                     match.newRating[color] - match.origRating[color]

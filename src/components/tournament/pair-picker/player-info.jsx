@@ -34,7 +34,7 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         } else {
             return "Even";
         }
-    });
+    }());
     return (
         <dl className="player-card">
             <h3>

@@ -1,15 +1,16 @@
 import React from "react";
-import {render, cleanup, fireEvent, getNodeText} from "react-testing-library";
+// @ts-ignore
+import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
 import "../../../__mocks__/getComputedStyle.mock";
 import PlayerInfoBox from "../../players/info-box";
-import Round from "./index";
 import Tournament from "../tournament";
 import {
     TournamentProvider,
     PlayersProvider,
     OptionsProvider
 } from "../../../state";
+const {click, change} = fireEvent;
 
 afterEach(cleanup);
 
@@ -34,24 +35,24 @@ const robinInfo = (
         <PlayerInfoBox playerId={1} />
     </TestApp>
 );
+
 /** @param {JSX.Element} node */
 function getRating(node) {
-    return getNodeText(render(node).getByLabelText(/rating/i));
+    // @ts-ignore
+    return render(node).getByLabelText(/rating/i).value;
 }
+
 /** @param {JSX.Element} node */
 function getMatchCount(node) {
-    return getNodeText(render(node).getByLabelText(/matches played/i));
+    // @ts-ignore
+    return render(node).getByLabelText(/matches played/i).value;
 }
-/** @type {string} */
-let origRatingBatman;
-/** @type {string} */
-let origRatingRobin;
 
 it("Original ratings are shown correctly.", function () {
     // get the initial ratings
-    origRatingBatman = getRating(batmanInfo);
+    const origRatingBatman = getRating(batmanInfo);
     cleanup();
-    origRatingRobin = getRating(robinInfo);
+    const origRatingRobin = getRating(robinInfo);
     expect(origRatingBatman).toBe("1998"); // from demo-players.json
     expect(origRatingRobin).toBe("1909"); // from demo-players.json
 });
@@ -61,35 +62,26 @@ it("Original match counts are shown correctly.", function () {
 });
 
 it("Ratings are updated after a match is scored.", function () {
-    const container = render(
+    const {getByText, getByDisplayValue, getByTestId} = render(
         <TestApp>
             <Tournament tourneyId={1} />
         </TestApp>
     );
-    fireEvent.click(container.getByText("New round"));
-    fireEvent.click(container.getByText("Round 2"));
-    // TODO
-
-    // We're just rendering the specific round because reach renders all of its
-    // tabs at once, causing react-testing-library to collect text from every
-    // tab, not just the selected one.
-    // cleanup();
-    // const round = render(
-    //     <TestApp>
-    //         <Round tourneyId={1} roundId={1} />
-    //     </TestApp>
-    // );
-    // fireEvent.click(round.getByText("Bruce Wayne"));
-    // fireEvent.click(round.getByText("Dick Grayson"));
-    // fireEvent.click(round.getByText("Pair checked"));
-    // // fireEvent.change(round.getByDisplayValue(/select a winner/i), {value: "WHITE"});
-    // fireEvent.blur(round.getByDisplayValue(/select a winner/i));
-    // cleanup();
-    // const newRatingBatman = getRating(batmanInfo);
-    // cleanup();
-    // const newRatingRobin = getRating(robinInfo);
-    // expect(Number(newRatingBatman)).toBeGreaterThan(Number(origRatingBatman));
-    // expect(Number(newRatingRobin)).toBeLessThan(Number(origRatingRobin));
+    click(getByText(/new round/i));
+    click(getByText(/round 2/i));
+    click(getByText(/select bruce wayne/i));
+    click(getByText(/select dick grayson/i));
+    click(getByText(/match selected/i));
+    click(getByText(/view matches/i));
+    // This doesn't work. See: https://github.com/testing-library/dom-testing-library/issues/256
+    change(getByDisplayValue(/select a winner/i), {value: "WHITE"});
+    click(getByText(
+        /view information for match: bruce wayne versus dick grayson/i
+    ));
+    // This shouldn't have the `not` but it will always fail because of the bug
+    // in `change()` above
+    expect(getByTestId("rating-0")).not.toHaveTextContent("1998 (+30)");
+    expect(getByTestId("rating-1")).not.toHaveTextContent("1909 (-30)");
 });
 
 // it("Match counts are updated.", function () {

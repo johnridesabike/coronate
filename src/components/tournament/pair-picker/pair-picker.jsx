@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {set, lensIndex, append} from "ramda";
 import {Dialog} from "@reach/dialog";
+import Hidden from "@reach/visually-hidden";
 import UserPlus from "react-feather/dist/icons/user-plus";
 import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
@@ -74,14 +75,14 @@ export default function PairPicker({
                                 disabled={!stagedPlayers.includes(null)}
                                 onClick={() => selectPlayer(pId)}
                             >
-                                <UserPlus/> Select
+                                <UserPlus/>
+                                <Hidden>
+                                    Select {getPlayer(pId).firstName}{" "}
+                                    {getPlayer(pId).lastName}
+                                </Hidden>
                             </button>
-                        )
-                        }
-                        {" "}
-                        <label htmlFor={`${pId}`}>
-                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
-                        </label>
+                        )}{" "}
+                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
                     </li>
                 ))}
             </ul>
