@@ -12,6 +12,7 @@ import style from "./scores.module.css";
  * @param {number} props.tourneyId
  */
 function ScoreList({tourneyId}) {
+    // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [{tieBreaks, roundList}] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
@@ -88,6 +89,7 @@ function ScoreList({tourneyId}) {
  * @param {number} props.tourneyId
  */
 function SelectTieBreaks({tourneyId}) {
+    // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [{tieBreaks}, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);

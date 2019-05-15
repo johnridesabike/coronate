@@ -1,0 +1,8 @@
+.topToolbar {
+    display: flex;
+    justify-content: start;
+}
+
+.toolbarItem:not(:last-child) {
+    margin-right: 1.5em;
+}

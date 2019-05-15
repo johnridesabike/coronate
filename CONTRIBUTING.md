@@ -28,7 +28,6 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## User interface
 
-- Add a way to edit registered players.
 - Improve the "tournament status" and "score detail" tabs.
 - Improve accessibility.
 - Improve how ranks and ties are displayed.

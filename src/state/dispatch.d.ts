@@ -6,6 +6,14 @@ declare interface ActionByeValue {
 export type OptionAction = ActionByeValue;
 
 // Players
+declare interface ActionSetPlayer {
+    type: "SET_PLAYER",
+    firstName: string,
+    lastName: string,
+    rating: number,
+    matchCount: number,
+    id: number
+}
 declare interface ActionAddPlayer {
     type: "ADD_PLAYER",
     firstName: string,
@@ -32,6 +40,7 @@ declare interface ActionAvoidPair {
 }
 export type PlayerAction = (
     ActionAddPlayer
+    | ActionSetPlayer
     | ActionDelPlayer
     | ActionSetMatchcount
     | ActionSetRating

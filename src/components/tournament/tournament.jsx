@@ -16,6 +16,7 @@ import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../data/utility";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
+import styles from "./tournament.module.css";
 
 /**
  * @param {Object} props
@@ -23,6 +24,7 @@ import "@reach/tooltip/styles.css";
  * @param {number} [props.tourneyId]
  */
 export default function Tournament({tourneyId}) {
+    // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
@@ -72,18 +74,19 @@ export default function Tournament({tourneyId}) {
         [roundList.length]
     );
     const isItOver = roundList.length >= calcNumOfRounds(players.length);
-    let tooltipText = "";
-    let tooltipWarn = false;
-    if (!isNewRoundReady) {
-        tooltipText = `You must complete the last round before beginning a new
-        one.`;
-        tooltipWarn = true;
-    } else if (isItOver) {
-        tooltipText = "All necessary rounds have completed.";
-        tooltipWarn = true;
-    } else {
-        tooltipText = "Ready to begin a new round.";
-    }
+    /** @type {[string, boolean]} */
+    const [tooltipText, tooltipWarn] = (function () {
+        if (!isNewRoundReady) {
+            return [
+                "You must complete the last round before beginning a new one.",
+                true
+            ];
+        } else if (isItOver) {
+            return ["All necessary rounds have completed.", true];
+        } else {
+            return ["Ready to begin a new round.", false];
+        }
+    }());
     function newRound() {
         const confirmText = (
             "All rounds have completed. Are you sure you want to begin a new "
@@ -117,31 +120,37 @@ export default function Tournament({tourneyId}) {
                     <ChevronLeft/> Back
                 </Link>
                 <h2>{name}</h2>
-                Round progress: {roundList.length}/
-                {calcNumOfRounds(players.length)}{" "}
-                <button
-                    onClick={newRound}
-                    disabled={!isNewRoundReady}
-                >
-                    <Plus/> New round
-                </button>{" "}
-                <Tooltip label={tooltipText}>
-                    <span className="helpIcon">
-                        {(tooltipWarn)
-                            // @ts-ignore
-                            ? <Alert className="status-alert" />
-                            // @ts-ignore
-                            : <Check className="status-ok" />
-                        }
+                <div className={styles.topToolbar}>
+                    <span className={styles.toolbarItem}>
+                        Round progress: {roundList.length}/
+                        {calcNumOfRounds(players.length)}{" "}
                     </span>
-                </Tooltip>{" "}
-                <button
-                    className="danger"
-                    onClick={delLastRound}
-                    disabled={roundList.length === 0}
-                >
-                    <Trash /> Remove last round
-                </button>
+                    <span className={styles.toolbarItem}>
+                        <button
+                            onClick={newRound}
+                            disabled={!isNewRoundReady}
+                        >
+                            <Plus/> New round
+                        </button>{" "}
+                        <Tooltip label={tooltipText}>
+                            <span className="helpIcon">
+                                {(tooltipWarn)
+                                    // @ts-ignore
+                                    ? <Alert className="status-alert" />
+                                    // @ts-ignore
+                                    : <Check className="status-ok" />
+                                }
+                            </span>
+                        </Tooltip>
+                    </span>
+                    <button
+                        className={"danger " + styles.toolbarItem}
+                        onClick={delLastRound}
+                        disabled={roundList.length === 0}
+                    >
+                        <Trash /> Remove last round
+                    </button>
+                </div>
             </div>
             <TabList>
                 <Tab>Players</Tab>

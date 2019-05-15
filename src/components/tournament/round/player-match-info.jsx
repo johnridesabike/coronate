@@ -27,12 +27,15 @@ export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
         roundId
     );
     const colorBalance = playerData.colorBalance;
-    let prettyBalance = "Even";
-    if (colorBalance < 0) {
-        prettyBalance = "White +" + Math.abs(colorBalance);
-    } else if (colorBalance > 0) {
-        prettyBalance = "Black +" + colorBalance;
-    }
+    const prettyBalance = (function () {
+        if (colorBalance < 0) {
+            return "White +" + Math.abs(colorBalance);
+        } else if (colorBalance > 0) {
+            return "Black +" + colorBalance;
+        } else {
+            return "Even";
+        }
+    }());
     return (
         <dl className="player-card">
             <h3>

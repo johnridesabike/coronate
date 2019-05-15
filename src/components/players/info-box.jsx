@@ -14,19 +14,19 @@ import {usePlayers} from "../../state";
 export default function PlayerInfoBox(props) {
     const playerId = Number(props.playerId);
     const {playerState, playerDispatch, getPlayer} = usePlayers();
-    const avoidList = playerState.avoid;
+    const {players, avoid} = playerState;
     const [singAvoidList, setSingAvoidList] = useState(
-        getPlayerAvoidList(playerId, avoidList)
+        getPlayerAvoidList(playerId, avoid)
     );
     const unAvoided = useMemo(
         () => (
-            playerState.players.map(
+            players.map(
                 (player) => player.id
             ).filter(
                 (pId) => !singAvoidList.includes(pId) && pId !== playerId
             )
         ),
-        [playerState.players, playerId, singAvoidList]
+        [players, playerId, singAvoidList]
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided[0]);
     /** @param {React.FormEvent<HTMLFormElement>} event */
@@ -39,9 +39,9 @@ export default function PlayerInfoBox(props) {
     }
     useEffect(
         function () {
-            setSingAvoidList(getPlayerAvoidList(playerId, avoidList));
+            setSingAvoidList(getPlayerAvoidList(playerId, avoid));
         },
-        [avoidList, playerId]
+        [avoid, playerId]
     );
     useEffect(
         function () {
@@ -62,53 +62,108 @@ export default function PlayerInfoBox(props) {
         },
         [playerId, getPlayer]
     );
+    /** @param {React.FormEvent<HTMLFormElement>} event */
+    function handleChange(event) {
+        event.preventDefault();
+        const {firstName, lastName, matchCount, rating} = event.currentTarget;
+        playerDispatch({
+            type: "SET_PLAYER",
+            id: playerId,
+            firstName: firstName.value,
+            lastName: lastName.value,
+            matchCount: Number(matchCount.value),
+            rating: Number(rating.value)
+        });
+    }
     return (
         <div>
-            {/* <Link to="/players"><ChevronLeft /> Back</Link> */}
             <h2>
+                Profile for{" "}
                 {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
             </h2>
-            <dl>
-                <dt id="match-count">Matches played</dt>
-                <dd aria-labelledby="match-count">
-                    {getPlayer(playerId).matchCount}
-                </dd>
-                <dt id="rating">Rating</dt>
-                <dd aria-labelledby="rating">{getPlayer(playerId).rating}</dd>
-                <dt>K factor</dt>
-                <dd>
-                    {numeral(kFactor(getPlayer(playerId).matchCount)).format(
-                        "00"
-                    )}
-                </dd>
-                <dt>Players to avoid</dt>
-                <dd>
-                    <ul>
-                        {singAvoidList.map((pId) => (
-                            <li key={pId}>
-                                {getPlayer(pId).firstName}{" "}
-                                {getPlayer(pId).lastName}{" "}
-                                <button
-                                    className="danger iconButton"
-                                    onClick={() =>
-                                        playerDispatch({
-                                            type: "DEL_AVOID_PAIR",
-                                            pair: [playerId, pId]
-                                        })
-                                    }
-                                    title={`Remove ${getPlayer(pId).firstName}
+            <form onChange={handleChange} onSubmit={handleChange}>
+                <p>
+                    <label>
+                    First name{" "}
+                        <input
+                            type="text"
+                            name="firstName"
+                            defaultValue={getPlayer(playerId).firstName}
+                        />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    Last name{" "}
+                        <input
+                            type="text"
+                            name="lastName"
+                            defaultValue={getPlayer(playerId).lastName}
+                        />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    Matches played{" "}
+                        <input
+                            type="number"
+                            name="matchCount"
+                            defaultValue={
+                                String(getPlayer(playerId).matchCount)
+                            }
+                        />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    Rating
+                        <input
+                            type="number"
+                            name="rating"
+                            defaultValue={String(getPlayer(playerId).rating)}
+                        />
+                    </label>
+                </p>
+                <p>
+                    <label>
+                    K factor
+                        <input
+                            type="number"
+                            readOnly
+                            value={(
+                                numeral(
+                                    kFactor(getPlayer(playerId).matchCount)
+                                ).format("00")
+                            )}
+                        />
+                    </label>
+                </p>
+            </form>
+            <ul>
+                <h3>Players to avoid</h3>
+                {singAvoidList.map((pId) => (
+                    <li key={pId}>
+                        {getPlayer(pId).firstName}{" "}
+                        {getPlayer(pId).lastName}{" "}
+                        <button
+                            className="danger iconButton"
+                            onClick={() =>
+                                playerDispatch({
+                                    type: "DEL_AVOID_PAIR",
+                                    pair: [playerId, pId]
+                                })
+                            }
+                            title={`Remove ${getPlayer(pId).firstName} 
 ${getPlayer(pId).lastName}`}
-                                    arial-label={`Remove 
+                            arial-label={`Remove 
 ${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
-                                >
-                                    <Trash />
-                                </button>
-                            </li>
-                        ))}
-                        {avoidList.length === 0 && <li>None</li>}
-                    </ul>
-                </dd>
-            </dl>
+                        >
+                            <Trash />
+                        </button>
+                    </li>
+                ))}
+                {avoid.length === 0 && <li>None</li>}
+            </ul>
             <form onSubmit={(event) => avoidAdd(event)}>
                 <fieldset>
                     <legend>Add player to avoid</legend>

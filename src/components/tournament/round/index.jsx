@@ -9,7 +9,8 @@ import {useRound} from "../../../state";
  * @param {number} props.tourneyId
  */
 export default function Index({tourneyId, roundId}) {
-    tourneyId = Number(tourneyId);
+    // eslint-disable-next-line fp/no-mutation
+    tourneyId = Number(tourneyId); // reach router passes a string instead
     const {unmatched} = useRound(tourneyId, roundId);
     const [isPickView, setIsPickView] = useState(unmatched.length > 0);
     useEffect(

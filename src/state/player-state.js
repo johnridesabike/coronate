@@ -3,13 +3,16 @@ import {createContext, createElement, useContext, useReducer} from "react";
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
     append,
+    assoc,
     curry,
     head,
     inc,
     lensPath,
+    lensIndex,
     filter,
     findIndex,
     map,
+    mergeLeft,
     over,
     pipe,
     propEq,
@@ -47,6 +50,23 @@ function playersReducer(state, action ) {
                 rating: action.rating,
                 id: getNextId(state.players)
             })),
+            state
+        );
+    case "SET_PLAYER":
+        return assoc(
+            "players",
+            over(
+                lensIndex(findIndex(propEq("id", action.id), state.players)),
+                mergeLeft(
+                    {
+                        firstName: action.firstName,
+                        lastName: action.lastName,
+                        rating: action.rating,
+                        matchCount: action.matchCount
+                    }
+                ),
+                state.players
+            ),
             state
         );
     case "DEL_PLAYER":
