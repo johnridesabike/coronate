@@ -1,7 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import {set, lensIndex, append} from "ramda";
-import {useRound, usePlayers, useOptions} from "../../../../state";
-import {WHITE, BLACK, DUMMY_ID} from "../../../../data/constants";
+import {Dialog} from "@reach/dialog";
+import UserPlus from "react-feather/dist/icons/user-plus";
+import Selecting from "../player-select/selecting";
+import {useRound, usePlayers, useOptions} from "../../../state";
+import {WHITE, BLACK, DUMMY_ID} from "../../../data/constants";
 
 /**
  * @param {Object} props
@@ -16,10 +19,10 @@ export default function PairPicker({
     stagedPlayers,
     setStagedPlayers
 }) {
-    tourneyId = Number(tourneyId); // reach router passes a string instead.
     const {dispatch, unmatched} = useRound(tourneyId, roundId);
     const {playerState, getPlayer} = usePlayers();
     const [{byeValue}] = useOptions();
+    const [isModalOpen, setIsModalOpen] = useState(false);
     /** @param {number} id */
     function selectPlayer(id) {
         if (stagedPlayers[WHITE] === null) {
@@ -57,18 +60,21 @@ export default function PairPicker({
                 disabled={unmatched.length === 0}
             >
                 Auto-pair unmatched players
+            </button><br/>
+            <button onClick={() => setIsModalOpen(true)}>
+                Add or remove players from the roster.
             </button>
             <ul>
                 {unmatchedWithDummy.map((pId) => (
                     <li key={pId}>
                         {stagedPlayers.includes(pId)
-                        ? <button disabled>Added</button>
+                        ? <button disabled>Selected</button>
                         : (
                             <button
                                 disabled={!stagedPlayers.includes(null)}
                                 onClick={() => selectPlayer(pId)}
                             >
-                                Add
+                                <UserPlus/> Select
                             </button>
                         )
                         }
@@ -79,6 +85,10 @@ export default function PairPicker({
                     </li>
                 ))}
             </ul>
+            <Dialog isOpen={isModalOpen}>
+                <button onClick={() => setIsModalOpen(false)}>Done</button>
+                <Selecting tourneyId={tourneyId} />
+            </Dialog>
         </div>
     );
 }

@@ -19,8 +19,18 @@ h1 {
   text-align: center;
 }
 
-caption {
+h2 {
     font-size: 1.25em;
+    font-weight: 700;
+}
+
+h3 {
+    font-weight: 1.125em;
+    font-weight: 700;
+}
+
+caption {
+    font-size: 1.125em;
     font-weight: 700;
 }
 
@@ -82,4 +92,12 @@ svg {
 
 .helpIcon {
     cursor: help;
+}
+
+.status-alert {
+    color: darkgoldenrod;
+}
+
+.status-ok {
+    color: green;
 }

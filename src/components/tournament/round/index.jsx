@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import Round from "./round";
-import PairPicker from "./pair-picker";
+import PairPicker from "../pair-picker";
 import {useRound} from "../../../state";
 
 /**
@@ -9,6 +9,7 @@ import {useRound} from "../../../state";
  * @param {number} props.tourneyId
  */
 export default function Index({tourneyId, roundId}) {
+    tourneyId = Number(tourneyId);
     const {unmatched} = useRound(tourneyId, roundId);
     const [isPickView, setIsPickView] = useState(unmatched.length > 0);
     useEffect(

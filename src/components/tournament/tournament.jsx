@@ -6,8 +6,11 @@ import last from "ramda/src/last";
 import Check from "react-feather/dist/icons/check-circle";
 import Alert from "react-feather/dist/icons/alert-circle";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
+import Trash from "react-feather/dist/icons/trash-2";
+import Plus from "react-feather/dist/icons/plus";
 import Round from "./round/";
 import Scores from "./scores";
+import Status from "./status";
 import PlayerSelect from "./player-select/index";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../data/utility";
@@ -63,7 +66,7 @@ export default function Tournament({tourneyId}) {
     useEffect(
         function () {
             if (roundList.length > 0) {
-                setOpenTab(roundList.length + 1);
+                setOpenTab(roundList.length + 2);
             }
         },
         [roundList.length]
@@ -92,7 +95,7 @@ export default function Tournament({tourneyId}) {
             }
         }
         dispatch({type: "ADD_ROUND", tourneyId});
-        setOpenTab(roundList.length + 1);
+        setOpenTab(roundList.length + 2);
         return;
     }
     function delLastRound() {
@@ -120,11 +123,16 @@ export default function Tournament({tourneyId}) {
                     onClick={newRound}
                     disabled={!isNewRoundReady}
                 >
-                    New round
+                    <Plus/> New round
                 </button>{" "}
                 <Tooltip label={tooltipText}>
                     <span className="helpIcon">
-                        {(tooltipWarn) ? <Alert /> : <Check />}
+                        {(tooltipWarn)
+                            // @ts-ignore
+                            ? <Alert className="status-alert" />
+                            // @ts-ignore
+                            : <Check className="status-ok" />
+                        }
                     </span>
                 </Tooltip>{" "}
                 <button
@@ -132,12 +140,13 @@ export default function Tournament({tourneyId}) {
                     onClick={delLastRound}
                     disabled={roundList.length === 0}
                 >
-                    Remove last round
+                    <Trash /> Remove last round
                 </button>
             </div>
             <TabList>
                 <Tab>Players</Tab>
-                <Tab>Scores</Tab>
+                <Tab>Tournament status</Tab>
+                <Tab>Score detail</Tab>
                 {Object.keys(roundList).map((id) => (
                     <Tab key={id}>Round {Number(id) + 1}</Tab>
                 ))}
@@ -145,6 +154,9 @@ export default function Tournament({tourneyId}) {
             <TabPanels>
                 <TabPanel>
                     <PlayerSelect tourneyId={tourneyId} />
+                </TabPanel>
+                <TabPanel>
+                    <Status tourneyId={tourneyId} />
                 </TabPanel>
                 <TabPanel>
                     <Scores tourneyId={tourneyId} />

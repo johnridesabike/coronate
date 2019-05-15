@@ -1,7 +1,10 @@
 import React, {Fragment} from "react";
 import {set, lensIndex} from "ramda";
-import {useTournament, usePlayers, useOptions} from "../../../../state";
-import {WHITE, BLACK} from "../../../../data/constants";
+import Repeat from "react-feather/dist/icons/repeat";
+import Check from "react-feather/dist/icons/check";
+import UserMinus from "react-feather/dist/icons/user-minus";
+import {useTournament, usePlayers, useOptions} from "../../../state";
+import {WHITE, BLACK} from "../../../data/constants";
 
 /**
  * @param {Object} props
@@ -44,9 +47,9 @@ export default function Stage({
                 {white !== null &&
                     <Fragment>
                         {getPlayer(white).firstName}{" "}
-                        {getPlayer(white).lastName}
+                        {getPlayer(white).lastName}{" "}
                         <button onClick={() => unstage(WHITE)}>
-                            Remove
+                            <UserMinus /> Remove
                         </button>
                     </Fragment>
                 }
@@ -56,9 +59,9 @@ export default function Stage({
                 {black !== null &&
                     <Fragment>
                         {getPlayer(black).firstName}{" "}
-                        {getPlayer(black).lastName}
+                        {getPlayer(black).lastName}{" "}
                         <button onClick={() => unstage(BLACK)}>
-                            Remove
+                            <UserMinus /> Remove
                         </button>
                     </Fragment>
                 }
@@ -71,13 +74,13 @@ export default function Stage({
                     stagedPlayers.every((id) => id === null)
                 }
             >
-                Swap colors
+                <Repeat/> Swap colors
             </button>{" "}
             <button
                 onClick={match}
                 disabled={stagedPlayers.includes(null)}
             >
-                Match selected
+                <Check/> Match selected
             </button>{" "}
         </div>
     );

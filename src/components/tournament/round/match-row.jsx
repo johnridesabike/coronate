@@ -36,19 +36,17 @@ export default function MatchRow({
     const {tourney, dispatch} = useRound(tourneyId, roundId);
     const {playerDispatch, getPlayer} = usePlayers();
     const [openModal, setOpenModal] = useState(false);
-    const resultCode = (
-        function () {
-            if (match.result[0] > match.result[1]) {
-                return "WHITE";
-            } else if (match.result[1] > match.result[0]) {
-                return "BLACK";
-            } else if (match.result.every((x) => x === 0.5)) {
-                return "DRAW";
-            } else {
-                return "NOTSET";
-            }
-        }())
-    ;
+    const resultCode = (function () {
+        if (match.result[0] > match.result[1]) {
+            return "WHITE";
+        } else if (match.result[1] > match.result[0]) {
+            return "BLACK";
+        } else if (match.result.every((x) => x === 0.5)) {
+            return "DRAW";
+        } else {
+            return "NOTSET";
+        }
+    }());
     const whiteName = (
         getPlayer(match.players[0]).firstName
         + " "
@@ -64,22 +62,20 @@ export default function MatchRow({
      */
     function setMatchResult(event) {
         /** @type {[number, number]} */
-        const result = (
-            function () {
-                switch (event.currentTarget.value) {
-                case "WHITE":
-                    return [1, 0];
-                case "BLACK":
-                    return [0, 1];
-                case "DRAW":
-                    return [0.5, 0.5];
-                case "NOTSET":
-                    return [0, 0];
-                default:
-                    throw new Error();
-                }
-            }()
-        );
+        const result = (function () {
+            switch (event.currentTarget.value) {
+            case "WHITE":
+                return [1, 0];
+            case "BLACK":
+                return [0, 1];
+            case "DRAW":
+                return [0.5, 0.5];
+            case "NOTSET":
+                return [0, 0];
+            default:
+                throw new Error();
+            }
+        }());
         const white = getPlayer(match.players[WHITE]);
         const black = getPlayer(match.players[BLACK]);
         const newRating = (

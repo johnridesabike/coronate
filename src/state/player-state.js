@@ -4,12 +4,17 @@ import {createContext, createElement, useContext, useReducer} from "react";
 import {
     append,
     curry,
+    head,
+    inc,
     lensPath,
     filter,
     findIndex,
+    map,
     over,
+    pipe,
     propEq,
-    set
+    set,
+    sort
 } from "ramda";
 import {getPlayerById} from "../data/player";
 import {createPlayer} from "../data/factories";
@@ -30,12 +35,18 @@ const defaultPlayers = {
  * @param {PlayerAction} action
  */
 function playersReducer(state, action ) {
+    // @ts-ignore
+    const getNextId = pipe(map((p) => p.id), sort((a, b) => b - a), head, inc);
     switch (action.type) {
-    // Players
     case "ADD_PLAYER":
         return over(
             lensPath(["players"]),
-            append(action.newPlayer),
+            append(createPlayer({
+                firstName: action.firstName,
+                lastName: action.lastName,
+                rating: action.rating,
+                id: getNextId(state.players)
+            })),
             state
         );
     case "DEL_PLAYER":

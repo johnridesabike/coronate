@@ -30,7 +30,7 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-        "no-unused-vars": ["error", {"varsIgnorePattern": "[iI]gnore"}],
+        "no-unused-vars": ["error", {"argsIgnorePattern": "^ignore$|^props$"}],
         "no-shadow": "error",
         "no-var": 1,
         "arrow-parens": "warn",
@@ -41,7 +41,7 @@
         "fp/no-delete": "error",
         "fp/no-mutation": [
             "warn",
-            {"exceptions": {"object": "document"}}
+            {"exceptions": [{"object": "document", "property": "title"}]}
         ],
         "fp/no-mutating-methods": "warn"
     }

@@ -1,10 +1,10 @@
 // this component should eventually replace player-match-info.jsx
 import React from "react";
-import {genPlayerData} from "../../../../pairing-scoring/scoring";
-import {useTournament, usePlayers} from "../../../../state";
+import {genPlayerData} from "../../../pairing-scoring/scoring";
+import {useTournament, usePlayers} from "../../../state";
 
 /**
- * @typedef {import("../../../../data").Match} Match
+ * @typedef {import("../../../data").Match} Match
  */
 
 /**
@@ -26,12 +26,15 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         opponentHistory,
         avoidList
     } = genPlayerData(playerId, players, avoid, roundList, roundId);
-    let prettyBalance = "Even";
-    if (colorBalance < 0) {
-        prettyBalance = "White +" + Math.abs(colorBalance);
-    } else if (colorBalance > 0) {
-        prettyBalance = "Black +" + colorBalance;
-    }
+    const prettyBalance = (function () {
+        if (colorBalance < 0) {
+            return "White +" + Math.abs(colorBalance);
+        } else if (colorBalance > 0) {
+            return "Black +" + colorBalance;
+        } else {
+            return "Even";
+        }
+    });
     return (
         <dl className="player-card">
             <h3>

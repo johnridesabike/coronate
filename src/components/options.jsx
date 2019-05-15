@@ -4,7 +4,6 @@ import {useTournaments, useOptions, usePlayers} from "../state";
 /**
  * @param {Object} props
  */
-// eslint-disable-next-line no-unused-vars
 export function Options(props) {
     const [tourneys] = useTournaments();
     const [options, dispatch] = useOptions();

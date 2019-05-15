@@ -1,5 +1,3 @@
-import {Player} from "../data/index";
-
 // Options
 declare interface ActionByeValue {
     type: "SET_BYE_VALUE",
@@ -10,7 +8,9 @@ export type OptionAction = ActionByeValue;
 // Players
 declare interface ActionAddPlayer {
     type: "ADD_PLAYER",
-    newPlayer: Player
+    firstName: string,
+    lastName: string,
+    rating: number
 }
 declare interface ActionDelPlayer {
     type: "DEL_PLAYER",

@@ -9,7 +9,6 @@ import {hasHadBye} from "../../../pairing-scoring/scoring";
  * @param {Object} props
  */
 export default function PlayerSelect({tourneyId}) {
-    tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);

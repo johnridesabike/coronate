@@ -1,4 +1,5 @@
 import React from "react";
+import NewPlayer from "../../players/new-player";
 import {useTournament, usePlayers} from "../../../state";
 
 /**
@@ -79,6 +80,7 @@ export default function Selecting({tourneyId}) {
                     ))}
                 </tbody>
             </table>
+            <NewPlayer />
         </div>
     );
 }
