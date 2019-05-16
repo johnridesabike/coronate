@@ -110,6 +110,7 @@ export function Options(props) {
                         value={text}
                         name="playerdata"
                         onChange={(event) => setText(event.currentTarget.value)}
+                        spellCheck={false}
                     />
                     <p>
                         <input type="submit" value="Load" />

@@ -1,6 +1,5 @@
 import {firstBy} from "thenby";
-import splitAt from "ramda/src/splitAt";
-import last from "ramda/src/last";
+import {splitAt, last} from "ramda";
 import blossom from "edmonds-blossom";
 import {genPlayerData} from "./scoring";
 import {DUMMY_ID} from "../data/constants";
@@ -216,7 +215,7 @@ export default function pairPlayers(
             return match;
         }
     );
-    // The bye match always gets added last so as not to affect the numbering.
+    // The bye match always gets added last so the the numbering isn't affected.
     if (byeMatch) {
         matches.push(byeMatch);
     }

@@ -1,4 +1,4 @@
-import {last} from "ramda";
+import {last, pipe, remove, sort, sum, assoc} from "ramda";
 import {firstBy} from "thenby";
 import {getPlayerById, getPlayerAvoidList} from "../data/player";
 import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
@@ -18,6 +18,17 @@ import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
  */
 function isBye(match) {
     return match.players.includes(DUMMY_ID);
+}
+
+/**
+ * @param {typeof WHITE | typeof BLACK} color
+ */
+function switchColor(color) {
+    return ( // return the opposite color
+        (color === WHITE)
+        ? BLACK
+        : WHITE
+    );
 }
 
 /**
@@ -120,44 +131,24 @@ function playerScoreListNoByes(playerId, roundList, roundId = null) {
  */
 export function playerScore(playerId, roundList, roundId = null) {
     const scoreList = playerScoreList(playerId, roundList, roundId);
-    return (
-        (scoreList.length > 0)
-        ? scoreList.reduce((a, b) => a + b)
-        : 0
-    );
+    return sum(scoreList);
 }
 
 /**
+ * The player's cumulative score.
  * @type {ScoreCalculator}
  * @returns {number}
  */
 function playerScoreCum(playerId, roundList, roundId = null) {
-    // TODO: fixing this...
-    // let runningScore = 0;
-    // /** @type {number[]} */
-    // let cumScores = [];
-    let scores = playerScoreListNoByes(playerId, roundList, roundId);
-    // scores.forEach(function (score) {
-    //     runningScore += score;
-    //     cumScores.push(runningScore);
-    // });
-    const reducedScores = scores.reduce(
-        /** @param {number[]} acc */
-        function (acc, score) {
-            const running = last(acc);
-            return acc.concat([running + score]);
-        },
+    const scoreList = playerScoreListNoByes(
+        playerId,
+        roundList,
+        roundId
+    ).reduce( // turn the regular score list into a "running" score list
+        (acc, score) => acc.concat([last(acc) + score]),
         [0]
     );
-    const cumScore = reducedScores.reduce((a, b) => a + b);
-    // console.log(scores, cumScores, reducedScores);
-    console.log(scores, reducedScores, cumScore);
-    // return (
-    //     (cumScores.length !== 0)
-    //     ? cumScores.reduce((a, b) => a + b)
-    //     : 0
-    // );
-    return cumScore;
+    return sum(scoreList);
 }
 
 /**
@@ -167,36 +158,30 @@ function playerScoreCum(playerId, roundList, roundId = null) {
  * @returns {number}
  */
 export function playerColorBalance(playerId, roundList, roundId = null) {
-    return getMatchesByPlayer(
+    const colorList = getMatchesByPlayer(
         playerId,
         roundList,
         roundId
     ).filter(
         (match) => !isBye(match)
     ).reduce(
-        function (acc, match) {
-            return (
-                (match.players[WHITE] === playerId)
-                ? acc.concat(-1) // White = -1
-                : acc.concat(1) // Black = +1
-            );
-        },
-        []
-    ).reduce(
-        (acc, num) => acc + num,
-        0
+        (acc, match) => (
+            (match.players[WHITE] === playerId)
+            ? acc.concat(-1) // White = -1
+            : acc.concat(1) // Black = +1
+        ),
+        [0]
     );
+    return sum(colorList);
 }
 
 /**
- * Gets the modified median factor defined in USCF § 34E1
+ * Used for `modifiedMedian` and `solkoff`.
  * @type {ScoreCalculator}
- * @param {boolean} [isSolkoff]
- * @returns {number}
+ * @returns {number[]}
  */
-function modifiedMedian(pId, roundList, roundId = null, isSolkoff = false) {
-    // get all of the opponent's scores
-    let scores = getPlayersByOpponent(
+function opponentScores(pId, roundList, roundId) {
+    const scores = getPlayersByOpponent(
         pId,
         roundList,
         roundId
@@ -205,26 +190,31 @@ function modifiedMedian(pId, roundList, roundId = null, isSolkoff = false) {
     ).map(
         (opponent) => playerScore(opponent, roundList, roundId)
     );
-    //sort them, then remove the first and last items
-    scores.sort();
-    if (!isSolkoff) {
-        scores.pop();
-        scores.shift();
-    }
+    return sort((a, b) => a - b, scores);
+}
+
+/**
+ * Gets the modified median factor defined in USCF § 34E1
+ * @type {ScoreCalculator}
+ * @returns {number}
+ */
+function modifiedMedian(playerId, roundList, roundId = null) {
+    const scores = opponentScores(playerId, roundList, roundId);
+    const trimmedScores = pipe(remove(-1, 1), remove(0, 1))(scores);
     return (
-        (scores.length > 0)
-        ? scores.reduce((a, b) => a + b)
+        (trimmedScores.length > 0)
+        ? trimmedScores.reduce((a, b) => a + b)
         : 0
     );
 }
 
 /**
- * A shortcut for passing the `isSolkoff` variable to `modifiedMedian`.
  * @type {ScoreCalculator}
  * @returns {number}
  */
 function solkoff(playerId, roundList, roundId = null) {
-    return modifiedMedian(playerId, roundList, roundId, true);
+    const scoreList = opponentScores(playerId, roundList, roundId);
+    return sum(scoreList);
 }
 
 /**
@@ -240,12 +230,10 @@ function playerOppScoreCum(playerId, roundList, roundId = null) {
     ).filter(
         (opponent) => opponent !== DUMMY_ID
     );
-    let oppScores = opponents.map((p) => playerScoreCum(p, roundList, roundId));
-    return (
-        (oppScores.length !== 0)
-        ? oppScores.reduce((a, b) => a + b)
-        : 0
+    const oppScores = opponents.map(
+        (p) => playerScoreCum(p, roundList, roundId)
     );
+    return sum(oppScores);
 }
 
 const tieBreakMethods = [
@@ -275,6 +263,7 @@ Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
 /**
+ * Helper function.
  * @param {Standing} standing1
  * @param {Standing} standing2
  * @returns {boolean}
@@ -319,29 +308,28 @@ function getAllPlayers(roundList) {
 export function calcStandings(methods, roundList, roundId = null) {
     const tieBreaks = methods.map((m) => tieBreakMethods[m]);
     // Get a flat list of all of the players and their scores.
-    const standingsFlat = getAllPlayers(roundList).map(function (pId) {
-        /** @type {Standing} */
-        const standing = {
+    const standingsFlat = getAllPlayers(roundList).map(
+        (pId) => ({
             id: pId,
             score: playerScore(pId, roundList, roundId),
-            tieBreaks: tieBreaks.map((method) => (
-                method.func(pId, roundList, roundId)
-            ))
-        };
-        return standing;
-    });
-    // Create a function to sort the players
-    let sortFunc = firstBy((standing) => standing.score, -1);
-    // For each tiebreak method, chain another `thenBy` to the function.
-    tieBreaks.forEach(function (ignore, index) {
-        sortFunc = sortFunc.thenBy((standing) => standing.tieBreaks[index], -1);
-    });
+            tieBreaks: tieBreaks.map(
+                (method) => (method.func(pId, roundList, roundId))
+            )
+        })
+    );
+    // // Create a function to sort the players
+    const sortFunc = tieBreaks.reduce(
+        (acc, ignore, index) => (
+            acc.thenBy((standing) => standing.tieBreaks[index], -1)
+        ),
+        firstBy((standing) => standing.score, -1)
+    );
     // Finally, sort the players.
-    standingsFlat.sort(sortFunc);
+    const standingsFlatSorted = sort(sortFunc, standingsFlat);
     /** @type {Standing[][]} */
     const standingsTree = [];
     let runningRank = 0;
-    standingsFlat.forEach(function (standing, i, orig) {
+    standingsFlatSorted.forEach(function (standing, i, orig) {
         if (i !== 0) { // we can't compare the first player with a previous one
             const prevPlayer = orig[i - 1];
             if (!areScoresEqual(standing, prevPlayer)) {
@@ -364,15 +352,11 @@ function dueColor(playerId, roundList, roundId = null) {
     if (!roundList[roundId - 1]) {
         return null;
     }
-    let prevColor = playerMatchColor(
+    const prevColor = playerMatchColor(
         playerId,
         roundList[roundId - 1]
     );
-    return ( // return the opposite color
-        (prevColor === WHITE)
-        ? BLACK
-        : WHITE
-    );
+    return switchColor(prevColor);
 }
 
 /**
@@ -403,4 +387,20 @@ export function genPlayerData(
         avoidList: getPlayerAvoidList(playerId, avoidList),
         hasHadBye: hasHadBye(playerId, roundList, roundId)
     };
+}
+
+/**
+ * @type {ScoreCalculator}
+ * @returns {Object} {opponentId: result}
+ */
+export function getResultsByOpponent(playerId, roundList, roundId = null) {
+    const matches = getMatchesByPlayer(playerId, roundList, roundId);
+    return matches.reduce(
+        function (acc, match) {
+            const opponent = match.players.filter((id) => id !== playerId)[0];
+            const color = match.players.indexOf(playerId);
+            return assoc(String(opponent), match.result[color], acc);
+        },
+        {}
+    );
 }

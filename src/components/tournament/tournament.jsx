@@ -10,7 +10,7 @@ import Trash from "react-feather/dist/icons/trash-2";
 import Plus from "react-feather/dist/icons/plus";
 import Round from "./round/";
 import Scores from "./scores";
-import Status from "./status";
+import Crosstable from "./crosstable";
 import PlayerSelect from "./player-select/index";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../data/utility";
@@ -174,7 +174,7 @@ export default function Tournament({tourneyId}) {
             </div>
             <TabList>
                 <Tab>Players</Tab>
-                <Tab>Tournament status</Tab>
+                <Tab>Crosstable</Tab>
                 <Tab>Score detail</Tab>
                 {Object.keys(roundList).map((id) => (
                     <Tab key={id}>Round {Number(id) + 1}</Tab>
@@ -185,7 +185,7 @@ export default function Tournament({tourneyId}) {
                     <PlayerSelect tourneyId={tourneyId} />
                 </TabPanel>
                 <TabPanel>
-                    <Status tourneyId={tourneyId} />
+                    <Crosstable tourneyId={tourneyId} />
                 </TabPanel>
                 <TabPanel>
                     <Scores tourneyId={tourneyId} />

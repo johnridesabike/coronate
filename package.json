@@ -39,7 +39,8 @@
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "sourcemaps": "source-map-explorer './build/static/js/*'"
+    "sourcemaps": "source-map-explorer './build/static/js/*'",
+    "lint": "eslint ./src/**/*.js ./src/**/*.jsx"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -34,3 +34,7 @@
 .rank {
     text-align: center;
 }
+
+.table :global(.table__number) {
+    padding: 0.25em 0.5em;
+}
