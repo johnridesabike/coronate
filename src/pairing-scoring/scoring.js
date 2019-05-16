@@ -1,3 +1,4 @@
+import {last} from "ramda";
 import {firstBy} from "thenby";
 import {getPlayerById, getPlayerAvoidList} from "../data/player";
 import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
@@ -131,19 +132,32 @@ export function playerScore(playerId, roundList, roundId = null) {
  * @returns {number}
  */
 function playerScoreCum(playerId, roundList, roundId = null) {
-    let runningScore = 0;
-    /** @type {number[]} */
-    let cumScores = [];
+    // TODO: fixing this...
+    // let runningScore = 0;
+    // /** @type {number[]} */
+    // let cumScores = [];
     let scores = playerScoreListNoByes(playerId, roundList, roundId);
-    scores.forEach(function (score) {
-        runningScore += score;
-        cumScores.push(runningScore);
-    });
-    return (
-        (cumScores.length !== 0)
-        ? cumScores.reduce((a, b) => a + b)
-        : 0
+    // scores.forEach(function (score) {
+    //     runningScore += score;
+    //     cumScores.push(runningScore);
+    // });
+    const reducedScores = scores.reduce(
+        /** @param {number[]} acc */
+        function (acc, score) {
+            const running = last(acc);
+            return acc.concat([running + score]);
+        },
+        [0]
     );
+    const cumScore = reducedScores.reduce((a, b) => a + b);
+    // console.log(scores, cumScores, reducedScores);
+    console.log(scores, reducedScores, cumScore);
+    // return (
+    //     (cumScores.length !== 0)
+    //     ? cumScores.reduce((a, b) => a + b)
+    //     : 0
+    // );
+    return cumScore;
 }
 
 /**
