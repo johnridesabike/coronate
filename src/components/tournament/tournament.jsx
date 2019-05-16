@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
 import Tooltip from "@reach/tooltip";
-import {Link, Redirect} from "@reach/router";
+import {Link} from "@reach/router";
 import last from "ramda/src/last";
 import Check from "react-feather/dist/icons/check-circle";
 import Alert from "react-feather/dist/icons/alert-circle";
@@ -14,6 +14,7 @@ import Status from "./status";
 import PlayerSelect from "./player-select/index";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../data/utility";
+import {DUMMY_ID} from "../../data/constants";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 import styles from "./tournament.module.css";
@@ -28,14 +29,11 @@ export default function Tournament({tourneyId}) {
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
-    const {playerState} = usePlayers();
+    const {playerState, getPlayer, playerDispatch} = usePlayers();
     const [openTab, setOpenTab] = useState(0);
     // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
-            if (!tourney) {
-                return false;
-            }
             const lastRound = last(roundList);
             if (!lastRound) {
                 return true;
@@ -53,7 +51,7 @@ export default function Tournament({tourneyId}) {
             );
             return (unMatchedPlayers.length === 0 && !results.includes(0));
         },
-        [tourney, players, roundList]
+        [players, roundList]
     );
     useEffect(
         function () {
@@ -67,8 +65,10 @@ export default function Tournament({tourneyId}) {
     );
     useEffect(
         function () {
-            if (roundList.length > 0) {
-                setOpenTab(roundList.length + 2);
+            if (roundList.length === 0) {
+                setOpenTab(0); // go to the first tab
+            } else {
+                setOpenTab(roundList.length + 2); // go to the most recent round
             }
         },
         [roundList.length]
@@ -103,15 +103,35 @@ export default function Tournament({tourneyId}) {
     }
     function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
+            // If a match has been scored, then reset it.
+            // Should this logic be somewhere else?
+            last(roundList).forEach(function (match) {
+                if (match.result[0] + match.result[1] === 0) {
+                    return; // Don't change players who haven't scored.
+                }
+                match.players.forEach(function (pId, color) {
+                    if (pId === DUMMY_ID) {
+                        return; // Don't try to set the dummy.
+                    }
+                    const {matchCount} = getPlayer(pId);
+                    playerDispatch({
+                        type: "SET_PLAYER_MATCHCOUNT",
+                        id: pId,
+                        matchCount: matchCount - 1
+                    });
+                    playerDispatch({
+                        type: "SET_PLAYER_RATING",
+                        id: pId,
+                        rating: match.origRating[color]
+                    });
+                });
+            });
             dispatch({
                 type: "DEL_LAST_ROUND",
                 players: playerState.players,
                 tourneyId
             });
         }
-    }
-    if (!tourney) {
-        return <Redirect to="/" />;
     }
     return (
         <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>

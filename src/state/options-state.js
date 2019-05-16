@@ -1,5 +1,5 @@
 import {createContext, createElement, useContext, useReducer} from "react";
-import {lensPath, set} from "ramda";
+import {assoc} from "ramda";
 import defaultOptions from "./demo-options.json";
 /**
  * @typedef {import("./dispatch").OptionAction} OptionAction
@@ -12,13 +12,11 @@ import defaultOptions from "./demo-options.json";
 function reducer(state, action) {
     switch (action.type) {
     case "SET_BYE_VALUE":
-        return set(
-            lensPath(["byeValue"]),
-            action.byeValue,
-            state
-        );
+        return assoc("byeValue", action.byeValue, state);
+    case "LOAD_STATE":
+        return action.state;
     default:
-        throw new Error("Unexpected action type " + action.type);
+        throw new Error("Unexpected action type.");
     }
 }
 

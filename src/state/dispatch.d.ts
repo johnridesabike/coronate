@@ -1,9 +1,14 @@
+declare interface ActionLoadState {
+    type: "LOAD_STATE",
+    state: Any
+}
+
 // Options
 declare interface ActionByeValue {
     type: "SET_BYE_VALUE",
     byeValue: number
 }
-export type OptionAction = ActionByeValue;
+export type OptionAction = ActionByeValue | ActionLoadState;
 
 // Players
 declare interface ActionSetPlayer {
@@ -39,12 +44,14 @@ declare interface ActionAvoidPair {
     pair: number[]
 }
 export type PlayerAction = (
-    ActionAddPlayer
+    ActionLoadState
+    | ActionAddPlayer
     | ActionSetPlayer
     | ActionDelPlayer
     | ActionSetMatchcount
     | ActionSetRating
     | ActionAvoidPair
+    
 );
 export interface PlayerState {
     players: Player[],
@@ -134,7 +141,8 @@ declare interface ActionMoveMatch {
     newIndex: number
 }
 export type Action = (
-    ActionByeValue
+    ActionLoadState
+    | ActionByeValue
     | ActionAddTourney
     | ActionDelTourney
     | ActionAddRound

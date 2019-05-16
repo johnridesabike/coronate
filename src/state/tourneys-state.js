@@ -6,7 +6,6 @@ import {
     append,
     concat,
     difference,
-    last,
     lensPath,
     mergeRight,
     filter,
@@ -18,11 +17,9 @@ import {
     reverse,
     set
 } from "ramda";
-import {getPlayerById} from "../data/player";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
 import {createTournament} from "../data/factories";
-import {DUMMY_ID} from "../data/constants";
 /**
  * @typedef {import("./dispatch").Action} Action
  * @typedef {import("../data/index").Tournament} Tournament
@@ -50,27 +47,6 @@ function tourneysReducer(state, action) {
             state
         );
     case "DEL_LAST_ROUND":
-        // If a match has been scored, then reset it.
-        // TODO: This logic should probably be somewhere else?
-        last(
-            state[action.tourneyId].roundList
-        ).forEach(
-            function (match) {
-                if (match.result[0] + match.result[1] !== 0) {
-                    match.players.forEach(
-                        function (pId, color) {
-                            if (pId === DUMMY_ID) {
-                                return; // don't try to set the dummy
-                            }
-                            getPlayerById(action.players, pId).matchCount -= 1;
-                            getPlayerById(action.players, pId).rating = (
-                                match.origRating[color]
-                            );
-                        }
-                    );
-                }
-            }
-        );
         return over(
             lensPath([action.tourneyId, "roundList"]),
             remove(-1, 1),
@@ -190,6 +166,8 @@ function tourneysReducer(state, action) {
             move(action.oldIndex, action.newIndex),
             state
         );
+    case "LOAD_STATE":
+        return action.state;
     default:
         throw new Error("Unexpected action type " + action.type);
     }

@@ -39,10 +39,16 @@
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",
+        "fp/no-mutating-methods": "warn",
         "fp/no-mutation": [
             "warn",
-            {"exceptions": [{"object": "document", "property": "title"}]}
-        ],
-        "fp/no-mutating-methods": "warn"
+            {
+                "exceptions": [
+                    {"object": "document"},
+                    {"object": "window"},
+                    {"object": "event"}
+                ]
+            }
+        ]
     }
 }

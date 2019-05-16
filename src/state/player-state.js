@@ -115,6 +115,8 @@ function playersReducer(state, action ) {
             )),
             state
         );
+    case "LOAD_STATE":
+        return action.state;
     default:
         throw new Error("Unexpected action type");
     }

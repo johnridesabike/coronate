@@ -53,11 +53,6 @@ li.inactive {
 .dummy {
   font-style: italic;
 }
-
-textarea.json {
-    font-family: "Fira Code", Menlo, Monaco, 'Courier New', monospace;
-}
-
 .data__input {
     text-align:center;
 }
@@ -68,9 +63,15 @@ li.player.missing {
 
 button,
 input,
-select {
+select,
+textarea {
     font-size: 0.8em;
 }
+
+textarea.json {
+    font-family: "Fira Code", Menlo, Monaco, "Courier New", monospace;
+}
+
 
 .danger:not([disabled]) {
     color: red;

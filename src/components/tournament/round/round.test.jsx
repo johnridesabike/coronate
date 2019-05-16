@@ -2,7 +2,6 @@ import React from "react";
 // @ts-ignore
 import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
-import "../../../__mocks__/getComputedStyle.mock";
 import PlayerInfoBox from "../../players/info-box";
 import Tournament from "../tournament";
 import {
