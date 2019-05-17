@@ -1,4 +1,16 @@
-import {last, pipe, remove, sort, sum, assoc} from "ramda";
+import {
+    add,
+    append,
+    defaultTo,
+    last,
+    lensIndex,
+    lensProp,
+    over,
+    pipe,
+    remove,
+    sort,
+    sum
+} from "ramda";
 import {firstBy} from "thenby";
 import {getPlayerById, getPlayerAvoidList} from "../data/player";
 import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
@@ -11,6 +23,35 @@ import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
  * @typedef {import("../data").Player} Player
  */
 
+const tieBreakMethods = [
+    {
+        name: "Modified median",
+        func: modifiedMedian
+    },
+    {
+        name: "Solkoff",
+        func: solkoff
+    },
+    {
+        name: "Cumulative score",
+        func: playerScoreCum
+    },
+    {
+        name: "Cumulative of opposition",
+        func: playerOppScoreCum
+    },
+    {
+        name: "Most black",
+        func: playerColorBalance
+    }
+];
+Object.freeze(tieBreakMethods);
+export {tieBreakMethods};
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper functions
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  *
  * @param {Match} match
@@ -21,6 +62,22 @@ function isBye(match) {
 }
 
 /**
+ *
+ * @param {Match} match
+ * @returns {boolean}
+ */
+function isNotBye(match) {
+    return !isBye(match);
+}
+
+/**
+ * @param {number} playerId
+ */
+function isNotDummy(playerId) {
+    return playerId !== DUMMY_ID;
+}
+
+/**
  * @param {typeof WHITE | typeof BLACK} color
  */
 function switchColor(color) {
@@ -28,20 +85,6 @@ function switchColor(color) {
         (color === WHITE)
         ? BLACK
         : WHITE
-    );
-}
-
-/**
- * @param {number} playerId
- * @param {object[]} matchList
- * @returns {typeof WHITE | typeof BLACK?}
- */
-export function playerMatchColor(playerId, matchList) {
-    const match = matchList.filter((m) => m.players.includes(playerId))[0];
-    return (
-        (match)
-        ? match.players.indexOf(playerId)
-        : null
     );
 }
 
@@ -60,6 +103,132 @@ function getMatchesByPlayer(playerId, roundList, roundId = null) {
         []
     ).filter(
         (match) => match.players.includes(playerId)
+    );
+}
+
+/**
+ * Helper function.
+ * @param {Standing} standing1
+ * @param {Standing} standing2
+ * @returns {boolean}
+ */
+function areScoresEqual(standing1, standing2) {
+    // Check if any of them aren't equal
+    if (standing1.score !== standing2.score) {
+        return false;
+    }
+    // Check if any values are not equal
+    return !(
+        standing1.tieBreaks.reduce(
+            /** @param {boolean[]} acc */
+            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
+            []
+        ).includes(true)
+    );
+}
+
+/**
+ * @param {Match[][]} roundList
+ * @returns {number[]}
+ */
+function getAllPlayers(roundList) {
+    const allPlayers = roundList.reduce( // flatten the rounds
+        (acc, round) => acc.concat(round),
+        []
+    ).reduce( // flaten the players
+        (acc, match) => acc.concat(match.players),
+        []
+    );
+    return Array.from(new Set(allPlayers));
+}
+
+/**
+ * Get a list of all of a player's scores from each match.
+ * @type {ScoreCalculator}
+ * @returns {number[]} the list of scores
+ */
+function playerScoreList(playerId, roundList, roundId = null) {
+    return getMatchesByPlayer(
+        playerId,
+        roundList,
+        roundId
+    ).map(
+        (match) => match.result[match.players.indexOf(playerId)]
+    );
+}
+
+/**
+ * Used for `modifiedMedian` and `solkoff`.
+ * @type {ScoreCalculator}
+ * @returns {number[]}
+ */
+function opponentScores(pId, roundList, roundId) {
+    const scores = getPlayersByOpponent(
+        pId,
+        roundList,
+        roundId
+    ).filter(
+        isNotDummy
+    ).map(
+        (opponent) => playerScore(opponent, roundList, roundId)
+    );
+    return sort((a, b) => a - b, scores);
+}
+
+/**
+ * Create a function to sort the players. This dynamically creates a `thenBy`
+ * function based on the desired tiebreak sort methods.
+ * @param {typeof tieBreakMethods} tieBreaks
+ */
+function createTieBreakSorter(tieBreaks) {
+    return tieBreaks.reduce(
+        (acc, ignore, index) => (
+            acc.thenBy(
+                /** @param {Standing} standing */
+                (standing) => standing.tieBreaks[index], -1
+            )
+        ),
+        firstBy(
+            /** @param {Standing} standing */
+            (standing) => standing.score, -1
+        )
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Scoring functions
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {number} playerId
+ * @param {object[]} matchList
+ * @returns {typeof WHITE | typeof BLACK?}
+ */
+export function playerMatchColor(playerId, matchList) {
+    const match = matchList.filter((m) => m.players.includes(playerId))[0];
+    return (
+        (match)
+        ? match.players.indexOf(playerId)
+        : null
+    );
+}
+
+/**
+ * TODO: Maybe merge this with the other function?
+ */
+/**
+ * @type {ScoreCalculator}
+ * @returns {number[]}
+ */
+function playerScoreListNoByes(playerId, roundList, roundId = null) {
+    return getMatchesByPlayer(
+        playerId,
+        roundList,
+        roundId
+    ).filter(
+        isNotBye
+    ).map(
+        (match) => match.result[match.players.indexOf(playerId)]
     );
 }
 
@@ -92,36 +261,6 @@ export function getPlayersByOpponent(opponentId, roundList, roundId = null) {
         []
     ).filter(
         (playerId) => playerId !== opponentId
-    );
-}
-
-/**
- * Get a list of all of a player's scores from each match.
- * @type {ScoreCalculator}
- * @returns {number[]} the list of scores
- */
-function playerScoreList(playerId, roundList, roundId = null) {
-    return getMatchesByPlayer(playerId, roundList, roundId).map(
-        (match) => match.result[match.players.indexOf(playerId)]
-    );
-}
-
-/**
- * TODO: Maybe merge this with the other function?
- */
-/**
- * @type {ScoreCalculator}
- * @returns {number[]}
- */
-function playerScoreListNoByes(playerId, roundList, roundId = null) {
-    return getMatchesByPlayer(
-        playerId,
-        roundList,
-        roundId
-    ).filter(
-        (match) => !isBye(match)
-    ).map(
-        (match) => match.result[match.players.indexOf(playerId)]
     );
 }
 
@@ -163,7 +302,7 @@ export function playerColorBalance(playerId, roundList, roundId = null) {
         roundList,
         roundId
     ).filter(
-        (match) => !isBye(match)
+        isNotBye
     ).reduce(
         (acc, match) => (
             (match.players[WHITE] === playerId)
@@ -176,36 +315,14 @@ export function playerColorBalance(playerId, roundList, roundId = null) {
 }
 
 /**
- * Used for `modifiedMedian` and `solkoff`.
- * @type {ScoreCalculator}
- * @returns {number[]}
- */
-function opponentScores(pId, roundList, roundId) {
-    const scores = getPlayersByOpponent(
-        pId,
-        roundList,
-        roundId
-    ).filter(
-        (opponent) => opponent !== DUMMY_ID
-    ).map(
-        (opponent) => playerScore(opponent, roundList, roundId)
-    );
-    return sort((a, b) => a - b, scores);
-}
-
-/**
  * Gets the modified median factor defined in USCF § 34E1
  * @type {ScoreCalculator}
  * @returns {number}
  */
 function modifiedMedian(playerId, roundList, roundId = null) {
     const scores = opponentScores(playerId, roundList, roundId);
-    const trimmedScores = pipe(remove(-1, 1), remove(0, 1))(scores);
-    return (
-        (trimmedScores.length > 0)
-        ? trimmedScores.reduce((a, b) => a + b)
-        : 0
-    );
+    const scoresMinusFirstAndLast = pipe(remove(-1, 1), remove(0, 1))(scores);
+    return sum(scoresMinusFirstAndLast);
 }
 
 /**
@@ -223,125 +340,80 @@ function solkoff(playerId, roundList, roundId = null) {
  * @returns {number}
  */
 function playerOppScoreCum(playerId, roundList, roundId = null) {
-    const opponents = getPlayersByOpponent(
+    const oppScores = getPlayersByOpponent(
         playerId,
         roundList,
         roundId
     ).filter(
-        (opponent) => opponent !== DUMMY_ID
-    );
-    const oppScores = opponents.map(
+        isNotDummy
+    ).map(
         (p) => playerScoreCum(p, roundList, roundId)
     );
     return sum(oppScores);
 }
 
-const tieBreakMethods = [
-    {
-        name: "Modified median",
-        func: modifiedMedian
-    },
-    {
-        name: "Solkoff",
-        func: solkoff
-    },
-    {
-        name: "Cumulative score",
-        func: playerScoreCum
-    },
-    {
-        name: "Cumulative of opposition",
-        func: playerOppScoreCum
-    },
-    {
-        name: "Most black",
-        func: playerColorBalance
-    }
-];
-
-Object.freeze(tieBreakMethods);
-export {tieBreakMethods};
-
-/**
- * Helper function.
- * @param {Standing} standing1
- * @param {Standing} standing2
- * @returns {boolean}
- */
-function areScoresEqual(standing1, standing2) {
-    // Check if any of them aren't equal
-    if (standing1.score !== standing2.score) {
-        return false;
-    }
-    // Check if any values are not equal
-    return !(
-        standing1.tieBreaks.reduce(
-            /** @param {boolean[]} acc */
-            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
-            []
-        ).includes(true)
-    );
-}
-
-/**
- * @param {Match[][]} roundList
- * @returns {number[]}
- */
-function getAllPlayers(roundList) {
-    const allPlayers = roundList.reduce( // flatten the rounds
-        (acc, round) => acc.concat(round),
-        []
-    ).reduce( // flaten the players
-        (acc, match) => acc.concat(match.players),
-        []
-    );
-    return Array.from(new Set(allPlayers));
-}
 
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @param {number[]} methods
  * @param {Match[][]} roundList
  * @param {number} [roundId]
- * @returns {[Standing[][], string[]]} The standings and the list of method used
+ * @returns {[Standing[], string[]]} The standings and the list of method used
  */
-export function calcStandings(methods, roundList, roundId = null) {
-    const tieBreaks = methods.map((m) => tieBreakMethods[m]);
+export function createStandingList(methods, roundList, roundId) {
+    const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
+    const tieBreakNames = selectedTieBreaks.map((m) => m.name);
     // Get a flat list of all of the players and their scores.
-    const standingsFlat = getAllPlayers(roundList).map(
-        (pId) => ({
-            id: pId,
-            score: playerScore(pId, roundList, roundId),
-            tieBreaks: tieBreaks.map(
-                (method) => (method.func(pId, roundList, roundId))
+    const standings = getAllPlayers(
+        roundList
+    ).filter(
+        (id) => id !== DUMMY_ID
+    ).map(
+        (id) => ({
+            id,
+            score: playerScore(id, roundList, roundId),
+            tieBreaks: selectedTieBreaks.map(
+                (method) => method.func(id, roundList, roundId)
             )
         })
     );
-    // // Create a function to sort the players
-    const sortFunc = tieBreaks.reduce(
-        (acc, ignore, index) => (
-            acc.thenBy((standing) => standing.tieBreaks[index], -1)
-        ),
-        firstBy((standing) => standing.score, -1)
-    );
-    // Finally, sort the players.
-    const standingsFlatSorted = sort(sortFunc, standingsFlat);
-    /** @type {Standing[][]} */
-    const standingsTree = [];
-    let runningRank = 0;
-    standingsFlatSorted.forEach(function (standing, i, orig) {
-        if (i !== 0) { // we can't compare the first player with a previous one
-            const prevPlayer = orig[i - 1];
-            if (!areScoresEqual(standing, prevPlayer)) {
-                runningRank += 1;
+    const sortFunc = createTieBreakSorter(selectedTieBreaks);
+    const standingsSorted = sort(sortFunc, standings);
+    return [standingsSorted, tieBreakNames];
+}
+
+/**
+ * Sort the standings by score, see USCF tie-break rules from § 34.
+ * example: `[[Dale, Audrey], [Pete], [Bob]]`
+ * Dale and Audrey are tied for first, Pete is 2nd, Bob is 3rd.
+ * @param {number[]} methods
+ * @param {Match[][]} roundList
+ * @param {number} [roundId]
+ * @returns {[Standing[][], string[]]} The standings and the list of method used
+ */
+export function createStandingTree(methods, roundList, roundId = null) {
+    const [
+        standingsFlat,
+        tieBreakNames
+    ] = createStandingList(methods, roundList, roundId);
+    const standingsTree = standingsFlat.reduce(
+        /** @param {Standing[][]} acc*/
+        function (acc, standing, i, orig) {
+            const prevStanding = orig[i - 1];
+            const isNewRank = (
+                (i === 0)
+                ? true // Always make a new rank for the first player
+                : !areScoresEqual(standing, prevStanding)
+            );
+            if (isNewRank) {
+                return append([standing], acc);
             }
-        }
-        if (!standingsTree[runningRank]) {
-            standingsTree[runningRank] = [];
-        }
-        standingsTree[runningRank].push(standing);
-    });
-    return [standingsTree, tieBreaks.map((m) => m.name)];
+            // If this player has the same score as the last, list them together
+            return over(lensIndex(acc.length - 1), append(standing), acc);
+        },
+        []
+    );
+    return [standingsTree, tieBreakNames];
 }
 
 /**
@@ -367,7 +439,7 @@ function dueColor(playerId, roundList, roundId = null) {
  * @param {number[][]} avoidList
  * @returns {PlayerData}
  */
-export function genPlayerData(
+export function createPlayerData(
     playerId,
     playerList,
     avoidList,
@@ -391,15 +463,25 @@ export function genPlayerData(
 
 /**
  * @type {ScoreCalculator}
- * @returns {Object} {opponentId: result}
+ * @returns {Object.<string, number>} {opponentId: result}
  */
 export function getResultsByOpponent(playerId, roundList, roundId = null) {
     const matches = getMatchesByPlayer(playerId, roundList, roundId);
     return matches.reduce(
+        /** @param {Object.<string, number>} acc*/
         function (acc, match) {
             const opponent = match.players.filter((id) => id !== playerId)[0];
             const color = match.players.indexOf(playerId);
-            return assoc(String(opponent), match.result[color], acc);
+            const result = match.result[color];
+            // This sets a default result of 0 and then adds the existing
+            // result. Most of the time, this would be the same as using `set()`
+            // with the result, but if two players play each other multiple
+            // times then the total results will be displayed.
+            return over(
+                lensProp(String(opponent)),
+                pipe(defaultTo(0), add(result)),
+                acc
+            );
         },
         {}
     );

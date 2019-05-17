@@ -1,5 +1,4 @@
-import React, {useState, useEffect, useMemo} from "react";
-import {Tabs, TabList, Tab, TabPanels, TabPanel} from "@reach/tabs";
+import React, {useEffect, useMemo} from "react";
 import Tooltip from "@reach/tooltip";
 import {Link} from "@reach/router";
 import last from "ramda/src/last";
@@ -8,10 +7,6 @@ import Alert from "react-feather/dist/icons/alert-circle";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import Trash from "react-feather/dist/icons/trash-2";
 import Plus from "react-feather/dist/icons/plus";
-import Round from "./round/";
-import Scores from "./scores";
-import Crosstable from "./crosstable";
-import PlayerSelect from "./player-select/index";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../data/utility";
 import {DUMMY_ID} from "../../data/constants";
@@ -21,16 +16,13 @@ import styles from "./tournament.module.css";
 
 /**
  * @param {Object} props
- * @param {string} [props.path]
- * @param {number} [props.tourneyId]
  */
-export default function Tournament({tourneyId}) {
+export default function Tournament({tourneyId, children, navigate}) {
     // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
     const {playerState, getPlayer, playerDispatch} = usePlayers();
-    const [openTab, setOpenTab] = useState(0);
     // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
@@ -63,16 +55,6 @@ export default function Tournament({tourneyId}) {
         },
         [name]
     );
-    useEffect(
-        function () {
-            if (roundList.length === 0) {
-                setOpenTab(0); // go to the first tab
-            } else {
-                setOpenTab(roundList.length + 2); // go to the most recent round
-            }
-        },
-        [roundList.length]
-    );
     const isItOver = roundList.length >= calcNumOfRounds(players.length);
     /** @type {[string, boolean]} */
     const [tooltipText, tooltipWarn] = (function () {
@@ -98,11 +80,11 @@ export default function Tournament({tourneyId}) {
             }
         }
         dispatch({type: "ADD_ROUND", tourneyId});
-        setOpenTab(roundList.length + 2);
         return;
     }
-    function delLastRound() {
+    async function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
+            await navigate(".");
             // If a match has been scored, then reset it.
             // Should this logic be somewhere else?
             last(roundList).forEach(function (match) {
@@ -134,18 +116,36 @@ export default function Tournament({tourneyId}) {
         }
     }
     return (
-        <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
-            <div>
-                <Link to="/">
-                    <ChevronLeft/> Back
-                </Link>
+        <div className={styles.tournament}>
+            <div className={styles.header}>
+                <nav>
+                    <Link to="/">
+                        <ChevronLeft/> Back
+                    </Link>
+                </nav>
                 <h2>{name}</h2>
-                <div className={styles.topToolbar}>
-                    <span className={styles.toolbarItem}>
-                        Round progress: {roundList.length}/
-                        {calcNumOfRounds(players.length)}{" "}
-                    </span>
-                    <span className={styles.toolbarItem}>
+            </div>
+            <div className={styles.sidebar}>
+                <nav>
+                    <ul>
+                        <li><Link to=".">Players</Link></li>
+                        <li><Link to="crosstable">Crosstable</Link></li>
+                        <li><Link to="scores">Score detail</Link></li>
+                    </ul>
+                    <hr />
+                    <ul>
+                        {Object.keys(roundList).map((id) => (
+                            <li key={id}>
+                                <Link to={`${id}`}>
+                                    Round {Number(id) + 1}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+                <hr />
+                <ul>
+                    <li>
                         <button
                             onClick={newRound}
                             disabled={!isNewRoundReady}
@@ -162,40 +162,25 @@ export default function Tournament({tourneyId}) {
                                 }
                             </span>
                         </Tooltip>
-                    </span>
-                    <button
-                        className={"danger " + styles.toolbarItem}
-                        onClick={delLastRound}
-                        disabled={roundList.length === 0}
-                    >
-                        <Trash /> Remove last round
-                    </button>
-                </div>
+                    </li>
+                    <li>
+                        <button
+                            className={"danger " + styles.toolbarItem}
+                            onClick={delLastRound}
+                            disabled={roundList.length === 0}
+                        >
+                            <Trash /> Remove last round
+                        </button>
+                    </li>
+                    <li>
+                        Round progress: {roundList.length}/
+                        {calcNumOfRounds(players.length)}{" "}
+                    </li>
+                </ul>
             </div>
-            <TabList>
-                <Tab>Players</Tab>
-                <Tab>Crosstable</Tab>
-                <Tab>Score detail</Tab>
-                {Object.keys(roundList).map((id) => (
-                    <Tab key={id}>Round {Number(id) + 1}</Tab>
-                ))}
-            </TabList>
-            <TabPanels>
-                <TabPanel>
-                    <PlayerSelect tourneyId={tourneyId} />
-                </TabPanel>
-                <TabPanel>
-                    <Crosstable tourneyId={tourneyId} />
-                </TabPanel>
-                <TabPanel>
-                    <Scores tourneyId={tourneyId} />
-                </TabPanel>
-                {Object.keys(roundList).map((id) => (
-                    <TabPanel key={id}>
-                        <Round roundId={Number(id)} tourneyId={tourneyId} />
-                    </TabPanel>
-                ))}
-            </TabPanels>
-        </Tabs>
+            <div className={styles.content}>
+                {children}
+            </div>
+        </div>
     );
 }

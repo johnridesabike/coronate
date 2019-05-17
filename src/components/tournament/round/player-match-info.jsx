@@ -1,6 +1,6 @@
 import React from "react";
 import numeral from "numeral";
-import {genPlayerData} from "../../../pairing-scoring/scoring";
+import {createPlayerData} from "../../../pairing-scoring/scoring";
 import {useRound, usePlayers} from "../../../state";
 import {getById} from "../../../data/utility";
 
@@ -19,7 +19,7 @@ export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
     const {tourney, matchList} = useRound(tourneyId, roundId);
     const {playerState, getPlayer} = usePlayers();
     const match = getById(matchList, matchId);
-    const playerData = genPlayerData(
+    const playerData = createPlayerData(
         match.players[color],
         playerState.players,
         playerState.avoid,

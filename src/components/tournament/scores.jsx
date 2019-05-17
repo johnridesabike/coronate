@@ -1,25 +1,26 @@
 import React, {useState} from "react";
 import numeral from "numeral";
 import dashify from "dashify";
-import {PanelContainer, Panel} from "../utility";
-import {DUMMY_ID} from "../../data/constants";
+import {defaultTo} from "ramda";
+import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
 import {useTournament, usePlayers} from "../../state";
-import {calcStandings, tieBreakMethods} from "../../pairing-scoring/scoring";
+import {
+    createStandingTree,
+    tieBreakMethods
+} from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 
 /**
  * @param {Object} props
  * @param {number} props.tourneyId
  */
-function ScoreList({tourneyId}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId); // reach router passes a string instead.
+function ScoreTable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
-    const [standingTree, tbMethods] = calcStandings(tieBreaks, roundList);
+    const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>
-            <caption>Standings</caption>
+            <caption>Score detail</caption>
             <tbody>
                 <tr className={style.topHeader}>
                     <th scope="col">Rank</th>
@@ -32,9 +33,7 @@ function ScoreList({tourneyId}) {
                     ))}
                 </tr>
                 {standingTree.map((standingsFlat, rank) =>
-                    standingsFlat.filter(
-                        (p) => p.id !== DUMMY_ID
-                    ).map((standing, j, src) => (
+                    standingsFlat.map((standing, j, src) => (
                         <tr key={standing.id} className={style.row}>
                             {j === 0 && ( // Only display the rank once
                                 <th
@@ -89,19 +88,17 @@ function ScoreList({tourneyId}) {
  * @param {number} props.tourneyId
  */
 function SelectTieBreaks({tourneyId}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId); // reach router passes a string instead.
     const [{tieBreaks}, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);
     /** @param {number} [id] */
     function toggleTb(id = null) {
-        if (!id) {
-            id = selectedTb;
-        }
-        if (tieBreaks.includes(id)) {
-            dispatch({type: "DEL_TIEBREAK", id, tourneyId});
+        /** @type {(id: number) => number} */
+        const defaultId = defaultTo(selectedTb);
+        if (tieBreaks.includes(defaultId(id))) {
+            dispatch({type: "DEL_TIEBREAK", id: defaultId(id), tourneyId});
+            setSelectedTb(null);
         } else {
-            dispatch({type: "ADD_TIEBREAK", id, tourneyId});
+            dispatch({type: "ADD_TIEBREAK", id: defaultId(id), tourneyId});
         }
     }
     /** @param {number} direction */
@@ -145,7 +142,10 @@ function SelectTieBreaks({tourneyId}) {
             </div>
             <ol>
                 {tieBreaks.map((id) => (
-                    <li key={id}>
+                    <li
+                        key={id}
+                        className={selectedTb === id ? "selected" : ""}
+                    >
                         {tieBreakMethods[id].name}
                         <button
                             onClick={() =>
@@ -164,19 +164,19 @@ function SelectTieBreaks({tourneyId}) {
             </ol>
             <h3>Available tiebreak methods</h3>
             <ol>
-                {tieBreakMethods.map((method, i) => (
-                    <li key={i}>
+                {tieBreakMethods.map((method, id) => (
+                    <li key={id}>
                         <span
                             className={
-                                tieBreaks.includes(i)
+                                tieBreaks.includes(id)
                                     ? "enabled"
                                     : "disabled"
                             }
                         >
                             {method.name}
                         </span>
-                        {!tieBreaks.includes(i) && (
-                            <button onClick={() => toggleTb(i)}>
+                        {!tieBreaks.includes(id) && (
+                            <button onClick={() => toggleTb(id)}>
                                 Add
                             </button>
                         )}
@@ -189,17 +189,22 @@ function SelectTieBreaks({tourneyId}) {
 
 /**
  * @param {Object} props
- * @param {number} props.tourneyId
  */
 const Scores = ({tourneyId}) => (
-    <PanelContainer>
-        <Panel>
-            <ScoreList tourneyId={tourneyId}/>
-        </Panel>
-        <Panel>
-            <SelectTieBreaks tourneyId={tourneyId}/>
-        </Panel>
-    </PanelContainer>
+    <Tabs>
+        <TabList>
+            <Tab>Scores</Tab>
+            <Tab>Edit tiebreak rules</Tab>
+        </TabList>
+        <TabPanels>
+            <TabPanel>
+                <ScoreTable tourneyId={Number(tourneyId)}/>
+            </TabPanel>
+            <TabPanel>
+                <SelectTieBreaks tourneyId={Number(tourneyId)} />
+            </TabPanel>
+        </TabPanels>
+    </Tabs>
 );
 
 export default Scores;

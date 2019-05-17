@@ -3,7 +3,6 @@ import Repeat from "react-feather/dist/icons/repeat";
 import Trash from "react-feather/dist/icons/trash-2";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
-import Users from "react-feather/dist/icons/users";
 import MatchRow from "./match-row";
 import {PanelContainer, Panel} from "../../utility";
 import {getById, getIndexById} from "../../../data/utility";
@@ -14,10 +13,9 @@ import style from "./round.module.css";
  * @param {Object} props
  * @param {number} props.roundId
  * @param {number} props.tourneyId
- * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsPickView
  */
-export default function Round({roundId, tourneyId, setIsPickView}) {
-    const {matchList, dispatch, unmatched} = useRound(tourneyId, roundId);
+export default function Round({roundId, tourneyId}) {
+    const {matchList, dispatch} = useRound(tourneyId, roundId);
     const {playerDispatch, getPlayer} = usePlayers();
     /** @type {string} */
     const defaultMatch = null;
@@ -68,15 +66,6 @@ export default function Round({roundId, tourneyId, setIsPickView}) {
         <PanelContainer data-testid={"round-" + roundId}>
             <Panel>
                 <div className={style.toolbar}>
-                    <button
-                        className="iconButton"
-                        onClick={() => setIsPickView(true)}
-                        disabled={unmatched.length === 0}
-                        title="View unmatched players."
-                    >
-                        <Users /> View unmatched players{" "}
-                        {unmatched.length > 0 && `(${unmatched.length})`}
-                    </button>
                     <button
                         className="danger iconButton"
                         onClick={() => unMatch(selectedMatch)}

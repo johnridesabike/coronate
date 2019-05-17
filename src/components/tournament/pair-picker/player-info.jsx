@@ -1,6 +1,6 @@
 // this component should eventually replace player-match-info.jsx
 import React from "react";
-import {genPlayerData} from "../../../pairing-scoring/scoring";
+import {createPlayerData} from "../../../pairing-scoring/scoring";
 import {useTournament, usePlayers} from "../../../state";
 
 /**
@@ -25,7 +25,7 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         hasHadBye,
         opponentHistory,
         avoidList
-    } = genPlayerData(playerId, players, avoid, roundList, roundId);
+    } = createPlayerData(playerId, players, avoid, roundList, roundId);
     const prettyBalance = (function () {
         if (colorBalance < 0) {
             return "White +" + Math.abs(colorBalance);

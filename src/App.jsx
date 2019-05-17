@@ -12,6 +12,10 @@ import NotFound from "./components/404";
 import TournamentIndex from "./components/tournament";
 import {TournamentList, Tournament} from "./components/tournament";
 import Players, {PlayerList, PlayerInfo} from "./components/players";
+import Scores from "./components/tournament/scores";
+import PlayerSelect from "./components/tournament/player-select";
+import Crosstable from "./components/tournament/crosstable";
+import Round from "./components/tournament/round";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
 import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
@@ -50,7 +54,12 @@ function App() {
                                 <Router>
                                     <TournamentIndex path="tourneys">
                                         <TournamentList path="/" />
-                                        <Tournament path=":tourneyId" />
+                                        <Tournament path=":tourneyId">
+                                            <PlayerSelect path="/" />
+                                            <Crosstable path="crosstable" />
+                                            <Scores path="scores" />
+                                            <Round path=":roundId" />
+                                        </Tournament>
                                     </TournamentIndex>
                                     <Players path="players">
                                         <PlayerList path="/"/>

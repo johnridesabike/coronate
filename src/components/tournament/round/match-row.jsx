@@ -10,7 +10,7 @@ import {BLACK, WHITE, DUMMY_ID} from "../../../data/constants";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
 // @ts-ignore
-import {winnerSelect, selected} from "./round.module.css";
+import {winnerSelect} from "./round.module.css";
 import "@reach/dialog/styles.css";
 
 /**
@@ -121,7 +121,7 @@ export default function MatchRow({
         });
     }
     return (
-        <tr className={match.id === selectedMatch ? selected : ""}>
+        <tr className={match.id === selectedMatch ? "selected" : ""}>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
             <td
                 className="table__player row__player"

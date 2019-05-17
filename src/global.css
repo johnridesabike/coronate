@@ -1,9 +1,9 @@
-.app {
-    overflow: visible; /* required for position:sticky */
-}
+/* .app {
+    overflow: visible; /* required for position:sticky *//*
+} */
 
 .header {
-    position: sticky;
+    /* position: sticky; */
     top: 0;
     background-color: lightgray !important;
 }
@@ -101,4 +101,8 @@ svg {
 
 .status-ok {
     color: green;
+}
+
+.selected {
+    background-color: lightblue;
 }

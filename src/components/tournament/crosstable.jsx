@@ -1,21 +1,58 @@
-// TODO clean this up, make it less complex and fragile
-import React from "react";
+// TODO: This component is in need of a major cleanup. I made this way too
+// complex and fragile.
+import React, {useMemo} from "react";
 import numeral from "numeral";
+import {assoc} from "ramda";
 import X from "react-feather/dist/icons/x";
-import {DUMMY_ID} from "../../data/constants";
 import {useTournament, usePlayers} from "../../state";
 import {
-    calcStandings,
+    createStandingList,
     getResultsByOpponent
 } from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
+/**
+ * @typedef {import("../../pairing-scoring").Standing} Standing
+ */
+
 /**
  * @param {Object} props
  */
 export default function Crosstable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
     const {getPlayer} = usePlayers();
-    const [standingTree] = calcStandings(tieBreaks, roundList);
+    const [standings, opponentScores] = useMemo(
+        function () {
+            const [standingsFlat] = createStandingList(tieBreaks, roundList);
+            /** @type {Object.<string, Object.<string, number>>} */
+            const opponentResults = standingsFlat.reduce(
+                /** @param {Object.<string, Object.<string, number>>} acc */
+                (acc, standing) => (
+                    assoc(
+                        String(standing.id),
+                        getResultsByOpponent(standing.id, roundList),
+                        acc
+                    )
+                ),
+                {}
+            );
+            return [standingsFlat, opponentResults];
+        },
+        [roundList, tieBreaks]
+    );
+    /**
+     * @param {number} player1Id
+     * @param {number} player2Id
+     */
+    function getXScore(player1Id, player2Id) {
+        if (player1Id === player2Id) {
+            return <X/>;
+        }
+        const result = opponentScores[String(player1Id)][player2Id];
+        if (result === undefined) {
+            return null;
+        }
+        return numeral(result).format("1/2");
+    }
     return (
         <table className={style.table}>
             <caption>Crosstable</caption>
@@ -23,58 +60,43 @@ export default function Crosstable({tourneyId}) {
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
-                    {standingTree.map((standingsFlat, rank) =>
-                        standingsFlat.filter(
-                            (p) => p.id !== DUMMY_ID
-                        ).map((ignore, index, src) =>
-                            <th key={rank + "." + index}>
-                                {rank + 1}{src.length > 1 && "." + (index + 1)}
-                            </th>
-                        )
+                    {standings.map((ignore, index) =>
+                        <th key={index}>
+                            {index + 1}
+                        </th>
                     )}
                     <th>Score</th>
                     <th>Rating</th>
                 </tr>
-                {standingTree.map((standingsFlat, rank) =>
-                    standingsFlat.filter(
-                        (p) => p.id !== DUMMY_ID
-                    ).map((standing, index, src) => (
-                        <tr key={standing.id} className={style.row}>
-                            <th scope="col">
-                                {rank + 1}{src.length > 1 && "." + (index + 1)}
-                            </th>
-                            <th
-                                scope="row"
-                                className={style.playerName}
-                                data-testid={rank}
-                            >
-                                {getPlayer(standing.id).firstName}&nbsp;
-                                {getPlayer(standing.id).lastName}
-                            </th>
-                            {standingTree.map((standingsFlat2, rank2) =>
-                                standingsFlat2.filter(
-                                    (p) => p.id !== DUMMY_ID
-                                ).map((opponent, index2) =>
-                                    <td
-                                        key={rank2 + "." + index2}
-                                        className="table__number"
-                                    >
-                                        {getResultsByOpponent(standing.id, roundList)[opponent.id] !== undefined
-                                        && numeral(getResultsByOpponent(standing.id, roundList)[opponent.id]).format("1/2")}
-                                        {opponent.id === standing.id && <X/>}
-                                    </td>
-                                )
-                            )}
+                {standings.map((standing, index)=>
+                    <tr key={index} className={style.row}>
+                        <th scope="col">
+                            {index + 1}
+                        </th>
+                        <th
+                            scope="row"
+                            className={style.playerName}
+                        >
+                            {getPlayer(standing.id).firstName}&nbsp;
+                            {getPlayer(standing.id).lastName}
+                        </th>
+                        {standings.map((opponent, index2) =>
                             <td
+                                key={index2}
                                 className="table__number"
                             >
-                                {numeral(standing.score).format("1/2")}
+                                {getXScore(standing.id, opponent.id)}
                             </td>
-                            <td className="table__number">
-                                {getPlayer(standing.id).rating}
-                            </td>
-                        </tr>
-                    ))
+                        )}
+                        <td
+                            className="table__number"
+                        >
+                            {numeral(standing.score).format("1/2")}
+                        </td>
+                        <td className="table__number">
+                            {getPlayer(standing.id).rating}
+                        </td>
+                    </tr>
                 )}
             </tbody>
         </table>

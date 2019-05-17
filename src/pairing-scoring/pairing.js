@@ -1,7 +1,7 @@
 import {firstBy} from "thenby";
 import {splitAt, last} from "ramda";
 import blossom from "edmonds-blossom";
-import {genPlayerData} from "./scoring";
+import {createPlayerData} from "./scoring";
 import {DUMMY_ID} from "../data/constants";
 /**
  * @typedef {import("./").PlayerData} PlayerData
@@ -109,7 +109,7 @@ export default function pairPlayers(
     /** @type {[number, number]} */
     let byeMatch;
     let playerData = players.map((playerId) => (
-        genPlayerData(playerId, playerList, avoidList, roundList, roundId)
+        createPlayerData(playerId, playerList, avoidList, roundList, roundId)
     ));
     const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
     scoreList.sort();

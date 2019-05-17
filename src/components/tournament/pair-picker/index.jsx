@@ -1,28 +1,21 @@
 import React, {useState} from "react";
-import List from "react-feather/dist/icons/list";
 import SelectList  from "./pair-picker";
 import Stage from "./stage";
 import PlayerInfo from "./player-info";
-import {useRound} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
 
 /**
  * @param {Object} props
  * @param {number} props.tourneyId
  * @param {number} props.roundId
- * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsPickView
  */
-export default function PairPicker({tourneyId, roundId, setIsPickView}) {
+export default function PairPicker({tourneyId, roundId}) {
     /** @type {[number, number]} */
     const defaultPlayers = [null, null];
     const [stagedPlayers, setStagedPlayers] = useState(defaultPlayers);
-    const {matchList} = useRound(tourneyId, roundId);
     return (
         <PanelContainer>
             <Panel>
-                <button onClick={() => setIsPickView(false)}>
-                    <List/> View matches ({matchList.length})
-                </button>
                 <SelectList
                     tourneyId={tourneyId}
                     roundId={roundId}
