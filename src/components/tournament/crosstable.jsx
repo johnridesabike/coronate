@@ -7,7 +7,8 @@ import X from "react-feather/dist/icons/x";
 import {useTournament, usePlayers} from "../../state";
 import {
     createStandingList,
-    getResultsByOpponent
+    getResultsByOpponent,
+    getPerformanceRatings
 } from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 /**
@@ -53,6 +54,15 @@ export default function Crosstable({tourneyId}) {
         }
         return numeral(result).format("1/2");
     }
+    /** @param {number} playerId */
+    function getRatingChange(playerId) {
+        const [
+            firstRating,
+            lastRating
+        ] = getPerformanceRatings(playerId, roundList);
+        const change = numeral(lastRating - firstRating).format("+0");
+        return <span>{lastRating}&nbsp;({change})</span>;
+    }
     return (
         <table className={style.table}>
             <caption>Crosstable</caption>
@@ -94,7 +104,7 @@ export default function Crosstable({tourneyId}) {
                             {numeral(standing.score).format("1/2")}
                         </td>
                         <td className="table__number">
-                            {getPlayer(standing.id).rating}
+                            {getRatingChange(standing.id)}
                         </td>
                     </tr>
                 )}

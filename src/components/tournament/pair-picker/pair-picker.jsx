@@ -48,7 +48,6 @@ export default function PairPicker({
     }
     return (
         <div>
-            <h3>Unmatched players</h3>
             <button
                 onClick={() => dispatch({
                     type: "AUTO_PAIR",

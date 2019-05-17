@@ -2,14 +2,15 @@ import {
     add,
     append,
     defaultTo,
+    init,
     last,
     lensIndex,
     lensProp,
     over,
     pipe,
-    remove,
     sort,
-    sum
+    sum,
+    tail
 } from "ramda";
 import {firstBy} from "thenby";
 import {getPlayerById, getPlayerAvoidList} from "../data/player";
@@ -195,6 +196,10 @@ function createTieBreakSorter(tieBreaks) {
     );
 }
 
+/** @type {(scores: number[]) => number[]} */
+// @ts-ignore
+const removeFirstAndLast = pipe(init, tail);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Scoring functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,7 +326,7 @@ export function playerColorBalance(playerId, roundList, roundId = null) {
  */
 function modifiedMedian(playerId, roundList, roundId = null) {
     const scores = opponentScores(playerId, roundList, roundId);
-    const scoresMinusFirstAndLast = pipe(remove(-1, 1), remove(0, 1))(scores);
+    const scoresMinusFirstAndLast = removeFirstAndLast(scores);
     return sum(scoresMinusFirstAndLast);
 }
 
@@ -485,4 +490,17 @@ export function getResultsByOpponent(playerId, roundList, roundId = null) {
         },
         {}
     );
+}
+
+/** @type {ScoreCalculator} */
+export function getPerformanceRatings(playerId, roundList, roundId = null) {
+    const matches = getMatchesByPlayer(playerId, roundList, roundId);
+    // TODO: This could be Don't-Repeat-Yourself'd a bit
+    const firstMatch = matches[0];
+    const firstColor = firstMatch.players.indexOf(playerId);
+    const firstRating = firstMatch.origRating[firstColor];
+    const lastMatch = last(matches);
+    const lastColor = lastMatch.players.indexOf(playerId);
+    const lastRating = lastMatch.newRating[lastColor];
+    return [firstRating, lastRating];
 }

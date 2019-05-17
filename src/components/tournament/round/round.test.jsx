@@ -1,9 +1,8 @@
 import React from "react";
-// @ts-ignore
 import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
 import PlayerInfoBox from "../../players/info-box";
-import Tournament from "../tournament";
+import RoundPanels from "./index";
 import {
     TournamentProvider,
     PlayersProvider,
@@ -14,7 +13,7 @@ const {click, change} = fireEvent;
 afterEach(cleanup);
 
 /** @param {Object} props */
-const TestApp = ({children}) => (
+const AllTheProviders = ({children}) => (
     <OptionsProvider>
         <PlayersProvider>
             <TournamentProvider>
@@ -25,26 +24,28 @@ const TestApp = ({children}) => (
 );
 
 const batmanInfo = (
-    <TestApp>
-        <PlayerInfoBox playerId={0} />
-    </TestApp>
+    <PlayerInfoBox playerId={0} />
 );
 const robinInfo = (
-    <TestApp>
-        <PlayerInfoBox playerId={1} />
-    </TestApp>
+    <PlayerInfoBox playerId={1} />
 );
 
 /** @param {JSX.Element} node */
 function getRating(node) {
+    return render(
+        node,
+        {wrapper: AllTheProviders}
     // @ts-ignore
-    return render(node).getByLabelText(/rating/i).value;
+    ).getByLabelText(/rating/i).value;
 }
 
 /** @param {JSX.Element} node */
 function getMatchCount(node) {
+    return render(
+        node,
+        {wrapper: AllTheProviders}
     // @ts-ignore
-    return render(node).getByLabelText(/matches played/i).value;
+    ).getByLabelText(/matches played/i).value;
 }
 
 it("Original ratings are shown correctly.", function () {
@@ -62,16 +63,14 @@ it("Original match counts are shown correctly.", function () {
 
 it("Ratings are updated after a match is scored.", function () {
     const {getByText, getByDisplayValue, getByTestId} = render(
-        <TestApp>
-            <Tournament tourneyId={1} />
-        </TestApp>
+        <RoundPanels tourneyId={1} roundId={1} />,
+        {wrapper: AllTheProviders}
     );
-    click(getByText(/new round/i));
-    click(getByText(/round 2/i));
+    click(getByText(/^unmatched players$/i));
     click(getByText(/select bruce wayne/i));
     click(getByText(/select dick grayson/i));
     click(getByText(/match selected/i));
-    click(getByText(/view matches/i));
+    click(getByText(/matches/i));
     // This doesn't work. See: https://github.com/testing-library/dom-testing-library/issues/256
     change(getByDisplayValue(/select a winner/i), {value: "WHITE"});
     click(getByText(

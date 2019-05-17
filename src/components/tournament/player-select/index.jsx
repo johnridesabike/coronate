@@ -9,6 +9,8 @@ import {hasHadBye} from "../../../pairing-scoring/scoring";
  * @param {Object} props
  */
 export default function PlayerSelect({tourneyId}) {
+    // eslint-disable-next-line fp/no-mutation
+    tourneyId = Number(tourneyId);
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
