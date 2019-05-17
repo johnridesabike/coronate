@@ -1,6 +1,7 @@
 // TODO clean this up, make it less complex and fragile
 import React from "react";
 import numeral from "numeral";
+import X from "react-feather/dist/icons/x";
 import {DUMMY_ID} from "../../data/constants";
 import {useTournament, usePlayers} from "../../state";
 import {
@@ -39,15 +40,9 @@ export default function Crosstable({tourneyId}) {
                         (p) => p.id !== DUMMY_ID
                     ).map((standing, index, src) => (
                         <tr key={standing.id} className={style.row}>
-                            {index === 0 && ( // Only display the rank once
-                                <th
-                                    scope="row"
-                                    className={"table__number " + style.rank}
-                                    rowSpan={src.length}
-                                >
-                                    {numeral(rank + 1).format("0o")}
-                                </th>
-                            )}
+                            <th scope="col">
+                                {rank + 1}{src.length > 1 && "." + (index + 1)}
+                            </th>
                             <th
                                 scope="row"
                                 className={style.playerName}
@@ -64,10 +59,9 @@ export default function Crosstable({tourneyId}) {
                                         key={rank2 + "." + index2}
                                         className="table__number"
                                     >
-                                        {opponent.id !== standing.id
-                                        ? numeral(getResultsByOpponent(standing.id, roundList)[opponent.id]).format("1/2")
-                                        : "X"
-                                        }
+                                        {getResultsByOpponent(standing.id, roundList)[opponent.id] !== undefined
+                                        && numeral(getResultsByOpponent(standing.id, roundList)[opponent.id]).format("1/2")}
+                                        {opponent.id === standing.id && <X/>}
                                     </td>
                                 )
                             )}
