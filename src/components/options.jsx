@@ -1,5 +1,9 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {useTournaments, useOptions, usePlayers} from "../state";
+import {createPlayer} from "../factories";
+import defaultPlayers from "../state/demo-players.json";
+import defaultOptions from "../state/demo-options.json";
+import defaultTourneys from "../state/demo-tourney.json";
 
 /**
  * @param {Object} props
@@ -50,6 +54,19 @@ export function Options(props) {
         reader.readAsText(event.currentTarget.files[0]);
         event.currentTarget.value = ""; // so the filename won't linger onscreen
     }
+    /** @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event */
+    function reloadDemoData(event) {
+        event.preventDefault();
+        loadData({
+            options: defaultOptions,
+            playerState: {
+                players: defaultPlayers.playerList.map((p) => createPlayer(p)),
+                avoid: defaultPlayers.avoidList
+            },
+            // @ts-ignore
+            tourneys: defaultTourneys
+        });
+    }
     return (
         <div>
             <form>
@@ -97,6 +114,10 @@ export function Options(props) {
                     Load data file:{" "}
                     <input type="file" id="file" onChange={handleFile}/>
                 </label>
+            </fieldset>
+            <fieldset>
+                <legend>Reset all changes</legend>
+                <button onClick={reloadDemoData}>Reload demo data</button>
             </fieldset>
             <form onSubmit={handleText}>
                 <fieldset>

@@ -1,4 +1,10 @@
-import {createContext, createElement, useContext, useReducer} from "react";
+import {
+    createContext,
+    createElement,
+    useContext,
+    useReducer,
+    useEffect
+} from "react";
 // This will cause Webpack to import the entire Ramda library, but we're using
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
@@ -17,12 +23,13 @@ import {
     reverse,
     set
 } from "ramda";
+import {localStorageOrDefault} from "./helpers";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
 import {createTournament} from "../factories";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../index").Tournament} Tournament
+ * @typedef {import("../factory-types").Tournament} Tournament
  */
 
 /** @type {Tournament[]} */
@@ -209,7 +216,14 @@ export function useRound(tourneyId, roundId) {
  * @param {Object} props
  */
 export function TournamentProvider(props) {
-    const [state, dispatch] = useReducer(tourneysReducer, defaultData);
+    const loadedData = localStorageOrDefault("tourneys", defaultData);
+    const [state, dispatch] = useReducer(tourneysReducer, loadedData);
+    useEffect(
+        function () {
+            localStorage.setItem("tourneys", JSON.stringify(state));
+        },
+        [state]
+    );
     return (
         createElement(
             TournamentContext.Provider,

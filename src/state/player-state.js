@@ -1,4 +1,10 @@
-import {createContext, createElement, useContext, useReducer} from "react";
+import {
+    createContext,
+    createElement,
+    useContext,
+    useReducer,
+    useEffect
+} from "react";
 // This will cause Webpack to import the entire Ramda library, but we're using
 // so much of it that cherry-picking individual files has virtually no benefit.
 import {
@@ -19,12 +25,13 @@ import {
     set,
     sort
 } from "ramda";
+import {localStorageOrDefault} from "./helpers";
 import {getPlayerById} from "../pairing-scoring/helpers";
 import {createPlayer} from "../factories";
 import demoPlayers from "./demo-players.json";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../index").Player} Player
+ * @typedef {import("../factory-types").Player} Player
  * @typedef {import("./dispatch").PlayerAction} PlayerAction
  */
 
@@ -136,7 +143,14 @@ export function usePlayers() {
  * @param {Object} props
  */
 export function PlayersProvider(props) {
-    const [state, dispatch] = useReducer(playersReducer, defaultPlayers);
+    const loadedData = localStorageOrDefault("players", defaultPlayers);
+    const [state, dispatch] = useReducer(playersReducer, loadedData);
+    useEffect(
+        function () {
+            localStorage.setItem("players", JSON.stringify(state));
+        },
+        [state]
+    );
     return (
         createElement(
             PlayerContext.Provider,

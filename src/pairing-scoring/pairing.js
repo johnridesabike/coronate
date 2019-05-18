@@ -8,6 +8,8 @@ import {DUMMY_ID} from "./constants";
  */
 /** @type {(value: number) => (condition: boolean) => number} */
 const priority = (value) => (condition) => condition ? value : 0;
+/** @type {(value: number) => (divider: number) => number} */
+const divisiblePriority = (value) => (divider) => value / divider;
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -20,13 +22,13 @@ const priority = (value) => (condition) => condition ? value : 0;
 const avoidMeetingTwice = priority(20);
 /**
  * @constant sameScoresPriority The weight given to match players with
- * equal scores. This gets muliplied against a ratio taken from the distance
- * between each player's score. For example, if the tournament has players
- * scoring 0, 1, 2, and 3, and if a player scoring 1 gets compared with a
- * player scoring 3, then their `sameScoresPriority` will be reduced by 50%.
- * (`(3 - 1) / 4 = 0.5`) (USCF § 27A2)
+ * equal scores. This gets divided against the difference between each players'
+ * scores, plus one. For example, players with scores `1` and `3` would have
+ * this priority divided by `3`. Players with scores `0` and `3` would have this
+ * priority divided by `4`. Players with equal scores would divide it by `1`, or
+ * leaving it unchanged. (USCF § 27A2)
  */
-const sameScores = priority(16);
+const sameScores = divisiblePriority(16);
 
 /**
  * @constant differentHalfPriority The weight given to match players in lower
@@ -43,7 +45,7 @@ const differentDueColor = priority(1);
 const maxPriority = pipe(
     add(differentHalf(false)),    // TODO: this is temporarily false until the
     add(differentDueColor(true)), // different-half calculator can be refactored
-    add(sameScores(true)),
+    add(sameScores(1)),
     add(avoidMeetingTwice(true))
 )(0);
 export {maxPriority};
@@ -54,7 +56,6 @@ export {maxPriority};
  * @returns {number}
  */
 export function calcPairIdeal(player1, player2) {
-    const scoreRatio = 1 / (Math.abs(player1.score - player2.score) + 1);
     const metBefore = player1.opponentHistory.includes(player2.id);
     const mustAvoid = player1.avoidList.includes(player2.id);
     return pipe(
@@ -66,7 +67,7 @@ export function calcPairIdeal(player1, player2) {
             player1.dueColor === null
             || player1.dueColor !== player2.dueColor
         )),
-        add(sameScores(true) * scoreRatio), // is there a more elegant solution?
+        add(sameScores(Math.abs(player1.score - player2.score) + 1)),
         add(avoidMeetingTwice(!metBefore && !mustAvoid))
     )(0);
 }
@@ -131,6 +132,7 @@ export default function pairPlayers(
     });
     // Turn the data into blossom-compatible input.
     const potentialMatches = playerData.reduce(
+        /** @param {number[][]} acc */
         function (acc, player1, ignore, src) {
             const playerMatches = src.filter(
                 (player) => player !== player1
@@ -153,9 +155,8 @@ export default function pairPlayers(
     /** @type {[PlayerStats, PlayerStats, number][]} */
     const reducedResults = blossomResults.reduce(
         function (acc, p1Id, p2Id) {
-            // Filter out unmatched players. Even though we removed the byes
-            // from the list, blossom will automatically include their missing
-            // IDs in its results.
+            // Filter out unmatched players. Blossom will automatically include
+            // their missing IDs in its results.
             if (p1Id !== -1) {
                 const p1 = playerData.filter((p) => p.id === p1Id)[0];
                 const p2 = playerData.filter((p) => p.id === p2Id)[0];

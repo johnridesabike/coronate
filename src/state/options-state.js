@@ -1,5 +1,12 @@
-import {createContext, createElement, useContext, useReducer} from "react";
+import {
+    createContext,
+    createElement,
+    useContext,
+    useReducer,
+    useEffect
+} from "react";
 import {assoc} from "ramda";
+import {localStorageOrDefault} from "./helpers";
 import defaultOptions from "./demo-options.json";
 /**
  * @typedef {import("./dispatch").OptionAction} OptionAction
@@ -32,11 +39,18 @@ export function useOptions() {
  * @param {Object} props
  */
 export function OptionsProvider(props) {
-    const [data, dispatch] = useReducer(reducer, defaultOptions);
+    const loadedData = localStorageOrDefault("options", defaultOptions);
+    const [state, dispatch] = useReducer(reducer, loadedData);
+    useEffect(
+        function () {
+            localStorage.setItem("options", JSON.stringify(state));
+        },
+        [state]
+    );
     return (
         createElement(
             OptionsContext.Provider,
-            {value: [data, dispatch]},
+            {value: [state, dispatch]},
             props.children
         )
     );
