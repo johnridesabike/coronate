@@ -61,7 +61,7 @@ export default function Crosstable({tourneyId}) {
             lastRating
         ] = getPerformanceRatings(playerId, roundList);
         const change = numeral(lastRating - firstRating).format("+0");
-        return <span>{lastRating}&nbsp;({change})</span>;
+        return `${lastRating}\xA0(${change})`; // \xA0 = &nsbp;
     }
     return (
         <table className={style.table}>

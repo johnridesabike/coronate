@@ -4,7 +4,7 @@ import Repeat from "react-feather/dist/icons/repeat";
 import Check from "react-feather/dist/icons/check";
 import UserMinus from "react-feather/dist/icons/user-minus";
 import {useTournament, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK} from "../../../data/constants";
+import {WHITE, BLACK} from "../../../pairing-scoring/constants";
 
 /**
  * @param {Object} props

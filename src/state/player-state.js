@@ -19,12 +19,12 @@ import {
     set,
     sort
 } from "ramda";
-import {getPlayerById} from "../data/player";
-import {createPlayer} from "../data/factories";
+import {getPlayerById} from "../pairing-scoring/helpers";
+import {createPlayer} from "../factories";
 import demoPlayers from "./demo-players.json";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../data/index").Player} Player
+ * @typedef {import("../index").Player} Player
  * @typedef {import("./dispatch").PlayerAction} PlayerAction
  */
 

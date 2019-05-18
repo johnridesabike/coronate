@@ -3,8 +3,6 @@ import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
 import dashify from "dashify";
 import {TournamentProvider, PlayersProvider} from "../../state";
-import "../utility"; // <-- this triggers the custom numeral format to load
-// TODO: make that side-effect less side-effecty.
 import Scores from "../tournament/scores";
 
 afterEach(cleanup);

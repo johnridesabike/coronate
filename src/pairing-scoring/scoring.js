@@ -1,27 +1,40 @@
+// TODO: Clean this up. Refactor unnecessary functions, etc.
 import {
     add,
     append,
     defaultTo,
-    init,
     last,
     lensIndex,
     lensProp,
     over,
     pipe,
     sort,
-    sum,
-    tail
+    sum
 } from "ramda";
 import {firstBy} from "thenby";
-import {getPlayerById, getPlayerAvoidList} from "../data/player";
-import {WHITE, BLACK, DUMMY_ID} from "../data/constants";
+import EloRank from "elo-rank";
+// eslint-disable-next-line no-unused-vars
+import {WHITE, BLACK, DUMMY_ID} from "./constants";
+import {
+    isNotBye,
+    getMatchesByPlayer,
+    playerScoreList,
+    removeFirstAndLast,
+    isNotDummy,
+    getAllPlayers,
+    areScoresEqual,
+    playerMatchColor,
+    switchColor,
+    getPlayerById,
+    getPlayerAvoidList
+} from "./helpers";
 
 /**
  * @typedef {import("./").ScoreCalculator} ScoreCalculator
- * @typedef {import("./").PlayerData} PlayerData
+ * @typedef {import("./").PlayerStats} PlayerStats
  * @typedef {import("./").Standing} Standing
- * @typedef {import("../data").Match} Match
- * @typedef {import("../data").Player} Player
+ * @typedef {import("../factory-types").Match} Match
+ * @typedef {import("../factory-types").Player} Player
  */
 
 const tieBreakMethods = [
@@ -49,133 +62,6 @@ const tieBreakMethods = [
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
-////////////////////////////////////////////////////////////////////////////////
-// Helper functions
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- *
- * @param {Match} match
- * @returns {boolean}
- */
-function isBye(match) {
-    return match.players.includes(DUMMY_ID);
-}
-
-/**
- *
- * @param {Match} match
- * @returns {boolean}
- */
-function isNotBye(match) {
-    return !isBye(match);
-}
-
-/**
- * @param {number} playerId
- */
-function isNotDummy(playerId) {
-    return playerId !== DUMMY_ID;
-}
-
-/**
- * @param {typeof WHITE | typeof BLACK} color
- */
-function switchColor(color) {
-    return ( // return the opposite color
-        (color === WHITE)
-        ? BLACK
-        : WHITE
-    );
-}
-
-/**
- * @type {ScoreCalculator}
- * @returns {Match[]}
- */
-function getMatchesByPlayer(playerId, roundList, roundId = null) {
-    const rounds = (
-        (roundId === null)
-        ? roundList
-        : roundList.slice(0, roundId + 1)
-    );
-    return rounds.reduce( // flatten the rounds to just the matches
-        (acc, round) => acc.concat(round),
-        []
-    ).filter(
-        (match) => match.players.includes(playerId)
-    );
-}
-
-/**
- * Helper function.
- * @param {Standing} standing1
- * @param {Standing} standing2
- * @returns {boolean}
- */
-function areScoresEqual(standing1, standing2) {
-    // Check if any of them aren't equal
-    if (standing1.score !== standing2.score) {
-        return false;
-    }
-    // Check if any values are not equal
-    return !(
-        standing1.tieBreaks.reduce(
-            /** @param {boolean[]} acc */
-            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
-            []
-        ).includes(true)
-    );
-}
-
-/**
- * @param {Match[][]} roundList
- * @returns {number[]}
- */
-function getAllPlayers(roundList) {
-    const allPlayers = roundList.reduce( // flatten the rounds
-        (acc, round) => acc.concat(round),
-        []
-    ).reduce( // flaten the players
-        (acc, match) => acc.concat(match.players),
-        []
-    );
-    return Array.from(new Set(allPlayers));
-}
-
-/**
- * Get a list of all of a player's scores from each match.
- * @type {ScoreCalculator}
- * @returns {number[]} the list of scores
- */
-function playerScoreList(playerId, roundList, roundId = null) {
-    return getMatchesByPlayer(
-        playerId,
-        roundList,
-        roundId
-    ).map(
-        (match) => match.result[match.players.indexOf(playerId)]
-    );
-}
-
-/**
- * Used for `modifiedMedian` and `solkoff`.
- * @type {ScoreCalculator}
- * @returns {number[]}
- */
-function opponentScores(pId, roundList, roundId) {
-    const scores = getPlayersByOpponent(
-        pId,
-        roundList,
-        roundId
-    ).filter(
-        isNotDummy
-    ).map(
-        (opponent) => playerScore(opponent, roundList, roundId)
-    );
-    return sort((a, b) => a - b, scores);
-}
-
 /**
  * Create a function to sort the players. This dynamically creates a `thenBy`
  * function based on the desired tiebreak sort methods.
@@ -193,28 +79,6 @@ function createTieBreakSorter(tieBreaks) {
             /** @param {Standing} standing */
             (standing) => standing.score, -1
         )
-    );
-}
-
-/** @type {(scores: number[]) => number[]} */
-// @ts-ignore
-const removeFirstAndLast = pipe(init, tail);
-
-////////////////////////////////////////////////////////////////////////////////
-// Scoring functions
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @param {number} playerId
- * @param {object[]} matchList
- * @returns {typeof WHITE | typeof BLACK?}
- */
-export function playerMatchColor(playerId, matchList) {
-    const match = matchList.filter((m) => m.players.includes(playerId))[0];
-    return (
-        (match)
-        ? match.players.indexOf(playerId)
-        : null
     );
 }
 
@@ -317,6 +181,24 @@ export function playerColorBalance(playerId, roundList, roundId = null) {
         [0]
     );
     return sum(colorList);
+}
+
+/**
+ * Used for `modifiedMedian` and `solkoff`.
+ * @type {ScoreCalculator}
+ * @returns {number[]}
+ */
+function opponentScores(pId, roundList, roundId) {
+    const scores = getPlayersByOpponent(
+        pId,
+        roundList,
+        roundId
+    ).filter(
+        isNotDummy
+    ).map(
+        (opponent) => playerScore(opponent, roundList, roundId)
+    );
+    return sort((a, b) => a - b, scores);
 }
 
 /**
@@ -442,9 +324,9 @@ function dueColor(playerId, roundList, roundId = null) {
  * @param {number} roundId
  * @param {Player[]} playerList
  * @param {number[][]} avoidList
- * @returns {PlayerData}
+ * @returns {PlayerStats}
  */
-export function createPlayerData(
+export function createPlayerStats(
     playerId,
     playerList,
     avoidList,
@@ -454,8 +336,8 @@ export function createPlayerData(
     const player = getPlayerById(playerList, playerId);
     return {
         profile: player,
-        rating: player.rating,
-        id: playerId,
+        rating: player.rating, // is this shortcut necessary?
+        id: playerId, // is this shortcut necessary?
         score: playerScore(playerId, roundList, roundId),
         dueColor: dueColor(playerId, roundList, roundId),
         colorBalance: playerColorBalance(playerId, roundList, roundId),
@@ -503,4 +385,50 @@ export function getPerformanceRatings(playerId, roundList, roundId = null) {
     const lastColor = lastMatch.players.indexOf(playerId);
     const lastRating = lastMatch.newRating[lastColor];
     return [firstRating, lastRating];
+}
+
+
+/**
+ * @param {number} matchCount
+ */
+export function kFactor(matchCount) {
+    const ne = matchCount || 1;
+    return (800 / ne);
+}
+
+/**
+ * @param {[number, number]} origRatings
+ * @param {[number, number]} matchCounts
+ * @param {[number, number]} result
+ * @returns {[number, number]}
+ */
+export function calcNewRatings(origRatings, matchCounts, result) {
+    const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
+    const blackElo = new EloRank(kFactor(matchCounts[BLACK]));
+    const FLOOR = 100;
+    const scoreExpected = [
+        whiteElo.getExpected(origRatings[WHITE], origRatings[BLACK]),
+        blackElo.getExpected(origRatings[BLACK], origRatings[WHITE])
+    ];
+    /** @type {[number, number]} */
+    const newRating = [
+        whiteElo.updateRating(
+            scoreExpected[WHITE],
+            result[WHITE],
+            origRatings[WHITE]
+        ),
+        blackElo.updateRating(
+            scoreExpected[BLACK],
+            result[BLACK],
+            origRatings[BLACK]
+        )
+    ];
+    // @ts-ignore
+    return newRating.map(
+        (rating) => (
+            rating < FLOOR
+            ? FLOOR
+            : rating
+        )
+    );
 }

@@ -120,33 +120,32 @@ it("Ratings are updated after a match is scored.", function () {
 //     expect(getMatchCount(batmanInfo)).toBe("9");
 // });
 
-// it("Players are auto-paired correctly", function () {
-//     // This will need to be updated as the pairing algorithm changes.
-//     const {getByText, getByTestId} = render(
-//         <TestApp>
-//             <Round tourneyId={1} roundId={1} />
-//         </TestApp>
-//     );
-//     fireEvent.click(getByText(/auto-pair/i));
-//     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
-//     expect(getByTestId("match-0-black")).toHaveTextContent("Harley Quinn");
-//     expect(getByTestId("match-1-white")).toHaveTextContent("Joker");
-//     expect(getByTestId("match-1-black")).toHaveTextContent("Oswald Cobblepot");
-//     expect(getByTestId("match-2-white")).toHaveTextContent("Kate Kane");
-//     expect(getByTestId("match-2-black")).toHaveTextContent("Harvey Dent");
-//     expect(getByTestId("match-3-white")).toHaveTextContent("Alfred Pennyworth");
-//     expect(getByTestId("match-3-black")).toHaveTextContent("Helena Wayne");
-//     expect(getByTestId("match-4-white")).toHaveTextContent("Jason Todd");
-//     expect(getByTestId("match-4-black")).toHaveTextContent("Ra's al Ghul");
-//     expect(getByTestId("match-5-white")).toHaveTextContent("Selina Kyle");
-//     expect(getByTestId("match-5-black")).toHaveTextContent("Victor Fries");
-//     expect(getByTestId("match-6-white")).toHaveTextContent("Dick Grayson");
-//     expect(getByTestId("match-6-black")).toHaveTextContent("Jonathan Crane");
-//     expect(getByTestId("match-7-white")).toHaveTextContent("Barbara Gordon");
-//     expect(getByTestId("match-7-black")).toHaveTextContent("Edward Nigma");
-//     expect(getByTestId("match-8-white")).toHaveTextContent("James Gordon");
-//     expect(getByTestId("match-8-black")).toHaveTextContent("Pamela Isley");
-// });
+it("Players are auto-paired correctly", function () {
+    // This will need to be updated as the pairing algorithm changes.
+    const {getByText, getByTestId} = render(
+        <RoundPanels tourneyId={1} roundId={1} />,
+        {wrapper: AllTheProviders}
+    );
+    fireEvent.click(getByText(/auto-pair unmatched players/i));
+    expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
+    expect(getByTestId("match-0-black")).toHaveTextContent("Harley Quinn");
+    expect(getByTestId("match-1-white")).toHaveTextContent("Joker");
+    expect(getByTestId("match-1-black")).toHaveTextContent("Oswald Cobblepot");
+    expect(getByTestId("match-2-white")).toHaveTextContent("Kate Kane");
+    expect(getByTestId("match-2-black")).toHaveTextContent("Harvey Dent");
+    expect(getByTestId("match-3-white")).toHaveTextContent("Alfred Pennyworth");
+    expect(getByTestId("match-3-black")).toHaveTextContent("Helena Wayne");
+    expect(getByTestId("match-4-white")).toHaveTextContent("Jason Todd");
+    expect(getByTestId("match-4-black")).toHaveTextContent("Ra's al Ghul");
+    expect(getByTestId("match-5-white")).toHaveTextContent("Selina Kyle");
+    expect(getByTestId("match-5-black")).toHaveTextContent("Victor Fries");
+    expect(getByTestId("match-6-white")).toHaveTextContent("Dick Grayson");
+    expect(getByTestId("match-6-black")).toHaveTextContent("Jonathan Crane");
+    expect(getByTestId("match-7-white")).toHaveTextContent("Barbara Gordon");
+    expect(getByTestId("match-7-black")).toHaveTextContent("Edward Nigma");
+    expect(getByTestId("match-8-white")).toHaveTextContent("James Gordon");
+    expect(getByTestId("match-8-black")).toHaveTextContent("Pamela Isley");
+});
 
 // it("Moving matches works.", function () {
 //     const {getByLabelText, getByTestId} = render(

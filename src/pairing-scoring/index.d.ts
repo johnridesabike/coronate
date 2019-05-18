@@ -1,6 +1,6 @@
-import {Match} from "../data/";
+import {Match} from "..";
 
-export interface PlayerData {
+export interface PlayerStats {
     profile: Player,
     id: number,
     score: number,

@@ -1,7 +1,7 @@
 /**
- * @typedef {import("./index").Match} Match
- * @typedef {import("./index").Tournament} Tournament
- * @typedef {import("./index").Player} Player
+ * @typedef {import("./factory-types").Match} Match
+ * @typedef {import("./factory-types").Tournament} Tournament
+ * @typedef {import("./factory-types").Player} Player
  */
 
 /**
@@ -33,6 +33,16 @@ export function createPlayer(importObj = {}) {
         matchCount: importObj.matchCount || 0
     };
 }
+
+const dummyPlayer = createPlayer({
+    id: -1,
+    firstName: "Bye",
+    lastName: "Player",
+    type: "dummy"
+});
+Object.freeze(dummyPlayer);
+export {dummyPlayer};
+
 
 /**
  * @param {Object} importObj

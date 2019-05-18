@@ -5,7 +5,7 @@ import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import MatchRow from "./match-row";
 import {PanelContainer, Panel} from "../../utility";
-import {getById, getIndexById} from "../../../data/utility";
+import {getById, getIndexById} from "../../../pairing-scoring/helpers";
 import {useRound, usePlayers} from "../../../state";
 import style from "./round.module.css";
 

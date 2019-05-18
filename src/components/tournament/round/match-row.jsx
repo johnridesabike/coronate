@@ -5,8 +5,8 @@ import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
 import Check from "react-feather/dist/icons/check";
 import {PanelContainer, Panel} from "../../utility";
-import {calcNewRatings} from "../../../data/player";
-import {BLACK, WHITE, DUMMY_ID} from "../../../data/constants";
+import {calcNewRatings} from "../../../pairing-scoring/scoring";
+import {BLACK, WHITE, DUMMY_ID} from "../../../pairing-scoring/constants";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
 // @ts-ignore
@@ -14,7 +14,7 @@ import {winnerSelect} from "./round.module.css";
 import "@reach/dialog/styles.css";
 
 /**
- * @typedef {import("../../../data").Match} Match
+ * @typedef {import("../../../factory-types").Match} Match
  */
 
 /**

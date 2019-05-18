@@ -1,12 +1,12 @@
 import {curry} from "ramda";
-import {BLACK, WHITE} from "../data/constants";
-import {createMatch} from "../data/factories";
-import {dummyPlayer, getPlayerById} from "../data/player";
+import {BLACK, WHITE} from "../pairing-scoring/constants";
+import {createMatch, dummyPlayer} from "../factories";
+import {getPlayerById} from "../pairing-scoring/helpers";
 import {hasHadBye} from "../pairing-scoring/scoring";
 import pairPlayers from "../pairing-scoring/pairing";
 /**
- * @typedef {import("../data/index").Player} Player
- * @typedef {import("../data/index").Tournament} Tournament
+ * @typedef {import("../factory-types").Player} Player
+ * @typedef {import("../factory-types").Tournament} Tournament
 */
 
 /**

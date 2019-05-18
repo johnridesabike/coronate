@@ -1,10 +1,10 @@
 import {firstBy} from "thenby";
 import {splitAt, last} from "ramda";
 import blossom from "edmonds-blossom";
-import {createPlayerData} from "./scoring";
-import {DUMMY_ID} from "../data/constants";
+import {createPlayerStats} from "./scoring";
+import {DUMMY_ID} from "./constants";
 /**
- * @typedef {import("./").PlayerData} PlayerData
+ * @typedef {import("./").PlayerStats} PlayerStats
  */
 
 /**
@@ -53,8 +53,8 @@ const differentDueColorPriority = 1;
  * Create an array of blossom-compatible weighted matchups. This returns
  * an array of each potential match, formatted like so: [idOfPlayer1,
  * idOfPlayer2, priority]. A higher priority means a more likely matchup.
- * @param {PlayerData} player1
- * @param {PlayerData} player2
+ * @param {PlayerStats} player1
+ * @param {PlayerStats} player2
  * @param {number[]} scoreList
  * @returns {number}
  */
@@ -109,7 +109,7 @@ export default function pairPlayers(
     /** @type {[number, number]} */
     let byeMatch;
     let playerData = players.map((playerId) => (
-        createPlayerData(playerId, playerList, avoidList, roundList, roundId)
+        createPlayerStats(playerId, playerList, avoidList, roundList, roundId)
     ));
     const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
     scoreList.sort();
@@ -167,7 +167,7 @@ export default function pairPlayers(
     // ID of one player and each value is the ID of the matched player.
     const blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of players.
-    /** @type {[PlayerData, PlayerData, number][]} */
+    /** @type {[PlayerStats, PlayerStats, number][]} */
     const reducedResults = blossomResults.reduce(
         function (acc, p1Id, p2Id) {
             // Filter out unmatched players. Even though we removed the byes
@@ -193,11 +193,11 @@ export default function pairPlayers(
     // Sort by net score and rating for board placement.
     reducedResults.sort(
         firstBy(
-            /** @param {[PlayerData, PlayerData, number]} pair */
+            /** @param {[PlayerStats, PlayerStats, number]} pair */
             (pair) => pair[0].score + pair[1].score,
             -1
         ).thenBy(
-            /** @param {[PlayerData, PlayerData, number]} pair */
+            /** @param {[PlayerStats, PlayerStats, number]} pair */
             (pair) => pair[0].rating + pair[1].rating,
             -1
         )

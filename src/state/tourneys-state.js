@@ -19,10 +19,10 @@ import {
 } from "ramda";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
-import {createTournament} from "../data/factories";
+import {createTournament} from "../factories";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../data/index").Tournament} Tournament
+ * @typedef {import("../index").Tournament} Tournament
  */
 
 /** @type {Tournament[]} */

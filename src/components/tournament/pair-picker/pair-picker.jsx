@@ -5,7 +5,7 @@ import Hidden from "@reach/visually-hidden";
 import UserPlus from "react-feather/dist/icons/user-plus";
 import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK, DUMMY_ID} from "../../../data/constants";
+import {WHITE, BLACK, DUMMY_ID} from "../../../pairing-scoring/constants";
 
 /**
  * @param {Object} props

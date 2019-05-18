@@ -3,7 +3,8 @@ import numeral from "numeral";
 // import {Link} from "@reach/router";
 // import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import Trash from "react-feather/dist/icons/trash-2";
-import {getPlayerAvoidList, kFactor} from "../../data/player";
+import {getPlayerAvoidList} from "../../pairing-scoring/helpers";
+import {kFactor} from "../../pairing-scoring/scoring";
 import {usePlayers} from "../../state";
 
 /**

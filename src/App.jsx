@@ -19,6 +19,7 @@ import Round from "./components/tournament/round";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
 import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
+import "side-effects";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";

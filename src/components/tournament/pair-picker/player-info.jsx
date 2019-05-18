@@ -1,10 +1,10 @@
 // this component should eventually replace player-match-info.jsx
 import React from "react";
-import {createPlayerData} from "../../../pairing-scoring/scoring";
+import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useTournament, usePlayers} from "../../../state";
 
 /**
- * @typedef {import("../../../data").Match} Match
+ * @typedef {import("../../../factory-types").Match} Match
  */
 
 /**
@@ -25,7 +25,7 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         hasHadBye,
         opponentHistory,
         avoidList
-    } = createPlayerData(playerId, players, avoid, roundList, roundId);
+    } = createPlayerStats(playerId, players, avoid, roundList, roundId);
     const prettyBalance = (function () {
         if (colorBalance < 0) {
             return "White +" + Math.abs(colorBalance);
