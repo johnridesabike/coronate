@@ -1,11 +1,13 @@
 import {firstBy} from "thenby";
-import {splitAt, last} from "ramda";
+import {splitAt, last, pipe, add, sort} from "ramda";
 import blossom from "edmonds-blossom";
 import {createPlayerStats} from "./scoring";
 import {DUMMY_ID} from "./constants";
 /**
  * @typedef {import("./").PlayerStats} PlayerStats
  */
+/** @type {(value: number) => (condition: boolean) => number} */
+const priority = (value) => (condition) => condition ? value : 0;
 
 /**
  * TODO: These probably need to be tweaked a lot.
@@ -14,9 +16,8 @@ import {DUMMY_ID} from "./constants";
  * @constant avoidMeetingTwicePriority The weight given to avoid players
  * meeting twice. This same weight is given to avoid matching players on each
  * other's "avoid" list. This is the highest priority. (USCF § 27A1)
- * @type {number}
  */
-const avoidMeetingTwicePriority = 20;
+const avoidMeetingTwice = priority(20);
 /**
  * @constant sameScoresPriority The weight given to match players with
  * equal scores. This gets muliplied against a ratio taken from the distance
@@ -24,69 +25,50 @@ const avoidMeetingTwicePriority = 20;
  * scoring 0, 1, 2, and 3, and if a player scoring 1 gets compared with a
  * player scoring 3, then their `sameScoresPriority` will be reduced by 50%.
  * (`(3 - 1) / 4 = 0.5`) (USCF § 27A2)
- * @type {number}
  */
-const sameScoresPriority = 16;
+const sameScores = priority(16);
+
 /**
  * @constant differentHalfPriority The weight given to match players in lower
  * versus upper halves. This is only applied to players being matched within
  * the same score group. (USCF § 27A3)
- * @type {number}
  */
-const differentHalfPriority = 2;
+const differentHalf = priority(2);
 /**
  * @constant differentDueColorPriority The weight given to match players with
  * opposite due colors. (USCF § 27A4 and § 27A5)
- * @type {number}
  */
-const differentDueColorPriority = 1;
-// /** @type {number} */
-// const maxPriority = (
-//     avoidMeetingTwicePriority
-//     + sameScoresPriority
-//     + differentHalfPriority
-//     + differentDueColorPriority
-// );
+const differentDueColor = priority(1);
 
+const maxPriority = pipe(
+    add(differentHalf(false)),    // TODO: this is temporarily false until the
+    add(differentDueColor(true)), // different-half calculator can be refactored
+    add(sameScores(true)),
+    add(avoidMeetingTwice(true))
+)(0);
+export {maxPriority};
 
 /**
- * Create an array of blossom-compatible weighted matchups. This returns
- * an array of each potential match, formatted like so: [idOfPlayer1,
- * idOfPlayer2, priority]. A higher priority means a more likely matchup.
  * @param {PlayerStats} player1
  * @param {PlayerStats} player2
- * @param {number[]} scoreList
  * @returns {number}
  */
-export function calcPairIdeal(player1, player2, scoreList) {
-    let priority = 0;
-    let scoreDiff;
+export function calcPairIdeal(player1, player2) {
+    const scoreRatio = 1 / (Math.abs(player1.score - player2.score) + 1);
     const metBefore = player1.opponentHistory.includes(player2.id);
     const mustAvoid = player1.avoidList.includes(player2.id);
-    if (!metBefore && !mustAvoid) {
-        priority += avoidMeetingTwicePriority;
-    }
-    // Calculate the "distance" between their scores and multiply that
-    // against the `sameScoresPriority` constant.
-    scoreDiff = Math.abs(
-        scoreList.indexOf(player1.score)
-        - scoreList.indexOf(player2.score)
-    );
-    scoreDiff = (scoreList.length - scoreDiff) / scoreList.length;
-    priority += sameScoresPriority * scoreDiff;
-    // Only include `differentHalfPriority` if they're in the same
-    // score group.
-    if (player1.score === player2.score) {
-        if (player1.upperHalf !== player2.upperHalf) {
-            priority += differentHalfPriority;
-        }
-    }
-    if (player1.dueColor === null) {
-        priority += differentDueColorPriority;
-    } else if (player1.dueColor !== player2.dueColor) {
-        priority += differentDueColorPriority;
-    }
-    return Math.ceil(priority);
+    return pipe(
+        add(differentHalf(
+            player1.upperHalf !== player2.upperHalf
+            && player1.score === player2.score
+        )),
+        add(differentDueColor(
+            player1.dueColor === null
+            || player1.dueColor !== player2.dueColor
+        )),
+        add(sameScores(true) * scoreRatio), // is there a more elegant solution?
+        add(avoidMeetingTwice(!metBefore && !mustAvoid))
+    )(0);
 }
 
 /**
@@ -108,16 +90,17 @@ export default function pairPlayers(
 ) {
     /** @type {[number, number]} */
     let byeMatch;
-    let playerData = players.map((playerId) => (
+    const rawPlayerData = players.map((playerId) => (
         createPlayerStats(playerId, playerList, avoidList, roundList, roundId)
     ));
-    const scoreList = Array.from(new Set(playerData.map((p) => p.score)));
-    scoreList.sort();
     // Sort the data so matchups default to order by score and rating.
-    playerData.sort(
-        firstBy((p) => p.score, -1).thenBy((p) => p.rating, -1)
+    let playerData = sort(
+        firstBy((p) => p.score, -1).thenBy((p) => p.rating, -1),
+        rawPlayerData
     );
-    // If there's an odd number of players, time to assign a bye.
+    const rawScoreList = Array.from(new Set(rawPlayerData.map((p) => p.score)));
+    const scoreList = sort((a, b) => a - b, rawScoreList);
+    // If there's an odd number of players, it's time to assign a bye.
     if (playerData.length % 2 !== 0) {
         // Assign a bye to the lowest-rated player in the lowest score group.
         // (USCF § 29L2.)
@@ -135,7 +118,7 @@ export default function pairPlayers(
     // Determine which players are in the upper and lower halves of their score
     // groups.
     scoreList.forEach(function (score) {
-        let playersWithScore = playerData.filter((pd) => pd.score === score);
+        const playersWithScore = playerData.filter((pd) => pd.score === score);
         playersWithScore.sort((pd) => pd.rating).reverse();
         if (playersWithScore.length > 1) {
             splitAt(
@@ -155,7 +138,7 @@ export default function pairPlayers(
                 (player2) => [
                     player1.id,
                     player2.id,
-                    calcPairIdeal(player1, player2, scoreList)
+                    calcPairIdeal(player1, player2)
                 ]
             );
             return acc.concat(playerMatches);

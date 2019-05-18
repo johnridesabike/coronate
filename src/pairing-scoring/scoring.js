@@ -308,13 +308,15 @@ export function createStandingTree(methods, roundList, roundId = null) {
  * @returns {typeof WHITE | typeof BLACK?}
  */
 function dueColor(playerId, roundList, roundId = null) {
-    if (!roundList[roundId - 1]) {
+    const match = (
+        (roundId === null)
+        ? last(roundList)
+        : roundList[roundId - 1]
+    );
+    if (!match) {
         return null;
     }
-    const prevColor = playerMatchColor(
-        playerId,
-        roundList[roundId - 1]
-    );
+    const prevColor = playerMatchColor(playerId, match);
     return switchColor(prevColor);
 }
 
