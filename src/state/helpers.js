@@ -5,7 +5,6 @@
  * @returns {T}
  */
 export function localStorageOrDefault(key, defaultValue) {
-    return defaultValue;
     if (process.env.NODE_ENV === "test") {
         return defaultValue; // don't store values during tests
     }
