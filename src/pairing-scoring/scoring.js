@@ -346,7 +346,8 @@ export function createPlayerStats(
         opponentHistory: getPlayersByOpponent(playerId, roundList, roundId),
         upperHalf: false,
         avoidList: getPlayerAvoidList(playerId, avoidList),
-        hasHadBye: hasHadBye(playerId, roundList, roundId)
+        hasHadBye: hasHadBye(playerId, roundList, roundId),
+        isDueBye: false
     };
 }
 

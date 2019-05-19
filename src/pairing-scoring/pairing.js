@@ -1,5 +1,19 @@
 import {firstBy} from "thenby";
-import {splitAt, last, pipe, add, sort} from "ramda";
+import {
+    add,
+    assoc,
+    filter,
+    findLastIndex,
+    lensIndex,
+    map,
+    pipe,
+    over,
+    reverse,
+    splitAt,
+    sort,
+    T,
+    view
+} from "ramda";
 import blossom from "edmonds-blossom";
 import {createPlayerStats} from "./scoring";
 import {DUMMY_ID} from "./constants";
@@ -73,6 +87,61 @@ export function calcPairIdeal(player1, player2) {
 }
 
 /**
+ * Determine which players are in the upper and lower halves of their score
+ * groups.
+ * @param {PlayerStats[]} playerStatsList
+ */
+function setUpperHalves(playerStatsList) {
+    /** @param {any[]} list */
+    const splitInHalf = (list) => splitAt(list.length / 2, list);
+    return playerStatsList.reduce(
+        /** @param {typeof playerStatsList} acc */
+        function (acc, player, ignore, src) {
+            const upperHalfIds = pipe(
+                // @ts-ignore
+                filter((a) => a.score === player.score),
+                sort((a, b) => b.rating - a.rating),
+                splitInHalf,
+                view(lensIndex(0)),
+                map((a) => a.id)
+            )(src);
+            if (upperHalfIds.includes(player.id)) {
+                return acc.concat([assoc("upperHalf", true, player)]);
+            } else {
+                return acc.concat([assoc("upperHalf", false, player)]);
+            }
+        },
+        []
+    );
+}
+
+/**
+ * @param {PlayerStats[]} playerStatsList
+ */
+function setByePlayer(playerStatsList) {
+    // if the list is even, just return it.
+    if (playerStatsList.length % 2 === 0) {
+        return playerStatsList;
+    }
+    // Assign a bye to the lowest-rated player in the lowest score group.
+    // Because the list is sorted, the last player is the lowest.
+    // (USCF § 29L2.)
+    const indexOfDueBye = findLastIndex((p) => !p.hasHadBye, playerStatsList);
+    // In the impossible situation that *everyone* has played a bye round
+    // previously, then just pick the last player.
+    const index = (
+        (indexOfDueBye === -1)
+        ? findLastIndex(T, playerStatsList)
+        : indexOfDueBye
+    );
+    return over(
+        lensIndex(index),
+        assoc("isDueBye", true),
+        playerStatsList
+    );
+}
+
+/**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
@@ -89,49 +158,25 @@ export default function pairPlayers(
     playerList,
     avoidList
 ) {
-    /** @type {[number, number]} */
-    let byeMatch;
-    const rawPlayerData = players.map((playerId) => (
-        createPlayerStats(playerId, playerList, avoidList, roundList, roundId)
-    ));
-    // Sort the data so matchups default to order by score and rating.
-    let playerData = sort(
-        firstBy((p) => p.score, -1).thenBy((p) => p.rating, -1),
-        rawPlayerData
-    );
-    const rawScoreList = Array.from(new Set(rawPlayerData.map((p) => p.score)));
-    const scoreList = sort((a, b) => a - b, rawScoreList);
-    // If there's an odd number of players, it's time to assign a bye.
-    if (playerData.length % 2 !== 0) {
-        // Assign a bye to the lowest-rated player in the lowest score group.
-        // (USCF § 29L2.)
-        // filter out players who have had a bye already.
-        let byePlayerData = last(playerData.filter((p) => !p.hasHadBye));
-        // In the impossible situation that *everyone* has played a bye round
-        // previously, then just pick the last player.
-        if (!byePlayerData) {
-            byePlayerData = last(playerData);
-        }
-        byeMatch = [byePlayerData.id, DUMMY_ID];
-        // Remove the bye'd player from the list so they won't be matched again.
-        playerData = playerData.filter((p) => p !== byePlayerData);
-    }
-    // Determine which players are in the upper and lower halves of their score
-    // groups.
-    scoreList.forEach(function (score) {
-        const playersWithScore = playerData.filter((pd) => pd.score === score);
-        playersWithScore.sort((pd) => pd.rating).reverse();
-        if (playersWithScore.length > 1) {
-            splitAt(
-                playersWithScore.length / 2,
-                playersWithScore
-            )[0].forEach(function (playerDatum) {
-                playerDatum.upperHalf = true;
-            });
-        }
-    });
+    const playerStatsList = pipe(
+        map((id) => (
+            createPlayerStats(id, playerList, avoidList, roundList, roundId)
+        )),
+        // Sort the data so matchups default to order by score and rating.
+        sort(
+            firstBy(
+                (a, b) => b.score - a.score
+            ).thenBy(
+                (a, b) => b.rating - a.rating
+            )
+        ),
+        setUpperHalves,
+        setByePlayer
+    )(players);
     // Turn the data into blossom-compatible input.
-    const potentialMatches = playerData.reduce(
+    const potentialMatches = playerStatsList.filter(
+        (p) => !p.isDueBye
+    ).reduce(
         /** @param {number[][]} acc */
         function (acc, player1, ignore, src) {
             const playerMatches = src.filter(
@@ -158,16 +203,16 @@ export default function pairPlayers(
             // Filter out unmatched players. Blossom will automatically include
             // their missing IDs in its results.
             if (p1Id !== -1) {
-                const p1 = playerData.filter((p) => p.id === p1Id)[0];
-                const p2 = playerData.filter((p) => p.id === p2Id)[0];
+                const p1 = playerStatsList.filter((p) => p.id === p1Id)[0];
+                const p2 = playerStatsList.filter((p) => p.id === p2Id)[0];
                 const ideal = potentialMatches.filter(
                     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 )[0][2];
-                const matched = acc.map((pair) => pair[0]);
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
+                const matched = acc.map((pair) => pair[0]);
                 if (!matched.includes(p1) && !matched.includes(p2)) {
-                    acc.push([p1, p2, ideal]);
+                    return acc.concat([[p1, p2, ideal]]);
                 }
             }
             return acc;
@@ -175,33 +220,34 @@ export default function pairPlayers(
         []
     );
     // Sort by net score and rating for board placement.
-    reducedResults.sort(
+    const sortedResults = sort(
         firstBy(
-            /** @param {[PlayerStats, PlayerStats, number]} pair */
             (pair) => pair[0].score + pair[1].score,
             -1
         ).thenBy(
-            /** @param {[PlayerStats, PlayerStats, number]} pair */
             (pair) => pair[0].rating + pair[1].rating,
             -1
-        )
+        ),
+        reducedResults
     );
     // Turn the results into new match objects.
-    const matches = reducedResults.map(
+    const matches = sortedResults.map(
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
             // const ideal = pair[2];
             const match = [player1.id, player2.id];
             if (player1.colorBalance < player2.colorBalance) {
-                match.reverse();
+                // match.reverse();
+                return reverse(match);
             }
             return match;
         }
     );
     // The bye match always gets added last so the the numbering isn't affected.
-    if (byeMatch) {
-        matches.push(byeMatch);
+    const byePlayer = playerStatsList.filter((p) => p.isDueBye)[0];
+    if (byePlayer) {
+        return matches.concat([[byePlayer.id, DUMMY_ID]]);
     }
     return matches;
 }

@@ -10,7 +10,8 @@ export interface PlayerStats {
     upperHalf: boolean,
     rating: number,
     avoidList: number[],
-    hasHadBye: boolean
+    hasHadBye: boolean,
+    isDueBye: boolean
 }
 export interface Standing {
     id: number,
