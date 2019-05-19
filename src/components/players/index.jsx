@@ -1,10 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import PlayerInfo from "./info-box";
 import PlayerList from "./list";
 
-/**
- * @param {Object} props
- */
 export default function Players(props) {
     return (
         <div>
@@ -12,5 +10,9 @@ export default function Players(props) {
         </div>
     );
 }
+Players.propTypes = {
+    children: PropTypes.node,
+    path: PropTypes.string
+};
 
 export {PlayerInfo, PlayerList};

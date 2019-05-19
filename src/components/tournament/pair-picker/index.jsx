@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import numeral from "numeral";
 import SelectList  from "./pair-picker";
 import Stage from "./stage";
@@ -7,11 +8,7 @@ import {PanelContainer, Panel} from "../../utility";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {usePlayers, useTournament} from "../../../state";
 import {calcPairIdeal, maxPriority} from "../../../pairing-scoring/pairing";
-/**
- * @param {Object} props
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- */
+
 export default function PairPicker({tourneyId, roundId}) {
     /** @type {[number, number]} */
     const defaultPlayers = [null, null];
@@ -79,3 +76,7 @@ export default function PairPicker({tourneyId, roundId}) {
         </PanelContainer>
     );
 }
+PairPicker.propTypes = {
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number
+};

@@ -1,18 +1,12 @@
 // this component should eventually replace player-match-info.jsx
 import React from "react";
+import PropTypes from "prop-types";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useTournament, usePlayers} from "../../../state";
-
 /**
  * @typedef {import("../../../factory-types").Match} Match
  */
 
-/**
- * @param {Object} props
- * @param {number} props.playerId
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- */
 export default function PlayerInfo({playerId, tourneyId, roundId}) {
     const [{roundList}] = useTournament(tourneyId);
     const {playerState, getPlayer} = usePlayers();
@@ -66,3 +60,8 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         </dl>
     );
 }
+PlayerInfo.propTypes = {
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number,
+    playerId: PropTypes.number
+};

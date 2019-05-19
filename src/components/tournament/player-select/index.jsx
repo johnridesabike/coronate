@@ -1,13 +1,11 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Selecting from "./selecting";
 import {useTournament, usePlayers} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
 import {hasHadBye} from "../../../pairing-scoring/scoring";
 
-/**
- * @param {Object} props
- */
 export default function PlayerSelect({tourneyId}) {
     // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId);
@@ -101,3 +99,7 @@ export default function PlayerSelect({tourneyId}) {
         </PanelContainer>
     );
 }
+PlayerSelect.propTypes = {
+    path: PropTypes.string,
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+};

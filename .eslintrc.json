@@ -4,7 +4,7 @@
         "plugin:jsx-a11y/recommended",
         "plugin:ramda/recommended"
     ],
-    "plugins": ["jsx-a11y", "ramda", "fp"],
+    "plugins": ["jsx-a11y", "ramda", "fp", "react"],
     "rules": {
         "max-len": [
             "warn", {
@@ -36,6 +36,7 @@
         "arrow-parens": "warn",
         "arrow-body-style": ["warn", "never"],
         "no-unused-expressions": "error",
+        "react/prop-types": [2],
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",
@@ -46,7 +47,8 @@
                 "exceptions": [
                     {"object": "document"},
                     {"object": "window"},
-                    {"object": "event"}
+                    {"object": "event"},
+                    {"property": "propTypes"}
                 ]
             }
         ]

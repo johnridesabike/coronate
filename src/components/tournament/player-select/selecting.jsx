@@ -1,13 +1,11 @@
 import React from "react";
+import PropTypes from "prop-types";
 import NewPlayer from "../../players/new-player";
 import {useTournament, usePlayers} from "../../../state";
 
-/**
- * @param {Object} props
- */
 export default function Selecting({tourneyId}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId);
+    // // eslint-disable-next-line fp/no-mutation
+    // tourneyId = Number(tourneyId);
     const [{players}, dispatch] = useTournament(tourneyId);
     const {playerState, getPlayer} = usePlayers();
     /** @param {React.ChangeEvent<HTMLInputElement>} event */
@@ -86,3 +84,6 @@ export default function Selecting({tourneyId}) {
         </div>
     );
 }
+Selecting.propTypes = {
+    tourneyId: PropTypes.number
+};

@@ -1,8 +1,5 @@
 import React from "react";
 
-/**
- * @param {Object} props
- */
 const About = (props) => (
     <p data-testid="about">
         This is an early, proof-of-concept, demo of a

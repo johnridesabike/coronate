@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Edit from "react-feather/dist/icons/edit";
@@ -13,19 +14,6 @@ import PlayerMatchInfo from "./player-match-info";
 import {winnerSelect} from "./round.module.css";
 import "@reach/dialog/styles.css";
 
-/**
- * @typedef {import("../../../factory-types").Match} Match
- */
-
-/**
- * @param {Object} props
- * @param {number} props.pos
- * @param {Match} props.match
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- * @param {string} props.selectedMatch
- * @param {React.Dispatch<React.SetStateAction<string>>} props.setSelectedMatch
- */
 export default function MatchRow({
     pos,
     match,
@@ -58,9 +46,6 @@ export default function MatchRow({
         + " "
         + getPlayer(match.players[1]).lastName
     );
-    /**
-     * @param {React.FocusEvent<HTMLSelectElement>} event
-     */
     function setMatchResult(event) {
         /** @type {[number, number]} */
         const result = (function () {
@@ -226,3 +211,11 @@ export default function MatchRow({
         </tr>
     );
 }
+MatchRow.propTypes = {
+    pos: PropTypes.number,
+    match: PropTypes.object,
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number,
+    selectedMatch: PropTypes.string,
+    setSelectedMatch: PropTypes.func
+};

@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import numeral from "numeral";
 import dashify from "dashify";
 import {defaultTo} from "ramda";
+import PropTypes from "prop-types";
 import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
 import {useTournament, usePlayers} from "../../state";
 import {
@@ -10,10 +11,6 @@ import {
 } from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
 
-/**
- * @param {Object} props
- * @param {number} props.tourneyId
- */
 function ScoreTable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
@@ -82,11 +79,10 @@ function ScoreTable({tourneyId}) {
         </table>
     );
 }
+ScoreTable.propTypes = {
+    tourneyId: PropTypes.number.isRequired
+};
 
-/**
- * @param {Object} props
- * @param {number} props.tourneyId
- */
 function SelectTieBreaks({tourneyId}) {
     const [{tieBreaks}, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);
@@ -186,10 +182,10 @@ function SelectTieBreaks({tourneyId}) {
         </div>
     );
 }
+SelectTieBreaks.propTypes = {
+    tourneyId: PropTypes.number.isRequired
+};
 
-/**
- * @param {Object} props
- */
 const Scores = ({tourneyId}) => (
     <Tabs>
         <TabList>
@@ -206,5 +202,9 @@ const Scores = ({tourneyId}) => (
         </TabPanels>
     </Tabs>
 );
+Scores.propTypes = {
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    path: PropTypes.string
+};
 
 export default Scores;

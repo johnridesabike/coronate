@@ -1,6 +1,7 @@
 // TODO: This component is in need of a major cleanup. I made this way too
 // complex and fragile.
 import React, {useMemo} from "react";
+import PropTypes from "prop-types";
 import numeral from "numeral";
 import {assoc} from "ramda";
 import X from "react-feather/dist/icons/x";
@@ -15,9 +16,6 @@ import style from "./scores.module.css";
  * @typedef {import("../../pairing-scoring").Standing} Standing
  */
 
-/**
- * @param {Object} props
- */
 export default function Crosstable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
     const {getPlayer} = usePlayers();
@@ -112,3 +110,7 @@ export default function Crosstable({tourneyId}) {
         </table>
     );
 }
+Crosstable.propTypes = {
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    path: PropTypes.string
+};

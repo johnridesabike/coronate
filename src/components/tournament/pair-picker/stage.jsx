@@ -1,4 +1,5 @@
 import React, {Fragment} from "react";
+import PropTypes from "prop-types";
 import {set, lensIndex} from "ramda";
 import Repeat from "react-feather/dist/icons/repeat";
 import Check from "react-feather/dist/icons/check";
@@ -6,13 +7,6 @@ import UserMinus from "react-feather/dist/icons/user-minus";
 import {useTournament, usePlayers, useOptions} from "../../../state";
 import {WHITE, BLACK} from "../../../pairing-scoring/constants";
 
-/**
- * @param {Object} props
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- * @param {[number, number]} props.stagedPlayers
- * @param {React.Dispatch<React.SetStateAction<[number, number]>>} props.setStagedPlayers
- */
 export default function Stage({
     tourneyId,
     roundId,
@@ -85,3 +79,9 @@ export default function Stage({
         </div>
     );
 }
+Stage.propTypes = {
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number,
+    stagedPlayers: PropTypes.arrayOf(PropTypes.number),
+    setStagedPlayers: PropTypes.func
+};

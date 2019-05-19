@@ -5,9 +5,6 @@ import defaultPlayers from "../state/demo-players.json";
 import defaultOptions from "../state/demo-options.json";
 import defaultTourneys from "../state/demo-tourney.json";
 
-/**
- * @param {Object} props
- */
 export function Options(props) {
     const [tourneys, tourneysDispatch] = useTournaments();
     const [options, optionsDispatch] = useOptions();
@@ -31,14 +28,12 @@ export function Options(props) {
         playerDispatch({type: "LOAD_STATE", state: data.playerState});
         window.alert("Data loaded!");
     }
-    /** @param {React.FormEvent<HTMLFormElement>} event */
     function handleText(event) {
         event.preventDefault();
         /** @type {typeof exportData} */
         const importData = JSON.parse(text);
         loadData(importData);
     }
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
     function handleFile(event) {
         event.preventDefault();
         const reader = new FileReader();
@@ -54,7 +49,6 @@ export function Options(props) {
         reader.readAsText(event.currentTarget.files[0]);
         event.currentTarget.value = ""; // so the filename won't linger onscreen
     }
-    /** @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event */
     function reloadDemoData(event) {
         event.preventDefault();
         loadData({

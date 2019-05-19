@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {Link} from "@reach/router";
 import {usePlayers} from "../state";
 import styles from "./utility.module.css";
@@ -8,28 +9,30 @@ import {DUMMY_ID} from "../pairing-scoring/constants";
  * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
  */
 
-/** @param {{children: JSX.Element | string, action: Action}} props */
 export const Button = ({children, action}) => (
     <button onClick={action}>
         {children}
     </button>
 );
+Button.propTypes = {
+    children: PropTypes.node.isRequired,
+    action: PropTypes.func.isRequired
+};
 
-/** @param {{action: Action}} action */
 export const BackButton = ({action}) => (
     <Button action={action}>&lt; Back</Button>
 );
+BackButton.propTypes = {
+    action: PropTypes.func.isRequired
+};
 
-/** @param {{action: Action}} action */
 export const OpenButton = ({action}) => (
     <Button action={action}>Open &gt;</Button>
 );
+OpenButton.propTypes = {
+    action: PropTypes.func.isRequired
+};
 
-/**
- * @param {object} props
- * @param {React.ReactNode} props.children
- * @param {React.CSSProperties} [props.style]
- */
 export function Panel({children, style}) {
     return (
         <div style={{...style}} className={styles.panel}>
@@ -37,11 +40,11 @@ export function Panel({children, style}) {
         </div>
     );
 }
+Panel.propTypes = {
+    children: PropTypes.node.isRequired,
+    style: PropTypes.object
+};
 
-/**
- *
- * @param {object} props
- */
 export function PanelContainer(props) {
     return (
         <div {...props} className={styles.panels}>
@@ -49,10 +52,10 @@ export function PanelContainer(props) {
         </div>
     );
 }
+PanelContainer.propTypes = {
+    children: PropTypes.node.isRequired
+};
 
-/**
- * @param {Object} props
- */
 export function PlayerLink({id, firstName, lastName}) {
     const {getPlayer} = usePlayers();
     if (id === DUMMY_ID) {
@@ -70,3 +73,8 @@ export function PlayerLink({id, firstName, lastName}) {
         </Link>
     );
 }
+PlayerLink.propTypes = {
+    id: PropTypes.number.isRequired,
+    firstName: PropTypes.bool,
+    lastName: PropTypes.bool
+};

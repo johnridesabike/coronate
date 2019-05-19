@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import PropTypes from "prop-types";
 import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
 import List from "react-feather/dist/icons/list";
 import Users from "react-feather/dist/icons/users";
@@ -6,9 +7,6 @@ import Round from "./round";
 import PairPicker from "../pair-picker";
 import {useRound} from "../../../state";
 
-/**
- * @param {Object} props
- */
 export default function Index({tourneyId, roundId}) {
     // eslint-disable-next-line fp/no-mutation
     tourneyId = Number(tourneyId); // reach router passes a string instead
@@ -51,3 +49,8 @@ export default function Index({tourneyId, roundId}) {
         </Tabs>
     );
 }
+Index.propTypes = {
+    tourneyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    path: PropTypes.string
+};

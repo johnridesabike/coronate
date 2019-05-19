@@ -1,17 +1,11 @@
 import React, {useMemo, useState, useEffect} from "react";
+import PropTypes from "prop-types";
 import numeral from "numeral";
-// import {Link} from "@reach/router";
-// import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import Trash from "react-feather/dist/icons/trash-2";
 import {getPlayerAvoidList} from "../../pairing-scoring/helpers";
 import {kFactor} from "../../pairing-scoring/scoring";
 import {usePlayers} from "../../state";
 
-/**
- * @param {Object} props
- * @param {string | number} [props.playerId]
- * @param {string} [props.path]
- */
 export default function PlayerInfoBox(props) {
     const playerId = Number(props.playerId);
     const {playerState, playerDispatch, getPlayer} = usePlayers();
@@ -186,3 +180,7 @@ ${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
         </div>
     );
 }
+PlayerInfoBox.propTypes = {
+    playerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    path: PropTypes.string
+};

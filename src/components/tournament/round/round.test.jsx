@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
 import PlayerInfoBox from "../../players/info-box";
@@ -22,6 +23,9 @@ const AllTheProviders = ({children}) => (
         </PlayersProvider>
     </OptionsProvider>
 );
+AllTheProviders.propTypes = {
+    children: PropTypes.node
+};
 
 const batmanInfo = (
     <PlayerInfoBox playerId={0} />

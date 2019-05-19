@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import {set, lensIndex, append} from "ramda";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
@@ -7,13 +8,6 @@ import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
 import {WHITE, BLACK, DUMMY_ID} from "../../../pairing-scoring/constants";
 
-/**
- * @param {Object} props
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- * @param {[number, number]} props.stagedPlayers
- * @param {React.Dispatch<React.SetStateAction<[number, number]>>} props.setStagedPlayers
- */
 export default function PairPicker({
     tourneyId,
     roundId,
@@ -92,3 +86,9 @@ export default function PairPicker({
         </div>
     );
 }
+PairPicker.propTypes = {
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number,
+    stagedPlayers: PropTypes.arrayOf(PropTypes.number),
+    setStagedPlayers: PropTypes.func
+};

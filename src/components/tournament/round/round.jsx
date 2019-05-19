@@ -1,19 +1,14 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import Repeat from "react-feather/dist/icons/repeat";
 import Trash from "react-feather/dist/icons/trash-2";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import MatchRow from "./match-row";
-import {PanelContainer, Panel} from "../../utility";
 import {getById, getIndexById} from "../../../pairing-scoring/helpers";
 import {useRound, usePlayers} from "../../../state";
 import style from "./round.module.css";
 
-/**
- * @param {Object} props
- * @param {number} props.roundId
- * @param {number} props.tourneyId
- */
 export default function Round({roundId, tourneyId}) {
     const {matchList, dispatch} = useRound(tourneyId, roundId);
     const {playerDispatch, getPlayer} = usePlayers();
@@ -63,81 +58,81 @@ export default function Round({roundId, tourneyId}) {
         dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
     }
     return (
-        <PanelContainer data-testid={"round-" + roundId}>
-            <Panel>
-                <div className={style.toolbar}>
-                    <button
-                        className="danger iconButton"
-                        onClick={() => unMatch(selectedMatch)}
-                        disabled={selectedMatch === null}
-                    >
-                        <Trash /> Unmatch
-                    </button>
-                    <button
-                        className="iconButton"
-                        onClick={() => swapColors(selectedMatch)}
-                        disabled={selectedMatch === null}
-                    >
-                        <Repeat /> Swap colors
-                    </button>
-                    <button
-                        className="iconButton"
-                        onClick={() => moveMatch(selectedMatch, -1)}
-                        disabled={selectedMatch === null}
-                    >
-                        <ArrowUp /> Move up
-                    </button>
-                    <button
-                        className="iconButton"
-                        onClick={() => moveMatch(selectedMatch, 1)}
-                        disabled={selectedMatch === null}
-                    >
-                        <ArrowDown/> Move down
-                    </button>
-                </div>
-                {(matchList.length === 0) &&
-                    <p>No players matched yet.</p>
+        <div>
+            <div className={style.toolbar}>
+                <button
+                    className="danger iconButton"
+                    onClick={() => unMatch(selectedMatch)}
+                    disabled={selectedMatch === null}
+                >
+                    <Trash /> Unmatch
+                </button>
+                <button
+                    className="iconButton"
+                    onClick={() => swapColors(selectedMatch)}
+                    disabled={selectedMatch === null}
+                >
+                    <Repeat /> Swap colors
+                </button>
+                <button
+                    className="iconButton"
+                    onClick={() => moveMatch(selectedMatch, -1)}
+                    disabled={selectedMatch === null}
+                >
+                    <ArrowUp /> Move up
+                </button>
+                <button
+                    className="iconButton"
+                    onClick={() => moveMatch(selectedMatch, 1)}
+                    disabled={selectedMatch === null}
+                >
+                    <ArrowDown/> Move down
+                </button>
+            </div>
+            {(matchList.length === 0) &&
+                <p>No players matched yet.</p>
+            }
+            <table className={style.table}>
+                {(matchList.length > 0) &&
+                    <caption>Round {roundId + 1} results</caption>
                 }
-                <table className={style.table}>
+                <tbody>
                     {(matchList.length > 0) &&
-                        <caption>Round {roundId + 1} results</caption>
+                        <tr>
+                            <th className="row__id" scope="col">
+                                #
+                            </th>
+                            <th className="row__player" scope="col">
+                                White
+                            </th>
+                            <th className="row__player" scope="col">
+                                Black
+                            </th>
+                            <th className="row__result" scope="col">
+                                Result
+                            </th>
+                            <th className="row__controls" scope="col">
+                                Controls
+                            </th>
+                        </tr>
                     }
-                    <tbody>
-                        {(matchList.length > 0) &&
-                            <tr>
-                                <th className="row__id" scope="col">
-                                    #
-                                </th>
-                                <th className="row__player" scope="col">
-                                    White
-                                </th>
-                                <th className="row__player" scope="col">
-                                    Black
-                                </th>
-                                <th className="row__result" scope="col">
-                                    Result
-                                </th>
-                                <th className="row__controls" scope="col">
-                                    Controls
-                                </th>
-                            </tr>
-                        }
-                        {matchList.map((match, pos) => (
-                            <MatchRow
-                                key={match.id}
-                                pos={pos}
-                                match={match}
-                                tourneyId={tourneyId}
-                                roundId={roundId}
-                                selectedMatch={selectedMatch}
-                                setSelectedMatch={setSelectedMatch}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-            </Panel>
-            <Panel>
-            </Panel>
-        </PanelContainer>
+                    {matchList.map((match, pos) => (
+                        <MatchRow
+                            key={match.id}
+                            pos={pos}
+                            match={match}
+                            tourneyId={tourneyId}
+                            roundId={roundId}
+                            selectedMatch={selectedMatch}
+                            setSelectedMatch={setSelectedMatch}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
+Round.propTypes = {
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number
+};

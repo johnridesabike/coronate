@@ -1,20 +1,13 @@
 import React from "react";
+import PropTypes from "prop-types";
 import numeral from "numeral";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useRound, usePlayers} from "../../../state";
 import {getById} from "../../../pairing-scoring/helpers";
-
 /**
- * @typedef {import("../../..").Match} Match
+ * @typedef {import("../../../factory-types").Match} Match
  */
 
-/**
- * @param {Object} props
- * @param {string} props.matchId
- * @param {number} props.color
- * @param {number} props.tourneyId
- * @param {number} props.roundId
- */
 export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
     const {tourney, matchList} = useRound(tourneyId, roundId);
     const {playerState, getPlayer} = usePlayers();
@@ -69,3 +62,9 @@ export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
         </dl>
     );
 }
+PlayerMatchInfo.propTypes = {
+    matchId: PropTypes.string,
+    color: PropTypes.number,
+    tourneyId: PropTypes.number,
+    roundId: PropTypes.number
+};

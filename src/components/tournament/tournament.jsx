@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo} from "react";
+import PropTypes from "prop-types";
 import Tooltip from "@reach/tooltip";
 import {Link} from "@reach/router";
 import last from "ramda/src/last";
@@ -14,12 +15,8 @@ import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 import styles from "./tournament.module.css";
 
-/**
- * @param {Object} props
- */
-export default function Tournament({tourneyId, children, navigate}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId); // reach router passes a string instead.
+export default function Tournament({tourneyId, children,navigate}) {
+    tourneyId = Number(tourneyId);
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
     const {playerState, getPlayer, playerDispatch} = usePlayers();
@@ -184,3 +181,9 @@ export default function Tournament({tourneyId, children, navigate}) {
         </div>
     );
 }
+Tournament.propTypes = {
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    children: PropTypes.node,
+    navigate: PropTypes.func,
+    path: PropTypes.string
+};

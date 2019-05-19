@@ -23,6 +23,7 @@
     "hash-source": "^1.0.4",
     "jest-dom": "^3.2.2",
     "numeral": "^2.0.6",
+    "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -40,7 +41,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "sourcemaps": "source-map-explorer './build/static/js/*'",
-    "lint": "eslint ./src/**/*.js ./src/**/*.jsx"
+    "lint": "eslint --ext .jsx,.js src/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -62,6 +63,7 @@
     "@types/react-tabs": "^2.3.1",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-ramda": "^2.5.1",
+    "eslint-plugin-react": "^7.13.0",
     "gh-pages": "^2.0.1"
   }
 }
