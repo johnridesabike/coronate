@@ -5,7 +5,7 @@ import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useRound, usePlayers} from "../../../state";
 import {getById} from "../../../pairing-scoring/helpers";
 /**
- * @typedef {import("../../../factory-types").Match} Match
+ * @typedef {import("../../../factory-types-old").Match} Match
  */
 
 export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {

@@ -3,18 +3,7 @@ import {BLACK, WHITE, DUMMY_ID} from "../pairing-scoring/constants";
 import {createMatch} from "../factories";
 import {getPlayerById} from "../pairing-scoring/helpers";
 import pairPlayers from "../pairing-scoring/pairing";
-/**
- * @typedef {import("../factory-types").Player} Player
- * @typedef {import("../factory-types").Tournament} Tournament
-*/
 
-/**
- * @param {Tournament} tourney
- * @param {number} roundId
- * @param {import("./dispatch").PlayerState} playerState
- * @param {number[]} unPairedPlayers
- * @param {number} byeValue
- */
 export function autoPair(
     tourney,
     playerState,
@@ -61,11 +50,6 @@ export function autoPair(
     );
 }
 
-/**
- * @param {Player[]} players
- * @param {number[]} pair
- * @param {number} byeValue
- */
 export function manualPair(players, pair, byeValue) {
     const getPlayer = curry(getPlayerById)(players);
     const match = createMatch({

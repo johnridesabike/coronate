@@ -1,37 +1,43 @@
-/**
- * @typedef {import("./factory-types").Match} Match
- * @typedef {import("./factory-types").Tournament} Tournament
- * @typedef {import("./factory-types").Player} Player
- */
+import t from "tcomb";
 
-/**
- *
- * @param {object} importObj
- * @returns {Match}
- */
+const Match = t.interface({
+    id: t.String,
+    players: t.tuple([t.Number, t.Number]),
+    result: t.tuple([t.Number, t.Number]),
+    origRating: t.tuple([t.Number, t.Number]),
+    newRating: t.tuple([t.Number, t.Number])
+}, "Match");
+export {Match};
+
 export function createMatch(importObj) {
-    return {
+    return Match({
         id: importObj.id,
         players: importObj.players,
         result: importObj.result || [0, 0],
         origRating: importObj.origRating,
         newRating: importObj.newRating
-    };
+    });
 }
 
-/**
- * @param {Object} importObj
- * @returns {Player}
- */
+const Player = t.interface({
+    id: t.Number,
+    firstName: t.String,
+    lastName: t.String,
+    rating: t.Number,
+    matchCount: t.Number,
+    type: t.String
+}, "Player");
+export {Player};
+
 export function createPlayer(importObj = {}) {
-    return {
+    return Player({
         id: importObj.id || 0,
         type: importObj.type || "person", // used for CSS styling etc.
         firstName: importObj.firstName || "",
         lastName: importObj.lastName || "",
         rating: importObj.rating || 0,
         matchCount: importObj.matchCount || 0
-    };
+    });
 }
 
 const dummyPlayer = createPlayer({
@@ -43,17 +49,27 @@ const dummyPlayer = createPlayer({
 Object.freeze(dummyPlayer);
 export {dummyPlayer};
 
+const RoundList = t.list(t.list(Match));
+export {RoundList};
 
-/**
- * @param {Object} importObj
- * @returns {Tournament}
- */
+const Tournament = t.interface({
+    name: t.String,
+    tieBreaks: t.list(t.Number),
+    byeQueue: t.list(t.Number),
+    players: t.list(t.Number),
+    roundList: t.list(t.list(Match))
+});
+export {Tournament};
+
 export function createTournament(importObj) {
-    return {
+    return Tournament({
         name: importObj.name || "",
         tieBreaks: importObj.tieBreaks || [0, 1, 2, 3],
         byeQueue: importObj.byeQueue || [],
         players: importObj.players || [],
         roundList: importObj.roundList || []
-    };
+    });
 }
+
+const AvoidList = t.list(t.tuple([t.Number, t.Number]));
+export {AvoidList};

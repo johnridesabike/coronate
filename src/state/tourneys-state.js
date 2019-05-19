@@ -29,7 +29,7 @@ import {autoPair, manualPair} from "./match-functions";
 import {createTournament} from "../factories";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../factory-types").Tournament} Tournament
+ * @typedef {import("../factory-types-old").Tournament} Tournament
  */
 
 /** @type {Tournament[]} */

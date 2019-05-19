@@ -31,7 +31,7 @@ import {createPlayer} from "../factories";
 import demoPlayers from "./demo-players.json";
 /**
  * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../factory-types").Player} Player
+ * @typedef {import("../factory-types-old").Player} Player
  * @typedef {import("./dispatch").PlayerAction} PlayerAction
  */
 

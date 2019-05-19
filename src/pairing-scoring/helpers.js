@@ -4,20 +4,23 @@ import {
     pipe,
     tail
 } from "ramda";
+import t from "tcomb";
 import {WHITE, BLACK, DUMMY_ID} from "./constants";
-import {createPlayer, dummyPlayer} from "../factories";
+import {createPlayer, dummyPlayer, RoundList} from "../factories";
+
+// @ts-ignore
+const ScoreCalculator = t.func(
+    [t.Number, RoundList, t.maybe(t.Number)],
+    t.Any
+);
+export {ScoreCalculator};
 
 /**
- * @typedef {import("./").ScoreCalculator} ScoreCalculator
  * @typedef {import("./").Standing} Standing
- * @typedef {import("../factory-types").Match} Match
- * @typedef {import("../factory-types").Player} Player
  */
 
 
 /**
- *
- * @param {Match} match
  * @returns {boolean}
  */
 function isBye(match) {
@@ -25,8 +28,6 @@ function isBye(match) {
 }
 
 /**
- *
- * @param {Match} match
  * @returns {boolean}
  */
 export function isNotBye(match) {
@@ -51,23 +52,22 @@ export function switchColor(color) {
     );
 }
 
-/**
- * @type {ScoreCalculator}
- * @returns {Match[]}
- */
-export function getMatchesByPlayer(playerId, roundList, roundId = null) {
-    const rounds = (
-        (roundId === null)
-        ? roundList
-        : roundList.slice(0, roundId + 1)
-    );
-    return rounds.reduce( // flatten the rounds to just the matches
-        (acc, round) => acc.concat(round),
-        []
-    ).filter(
-        (match) => match.players.includes(playerId)
-    );
-}
+const getMatchesByPlayer = ScoreCalculator.of(
+    function (playerId, roundList, roundId = null) {
+        const rounds = (
+            (roundId === null)
+            ? roundList
+            : roundList.slice(0, roundId + 1)
+        );
+        return rounds.reduce( // flatten the rounds to just the matches
+            (acc, round) => acc.concat(round),
+            []
+        ).filter(
+            (match) => match.players.includes(playerId)
+        );
+    }
+);
+export {getMatchesByPlayer};
 
 /**
  * Helper function.
@@ -91,7 +91,6 @@ export function areScoresEqual(standing1, standing2) {
 }
 
 /**
- * @param {Match[][]} roundList
  * @returns {number[]}
  */
 export function getAllPlayers(roundList) {
@@ -107,18 +106,20 @@ export function getAllPlayers(roundList) {
 
 /**
  * Get a list of all of a player's scores from each match.
- * @type {ScoreCalculator}
  * @returns {number[]} the list of scores
  */
-export function playerScoreList(playerId, roundList, roundId = null) {
-    return getMatchesByPlayer(
-        playerId,
-        roundList,
-        roundId
-    ).map(
-        (match) => match.result[match.players.indexOf(playerId)]
-    );
-}
+const playerScoreList = ScoreCalculator.of(
+    function (playerId, roundList, roundId = null) {
+        return getMatchesByPlayer(
+            playerId,
+            roundList,
+            roundId
+        ).map(
+            (match) => match.result[match.players.indexOf(playerId)]
+        );
+    }
+);
+export {playerScoreList};
 
 /** @type {(scores: number[]) => number[]} */
 // @ts-ignore
@@ -140,13 +141,6 @@ export function playerMatchColor(playerId, matchList) {
     );
 }
 
-
-
-/**
- * @param {Player[]} playerList
- * @param {number} id
- * @returns {Player}
- */
 export function getPlayerById(playerList, id) {
     if (id === DUMMY_ID) {
         return dummyPlayer;
@@ -179,10 +173,6 @@ export function getPlayerAvoidList(playerId, avoidList) {
     );
 }
 
-/**
- * @param {number[][]} avoidList
- * @param {Player[]} playerList
- */
 export function cleanAvoidList(avoidList, playerList) {
     const ids = playerList.map((p) => p.id);
     return avoidList.filter(
