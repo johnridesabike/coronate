@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
+import Icons from "../../icons";
 import Selecting from "./selecting";
 import {useTournament, usePlayers} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
@@ -16,7 +17,7 @@ export default function PlayerSelect({tourneyId}) {
         <PanelContainer>
             <Panel>
                 <button onClick={() => setIsSelecting(true)}>
-                    Edit player roster
+                    <Icons.Edit /> Edit player roster
                 </button>
                 <table>
                     <caption>Current roster</caption>

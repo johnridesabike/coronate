@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
-import List from "react-feather/dist/icons/list";
-import Users from "react-feather/dist/icons/users";
+import Icons from "../../icons";
 import Round from "./round";
 import PairPicker from "../pair-picker";
 import {useRound} from "../../../state";
@@ -27,9 +26,9 @@ export default function Index({tourneyId, roundId}) {
     return (
         <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
             <TabList>
-                <Tab><List/> Matches</Tab>
+                <Tab><Icons.List/> Matches</Tab>
                 <Tab disabled={unmatched.length === 0}>
-                    <Users/> Unmatched players
+                    <Icons.Users/> Unmatched players
                 </Tab>
             </TabList>
             <TabPanels>

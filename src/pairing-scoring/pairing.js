@@ -39,7 +39,7 @@ const avoidMeetingTwice = priority(20);
  * equal scores. This gets divided against the difference between each players'
  * scores, plus one. For example, players with scores `1` and `3` would have
  * this priority divided by `3`. Players with scores `0` and `3` would have this
- * priority divided by `4`. Players with equal scores would divide it by `1`, or
+ * priority divided by `4`. Players with equal scores would divide it by `1`,
  * leaving it unchanged. (USCF § 27A2)
  */
 const sameScores = divisiblePriority(16);
@@ -57,8 +57,8 @@ const differentHalf = priority(2);
 const differentDueColor = priority(1);
 
 const maxPriority = pipe(
-    add(differentHalf(true)),    // TODO: this is temporarily false until the
-    add(differentDueColor(true)), // different-half calculator can be refactored
+    add(differentHalf(true)),
+    add(differentDueColor(true)),
     add(sameScores(1)),
     add(avoidMeetingTwice(true))
 )(0);
@@ -106,28 +106,35 @@ export function setUpperHalves(playerStatsList) {
                 view(lensIndex(0)),
                 map((a) => a.id)
             )(src);
-            if (upperHalfIds.includes(player.id)) {
-                return acc.concat([assoc("upperHalf", true, player)]);
-            } else {
-                return acc.concat([assoc("upperHalf", false, player)]);
-            }
+            const isUpperHalf = upperHalfIds.includes(player.id);
+            return acc.concat([assoc("upperHalf", isUpperHalf, player)]);
         },
         []
     );
 }
 
 /**
+ * @param {number[]} byeQueue
  * @param {PlayerStats[]} playerStatsList
  */
-function setByePlayer(playerStatsList) {
+function setByePlayer(byeQueue, playerStatsList) {
     // if the list is even, just return it.
     if (playerStatsList.length % 2 === 0) {
         return playerStatsList;
     }
-    // Assign a bye to the lowest-rated player in the lowest score group.
-    // Because the list is sorted, the last player is the lowest.
-    // (USCF § 29L2.)
-    const indexOfDueBye = findLastIndex((p) => !p.hasHadBye, playerStatsList);
+    const hasNotHadBye = playerStatsList.filter(
+        (p) => !p.hasHadBye
+    ).map((p) => p.id);
+    const nextByeSignup = byeQueue.filter((id) => hasNotHadBye.includes(id))[0];
+    const indexOfDueBye = (
+        (nextByeSignup)
+        // Assign the bye to the next person who signed up.
+        ? findLastIndex((p) => p.id === nextByeSignup, playerStatsList)
+        // Assign a bye to the lowest-rated player in the lowest score group.
+        // Because the list is sorted, the last player is the lowest.
+        // (USCF § 29L2.)
+        : findLastIndex((p) => !p.hasHadBye, playerStatsList)
+    );
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
     const index = (
@@ -166,13 +173,15 @@ export function sortPlayersForPairing(playerStatsList) {
  * @param {number[]} players
  * @param {object[]} playerList
  * @param {number[][]} avoidList
+ * @param {number[]} byeQueue
  */
 export default function pairPlayers(
     players,
     roundId,
     roundList,
     playerList,
-    avoidList
+    avoidList,
+    byeQueue
 ) {
     const playerStatsList = pipe(
         map((id) => (
@@ -180,7 +189,7 @@ export default function pairPlayers(
         )),
         sortPlayersForPairing,
         setUpperHalves,
-        setByePlayer
+        (list) => setByePlayer(byeQueue, list)
     )(players);
     // Turn the data into blossom-compatible input.
     const potentialMatches = playerStatsList.filter(
@@ -238,15 +247,12 @@ export default function pairPlayers(
         )),
         reducedResults
     );
-    // Turn the results into new match objects.
     const matches = sortedResults.map(
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
-            // const ideal = pair[2];
             const match = [player1.id, player2.id];
             if (player1.colorBalance < player2.colorBalance) {
-                // match.reverse();
                 return reverse(match);
             }
             return match;

@@ -9,21 +9,26 @@ numeral.register("format", "half", {
     // @ts-ignore
     // eslint-disable-next-line no-unused-vars
     format: function (value, format, roundingFunction) {
-        /** @type {number | string} */
-        let whole = Math.floor(value);
-        /** @type {number | string} */
-        let remainder = value - whole;
-        if (remainder === 0.5) {
-            remainder = "½";
-        } else if (remainder === 0) {
-            remainder = "";
-        }
-        if (whole === 0 && remainder) {
-            whole = "";
-        }
-        // let output = numeral._.numberToFormat(value, format, roundingFunction);
-        // return output;
-        return String(whole) + remainder;
+        const whole = Math.floor(value);
+        const remainder = value - whole;
+        const fraction = (function () {
+            switch (remainder) {
+            case 0.25:
+                return "¼";
+            case 0.5:
+                return "½";
+            case 0.75:
+                return "¾";
+            default:
+                return "";
+            }
+        }());
+        const stringedWhole = (
+            (whole === 0 && remainder)
+            ? ""
+            : String(whole)
+        );
+        return stringedWhole + fraction;
     },
     /** @param {string} value */
     unformat: function (value) {

@@ -1,8 +1,7 @@
-import {curry} from "ramda";
-import {BLACK, WHITE} from "../pairing-scoring/constants";
-import {createMatch, dummyPlayer} from "../factories";
+import {curry, assoc} from "ramda";
+import {BLACK, WHITE, DUMMY_ID} from "../pairing-scoring/constants";
+import {createMatch} from "../factories";
 import {getPlayerById} from "../pairing-scoring/helpers";
-import {hasHadBye} from "../pairing-scoring/scoring";
 import pairPlayers from "../pairing-scoring/pairing";
 /**
  * @typedef {import("../factory-types").Player} Player
@@ -25,31 +24,13 @@ export function autoPair(
 ) {
     const roundList = tourney.roundList;
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const nextBye = tourney.byeQueue.filter(
-        (pId) => !hasHadBye(pId, roundList)
-    )[0];
-    let byeMatch = null;
-    if (nextBye >= 0) {
-        byeMatch = createMatch({
-            id: nextBye + "-" + dummyPlayer.id,
-            players: [nextBye, dummyPlayer.id],
-            origRating: [
-                getPlayer(nextBye).rating,
-                dummyPlayer.rating
-            ],
-            newRating: [
-                getPlayer(nextBye).rating,
-                dummyPlayer.rating
-            ]
-        });
-        unPairedPlayers = unPairedPlayers.filter((pId) => pId !== nextBye);
-    }
     const pairs = pairPlayers(
         unPairedPlayers,
         roundId,
         roundList,
         playerState.players,
-        playerState.avoid
+        playerState.avoid,
+        tourney.byeQueue
     );
     const newMatchList = pairs.map(
         (pair) => createMatch({
@@ -65,20 +46,19 @@ export function autoPair(
             ]
         })
     );
-    if (byeMatch) {
-        newMatchList.push(byeMatch);
-    }
-    // this covers manual bye matches and auto-paired bye matches
-    newMatchList.forEach(function (match) {
-        const dummy = match.players.indexOf(dummyPlayer.id);
-        if (dummy === BLACK) {
-            match.result[WHITE] = byeValue;
-        }
-        if (dummy === WHITE) {
-            match.result[BLACK] = byeValue;
-        }
-    });
-    return newMatchList;
+    return newMatchList.reduce(
+        // Set match results for bye matches
+        function (acc, match) {
+            if (match.players[WHITE] === DUMMY_ID) {
+                return acc.concat([assoc("result", [0, byeValue], match)]);
+            }
+            if (match.players[BLACK] === DUMMY_ID) {
+                return acc.concat([assoc("result", [byeValue, 0], match)]);
+            }
+            return acc.concat([match]);
+        },
+        []
+    );
 }
 
 /**
@@ -100,11 +80,11 @@ export function manualPair(players, pair, byeValue) {
             getPlayer(pair[BLACK]).rating
         ]
     });
-    if (pair[WHITE] === dummyPlayer.id) {
-        match.result = [0, byeValue];
+    if (pair[WHITE] === DUMMY_ID) {
+        return assoc("result", [0, byeValue], match);
     }
-    if (pair[BLACK] === dummyPlayer.id) {
-        match.result = [byeValue, 0];
+    if (pair[BLACK] === DUMMY_ID) {
+        return assoc("result", [byeValue, 0], match);
     }
     return match;
 }

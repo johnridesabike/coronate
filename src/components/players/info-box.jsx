@@ -1,7 +1,8 @@
 import React, {useMemo, useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import numeral from "numeral";
-import Trash from "react-feather/dist/icons/trash-2";
+import {Link} from "@reach/router";
+import Icons from "../icons";
 import {getPlayerAvoidList} from "../../pairing-scoring/helpers";
 import {kFactor} from "../../pairing-scoring/scoring";
 import {usePlayers} from "../../state";
@@ -72,6 +73,7 @@ export default function PlayerInfoBox(props) {
     }
     return (
         <div>
+            <Link to=".."><Icons.ChevronLeft /> Back</Link>
             <h2>
                 Profile for{" "}
                 {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
@@ -153,7 +155,7 @@ ${getPlayer(pId).lastName}`}
                             arial-label={`Remove 
 ${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
                         >
-                            <Trash />
+                            <Icons.Trash />
                         </button>
                     </li>
                 ))}

@@ -12,6 +12,7 @@
 
 .sidebar {
     grid-area: sidebar;
+    margin-right: 0.5em;
 }
 
 .sidebar ul {

@@ -3,6 +3,7 @@ import numeral from "numeral";
 import dashify from "dashify";
 import {defaultTo} from "ramda";
 import PropTypes from "prop-types";
+import Icons from "../icons";
 import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
 import {useTournament, usePlayers} from "../../state";
 import {
@@ -121,13 +122,13 @@ function SelectTieBreaks({tourneyId}) {
                     onClick={() => moveTb(-1)}
                     disabled={selectedTb === null}
                 >
-                    Move up
+                    <Icons.ArrowUp/> Move up
                 </button>
                 <button
                     onClick={() => moveTb(1)}
                     disabled={selectedTb === null}
                 >
-                    Move down
+                    <Icons.ArrowDown/> Move down
                 </button>
                 <button
                     onClick={() => setSelectedTb(null)}
@@ -189,8 +190,8 @@ SelectTieBreaks.propTypes = {
 const Scores = ({tourneyId}) => (
     <Tabs>
         <TabList>
-            <Tab>Scores</Tab>
-            <Tab>Edit tiebreak rules</Tab>
+            <Tab><Icons.List /> Scores</Tab>
+            <Tab><Icons.Settings /> Edit tiebreak rules</Tab>
         </TabList>
         <TabPanels>
             <TabPanel>

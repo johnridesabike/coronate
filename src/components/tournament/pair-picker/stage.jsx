@@ -1,9 +1,7 @@
 import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import {set, lensIndex} from "ramda";
-import Repeat from "react-feather/dist/icons/repeat";
-import Check from "react-feather/dist/icons/check";
-import UserMinus from "react-feather/dist/icons/user-minus";
+import Icons from "../../icons";
 import {useTournament, usePlayers, useOptions} from "../../../state";
 import {WHITE, BLACK} from "../../../pairing-scoring/constants";
 
@@ -43,7 +41,7 @@ export default function Stage({
                         {getPlayer(white).firstName}{" "}
                         {getPlayer(white).lastName}{" "}
                         <button onClick={() => unstage(WHITE)}>
-                            <UserMinus /> Remove
+                            <Icons.UserMinus /> Remove
                         </button>
                     </Fragment>
                 }
@@ -55,7 +53,7 @@ export default function Stage({
                         {getPlayer(black).firstName}{" "}
                         {getPlayer(black).lastName}{" "}
                         <button onClick={() => unstage(BLACK)}>
-                            <UserMinus /> Remove
+                            <Icons.UserMinus /> Remove
                         </button>
                     </Fragment>
                 }
@@ -68,13 +66,13 @@ export default function Stage({
                     stagedPlayers.every((id) => id === null)
                 }
             >
-                <Repeat/> Swap colors
+                <Icons.Repeat/> Swap colors
             </button>{" "}
             <button
                 onClick={match}
                 disabled={stagedPlayers.includes(null)}
             >
-                <Check/> Match selected
+                <Icons.Check/> Match selected
             </button>{" "}
         </div>
     );

@@ -1,9 +1,6 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
-import Repeat from "react-feather/dist/icons/repeat";
-import Trash from "react-feather/dist/icons/trash-2";
-import ArrowUp from "react-feather/dist/icons/arrow-up";
-import ArrowDown from "react-feather/dist/icons/arrow-down";
+import Icons from "../../icons";
 import MatchRow from "./match-row";
 import {getById, getIndexById} from "../../../pairing-scoring/helpers";
 import {useRound, usePlayers} from "../../../state";
@@ -65,28 +62,28 @@ export default function Round({roundId, tourneyId}) {
                     onClick={() => unMatch(selectedMatch)}
                     disabled={selectedMatch === null}
                 >
-                    <Trash /> Unmatch
+                    <Icons.Trash /> Unmatch
                 </button>
                 <button
                     className="iconButton"
                     onClick={() => swapColors(selectedMatch)}
                     disabled={selectedMatch === null}
                 >
-                    <Repeat /> Swap colors
+                    <Icons.Repeat /> Swap colors
                 </button>
                 <button
                     className="iconButton"
                     onClick={() => moveMatch(selectedMatch, -1)}
                     disabled={selectedMatch === null}
                 >
-                    <ArrowUp /> Move up
+                    <Icons.ArrowUp /> Move up
                 </button>
                 <button
                     className="iconButton"
                     onClick={() => moveMatch(selectedMatch, 1)}
                     disabled={selectedMatch === null}
                 >
-                    <ArrowDown/> Move down
+                    <Icons.ArrowDown /> Move down
                 </button>
             </div>
             {(matchList.length === 0) &&

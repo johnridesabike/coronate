@@ -1,8 +1,7 @@
 import React from "react";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
-import ChevronRight from "react-feather/dist/icons/chevron-right";
-import Trash from "react-feather/dist/icons/trash-2";
+import Icons from "../icons";
 import {usePlayers} from "../../state";
 import {PlayerLink} from "../utility";
 import NewPlayer from "./new-player";
@@ -53,7 +52,7 @@ export default function PlayerList(props) {
                                 // eslint-disable-next-line max-len
                                 aria-label={`Delete ${player.firstName} ${player.lastName}`}
                             >
-                                <Trash />
+                                <Icons.Trash />
                             </button>
                         </td>
                         <td>
@@ -62,7 +61,7 @@ export default function PlayerList(props) {
                                 <VisuallyHidden>
                                     {" "}{player.firstName} {player.lastName}
                                 </VisuallyHidden>
-                                {" "}<ChevronRight />
+                                {" "}<Icons.ChevronRight />
                             </Link>
                         </td>
                     </tr>

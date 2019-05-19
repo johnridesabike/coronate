@@ -2,9 +2,7 @@ import React, {useState} from "react";
 import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
-import Edit from "react-feather/dist/icons/edit";
-import Info from "react-feather/dist/icons/info";
-import Check from "react-feather/dist/icons/check";
+import Icons from "../../icons";
 import {PanelContainer, Panel} from "../../utility";
 import {calcNewRatings} from "../../../pairing-scoring/scoring";
 import {BLACK, WHITE, DUMMY_ID} from "../../../pairing-scoring/constants";
@@ -49,7 +47,7 @@ export default function MatchRow({
     function setMatchResult(event) {
         /** @type {[number, number]} */
         const result = (function () {
-            switch (event.currentTarget.value) {
+            switch (event.target.value) {
             case "WHITE":
                 return [1, 0];
             case "BLACK":
@@ -114,7 +112,7 @@ export default function MatchRow({
             >
                 {whiteName}{" "}
                 {resultCode === "WHITE" && (
-                    <span role="img" aria-label="Winner">
+                    <span role="img" aria-hidden>
                         🏆
                     </span>
                 )}
@@ -125,7 +123,7 @@ export default function MatchRow({
             >
                 {blackName}{" "}
                 {resultCode === "BLACK" && (
-                    <span role="img" aria-label="Winner">
+                    <span role="img" aria-hidden>
                         🏆
                     </span>
                 )}
@@ -160,7 +158,7 @@ export default function MatchRow({
                         onClick={() => setSelectedMatch(match.id)}
                         title="Edit match"
                     >
-                        <Edit />
+                        <Icons.Edit />
                     </button>
                 ) : (
                     <button
@@ -168,7 +166,7 @@ export default function MatchRow({
                         onClick={() => setSelectedMatch(null)}
                         title="End editing match"
                     >
-                        <Check />
+                        <Icons.Check />
                     </button>
                 )}
                 <button
@@ -176,7 +174,7 @@ export default function MatchRow({
                     onClick={() => setOpenModal(true)}
                     title="Open match information."
                 >
-                    <Info />
+                    <Icons.Info />
                     <Hidden>
                         View information for match:{" "}
                         {whiteName} versus {blackName}

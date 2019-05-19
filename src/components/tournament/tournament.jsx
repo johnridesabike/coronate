@@ -3,11 +3,7 @@ import PropTypes from "prop-types";
 import Tooltip from "@reach/tooltip";
 import {Link} from "@reach/router";
 import last from "ramda/src/last";
-import Check from "react-feather/dist/icons/check-circle";
-import Alert from "react-feather/dist/icons/alert-circle";
-import ChevronLeft from "react-feather/dist/icons/chevron-left";
-import Trash from "react-feather/dist/icons/trash-2";
-import Plus from "react-feather/dist/icons/plus";
+import Icons from "../icons";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../pairing-scoring/helpers";
 import {DUMMY_ID} from "../../pairing-scoring/constants";
@@ -117,7 +113,7 @@ export default function Tournament(props) {
             <div className={styles.header}>
                 <nav>
                     <Link to="/">
-                        <ChevronLeft/> Back
+                        <Icons.ChevronLeft/> Back
                     </Link>
                 </nav>
                 <h2>{name}</h2>
@@ -125,9 +121,21 @@ export default function Tournament(props) {
             <div className={styles.sidebar}>
                 <nav>
                     <ul>
-                        <li><Link to=".">Players</Link></li>
-                        <li><Link to="crosstable">Crosstable</Link></li>
-                        <li><Link to="scores">Score detail</Link></li>
+                        <li>
+                            <Link to=".">
+                                <Icons.Users /> Players
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="crosstable">
+                                <Icons.Layers /> Crosstable
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="scores">
+                                <Icons.List /> Score detail
+                            </Link>
+                        </li>
                     </ul>
                     <hr />
                     <ul>
@@ -147,15 +155,15 @@ export default function Tournament(props) {
                             onClick={newRound}
                             disabled={!isNewRoundReady}
                         >
-                            <Plus/> New round
+                            <Icons.Plus/> New round
                         </button>{" "}
                         <Tooltip label={tooltipText}>
                             <span className="helpIcon">
                                 {(tooltipWarn)
                                     // @ts-ignore
-                                    ? <Alert className="status-alert" />
+                                    ? <Icons.Alert className="status-alert" />
                                     // @ts-ignore
-                                    : <Check className="status-ok" />
+                                    : <Icons.Check className="status-ok" />
                                 }
                             </span>
                         </Tooltip>
@@ -166,7 +174,7 @@ export default function Tournament(props) {
                             onClick={delLastRound}
                             disabled={roundList.length === 0}
                         >
-                            <Trash /> Remove last round
+                            <Icons.Trash /> Remove last round
                         </button>
                     </li>
                     <li>

@@ -4,7 +4,7 @@ import React, {useMemo} from "react";
 import PropTypes from "prop-types";
 import numeral from "numeral";
 import {assoc} from "ramda";
-import X from "react-feather/dist/icons/x";
+import Icons from "../icons";
 import {useTournament, usePlayers} from "../../state";
 import {
     createStandingList,
@@ -44,7 +44,7 @@ export default function Crosstable({tourneyId}) {
      */
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {
-            return <X/>;
+            return <Icons.X/>;
         }
         const result = opponentScores[String(player1Id)][player2Id];
         if (result === undefined) {

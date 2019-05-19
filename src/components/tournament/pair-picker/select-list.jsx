@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {set, lensIndex, append} from "ramda";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
-import UserPlus from "react-feather/dist/icons/user-plus";
+import Icons from "../../icons";
 import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
 import {WHITE, BLACK, DUMMY_ID} from "../../../pairing-scoring/constants";
@@ -68,7 +68,7 @@ export default function SelectList({
                                 disabled={!stagedPlayers.includes(null)}
                                 onClick={() => selectPlayer(pId)}
                             >
-                                <UserPlus/>
+                                <Icons.UserPlus/>
                                 <Hidden>
                                     Select {getPlayer(pId).firstName}{" "}
                                     {getPlayer(pId).lastName}

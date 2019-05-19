@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Trash from "react-feather/dist/icons/trash-2";
+import Icons from "../icons";
 import {Link} from "@reach/router";
 import {useTournaments} from "../../state";
 
@@ -45,7 +45,7 @@ export default function TournamentList(props) {
                                         index: i
                                     })
                                 }>
-                                <Trash />
+                                <Icons.Trash />
                             </button>
                         </li>
                     )}
