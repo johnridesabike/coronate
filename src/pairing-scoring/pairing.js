@@ -57,7 +57,7 @@ const differentHalf = priority(2);
 const differentDueColor = priority(1);
 
 const maxPriority = pipe(
-    add(differentHalf(false)),    // TODO: this is temporarily false until the
+    add(differentHalf(true)),    // TODO: this is temporarily false until the
     add(differentDueColor(true)), // different-half calculator can be refactored
     add(sameScores(1)),
     add(avoidMeetingTwice(true))
@@ -91,7 +91,7 @@ export function calcPairIdeal(player1, player2) {
  * groups.
  * @param {PlayerStats[]} playerStatsList
  */
-function setUpperHalves(playerStatsList) {
+export function setUpperHalves(playerStatsList) {
     /** @param {any[]} list */
     const splitInHalf = (list) => splitAt(list.length / 2, list);
     return playerStatsList.reduce(
@@ -100,7 +100,8 @@ function setUpperHalves(playerStatsList) {
             const upperHalfIds = pipe(
                 // @ts-ignore
                 filter((a) => a.score === player.score),
-                sort((a, b) => b.rating - a.rating),
+                // These should already be sorted
+                // sort((a, b) => b.rating - a.rating),
                 splitInHalf,
                 view(lensIndex(0)),
                 map((a) => a.id)
@@ -142,6 +143,21 @@ function setByePlayer(playerStatsList) {
 }
 
 /**
+ * Sort the data so matchups default to order by score and rating.
+ * @param {PlayerStats[]} playerStatsList
+ */
+export function sortPlayersForPairing(playerStatsList) {
+    return sort(
+        firstBy(
+            (a, b) => b.score - a.score
+        ).thenBy(
+            (a, b) => b.rating - a.rating
+        ),
+        playerStatsList
+    );
+}
+
+/**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
@@ -162,14 +178,7 @@ export default function pairPlayers(
         map((id) => (
             createPlayerStats(id, playerList, avoidList, roundList, roundId)
         )),
-        // Sort the data so matchups default to order by score and rating.
-        sort(
-            firstBy(
-                (a, b) => b.score - a.score
-            ).thenBy(
-                (a, b) => b.rating - a.rating
-            )
-        ),
+        sortPlayersForPairing,
         setUpperHalves,
         setByePlayer
     )(players);
@@ -221,13 +230,12 @@ export default function pairPlayers(
     );
     // Sort by net score and rating for board placement.
     const sortedResults = sort(
-        firstBy(
-            (pair) => pair[0].score + pair[1].score,
-            -1
-        ).thenBy(
-            (pair) => pair[0].rating + pair[1].rating,
-            -1
-        ),
+        firstBy((pair1, pair2) => (
+            pair2[0].score + pair2[1].score - pair1[0].score - pair1[1].score
+        )).thenBy((pair1, pair2) => (
+            pair2[0].rating + pair2[1].rating
+            - pair1[0].rating - pair1[1].rating
+        )),
         reducedResults
     );
     // Turn the results into new match objects.

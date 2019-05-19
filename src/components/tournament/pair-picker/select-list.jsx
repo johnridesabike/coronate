@@ -8,7 +8,7 @@ import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
 import {WHITE, BLACK, DUMMY_ID} from "../../../pairing-scoring/constants";
 
-export default function PairPicker({
+export default function SelectList({
     tourneyId,
     roundId,
     stagedPlayers,
@@ -86,7 +86,7 @@ export default function PairPicker({
         </div>
     );
 }
-PairPicker.propTypes = {
+SelectList.propTypes = {
     tourneyId: PropTypes.number,
     roundId: PropTypes.number,
     stagedPlayers: PropTypes.arrayOf(PropTypes.number),

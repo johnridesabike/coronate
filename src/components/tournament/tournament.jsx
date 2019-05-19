@@ -15,8 +15,8 @@ import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 import styles from "./tournament.module.css";
 
-export default function Tournament({tourneyId, children,navigate}) {
-    tourneyId = Number(tourneyId);
+export default function Tournament(props) {
+    const tourneyId = Number(props.tourneyId);
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
     const {playerState, getPlayer, playerDispatch} = usePlayers();
@@ -81,7 +81,7 @@ export default function Tournament({tourneyId, children,navigate}) {
     }
     async function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
-            await navigate(".");
+            await props.navigate(".");
             // If a match has been scored, then reset it.
             // Should this logic be somewhere else?
             last(roundList).forEach(function (match) {
@@ -176,7 +176,7 @@ export default function Tournament({tourneyId, children,navigate}) {
                 </ul>
             </div>
             <div className={styles.content}>
-                {children}
+                {props.children}
             </div>
         </div>
     );
