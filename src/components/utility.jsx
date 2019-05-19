@@ -5,10 +5,6 @@ import {usePlayers} from "../state";
 import styles from "./utility.module.css";
 import {DUMMY_ID} from "../pairing-scoring/constants";
 
-/**
- * @typedef {(event: React.MouseEvent | React.KeyboardEvent) => void} Action
- */
-
 export const Button = ({children, action}) => (
     <button onClick={action}>
         {children}
@@ -58,13 +54,23 @@ PanelContainer.propTypes = {
 
 export function PlayerLink({id, firstName, lastName}) {
     const {getPlayer} = usePlayers();
-    if (id === DUMMY_ID) {
-        return ( // there's no bye player profile
-            <span>
-                {firstName && getPlayer(id).firstName}{" "}
-                {lastName && getPlayer(id).lastName}
-            </span>
-        );
+    const player = getPlayer(id);
+    const name = (function () {
+        if (firstName && lastName) {
+            return player.firstName + " " + player.lastName;
+        } else if (firstName && !lastName) {
+            return player.firstName;
+        } else if (!firstName && lastName) {
+            return player.lastName;
+        } else {
+            return null;
+        }
+    }());
+    if (id === DUMMY_ID) { // there's no bye player profile
+        return name;
+    }
+    if (!name) {
+        return null;
     }
     return (
         <Link to={"/players/" + id}>

@@ -16,10 +16,11 @@ export default function Stage({
     const dispatch = useTournament(tourneyId)[1];
     const [{byeValue}] = useOptions();
     const [white, black] = stagedPlayers;
-    /** @param {typeof WHITE | typeof BLACK} color */
+
     function unstage(color) {
         setStagedPlayers((prevState) => set(lensIndex(color), null, prevState));
     }
+
     function match() {
         dispatch({
             type: "MANUAL_PAIR",
@@ -31,6 +32,7 @@ export default function Stage({
         });
         setStagedPlayers([null, null]);
     }
+
     return (
         <div>
             <h2>Selected for matching:</h2>

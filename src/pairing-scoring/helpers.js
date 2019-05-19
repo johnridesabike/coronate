@@ -1,24 +1,14 @@
 // TODO: Clean this up. Refactor unnecessary functions, etc.
-import {
-    init,
-    pipe,
-    tail
-} from "ramda";
+import {init, pipe, tail} from "ramda";
 import t from "tcomb";
 import {WHITE, BLACK, DUMMY_ID} from "./constants";
 import {createPlayer, dummyPlayer, RoundList} from "../factories";
 
-// @ts-ignore
 const ScoreCalculator = t.func(
     [t.Number, RoundList, t.maybe(t.Number)],
     t.Any
 );
 export {ScoreCalculator};
-
-/**
- * @typedef {import("./").Standing} Standing
- */
-
 
 /**
  * @returns {boolean}

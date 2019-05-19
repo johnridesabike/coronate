@@ -4,11 +4,9 @@ import NewPlayer from "../../players/new-player";
 import {useTournament, usePlayers} from "../../../state";
 
 export default function Selecting({tourneyId}) {
-    // // eslint-disable-next-line fp/no-mutation
-    // tourneyId = Number(tourneyId);
     const [{players}, dispatch] = useTournament(tourneyId);
     const {playerState, getPlayer} = usePlayers();
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
+
     function togglePlayer(event) {
         const id = Number(event.target.value);
         if (event.target.checked) {
@@ -25,6 +23,7 @@ export default function Selecting({tourneyId}) {
             });
         }
     }
+
     return (
         <div>
             <button

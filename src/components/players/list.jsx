@@ -6,15 +6,8 @@ import {usePlayers} from "../../state";
 import {PlayerLink} from "../utility";
 import NewPlayer from "./new-player";
 
-/**
- * @param {Object} props
- */
 export default function PlayerList(props) {
     const {playerState, playerDispatch} = usePlayers();
-    /**
-     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
-     * @param {number} id
-     */
     const delPlayer = function (event, id) {
         event.preventDefault();
         playerDispatch({type: "DEL_PLAYER", id});
@@ -65,7 +58,8 @@ export default function PlayerList(props) {
                             </Link>
                         </td>
                     </tr>
-                )}</tbody>
+                )}
+                </tbody>
             </table>
             <NewPlayer />
         </div>

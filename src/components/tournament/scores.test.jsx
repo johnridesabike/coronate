@@ -15,7 +15,6 @@ it("The tie break scores calculate correctly", function () {
             </TournamentProvider>
         </PlayersProvider>
     );
-    /** @param {string} score */
     const batman = (score) => getByTestId(dashify("Bruce Wayne " + score));
     expect(batman("Modified median")).toHaveTextContent("4");
     expect(batman("Solkoff")).toHaveTextContent("7½");

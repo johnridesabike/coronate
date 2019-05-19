@@ -88,7 +88,7 @@ export function calcPairIdeal(player1, player2) {
 /**
  * Determine which players are in the upper and lower halves of their score
  * groups.
- * @param {PlayerStats[]} playerStatsList
+ * This function does not sort the list. The list should be sorted first.
  */
 export function setUpperHalves(playerStatsList) {
     t.assert(t.list(PlayerStats).is(playerStatsList));
@@ -98,10 +98,7 @@ export function setUpperHalves(playerStatsList) {
         /** @param {typeof playerStatsList} acc */
         function (acc, player, ignore, src) {
             const upperHalfIds = pipe(
-                // @ts-ignore
                 filter((a) => a.score === player.score),
-                // These should already be sorted
-                // sort((a, b) => b.rating - a.rating),
                 splitInHalf,
                 view(lensIndex(0)),
                 map((a) => a.id)

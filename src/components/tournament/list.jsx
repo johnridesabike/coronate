@@ -3,17 +3,14 @@ import Icons from "../icons";
 import {Link} from "@reach/router";
 import {useTournaments} from "../../state";
 
-/**
- * @param {Object} props
- */
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useTournaments();
     const [newTourneyName, setNewTourneyName] = useState("");
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
+
     function updateNewName(event) {
         setNewTourneyName(event.target.value);
     }
-    /** @param {React.FormEvent<HTMLFormElement>} event */
+
     function makeTournament(event) {
         event.preventDefault();
         dispatch({
@@ -22,6 +19,7 @@ export default function TournamentList(props) {
         });
         setNewTourneyName("");
     }
+
     return (
         <div>
             {(tourneys.length > 0) &&
@@ -44,7 +42,8 @@ export default function TournamentList(props) {
                                         type: "DEL_TOURNEY",
                                         index: i
                                     })
-                                }>
+                                }
+                            >
                                 <Icons.Trash />
                             </button>
                         </li>

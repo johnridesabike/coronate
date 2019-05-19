@@ -35,9 +35,6 @@ export function useOptions() {
     return useContext(OptionsContext);
 }
 
-/**
- * @param {Object} props
- */
 export function OptionsProvider(props) {
     const loadedData = localStorageOrDefault("options", defaultOptions);
     const [state, dispatch] = useReducer(reducer, loadedData);

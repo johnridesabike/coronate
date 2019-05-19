@@ -7,8 +7,6 @@ import Icons from "../icons";
 import {useTournament, usePlayers} from "../../state";
 import {calcNumOfRounds} from "../../pairing-scoring/helpers";
 import {DUMMY_ID} from "../../pairing-scoring/constants";
-import "@reach/tabs/styles.css";
-import "@reach/tooltip/styles.css";
 import styles from "./tournament.module.css";
 
 export default function Tournament(props) {
@@ -49,7 +47,6 @@ export default function Tournament(props) {
         [name]
     );
     const isItOver = roundList.length >= calcNumOfRounds(players.length);
-    /** @type {[string, boolean]} */
     const [tooltipText, tooltipWarn] = (function () {
         if (!isNewRoundReady) {
             return [
@@ -62,6 +59,7 @@ export default function Tournament(props) {
             return ["Ready to begin a new round.", false];
         }
     }());
+
     function newRound() {
         const confirmText = (
             "All rounds have completed. Are you sure you want to begin a new "
@@ -75,6 +73,7 @@ export default function Tournament(props) {
         dispatch({type: "ADD_ROUND", tourneyId});
         return;
     }
+
     async function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
             await props.navigate(".");
@@ -108,6 +107,7 @@ export default function Tournament(props) {
             });
         }
     }
+
     return (
         <div className={styles.tournament}>
             <div className={styles.header}>

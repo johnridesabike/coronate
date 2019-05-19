@@ -3,9 +3,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useTournament, usePlayers} from "../../../state";
-/**
- * @typedef {import("../../../factory-types-old").Match} Match
- */
 
 export default function PlayerInfo({playerId, tourneyId, roundId}) {
     const [{roundList}] = useTournament(tourneyId);

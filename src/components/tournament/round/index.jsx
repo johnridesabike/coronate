@@ -6,11 +6,10 @@ import Round from "./round";
 import PairPicker from "../pair-picker";
 import {useRound} from "../../../state";
 
-export default function Index({tourneyId, roundId}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId); // reach router passes a string instead
-    // eslint-disable-next-line fp/no-mutation
-    roundId = Number(roundId); // reach router passes a string instead
+export default function Index(props) {
+    // reach router passes strings instead
+    const tourneyId = Number(props.tourneyId);
+    const roundId = Number(props.roundId);
     const {unmatched} = useRound(tourneyId, roundId);
     const [openTab, setOpenTab] = useState(0);
     useEffect(

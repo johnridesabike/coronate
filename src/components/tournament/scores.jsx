@@ -87,9 +87,8 @@ ScoreTable.propTypes = {
 function SelectTieBreaks({tourneyId}) {
     const [{tieBreaks}, dispatch] = useTournament(tourneyId);
     const [selectedTb, setSelectedTb] = useState(null);
-    /** @param {number} [id] */
+
     function toggleTb(id = null) {
-        /** @type {(id: number) => number} */
         const defaultId = defaultTo(selectedTb);
         if (tieBreaks.includes(defaultId(id))) {
             dispatch({type: "DEL_TIEBREAK", id: defaultId(id), tourneyId});
@@ -98,7 +97,7 @@ function SelectTieBreaks({tourneyId}) {
             dispatch({type: "ADD_TIEBREAK", id: defaultId(id), tourneyId});
         }
     }
-    /** @param {number} direction */
+
     function moveTb(direction) {
         const index = tieBreaks.indexOf(selectedTb);
         dispatch({
@@ -108,6 +107,7 @@ function SelectTieBreaks({tourneyId}) {
             tourneyId
         });
     }
+
     return (
         <div>
             <h3>Selected tiebreak methods</h3>

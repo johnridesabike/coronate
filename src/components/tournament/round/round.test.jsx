@@ -13,7 +13,6 @@ const {click, change} = fireEvent;
 
 afterEach(cleanup);
 
-/** @param {Object} props */
 const AllTheProviders = ({children}) => (
     <OptionsProvider>
         <PlayersProvider>

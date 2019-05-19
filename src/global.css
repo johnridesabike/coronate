@@ -5,7 +5,7 @@
 .header {
     /* position: sticky; */
     top: 0;
-    background-color: lightgray !important;
+    background-color: white !important;
 }
 
 .content {
@@ -74,7 +74,7 @@ textarea.json {
 
 
 .danger:not([disabled]) {
-    color: red;
+    color: darkred;
 }
 
 .disabled {

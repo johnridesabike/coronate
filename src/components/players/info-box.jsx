@@ -25,7 +25,6 @@ export default function PlayerInfoBox(props) {
         [players, playerId, singAvoidList]
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided[0]);
-    /** @param {React.FormEvent<HTMLFormElement>} event */
     function avoidAdd(event) {
         event.preventDefault();
         playerDispatch({
@@ -58,7 +57,6 @@ export default function PlayerInfoBox(props) {
         },
         [playerId, getPlayer]
     );
-    /** @param {React.FormEvent<HTMLFormElement>} event */
     function handleChange(event) {
         event.preventDefault();
         const {firstName, lastName, matchCount, rating} = event.currentTarget;

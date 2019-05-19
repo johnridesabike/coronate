@@ -8,7 +8,6 @@ import {calcNewRatings} from "../../../pairing-scoring/scoring";
 import {BLACK, WHITE, DUMMY_ID} from "../../../pairing-scoring/constants";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
-// @ts-ignore
 import {winnerSelect} from "./round.module.css";
 import "@reach/dialog/styles.css";
 
@@ -44,8 +43,8 @@ export default function MatchRow({
         + " "
         + getPlayer(match.players[1]).lastName
     );
+
     function setMatchResult(event) {
-        /** @type {[number, number]} */
         const result = (function () {
             switch (event.target.value) {
             case "WHITE":
@@ -103,6 +102,7 @@ export default function MatchRow({
             newRating
         });
     }
+
     return (
         <tr className={match.id === selectedMatch ? "selected" : ""}>
             <th className="table__number row__id" scope="row">{pos + 1}</th>

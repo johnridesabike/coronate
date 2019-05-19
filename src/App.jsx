@@ -20,6 +20,8 @@ import {Options} from "./components/options";
 import Caution from "./components/caution";
 import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
 import "side-effects";
+import "@reach/tabs/styles.css";
+import "@reach/tooltip/styles.css";
 import "./global.css";
 // @ts-ignore
 import {link} from "./App.module.css";
@@ -33,20 +35,25 @@ function App() {
         <div className="app">
             <Caution />
             <LocationProvider history={history}>
-                <nav className="header">
-                    <Link to="tourneys" className={link}>
-                        Tournaments
-                    </Link>
-                    <Link to="players" className={link}>
-                        Players
-                    </Link>
-                    <Link to="options" className={link}>
-                        Options
-                    </Link>
-                    <Link to="about" className={link}>
-                        About
-                    </Link>
-                </nav>
+                <header className="header">
+                    <h1>
+                        Chessahoochee: <small>a chess tournament app.</small>
+                    </h1>
+                    <nav>
+                        <Link to="tourneys" className={link}>
+                            Tournaments
+                        </Link>
+                        <Link to="players" className={link}>
+                            Players
+                        </Link>
+                        <Link to="options" className={link}>
+                            Options
+                        </Link>
+                        <Link to="about" className={link}>
+                            About
+                        </Link>
+                    </nav>
+                </header>
                 <main className="content">
                     {/* Lots of nested contexts. Is there a better way? */}
                     <OptionsProvider>

@@ -9,13 +9,10 @@ import style from "./round.module.css";
 export default function Round({roundId, tourneyId}) {
     const {matchList, dispatch} = useRound(tourneyId, roundId);
     const {playerDispatch, getPlayer} = usePlayers();
-    /** @type {string} */
-    const defaultMatch = null;
-    const [selectedMatch, setSelectedMatch] = useState(defaultMatch);
+    const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
         throw new Error("Round " + roundId + " does not exist.");
     }
-    /** @param {string} matchId */
     function unMatch(matchId) {
         const match = getById(matchList, matchId);
         if (match.result.reduce((a, b) => a + b) !== 0) {
@@ -37,14 +34,11 @@ export default function Round({roundId, tourneyId}) {
         dispatch({type: "DEL_MATCH", tourneyId, roundId, matchId});
         setSelectedMatch(null);
     }
-    /** @param {string} matchId */
+
     function swapColors(matchId) {
         dispatch({type: "SWAP_COLORS", tourneyId, roundId, matchId});
     }
-    /**
-     * @param {string} matchId
-     * @param {number} direction
-     */
+
     function moveMatch(matchId, direction) {
         const oldIndex = getIndexById(matchList, matchId);
         const newIndex = (
@@ -54,6 +48,7 @@ export default function Round({roundId, tourneyId}) {
         );
         dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
     }
+
     return (
         <div>
             <div className={style.toolbar}>

@@ -18,7 +18,7 @@ export default function SelectList({
     const {playerState, getPlayer} = usePlayers();
     const [{byeValue}] = useOptions();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    /** @param {number} id */
+
     function selectPlayer(id) {
         if (stagedPlayers[WHITE] === null) {
             setStagedPlayers(
@@ -31,6 +31,7 @@ export default function SelectList({
         }
         // else... nothing happens
     }
+
     // make a new list so as not to affect auto-pairing
     const unmatchedWithDummy = (
         (unmatched.length % 2 !== 0)

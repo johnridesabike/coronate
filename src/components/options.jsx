@@ -21,7 +21,6 @@ export function Options(props) {
         },
         [exportData]
     );
-    /** @param {typeof exportData} data */
     function loadData(data) {
         tourneysDispatch({type: "LOAD_STATE", state: data.tourneys});
         optionsDispatch({type: "LOAD_STATE", state: data.options});
@@ -30,7 +29,6 @@ export function Options(props) {
     }
     function handleText(event) {
         event.preventDefault();
-        /** @type {typeof exportData} */
         const importData = JSON.parse(text);
         loadData(importData);
     }
@@ -39,10 +37,7 @@ export function Options(props) {
         const reader = new FileReader();
         // eslint-disable-next-line fp/no-mutation
         reader.onload = function (ev) {
-            /** @type {string} */
-            // @ts-ignore
             const data = ev.target.result;
-            /** @type {typeof exportData} */
             const importData = JSON.parse(data);
             loadData(importData);
         };
@@ -57,7 +52,6 @@ export function Options(props) {
                 players: defaultPlayers.playerList.map((p) => createPlayer(p)),
                 avoid: defaultPlayers.avoidList
             },
-            // @ts-ignore
             tourneys: defaultTourneys
         });
     }

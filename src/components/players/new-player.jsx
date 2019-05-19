@@ -6,19 +6,20 @@ export default function NewPlayer() {
     const {playerDispatch} = usePlayers();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
-    /** @param {React.FormEvent<HTMLFormElement>} event */
+
     const handleSubmit = function (event) {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
         setNewPlayerdata(newPlayerDefault);
         playerDispatch({type: "ADD_PLAYER", firstName, lastName, rating});
     };
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
+
     const updateField = function (event) {
         event.preventDefault();
         const {name, value} = event.currentTarget;
         setNewPlayerdata((prevState) => assoc(name, value, prevState));
     };
+
     return (
         <form onSubmit={handleSubmit}>
             <fieldset>
@@ -28,7 +29,8 @@ export default function NewPlayer() {
                         First name{" "}
                         <input type="text" name="firstName"
                             onChange={updateField}
-                            value={newPlayerData.firstName} required />
+                            value={newPlayerData.firstName} required
+                        />
                     </label>
                 </p>
                 <p>
@@ -36,7 +38,8 @@ export default function NewPlayer() {
                         Last name{" "}
                         <input type="text" name="lastName"
                             onChange={updateField}
-                            value={newPlayerData.lastName} required />
+                            value={newPlayerData.lastName} required
+                        />
                     </label>
                 </p>
                 <p>
@@ -47,7 +50,8 @@ export default function NewPlayer() {
                             name="rating"
                             onChange={updateField}
                             value={newPlayerData.rating}
-                            required />
+                            required
+                        />
                     </label>
                 </p>
                 <p>

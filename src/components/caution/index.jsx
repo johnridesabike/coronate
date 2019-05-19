@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./index.module.css";
 
 const Caution = () => (
-    <div className={styles.caution}>
+    <aside className={styles.caution}>
         <p className={styles.caution__text}>
             <span role="img" aria-label="warning">⚠️</span>
             &nbsp;
@@ -16,11 +16,12 @@ const Caution = () => (
             &nbsp;
             <a
                 className={styles.caution__link}
-                href="https://github.com/johnridesabike/chessahoochee">
+                href="https://github.com/johnridesabike/chessahoochee"
+            >
                 Git repository
             </a>.
         </p>
-    </div>
+    </aside>
 );
 
 export default Caution;

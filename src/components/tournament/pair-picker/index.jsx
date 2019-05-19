@@ -17,14 +17,12 @@ import {
 } from "../../../pairing-scoring/pairing";
 
 export default function PairPicker({tourneyId, roundId}) {
-    /** @type {[number, number]} */
-    const defaultPlayers = [null, null];
-    const [stagedPlayers, setStagedPlayers] = useState(defaultPlayers);
+    const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const {playerState} = usePlayers();
     const [tourney] = useTournament(tourneyId);
     const statsList = React.useMemo(
-        function () {
-            return pipe(
+        () => (
+            pipe(
                 map((id) => (
                     createPlayerStats(
                         id,
@@ -36,8 +34,8 @@ export default function PairPicker({tourneyId, roundId}) {
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
-            )(tourney.players);
-        },
+            )(tourney.players)
+        ),
         [
             tourney.players,
             tourney.roundList,

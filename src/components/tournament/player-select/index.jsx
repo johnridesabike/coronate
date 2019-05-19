@@ -7,9 +7,8 @@ import {useTournament, usePlayers} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
 import {hasHadBye} from "../../../pairing-scoring/scoring";
 
-export default function PlayerSelect({tourneyId}) {
-    // eslint-disable-next-line fp/no-mutation
-    tourneyId = Number(tourneyId);
+export default function PlayerSelect(props) {
+    const tourneyId = Number(props.tourneyId);
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);

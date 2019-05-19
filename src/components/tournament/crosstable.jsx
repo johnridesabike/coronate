@@ -12,9 +12,6 @@ import {
     getPerformanceRatings
 } from "../../pairing-scoring/scoring";
 import style from "./scores.module.css";
-/**
- * @typedef {import("../../pairing-scoring").Standing} Standing
- */
 
 export default function Crosstable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
@@ -38,10 +35,7 @@ export default function Crosstable({tourneyId}) {
         },
         [roundList, tieBreaks]
     );
-    /**
-     * @param {number} player1Id
-     * @param {number} player2Id
-     */
+
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {
             return <Icons.X/>;
@@ -52,7 +46,7 @@ export default function Crosstable({tourneyId}) {
         }
         return numeral(result).format("1/2");
     }
-    /** @param {number} playerId */
+
     function getRatingChange(playerId) {
         const [
             firstRating,
