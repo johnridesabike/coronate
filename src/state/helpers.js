@@ -5,7 +5,6 @@
  * @returns {T}
  */
 export function localStorageOrDefault(key, defaultValue) {
-    return defaultValue;
     const value = JSON.parse(localStorage.getItem(key)) || defaultValue;
     localStorage.setItem(key, JSON.stringify(value));
     return value;
