@@ -2,6 +2,7 @@ import {firstBy} from "thenby";
 import {
     add,
     assoc,
+    curry,
     filter,
     findLastIndex,
     lensIndex,
@@ -17,13 +18,10 @@ import {
 import blossom from "edmonds-blossom";
 import t from "tcomb";
 import {createPlayerStats, PlayerStats} from "./scoring";
-import {DUMMY_ID} from "./constants";
-import {Player, RoundList, AvoidList} from "../factories";
-/** @type {(value: number) => (condition: boolean) => number} */
-const priority = (value) => (condition) => condition ? value : 0;
-/** @type {(value: number) => (divider: number) => number} */
-const divisiblePriority = (value) => (divider) => value / divider;
+import {DUMMY_ID, Player, RoundList, AvoidList} from "../data-types";
 
+const priority = (value) => (condition) => condition ? value : 0;
+const divisiblePriority = (value) => (divider) => value / divider;
 /**
  * TODO: These probably need to be tweaked a lot.
  */
@@ -67,8 +65,11 @@ export {maxPriority};
  * @returns {number}
  */
 export function calcPairIdeal(player1, player2) {
-    t.assert(PlayerStats.is(player1));
-    t.assert(PlayerStats.is(player2));
+    PlayerStats(player1);
+    PlayerStats(player2);
+    if (player1.id === player2.id) {
+        return 0;
+    }
     const metBefore = player1.opponentHistory.includes(player2.id);
     const mustAvoid = player1.avoidList.includes(player2.id);
     return pipe(
@@ -91,11 +92,9 @@ export function calcPairIdeal(player1, player2) {
  * This function does not sort the list. The list should be sorted first.
  */
 export function setUpperHalves(playerStatsList) {
-    t.assert(t.list(PlayerStats).is(playerStatsList));
-    /** @param {any[]} list */
+    t.list(PlayerStats)(playerStatsList);
     const splitInHalf = (list) => splitAt(list.length / 2, list);
     return playerStatsList.reduce(
-        /** @param {typeof playerStatsList} acc */
         function (acc, player, ignore, src) {
             const upperHalfIds = pipe(
                 filter((a) => a.score === player.score),
@@ -111,8 +110,8 @@ export function setUpperHalves(playerStatsList) {
 }
 
 function setByePlayer(byeQueue, playerStatsList) {
-    t.assert(t.list(t.Number).is(byeQueue));
-    t.assert(t.list(PlayerStats).is(playerStatsList));
+    t.list(t.Number)(byeQueue);
+    t.list(PlayerStats)(playerStatsList);
     // if the list is even, just return it.
     if (playerStatsList.length % 2 === 0) {
         return playerStatsList;
@@ -148,7 +147,7 @@ function setByePlayer(byeQueue, playerStatsList) {
  * Sort the data so matchups default to order by score and rating.
  */
 export function sortPlayersForPairing(playerStatsList) {
-    t.assert(t.list(PlayerStats).is(playerStatsList));
+    t.list(PlayerStats)(playerStatsList);
     return sort(
         firstBy(
             (a, b) => b.score - a.score
@@ -164,37 +163,40 @@ export function sortPlayersForPairing(playerStatsList) {
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
  */
-export default function pairPlayers(
+export default function pairPlayers({
     playerIds,
     roundId,
     roundList,
-    playerList,
+    playerDataSource,
     avoidList,
     byeQueue
-) {
-    t.assert(t.list(t.Number).is(playerIds));
+}) {
+    t.list(t.Number)(playerIds);
     t.Number(roundId);
-    t.assert(RoundList.is(roundList));
-    t.assert(t.list(Player).is(playerList));
-    t.assert(AvoidList.is(avoidList));
-    t.assert(t.list(t.Number).is(byeQueue));
+    t.list(Player)(playerDataSource);
+    t.list(t.Number)(byeQueue);
+    RoundList(roundList);
+    AvoidList(avoidList);
     const playerStatsList = pipe(
         map((id) => (
-            createPlayerStats(id, playerList, avoidList, roundList, roundId)
+            createPlayerStats({
+                id,
+                playerDataSource,
+                avoidList,
+                roundList,
+                roundId
+            })
         )),
         sortPlayersForPairing,
         setUpperHalves,
-        (list) => setByePlayer(byeQueue, list)
+        curry(setByePlayer)(byeQueue)
     )(playerIds);
     // Turn the data into blossom-compatible input.
     const potentialMatches = playerStatsList.filter(
         (p) => !p.isDueBye
     ).reduce(
-        /** @param {number[][]} acc */
         function (acc, player1, ignore, src) {
-            const playerMatches = src.filter(
-                (player) => player !== player1
-            ).map(
+            const playerMatches = src.map(
                 (player2) => [
                     player1.id,
                     player2.id,

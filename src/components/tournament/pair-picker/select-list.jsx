@@ -6,7 +6,7 @@ import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import Selecting from "../player-select/selecting";
 import {useRound, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK, DUMMY_ID} from "../../../pairing-scoring/constants";
+import {WHITE, BLACK, DUMMY_ID} from "../../../data-types";
 
 export default function SelectList({
     tourneyId,

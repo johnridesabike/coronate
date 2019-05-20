@@ -26,7 +26,7 @@ import {
 import t from "tcomb";
 import {localStorageOrDefault} from "./helpers";
 import {getPlayerById} from "../pairing-scoring/helpers";
-import {createPlayer} from "../factories";
+import {createPlayer} from "../data-types";
 import demoPlayers from "./demo-players.json";
 
 const defaultPlayers = {

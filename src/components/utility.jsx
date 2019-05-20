@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {Link} from "@reach/router";
 import {usePlayers} from "../state";
 import styles from "./utility.module.css";
-import {DUMMY_ID} from "../pairing-scoring/constants";
+import {DUMMY_ID} from "../data-types";
 
 export const Button = ({children, action}) => (
     <button onClick={action}>
@@ -84,3 +84,14 @@ PlayerLink.propTypes = {
     firstName: PropTypes.bool,
     lastName: PropTypes.bool
 };
+
+/*******************************************************************************
+ * Non-JSX functions
+ ******************************************************************************/
+export function findById(id, list) {
+    return list.filter((x) => x.id === id)[0];
+}
+
+export function findIndexById(id, list) {
+    return list.indexOf(findById(id, list));
+}

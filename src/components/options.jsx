@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {useTournaments, useOptions, usePlayers} from "../state";
-import {createPlayer} from "../factories";
+import {createPlayer} from "../data-types";
 import defaultPlayers from "../state/demo-players.json";
 import defaultOptions from "../state/demo-options.json";
 import defaultTourneys from "../state/demo-tourney.json";

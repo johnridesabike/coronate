@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {set, lensIndex} from "ramda";
 import Icons from "../../icons";
 import {useTournament, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK} from "../../../pairing-scoring/constants";
+import {WHITE, BLACK} from "../../../data-types";
 
 export default function Stage({
     tourneyId,

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import PropTypes from "prop-types";
 import Icons from "../../icons";
 import MatchRow from "./match-row";
-import {getById, getIndexById} from "../../../pairing-scoring/helpers";
+import {findById, findIndexById} from "../../utility";
 import {useRound, usePlayers} from "../../../state";
 import style from "./round.module.css";
 
@@ -14,7 +14,7 @@ export default function Round({roundId, tourneyId}) {
         throw new Error("Round " + roundId + " does not exist.");
     }
     function unMatch(matchId) {
-        const match = getById(matchList, matchId);
+        const match = findById(matchId, matchList);
         if (match.result.reduce((a, b) => a + b) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
@@ -40,7 +40,7 @@ export default function Round({roundId, tourneyId}) {
     }
 
     function moveMatch(matchId, direction) {
-        const oldIndex = getIndexById(matchList, matchId);
+        const oldIndex = findIndexById(matchId, matchList);
         const newIndex = (
             (oldIndex + direction >= 0)
             ? oldIndex + direction

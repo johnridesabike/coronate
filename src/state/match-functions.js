@@ -1,6 +1,5 @@
 import {curry, assoc} from "ramda";
-import {BLACK, WHITE, DUMMY_ID} from "../pairing-scoring/constants";
-import {createMatch} from "../factories";
+import {BLACK, WHITE, DUMMY_ID, createMatch} from "../data-types";
 import {getPlayerById} from "../pairing-scoring/helpers";
 import pairPlayers from "../pairing-scoring/pairing";
 
@@ -13,14 +12,14 @@ export function autoPair(
 ) {
     const roundList = tourney.roundList;
     const getPlayer = curry(getPlayerById)(playerState.players);
-    const pairs = pairPlayers(
-        unPairedPlayers,
+    const pairs = pairPlayers({
+        playerIds: unPairedPlayers,
         roundId,
         roundList,
-        playerState.players,
-        playerState.avoid,
-        tourney.byeQueue
-    );
+        playerDataSource: playerState.players,
+        avoidList: playerState.avoid,
+        byeQueue: tourney.byeQueue
+    });
     const newMatchList = pairs.map(
         (pair) => createMatch({
             id: pair.join("-"),

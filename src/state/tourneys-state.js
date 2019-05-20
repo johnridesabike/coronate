@@ -25,7 +25,7 @@ import t from "tcomb";
 import {localStorageOrDefault} from "./helpers";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
-import {createTournament, Player} from "../factories";
+import {createTournament, Player} from "../data-types";
 
 const ActionAddTourney = t.interface({
     name: t.String

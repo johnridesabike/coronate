@@ -16,7 +16,13 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         hasHadBye,
         opponentHistory,
         avoidList
-    } = createPlayerStats(playerId, players, avoid, roundList, roundId);
+    } = createPlayerStats({
+        id: playerId,
+        playerDataSource: players,
+        avoidList: avoid,
+        roundList,
+        roundId
+    });
     const prettyBalance = (function () {
         if (colorBalance < 0) {
             return "White +" + Math.abs(colorBalance);

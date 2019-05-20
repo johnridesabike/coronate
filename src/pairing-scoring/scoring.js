@@ -14,33 +14,32 @@ import {
 import {firstBy} from "thenby";
 import EloRank from "elo-rank";
 import t from "tcomb";
-import {WHITE, BLACK, DUMMY_ID} from "./constants";
-import {Player, RoundList} from "../factories";
 import {
-    isNotBye,
+    AvoidList,
+    BLACK,
+    DUMMY_ID,
+    Match,
+    Player,
+    RoundList,
+    WHITE
+} from "../data-types";
+import {
+    Standing,
+    areScoresEqual,
+    getAllPlayersFromMatches,
     getMatchesByPlayer,
+    getPlayerAvoidList,
+    getPlayerById,
+    isNotBye,
+    isNotDummy,
     playerScoreList,
     removeFirstAndLast,
-    isNotDummy,
-    getAllPlayersFromMatches,
-    areScoresEqual,
-    playerColorInRound,
-    switchColor,
-    getPlayerById,
-    getPlayerAvoidList,
-    ScoreCalculator
+    rounds2Matches
 } from "./helpers";
-
-const Standing = t.struct({
-    id: t.Number,
-    score: t.Number,
-    tieBreaks: t.list(t.Number)
-});
 
 /**
  * Create a function to sort the players. This dynamically creates a `thenBy`
  * function based on the desired tiebreak sort methods.
- * @param {typeof tieBreakMethods} tieBreaks
  */
 function createTieBreakSorter(tieBreaks) {
     return tieBreaks.reduce(
@@ -57,167 +56,156 @@ function createTieBreakSorter(tieBreaks) {
 /**
  * @returns {number[]}
  */
-const playerScoreListNoByes = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        return getMatchesByPlayer(
-            playerId,
-            roundList,
-            roundId
-        ).filter(
-            isNotBye
-        ).map(
-            (match) => match.result[match.players.indexOf(playerId)]
-        );
-    }
-);
+function playerScoreListNoByes(playerId, matchList) {
+    return getMatchesByPlayer(
+        playerId,
+        matchList
+    ).filter(
+        isNotBye
+    ).map(
+        (match) => match.result[match.players.indexOf(playerId)]
+    );
+}
 
 /**
  * @returns {boolean}
  */
-const hasHadBye = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        return getMatchesByPlayer(
-            playerId,
-            roundList,
-            roundId
-        ).reduce(
-            (acc, match) => acc.concat(match.players),
-            []
-        ).includes(DUMMY_ID);
-    }
-);
+function hasHadBye(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    return getMatchesByPlayer(
+        playerId,
+        matchList
+    ).reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    ).includes(DUMMY_ID);
+}
 export {hasHadBye};
 
 /**
  * @returns {number[]}
  */
-const getPlayersByOpponent = ScoreCalculator.of(
-    function (opponentId, roundList, roundId = null) {
-        return getMatchesByPlayer(
-            opponentId,
-            roundList,
-            roundId
-        ).reduce(
-            (acc, match) => acc.concat(match.players),
-            []
-        ).filter(
-            (playerId) => playerId !== opponentId
-        );
-    }
-);
+function getPlayersByOpponent(opponentId, matchList) {
+    t.Number(opponentId);
+    t.list(Match)(matchList);
+    return getMatchesByPlayer(
+        opponentId,
+        matchList
+    ).reduce(
+        (acc, match) => acc.concat(match.players),
+        []
+    ).filter(
+        (playerId) => playerId !== opponentId
+    );
+}
 
 /**
  * @returns {number}
  */
-const playerScore = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const scoreList = playerScoreList(playerId, roundList, roundId);
-        return sum(scoreList);
-    }
-);
+function playerScore(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const scoreList = playerScoreList(playerId, matchList);
+    return sum(scoreList);
+}
 
 /**
  * The player's cumulative score.
  * @returns {number}
  */
-const playerScoreCum = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const scoreList = playerScoreListNoByes(
-            playerId,
-            roundList,
-            roundId
-        ).reduce( // turn the regular score list into a "running" score list
-            (acc, score) => acc.concat([last(acc) + score]),
-            [0]
-        );
-        return sum(scoreList);
-    }
-);
+function playerScoreCum(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const scoreList = playerScoreListNoByes(
+        playerId,
+        matchList
+    ).reduce( // turn the regular score list into a "running" score list
+        (acc, score) => acc.concat([last(acc) + score]),
+        [0]
+    );
+    return sum(scoreList);
+}
 
 /**
  * Calculate a player's color balance. A negative number means they played as
  * white more. A positive number means they played as black more.
  * @returns {number}
  */
-const playerColorBalance = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const colorList = getMatchesByPlayer(
-            playerId,
-            roundList,
-            roundId
-        ).filter(
-            isNotBye
-        ).reduce(
-            (acc, match) => (
-                (match.players[WHITE] === playerId)
-                ? acc.concat(-1) // White = -1
-                : acc.concat(1) // Black = +1
-            ),
-            [0]
-        );
-        return sum(colorList);
-    }
-);
+function playerColorBalance(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const colorList = getMatchesByPlayer(
+        playerId,
+        matchList
+    ).filter(
+        isNotBye
+    ).reduce(
+        (acc, match) => (
+            (match.players[WHITE] === playerId)
+            ? acc.concat(-1) // White = -1
+            : acc.concat(1) // Black = +1
+        ),
+        [0]
+    );
+    return sum(colorList);
+}
 
 /**
  * Used for `modifiedMedian` and `solkoff`.
  * @returns {number[]}
  */
-const opponentScores = ScoreCalculator.of(
-    function (pId, roundList, roundId) {
-        const scores = getPlayersByOpponent(
-            pId,
-            roundList,
-            roundId
-        ).filter(
-            isNotDummy
-        ).map(
-            (opponent) => playerScore(opponent, roundList, roundId)
-        );
-        return sort((a, b) => a - b, scores);
-    }
-);
+function opponentScores(pId, matchList) {
+    t.Number(pId);
+    t.list(Match)(matchList);
+    const scores = getPlayersByOpponent(
+        pId,
+        matchList
+    ).filter(
+        isNotDummy
+    ).map(
+        (opponent) => playerScore(opponent, matchList)
+    );
+    return sort((a, b) => a - b, scores);
+}
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
  * @returns {number}
  */
-const modifiedMedian = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const scores = opponentScores(playerId, roundList, roundId);
-        const scoresMinusFirstAndLast = removeFirstAndLast(scores);
-        return sum(scoresMinusFirstAndLast);
-    }
-);
+function modifiedMedian(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const scores = opponentScores(playerId, matchList);
+    const scoresMinusFirstAndLast = removeFirstAndLast(scores);
+    return sum(scoresMinusFirstAndLast);
+}
 
 /**
  * @returns {number}
  */
-const solkoff = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const scoreList = opponentScores(playerId, roundList, roundId);
-        return sum(scoreList);
-    }
-);
+function solkoff(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const scoreList = opponentScores(playerId, matchList);
+    return sum(scoreList);
+}
 
 /**
  * Get the cumulative scores of a player's opponents.
  * @returns {number}
  */
-const playerOppScoreCum = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const oppScores = getPlayersByOpponent(
-            playerId,
-            roundList,
-            roundId
-        ).filter(
-            isNotDummy
-        ).map(
-            (p) => playerScoreCum(p, roundList, roundId)
-        );
-        return sum(oppScores);
-    }
-);
+function playerOppScoreCum(playerId, matchList) {
+    const oppScores = getPlayersByOpponent(
+        playerId,
+        matchList
+    ).filter(
+        isNotDummy
+    ).map(
+        (p) => playerScoreCum(p, matchList)
+    );
+    return sum(oppScores);
+}
 
 const tieBreakMethods = [
     {
@@ -249,22 +237,23 @@ export {tieBreakMethods};
  * @returns {[typeof Standing[], string[]]} The standings and the list of method used
  */
 export function createStandingList(methods, roundList, roundId) {
-    t.assert(t.list(t.Number).is(methods));
-    t.assert(t.list(t.Array).is(roundList));
-    t.assert(t.maybe(t.Number).is(roundId));
+    t.list(t.Number)(methods);
+    t.list(t.Array)(roundList);
+    t.maybe(t.Number)(roundId);
+    const matchList = rounds2Matches(roundList, roundId);
     const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
     const tieBreakNames = selectedTieBreaks.map((m) => m.name);
     // Get a flat list of all of the players and their scores.
     const standings = getAllPlayersFromMatches(
-        roundList
+        matchList
     ).filter(
         (id) => id !== DUMMY_ID
     ).map(
         (id) => (Standing({
             id,
-            score: playerScore(id, roundList, roundId),
+            score: playerScore(id, matchList),
             tieBreaks: selectedTieBreaks.map(
-                (method) => method.func(id, roundList, roundId)
+                (method) => method.func(id, matchList)
             )
         }))
     );
@@ -280,9 +269,9 @@ export function createStandingList(methods, roundList, roundId) {
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
 export function createStandingTree(methods, roundList, roundId = null) {
-    t.assert(t.list(t.Number).is(methods));
-    t.assert(RoundList.is(roundList));
-    t.assert(t.maybe(t.Number).is(roundId));
+    t.list(t.Number)(methods);
+    RoundList(roundList);
+    t.maybe(t.Number)(roundId);
     const [
         standingsFlat,
         tieBreakNames
@@ -310,20 +299,17 @@ export function createStandingTree(methods, roundList, roundId = null) {
 /**
  * @returns {typeof WHITE | typeof BLACK?}
  */
-const dueColor = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const round = (
-            (roundId === null)
-            ? last(roundList)
-            : roundList[roundId - 1]
-        );
-        if (!round) {
-            return null;
-        }
-        const prevColor = playerColorInRound(playerId, round);
-        return switchColor(prevColor);
+
+function dueColor(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const lastMatch = last(getMatchesByPlayer(playerId, matchList));
+    if (!lastMatch) {
+        return null;
     }
-);
+    const prevColor = lastMatch.players.indexOf(playerId);
+    return (prevColor === WHITE) ? BLACK : WHITE;
+}
 
 const PlayerStats = t.interface({
     profile: Player,
@@ -343,25 +329,31 @@ export {PlayerStats};
 /**
  * @returns {PlayerStats}
  */
-export function createPlayerStats(
-    playerId,
-    playerList,
+export function createPlayerStats({
+    id,
+    playerDataSource,
     avoidList,
     roundList,
     roundId
-) {
-    const player = getPlayerById(playerList, playerId);
+}) {
+    t.Number(id);
+    t.Number(roundId);
+    t.list(Player)(playerDataSource);
+    AvoidList(avoidList);
+    RoundList(roundList);
+    const player = getPlayerById(playerDataSource, id);
+    const matches = rounds2Matches(roundList, roundId);
     return PlayerStats({
         profile: player,
         rating: player.rating, // is this shortcut necessary?
-        id: playerId, // is this shortcut necessary?
-        score: playerScore(playerId, roundList, roundId),
-        dueColor: dueColor(playerId, roundList, roundId),
-        colorBalance: playerColorBalance(playerId, roundList, roundId),
-        opponentHistory: getPlayersByOpponent(playerId, roundList, roundId),
+        id: id, // is this shortcut necessary?
+        score: playerScore(id, matches),
+        dueColor: dueColor(id, matches),
+        colorBalance: playerColorBalance(id, matches),
+        opponentHistory: getPlayersByOpponent(id, matches),
         upperHalf: false,
-        avoidList: getPlayerAvoidList(playerId, avoidList),
-        hasHadBye: hasHadBye(playerId, roundList, roundId),
+        avoidList: getPlayerAvoidList(id, avoidList),
+        hasHadBye: hasHadBye(id, matches),
         isDueBye: false
     });
 }
@@ -369,45 +361,45 @@ export function createPlayerStats(
 /**
  * @returns {Object.<string, number>} {opponentId: result}
  */
-const getResultsByOpponent = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const matches = getMatchesByPlayer(playerId, roundList, roundId);
-        return matches.reduce(
-            function (acc, match) {
-                const opponent = match.players.filter(
-                    (id) => id !== playerId
-                )[0];
-                const color = match.players.indexOf(playerId);
-                const result = match.result[color];
-                // This sets a default result of 0 and then adds the existing
-                // result. Most of the time, this would be the same as using
-                // `set()` with the result, but if two players play each other
-                // multiple times then the total results will be displayed.
-                return over(
-                    lensProp(String(opponent)),
-                    pipe(defaultTo(0), add(result)),
-                    acc
-                );
-            },
-            {}
-        );
-    }
-);
+function getResultsByOpponent(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const matches = getMatchesByPlayer(playerId, matchList);
+    return matches.reduce(
+        function (acc, match) {
+            const opponent = match.players.filter(
+                (id) => id !== playerId
+            )[0];
+            const color = match.players.indexOf(playerId);
+            const result = match.result[color];
+            // This sets a default result of 0 and then adds the existing
+            // result. Most of the time, this would be the same as using
+            // `set()` with the result, but if two players play each other
+            // multiple times then the total results will be displayed.
+            return over(
+                lensProp(String(opponent)),
+                pipe(defaultTo(0), add(result)),
+                acc
+            );
+        },
+        {}
+    );
+}
 export {getResultsByOpponent};
 
-const getPerformanceRatings = ScoreCalculator.of(
-    function (playerId, roundList, roundId = null) {
-        const matches = getMatchesByPlayer(playerId, roundList, roundId);
-        // TODO: This could be Don't-Repeat-Yourself'd a bit
-        const firstMatch = matches[0];
-        const firstColor = firstMatch.players.indexOf(playerId);
-        const firstRating = firstMatch.origRating[firstColor];
-        const lastMatch = last(matches);
-        const lastColor = lastMatch.players.indexOf(playerId);
-        const lastRating = lastMatch.newRating[lastColor];
-        return [firstRating, lastRating];
-    }
-);
+function getPerformanceRatings(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    const matches = getMatchesByPlayer(playerId, matchList);
+    // TODO: This could be Don't-Repeat-Yourself'd a bit
+    const firstMatch = matches[0];
+    const firstColor = firstMatch.players.indexOf(playerId);
+    const firstRating = firstMatch.origRating[firstColor];
+    const lastMatch = last(matches);
+    const lastColor = lastMatch.players.indexOf(playerId);
+    const lastRating = lastMatch.newRating[lastColor];
+    return [firstRating, lastRating];
+}
 export {getPerformanceRatings};
 
 export function kFactor(matchCount) {
@@ -417,12 +409,12 @@ export function kFactor(matchCount) {
 }
 
 /**
- * @param {[number, number]} origRatings
- * @param {[number, number]} matchCounts
- * @param {[number, number]} result
  * @returns {[number, number]}
  */
 export function calcNewRatings(origRatings, matchCounts, result) {
+    t.tuple([t.Number, t.Number])(origRatings);
+    t.tuple([t.Number, t.Number])(matchCounts);
+    t.tuple([t.Number, t.Number])(result);
     const whiteElo = new EloRank(kFactor(matchCounts[WHITE]));
     const blackElo = new EloRank(kFactor(matchCounts[BLACK]));
     const FLOOR = 100;

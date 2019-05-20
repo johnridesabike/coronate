@@ -11,6 +11,7 @@ import {
     getResultsByOpponent,
     getPerformanceRatings
 } from "../../pairing-scoring/scoring";
+import {rounds2Matches} from "../../pairing-scoring/helpers";
 import style from "./scores.module.css";
 
 export default function Crosstable({tourneyId}) {
@@ -19,11 +20,12 @@ export default function Crosstable({tourneyId}) {
     const [standings, opponentScores] = useMemo(
         function () {
             const [standingsFlat] = createStandingList(tieBreaks, roundList);
+            const matches = rounds2Matches(roundList);
             const opponentResults = standingsFlat.reduce(
                 (acc, standing) => (
                     assoc(
                         String(standing.id),
-                        getResultsByOpponent(standing.id, roundList),
+                        getResultsByOpponent(standing.id, matches),
                         acc
                     )
                 ),
@@ -46,10 +48,11 @@ export default function Crosstable({tourneyId}) {
     }
 
     function getRatingChange(playerId) {
+        const matches = rounds2Matches(roundList);
         const [
             firstRating,
             lastRating
-        ] = getPerformanceRatings(playerId, roundList);
+        ] = getPerformanceRatings(playerId, matches);
         const change = numeral(lastRating - firstRating).format("+0");
         return `${lastRating}\xA0(${change})`; // \xA0 = &nsbp;
     }

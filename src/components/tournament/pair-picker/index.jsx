@@ -7,7 +7,7 @@ import Stage from "./stage";
 import PlayerInfo from "./player-info";
 import {PanelContainer, Panel} from "../../utility";
 import {usePlayers, useTournament} from "../../../state";
-import {getById} from "../../../pairing-scoring/helpers";
+import {findById} from "../../utility";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {
     calcPairIdeal,
@@ -24,13 +24,13 @@ export default function PairPicker({tourneyId, roundId}) {
         () => (
             pipe(
                 map((id) => (
-                    createPlayerStats(
+                    createPlayerStats({
                         id,
-                        playerState.players,
-                        playerState.avoid,
-                        tourney.roundList,
+                        playerDataSource: playerState.players,
+                        avoidList: playerState.avoid,
+                        roundList: tourney.roundList,
                         roundId
-                    )
+                    })
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
@@ -49,8 +49,8 @@ export default function PairPicker({tourneyId, roundId}) {
             if (stagedPlayers.includes(null)) {
                 return null;
             }
-            const player0stats = getById(statsList, stagedPlayers[0]);
-            const player1stats = getById(statsList, stagedPlayers[1]);
+            const player0stats = findById(stagedPlayers[0], statsList);
+            const player1stats = findById(stagedPlayers[1], statsList);
             const ideal = calcPairIdeal(player0stats, player1stats);
             return numeral(ideal / maxPriority).format("%");
         },

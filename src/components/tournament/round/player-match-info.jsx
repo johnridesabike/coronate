@@ -3,19 +3,19 @@ import PropTypes from "prop-types";
 import numeral from "numeral";
 import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {useRound, usePlayers} from "../../../state";
-import {getById} from "../../../pairing-scoring/helpers";
+import {findById} from "../../utility";
 
 export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
     const {tourney, matchList} = useRound(tourneyId, roundId);
     const {playerState, getPlayer} = usePlayers();
-    const match = getById(matchList, matchId);
-    const playerData = createPlayerStats(
-        match.players[color],
-        playerState.players,
-        playerState.avoid,
-        tourney.roundList,
+    const match = findById(matchId, matchList);
+    const playerData = createPlayerStats({
+        id: match.players[color],
+        playerDataSource: playerState.players,
+        avoidList: playerState.avoid,
+        roundList: tourney.roundList,
         roundId
-    );
+    });
     const colorBalance = playerData.colorBalance;
     const prettyBalance = (function () {
         if (colorBalance < 0) {
