@@ -6,7 +6,7 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "homepage": ".",
-  "main": "src/index.jsx",
+  "main": "public/electron.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/chessahoochee.git"
@@ -19,6 +19,7 @@
     "@reach/visually-hidden": "^0.1.4",
     "dashify": "^2.0.0",
     "edmonds-blossom": "^1.0.0",
+    "electron-is-dev": "^1.1.0",
     "elo-rank": "^1.0.3",
     "hash-source": "^1.0.4",
     "jest-dom": "^3.2.2",
@@ -42,7 +43,11 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "sourcemaps": "source-map-explorer './build/static/js/*'",
-    "lint": "eslint --ext .jsx,.js src/"
+    "lint": "eslint --ext .jsx,.js src/",
+    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "postinstall": "electron-builder install-app-deps",
+    "preelectron-pack": "npm run build",
+    "electron-pack": "electron-builder build -mw"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,9 +59,25 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "concurrently": "^4.1.0",
+    "electron": "^5.0.1",
+    "electron-builder": "^20.40.2",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-ramda": "^2.5.1",
     "eslint-plugin-react": "^7.13.0",
-    "gh-pages": "^2.0.1"
+    "gh-pages": "^2.0.1",
+    "typescript": "^3.4.5",
+    "wait-on": "^3.2.0"
+  },
+  "build": {
+    "appId": "bike.johnridesa.chessahoochee",
+    "productName": "Chessahoochee",
+    "copyright": "Copyright © 2019 ${author}",
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }
