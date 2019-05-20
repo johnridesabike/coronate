@@ -78,12 +78,7 @@ const ActionSetMatchResult = t.interface({
     result: t.tuple([t.Number, t.Number]),
     newRating: t.tuple([t.Number, t.Number])
 });
-const ActionDelMatch = t.interface({
-    tourneyId: t.Number,
-    roundId: t.Number,
-    matchId: t.String
-});
-const ActionSwapColors = t.interface({
+const ActionEditMatch = t.interface({
     tourneyId: t.Number,
     roundId: t.Number,
     matchId: t.String
@@ -109,8 +104,7 @@ const ActionTypes = t.union([
     ActionAutoPair,
     ActionManualPair,
     ActionSetMatchResult,
-    ActionDelMatch,
-    ActionSwapColors,
+    ActionEditMatch,
     ActionMoveMatch
 ]);
 ActionTypes.dispatch = function (x) {
@@ -128,8 +122,8 @@ ActionTypes.dispatch = function (x) {
         "AUTO_PAIR": ActionAutoPair,
         "MANUAL_PAIR": ActionManualPair,
         "SET_MATCH_RESULT": ActionSetMatchResult,
-        "DEL_MATCH": ActionDelMatch,
-        "SWAP_COLORS": ActionSwapColors,
+        "DEL_MATCH": ActionEditMatch,
+        "SWAP_COLORS": ActionEditMatch,
         "MOVE_MATCH": ActionMoveMatch
     };
     return typeToConstructor[x.type];
@@ -274,8 +268,7 @@ function tourneysReducer(state, action) {
     }
 }
 
-const defaultContext = null;
-const TournamentContext = createContext(defaultContext);
+const TournamentContext = createContext(null);
 
 export function useTournaments() {
     return useContext(TournamentContext);

@@ -22,11 +22,12 @@ import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
 import "side-effects";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
-import "./global.css";
 import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
 let history = createHistory(source);
+
+// const electron = window.require("electron");
 
 function App() {
     return (

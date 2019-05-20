@@ -33,8 +33,7 @@ function reducer(state, action) {
     }
 }
 
-const defaultContext = null;
-const OptionsContext = createContext(defaultContext);
+const OptionsContext = createContext(null);
 
 export function useOptions() {
     return useContext(OptionsContext);

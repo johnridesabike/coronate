@@ -143,7 +143,7 @@ function SelectTieBreaks({tourneyId}) {
                         key={id}
                         className={selectedTb === id ? "selected" : ""}
                     >
-                        {tieBreakMethods[id].name}
+                        {tieBreakMethods[id].name}{" "}
                         <button
                             onClick={() =>
                                 selectedTb === id

@@ -174,8 +174,7 @@ function playersReducer(state, action ) {
     }
 }
 
-const defaultContext = null;
-const PlayerContext = createContext(defaultContext);
+const PlayerContext = createContext(null);
 
 export function usePlayers() {
     const [playerState, playerDispatch] = useContext(PlayerContext);

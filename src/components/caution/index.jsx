@@ -4,15 +4,15 @@ import styles from "./index.module.css";
 const Caution = () => (
     <aside className={styles.caution}>
         <p className={styles.caution__text}>
-            <span role="img" aria-label="warning">⚠️</span>
+            <span role="img" aria-label="WARNING.">⚠️</span>
             &nbsp;
-            This is an unstable demo build.
+            This is beta software.
             &nbsp;
-            <span role="img" aria-label="warning">⚠️</span>
+            <span role="img" aria-label="WARNING.">⚠️</span>
             {" "}
-            Want to help make it better? Head to the
+            Want to help make it better? Check out the
             {" "}
-            <span role="img" aria-label="finger pointing right">👉</span>
+            <span role="img" aria-hidden>👉</span>
             &nbsp;
             <a
                 className={styles.caution__link}
