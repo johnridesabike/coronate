@@ -5,8 +5,6 @@ import {
     useReducer,
     useEffect
 } from "react";
-// This will cause Webpack to import the entire Ramda library, but we're using
-// so much of it that cherry-picking individual files has virtually no benefit.
 import {
     __,
     append,
@@ -23,25 +21,122 @@ import {
     reverse,
     set
 } from "ramda";
+import t from "tcomb";
 import {localStorageOrDefault} from "./helpers";
 import defaultTourneyList from "./demo-tourney.json";
 import {autoPair, manualPair} from "./match-functions";
-import {createTournament} from "../factories";
-/**
- * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../factory-types-old").Tournament} Tournament
- */
+import {createTournament, Player} from "../factories";
 
-/** @type {Tournament[]} */
-// @ts-ignore
-const defaultData = defaultTourneyList;
+const ActionAddTourney = t.interface({
+    name: t.String
+});
+const ActionDelTourney = t.interface({
+    index: t.Number
+});
+const ActionAddRound = t.interface({
+    tourneyId: t.Number
+});
+const ActionDelLastRound = t.interface({
+    tourneyId: t.Number,
+    players: t.list(Player)
+});
+const ActionAddRemoveTieBreak = t.interface({
+    tourneyId: t.Number,
+    id: t.Number
+});
+const ActionMoveTieBreak = t.interface({
+    tourneyId: t.Number,
+    oldIndex: t.Number,
+    newIndex: t.Number
+});
+const ActionSetTourneyPlayers = t.interface({
+    tourneyId: t.Number,
+    players: t.list(t.Number)
+});
+const ActionSetByeQueue = t.interface({
+    tourneyId: t.Number,
+    byeQueue: t.list(t.Number)
+});
+const ActionAutoPair = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    unpairedPlayers: t.list(t.Number),
+    playerState: t.Any,
+    byeValue: t.Number
+});
+const ActionManualPair = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    pair: t.list(t.Number),
+    players: t.list(Player),
+    byeValue: t.Number
+});
+const ActionSetMatchResult = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    matchId: t.String,
+    result: t.tuple([t.Number, t.Number]),
+    newRating: t.tuple([t.Number, t.Number])
+});
+const ActionDelMatch = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    matchId: t.String
+});
+const ActionSwapColors = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    matchId: t.String
+});
+const ActionMoveMatch = t.interface({
+    tourneyId: t.Number,
+    roundId: t.Number,
+    oldIndex: t.Number,
+    newIndex: t.Number
+});
+const ActionLoadState = t.interface({state: t.Any});
+const ActionTypes = t.union([
+    ActionLoadState,
+    ActionAddTourney,
+    ActionDelTourney,
+    ActionAddRound,
+    ActionDelLastRound,
+    ActionAddRemoveTieBreak,
+    ActionAddRemoveTieBreak,
+    ActionMoveTieBreak,
+    ActionSetTourneyPlayers,
+    ActionSetByeQueue,
+    ActionAutoPair,
+    ActionManualPair,
+    ActionSetMatchResult,
+    ActionDelMatch,
+    ActionSwapColors,
+    ActionMoveMatch
+]);
+ActionTypes.dispatch = function (x) {
+    const typeToConstructor = {
+        "LOAD_STATE": ActionLoadState,
+        "ADD_TOURNEY": ActionAddTourney,
+        "DEL_TOURNEY": ActionDelTourney,
+        "ADD_ROUND": ActionAddRound,
+        "DEL_LAST_ROUND": ActionDelLastRound,
+        "ADD_TIEBREAK": ActionAddRemoveTieBreak,
+        "DEL_TIEBREAK": ActionAddRemoveTieBreak,
+        "MOVE_TIEBREAK": ActionMoveTieBreak,
+        "SET_TOURNEY_PLAYERS": ActionSetTourneyPlayers,
+        "SET_BYE_QUEUE": ActionSetByeQueue,
+        "AUTO_PAIR": ActionAutoPair,
+        "MANUAL_PAIR": ActionManualPair,
+        "SET_MATCH_RESULT": ActionSetMatchResult,
+        "DEL_MATCH": ActionDelMatch,
+        "SWAP_COLORS": ActionSwapColors,
+        "MOVE_MATCH": ActionMoveMatch
+    };
+    return typeToConstructor[x.type];
+};
 
-/**
- * @param {Tournament[]} state
- * @param {Action} action
- * @returns {Tournament[]}
- */
 function tourneysReducer(state, action) {
+    ActionTypes(action);
     switch (action.type) {
     case "ADD_TOURNEY":
         return append(createTournament({name: action.name}), state);
@@ -93,7 +188,6 @@ function tourneysReducer(state, action) {
         return over(
             lensPath([action.tourneyId, "roundList", action.roundId]),
             concat(
-                // @ts-ignore
                 __,
                 autoPair(
                     state[action.tourneyId],
@@ -180,7 +274,6 @@ function tourneysReducer(state, action) {
     }
 }
 
-/** @type {[Tournament[], React.Dispatch<Action>]} */
 const defaultContext = null;
 const TournamentContext = createContext(defaultContext);
 
@@ -188,19 +281,11 @@ export function useTournaments() {
     return useContext(TournamentContext);
 }
 
-/**
- * @param {number} [tourneyId]
- * @returns {[Tournament, React.Dispatch<Action>]}
- */
 export function useTournament(tourneyId) {
     const [tourneys, dispatch] = useContext(TournamentContext);
     return [tourneys[tourneyId], dispatch];
 }
 
-/**
- * @param {number} tourneyId
- * @param {number} roundId
- */
 export function useRound(tourneyId, roundId) {
     const [tourney, dispatch] = useTournament(tourneyId);
     const matchList = tourney.roundList[roundId];
@@ -212,11 +297,8 @@ export function useRound(tourneyId, roundId) {
     return {tourney, dispatch, unmatched, matchList};
 }
 
-/**
- * @param {Object} props
- */
 export function TournamentProvider(props) {
-    const loadedData = localStorageOrDefault("tourneys", defaultData);
+    const loadedData = localStorageOrDefault("tourneys", defaultTourneyList);
     const [state, dispatch] = useReducer(tourneysReducer, loadedData);
     useEffect(
         function () {

@@ -45,6 +45,4 @@ This project is built using Node.js and React, so familiarity with those will co
 
 When feasible, I like to follow the Crockford ([JSLint](https://www.jslint.com)) style guide, even though it is often inadequate for frameworks like React. This project uses [Ramda](https://ramdajs.com/) to manage state changes, and I prefer to use functional/immutable code. I use native JS code as much as reasonable while trying to avoid reinventing solutions in existing libraries.
 
-This project is 100% JavaScript, but uses TypeScript for type-checking (See "[Type Checking JavaScript Files](https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html)"). In only a few specific cases, like with some Ramda functions, type-checking isn't applicable.
-
 These are general guidelines and personal preferences, and not always followed (or necessary to follow). The ESLint configuration mostly mirrors the preferred style.

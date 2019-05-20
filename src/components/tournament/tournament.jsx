@@ -160,9 +160,7 @@ export default function Tournament(props) {
                         <Tooltip label={tooltipText}>
                             <span className="helpIcon">
                                 {(tooltipWarn)
-                                    // @ts-ignore
                                     ? <Icons.Alert className="status-alert" />
-                                    // @ts-ignore
                                     : <Icons.Check className="status-ok" />
                                 }
                             </span>

@@ -23,11 +23,9 @@ import "side-effects";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 import "./global.css";
-// @ts-ignore
 import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
-// @ts-ignore
 let history = createHistory(source);
 
 function App() {
@@ -37,7 +35,7 @@ function App() {
             <LocationProvider history={history}>
                 <header className="header">
                     <h1>
-                        Chessahoochee: <small>a chess tournament app.</small>
+                        ♘ Chessahoochee: <small>a chess tournament app.</small>
                     </h1>
                     <nav>
                         <Link to="tourneys" className={link}>

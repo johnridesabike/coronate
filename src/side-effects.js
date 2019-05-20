@@ -6,7 +6,6 @@ numeral.register("format", "half", {
         format: /(1\/2)/,
         unformat: /(1\/2)/
     },
-    // @ts-ignore
     // eslint-disable-next-line no-unused-vars
     format: function (value, format, roundingFunction) {
         const whole = Math.floor(value);

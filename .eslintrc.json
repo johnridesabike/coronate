@@ -51,7 +51,8 @@
                     {"object": "document"},
                     {"object": "window"},
                     {"object": "event"},
-                    {"property": "propTypes"}
+                    {"property": "propTypes"},
+                    {"property": "dispatch"}
                 ]
             }
         ]

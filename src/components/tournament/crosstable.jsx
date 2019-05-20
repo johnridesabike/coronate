@@ -19,9 +19,7 @@ export default function Crosstable({tourneyId}) {
     const [standings, opponentScores] = useMemo(
         function () {
             const [standingsFlat] = createStandingList(tieBreaks, roundList);
-            /** @type {Object.<string, Object.<string, number>>} */
             const opponentResults = standingsFlat.reduce(
-                /** @param {Object.<string, Object.<string, number>>} acc */
                 (acc, standing) => (
                     assoc(
                         String(standing.id),

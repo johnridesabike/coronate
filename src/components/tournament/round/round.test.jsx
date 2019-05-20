@@ -33,26 +33,21 @@ const robinInfo = (
     <PlayerInfoBox playerId={1} />
 );
 
-/** @param {JSX.Element} node */
 function getRating(node) {
     return render(
         node,
         {wrapper: AllTheProviders}
-    // @ts-ignore
     ).getByLabelText(/rating/i).value;
 }
 
-/** @param {JSX.Element} node */
 function getMatchCount(node) {
     return render(
         node,
         {wrapper: AllTheProviders}
-    // @ts-ignore
     ).getByLabelText(/matches played/i).value;
 }
 
 it("Original ratings are shown correctly.", function () {
-    // get the initial ratings
     const origRatingBatman = getRating(batmanInfo);
     cleanup();
     const origRatingRobin = getRating(robinInfo);
@@ -74,15 +69,12 @@ it("Ratings are updated after a match is scored.", function () {
     click(getByText(/select dick grayson/i));
     click(getByText(/match selected/i));
     click(getByText(/matches/i));
-    // This doesn't work. See: https://github.com/testing-library/dom-testing-library/issues/256
-    change(getByDisplayValue(/select a winner/i), {value: "WHITE"});
+    change(getByDisplayValue(/select a winner/i), {target: {value: "WHITE"}});
     click(getByText(
         /view information for match: bruce wayne versus dick grayson/i
     ));
-    // This shouldn't have the `not` but it will always fail because of the bug
-    // in `change()` above
-    expect(getByTestId("rating-0")).not.toHaveTextContent("1998 (+30)");
-    expect(getByTestId("rating-1")).not.toHaveTextContent("1909 (-30)");
+    expect(getByTestId("rating-0")).toHaveTextContent("1998 (+33)");
+    expect(getByTestId("rating-1")).toHaveTextContent("1909 (-33)");
 });
 
 // it("Match counts are updated.", function () {

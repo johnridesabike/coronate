@@ -5,8 +5,6 @@ import {
     useReducer,
     useEffect
 } from "react";
-// This will cause Webpack to import the entire Ramda library, but we're using
-// so much of it that cherry-picking individual files has virtually no benefit.
 import {
     append,
     assoc,
@@ -25,19 +23,65 @@ import {
     set,
     sort
 } from "ramda";
+import t from "tcomb";
 import {localStorageOrDefault} from "./helpers";
 import {getPlayerById} from "../pairing-scoring/helpers";
 import {createPlayer} from "../factories";
 import demoPlayers from "./demo-players.json";
-/**
- * @typedef {import("./dispatch").Action} Action
- * @typedef {import("../factory-types-old").Player} Player
- * @typedef {import("./dispatch").PlayerAction} PlayerAction
- */
 
 const defaultPlayers = {
     players: demoPlayers.playerList.map((p) => createPlayer(p)),
     avoid: demoPlayers.avoidList
+};
+
+const ActionSetPlayer = t.interface({
+    firstName: t.String,
+    lastName: t.String,
+    rating: t.Number,
+    matchCount: t.Number,
+    id: t.Number
+});
+const ActionAddPlayer = t.interface({
+    firstName: t.String,
+    lastName: t.String,
+    rating: t.Number
+});
+const ActionDelPlayer = t.interface({
+    id: t.Number
+});
+const ActionSetMatchcount = t.interface({
+    id: t.Number,
+    matchCount: t.Number
+});
+const ActionSetRating = t.interface({
+    id: t.Number,
+    rating: t.Number
+});
+const ActionAvoidPair = t.interface({
+    pair: t.tuple([t.Number, t.Number])
+});
+const ActionLoadState = t.interface({state: t.Any});
+const ActionTypes = t.union([
+    ActionSetPlayer,
+    ActionAddPlayer,
+    ActionDelPlayer,
+    ActionSetMatchcount,
+    ActionSetRating,
+    ActionAvoidPair,
+    ActionLoadState
+]);
+ActionTypes.dispatch = function (x) {
+    const typeToConstructor = {
+        "SET_PLAYER": ActionSetPlayer,
+        "ADD_PLAYER": ActionAddPlayer,
+        "DEL_PLAYER": ActionDelPlayer,
+        "SET_PLAYER_MATCHCOUNT": ActionSetMatchcount,
+        "SET_PLAYER_RATING": ActionSetRating,
+        "ADD_AVOID_PAIR": ActionAvoidPair,
+        "DEL_AVOID_PAIR": ActionAvoidPair,
+        "LOAD_STATE": ActionLoadState
+    };
+    return typeToConstructor[x.type];
 };
 
 /**
@@ -45,7 +89,7 @@ const defaultPlayers = {
  * @param {PlayerAction} action
  */
 function playersReducer(state, action ) {
-    // @ts-ignore
+    ActionTypes(action);
     const getNextId = pipe(map((p) => p.id), sort((a, b) => b - a), head, inc);
     switch (action.type) {
     case "ADD_PLAYER":
@@ -77,15 +121,16 @@ function playersReducer(state, action ) {
             state
         );
     case "DEL_PLAYER":
-        return over(
-            lensPath(["players"]),
-            filter((p) => p.id !== action.id),
-            set(
+        return pipe(
+            over(
                 lensPath(["avoid"]),
                 filter((pair) => !pair.includes(action.id)),
-                state
+            ),
+            over(
+                lensPath(["players"]),
+                filter((p) => p.id !== action.id),
             )
-        );
+        )(state);
     case "SET_PLAYER_MATCHCOUNT":
         return set(
             lensPath([
@@ -129,7 +174,6 @@ function playersReducer(state, action ) {
     }
 }
 
-/** @type {[typeof defaultPlayers, React.Dispatch<PlayerAction>]} */
 const defaultContext = null;
 const PlayerContext = createContext(defaultContext);
 
@@ -139,9 +183,6 @@ export function usePlayers() {
     return {playerState, playerDispatch, getPlayer};
 }
 
-/**
- * @param {Object} props
- */
 export function PlayersProvider(props) {
     const loadedData = localStorageOrDefault("players", defaultPlayers);
     const [state, dispatch] = useReducer(playersReducer, loadedData);

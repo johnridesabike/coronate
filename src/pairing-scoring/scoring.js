@@ -14,7 +14,6 @@ import {
 import {firstBy} from "thenby";
 import EloRank from "elo-rank";
 import t from "tcomb";
-// eslint-disable-next-line no-unused-vars
 import {WHITE, BLACK, DUMMY_ID} from "./constants";
 import {Player, RoundList} from "../factories";
 import {
@@ -23,9 +22,9 @@ import {
     playerScoreList,
     removeFirstAndLast,
     isNotDummy,
-    getAllPlayers,
+    getAllPlayersFromMatches,
     areScoresEqual,
-    playerMatchColor,
+    playerColorInRound,
     switchColor,
     getPlayerById,
     getPlayerAvoidList,
@@ -256,7 +255,7 @@ export function createStandingList(methods, roundList, roundId) {
     const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
     const tieBreakNames = selectedTieBreaks.map((m) => m.name);
     // Get a flat list of all of the players and their scores.
-    const standings = getAllPlayers(
+    const standings = getAllPlayersFromMatches(
         roundList
     ).filter(
         (id) => id !== DUMMY_ID
@@ -313,15 +312,15 @@ export function createStandingTree(methods, roundList, roundId = null) {
  */
 const dueColor = ScoreCalculator.of(
     function (playerId, roundList, roundId = null) {
-        const match = (
+        const round = (
             (roundId === null)
             ? last(roundList)
             : roundList[roundId - 1]
         );
-        if (!match) {
+        if (!round) {
             return null;
         }
-        const prevColor = playerMatchColor(playerId, match);
+        const prevColor = playerColorInRound(playerId, round);
         return switchColor(prevColor);
     }
 );
@@ -431,7 +430,6 @@ export function calcNewRatings(origRatings, matchCounts, result) {
         whiteElo.getExpected(origRatings[WHITE], origRatings[BLACK]),
         blackElo.getExpected(origRatings[BLACK], origRatings[WHITE])
     ];
-    /** @type {[number, number]} */
     const newRating = [
         whiteElo.updateRating(
             scoreExpected[WHITE],
@@ -444,7 +442,6 @@ export function calcNewRatings(origRatings, matchCounts, result) {
             origRatings[BLACK]
         )
     ];
-    // @ts-ignore
     return newRating.map(
         (rating) => (
             rating < FLOOR
