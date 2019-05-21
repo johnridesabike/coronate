@@ -32,5 +32,5 @@ it("Deleting all tournaments displays a message", function () {
     );
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     fireEvent.click(getByLabelText(/delete “the battle for gotham city”/i));
-    expect(getByText(/No tournaments added yet./i)).toBeTruthy();
+    expect(getByText(/No tournaments added yet./i)).toBeInTheDocument();
 });

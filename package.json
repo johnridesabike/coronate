@@ -21,11 +21,12 @@
     "deploy": "gh-pages -d build",
     "sourcemaps": "source-map-explorer './build/static/js/*'",
     "lint": "eslint --ext .jsx,.js src/",
-    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-dev-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-start": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-start-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "postinstall": "electron-builder install-app-deps",
-    "preelectron-pack": "npm run build",
-    "electron-pack": "electron-builder build -mw"
+    "preelectron-build": "npm run build",
+    "electron-build": "electron-builder build -mw",
+    "electron-build-win": "electron-builder build -w"
   },
   "dependencies": {
     "@reach/dialog": "^0.2.8",

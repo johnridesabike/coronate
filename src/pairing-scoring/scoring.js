@@ -25,10 +25,6 @@ import {
     getPlayerScoreListNoByes
 } from "./helpers";
 
-/**
- * @returns {typeof WHITE | typeof BLACK?}
- */
-
 export function getDueColor(playerId, matchList) {
     t.Number(playerId);
     t.list(Match)(matchList);
@@ -94,11 +90,9 @@ function getOpponentScores(playerId, matchList) {
 /*******************************************************************************
  * The main scoring methods
  ******************************************************************************/
-/**
- * @returns {number}
- */
 const getPlayerScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function playerScoreFunction(playerId, matchList) {
         const scoreList = getPlayerScoreList(playerId, matchList);
         return sum(scoreList);
     }
@@ -107,10 +101,10 @@ export {getPlayerScore};
 
 /**
  * The player's cumulative score.
- * @returns {number}
  */
 const getCumulativeScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function cumulativeScoreFunction(playerId, matchList) {
         const scoreList = getPlayerScoreListNoByes(
             playerId,
             matchList
@@ -124,10 +118,10 @@ const getCumulativeScore = ScoreCalulator.of(
 
 /**
  * Get the cumulative scores of a player's opponents.
- * @returns {number}
  */
 const getCumulativeOfOpponentScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function cumulativeOfOpponentFunction(playerId, matchList) {
         const oppScores = getPlayersByOpponent(
             playerId,
             matchList
@@ -143,10 +137,10 @@ const getCumulativeOfOpponentScore = ScoreCalulator.of(
 /**
  * Calculate a player's color balance. A negative number means they played as
  * white more. A positive number means they played as black more.
- * @returns {number}
  */
 const getColorBalanceScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function colorBalanceFunction(playerId, matchList) {
         const colorList = getMatchesByPlayer(
             playerId,
             matchList
@@ -167,10 +161,10 @@ export {getColorBalanceScore};
 
 /**
  * Gets the modified median factor defined in USCF § 34E1
- * @returns {number}
  */
 const getModifiedMedianScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function modifiedMedianFunction(playerId, matchList) {
         const scores = getOpponentScores(playerId, matchList);
         return pipe(
             sort((a, b) => a - b),
@@ -181,11 +175,9 @@ const getModifiedMedianScore = ScoreCalulator.of(
     }
 );
 
-/**
- * @returns {number}
- */
 const getSolkoffScore = ScoreCalulator.of(
-    function (playerId, matchList) {
+    // named functions are better for debugging
+    function solkoffFunction(playerId, matchList) {
         const scoreList = getOpponentScores(playerId, matchList);
         return sum(scoreList);
     }
