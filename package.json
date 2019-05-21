@@ -22,7 +22,7 @@
     "sourcemaps": "source-map-explorer './build/static/js/*'",
     "lint": "eslint --ext .jsx,.js src/",
     "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-dev-win": "concurrently \"SET BROWSER=none\" \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "postinstall": "electron-builder install-app-deps",
     "preelectron-pack": "npm run build",
     "electron-pack": "electron-builder build -mw"
