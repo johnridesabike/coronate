@@ -1,7 +1,7 @@
 // this component should eventually replace player-match-info.jsx
 import React from "react";
 import PropTypes from "prop-types";
-import {createPlayerStats} from "../../../pairing-scoring/scoring";
+import {createPlayerStats} from "../../../pairing-scoring";
 import {useTournament, usePlayers} from "../../../state";
 
 export default function PlayerInfo({playerId, tourneyId, roundId}) {

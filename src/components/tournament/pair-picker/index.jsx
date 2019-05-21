@@ -8,13 +8,13 @@ import PlayerInfo from "./player-info";
 import {PanelContainer, Panel} from "../../utility";
 import {usePlayers, useTournament} from "../../../state";
 import {findById} from "../../utility";
-import {createPlayerStats} from "../../../pairing-scoring/scoring";
 import {
     calcPairIdeal,
     maxPriority,
     sortPlayersForPairing,
-    setUpperHalves
-} from "../../../pairing-scoring/pairing";
+    setUpperHalves,
+    createPlayerStats
+} from "../../../pairing-scoring";
 
 export default function PairPicker({tourneyId, roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);

@@ -1,6 +1,15 @@
 import {BLACK, WHITE, DUMMY_ID} from "./constants";
 import {createPlayer, createMatch, createTournament} from "./factories";
-import {AvoidList, Player, Match, Tournament, RoundList} from "./types";
+import {
+    AvoidList,
+    Match,
+    Player,
+    PlayerStats,
+    RoundList,
+    ScoreCalulator,
+    Standing,
+    Tournament
+} from "./types";
 
 const dummyPlayer = createPlayer({
     id: DUMMY_ID,
@@ -22,7 +31,10 @@ export {
     DUMMY_ID,
     Match,
     Player,
+    PlayerStats,
     RoundList,
+    ScoreCalulator,
+    Standing,
     Tournament,
     WHITE,
     createMatch,

@@ -25,7 +25,7 @@ import {
 } from "ramda";
 import t from "tcomb";
 import {localStorageOrDefault} from "./helpers";
-import {getPlayerById} from "../pairing-scoring/helpers";
+import {getPlayerById} from "../pairing-scoring";
 import {createPlayer} from "../data-types";
 import demoPlayers from "./demo-players.json";
 

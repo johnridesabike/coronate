@@ -4,7 +4,7 @@ import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import {PanelContainer, Panel} from "../../utility";
-import {calcNewRatings} from "../../../pairing-scoring/scoring";
+import {calcNewRatings} from "../../../pairing-scoring";
 import {BLACK, WHITE, DUMMY_ID} from "../../../data-types";
 import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";

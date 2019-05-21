@@ -5,7 +5,7 @@ import {Link} from "@reach/router";
 import last from "ramda/src/last";
 import Icons from "../icons";
 import {useTournament, usePlayers} from "../../state";
-import {calcNumOfRounds} from "../../pairing-scoring/helpers";
+import {calcNumOfRounds} from "../../pairing-scoring";
 import {DUMMY_ID} from "../../data-types";
 import styles from "./tournament.module.css";
 

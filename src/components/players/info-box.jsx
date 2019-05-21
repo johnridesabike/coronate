@@ -3,8 +3,7 @@ import PropTypes from "prop-types";
 import numeral from "numeral";
 import {Link} from "@reach/router";
 import Icons from "../icons";
-import {getPlayerAvoidList} from "../../pairing-scoring/helpers";
-import {kFactor} from "../../pairing-scoring/scoring";
+import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
 import {usePlayers} from "../../state";
 
 export default function PlayerInfoBox(props) {

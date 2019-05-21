@@ -1,7 +1,6 @@
 import {curry, assoc} from "ramda";
 import {BLACK, WHITE, DUMMY_ID, createMatch} from "../data-types";
-import {getPlayerById} from "../pairing-scoring/helpers";
-import pairPlayers from "../pairing-scoring/pairing";
+import {getPlayerById, pairPlayers} from "../pairing-scoring";
 
 export function autoPair(
     tourney,

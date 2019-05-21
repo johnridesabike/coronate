@@ -1,3 +1,6 @@
+// This file is a work in progress. The weighting for the ratings needs to be
+// tweaked a lot, and the pairing function itself needs to be cleaned up and
+// made more reusable.
 import {firstBy} from "thenby";
 import {
     add,
@@ -12,13 +15,18 @@ import {
     reverse,
     splitAt,
     sort,
-    T,
     view
 } from "ramda";
 import blossom from "edmonds-blossom";
 import t from "tcomb";
-import {createPlayerStats, PlayerStats} from "./scoring";
-import {DUMMY_ID, Player, RoundList, AvoidList} from "../data-types";
+import {createPlayerStats} from "./factories";
+import {
+    AvoidList,
+    DUMMY_ID,
+    Player,
+    PlayerStats,
+    RoundList
+} from "../data-types";
 
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (value) => (divider) => value / divider;
@@ -133,7 +141,7 @@ function setByePlayer(byeQueue, playerStatsList) {
     // previously, then just pick the last player.
     const index = (
         (indexOfDueBye === -1)
-        ? findLastIndex(T, playerStatsList)
+        ? playerStatsList.length - 1
         : indexOfDueBye
     );
     return over(

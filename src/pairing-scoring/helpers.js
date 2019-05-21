@@ -1,22 +1,14 @@
-// TODO: Clean this up. Refactor unnecessary functions, etc.
-import {init, pipe, tail} from "ramda";
 import t from "tcomb";
-import {} from "../data-types";
 import {
     AvoidList,
     DUMMY_ID,
     Match,
     Player,
     RoundList,
+    Standing,
     dummyPlayer,
     missingPlayer
 } from "../data-types";
-const Standing = t.struct({
-    id: t.Number,
-    score: t.Number,
-    tieBreaks: t.list(t.Number)
-});
-export {Standing};
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
@@ -44,11 +36,7 @@ export function getPlayerById(playerList, id) {
         return dummyPlayer;
     }
     const player = playerList.filter((p) => p.id === id)[0];
-    return (
-        (player)
-        ? player
-        : missingPlayer(id)
-    );
+    return (player) ? player : missingPlayer(id);
 }
 
 /*******************************************************************************
@@ -62,6 +50,19 @@ function getMatchesByPlayer(playerId, matchList) {
     return matchList.filter((match) => match.players.includes(playerId));
 }
 export {getMatchesByPlayer};
+
+function getMatchDetailsForPlayer(playerId, match) {
+    t.Number(playerId);
+    Match(match);
+    const index = match.players.indexOf(playerId);
+    return {
+        color: index,
+        newRating: match.newRating[index],
+        origRating: match.origRating[index],
+        result: match.result[index]
+    };
+}
+export {getMatchDetailsForPlayer};
 
 /**
  * Flatten a list of rounds to a list of matches.
@@ -93,30 +94,40 @@ export function getAllPlayersFromMatches(matchList) {
 /**
  * Get a list of all of a player's scores from each match.
  */
-export function playerScoreList(playerId, matchList) {
+export function getPlayerScoreList(playerId, matchList) {
     t.Number(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
         matchList,
     ).map(
-        (match) => match.result[match.players.indexOf(playerId)]
+        (match) => getMatchDetailsForPlayer(playerId, match).result
     );
 }
 
-const removeFirstAndLast = pipe(init, tail);
-export {removeFirstAndLast};
+/**
+ * TODO: Maybe merge this with the other function?
+ * @returns {number[]}
+ */
+export function getPlayerScoreListNoByes(playerId, matchList) {
+    t.Number(playerId);
+    t.list(Match)(matchList);
+    return getMatchesByPlayer(
+        playerId,
+        matchList
+    ).filter(
+        isNotBye
+    ).map(
+        (match) => getMatchDetailsForPlayer(playerId, match).result
+    );
+}
 
 /*******************************************************************************
  * Round functions
  ******************************************************************************/
 export function calcNumOfRounds(playerCount) {
     const rounds = Math.ceil(Math.log2(playerCount));
-    return (
-        (Number.isFinite(rounds))
-        ? rounds
-        : 0
-    );
+    return (Number.isFinite(rounds)) ? rounds : 0;
 }
 
 /*******************************************************************************

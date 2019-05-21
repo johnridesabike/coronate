@@ -5,7 +5,7 @@ import Icons from "../../icons";
 import Selecting from "./selecting";
 import {useTournament, usePlayers} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
-import {hasHadBye} from "../../../pairing-scoring/scoring";
+import {hasHadBye} from "../../../pairing-scoring";
 
 export default function PlayerSelect(props) {
     const tourneyId = Number(props.tourneyId);

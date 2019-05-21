@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import numeral from "numeral";
-import {createPlayerStats} from "../../../pairing-scoring/scoring";
+import {createPlayerStats} from "../../../pairing-scoring";
 import {useRound, usePlayers} from "../../../state";
 import {findById} from "../../utility";
 

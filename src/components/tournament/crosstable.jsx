@@ -9,9 +9,9 @@ import {useTournament, usePlayers} from "../../state";
 import {
     createStandingList,
     getResultsByOpponent,
-    getPerformanceRatings
-} from "../../pairing-scoring/scoring";
-import {rounds2Matches} from "../../pairing-scoring/helpers";
+    getPerformanceRatings,
+    rounds2Matches
+} from "../../pairing-scoring";
 import style from "./scores.module.css";
 
 export default function Crosstable({tourneyId}) {

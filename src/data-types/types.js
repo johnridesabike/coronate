@@ -10,11 +10,29 @@ const Player = t.interface(
         lastName: t.String,
         rating: t.Number,
         matchCount: t.Number,
-        type: t.String
+        type: t.String // used for CSS styling etc
     },
     "Player"
 );
 export {Player};
+
+const PlayerStats = t.interface(
+    {
+        profile: Player,
+        id: t.Number,
+        score: t.Number,
+        dueColor: t.maybe(t.Number),
+        colorBalance: t.Number,
+        opponentHistory: t.list(t.Number),
+        upperHalf: t.Boolean,
+        rating: t.Number,
+        avoidList: t.list(t.Number),
+        hasHadBye: t.Boolean,
+        isDueBye: t.Boolean
+    },
+    "PlayerStats"
+);
+export {PlayerStats};
 
 const Match = t.interface(
     {
@@ -43,4 +61,19 @@ const Tournament = t.interface(
 );
 export {Tournament};
 
+const ScoreCalulator = t.func(
+    [t.Number, t.list(Match)],
+    t.Number,
+    "ScoreCalulator"
+);
+export {ScoreCalulator};
 
+const Standing = t.interface(
+    {
+        id: t.Number,
+        score: t.Number,
+        tieBreaks: t.list(t.Number)
+    },
+    "Standing"
+);
+export {Standing};

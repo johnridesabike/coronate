@@ -36,6 +36,8 @@
         "arrow-parens": "warn",
         "arrow-body-style": ["warn", "never"],
         "no-unused-expressions": "error",
+        "no-unneeded-ternary": "error",
+        "multiline-ternary": ["error", "always-multiline"],
         "react/prop-types": [2],
         "react/jsx-closing-tag-location": [1],
         "react/jsx-closing-bracket-location": [1],

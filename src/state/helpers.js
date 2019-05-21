@@ -1,8 +1,5 @@
 /**
- * @template {object} T
- * @param {string} key
- * @param {T} defaultValue
- * @returns {T}
+ * TODO: replace this with something more useful like PouchDB.
  */
 export function localStorageOrDefault(key, defaultValue) {
     if (process.env.NODE_ENV === "test") {

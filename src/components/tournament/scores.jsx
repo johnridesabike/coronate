@@ -9,7 +9,7 @@ import {useTournament, usePlayers} from "../../state";
 import {
     createStandingTree,
     tieBreakMethods
-} from "../../pairing-scoring/scoring";
+} from "../../pairing-scoring";
 import style from "./scores.module.css";
 
 function ScoreTable({tourneyId}) {
