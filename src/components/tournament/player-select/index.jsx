@@ -5,13 +5,14 @@ import Icons from "../../icons";
 import Selecting from "./selecting";
 import {useTournament, usePlayers} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
-import {hasHadBye} from "../../../pairing-scoring";
+import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
 
 export default function PlayerSelect(props) {
     const tourneyId = Number(props.tourneyId);
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     const {getPlayer} = usePlayers();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
+    const matches = rounds2Matches(roundList);
     return (
         <PanelContainer>
             <Panel>
@@ -68,9 +69,9 @@ export default function PlayerSelect(props) {
                         <li
                             key={pId}
                             className={
-                                hasHadBye(pId, roundList)
-                                    ? "disabled"
-                                    : ""
+                                hasHadBye(pId, matches)
+                                ? "disabled"
+                                : ""
                             }
                         >
                             {getPlayer(pId).firstName}{" "}

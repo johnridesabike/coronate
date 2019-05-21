@@ -3,6 +3,12 @@
     flex-wrap: wrap;
 }
 
+@media screen and (min-width: 600px) {
+    .panels {
+        flex-wrap: nowrap;
+    }
+}
+
 .panel:not(:last-child) {
     margin-right: 1em;
 }
