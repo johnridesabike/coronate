@@ -38,7 +38,7 @@ import {
 } from "./helpers";
 
 /**
- * Create a function to sort the players. This dynamically creates a `thenBy`
+ * Create a function to sort the standings. This dynamically creates a `thenBy`
  * function based on the desired tiebreak sort methods.
  */
 function createTieBreakSorter(tieBreaks) {

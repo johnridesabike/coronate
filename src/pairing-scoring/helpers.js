@@ -8,8 +8,8 @@ import {
     Match,
     Player,
     RoundList,
-    anonymousPlayer,
-    dummyPlayer
+    dummyPlayer,
+    missingPlayer
 } from "../data-types";
 const Standing = t.struct({
     id: t.Number,
@@ -47,7 +47,7 @@ export function getPlayerById(playerList, id) {
     return (
         (player)
         ? player
-        : anonymousPlayer
+        : missingPlayer(id)
     );
 }
 
