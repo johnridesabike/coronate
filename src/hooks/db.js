@@ -3,8 +3,9 @@ import localforage from "localforage";
 import "localforage-getitems";
 import t from "tcomb";
 import {curry} from "ramda";
-import demoPlayers from "./state/demo-players.json";
-import {getPlayerById} from "./pairing-scoring";
+import demoPlayers from "../state/demo-players.json";
+import demoTourneys from "../state/demo-tourney.json";
+import {getPlayerById} from "../pairing-scoring";
 
 const DB_NAME = "Chessahoochee";
 
@@ -17,15 +18,17 @@ demoPlayers.playerList.forEach(function (value) {
     playerStore.setItem(String(value.id), value);
 });
 
-export function usePlayers(ids) {
+export function usePlayersDb(ids) {
     t.list(t.Number)(ids);
     const [players, setPlayers] = useState([]);
     useEffect(
         function () {
             const idStrings = ids.map((id) => String(id));
-            playerStore.getItems(idStrings).then(function (values) {
-                setPlayers(values);
-            });
+            if (idStrings.length > 0) {
+                playerStore.getItems(idStrings).then(function (values) {
+                    setPlayers(values);
+                });
+            }
         },
         [ids]
     );
@@ -44,7 +47,7 @@ const optionStore = localforage.createInstance({
     storeName: "Options"
 });
 
-export function useOption(key, defaultValue) {
+export function useOptionDb(key, defaultValue) {
     const [option, setOption] = useState(t.Number(defaultValue));
     useEffect(
         function () {
@@ -72,4 +75,33 @@ export function useOption(key, defaultValue) {
         [key, option]
     );
     return [option, setOption];
+}
+
+const tourneyStore = localforage.createInstance({
+    name: DB_NAME,
+    storeName: "Tournaments"
+});
+
+demoTourneys.forEach(function (value) {
+    tourneyStore.setItem(String(value.id), value);
+});
+
+export function useTournamentDb(id) {
+    const [tourney, setTourney] = useState({});
+    useEffect(
+        function () {
+            tourneyStore.getItem(String(id)).then(function (value) {
+                console.log("got tourney", id, value);
+                setTourney(value);
+            });
+        },
+        [id]
+    );
+    useEffect(
+        function () {
+            tourneyStore.setItem(String(id), tourney);
+        },
+        [id, tourney]
+    );
+    return [tourney, setTourney];
 }

@@ -5,15 +5,36 @@ import {Link} from "@reach/router";
 import last from "ramda/src/last";
 import Icons from "../icons";
 import {useTournament, usePlayers} from "../../state";
-import {calcNumOfRounds} from "../../pairing-scoring";
+import {
+    calcNumOfRounds,
+    rounds2Matches,
+    getAllPlayersFromMatches
+} from "../../pairing-scoring";
 import {DUMMY_ID} from "../../data-types";
 import styles from "./tournament.module.css";
+import {
+    TournamentProvider,
+    useTournamentDb,
+    usePlayersDb
+} from "../../hooks";
 
 export default function Tournament(props) {
     const tourneyId = Number(props.tourneyId);
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
     const {playerState, getPlayer, playerDispatch} = usePlayers();
+
+    const [tourney2] = useTournamentDb(props.tourneyId);
+    const tourneyPlayers = useMemo(
+        () => (
+            (tourney2.roundList)
+            ? getAllPlayersFromMatches(rounds2Matches(tourney2.roundList))
+            : []
+        ),
+        [tourney2.roundList]
+    );
+    const [players2, getPlayer2] = usePlayersDb(tourneyPlayers);
+
     // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
@@ -182,7 +203,14 @@ export default function Tournament(props) {
                 </ul>
             </div>
             <div className={styles.content}>
-                {props.children}
+                <TournamentProvider
+                    value={{
+                        players: players2,
+                        getPlayer: getPlayer2,
+                        tourney: tourney2}}
+                >
+                    {props.children}
+                </TournamentProvider>
             </div>
         </div>
     );

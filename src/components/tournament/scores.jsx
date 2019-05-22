@@ -5,16 +5,17 @@ import {defaultTo} from "ramda";
 import PropTypes from "prop-types";
 import Icons from "../icons";
 import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
-import {useTournament, usePlayers} from "../../state";
+import {useTournament} from "../../state";
 import {
     createStandingTree,
     tieBreakMethods
 } from "../../pairing-scoring";
+import {useTournament as useTournament2} from "../../hooks";
 import style from "./scores.module.css";
 
 function ScoreTable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(tourneyId);
-    const {getPlayer} = usePlayers();
+    const {getPlayer} = useTournament2();
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>

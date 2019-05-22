@@ -6,7 +6,7 @@ import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import Selecting from "../player-select/selecting";
 import {useRound, usePlayers} from "../../../state";
-import {useOption} from "../../../hooks";
+import {useOptionDb} from "../../../hooks";
 import {WHITE, BLACK, DUMMY_ID} from "../../../data-types";
 
 export default function SelectList({
@@ -17,7 +17,7 @@ export default function SelectList({
 }) {
     const {dispatch, unmatched} = useRound(tourneyId, roundId);
     const {playerState, getPlayer} = usePlayers();
-    const [byeValue] = useOption("byeValue", 1);
+    const [byeValue] = useOptionDb("byeValue", 1);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     function selectPlayer(id) {

@@ -42,6 +42,7 @@
         "react/jsx-closing-tag-location": [1],
         "react/jsx-closing-bracket-location": [1],
         "react/jsx-handler-names": [1],
+        "react/jsx-first-prop-new-line": ["warn", "multiline"],
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",

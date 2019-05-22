@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {useTournaments, usePlayers} from "../state";
 // import {useOptions as useOptionsOld} from "../state";
-import {useOption} from "../hooks";
+import {useOptionDb} from "../hooks";
 import {createPlayer} from "../data-types";
 import defaultPlayers from "../state/demo-players.json";
 import defaultOptions from "../state/demo-options.json";
@@ -12,7 +12,7 @@ export function Options(props) {
     // const [options, optionsDispatch] = useOptionsOld();
     const {playerState, playerDispatch} = usePlayers();
     const [text, setText] = useState("");
-    const [byeValue, setByeValue] = useOption("byeValue", 1);
+    const [byeValue, setByeValue] = useOptionDb("byeValue", 1);
     // memoize this so the `useEffect` hook syncs with the correct state
     const exportData = useMemo(
         () => ({options: {byeValue}, tourneys, playerState}),

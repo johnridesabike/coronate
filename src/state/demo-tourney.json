@@ -1,5 +1,6 @@
 [
     {
+        "id": 0,
         "name": "Wayne Manor Open",
         "tieBreaks": [0, 1, 2, 3],
         "byeQueue": [],
@@ -156,6 +157,7 @@
         ]
     },
     {
+        "id": 1,
         "name": "The Battle for Gotham City",
         "tieBreaks": [0, 1, 2, 3],
         "byeQueue": [],

@@ -3,14 +3,16 @@ import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
 import Selecting from "./selecting";
-import {useTournament, usePlayers} from "../../../state";
+import {useTournament} from "../../../state";
 import {PanelContainer, Panel} from "../../utility";
 import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
+import {useTournament as useTournament2} from "../../../hooks";
 
 export default function PlayerSelect(props) {
     const tourneyId = Number(props.tourneyId);
     const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
-    const {getPlayer} = usePlayers();
+    // const {getPlayer} = usePlayers();
+    const {getPlayer} = useTournament2();
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
     const matches = rounds2Matches(roundList);
     return (

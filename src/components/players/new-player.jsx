@@ -27,7 +27,9 @@ export default function NewPlayer() {
                 <p>
                     <label>
                         First name{" "}
-                        <input type="text" name="firstName"
+                        <input
+                            type="text"
+                            name="firstName"
                             onChange={updateField}
                             value={newPlayerData.firstName} required
                         />
@@ -36,7 +38,9 @@ export default function NewPlayer() {
                 <p>
                     <label>
                         Last name{" "}
-                        <input type="text" name="lastName"
+                        <input
+                            type="text"
+                            name="lastName"
                             onChange={updateField}
                             value={newPlayerData.lastName} required
                         />

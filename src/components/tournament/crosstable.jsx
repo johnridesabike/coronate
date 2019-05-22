@@ -10,21 +10,14 @@ import {
     createStandingList,
     getResultsByOpponent,
     getPerformanceRatings,
-    rounds2Matches,
-    getAllPlayersFromMatches
+    rounds2Matches
 } from "../../pairing-scoring";
-import {usePlayers} from "../../hooks";
+import {useTournament as useTournament2} from "../../hooks";
 import style from "./scores.module.css";
 
 export default function Crosstable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
-    const playerIds = useMemo(
-        () => getAllPlayersFromMatches(rounds2Matches(roundList)),
-        [roundList]
-    );
-    const [players, getPlayer] = usePlayers(playerIds);
-    // const [players, getPlayer] = usePlayers([1]);
-    // const getPlayer = () => ({});
+    const {getPlayer} = useTournament2();
     const [standings, opponentScores] = useMemo(
         function () {
             const [standingsFlat] = createStandingList(tieBreaks, roundList);
