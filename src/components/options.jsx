@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo} from "react";
-import {useTournaments, useOptions, usePlayers} from "../state";
+import {useTournaments, usePlayers} from "../state";
+// import {useOptions as useOptionsOld} from "../state";
+import {useOption} from "../hooks";
 import {createPlayer} from "../data-types";
 import defaultPlayers from "../state/demo-players.json";
 import defaultOptions from "../state/demo-options.json";
@@ -7,13 +9,14 @@ import defaultTourneys from "../state/demo-tourney.json";
 
 export function Options(props) {
     const [tourneys, tourneysDispatch] = useTournaments();
-    const [options, optionsDispatch] = useOptions();
+    // const [options, optionsDispatch] = useOptionsOld();
     const {playerState, playerDispatch} = usePlayers();
     const [text, setText] = useState("");
+    const [byeValue, setByeValue] = useOption("byeValue", 1);
     // memoize this so the `useEffect` hook syncs with the correct state
     const exportData = useMemo(
-        () => ({options, tourneys, playerState}),
-        [options, tourneys, playerState]
+        () => ({options: {byeValue}, tourneys, playerState}),
+        [byeValue, tourneys, playerState]
     );
     useEffect(
         function () {
@@ -23,7 +26,7 @@ export function Options(props) {
     );
     function loadData(data) {
         tourneysDispatch({type: "LOAD_STATE", state: data.tourneys});
-        optionsDispatch({type: "LOAD_STATE", state: data.options});
+        setByeValue(data.options.byeValue);
         playerDispatch({type: "LOAD_STATE", state: data.playerState});
         window.alert("Data loaded!");
     }
@@ -65,22 +68,16 @@ export function Options(props) {
                         1
                         <input
                             type="radio"
-                            checked={options.byeValue === 1}
-                            onChange={() => optionsDispatch({
-                                type: "SET_BYE_VALUE",
-                                byeValue: 1
-                            })}
+                            checked={byeValue === 1}
+                            onChange={() => setByeValue(1)}
                         />
                     </label>{" "}
                     <label>
                         ½
                         <input
                             type="radio"
-                            checked={options.byeValue === 0.5}
-                            onChange={() => optionsDispatch({
-                                type: "SET_BYE_VALUE",
-                                byeValue: 0.5
-                            })}
+                            checked={byeValue === 0.5}
+                            onChange={() => setByeValue(0.5)}
                         />
                     </label>
                 </fieldset>

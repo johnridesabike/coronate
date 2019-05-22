@@ -2,8 +2,9 @@ import React, {Fragment} from "react";
 import PropTypes from "prop-types";
 import {set, lensIndex} from "ramda";
 import Icons from "../../icons";
-import {useTournament, usePlayers, useOptions} from "../../../state";
+import {useTournament, usePlayers} from "../../../state";
 import {WHITE, BLACK} from "../../../data-types";
+import {useOption} from "../../../hooks";
 
 export default function Stage({
     tourneyId,
@@ -14,7 +15,7 @@ export default function Stage({
     const {playerState, getPlayer} = usePlayers();
     const {players} = playerState;
     const dispatch = useTournament(tourneyId)[1];
-    const [{byeValue}] = useOptions();
+    const [byeValue] = useOption("byeValue", 1);
     const [white, black] = stagedPlayers;
 
     function unstage(color) {

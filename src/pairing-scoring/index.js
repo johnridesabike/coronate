@@ -11,6 +11,7 @@ import pairPlayers, {
 } from "./pairing";
 import {
     calcNumOfRounds,
+    getAllPlayersFromMatches,
     getPlayerAvoidList,
     getPlayerById,
     rounds2Matches
@@ -33,6 +34,7 @@ export {
     getPerformanceRatings,
     getPlayerAvoidList,
     getPlayerById,
+    getAllPlayersFromMatches,
     getResultsByOpponent,
     hasHadBye,
     kFactor,

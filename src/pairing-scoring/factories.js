@@ -51,8 +51,6 @@ export function createStandingList(methods, roundList, roundId) {
     // Get a flat list of all of the players and their scores.
     const standings = getAllPlayersFromMatches(
         matchList
-    ).filter(
-        isNotDummy
     ).map(
         (id) => Standing({
             id,
@@ -81,7 +79,8 @@ export function createStandingTree(methods, roundList, roundId = null) {
         standingsFlat,
         tieBreakNames
     ] = createStandingList(methods, roundList, roundId);
-    const standingsTree = standingsFlat.reduce(
+    const standingsFlatNoByes = standingsFlat.filter(isNotDummy);
+    const standingsTree = standingsFlatNoByes.reduce(
         /** @param {Standing[][]} acc*/
         function (acc, standing, i, orig) {
             const prevStanding = orig[i - 1];

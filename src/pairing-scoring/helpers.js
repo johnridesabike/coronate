@@ -31,12 +31,25 @@ export function areScoresEqual(standing1, standing2) {
     );
 }
 
+/**
+ * Retrive a specific player from a list or object.
+ * @param playerList This can either be typed as `[Player1, Player1]` or
+ * `{"1": Player, "2": Player}`, where `Player1.id` equals its dict key.
+ * @param id the `id` property of the desired `Player` object.
+ * @returns The desired Player object.
+ */
 export function getPlayerById(playerList, id) {
-    if (id === DUMMY_ID) {
+    t.union([
+        t.list(Player),
+        t.dict(t.String, Player)
+    ])(playerList);
+    if (Number(id) === DUMMY_ID) {
         return dummyPlayer;
     }
-    const player = playerList.filter((p) => p.id === id)[0];
-    return (player) ? player : missingPlayer(id);
+    const player = (playerList.filter)
+        ? playerList.filter((p) => p.id === id)[0]
+        : playerList[id];
+    return (player) ? player : missingPlayer(Number(id));
 }
 
 /*******************************************************************************

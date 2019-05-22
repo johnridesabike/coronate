@@ -44,7 +44,8 @@ Panel.propTypes = {
 export function PanelContainer(props) {
     return (
         <div {...props} className={styles.panels}>
-            {React.Children.map(props.children, (child) => child)}
+            {props.children}
+            {/* {React.Children.map(props.children, (child) => child)} */}
         </div>
     );
 }

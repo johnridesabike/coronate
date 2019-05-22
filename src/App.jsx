@@ -18,7 +18,7 @@ import Crosstable from "./components/tournament/crosstable";
 import Round from "./components/tournament/round";
 import {Options} from "./components/options";
 import Caution from "./components/caution";
-import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
+import {TournamentProvider, PlayersProvider} from "./state";
 import "side-effects";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
@@ -55,31 +55,29 @@ function App() {
                 </header>
                 <main className="content">
                     {/* Lots of nested contexts. Is there a better way? */}
-                    <OptionsProvider>
-                        <PlayersProvider>
-                            <TournamentProvider>
-                                <Router>
-                                    <TournamentIndex path="tourneys">
-                                        <TournamentList path="/" />
-                                        <Tournament path=":tourneyId">
-                                            <PlayerSelect path="/" />
-                                            <Crosstable path="crosstable" />
-                                            <Scores path="scores" />
-                                            <Round path=":roundId" />
-                                        </Tournament>
-                                    </TournamentIndex>
-                                    <Players path="players">
-                                        <PlayerList path="/"/>
-                                        <PlayerInfo path=":playerId" />
-                                    </Players>
-                                    <Options path="options" />
-                                    <About path="about" />
-                                    <NotFound default />
-                                    <Redirect from="/" to="tourneys" noThrow />
-                                </Router>
-                            </TournamentProvider>
-                        </PlayersProvider>
-                    </OptionsProvider>
+                    <PlayersProvider>
+                        <TournamentProvider>
+                            <Router>
+                                <TournamentIndex path="tourneys">
+                                    <TournamentList path="/" />
+                                    <Tournament path=":tourneyId">
+                                        <PlayerSelect path="/" />
+                                        <Crosstable path="crosstable" />
+                                        <Scores path="scores" />
+                                        <Round path=":roundId" />
+                                    </Tournament>
+                                </TournamentIndex>
+                                <Players path="players">
+                                    <PlayerList path="/"/>
+                                    <PlayerInfo path=":playerId" />
+                                </Players>
+                                <Options path="options" />
+                                <About path="about" />
+                                <NotFound default />
+                                <Redirect from="/" to="tourneys" noThrow />
+                            </Router>
+                        </TournamentProvider>
+                    </PlayersProvider>
                 </main>
             </LocationProvider>
         </div>

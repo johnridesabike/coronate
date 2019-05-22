@@ -5,18 +5,26 @@ import PropTypes from "prop-types";
 import numeral from "numeral";
 import {assoc} from "ramda";
 import Icons from "../icons";
-import {useTournament, usePlayers} from "../../state";
+import {useTournament} from "../../state";
 import {
     createStandingList,
     getResultsByOpponent,
     getPerformanceRatings,
-    rounds2Matches
+    rounds2Matches,
+    getAllPlayersFromMatches
 } from "../../pairing-scoring";
+import {usePlayers} from "../../hooks";
 import style from "./scores.module.css";
 
 export default function Crosstable({tourneyId}) {
     const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
-    const {getPlayer} = usePlayers();
+    const playerIds = useMemo(
+        () => getAllPlayersFromMatches(rounds2Matches(roundList)),
+        [roundList]
+    );
+    const [players, getPlayer] = usePlayers(playerIds);
+    // const [players, getPlayer] = usePlayers([1]);
+    // const getPlayer = () => ({});
     const [standings, opponentScores] = useMemo(
         function () {
             const [standingsFlat] = createStandingList(tieBreaks, roundList);
