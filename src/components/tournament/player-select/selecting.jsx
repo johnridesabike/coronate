@@ -1,22 +1,25 @@
-import {usePlayers, useTournament} from "../../../state";
 import NewPlayer from "../../players/new-player";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 import React from "react";
+import {usePlayers} from "../../../state";
+import {useTournament} from "../../../hooks";
 
-export default function Selecting({tourneyId}) {
-    const [{players}, dispatch] = useTournament(tourneyId);
+export default function Selecting(props) {
+    // const [{players}, dispatch] = useTournament(tourneyId);
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
     const {playerState, getPlayer} = usePlayers();
 
     function togglePlayer(event) {
         const id = Number(event.target.value);
         if (event.target.checked) {
             dispatch({
-                players: players.concat([id]),
+                players: tourney.players.concat([id]),
                 type: "SET_TOURNEY_PLAYERS"
             });
         } else {
             dispatch({
-                players: players.filter((pId) => pId !== id),
+                players: tourney.players.filter((pId) => pId !== id),
                 type: "SET_TOURNEY_PLAYERS"
             });
         }
@@ -27,11 +30,10 @@ export default function Selecting({tourneyId}) {
             <button
                 onClick={() =>
                     dispatch({
-                        type: "SET_TOURNEY_PLAYERS",
                         players: playerState.players.map(
                             (p) => p.id
                         ),
-                        tourneyId
+                        type: "SET_TOURNEY_PLAYERS"
                     })
                 }
             >
@@ -40,9 +42,8 @@ export default function Selecting({tourneyId}) {
             <button
                 onClick={() =>
                     dispatch({
-                        type: "SET_TOURNEY_PLAYERS",
                         players: [],
-                        tourneyId
+                        type: "SET_TOURNEY_PLAYERS"
                     })
                 }
             >
@@ -69,7 +70,7 @@ export default function Selecting({tourneyId}) {
                                 <input
                                     type="checkbox"
                                     value={id}
-                                    checked={players.includes(id)}
+                                    checked={tourney.players.includes(id)}
                                     onChange={togglePlayer}
                                 />
                             </td>
@@ -81,6 +82,4 @@ export default function Selecting({tourneyId}) {
         </div>
     );
 }
-Selecting.propTypes = {
-    tourneyId: PropTypes.number
-};
+Selecting.propTypes = {};

@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
-import {Link} from "@reach/router";
-import {usePlayers} from "../state";
-import styles from "./utility.module.css";
 import {DUMMY_ID} from "../data-types";
+import {Link} from "@reach/router";
+import PropTypes from "prop-types";
+import React from "react";
+import styles from "./utility.module.css";
+import {usePlayers} from "../state";
 
 export const Button = ({children, action}) => (
     <button onClick={action}>
@@ -11,8 +11,8 @@ export const Button = ({children, action}) => (
     </button>
 );
 Button.propTypes = {
-    children: PropTypes.node.isRequired,
-    action: PropTypes.func.isRequired
+    action: PropTypes.func.isRequired,
+    children: PropTypes.node.isRequired
 };
 
 export const BackButton = ({action}) => (
@@ -81,8 +81,8 @@ export function PlayerLink({id, firstName, lastName}) {
     );
 }
 PlayerLink.propTypes = {
-    id: PropTypes.number.isRequired,
     firstName: PropTypes.bool,
+    id: PropTypes.number.isRequired,
     lastName: PropTypes.bool
 };
 

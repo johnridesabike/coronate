@@ -1,16 +1,16 @@
-import React from "react";
-import {Link} from "@reach/router";
-import VisuallyHidden from "@reach/visually-hidden";
 import Icons from "../icons";
-import {usePlayers} from "../../state";
-import {PlayerLink} from "../utility";
+import {Link} from "@reach/router";
 import NewPlayer from "./new-player";
+import {PlayerLink} from "../utility";
+import React from "react";
+import VisuallyHidden from "@reach/visually-hidden";
+import {usePlayers} from "../../state";
 
 export default function PlayerList(props) {
     const {playerState, playerDispatch} = usePlayers();
     const delPlayer = function (event, id) {
         event.preventDefault();
-        playerDispatch({type: "DEL_PLAYER", id});
+        playerDispatch({id, type: "DEL_PLAYER"});
     };
     return (
         <div>

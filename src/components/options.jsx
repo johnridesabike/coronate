@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useMemo} from "react";
-import {useTournaments, usePlayers} from "../state";
+import React, {useEffect, useMemo, useState} from "react";
+import {usePlayers, useTournaments} from "../state";
 // import {useOptions as useOptionsOld} from "../state";
-import {useOptionDb} from "../hooks";
 import {createPlayer} from "../data-types";
-import defaultPlayers from "../state/demo-players.json";
 import defaultOptions from "../state/demo-options.json";
+import defaultPlayers from "../state/demo-players.json";
 import defaultTourneys from "../state/demo-tourney.json";
+import {useOptionDb} from "../hooks";
 
 export function Options(props) {
     const [tourneys, tourneysDispatch] = useTournaments();
@@ -15,7 +15,7 @@ export function Options(props) {
     const [byeValue, setByeValue] = useOptionDb("byeValue", 1);
     // memoize this so the `useEffect` hook syncs with the correct state
     const exportData = useMemo(
-        () => ({options: {byeValue}, tourneys, playerState}),
+        () => ({options: {byeValue}, playerState, tourneys}),
         [byeValue, tourneys, playerState]
     );
     useEffect(
@@ -25,9 +25,9 @@ export function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({type: "LOAD_STATE", state: data.tourneys});
+        tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
         setByeValue(data.options.byeValue);
-        playerDispatch({type: "LOAD_STATE", state: data.playerState});
+        playerDispatch({state: data.playerState, type: "LOAD_STATE"});
         window.alert("Data loaded!");
     }
     function handleText(event) {
@@ -52,8 +52,8 @@ export function Options(props) {
         loadData({
             options: defaultOptions,
             playerState: {
-                players: defaultPlayers.playerList.map((p) => createPlayer(p)),
-                avoid: defaultPlayers.avoidList
+                avoid: defaultPlayers.avoidList,
+                players: defaultPlayers.playerList.map((p) => createPlayer(p))
             },
             tourneys: defaultTourneys
         });

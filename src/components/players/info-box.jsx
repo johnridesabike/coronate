@@ -1,9 +1,9 @@
-import React, {useMemo, useState, useEffect} from "react";
+import React, {useEffect, useMemo, useState} from "react";
+import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
+import Icons from "../icons";
+import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import numeral from "numeral";
-import {Link} from "@reach/router";
-import Icons from "../icons";
-import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
 import {usePlayers} from "../../state";
 
 export default function PlayerInfoBox(props) {
@@ -27,8 +27,8 @@ export default function PlayerInfoBox(props) {
     function avoidAdd(event) {
         event.preventDefault();
         playerDispatch({
-            type: "ADD_AVOID_PAIR",
-            pair: [playerId, Number(selectedAvoider)]
+            pair: [playerId, Number(selectedAvoider)],
+            type: "ADD_AVOID_PAIR"
         });
     }
     useEffect(
@@ -60,12 +60,12 @@ export default function PlayerInfoBox(props) {
         event.preventDefault();
         const {firstName, lastName, matchCount, rating} = event.currentTarget;
         playerDispatch({
-            type: "SET_PLAYER",
-            id: playerId,
             firstName: firstName.value,
+            id: playerId,
             lastName: lastName.value,
             matchCount: Number(matchCount.value),
-            rating: Number(rating.value)
+            rating: Number(rating.value),
+            type: "SET_PLAYER"
         });
     }
     return (
@@ -143,8 +143,8 @@ export default function PlayerInfoBox(props) {
                             className="danger iconButton"
                             onClick={() =>
                                 playerDispatch({
-                                    type: "DEL_AVOID_PAIR",
-                                    pair: [playerId, pId]
+                                    pair: [playerId, pId],
+                                    type: "DEL_AVOID_PAIR"
                                 })
                             }
                             title={`Remove ${getPlayer(pId).firstName} 
@@ -180,6 +180,6 @@ ${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
     );
 }
 PlayerInfoBox.propTypes = {
-    playerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    path: PropTypes.string
+    path: PropTypes.string,
+    playerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

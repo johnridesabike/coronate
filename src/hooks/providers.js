@@ -54,7 +54,12 @@ export function TournamentProvider(props) {
     );
     useEffect(
         function saveTourneyToDb() {
-            tourneyStore.setItem(String(props.tourneyId), tourney);
+            tourneyStore.setItem(String(props.tourneyId), tourney).catch(
+                function (error) {
+                    console.log("error saving tourney", error);
+                    console.log(props.tourneyId, tourney);
+                }
+            );
         },
         [props.tourneyId, tourney]
     );

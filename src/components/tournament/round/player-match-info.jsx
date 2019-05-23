@@ -1,20 +1,22 @@
-import React from "react";
+import {useRound, useTournament} from "../../../hooks";
 import PropTypes from "prop-types";
-import numeral from "numeral";
+import React from "react";
 import {createPlayerStats} from "../../../pairing-scoring";
-import {useRound, usePlayers} from "../../../state";
 import {findById} from "../../utility";
+import numeral from "numeral";
+import {usePlayers} from "../../../state";
 
-export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
-    const {tourney, matchList} = useRound(tourneyId, roundId);
+export default function PlayerMatchInfo({matchId, color, roundId}) {
+    const {tourney} = useTournament();
+    const {matchList} = useRound(tourney, roundId);
     const {playerState, getPlayer} = usePlayers();
     const match = findById(matchId, matchList);
     const playerData = createPlayerStats({
+        avoidList: playerState.avoid,
         id: match.players[color],
         playerDataSource: playerState.players,
-        avoidList: playerState.avoid,
-        roundList: tourney.roundList,
-        roundId
+        roundId,
+        roundList: tourney.roundList
     });
     const colorBalance = playerData.colorBalance;
     const prettyBalance = (function () {
@@ -60,8 +62,7 @@ export default function PlayerMatchInfo({matchId, color, tourneyId, roundId}) {
     );
 }
 PlayerMatchInfo.propTypes = {
-    matchId: PropTypes.string,
     color: PropTypes.number,
-    tourneyId: PropTypes.number,
+    matchId: PropTypes.string,
     roundId: PropTypes.number
 };

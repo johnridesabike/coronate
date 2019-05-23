@@ -1,13 +1,14 @@
+import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
-import {set, lensIndex, append} from "ramda";
+import {append, lensIndex, set} from "ramda";
+import {useRound, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
+import PropTypes from "prop-types";
 import Selecting from "../player-select/selecting";
-import {useRound, usePlayers} from "../../../state";
 import {useOptionDb} from "../../../hooks";
-import {WHITE, BLACK, DUMMY_ID} from "../../../data-types";
+import {usePlayers} from "../../../state";
 
 export default function SelectList({
     tourneyId,
@@ -15,7 +16,9 @@ export default function SelectList({
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {dispatch, unmatched} = useRound(tourneyId, roundId);
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
+    const {unmatched} = useRound(tourney, roundId);
     const {playerState, getPlayer} = usePlayers();
     const [byeValue] = useOptionDb("byeValue", 1);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,12 +49,11 @@ export default function SelectList({
         <div>
             <button
                 onClick={() => dispatch({
-                    type: "AUTO_PAIR",
-                    unpairedPlayers: unmatched,
-                    tourneyId,
-                    roundId,
+                    byeValue,
                     playerState,
-                    byeValue
+                    roundId,
+                    type: "AUTO_PAIR",
+                    unpairedPlayers: unmatched
                 })}
                 disabled={unmatched.length === 0}
             >
@@ -89,8 +91,8 @@ export default function SelectList({
     );
 }
 SelectList.propTypes = {
-    tourneyId: PropTypes.number,
     roundId: PropTypes.number,
+    setStagedPlayers: PropTypes.func,
     stagedPlayers: PropTypes.arrayOf(PropTypes.number),
-    setStagedPlayers: PropTypes.func
+    tourneyId: PropTypes.number
 };

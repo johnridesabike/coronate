@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {usePlayers} from "../../state";
 import {assoc} from "ramda";
+import {usePlayers} from "../../state";
 
 export default function NewPlayer() {
     const {playerDispatch} = usePlayers();
@@ -11,7 +11,7 @@ export default function NewPlayer() {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
         setNewPlayerdata(newPlayerDefault);
-        playerDispatch({type: "ADD_PLAYER", firstName, lastName, rating});
+        playerDispatch({firstName, lastName, rating, type: "ADD_PLAYER"});
     };
 
     const updateField = function (event) {

@@ -1,13 +1,13 @@
 // this component should eventually replace player-match-info.jsx
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 import {createPlayerStats} from "../../../pairing-scoring";
-import {useTournament, usePlayers} from "../../../state";
+import {usePlayers} from "../../../state";
+import {useTournament} from "../../../hooks";
 
-export default function PlayerInfo({playerId, tourneyId, roundId}) {
-    const [{roundList}] = useTournament(tourneyId);
-    const {playerState, getPlayer} = usePlayers();
-    const {players, avoid} = playerState;
+export default function PlayerInfo({playerId, roundId}) {
+    const {tourney, players} = useTournament();
+    const {playerState} = usePlayers();
     const {
         profile,
         rating,
@@ -17,11 +17,11 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
         opponentHistory,
         avoidList
     } = createPlayerStats({
+        avoidList: playerState.avoid,
         id: playerId,
-        playerDataSource: players,
-        avoidList: avoid,
-        roundList,
-        roundId
+        playerDataSource: playerState.players,
+        roundId,
+        roundList: tourney.roundList
     });
     const prettyBalance = (function () {
         if (colorBalance < 0) {
@@ -45,8 +45,8 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
             <ol>
                 {opponentHistory.map((opId) => (
                     <li key={opId}>
-                        {getPlayer(opId).firstName}{" "}
-                        {getPlayer(opId).lastName}
+                        {players[opId].firstName}{" "}
+                        {players[opId].lastName}
                     </li>
                 ))}
             </ol>
@@ -56,7 +56,7 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
             <ol>
                 {avoidList.map((pId) => (
                     <li key={pId}>
-                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                        {players[pId].firstName} {players[pId].lastName}
                     </li>
                 ))}
             </ol>
@@ -64,7 +64,6 @@ export default function PlayerInfo({playerId, tourneyId, roundId}) {
     );
 }
 PlayerInfo.propTypes = {
-    tourneyId: PropTypes.number,
-    roundId: PropTypes.number,
-    playerId: PropTypes.number
+    playerId: PropTypes.number,
+    roundId: PropTypes.number
 };

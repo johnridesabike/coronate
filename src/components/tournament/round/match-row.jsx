@@ -1,15 +1,16 @@
+import "@reach/dialog/styles.css";
+import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
-import {PanelContainer, Panel} from "../../utility";
-import {calcNewRatings} from "../../../pairing-scoring";
-import {BLACK, WHITE, DUMMY_ID} from "../../../data-types";
-import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
+import PropTypes from "prop-types";
+import {calcNewRatings} from "../../../pairing-scoring";
+import {usePlayers} from "../../../state";
+import {useTournament} from "../../../hooks";
 import {winnerSelect} from "./round.module.css";
-import "@reach/dialog/styles.css";
 
 export default function MatchRow({
     pos,
@@ -19,7 +20,8 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    const {tourney, dispatch} = useRound(tourneyId, roundId);
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
     const {playerDispatch, getPlayer} = usePlayers();
     const [openModal, setOpenModal] = useState(false);
     const resultCode = (function () {
@@ -71,35 +73,34 @@ export default function MatchRow({
             )
         );
         playerDispatch({
-            type: "SET_PLAYER_RATING",
             id: white.id,
-            rating: newRating[WHITE]
+            rating: newRating[WHITE],
+            type: "SET_PLAYER_RATING"
         });
         playerDispatch({
-            type: "SET_PLAYER_RATING",
             id: black.id,
-            rating: newRating[BLACK]
+            rating: newRating[BLACK],
+            type: "SET_PLAYER_RATING"
         });
         // if the result hasn't been scored yet, increment the matchCount
         if (match.result.reduce((a, b) => a + b) === 0) {
             playerDispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
                 id: white.id,
-                matchCount: white.matchCount + 1
+                matchCount: white.matchCount + 1,
+                type: "SET_PLAYER_MATCHCOUNT"
             });
             playerDispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
                 id: black.id,
-                matchCount: black.matchCount + 1
+                matchCount: black.matchCount + 1,
+                type: "SET_PLAYER_MATCHCOUNT"
             });
         }
         dispatch({
-            type: "SET_MATCH_RESULT",
-            tourneyId,
-            roundId,
             matchId: match.id,
+            newRating,
             result,
-            newRating
+            roundId,
+            type: "SET_MATCH_RESULT"
         });
     }
 
@@ -210,10 +211,10 @@ export default function MatchRow({
     );
 }
 MatchRow.propTypes = {
-    pos: PropTypes.number,
     match: PropTypes.object,
-    tourneyId: PropTypes.number,
+    pos: PropTypes.number,
     roundId: PropTypes.number,
     selectedMatch: PropTypes.string,
-    setSelectedMatch: PropTypes.func
+    setSelectedMatch: PropTypes.func,
+    tourneyId: PropTypes.number
 };

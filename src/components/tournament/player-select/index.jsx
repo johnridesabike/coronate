@@ -5,13 +5,10 @@ import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 import Selecting from "./selecting";
-// import {useTournament} from "../../../state";
 import {useTournament as useTournament2} from "../../../hooks";
 
 export default function PlayerSelect(props) {
     const tourneyId = Number(props.tourneyId);
-    // const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
-    // const {getPlayer} = usePlayers();
     const {tourney, tourneyDispatch, getPlayer} = useTournament2();
     const {players, roundList, byeQueue} = tourney;
     const dispatch = tourneyDispatch;

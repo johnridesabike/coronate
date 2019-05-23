@@ -194,8 +194,7 @@ export default function tournamentReducer(state, action) {
                 ]),
                 action.newRating,
             ),
-            state
-        );
+        )(state);
     case "DEL_MATCH":
         return over(
             lensPath(["roundList", action.roundId]),

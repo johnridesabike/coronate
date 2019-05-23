@@ -1,23 +1,22 @@
 // TODO: This component is in need of a major cleanup. I made this way too
 // complex and fragile.
 import React, {useMemo} from "react";
-import PropTypes from "prop-types";
-import numeral from "numeral";
-import {assoc} from "ramda";
-import Icons from "../icons";
-import {useTournament} from "../../state";
 import {
     createStandingList,
-    getResultsByOpponent,
     getPerformanceRatings,
+    getResultsByOpponent,
     rounds2Matches
 } from "../../pairing-scoring";
-import {useTournament as useTournament2} from "../../hooks";
+import Icons from "../icons";
+import PropTypes from "prop-types";
+import {assoc} from "ramda";
+import numeral from "numeral";
 import style from "./scores.module.css";
+import {useTournament as useTournament2} from "../../hooks";
 
-export default function Crosstable({tourneyId}) {
-    const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
-    const {getPlayer} = useTournament2();
+export default function Crosstable(props) {
+    const {tourney, getPlayer} = useTournament2();
+    const {tieBreaks, roundList} = tourney;
     const [standings, opponentScores] = useMemo(
         function () {
             const [standingsFlat] = createStandingList(tieBreaks, roundList);
@@ -107,6 +106,6 @@ export default function Crosstable({tourneyId}) {
     );
 }
 Crosstable.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    path: PropTypes.string
+    path: PropTypes.string,
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };

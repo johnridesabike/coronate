@@ -1,21 +1,20 @@
 import React, {useState} from "react";
-import numeral from "numeral";
-import dashify from "dashify";
-import {defaultTo} from "ramda";
-import PropTypes from "prop-types";
-import Icons from "../icons";
-import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
-import {useTournament} from "../../state";
+import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
     createStandingTree,
     tieBreakMethods
 } from "../../pairing-scoring";
-import {useTournament as useTournament2} from "../../hooks";
+import Icons from "../icons";
+import PropTypes from "prop-types";
+import dashify from "dashify";
+import {defaultTo} from "ramda";
+import numeral from "numeral";
 import style from "./scores.module.css";
+import {useTournament} from "../../hooks";
 
-function ScoreTable({tourneyId}) {
-    const [{tieBreaks, roundList}] = useTournament(tourneyId);
-    const {getPlayer} = useTournament2();
+function ScoreTable(props) {
+    const {tourney, players} = useTournament();
+    const {tieBreaks, roundList} = tourney;
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>
@@ -48,14 +47,14 @@ function ScoreTable({tourneyId}) {
                                 className={style.playerName}
                                 data-testid={rank}
                             >
-                                {getPlayer(standing.id).firstName}&nbsp;
-                                {getPlayer(standing.id).lastName}
+                                {players[standing.id].firstName}&nbsp;
+                                {players[standing.id].lastName}
                             </th>
                             <td
                                 className="table__number"
                                 data-testid={dashify(
-                                    getPlayer(standing.id).firstName
-                                    + getPlayer(standing.id).lastName
+                                    players[standing.id].firstName
+                                    + players[standing.id].lastName
                                     + " score"
                                 )}
                             >
@@ -66,8 +65,8 @@ function ScoreTable({tourneyId}) {
                                     key={i}
                                     className="table__number"
                                     data-testid={dashify(
-                                        getPlayer(standing.id).firstName
-                                        + getPlayer(standing.id).lastName
+                                        players[standing.id].firstName
+                                        + players[standing.id].lastName
                                         + tbMethods[i]
                                     )}
                                 >
@@ -81,31 +80,30 @@ function ScoreTable({tourneyId}) {
         </table>
     );
 }
-ScoreTable.propTypes = {
-    tourneyId: PropTypes.number.isRequired
-};
+ScoreTable.propTypes = {};
 
-function SelectTieBreaks({tourneyId}) {
-    const [{tieBreaks}, dispatch] = useTournament(tourneyId);
+function SelectTieBreaks(props) {
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
+    const {tieBreaks} = tourney;
     const [selectedTb, setSelectedTb] = useState(null);
 
     function toggleTb(id = null) {
         const defaultId = defaultTo(selectedTb);
         if (tieBreaks.includes(defaultId(id))) {
-            dispatch({type: "DEL_TIEBREAK", id: defaultId(id), tourneyId});
+            dispatch({id: defaultId(id), type: "DEL_TIEBREAK"});
             setSelectedTb(null);
         } else {
-            dispatch({type: "ADD_TIEBREAK", id: defaultId(id), tourneyId});
+            dispatch({id: defaultId(id), type: "ADD_TIEBREAK"});
         }
     }
 
     function moveTb(direction) {
         const index = tieBreaks.indexOf(selectedTb);
         dispatch({
-            type: "MOVE_TIEBREAK",
-            oldIndex: index,
             newIndex: index + direction,
-            tourneyId
+            oldIndex: index,
+            type: "MOVE_TIEBREAK"
         });
     }
 
@@ -184,11 +182,9 @@ function SelectTieBreaks({tourneyId}) {
         </div>
     );
 }
-SelectTieBreaks.propTypes = {
-    tourneyId: PropTypes.number.isRequired
-};
+SelectTieBreaks.propTypes = {};
 
-const Scores = ({tourneyId}) => (
+const Scores = (props) => (
     <Tabs>
         <TabList>
             <Tab><Icons.List /> Scores</Tab>
@@ -196,16 +192,15 @@ const Scores = ({tourneyId}) => (
         </TabList>
         <TabPanels>
             <TabPanel>
-                <ScoreTable tourneyId={Number(tourneyId)}/>
+                <ScoreTable />
             </TabPanel>
             <TabPanel>
-                <SelectTieBreaks tourneyId={Number(tourneyId)} />
+                <SelectTieBreaks />
             </TabPanel>
         </TabPanels>
     </Tabs>
 );
 Scores.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     path: PropTypes.string
 };
 

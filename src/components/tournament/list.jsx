@@ -14,8 +14,8 @@ export default function TournamentList(props) {
     function makeTournament(event) {
         event.preventDefault();
         dispatch({
-            type: "ADD_TOURNEY",
-            name: newTourneyName
+            name: newTourneyName,
+            type: "ADD_TOURNEY"
         });
         setNewTourneyName("");
     }
@@ -39,8 +39,8 @@ export default function TournamentList(props) {
                                 className="danger iconButton"
                                 onClick={
                                     () => dispatch({
-                                        type: "DEL_TOURNEY",
-                                        index: i
+                                        index: i,
+                                        type: "DEL_TOURNEY"
                                     })
                                 }
                             >

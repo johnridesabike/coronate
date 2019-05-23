@@ -1,14 +1,14 @@
-import React from "react";
-import PropTypes from "prop-types";
-import {render, cleanup, fireEvent} from "react-testing-library";
 import "jest-dom/extend-expect";
-import PlayerInfoBox from "../../players/info-box";
-import RoundPanels from "./index";
 import {
-    TournamentProvider,
+    OptionsProvider,
     PlayersProvider,
-    OptionsProvider
+    TournamentProvider
 } from "../../../state";
+import {cleanup, fireEvent, render} from "react-testing-library";
+import PlayerInfoBox from "../../players/info-box";
+import PropTypes from "prop-types";
+import React from "react";
+import RoundPanels from "./index";
 const {click, change} = fireEvent;
 
 afterEach(cleanup);

@@ -1,27 +1,27 @@
-import React from "react";
-import {
-    Router,
-    Link,
-    LocationProvider,
-    createHistory,
-    Redirect
-} from "@reach/router";
-import createHashSource from "hash-source";
-import About from "./components/about";
-import NotFound from "./components/404";
-import TournamentIndex from "./components/tournament";
-import {TournamentList, Tournament} from "./components/tournament";
-import Players, {PlayerList, PlayerInfo} from "./components/players";
-import Scores from "./components/tournament/scores";
-import PlayerSelect from "./components/tournament/player-select";
-import Crosstable from "./components/tournament/crosstable";
-import Round from "./components/tournament/round";
-import {Options} from "./components/options";
-import Caution from "./components/caution";
-import {TournamentProvider, PlayersProvider} from "./state";
-import "side-effects";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
+import "side-effects";
+import {
+    Link,
+    LocationProvider,
+    Redirect,
+    Router,
+    createHistory
+} from "@reach/router";
+import Players, {PlayerInfo, PlayerList} from "./components/players";
+import {PlayersProvider, TournamentProvider} from "./state";
+import {Tournament, TournamentList} from "./components/tournament";
+import About from "./components/about";
+import Caution from "./components/caution";
+import Crosstable from "./components/tournament/crosstable";
+import NotFound from "./components/404";
+import {Options} from "./components/options";
+import PlayerSelect from "./components/tournament/player-select";
+import React from "react";
+import Round from "./components/tournament/round";
+import Scores from "./components/tournament/scores";
+import TournamentIndex from "./components/tournament";
+import createHashSource from "hash-source";
 import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();

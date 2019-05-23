@@ -1,35 +1,36 @@
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
-import numeral from "numeral";
-import {pipe, map} from "ramda";
-import SelectList  from "./select-list";
-import Stage from "./stage";
-import PlayerInfo from "./player-info";
-import {PanelContainer, Panel} from "../../utility";
-import {usePlayers, useTournament} from "../../../state";
-import {findById} from "../../utility";
 import {
     calcPairIdeal,
+    createPlayerStats,
     maxPriority,
-    sortPlayersForPairing,
     setUpperHalves,
-    createPlayerStats
+    sortPlayersForPairing
 } from "../../../pairing-scoring";
+import {map, pipe} from "ramda";
+import PlayerInfo from "./player-info";
+import PropTypes from "prop-types";
+import SelectList  from "./select-list";
+import Stage from "./stage";
+import {findById} from "../../utility";
+import numeral from "numeral";
+import {usePlayers} from "../../../state";
+import {useTournament} from "../../../hooks";
 
 export default function PairPicker({tourneyId, roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const {playerState} = usePlayers();
-    const [tourney] = useTournament(tourneyId);
+    const {tourney} = useTournament();
     const statsList = React.useMemo(
         () => (
             pipe(
                 map((id) => (
                     createPlayerStats({
+                        avoidList: playerState.avoid,
                         id,
                         playerDataSource: playerState.players,
-                        avoidList: playerState.avoid,
-                        roundList: tourney.roundList,
-                        roundId
+                        roundId,
+                        roundList: tourney.roundList
                     })
                 )),
                 sortPlayersForPairing,
@@ -92,6 +93,6 @@ export default function PairPicker({tourneyId, roundId}) {
     );
 }
 PairPicker.propTypes = {
-    tourneyId: PropTypes.number,
-    roundId: PropTypes.number
+    roundId: PropTypes.number,
+    tourneyId: PropTypes.number
 };
