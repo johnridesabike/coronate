@@ -1,5 +1,5 @@
-import {curry, assoc} from "ramda";
-import {BLACK, WHITE, DUMMY_ID, createMatch} from "../data-types";
+import {BLACK, DUMMY_ID, WHITE, createMatch} from "../data-types";
+import {assoc, curry} from "ramda";
 import {getPlayerById, pairPlayers} from "../pairing-scoring";
 
 export function autoPair(

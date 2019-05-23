@@ -1,6 +1,6 @@
+import {BLACK, WHITE} from "../data-types";
 import EloRank from "elo-rank";
 import t from "tcomb";
-import {WHITE, BLACK} from "../data-types";
 
 export function kFactor(matchCount) {
     const ne = t.Number(matchCount) || 1;

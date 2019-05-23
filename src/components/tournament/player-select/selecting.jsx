@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
+import {usePlayers, useTournament} from "../../../state";
 import NewPlayer from "../../players/new-player";
-import {useTournament, usePlayers} from "../../../state";
+import PropTypes from "prop-types";
+import React from "react";
 
 export default function Selecting({tourneyId}) {
     const [{players}, dispatch] = useTournament(tourneyId);
@@ -11,15 +11,13 @@ export default function Selecting({tourneyId}) {
         const id = Number(event.target.value);
         if (event.target.checked) {
             dispatch({
-                type: "SET_TOURNEY_PLAYERS",
                 players: players.concat([id]),
-                tourneyId
+                type: "SET_TOURNEY_PLAYERS"
             });
         } else {
             dispatch({
-                type: "SET_TOURNEY_PLAYERS",
                 players: players.filter((pId) => pId !== id),
-                tourneyId
+                type: "SET_TOURNEY_PLAYERS"
             });
         }
     }

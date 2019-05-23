@@ -1,16 +1,17 @@
-import React, {useState, useEffect} from "react";
-import PropTypes from "prop-types";
-import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
+import React, {useEffect, useState} from "react";
+import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
+import {useRound, useTournament} from "../../../hooks";
 import Icons from "../../icons";
-import Round from "./round";
 import PairPicker from "../pair-picker";
-import {useRound} from "../../../state";
+import PropTypes from "prop-types";
+import Round from "./round";
 
 export default function Index(props) {
     // reach router passes strings instead
     const tourneyId = Number(props.tourneyId);
     const roundId = Number(props.roundId);
-    const {unmatched} = useRound(tourneyId, roundId);
+    const {tourney} = useTournament();
+    const {unmatched} = useRound(tourney, roundId);
     const [openTab, setOpenTab] = useState(0);
     useEffect(
         function () {
@@ -48,7 +49,7 @@ export default function Index(props) {
     );
 }
 Index.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    path: PropTypes.string,
     roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    path: PropTypes.string
+    tourneyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

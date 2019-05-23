@@ -1,40 +1,20 @@
 import React, {useEffect, useMemo} from "react";
+import {usePlayers, useTournament} from "../../state";
+import {DUMMY_ID} from "../../data-types";
+import Icons from "../icons";
+import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import Tooltip from "@reach/tooltip";
-import {Link} from "@reach/router";
+import {TournamentProvider} from "../../hooks";
+import {calcNumOfRounds} from "../../pairing-scoring";
 import last from "ramda/src/last";
-import Icons from "../icons";
-import {useTournament, usePlayers} from "../../state";
-import {
-    calcNumOfRounds,
-    rounds2Matches,
-    getAllPlayersFromMatches
-} from "../../pairing-scoring";
-import {DUMMY_ID} from "../../data-types";
 import styles from "./tournament.module.css";
-import {
-    TournamentProvider,
-    useTournamentDb,
-    usePlayersDb
-} from "../../hooks";
 
 export default function Tournament(props) {
     const tourneyId = Number(props.tourneyId);
     const [tourney, dispatch] = useTournament(tourneyId);
     const {name, players, roundList} = tourney;
     const {playerState, getPlayer, playerDispatch} = usePlayers();
-
-    const [tourney2] = useTournamentDb(props.tourneyId);
-    const tourneyPlayers = useMemo(
-        () => (
-            (tourney2.roundList)
-            ? getAllPlayersFromMatches(rounds2Matches(tourney2.roundList))
-            : []
-        ),
-        [tourney2.roundList]
-    );
-    const [players2, getPlayer2] = usePlayersDb(tourneyPlayers);
-
     // This isn't expensive, but why not memoize it?
     const isNewRoundReady = useMemo(
         function () {
@@ -91,7 +71,7 @@ export default function Tournament(props) {
                 return;
             }
         }
-        dispatch({type: "ADD_ROUND", tourneyId});
+        dispatch({tourneyId, type: "ADD_ROUND"});
         return;
     }
 
@@ -110,21 +90,21 @@ export default function Tournament(props) {
                     }
                     const {matchCount} = getPlayer(pId);
                     playerDispatch({
-                        type: "SET_PLAYER_MATCHCOUNT",
                         id: pId,
-                        matchCount: matchCount - 1
+                        matchCount: matchCount - 1,
+                        type: "SET_PLAYER_MATCHCOUNT"
                     });
                     playerDispatch({
-                        type: "SET_PLAYER_RATING",
                         id: pId,
-                        rating: match.origRating[color]
+                        rating: match.origRating[color],
+                        type: "SET_PLAYER_RATING"
                     });
                 });
             });
             dispatch({
-                type: "DEL_LAST_ROUND",
                 players: playerState.players,
-                tourneyId
+                tourneyId,
+                type: "DEL_LAST_ROUND"
             });
         }
     }
@@ -203,12 +183,7 @@ export default function Tournament(props) {
                 </ul>
             </div>
             <div className={styles.content}>
-                <TournamentProvider
-                    value={{
-                        players: players2,
-                        getPlayer: getPlayer2,
-                        tourney: tourney2}}
-                >
+                <TournamentProvider tourneyId={tourneyId}>
                     {props.children}
                 </TournamentProvider>
             </div>
@@ -216,8 +191,8 @@ export default function Tournament(props) {
     );
 }
 Tournament.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     children: PropTypes.node,
     navigate: PropTypes.func,
-    path: PropTypes.string
+    path: PropTypes.string,
+    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };

@@ -1,18 +1,20 @@
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
+import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
+import PropTypes from "prop-types";
 import Selecting from "./selecting";
-import {useTournament} from "../../../state";
-import {PanelContainer, Panel} from "../../utility";
-import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
+// import {useTournament} from "../../../state";
 import {useTournament as useTournament2} from "../../../hooks";
 
 export default function PlayerSelect(props) {
     const tourneyId = Number(props.tourneyId);
-    const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
+    // const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
     // const {getPlayer} = usePlayers();
-    const {getPlayer} = useTournament2();
+    const {tourney, tourneyDispatch, getPlayer} = useTournament2();
+    const {players, roundList, byeQueue} = tourney;
+    const dispatch = tourneyDispatch;
     const [isSelecting, setIsSelecting] = useState(players.length === 0);
     const matches = rounds2Matches(roundList);
     return (
@@ -42,11 +44,10 @@ export default function PlayerSelect(props) {
                                     <button
                                         onClick={() =>
                                             dispatch({
-                                                type: "SET_BYE_QUEUE",
                                                 byeQueue: byeQueue.concat(
                                                     [pId]
                                                 ),
-                                                tourneyId
+                                                type: "SET_BYE_QUEUE"
                                             })
                                         }
                                         disabled={byeQueue.includes(
@@ -81,11 +82,10 @@ export default function PlayerSelect(props) {
                             <button
                                 onClick={() =>
                                     dispatch({
-                                        type: "SET_BYE_QUEUE",
                                         byeQueue: byeQueue.filter(
                                             (id) => pId !== id
                                         ),
-                                        tourneyId
+                                        type: "SET_BYE_QUEUE"
                                     })
                                 }
                             >

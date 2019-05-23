@@ -2,13 +2,13 @@ import {
     createContext,
     createElement,
     useContext,
-    useReducer,
-    useEffect
+    useEffect,
+    useReducer
 } from "react";
 import {assoc} from "ramda";
-import t from "tcomb";
-import {localStorageOrDefault} from "./helpers";
 import defaultOptions from "./demo-options.json";
+import {localStorageOrDefault} from "./helpers";
+import t from "tcomb";
 
 const ActionLoadState = t.interface({state: t.Any});
 const ActionSetByeValue = t.interface({byeValue: t.Number});

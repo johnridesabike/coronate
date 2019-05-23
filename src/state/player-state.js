@@ -1,20 +1,13 @@
 import {
-    createContext,
-    createElement,
-    useContext,
-    useReducer,
-    useEffect
-} from "react";
-import {
     append,
     assoc,
     curry,
-    head,
-    inc,
-    lensPath,
-    lensIndex,
     filter,
     findIndex,
+    head,
+    inc,
+    lensIndex,
+    lensPath,
     map,
     mergeLeft,
     over,
@@ -23,11 +16,18 @@ import {
     set,
     sort
 } from "ramda";
-import t from "tcomb";
-import {localStorageOrDefault} from "./helpers";
-import {getPlayerById} from "../pairing-scoring";
+import {
+    createContext,
+    createElement,
+    useContext,
+    useEffect,
+    useReducer
+} from "react";
 import {createPlayer} from "../data-types";
 import demoPlayers from "./demo-players.json";
+import {getPlayerById} from "../pairing-scoring";
+import {localStorageOrDefault} from "./helpers";
+import t from "tcomb";
 
 const defaultPlayers = {
     players: demoPlayers.playerList.map((p) => createPlayer(p)),

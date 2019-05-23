@@ -1,14 +1,19 @@
 import React, {useState} from "react";
-import PropTypes from "prop-types";
+import {findById, findIndexById} from "../../utility";
+import {useRound, useTournament} from "../../../hooks";
 import Icons from "../../icons";
 import MatchRow from "./match-row";
-import {findById, findIndexById} from "../../utility";
-import {useRound, usePlayers} from "../../../state";
+import PropTypes from "prop-types";
 import style from "./round.module.css";
+// import {usePlayers} from "../../../state";
 
 export default function Round({roundId, tourneyId}) {
-    const {matchList, dispatch} = useRound(tourneyId, roundId);
-    const {playerDispatch, getPlayer} = usePlayers();
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
+    const {matchList} = useRound(tourney, roundId);
+    // const {playerDispatch, getPlayer} = usePlayers();
+    const playerDispatch = () => null;
+    const getPlayer = () => ({matchCount: 1});
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
         throw new Error("Round " + roundId + " does not exist.");
@@ -20,23 +25,23 @@ export default function Round({roundId, tourneyId}) {
             // records
             match.players.forEach(function (pId, color) {
                 playerDispatch({
-                    type: "SET_PLAYER_MATCHCOUNT",
                     id: pId,
-                    matchCount: getPlayer(pId).matchCount - 1
+                    matchCount: getPlayer(pId).matchCount - 1,
+                    type: "SET_PLAYER_MATCHCOUNT"
                 });
                 playerDispatch({
-                    type: "SET_PLAYER_RATING",
                     id: pId,
-                    rating: match.origRating[color]
+                    rating: match.origRating[color],
+                    type: "SET_PLAYER_RATING"
                 });
             });
         }
-        dispatch({type: "DEL_MATCH", tourneyId, roundId, matchId});
+        dispatch({matchId, roundId, tourneyId, type: "DEL_MATCH"});
         setSelectedMatch(null);
     }
 
     function swapColors(matchId) {
-        dispatch({type: "SWAP_COLORS", tourneyId, roundId, matchId});
+        dispatch({matchId, roundId, tourneyId,  type: "SWAP_COLORS"});
     }
 
     function moveMatch(matchId, direction) {
@@ -46,7 +51,7 @@ export default function Round({roundId, tourneyId}) {
             ? oldIndex + direction
             : 0
         );
-        dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
+        dispatch({newIndex, oldIndex, roundId, tourneyId, type: "MOVE_MATCH"});
     }
 
     return (
@@ -125,6 +130,6 @@ export default function Round({roundId, tourneyId}) {
     );
 }
 Round.propTypes = {
-    tourneyId: PropTypes.number,
-    roundId: PropTypes.number
+    roundId: PropTypes.number,
+    tourneyId: PropTypes.number
 };

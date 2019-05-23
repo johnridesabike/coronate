@@ -1,11 +1,11 @@
-import {useState, useEffect} from "react";
-import localforage from "localforage";
 import "localforage-getitems";
-import t from "tcomb";
+import {useEffect, useState} from "react";
 import {curry} from "ramda";
 import demoPlayers from "../state/demo-players.json";
 import demoTourneys from "../state/demo-tourney.json";
 import {getPlayerById} from "../pairing-scoring";
+import localforage from "localforage";
+import t from "tcomb";
 
 const DB_NAME = "Chessahoochee";
 
@@ -17,6 +17,7 @@ const playerStore = localforage.createInstance({
 demoPlayers.playerList.forEach(function (value) {
     playerStore.setItem(String(value.id), value);
 });
+export {playerStore};
 
 export function usePlayersDb(ids) {
     t.list(t.Number)(ids);
@@ -42,16 +43,17 @@ export function usePlayersDb(ids) {
     return [players, getPlayer];
 }
 
-const optionStore = localforage.createInstance({
+const optionsStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Options"
 });
+export {optionsStore};
 
 export function useOptionDb(key, defaultValue) {
     const [option, setOption] = useState(t.Number(defaultValue));
     useEffect(
         function () {
-            optionStore.getItem(key).then(function (value) {
+            optionsStore.getItem(key).then(function (value) {
                 console.log("getting " + key + " from localforage");
                 (value === null)
                 ? setOption(t.Number(defaultValue))
@@ -64,7 +66,7 @@ export function useOptionDb(key, defaultValue) {
     );
     useEffect(
         function () {
-            optionStore.setItem(key, option).then(
+            optionsStore.setItem(key, option).then(
                 function (value) {
                     console.log("updated", key, value);
                 }
@@ -85,6 +87,7 @@ const tourneyStore = localforage.createInstance({
 demoTourneys.forEach(function (value) {
     tourneyStore.setItem(String(value.id), value);
 });
+export {tourneyStore};
 
 export function useTournamentDb(id) {
     const [tourney, setTourney] = useState({});

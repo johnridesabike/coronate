@@ -1,5 +1,20 @@
 // TODO: Clean this up. Refactor unnecessary functions, etc.
 import {
+    BLACK,
+    DUMMY_ID,
+    Match,
+    ScoreCalulator,
+    WHITE
+} from "../data-types";
+import {
+    getMatchDetailsForPlayer,
+    getMatchesByPlayer,
+    getPlayerScoreList,
+    getPlayerScoreListNoByes,
+    isNotBye,
+    isNotDummy
+} from "./helpers";
+import {
     init,
     last,
     pipe,
@@ -9,21 +24,6 @@ import {
 } from "ramda";
 import {firstBy} from "thenby";
 import t from "tcomb";
-import {
-    BLACK,
-    DUMMY_ID,
-    Match,
-    ScoreCalulator,
-    WHITE
-} from "../data-types";
-import {
-    getMatchesByPlayer,
-    getMatchDetailsForPlayer,
-    isNotBye,
-    isNotDummy,
-    getPlayerScoreList,
-    getPlayerScoreListNoByes
-} from "./helpers";
 
 export function getDueColor(playerId, matchList) {
     t.Number(playerId);
@@ -185,24 +185,24 @@ const getSolkoffScore = ScoreCalulator.of(
 
 const tieBreakMethods = [
     {
-        name: "Modified median",
-        func: getModifiedMedianScore
+        func: getModifiedMedianScore,
+        name: "Modified median"
     },
     {
-        name: "Solkoff",
-        func: getSolkoffScore
+        func: getSolkoffScore,
+        name: "Solkoff"
     },
     {
-        name: "Cumulative score",
-        func: getCumulativeScore
+        func: getCumulativeScore,
+        name: "Cumulative score"
     },
     {
-        name: "Cumulative of opposition",
-        func: getCumulativeOfOpponentScore
+        func: getCumulativeOfOpponentScore,
+        name: "Cumulative of opposition"
     },
     {
-        name: "Most black",
-        func: getColorBalanceScore
+        func: getColorBalanceScore,
+        name: "Most black"
     }
 ];
 Object.freeze(tieBreakMethods);

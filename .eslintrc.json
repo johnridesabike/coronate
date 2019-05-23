@@ -38,6 +38,16 @@
         "no-unused-expressions": "error",
         "no-unneeded-ternary": "error",
         "multiline-ternary": ["error", "always-multiline"],
+        "sort-keys": "warn",
+        "sort-imports": [
+            "warn",
+            {
+                "ignoreCase": false,
+                "ignoreDeclarationSort": false,
+                "ignoreMemberSort": false,
+                "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+            }
+        ],
         "react/prop-types": [2],
         "react/jsx-closing-tag-location": [1],
         "react/jsx-closing-bracket-location": [1],
