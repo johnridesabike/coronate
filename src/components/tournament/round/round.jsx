@@ -5,13 +5,11 @@ import Icons from "../../icons";
 import MatchRow from "./match-row";
 import PropTypes from "prop-types";
 import style from "./round.module.css";
-// import {usePlayers} from "../../../state";
 
 export default function Round({roundId, tourneyId}) {
     const {tourney, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
     const {matchList} = useRound(tourney, roundId);
-    // const {playerDispatch, getPlayer} = usePlayers();
     const playerDispatch = () => null;
     const getPlayer = () => ({matchCount: 1});
     const [selectedMatch, setSelectedMatch] = useState(null);

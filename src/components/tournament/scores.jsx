@@ -13,7 +13,7 @@ import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
 
 function ScoreTable(props) {
-    const {tourney, players} = useTournament();
+    const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
@@ -47,14 +47,14 @@ function ScoreTable(props) {
                                 className={style.playerName}
                                 data-testid={rank}
                             >
-                                {players[standing.id].firstName}&nbsp;
-                                {players[standing.id].lastName}
+                                {getPlayer(standing.id).firstName}&nbsp;
+                                {getPlayer(standing.id).lastName}
                             </th>
                             <td
                                 className="table__number"
                                 data-testid={dashify(
-                                    players[standing.id].firstName
-                                    + players[standing.id].lastName
+                                    getPlayer(standing.id).firstName
+                                    + getPlayer(standing.id).lastName
                                     + " score"
                                 )}
                             >
@@ -65,8 +65,8 @@ function ScoreTable(props) {
                                     key={i}
                                     className="table__number"
                                     data-testid={dashify(
-                                        players[standing.id].firstName
-                                        + players[standing.id].lastName
+                                        getPlayer(standing.id).firstName
+                                        + getPlayer(standing.id).lastName
                                         + tbMethods[i]
                                     )}
                                 >

@@ -1,22 +1,20 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {usePlayers, useTournaments} from "../state";
-// import {useOptions as useOptionsOld} from "../state";
+import {useAllPlayersDb, useOptionsDb} from "../hooks";
 import {createPlayer} from "../data-types";
 import defaultOptions from "../state/demo-options.json";
 import defaultPlayers from "../state/demo-players.json";
 import defaultTourneys from "../state/demo-tourney.json";
-import {useOptionDb} from "../hooks";
+import {useTournaments} from "../state";
 
 export function Options(props) {
     const [tourneys, tourneysDispatch] = useTournaments();
-    // const [options, optionsDispatch] = useOptionsOld();
-    const {playerState, playerDispatch} = usePlayers();
+    const [players, setPlayers] = useAllPlayersDb();
     const [text, setText] = useState("");
-    const [byeValue, setByeValue] = useOptionDb("byeValue", 1);
+    const [options, opitionsDispatch] = useOptionsDb();
     // memoize this so the `useEffect` hook syncs with the correct state
     const exportData = useMemo(
-        () => ({options: {byeValue}, playerState, tourneys}),
-        [byeValue, tourneys, playerState]
+        () => ({options, players, tourneys}),
+        [options, tourneys, players]
     );
     useEffect(
         function () {
@@ -26,8 +24,8 @@ export function Options(props) {
     );
     function loadData(data) {
         tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
-        setByeValue(data.options.byeValue);
-        playerDispatch({state: data.playerState, type: "LOAD_STATE"});
+        opitionsDispatch({state: data.options, type: "LOAD_STATE"});
+        setPlayers(data.players);
         window.alert("Data loaded!");
     }
     function handleText(event) {
@@ -68,16 +66,24 @@ export function Options(props) {
                         1
                         <input
                             type="radio"
-                            checked={byeValue === 1}
-                            onChange={() => setByeValue(1)}
+                            checked={options.byeValue === 1}
+                            onChange={() => opitionsDispatch({
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 1
+                            })}
                         />
                     </label>{" "}
                     <label>
                         ½
                         <input
                             type="radio"
-                            checked={byeValue === 0.5}
-                            onChange={() => setByeValue(0.5)}
+                            checked={options.byeValue === 0.5}
+                            onChange={() => opitionsDispatch({
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 0.5
+                            })}
                         />
                     </label>
                 </fieldset>

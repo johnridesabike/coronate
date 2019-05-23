@@ -1,7 +1,7 @@
 import {BLACK, WHITE} from "../../../data-types";
 import React, {Fragment} from "react";
 import {lensIndex, set} from "ramda";
-import {useOptionDb, useTournament} from "../../../hooks";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 
@@ -12,7 +12,7 @@ export default function Stage({
 }) {
     const {tourneyDispatch, players} = useTournament();
     const dispatch = tourneyDispatch;
-    const [byeValue] = useOptionDb("byeValue", 1);
+    const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
 
     function unstage(color) {
@@ -21,9 +21,9 @@ export default function Stage({
 
     function match() {
         dispatch({
-            byeValue,
+            byeValue: options.byeValue,
             pair: [white, black],
-            players,
+            players: Object.values(players),
             roundId,
             type: "MANUAL_PAIR"
         });

@@ -1,3 +1,4 @@
+import {AvoidList, Player} from "../../data-types";
 import {
     __,
     append,
@@ -17,13 +18,10 @@ import {
     set
 } from "ramda";
 import {autoPair, manualPair} from "../../state/match-functions";
-import {Player} from "../../data-types";
 import t from "tcomb";
 
 const ActionAddRound = t.interface({});
-const ActionDelLastRound = t.interface({
-    players: t.list(Player)
-});
+const ActionDelLastRound = t.interface({});
 const ActionAddRemoveTieBreak = t.interface({
     id: t.Number
 });
@@ -38,8 +36,9 @@ const ActionSetByeQueue = t.interface({
     byeQueue: t.list(t.Number)
 });
 const ActionAutoPair = t.interface({
+    avoidList: AvoidList,
     byeValue: t.Number,
-    playerState: t.Any,
+    playerDataList: t.list(Player),
     roundId: t.Number,
     unpairedPlayers: t.list(t.Number)
 });
@@ -152,13 +151,14 @@ export default function tournamentReducer(state, action) {
             lensPath(["roundList", action.roundId]),
             concat(
                 __,
-                autoPair(
-                    state,
-                    action.playerState,
-                    action.roundId,
-                    action.unpairedPlayers,
-                    action.byeValue
-                )
+                autoPair({
+                    avoidList: action.avoidList,
+                    byeValue: action.byeValue,
+                    playerDataList: action.playerDataList,
+                    roundId: action.roundId,
+                    tourney: state,
+                    unPairedPlayers: action.unpairedPlayers
+                })
             ),
             state
         );

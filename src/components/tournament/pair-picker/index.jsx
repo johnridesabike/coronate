@@ -8,27 +8,26 @@ import {
     sortPlayersForPairing
 } from "../../../pairing-scoring";
 import {map, pipe} from "ramda";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import PlayerInfo from "./player-info";
 import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Stage from "./stage";
 import {findById} from "../../utility";
 import numeral from "numeral";
-import {usePlayers} from "../../../state";
-import {useTournament} from "../../../hooks";
 
 export default function PairPicker({tourneyId, roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
-    const {playerState} = usePlayers();
-    const {tourney} = useTournament();
+    const [options] = useOptionsDb();
+    const {tourney, players} = useTournament();
     const statsList = React.useMemo(
         () => (
             pipe(
                 map((id) => (
                     createPlayerStats({
-                        avoidList: playerState.avoid,
+                        avoidList: options.avoidPairs,
                         id,
-                        playerDataSource: playerState.players,
+                        playerDataSource: Object.values(players),
                         roundId,
                         roundList: tourney.roundList
                     })
@@ -40,9 +39,9 @@ export default function PairPicker({tourneyId, roundId}) {
         [
             tourney.players,
             tourney.roundList,
-            playerState.avoid,
-            playerState.players,
-            roundId
+            roundId,
+            options.avoidPairs,
+            players
         ]
     );
     const matchIdeal = React.useMemo(

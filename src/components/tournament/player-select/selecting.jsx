@@ -1,14 +1,12 @@
+import {useAllPlayersDb, useTournament} from "../../../hooks";
 import NewPlayer from "../../players/new-player";
 // import PropTypes from "prop-types";
 import React from "react";
-import {usePlayers} from "../../../state";
-import {useTournament} from "../../../hooks";
 
 export default function Selecting(props) {
-    // const [{players}, dispatch] = useTournament(tourneyId);
     const {tourney, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
-    const {playerState, getPlayer} = usePlayers();
+    const [players] = useAllPlayersDb();
 
     function togglePlayer(event) {
         const id = Number(event.target.value);
@@ -30,7 +28,7 @@ export default function Selecting(props) {
             <button
                 onClick={() =>
                     dispatch({
-                        players: playerState.players.map(
+                        players: players.map(
                             (p) => p.id
                         ),
                         type: "SET_TOURNEY_PLAYERS"
@@ -62,10 +60,10 @@ export default function Selecting(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {playerState.players.map(({id}) => (
+                    {Object.values(players).map(({id, firstName, lastName}) => (
                         <tr key={id}>
-                            <td>{getPlayer(id).firstName}</td>
-                            <td>{getPlayer(id).lastName}</td>
+                            <td>{firstName}</td>
+                            <td>{lastName}</td>
                             <td>
                                 <input
                                     type="checkbox"

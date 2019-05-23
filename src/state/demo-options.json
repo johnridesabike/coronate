@@ -1,3 +1,4 @@
 {
-    "byeValue" : 1
+    "byeValue" : 1,
+    "avoidPairs": [[3, 7], [9, 10], [8, 0]]
 }

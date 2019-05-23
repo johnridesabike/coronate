@@ -1,14 +1,12 @@
 import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
 import React, {useState} from "react";
 import {append, lensIndex, set} from "ramda";
-import {useRound, useTournament} from "../../../hooks";
+import {useOptionsDb, useRound, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 import Selecting from "../player-select/selecting";
-import {useOptionDb} from "../../../hooks";
-import {usePlayers} from "../../../state";
 
 export default function SelectList({
     tourneyId,
@@ -16,11 +14,10 @@ export default function SelectList({
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {tourney, tourneyDispatch} = useTournament();
+    const {tourney, players, getPlayer, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
     const {unmatched} = useRound(tourney, roundId);
-    const {playerState, getPlayer} = usePlayers();
-    const [byeValue] = useOptionDb("byeValue", 1);
+    const [options] = useOptionsDb();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     function selectPlayer(id) {
@@ -49,8 +46,9 @@ export default function SelectList({
         <div>
             <button
                 onClick={() => dispatch({
-                    byeValue,
-                    playerState,
+                    avoidList: options.avoidPairs,
+                    byeValue: options.byeValue,
+                    playerDataList: Object.values(players),
                     roundId,
                     type: "AUTO_PAIR",
                     unpairedPlayers: unmatched

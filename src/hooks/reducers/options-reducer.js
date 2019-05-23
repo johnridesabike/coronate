@@ -1,0 +1,61 @@
+import {append, assoc, filter, lensProp, over} from "ramda";
+import t from "tcomb";
+
+const ActionLoadState = t.interface({
+    state: t.Any
+});
+const ActionSetOption = t.interface({
+    option: t.String,
+    value: t.union([
+        t.Number,
+        t.list(t.tuple([t.Number, t.Number]))
+    ])
+});
+const ActionAvoidPair = t.interface({
+    pair: t.tuple([t.Number, t.Number])
+});
+const ActionTypes = t.union([
+    ActionLoadState,
+    ActionAvoidPair
+]);
+ActionTypes.dispatch = function (x) {
+    const typeToConstructor = {
+        "ADD_AVOID_PAIR": ActionAvoidPair,
+        "DEL_AVOID_PAIR": ActionAvoidPair,
+        "LOAD_STATE": ActionLoadState,
+        "SET_OPTION": ActionSetOption
+    };
+    return typeToConstructor[x.type];
+};
+
+export default function optionsReducer(state, action) {
+    ActionTypes(action);
+    switch (action.type) {
+    case "ADD_AVOID_PAIR":
+        return over(
+            lensProp("avoid"),
+            append(action.pair),
+            state
+        );
+    case "DEL_AVOID_PAIR":
+        return over(
+            lensProp("avoid"),
+            filter((pair) => !(
+                pair.includes(action.pair[0])
+                && pair.includes(action.pair[1])
+            )),
+            state
+        );
+    case "SET_OPTION":
+        return assoc(
+            action.option,
+            action.value,
+            state
+        );
+    case "LOAD_STATE":
+        return action.state;
+    default:
+        throw new Error("Unexpected action type.");
+    }
+}
+

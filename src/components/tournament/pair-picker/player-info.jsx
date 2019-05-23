@@ -1,13 +1,12 @@
 // this component should eventually replace player-match-info.jsx
+import {useOptionsDb, useTournament} from "../../../hooks";
 import PropTypes from "prop-types";
 import React from "react";
 import {createPlayerStats} from "../../../pairing-scoring";
-import {usePlayers} from "../../../state";
-import {useTournament} from "../../../hooks";
 
 export default function PlayerInfo({playerId, roundId}) {
     const {tourney, players} = useTournament();
-    const {playerState} = usePlayers();
+    const [options] = useOptionsDb();
     const {
         profile,
         rating,
@@ -17,9 +16,9 @@ export default function PlayerInfo({playerId, roundId}) {
         opponentHistory,
         avoidList
     } = createPlayerStats({
-        avoidList: playerState.avoid,
+        avoidList: options.avoidPairs,
         id: playerId,
-        playerDataSource: playerState.players,
+        playerDataSource: Object.values(players),
         roundId,
         roundList: tourney.roundList
     });

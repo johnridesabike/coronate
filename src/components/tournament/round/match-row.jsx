@@ -8,7 +8,6 @@ import Icons from "../../icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
 import {calcNewRatings} from "../../../pairing-scoring";
-import {usePlayers} from "../../../state";
 import {useTournament} from "../../../hooks";
 import {winnerSelect} from "./round.module.css";
 
@@ -20,9 +19,14 @@ export default function MatchRow({
     selectedMatch,
     setSelectedMatch
 }) {
-    const {tourney, tourneyDispatch} = useTournament();
+    const {
+        tourney,
+        tourneyDispatch,
+        players,
+        getPlayer,
+        playersDispatch
+    } = useTournament();
     const dispatch = tourneyDispatch;
-    const {playerDispatch, getPlayer} = usePlayers();
     const [openModal, setOpenModal] = useState(false);
     const resultCode = (function () {
         if (match.result[0] > match.result[1]) {
@@ -61,8 +65,8 @@ export default function MatchRow({
                 throw new Error();
             }
         }());
-        const white = getPlayer(match.players[WHITE]);
-        const black = getPlayer(match.players[BLACK]);
+        const white = players[match.players[WHITE]];
+        const black = players[match.players[BLACK]];
         const newRating = (
             (event.currentTarget.value === "NOTSET")
             ? match.origRating
@@ -72,24 +76,24 @@ export default function MatchRow({
                 result
             )
         );
-        playerDispatch({
+        playersDispatch({
             id: white.id,
             rating: newRating[WHITE],
             type: "SET_PLAYER_RATING"
         });
-        playerDispatch({
+        playersDispatch({
             id: black.id,
             rating: newRating[BLACK],
             type: "SET_PLAYER_RATING"
         });
         // if the result hasn't been scored yet, increment the matchCount
         if (match.result.reduce((a, b) => a + b) === 0) {
-            playerDispatch({
+            playersDispatch({
                 id: white.id,
                 matchCount: white.matchCount + 1,
                 type: "SET_PLAYER_MATCHCOUNT"
             });
-            playerDispatch({
+            playersDispatch({
                 id: black.id,
                 matchCount: black.matchCount + 1,
                 type: "SET_PLAYER_MATCHCOUNT"
