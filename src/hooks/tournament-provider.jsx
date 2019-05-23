@@ -2,7 +2,8 @@ import React, {
     createContext,
     useContext,
     useEffect,
-    useReducer
+    useReducer,
+    useState
 } from "react";
 import {curry, difference} from "ramda";
 import {
@@ -25,6 +26,7 @@ export function useTournament() {
 export function TournamentProvider(props) {
     const [tourney, tourneyDispatch] = useReducer(tournamentReducer, {});
     const [players, playersDispatch] = useReducer(playersReducer, {});
+    const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initTourneyFromDb() {
             tourneyStore.getItem(String(props.tourneyId)).then(
@@ -50,10 +52,10 @@ export function TournamentProvider(props) {
             );
             // TODO: Make this smarter
             const changedPlayers = difference(idStrings, Object.keys(players));
-            console.log(changedPlayers);
             if (changedPlayers.length > 0) {
                 playerStore.getItems(idStrings).then(function (values) {
                     playersDispatch({state: values, type: "LOAD_STATE"});
+                    setIsLoaded(true);
                 });
             }
         },
@@ -72,13 +74,16 @@ export function TournamentProvider(props) {
     );
     useEffect(
         function savePlayersToDb() {
+            if (!isLoaded) {
+                return;
+            }
             playerStore.setItems(players).then(function (values) {
                 console.log("saved player changes to DB", values);
             }).catch(function (error) {
                 console.log("couldn't save players to db", error);
             });
         },
-        [players]
+        [players, isLoaded]
     );
     const getPlayer = curry(getPlayerById)(players);
     if (Object.keys(tourney).length === 0) {

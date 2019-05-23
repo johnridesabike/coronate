@@ -1,9 +1,11 @@
 import React, {useState} from "react";
 import {assoc} from "ramda";
-import {usePlayers} from "../../state";
+// import {usePlayers} from "../../state";
+import {useAllPlayersDb} from "../../hooks";
 
 export default function NewPlayer() {
-    const {playerDispatch} = usePlayers();
+    // const {playerDispatch} = usePlayers();
+    const [ignore, dispatch] = useAllPlayersDb();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
 
@@ -11,7 +13,7 @@ export default function NewPlayer() {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
         setNewPlayerdata(newPlayerDefault);
-        playerDispatch({firstName, lastName, rating, type: "ADD_PLAYER"});
+        dispatch({firstName, lastName, rating, type: "ADD_PLAYER"});
     };
 
     const updateField = function (event) {

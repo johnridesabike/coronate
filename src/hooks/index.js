@@ -1,7 +1,7 @@
 import {
     TournamentProvider,
     useTournament
-} from "./providers";
+} from "./tournament-provider";
 import {
     useAllPlayersDb,
     useAllTournamentsDb,

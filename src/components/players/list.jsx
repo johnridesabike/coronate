@@ -4,13 +4,13 @@ import NewPlayer from "./new-player";
 import {PlayerLink} from "../utility";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
-import {usePlayers} from "../../state";
+import {useAllPlayersDb} from "../../hooks";
 
 export default function PlayerList(props) {
-    const {playerState, playerDispatch} = usePlayers();
+    const [players, dispatch] = useAllPlayersDb();
     const delPlayer = function (event, id) {
         event.preventDefault();
-        playerDispatch({id, type: "DEL_PLAYER"});
+        dispatch({id, type: "DEL_ITEM"});
     };
     return (
         <div>
@@ -25,7 +25,7 @@ export default function PlayerList(props) {
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>{playerState.players.map((player) =>
+                <tbody>{Object.values(players).map((player) =>
                     <tr key={player.id}>
                         <td className="table__player">
                             <PlayerLink id={player.id} firstName />
@@ -37,9 +37,7 @@ export default function PlayerList(props) {
                         <td>
                             <button
                                 className="danger iconButton"
-                                onClick={(event) =>
-                                    delPlayer(event, player.id)
-                                }
+                                onClick={(event) => delPlayer(event, player.id)}
                                 // eslint-disable-next-line max-len
                                 title={`Delete ${player.firstName} ${player.lastName}`}
                                 // eslint-disable-next-line max-len

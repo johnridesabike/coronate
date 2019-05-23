@@ -1,4 +1,5 @@
 import "localforage-getitems";
+import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
 import {curry} from "ramda";
 import demoOptions from "../state/demo-options.json";
@@ -7,38 +8,11 @@ import demoTourneys from "../state/demo-tourney.json";
 import {extendPrototype} from "localforage-setitems";
 import {getPlayerById} from "../pairing-scoring";
 import localforage from "localforage";
-import {optionsReducer} from "./reducers";
 import t from "tcomb";
 
 extendPrototype(localforage);
 
 const DB_NAME = "Chessahoochee";
-
-function useAllItemsFromDb(store) {
-    const [items, setItems] = useState({});
-    useEffect(
-        function loadItemsFromDb() {
-            let updatedItems = {};
-            store.iterate(function (value, key) {
-                // eslint-disable-next-line fp/no-mutation
-                updatedItems[key] = value;
-            }).then(function () {
-                console.log("loaded items from", store._config.storeName);
-                setItems(updatedItems);
-            });
-        },
-        [store]
-    );
-    useEffect(
-        function saveItemsToDb() {
-            store.setItems(items).then(function () {
-                console.log("saved items to", store._config.storeName);
-            });
-        },
-        [store, items]
-    );
-    return [items, setItems];
-}
 
 const playerStore = localforage.createInstance({
     name: DB_NAME,
@@ -49,6 +23,60 @@ demoPlayers.playerList.forEach(function (value) {
     playerStore.setItem(String(value.id), value);
 });
 export {playerStore};
+
+const optionsStore = localforage.createInstance({
+    name: DB_NAME,
+    storeName: "Options"
+});
+optionsStore.setItem("byeValue", demoOptions.byeValue);
+optionsStore.setItem("avoidPairs", demoOptions.avoidPairs);
+export {optionsStore};
+
+const tourneyStore = localforage.createInstance({
+    name: DB_NAME,
+    storeName: "Tournaments"
+});
+
+demoTourneys.forEach(function (value) {
+    tourneyStore.setItem(String(value.id), value);
+});
+export {tourneyStore};
+
+function useAllItemsFromDb(store) {
+    const [items, dispatch] = useReducer(genericDbReducer, {});
+    const [isLoaded, setIsLoaded] = useState(false);
+    useEffect(
+        function loadItemsFromDb() {
+            let updatedItems = {};
+            store.iterate(function (value, key) {
+                // eslint-disable-next-line fp/no-mutation
+                updatedItems[key] = value;
+            }).then(function () {
+                console.log("loaded items from", store._config.storeName);
+                dispatch({state: updatedItems, type: "LOAD_STATE"});
+                setIsLoaded(true);
+            });
+        },
+        [store]
+    );
+    useEffect(
+        function saveChangesToDb() {
+            if (!isLoaded) {
+                return;
+            }
+            store.setItems(items).then(function () {
+                console.log("saved items to", store._config.storeName);
+                console.log("items:", items);
+            });
+        },
+        [store, items, isLoaded]
+    );
+    return [items, dispatch];
+}
+
+export function useAllPlayersDb() {
+    return useAllItemsFromDb(playerStore);
+}
 
 export function usePlayersDb(ids) {
     t.list(t.Number)(ids);
@@ -74,18 +102,6 @@ export function usePlayersDb(ids) {
     return [players, getPlayer];
 }
 
-export function useAllPlayersDb() {
-    return useAllItemsFromDb(playerStore);
-}
-
-const optionsStore = localforage.createInstance({
-    name: DB_NAME,
-    storeName: "Options"
-});
-optionsStore.setItem("byeValue", demoOptions.byeValue);
-optionsStore.setItem("avoidPairs", demoOptions.avoidPairs);
-export {optionsStore};
-
 export function useOptionsDb() {
     const [options, dispatch] = useReducer(optionsReducer, demoOptions);
     useEffect(
@@ -105,20 +121,10 @@ export function useOptionsDb() {
     return [options, dispatch];
 }
 
-const tourneyStore = localforage.createInstance({
-    name: DB_NAME,
-    storeName: "Tournaments"
-});
-
-demoTourneys.forEach(function (value) {
-    tourneyStore.setItem(String(value.id), value);
-});
-export {tourneyStore};
-
 export function useTournamentDb(id) {
     const [tourney, setTourney] = useState({});
     useEffect(
-        function () {
+        function loadTournamentFromDb() {
             tourneyStore.getItem(String(id)).then(function (value) {
                 console.log("got tourney", id, value);
                 setTourney(value);
@@ -127,7 +133,7 @@ export function useTournamentDb(id) {
         [id]
     );
     useEffect(
-        function () {
+        function saveChangesToDb() {
             tourneyStore.setItem(String(id), tourney);
         },
         [id, tourney]
