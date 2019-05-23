@@ -1,10 +1,12 @@
 import React, {useState} from "react";
 import Icons from "../icons";
 import {Link} from "@reach/router";
-import {useTournaments} from "../../state";
+// import {useTournaments} from "../../state";
+import {useAllTournamentsDb} from "../../hooks";
 
 export default function TournamentList(props) {
-    const [tourneys, dispatch] = useTournaments();
+    const [tourneys] = useAllTournamentsDb();
+    const dispatch = () => null; // TODO
     const [newTourneyName, setNewTourneyName] = useState("");
 
     function updateNewName(event) {
@@ -22,24 +24,24 @@ export default function TournamentList(props) {
 
     return (
         <div>
-            {(tourneys.length > 0) &&
+            {(Object.keys(tourneys).length > 0) &&
                 <h2>Tournament list</h2>
             }
-            {(tourneys.length > 0)
+            {(Object.keys(tourneys).length > 0)
                 ?
                 <ol>
-                    {tourneys.map((tourney, i) =>
-                        <li key={i}>
-                            <Link to={String(i)}>
-                                {tourney.name}
+                    {Object.values(tourneys).map(({name, id}) =>
+                        <li key={id}>
+                            <Link to={String(id)}>
+                                {name}
                             </Link>{" "}
                             <button
-                                title={`Delete “${tourney.name}”`}
-                                aria-label={`Delete “${tourney.name}”`}
+                                title={`Delete “${name}”`}
+                                aria-label={`Delete “${name}”`}
                                 className="danger iconButton"
                                 onClick={
                                     () => dispatch({
-                                        index: i,
+                                        index: id,
                                         type: "DEL_TOURNEY"
                                     })
                                 }

@@ -14,6 +14,32 @@ extendPrototype(localforage);
 
 const DB_NAME = "Chessahoochee";
 
+function useAllItemsFromDb(store) {
+    const [items, setItems] = useState({});
+    useEffect(
+        function loadItemsFromDb() {
+            let updatedItems = {};
+            store.iterate(function (value, key) {
+                // eslint-disable-next-line fp/no-mutation
+                updatedItems[key] = value;
+            }).then(function () {
+                console.log("loaded items from", store._config.storeName);
+                setItems(updatedItems);
+            });
+        },
+        [store]
+    );
+    useEffect(
+        function saveItemsToDb() {
+            store.setItems(items).then(function () {
+                console.log("saved items to", store._config.storeName);
+            });
+        },
+        [store, items]
+    );
+    return [items, setItems];
+}
+
 const playerStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Players"
@@ -49,26 +75,7 @@ export function usePlayersDb(ids) {
 }
 
 export function useAllPlayersDb() {
-    const [players, setPlayers] = useState({});
-    useEffect(
-        function loadPlayersFromDb() {
-            let updatedPlayers = {};
-            playerStore.iterate(function (value, key) {
-                // eslint-disable-next-line fp/no-mutation
-                updatedPlayers[key] = value;
-            }).then(function () {
-                setPlayers(updatedPlayers);
-            });
-        },
-        []
-    );
-    useEffect(
-        function savePlayersToDb() {
-            playerStore.setItems(players);
-        },
-        [players]
-    );
-    return [players, setPlayers];
+    return useAllItemsFromDb(playerStore);
 }
 
 const optionsStore = localforage.createInstance({
@@ -98,36 +105,6 @@ export function useOptionsDb() {
     return [options, dispatch];
 }
 
-// function useOptionDbOld(key, defaultValue) {
-//     const [option, setOption] = useState(t.Number(defaultValue));
-//     useEffect(
-//         function () {
-//             optionsStore.getItem(key).then(function (value) {
-//                 console.log("getting " + key + " from localforage");
-//                 (value === null)
-//                 ? setOption(t.Number(defaultValue))
-//                 : setOption(t.Number(value));
-//             }).catch(function (err) {
-//                 console.log("error:", err);
-//             });
-//         },
-//         [key, defaultValue]
-//     );
-//     useEffect(
-//         function () {
-//             optionsStore.setItem(key, option).then(
-//                 function (value) {
-//                     console.log("updated", key, value);
-//                 }
-//             ).catch(function (err) {
-//                 console.log("error:", err);
-//             });
-//         },
-//         [key, option]
-//     );
-//     return [option, setOption];
-// }
-
 const tourneyStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Tournaments"
@@ -156,4 +133,8 @@ export function useTournamentDb(id) {
         [id, tourney]
     );
     return [tourney, setTourney];
+}
+
+export function useAllTournamentsDb() {
+    return useAllItemsFromDb(tourneyStore);
 }

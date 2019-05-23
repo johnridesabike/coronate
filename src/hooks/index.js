@@ -4,6 +4,7 @@ import {
 } from "./providers";
 import {
     useAllPlayersDb,
+    useAllTournamentsDb,
     useOptionsDb,
     usePlayersDb,
     useTournamentDb
@@ -23,6 +24,7 @@ export function useRound(tourney, roundId) {
 export {
     useAllPlayersDb,
     usePlayersDb,
+    useAllTournamentsDb,
     useOptionsDb,
     useTournament,
     useTournamentDb,

@@ -4,12 +4,9 @@ import React from "react";
 import Sidebar from "./sidebar";
 import {TournamentProvider} from "../../hooks";
 import styles from "./tournament.module.css";
-// import {useTournament} from "../../state";
 
 export default function Tournament(props) {
     const tourneyId = Number(props.tourneyId);
-    // const [tourney] = useTournament(tourneyId);
-    // const {name} = tourney;
     return (
         <TournamentProvider tourneyId={tourneyId}>
             <div className={styles.tournament}>

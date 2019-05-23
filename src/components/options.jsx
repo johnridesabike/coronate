@@ -1,13 +1,12 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {useAllPlayersDb, useOptionsDb} from "../hooks";
+import {useAllPlayersDb, useAllTournamentsDb, useOptionsDb} from "../hooks";
 import {createPlayer} from "../data-types";
 import defaultOptions from "../state/demo-options.json";
 import defaultPlayers from "../state/demo-players.json";
 import defaultTourneys from "../state/demo-tourney.json";
-import {useTournaments} from "../state";
 
 export function Options(props) {
-    const [tourneys, tourneysDispatch] = useTournaments();
+    const [tourneys, setTourneys] = useAllTournamentsDb();
     const [players, setPlayers] = useAllPlayersDb();
     const [text, setText] = useState("");
     const [options, opitionsDispatch] = useOptionsDb();
@@ -23,7 +22,8 @@ export function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
+        // tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
+        setTourneys(data.tourneys);
         opitionsDispatch({state: data.options, type: "LOAD_STATE"});
         setPlayers(data.players);
         window.alert("Data loaded!");
