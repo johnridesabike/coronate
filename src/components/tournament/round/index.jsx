@@ -7,8 +7,6 @@ import PropTypes from "prop-types";
 import Round from "./round";
 
 export default function Index(props) {
-    // reach router passes strings instead
-    const tourneyId = Number(props.tourneyId);
     const roundId = Number(props.roundId);
     const {tourney} = useTournament();
     const {unmatched} = useRound(tourney, roundId);
@@ -35,13 +33,11 @@ export default function Index(props) {
                 <TabPanel>
                     <Round
                         roundId={roundId}
-                        tourneyId={tourneyId}
                     />
                 </TabPanel>
                 <TabPanel>
                     <PairPicker
                         roundId={roundId}
-                        tourneyId={tourneyId}
                     />
                 </TabPanel>
             </TabPanels>
@@ -50,6 +46,5 @@ export default function Index(props) {
 }
 Index.propTypes = {
     path: PropTypes.string,
-    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    tourneyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

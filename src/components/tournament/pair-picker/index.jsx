@@ -23,10 +23,11 @@ export default function PairPicker({tourneyId, roundId}) {
     const statsList = React.useMemo(
         () => (
             pipe(
-                map((id) => (
+                Object.values,
+                map((player) => (
                     createPlayerStats({
                         avoidList: options.avoidPairs,
-                        id,
+                        id: player.id,
                         players,
                         roundId,
                         roundList: tourney.roundList
@@ -34,10 +35,9 @@ export default function PairPicker({tourneyId, roundId}) {
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
-            )(tourney.playerIds)
+            )(players)
         ),
         [
-            tourney.playerIds,
             tourney.roundList,
             roundId,
             options.avoidPairs,
