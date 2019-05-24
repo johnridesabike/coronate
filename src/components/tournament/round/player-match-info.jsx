@@ -12,7 +12,7 @@ export default function PlayerMatchInfo({matchId, color, roundId}) {
     const match = findById(matchId, matchList);
     const playerData = createPlayerStats({
         avoidList: options.avoidPairs,
-        id: match.players[color],
+        id: match.playerIds[color],
         playerDataSource: Object.values(players),
         roundId,
         roundList: tourney.roundList

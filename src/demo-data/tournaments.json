@@ -1,0 +1,621 @@
+{
+    "CaouTNel9k70jUJ0h6SYM": {
+        "id": "CaouTNel9k70jUJ0h6SYM",
+        "name": "Wayne Manor Open",
+        "tieBreaks": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "byeQueue": [],
+        "playerIds": [
+            "BruceWayne_lv_ZsUHTU9",
+            "DickGrayson_1C2rCokHH",
+            "AlfredPennyWorth_y4dW",
+            "BarbaraGordon_cL6SpI2",
+            "KateKane_klFW6gDfUOTX",
+            "SelinaKyle_rJBH-45Xoy",
+            "JasonTodd_fc9CeOa-Luw",
+            "JamesGordon_1ts9xICT3",
+            "HelenaWayne_fE6O0DJcE"
+        ],
+        "roundList": [
+            [
+                {
+                    "id": "FUASEeyES6ez_ROoT6qmU",
+                    "playerIds": [
+                        "JasonTodd_fc9CeOa-Luw",
+                        "DickGrayson_1C2rCokHH"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1238,
+                        2108
+                    ],
+                    "newRating": [
+                        1236,
+                        2109
+                    ]
+                },
+                {
+                    "id": "gqPyD66QMPF-pup41xsB2",
+                    "playerIds": [
+                        "JamesGordon_1ts9xICT3",
+                        "AlfredPennyWorth_y4dW"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1049,
+                        2260
+                    ],
+                    "newRating": [
+                        1049,
+                        2260
+                    ]
+                },
+                {
+                    "id": "KpS1lQSzsQWQ3VVWJyA2P",
+                    "playerIds": [
+                        "KateKane_klFW6gDfUOTX",
+                        "BarbaraGordon_cL6SpI2"
+                    ],
+                    "result": [
+                        0.5,
+                        0.5
+                    ],
+                    "origRating": [
+                        1527,
+                        1755
+                    ],
+                    "newRating": [
+                        1553,
+                        1722
+                    ]
+                },
+                {
+                    "id": "OgFuy-wq8mz378EWat46u",
+                    "playerIds": [
+                        "SelinaKyle_rJBH-45Xoy",
+                        "BruceWayne_lv_ZsUHTU9"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1284,
+                        1881
+                    ],
+                    "newRating": [
+                        1278,
+                        1887
+                    ]
+                },
+                {
+                    "id": "f8Ps3GUmd0ZRsBBY8rZOp",
+                    "playerIds": [
+                        "HelenaWayne_fE6O0DJcE",
+                        "________DUMMY________"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        831,
+                        0
+                    ],
+                    "newRating": [
+                        831,
+                        0
+                    ]
+                }
+            ],
+            [
+                {
+                    "id": "6seKrw7ehbhL766g6L2PF",
+                    "playerIds": [
+                        "DickGrayson_1C2rCokHH",
+                        "KateKane_klFW6gDfUOTX"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        2109,
+                        1685
+                    ],
+                    "newRating": [
+                        2122,
+                        1672
+                    ]
+                },
+                {
+                    "id": "TCSjz48ZXqjamtYUFNg0B",
+                    "playerIds": [
+                        "BruceWayne_lv_ZsUHTU9",
+                        "HelenaWayne_fE6O0DJcE"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1887,
+                        831
+                    ],
+                    "newRating": [
+                        1887,
+                        830
+                    ]
+                },
+                {
+                    "id": "zF64DEsN8sHydpDDsg37E",
+                    "playerIds": [
+                        "AlfredPennyWorth_y4dW",
+                        "SelinaKyle_rJBH-45Xoy"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        2260,
+                        1278
+                    ],
+                    "newRating": [
+                        2101,
+                        1437
+                    ]
+                },
+                {
+                    "id": "qVGt1EJq9y0MmvFtumM0A",
+                    "playerIds": [
+                        "BarbaraGordon_cL6SpI2",
+                        "JasonTodd_fc9CeOa-Luw"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1545,
+                        1236
+                    ],
+                    "newRating": [
+                        1574,
+                        1207
+                    ]
+                },
+                {
+                    "id": "UhfHaRWr_-BtVo22xAuJu",
+                    "playerIds": [
+                        "JamesGordon_1ts9xICT3",
+                        "________DUMMY________"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1049,
+                        0
+                    ],
+                    "newRating": [
+                        1049,
+                        0
+                    ]
+                }
+            ],
+            [
+                {
+                    "id": "odrOOnZJUe0YAwkfUDqUb",
+                    "playerIds": [
+                        "AlfredPennyWorth_y4dW",
+                        "BruceWayne_lv_ZsUHTU9"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        2101,
+                        1887
+                    ],
+                    "newRating": [
+                        1998,
+                        1990
+                    ]
+                },
+                {
+                    "id": "qzCMqUwNIDAcFSAuA5yCm",
+                    "playerIds": [
+                        "HelenaWayne_fE6O0DJcE",
+                        "DickGrayson_1C2rCokHH"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        830,
+                        2122
+                    ],
+                    "newRating": [
+                        990,
+                        2008
+                    ]
+                },
+                {
+                    "id": "6QgVqdtcJPjfVp3UZ8S9g",
+                    "playerIds": [
+                        "SelinaKyle_rJBH-45Xoy",
+                        "BarbaraGordon_cL6SpI2"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1437,
+                        1574
+                    ],
+                    "newRating": [
+                        1529,
+                        1464
+                    ]
+                },
+                {
+                    "id": "as45gODKMLC5-3_UsTyx5",
+                    "playerIds": [
+                        "KateKane_klFW6gDfUOTX",
+                        "JamesGordon_1ts9xICT3"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1672,
+                        1049
+                    ],
+                    "newRating": [
+                        1542,
+                        1244
+                    ]
+                },
+                {
+                    "id": "Pc0CWecSfeGNfvBPjyEIj",
+                    "playerIds": [
+                        "JasonTodd_fc9CeOa-Luw",
+                        "________DUMMY________"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1207,
+                        0
+                    ],
+                    "newRating": [
+                        1207,
+                        0
+                    ]
+                }
+            ],
+            [
+                {
+                    "id": "xj0y_Iqkb-g3MDGgmYx2-",
+                    "playerIds": [
+                        "BruceWayne_lv_ZsUHTU9",
+                        "KateKane_klFW6gDfUOTX"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1990,
+                        1542
+                    ],
+                    "newRating": [
+                        1998,
+                        1534
+                    ]
+                },
+                {
+                    "id": "HWYWtsyaqUkHRExM6kQrt",
+                    "playerIds": [
+                        "DickGrayson_1C2rCokHH",
+                        "JamesGordon_1ts9xICT3"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        2008,
+                        1244
+                    ],
+                    "newRating": [
+                        2009,
+                        1243
+                    ]
+                },
+                {
+                    "id": "uAzHZVMC71liQZ-6fWWeD",
+                    "playerIds": [
+                        "HelenaWayne_fE6O0DJcE",
+                        "SelinaKyle_rJBH-45Xoy"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        990,
+                        1529
+                    ],
+                    "newRating": [
+                        983,
+                        1534
+                    ]
+                },
+                {
+                    "id": "_tCBn9YNIyto-vXpxm7WI",
+                    "playerIds": [
+                        "JasonTodd_fc9CeOa-Luw",
+                        "AlfredPennyWorth_y4dW"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1207,
+                        1998
+                    ],
+                    "newRating": [
+                        1205,
+                        1999
+                    ]
+                },
+                {
+                    "id": "L7yatE2oVKlV7LOY6-d7Y",
+                    "playerIds": [
+                        "BarbaraGordon_cL6SpI2",
+                        "________DUMMY________"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1464,
+                        0
+                    ],
+                    "newRating": [
+                        1464,
+                        0
+                    ]
+                }
+            ]
+        ]
+    },
+    "tvAdS4YbSOznrBgrg0ITA": {
+        "id": "tvAdS4YbSOznrBgrg0ITA",
+        "name": "The Battle for Gotham City",
+        "tieBreaks": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "byeQueue": [],
+        "playerIds": [
+            "BruceWayne_lv_ZsUHTU9",
+            "DickGrayson_1C2rCokHH",
+            "AlfredPennyWorth_y4dW",
+            "BarbaraGordon_cL6SpI2",
+            "KateKane_klFW6gDfUOTX",
+            "SelinaKyle_rJBH-45Xoy",
+            "JasonTodd_fc9CeOa-Luw",
+            "JamesGordon_1ts9xICT3",
+            "HelenaWayne_fE6O0DJcE",
+            "Joker_v0z2416fpAZ9o2c",
+            "HarleyQuinn_-10-02VPH",
+            "VictorFries_cWaQoW014",
+            "OswaldCobblepot_lfCro",
+            "RasAlGhul_k9n8k852bHr",
+            "PamelaIsley_vH5vD8uPB",
+            "EdwardNigma_j80JfWOZq",
+            "JonathanCrane_R4Q8tVW",
+            "HarveyDent_0eYIiP_Ij5"
+        ],
+        "roundList": [
+            [
+                {
+                    "id": "5f8GYcR8V44NYvTN1cZle",
+                    "playerIds": [
+                        "EdwardNigma_j80JfWOZq",
+                        "BruceWayne_lv_ZsUHTU9"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        950,
+                        1998
+                    ],
+                    "newRating": [
+                        948,
+                        1998
+                    ]
+                },
+                {
+                    "id": "GPTct4sL368SryTLFUu8E",
+                    "playerIds": [
+                        "JonathanCrane_R4Q8tVW",
+                        "AlfredPennyWorth_y4dW"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        900,
+                        1999
+                    ],
+                    "newRating": [
+                        899,
+                        1999
+                    ]
+                },
+                {
+                    "id": "AxtoztZ6O19nyrLfZ4YaU",
+                    "playerIds": [
+                        "HarveyDent_0eYIiP_Ij5",
+                        "DickGrayson_1C2rCokHH"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        850,
+                        2009
+                    ],
+                    "newRating": [
+                        1649,
+                        1909
+                    ]
+                },
+                {
+                    "id": "bUM_tWQsAtPe1gqRzlXd1",
+                    "playerIds": [
+                        "RasAlGhul_k9n8k852bHr",
+                        "SelinaKyle_rJBH-45Xoy"
+                    ],
+                    "result": [
+                        0.5,
+                        0.5
+                    ],
+                    "origRating": [
+                        1050,
+                        1534
+                    ],
+                    "newRating": [
+                        1404,
+                        1495
+                    ]
+                },
+                {
+                    "id": "bAOVlP-M5xaPk1qofNReb",
+                    "playerIds": [
+                        "OswaldCobblepot_lfCro",
+                        "BarbaraGordon_cL6SpI2"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1100,
+                        1464
+                    ],
+                    "newRating": [
+                        1812,
+                        1345
+                    ]
+                },
+                {
+                    "id": "4omlgiGSaE1BmrHdABSym",
+                    "playerIds": [
+                        "PamelaIsley_vH5vD8uPB",
+                        "KateKane_klFW6gDfUOTX"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1000,
+                        1534
+                    ],
+                    "newRating": [
+                        965,
+                        1538
+                    ]
+                },
+                {
+                    "id": "ysdEVYS2AyuKyOAwLLpTF",
+                    "playerIds": [
+                        "HarleyQuinn_-10-02VPH",
+                        "JamesGordon_1ts9xICT3"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        1200,
+                        1242
+                    ],
+                    "newRating": [
+                        1648,
+                        1167
+                    ]
+                },
+                {
+                    "id": "YoJ9WGokAYrmJjfxCCf87",
+                    "playerIds": [
+                        "VictorFries_cWaQoW014",
+                        "Joker_v0z2416fpAZ9o2c"
+                    ],
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "origRating": [
+                        1150,
+                        1250
+                    ],
+                    "newRating": [
+                        862,
+                        1538
+                    ]
+                },
+                {
+                    "id": "Az7SBl3cs7rbwKPBI0IsU",
+                    "playerIds": [
+                        "HelenaWayne_fE6O0DJcE",
+                        "JasonTodd_fc9CeOa-Luw"
+                    ],
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "origRating": [
+                        983,
+                        1205
+                    ],
+                    "newRating": [
+                        1087,
+                        1101
+                    ]
+                }
+            ],
+            []
+        ]
+    }
+}

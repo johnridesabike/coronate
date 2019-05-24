@@ -26,12 +26,15 @@ export function useTournament() {
 export function TournamentProvider(props) {
     const [tourney, tourneyDispatch] = useReducer(tournamentReducer, {});
     const [players, playersDispatch] = useReducer(playersReducer, {});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
+    const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
     useEffect(
         function initTourneyFromDb() {
-            tourneyStore.getItem(String(props.tourneyId)).then(
-                function (value) {
+            tourneyStore.getItem(props.tourneyId).then(
+                function tourneyWasLoaded(value) {
+                    console.log("loaded", props.tourneyId, value);
                     tourneyDispatch({state: value, type: "SET_STATE"});
+                    setIsTourneyLoaded(true);
                 }
             );
         },
@@ -39,42 +42,46 @@ export function TournamentProvider(props) {
     );
     useEffect(
         function hydrateTourneyPlayersFromDb() {
-            if (!tourney.roundList) {
-                return;
+            if (!tourney.roundList || !tourney.playerIds) {
+                return; // the tournament hasn't been loaded yet
             }
-            const ids = getAllPlayersFromMatches(
+            const allTheIds = getAllPlayersFromMatches(
                 rounds2Matches(tourney.roundList)
+            ).concat(
+                tourney.playerIds
             );
-            const idStrings = ids.map(
-                (id) => String(id)
-            ).filter(
-                (id) => id !== String(DUMMY_ID)
-            );
+            const idsNoDummy = allTheIds.filter((id) => id !== DUMMY_ID);
             // TODO: Make this smarter
-            const changedPlayers = difference(idStrings, Object.keys(players));
+            const changedPlayers = difference(idsNoDummy, Object.keys(players));
             if (changedPlayers.length > 0) {
-                playerStore.getItems(idStrings).then(function (values) {
+                playerStore.getItems(idsNoDummy).then(function (values) {
+                    console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
-                    setIsLoaded(true);
+                    setIsPlayersLoaded(true);
                 });
+            } else {
+                setIsPlayersLoaded(true);
             }
         },
-        [tourney.roundList, players]
+        [tourney.roundList, players, tourney.playerIds]
     );
     useEffect(
         function saveTourneyToDb() {
-            tourneyStore.setItem(String(props.tourneyId), tourney).catch(
+            if (!isTourneyLoaded) {
+                return;
+            }
+            tourneyStore.setItem(props.tourneyId, tourney).catch(
                 function (error) {
                     console.log("error saving tourney", error);
                     console.log(props.tourneyId, tourney);
                 }
             );
         },
-        [props.tourneyId, tourney]
+        [props.tourneyId, tourney, isTourneyLoaded]
     );
     useEffect(
         function savePlayersToDb() {
-            if (!isLoaded) {
+            if (!isPlayersLoaded) {
                 return;
             }
             playerStore.setItems(players).then(function (values) {
@@ -83,10 +90,10 @@ export function TournamentProvider(props) {
                 console.log("couldn't save players to db", error);
             });
         },
-        [players, isLoaded]
+        [players, isPlayersLoaded]
     );
     const getPlayer = curry(getPlayerById)(players);
-    if (Object.keys(tourney).length === 0) {
+    if (!isTourneyLoaded || !isPlayersLoaded) {
         return <div>Loading...</div>;
     }
     return (
@@ -105,5 +112,5 @@ export function TournamentProvider(props) {
 }
 TournamentProvider.propTypes = {
     children: PropTypes.node.isRequired,
-    tourneyId: PropTypes.number.isRequired
+    tourneyId: PropTypes.string.isRequired
 };

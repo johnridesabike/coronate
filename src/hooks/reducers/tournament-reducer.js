@@ -1,4 +1,4 @@
-import {AvoidList, Player} from "../../data-types";
+import {AvoidPair, Id, Player} from "../../data-types";
 import {
     __,
     append,
@@ -17,7 +17,7 @@ import {
     reverse,
     set
 } from "ramda";
-import {autoPair, manualPair} from "../../state/match-functions";
+import {autoPair, manualPair} from "./match-functions";
 import t from "tcomb";
 
 const ActionAddRound = t.interface({});
@@ -30,22 +30,20 @@ const ActionMoveTieBreak = t.interface({
     oldIndex: t.Number
 });
 const ActionSetTourneyPlayers = t.interface({
-    players: t.list(t.Number)
+    playerIds: t.list(Id)
 });
 const ActionSetByeQueue = t.interface({
-    byeQueue: t.list(t.Number)
+    byeQueue: t.list(Id)
 });
 const ActionAutoPair = t.interface({
-    avoidList: AvoidList,
+    avoidList: t.list(AvoidPair),
     byeValue: t.Number,
-    playerDataList: t.list(Player),
-    roundId: t.Number,
-    unpairedPlayers: t.list(t.Number)
+    players: t.dict(t.String, Player),
+    roundId: t.Number
 });
 const ActionManualPair = t.interface({
     byeValue: t.Number,
-    pair: t.list(t.Number),
-    players: t.list(Player),
+    pair: t.tuple([Player, Player]),
     roundId: t.Number
 });
 const ActionSetMatchResult = t.interface({
@@ -136,8 +134,8 @@ export default function tournamentReducer(state, action) {
         );
     case "SET_TOURNEY_PLAYERS":
         return assoc(
-            "players",
-            action.players,
+            "playerIds",
+            action.playerIds,
             state
         );
     case "SET_BYE_QUEUE":
@@ -154,10 +152,9 @@ export default function tournamentReducer(state, action) {
                 autoPair({
                     avoidList: action.avoidList,
                     byeValue: action.byeValue,
-                    playerDataList: action.playerDataList,
+                    players: action.players,
                     roundId: action.roundId,
-                    tourney: state,
-                    unPairedPlayers: action.unpairedPlayers
+                    tourney: state
                 })
             ),
             state
@@ -165,7 +162,7 @@ export default function tournamentReducer(state, action) {
     case "MANUAL_PAIR":
         return over(
             lensPath(["roundList", action.roundId]),
-            append(manualPair(action.players, action.pair, action.byeValue)),
+            append(manualPair(action.pair, action.byeValue)),
             state
         );
     case "SET_MATCH_RESULT":
@@ -216,7 +213,7 @@ export default function tournamentReducer(state, action) {
                 {
                     newRating: reverse(match.newRating),
                     origRating: reverse(match.origRating),
-                    players: reverse(match.players),
+                    playerIds: reverse(match.playerIds),
                     result: reverse(match.result)
                 }
             ),
@@ -229,6 +226,7 @@ export default function tournamentReducer(state, action) {
             state
         );
     case "SET_STATE":
+        console.log("setting state:", action.state);
         return action.state;
     default:
         throw new Error("Unexpected action type " + action.type);

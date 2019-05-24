@@ -14,7 +14,7 @@ export default function SelectList({
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {tourney, players, getPlayer, tourneyDispatch} = useTournament();
+    const {tourney, getPlayer, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
     const {unmatched} = useRound(tourney, roundId);
     const [options] = useOptionsDb();
@@ -45,15 +45,14 @@ export default function SelectList({
     return (
         <div>
             <button
+                disabled={unmatched.length === 0}
                 onClick={() => dispatch({
                     avoidList: options.avoidPairs,
                     byeValue: options.byeValue,
-                    playerDataList: Object.values(players),
+                    players: unmatched,
                     roundId,
-                    type: "AUTO_PAIR",
-                    unpairedPlayers: unmatched
+                    type: "AUTO_PAIR"
                 })}
-                disabled={unmatched.length === 0}
             >
                 Auto-pair unmatched players
             </button><br/>
@@ -91,6 +90,6 @@ export default function SelectList({
 SelectList.propTypes = {
     roundId: PropTypes.number,
     setStagedPlayers: PropTypes.func,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.number),
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string),
     tourneyId: PropTypes.number
 };

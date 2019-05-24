@@ -1,4 +1,5 @@
 import {append, assoc, filter, lensProp, over} from "ramda";
+import {AvoidPair} from "../../data-types";
 import t from "tcomb";
 
 const ActionLoadState = t.interface({
@@ -8,11 +9,11 @@ const ActionSetOption = t.interface({
     option: t.String,
     value: t.union([
         t.Number,
-        t.list(t.tuple([t.Number, t.Number]))
+        t.list(AvoidPair)
     ])
 });
 const ActionAvoidPair = t.interface({
-    pair: t.tuple([t.Number, t.Number])
+    pair: AvoidPair
 });
 const ActionTypes = t.union([
     ActionLoadState,
@@ -33,13 +34,13 @@ export default function optionsReducer(state, action) {
     switch (action.type) {
     case "ADD_AVOID_PAIR":
         return over(
-            lensProp("avoid"),
+            lensProp("avoidPairs"),
             append(action.pair),
             state
         );
     case "DEL_AVOID_PAIR":
         return over(
-            lensProp("avoid"),
+            lensProp("avoidPairs"),
             filter((pair) => !(
                 pair.includes(action.pair[0])
                 && pair.includes(action.pair[1])

@@ -35,17 +35,17 @@ function ScoreTable(props) {
                         <tr key={standing.id} className={style.row}>
                             {j === 0 && ( // Only display the rank once
                                 <th
-                                    scope="row"
                                     className={"table__number " + style.rank}
                                     rowSpan={src.length}
+                                    scope="row"
                                 >
                                     {numeral(rank + 1).format("0o")}
                                 </th>
                             )}
                             <th
-                                scope="row"
                                 className={style.playerName}
                                 data-testid={rank}
+                                scope="row"
                             >
                                 {getPlayer(standing.id).firstName}&nbsp;
                                 {getPlayer(standing.id).lastName}
@@ -112,26 +112,26 @@ function SelectTieBreaks(props) {
             <h3>Selected tiebreak methods</h3>
             <div className="toolbar">
                 <button
-                    onClick={() => toggleTb()}
                     disabled={selectedTb === null}
+                    onClick={() => toggleTb()}
                 >
                     Toggle
                 </button>
                 <button
-                    onClick={() => moveTb(-1)}
                     disabled={selectedTb === null}
+                    onClick={() => moveTb(-1)}
                 >
                     <Icons.ArrowUp/> Move up
                 </button>
                 <button
-                    onClick={() => moveTb(1)}
                     disabled={selectedTb === null}
+                    onClick={() => moveTb(1)}
                 >
                     <Icons.ArrowDown/> Move down
                 </button>
                 <button
-                    onClick={() => setSelectedTb(null)}
                     disabled={selectedTb === null}
+                    onClick={() => setSelectedTb(null)}
                 >
                     Done
                 </button>
@@ -144,13 +144,13 @@ function SelectTieBreaks(props) {
                     >
                         {tieBreakMethods[id].name}{" "}
                         <button
+                            disabled={
+                                selectedTb !== null && selectedTb !== id
+                            }
                             onClick={() =>
                                 selectedTb === id
                                     ? setSelectedTb(null)
                                     : setSelectedTb(id)
-                            }
-                            disabled={
-                                selectedTb !== null && selectedTb !== id
                             }
                         >
                             {selectedTb === id ? "Done" : "Edit"}

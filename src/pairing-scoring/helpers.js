@@ -1,7 +1,7 @@
-import t from "tcomb";
 import {
-    AvoidList,
+    AvoidPair,
     DUMMY_ID,
+    Id,
     Match,
     Player,
     RoundList,
@@ -9,6 +9,7 @@ import {
     dummyPlayer,
     missingPlayer
 } from "../data-types";
+import t from "tcomb";
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
@@ -43,31 +44,31 @@ export function getPlayerById(playerList, id) {
         t.list(Player),
         t.dict(t.String, Player)
     ])(playerList);
-    if (Number(id) === DUMMY_ID) {
+    if (id === DUMMY_ID) {
         return dummyPlayer;
     }
     const player = (playerList.filter)
         ? playerList.filter((p) => p.id === id)[0]
         : playerList[id];
-    return (player) ? player : missingPlayer(Number(id));
+    return (player) ? player : missingPlayer(id);
 }
 
 /*******************************************************************************
  * Match functions
  ******************************************************************************/
-const isNotBye = (match) => !match.players.includes(DUMMY_ID);
+const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
 export {isNotBye};
 
 function getMatchesByPlayer(playerId, matchList) {
     t.list(Match)(matchList);
-    return matchList.filter((match) => match.players.includes(playerId));
+    return matchList.filter((match) => match.playerIds.includes(playerId));
 }
 export {getMatchesByPlayer};
 
 function getMatchDetailsForPlayer(playerId, match) {
-    t.Number(playerId);
+    Id(playerId);
     Match(match);
-    const index = match.players.indexOf(playerId);
+    const index = match.playerIds.indexOf(playerId);
     return {
         color: index,
         newRating: match.newRating[index],
@@ -98,7 +99,7 @@ export function rounds2Matches(roundList, roundId = null) {
 export function getAllPlayersFromMatches(matchList) {
     t.list(Match)(matchList);
     const allPlayers = matchList.reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     );
     return Array.from(new Set(allPlayers));
@@ -108,7 +109,7 @@ export function getAllPlayersFromMatches(matchList) {
  * Get a list of all of a player's scores from each match.
  */
 export function getPlayerScoreList(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
@@ -123,7 +124,7 @@ export function getPlayerScoreList(playerId, matchList) {
  * @returns {number[]}
  */
 export function getPlayerScoreListNoByes(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
@@ -147,8 +148,8 @@ export function calcNumOfRounds(playerCount) {
  * Avoid list functions
  ******************************************************************************/
 export function getPlayerAvoidList(playerId, avoidList) {
-    AvoidList(avoidList);
-    t.Number(playerId);
+    t.list(AvoidPair)(avoidList);
+    Id(playerId);
     return avoidList.filter( // get pairings with the player
         (pair) => pair.includes(playerId)
     ).reduce( // Flatten the array
@@ -160,7 +161,7 @@ export function getPlayerAvoidList(playerId, avoidList) {
 }
 
 export function cleanAvoidList(avoidList, playerList) {
-    AvoidList(avoidList);
+    t.list(AvoidPair)(avoidList);
     t.list(Player)(playerList);
     const ids = playerList.map((p) => p.id);
     return avoidList.filter(

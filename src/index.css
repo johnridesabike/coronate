@@ -104,6 +104,7 @@ textarea {
 
 textarea.json {
     font-family: "Fira Code", Menlo, Monaco, "Courier New", monospace;
+    white-space: pre;
 }
 
 

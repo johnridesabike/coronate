@@ -35,12 +35,12 @@ export default function PlayerList(props) {
                         <td className="table__number">{player.rating}</td>
                         <td>
                             <button
-                                className="danger iconButton"
-                                onClick={(event) => delPlayer(event, player.id)}
-                                // eslint-disable-next-line max-len
-                                title={`Delete ${player.firstName} ${player.lastName}`}
                                 // eslint-disable-next-line max-len
                                 aria-label={`Delete ${player.firstName} ${player.lastName}`}
+                                className="danger iconButton"
+                                // eslint-disable-next-line max-len
+                                title={`Delete ${player.firstName} ${player.lastName}`}
+                                onClick={(event) => delPlayer(event, player.id)}
                             >
                                 <Icons.Trash />
                             </button>

@@ -53,6 +53,17 @@
         "react/jsx-closing-bracket-location": [1],
         "react/jsx-handler-names": [1],
         "react/jsx-first-prop-new-line": ["warn", "multiline"],
+        "react/jsx-sort-props": [
+            "warn",
+            {
+                "callbacksLast": true,
+                "shorthandFirst": false,
+                "shorthandLast": true,
+                "ignoreCase": false,
+                "noSortAlphabetically": false,
+                "reservedFirst": true
+            }
+        ],
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",

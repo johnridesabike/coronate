@@ -21,7 +21,7 @@ export default function Round({roundId, tourneyId}) {
         if (match.result.reduce((a, b) => a + b) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
-            match.players.forEach(function (pId, color) {
+            match.playerIds.forEach(function (pId, color) {
                 playerDispatch({
                     id: pId,
                     matchCount: getPlayer(pId).matchCount - 1,
@@ -57,29 +57,29 @@ export default function Round({roundId, tourneyId}) {
             <div className={style.toolbar}>
                 <button
                     className="danger iconButton"
-                    onClick={() => unMatch(selectedMatch)}
                     disabled={selectedMatch === null}
+                    onClick={() => unMatch(selectedMatch)}
                 >
                     <Icons.Trash /> Unmatch
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => swapColors(selectedMatch)}
                     disabled={selectedMatch === null}
+                    onClick={() => swapColors(selectedMatch)}
                 >
                     <Icons.Repeat /> Swap colors
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => moveMatch(selectedMatch, -1)}
                     disabled={selectedMatch === null}
+                    onClick={() => moveMatch(selectedMatch, -1)}
                 >
                     <Icons.ArrowUp /> Move up
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => moveMatch(selectedMatch, 1)}
                     disabled={selectedMatch === null}
+                    onClick={() => moveMatch(selectedMatch, 1)}
                 >
                     <Icons.ArrowDown /> Move down
                 </button>
@@ -114,12 +114,12 @@ export default function Round({roundId, tourneyId}) {
                     {matchList.map((match, pos) => (
                         <MatchRow
                             key={match.id}
-                            pos={pos}
                             match={match}
-                            tourneyId={tourneyId}
+                            pos={pos}
                             roundId={roundId}
                             selectedMatch={selectedMatch}
                             setSelectedMatch={setSelectedMatch}
+                            tourneyId={tourneyId}
                         />
                     ))}
                 </tbody>

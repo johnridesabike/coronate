@@ -9,7 +9,7 @@ import {
     createHistory
 } from "@reach/router";
 import Players, {PlayerInfo, PlayerList} from "./components/players";
-import {PlayersProvider, TournamentProvider} from "./state";
+// import {PlayersProvider, TournamentProvider} from "./state";
 import {Tournament, TournamentList} from "./components/tournament";
 import About from "./components/about";
 import Caution from "./components/caution";
@@ -39,45 +39,40 @@ function App() {
                         ♘ Chessahoochee: <small>a chess tournament app.</small>
                     </h1>
                     <nav>
-                        <Link to="tourneys" className={link}>
+                        <Link className={link} to="tourneys">
                             Tournaments
                         </Link>
-                        <Link to="players" className={link}>
+                        <Link className={link} to="players">
                             Players
                         </Link>
-                        <Link to="options" className={link}>
+                        <Link className={link} to="options">
                             Options
                         </Link>
-                        <Link to="about" className={link}>
+                        <Link className={link} to="about">
                             About
                         </Link>
                     </nav>
                 </header>
                 <main className="content">
-                    {/* Lots of nested contexts. Is there a better way? */}
-                    <PlayersProvider>
-                        <TournamentProvider>
-                            <Router>
-                                <TournamentIndex path="tourneys">
-                                    <TournamentList path="/" />
-                                    <Tournament path=":tourneyId">
-                                        <PlayerSelect path="/" />
-                                        <Crosstable path="crosstable" />
-                                        <Scores path="scores" />
-                                        <Round path=":roundId" />
-                                    </Tournament>
-                                </TournamentIndex>
-                                <Players path="players">
-                                    <PlayerList path="/"/>
-                                    <PlayerInfo path=":playerId" />
-                                </Players>
-                                <Options path="options" />
-                                <About path="about" />
-                                <NotFound default />
-                                <Redirect from="/" to="tourneys" noThrow />
-                            </Router>
-                        </TournamentProvider>
-                    </PlayersProvider>
+                    <Router>
+                        <TournamentIndex path="tourneys">
+                            <TournamentList path="/" />
+                            <Tournament path=":tourneyId">
+                                <PlayerSelect path="/" />
+                                <Crosstable path="crosstable" />
+                                <Scores path="scores" />
+                                <Round path=":roundId" />
+                            </Tournament>
+                        </TournamentIndex>
+                        <Players path="players">
+                            <PlayerList path="/"/>
+                            <PlayerInfo path=":playerId" />
+                        </Players>
+                        <Options path="options" />
+                        <About path="about" />
+                        <NotFound default />
+                        <Redirect from="/" to="tourneys" noThrow />
+                    </Router>
                 </main>
             </LocationProvider>
         </div>

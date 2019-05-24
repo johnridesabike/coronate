@@ -34,14 +34,14 @@ export default function Index(props) {
             <TabPanels>
                 <TabPanel>
                     <Round
-                        tourneyId={tourneyId}
                         roundId={roundId}
+                        tourneyId={tourneyId}
                     />
                 </TabPanel>
                 <TabPanel>
                     <PairPicker
-                        tourneyId={tourneyId}
                         roundId={roundId}
+                        tourneyId={tourneyId}
                     />
                 </TabPanel>
             </TabPanels>

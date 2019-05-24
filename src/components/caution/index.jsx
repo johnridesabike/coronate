@@ -4,11 +4,11 @@ import styles from "./index.module.css";
 const Caution = () => (
     <aside className={styles.caution}>
         <p className={styles.caution__text}>
-            <span role="img" aria-label="WARNING.">⚠️</span>
+            <span aria-label="WARNING." role="img">⚠️</span>
             &nbsp;
             This is beta software.
             &nbsp;
-            <span role="img" aria-label="WARNING.">⚠️</span>
+            <span aria-label="WARNING." role="img">⚠️</span>
             {" "}
             Want to help make it better? Check out the
             {" "}

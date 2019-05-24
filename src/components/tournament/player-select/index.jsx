@@ -5,14 +5,13 @@ import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 import Selecting from "./selecting";
-import {useTournament as useTournament2} from "../../../hooks";
+import {useTournament} from "../../../hooks";
 
 export default function PlayerSelect(props) {
-    const tourneyId = Number(props.tourneyId);
-    const {tourney, tourneyDispatch, getPlayer} = useTournament2();
-    const {players, roundList, byeQueue} = tourney;
+    const {tourney, tourneyDispatch, getPlayer} = useTournament();
+    const {playerIds, roundList, byeQueue} = tourney;
     const dispatch = tourneyDispatch;
-    const [isSelecting, setIsSelecting] = useState(players.length === 0);
+    const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
     const matches = rounds2Matches(roundList);
     return (
         <PanelContainer>
@@ -30,7 +29,7 @@ export default function PlayerSelect(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {players.map((pId) => (
+                        {playerIds.map((pId) => (
                             <tr
                                 key={pId}
                                 className={getPlayer(pId).type + " player"}
@@ -39,6 +38,9 @@ export default function PlayerSelect(props) {
                                 <td>{getPlayer(pId).lastName}</td>
                                 <td>
                                     <button
+                                        disabled={byeQueue.includes(
+                                            pId
+                                        )}
                                         onClick={() =>
                                             dispatch({
                                                 byeQueue: byeQueue.concat(
@@ -47,9 +49,6 @@ export default function PlayerSelect(props) {
                                                 type: "SET_BYE_QUEUE"
                                             })
                                         }
-                                        disabled={byeQueue.includes(
-                                            pId
-                                        )}
                                     >
                                         Bye signup
                                     </button>
@@ -94,7 +93,7 @@ export default function PlayerSelect(props) {
             </Panel>
             <Dialog isOpen={isSelecting}>
                 <button onClick={() => setIsSelecting(false)}>Done</button>
-                <Selecting tourneyId={tourneyId} />
+                <Selecting tourneyId={props.tourneyId} />
             </Dialog>
         </PanelContainer>
     );

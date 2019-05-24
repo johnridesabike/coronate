@@ -1,23 +1,24 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
+import {useAllPlayersDb, useOptionsDb} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import numeral from "numeral";
-import {usePlayers} from "../../state";
+// import {usePlayers} from "../../state";
+// const usePlayers = () => ({});
 
-export default function PlayerInfoBox(props) {
-    const playerId = Number(props.playerId);
-    const {playerState, playerDispatch, getPlayer} = usePlayers();
-    const {players, avoid} = playerState;
+export default function PlayerInfoBox({playerId}) {
+    // const {playerState, playerDispatch, getPlayer} = usePlayers();
+    const [players, playersDispatch] = useAllPlayersDb();
+    const player = players[playerId];
+    const [options, optionsDispatch] = useOptionsDb();
     const [singAvoidList, setSingAvoidList] = useState(
-        getPlayerAvoidList(playerId, avoid)
+        getPlayerAvoidList(playerId, options.avoidPairs)
     );
     const unAvoided = useMemo(
         () => (
-            players.map(
-                (player) => player.id
-            ).filter(
+            Object.keys(players).filter(
                 (pId) => !singAvoidList.includes(pId) && pId !== playerId
             )
         ),
@@ -26,16 +27,16 @@ export default function PlayerInfoBox(props) {
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided[0]);
     function avoidAdd(event) {
         event.preventDefault();
-        playerDispatch({
-            pair: [playerId, Number(selectedAvoider)],
+        optionsDispatch({
+            pair: [playerId, selectedAvoider],
             type: "ADD_AVOID_PAIR"
         });
     }
     useEffect(
         function () {
-            setSingAvoidList(getPlayerAvoidList(playerId, avoid));
+            setSingAvoidList(getPlayerAvoidList(playerId, options.avoidPairs));
         },
-        [avoid, playerId]
+        [options.avoidPairs, playerId]
     );
     useEffect(
         function () {
@@ -45,21 +46,24 @@ export default function PlayerInfoBox(props) {
     );
     useEffect(
         function () {
+            if (!player) {
+                return;
+            }
             const origTitle = document.title;
             document.title = (
-                getPlayer(playerId).firstName
-                + " " + getPlayer(playerId).lastName
+                player.firstName
+                + " " + player.lastName
             );
             return function () {
                 document.title = origTitle;
             };
         },
-        [playerId, getPlayer]
+        [playerId, player]
     );
     function handleChange(event) {
         event.preventDefault();
         const {firstName, lastName, matchCount, rating} = event.currentTarget;
-        playerDispatch({
+        playersDispatch({
             firstName: firstName.value,
             id: playerId,
             lastName: lastName.value,
@@ -68,21 +72,24 @@ export default function PlayerInfoBox(props) {
             type: "SET_PLAYER"
         });
     }
+    if (!player) {
+        return <div>Loading...</div>;
+    }
     return (
         <div>
             <Link to=".."><Icons.ChevronLeft /> Back</Link>
             <h2>
                 Profile for{" "}
-                {getPlayer(playerId).firstName} {getPlayer(playerId).lastName}
+                {player.firstName} {player.lastName}
             </h2>
             <form onChange={handleChange} onSubmit={handleChange}>
                 <p>
                     <label>
                     First name{" "}
                         <input
-                            type="text"
+                            defaultValue={player.firstName}
                             name="firstName"
-                            defaultValue={getPlayer(playerId).firstName}
+                            type="text"
                         />
                     </label>
                 </p>
@@ -90,9 +97,9 @@ export default function PlayerInfoBox(props) {
                     <label>
                     Last name{" "}
                         <input
-                            type="text"
+                            defaultValue={player.lastName}
                             name="lastName"
-                            defaultValue={getPlayer(playerId).lastName}
+                            type="text"
                         />
                     </label>
                 </p>
@@ -100,11 +107,11 @@ export default function PlayerInfoBox(props) {
                     <label>
                     Matches played{" "}
                         <input
-                            type="number"
-                            name="matchCount"
                             defaultValue={
-                                String(getPlayer(playerId).matchCount)
+                                String(player.matchCount)
                             }
+                            name="matchCount"
+                            type="number"
                         />
                     </label>
                 </p>
@@ -112,9 +119,9 @@ export default function PlayerInfoBox(props) {
                     <label>
                     Rating
                         <input
-                            type="number"
+                            defaultValue={String(player.rating)}
                             name="rating"
-                            defaultValue={String(getPlayer(playerId).rating)}
+                            type="number"
                         />
                     </label>
                 </p>
@@ -123,53 +130,53 @@ export default function PlayerInfoBox(props) {
                     K factor
                         <input
                             type="number"
-                            readOnly
                             value={(
                                 numeral(
-                                    kFactor(getPlayer(playerId).matchCount)
+                                    kFactor(player.matchCount)
                                 ).format("00")
                             )}
+                            readOnly
                         />
                     </label>
                 </p>
             </form>
+            <h3>Players to avoid</h3>
             <ul>
-                <h3>Players to avoid</h3>
                 {singAvoidList.map((pId) => (
                     <li key={pId}>
-                        {getPlayer(pId).firstName}{" "}
-                        {getPlayer(pId).lastName}{" "}
+                        {players[pId].firstName}{" "}
+                        {players[pId].lastName}{" "}
                         <button
+                            arial-label={`Remove 
+${players[pId].firstName} ${players[pId].lastName} from avoid list.`}
                             className="danger iconButton"
+                            title={`Remove ${players[pId].firstName} 
+${players[pId].lastName}`}
                             onClick={() =>
-                                playerDispatch({
+                                playersDispatch({
                                     pair: [playerId, pId],
                                     type: "DEL_AVOID_PAIR"
                                 })
                             }
-                            title={`Remove ${getPlayer(pId).firstName} 
-${getPlayer(pId).lastName}`}
-                            arial-label={`Remove 
-${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
                         >
                             <Icons.Trash />
                         </button>
                     </li>
                 ))}
-                {avoid.length === 0 && <li>None</li>}
+                {singAvoidList.length === 0 && <li>None</li>}
             </ul>
             <form onSubmit={(event) => avoidAdd(event)}>
                 <fieldset>
                     <legend>Add player to avoid</legend>
                     <select
                         onBlur={(event) =>
-                            setSelectedAvoider(Number(event.target.value))
+                            setSelectedAvoider(event.target.value)
                         }
                     >
                         {unAvoided.map((pId) => (
                             <option key={pId} value={pId}>
-                                {getPlayer(pId).firstName}{" "}
-                                {getPlayer(pId).lastName}
+                                {players[pId].firstName}{" "}
+                                {players[pId].lastName}
                             </option>
                         ))}
                     </select>{" "}
@@ -180,6 +187,5 @@ ${getPlayer(pId).firstName} ${getPlayer(pId).lastName} from avoid list.`}
     );
 }
 PlayerInfoBox.propTypes = {
-    path: PropTypes.string,
-    playerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    playerId: PropTypes.string
 };

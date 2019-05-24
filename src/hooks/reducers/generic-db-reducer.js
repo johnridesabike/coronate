@@ -1,5 +1,6 @@
-import {assoc, dissoc, head, inc, keys, map, pipe, sort} from "ramda";
+import {assoc, dissoc} from "ramda";
 import {createPlayer, createTournament} from "../../data-types";
+import nanoid from "nanoid";
 import t from "tcomb";
 
 const ActionLoadState = t.interface({
@@ -39,30 +40,23 @@ ActionTypes.dispatch = function (x) {
 
 export default function genericDbReducer(state, action) {
     ActionTypes(action);
-    const getNextId = pipe(
-        keys,
-        map((id) => Number(id)),
-        sort((a, b) => b - a),
-        head,
-        inc,
-        String
-    );
+    const nextId = nanoid();
     switch (action.type) {
     case "ADD_ITEM":
         console.warn("Use a more specific action instead, please.");
-        return assoc(getNextId(state), action.item, state);
+        return assoc(nextId, action.item, state);
     case "ADD_TOURNEY":
         return assoc(
-            getNextId(state),
-            createTournament({name: action.name}),
+            nextId,
+            createTournament({id: nextId, name: action.name}),
             state
         );
     case "ADD_PLAYER":
         return assoc(
-            getNextId(state),
+            nextId,
             createPlayer({
                 firstName: action.firstName,
-                id: Number(getNextId(state)),
+                id: nextId,
                 lastName: action.lastName,
                 rating: action.rating
             }),

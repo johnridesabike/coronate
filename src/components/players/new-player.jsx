@@ -30,10 +30,10 @@ export default function NewPlayer({dispatch}) {
                     <label>
                         First name{" "}
                         <input
-                            type="text"
                             name="firstName"
-                            onChange={updateField}
-                            value={newPlayerData.firstName} required
+                            type="text"
+                            value={newPlayerData.firstName}
+                            required onChange={updateField}
                         />
                     </label>
                 </p>
@@ -41,10 +41,10 @@ export default function NewPlayer({dispatch}) {
                     <label>
                         Last name{" "}
                         <input
-                            type="text"
                             name="lastName"
-                            onChange={updateField}
-                            value={newPlayerData.lastName} required
+                            type="text"
+                            value={newPlayerData.lastName}
+                            required onChange={updateField}
                         />
                     </label>
                 </p>
@@ -52,11 +52,11 @@ export default function NewPlayer({dispatch}) {
                     <label>
                         Rating {" "}
                         <input
-                            type="number"
                             name="rating"
-                            onChange={updateField}
+                            type="number"
                             value={newPlayerData.rating}
                             required
+                            onChange={updateField}
                         />
                     </label>
                 </p>

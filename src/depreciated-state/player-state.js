@@ -99,7 +99,7 @@ function playersReducer(state, action ) {
                 firstName: action.firstName,
                 lastName: action.lastName,
                 rating: action.rating,
-                id: getNextId(state.players)
+                id: getNextId(state.playerIds)
             })),
             state
         );

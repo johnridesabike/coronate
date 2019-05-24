@@ -1,24 +1,19 @@
+import {Id, createPlayer} from "../../data-types";
 import {
     assoc,
     dissoc,
-    head,
-    inc,
-    keys,
     lensPath,
     lensProp,
-    map,
     mergeLeft,
     over,
-    pipe,
-    set,
-    sort
+    set
 } from "ramda";
-import {createPlayer} from "../../data-types";
+import nanoid from "nanoid";
 import t from "tcomb";
 
 const ActionSetPlayer = t.interface({
     firstName: t.String,
-    id: t.Number,
+    id: Id,
     lastName: t.String,
     matchCount: t.Number,
     rating: t.Number
@@ -29,14 +24,14 @@ const ActionAddPlayer = t.interface({
     rating: t.Number
 });
 const ActionDelPlayer = t.interface({
-    id: t.Number
+    id: Id
 });
 const ActionSetMatchcount = t.interface({
-    id: t.Number,
+    id: Id,
     matchCount: t.Number
 });
 const ActionSetRating = t.interface({
-    id: t.Number,
+    id: Id,
     rating: t.Number
 });
 const ActionAvoidPair = t.interface({
@@ -68,20 +63,14 @@ ActionTypes.dispatch = function (x) {
 
 export default function playersReducer(state, action) {
     ActionTypes(action);
-    const getNextId = pipe(
-        keys,
-        map((id) => Number(id)),
-        sort((a, b) => b - a),
-        head,
-        inc
-    );
+    const nextId = nanoid();
     switch (action.type) {
     case "ADD_PLAYER":
         return assoc(
-            getNextId(state.players),
+            nextId,
             createPlayer({
                 firstName: action.firstName,
-                id: getNextId(state.players),
+                id: nextId,
                 lastName: action.lastName,
                 rating: action.rating
             }),
@@ -89,7 +78,7 @@ export default function playersReducer(state, action) {
         );
     case "SET_PLAYER":
         return over(
-            lensProp(String(action.id)),
+            lensProp(action.id),
             mergeLeft(
                 {
                     firstName: action.firstName,

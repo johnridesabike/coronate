@@ -5,8 +5,7 @@ import {Link} from "@reach/router";
 import {useAllTournamentsDb} from "../../hooks";
 
 export default function TournamentList(props) {
-    const [tourneys] = useAllTournamentsDb();
-    const dispatch = () => null; // TODO
+    const [tourneys, dispatch] = useAllTournamentsDb();
     const [newTourneyName, setNewTourneyName] = useState("");
 
     function updateNewName(event) {
@@ -32,19 +31,17 @@ export default function TournamentList(props) {
                 <ol>
                     {Object.values(tourneys).map(({name, id}) =>
                         <li key={id}>
-                            <Link to={String(id)}>
+                            <Link to={id}>
                                 {name}
                             </Link>{" "}
                             <button
-                                title={`Delete “${name}”`}
                                 aria-label={`Delete “${name}”`}
                                 className="danger iconButton"
-                                onClick={
-                                    () => dispatch({
-                                        index: id,
-                                        type: "DEL_TOURNEY"
-                                    })
-                                }
+                                title={`Delete “${name}”`}
+                                onClick={() => dispatch({
+                                    index: id,
+                                    type: "DEL_TOURNEY"
+                                })}
                             >
                                 <Icons.Trash />
                             </button>
@@ -58,11 +55,11 @@ export default function TournamentList(props) {
                     <legend>Make a new tournament</legend>
                     <label>Name:{" "}
                         <input
-                            type="text"
                             placeholder="tournament name"
+                            required={true}
+                            type="text"
                             value={newTourneyName}
                             onChange={updateNewName}
-                            required={true}
                         />
                     </label>
                     <input type="submit" value="Create" />

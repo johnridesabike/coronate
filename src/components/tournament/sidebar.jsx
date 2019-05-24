@@ -28,7 +28,7 @@ export default function Sidebar(props) {
                 return true;
             }
             const matchedPlayers = lastRound.reduce(
-                (acc, match) => acc.concat(match.players),
+                (acc, match) => acc.concat(match.playerIds),
                 []
             );
             const unMatchedPlayers = Object.keys(players).filter(
@@ -90,7 +90,7 @@ export default function Sidebar(props) {
                 if (match.result[0] + match.result[1] === 0) {
                     return; // Don't change players who haven't scored.
                 }
-                match.players.forEach(function (pId, color) {
+                match.playerIds.forEach(function (pId, color) {
                     if (pId === DUMMY_ID) {
                         return; // Don't try to set the dummy.
                     }
@@ -146,8 +146,8 @@ export default function Sidebar(props) {
             <ul>
                 <li>
                     <button
-                        onClick={newRound}
                         disabled={!isNewRoundReady}
+                        onClick={newRound}
                     >
                         <Icons.Plus/> New round
                     </button>{" "}
@@ -163,8 +163,8 @@ export default function Sidebar(props) {
                 <li>
                     <button
                         className={"danger"}
-                        onClick={delLastRound}
                         disabled={roundList.length === 0}
+                        onClick={delLastRound}
                     >
                         <Icons.Trash /> Remove last round
                     </button>

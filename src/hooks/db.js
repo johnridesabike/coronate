@@ -2,9 +2,7 @@ import "localforage-getitems";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
 import {curry} from "ramda";
-import demoOptions from "../state/demo-options.json";
-import demoPlayers from "../state/demo-players.json";
-import demoTourneys from "../state/demo-tourney.json";
+import demoData from "../demo-data";
 import {extendPrototype} from "localforage-setitems";
 import {getPlayerById} from "../pairing-scoring";
 import localforage from "localforage";
@@ -14,34 +12,40 @@ extendPrototype(localforage);
 
 const DB_NAME = "Chessahoochee";
 
+/*******************************************************************************
+ * Initialize the players database
+ ******************************************************************************/
 const playerStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Players"
 });
 
-demoPlayers.playerList.forEach(function (value) {
-    playerStore.setItem(String(value.id), value);
-});
+playerStore.setItems(demoData.players);
 export {playerStore};
 
+/*******************************************************************************
+ * Initialize the options database
+ ******************************************************************************/
 const optionsStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Options"
 });
-optionsStore.setItem("byeValue", demoOptions.byeValue);
-optionsStore.setItem("avoidPairs", demoOptions.avoidPairs);
+optionsStore.setItems(demoData.options);
 export {optionsStore};
 
+/*******************************************************************************
+ * Initialize the tournaments database
+ ******************************************************************************/
 const tourneyStore = localforage.createInstance({
     name: DB_NAME,
     storeName: "Tournaments"
 });
-
-demoTourneys.forEach(function (value) {
-    tourneyStore.setItem(String(value.id), value);
-});
+tourneyStore.setItems(demoData.tournaments);
 export {tourneyStore};
 
+/*******************************************************************************
+ * Database hooks
+ ******************************************************************************/
 function useAllItemsFromDb(store) {
     const [items, dispatch] = useReducer(genericDbReducer, {});
     const [isLoaded, setIsLoaded] = useState(false);
@@ -103,20 +107,26 @@ export function usePlayersDb(ids) {
 }
 
 export function useOptionsDb() {
-    const [options, dispatch] = useReducer(optionsReducer, demoOptions);
+    const [options, dispatch] = useReducer(optionsReducer, demoData.options);
+    const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initOptionsFromDb() {
             optionsStore.iterate(function (value, key) {
                 dispatch({option: key, type: "SET_OPTION", value: value});
+            }).then(function () {
+                setIsLoaded(true);
             });
         },
         []
     );
     useEffect(
         function writeChangesToDb() {
+            if (!isLoaded) {
+                return;
+            }
             optionsStore.setItems(options);
         },
-        [options]
+        [options, isLoaded]
     );
     return [options, dispatch];
 }

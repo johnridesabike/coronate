@@ -18,7 +18,7 @@ export default function PlayerInfo({playerId, roundId}) {
     } = createPlayerStats({
         avoidList: options.avoidPairs,
         id: playerId,
-        playerDataSource: Object.values(players),
+        players,
         roundId,
         roundList: tourney.roundList
     });
@@ -63,6 +63,6 @@ export default function PlayerInfo({playerId, roundId}) {
     );
 }
 PlayerInfo.propTypes = {
-    playerId: PropTypes.number,
+    playerId: PropTypes.string,
     roundId: PropTypes.number
 };

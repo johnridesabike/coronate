@@ -12,10 +12,10 @@ import PropTypes from "prop-types";
 import {assoc} from "ramda";
 import numeral from "numeral";
 import style from "./scores.module.css";
-import {useTournament as useTournament2} from "../../hooks";
+import {useTournament} from "../../hooks";
 
 export default function Crosstable(props) {
-    const {tourney, getPlayer} = useTournament2();
+    const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
     const [standings, opponentScores] = useMemo(
         function () {
@@ -24,7 +24,7 @@ export default function Crosstable(props) {
             const opponentResults = standingsFlat.reduce(
                 (acc, standing) => (
                     assoc(
-                        String(standing.id),
+                        standing.id,
                         getResultsByOpponent(standing.id, matches),
                         acc
                     )
@@ -40,7 +40,7 @@ export default function Crosstable(props) {
         if (player1Id === player2Id) {
             return <Icons.X/>;
         }
-        const result = opponentScores[String(player1Id)][player2Id];
+        const result = opponentScores[player1Id][player2Id];
         if (result === undefined) {
             return null;
         }
@@ -77,8 +77,8 @@ export default function Crosstable(props) {
                             {index + 1}
                         </th>
                         <th
-                            scope="row"
                             className={style.playerName}
+                            scope="row"
                         >
                             {getPlayer(standing.id).firstName}&nbsp;
                             {getPlayer(standing.id).lastName}
@@ -106,6 +106,5 @@ export default function Crosstable(props) {
     );
 }
 Crosstable.propTypes = {
-    path: PropTypes.string,
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    tourneyId: PropTypes.string
 };

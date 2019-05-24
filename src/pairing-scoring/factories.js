@@ -1,4 +1,12 @@
-import t from "tcomb";
+import {
+    AvoidPair,
+    Id,
+    Match,
+    Player,
+    PlayerStats,
+    RoundList,
+    Standing
+} from "../data-types";
 import {
     add,
     append,
@@ -11,32 +19,24 @@ import {
     sort
 } from "ramda";
 import {
-    AvoidList,
-    Match,
-    Player,
-    PlayerStats,
-    RoundList,
-    Standing
-} from "../data-types";
-import {
     areScoresEqual,
     getAllPlayersFromMatches,
+    getMatchDetailsForPlayer,
     getMatchesByPlayer,
     getPlayerAvoidList,
-    getPlayerById,
-    getMatchDetailsForPlayer,
     isNotDummy,
     rounds2Matches
 } from "./helpers";
 import {
     createTieBreakSorter,
-    getDueColor,
     getColorBalanceScore,
+    getDueColor,
     getPlayerScore,
     getPlayersByOpponent,
     hasHadBye,
     tieBreakMethods
 } from "./scoring";
+import t from "tcomb";
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * @returns {[typeof Standing[], string[]]} The standings and the list of method used
@@ -105,30 +105,30 @@ export function createStandingTree(methods, roundList, roundId = null) {
  */
 export function createPlayerStats({
     id,
-    playerDataSource,
+    players,
     avoidList,
     roundList,
     roundId
 }) {
-    t.Number(id);
+    Id(id);
     t.Number(roundId);
-    t.list(Player)(playerDataSource);
-    AvoidList(avoidList);
+    t.dict(t.String, Player)(players);
+    t.list(AvoidPair)(avoidList);
     RoundList(roundList);
-    const player = getPlayerById(playerDataSource, id);
+    // const player = getPlayerById(playerDataSource, id);
     const matches = rounds2Matches(roundList, roundId);
     return PlayerStats({
-        profile: player,
-        rating: player.rating, // is this shortcut necessary?
-        id: id, // is this shortcut necessary?
-        score: getPlayerScore(id, matches),
-        dueColor: getDueColor(id, matches),
-        colorBalance: getColorBalanceScore(id, matches),
-        opponentHistory: getPlayersByOpponent(id, matches),
-        upperHalf: false,
         avoidList: getPlayerAvoidList(id, avoidList),
+        colorBalance: getColorBalanceScore(id, matches),
+        dueColor: getDueColor(id, matches),
         hasHadBye: hasHadBye(id, matches),
-        isDueBye: false
+        id: id, // is this shortcut necessary?
+        isDueBye: false,
+        opponentHistory: getPlayersByOpponent(id, matches),
+        profile: players[id],
+        rating: players[id].rating, // is this shortcut necessary?
+        score: getPlayerScore(id, matches),
+        upperHalf: false
     });
 }
 
@@ -136,12 +136,12 @@ export function createPlayerStats({
  * @returns {Object.<string, number>} {opponentId: result}
  */
 function getResultsByOpponent(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const matches = getMatchesByPlayer(playerId, matchList);
     return matches.reduce(
         function (acc, match) {
-            const opponent = match.players.filter(
+            const opponent = match.playerIds.filter(
                 (id) => id !== playerId
             )[0];
             const {result} = getMatchDetailsForPlayer(playerId, match);
@@ -150,7 +150,7 @@ function getResultsByOpponent(playerId, matchList) {
             // `set()` with the result, but if two players play each other
             // multiple times then the total results will be displayed.
             return over(
-                lensProp(String(opponent)),
+                lensProp(opponent),
                 pipe(defaultTo(0), add(result)),
                 acc
             );
@@ -161,7 +161,7 @@ function getResultsByOpponent(playerId, matchList) {
 export {getResultsByOpponent};
 
 function getPerformanceRatings(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const matches = getMatchesByPlayer(playerId, matchList);
     const firstMatch = matches[0];

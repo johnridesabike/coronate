@@ -40,14 +40,14 @@ export default function MatchRow({
         }
     }());
     const whiteName = (
-        getPlayer(match.players[0]).firstName
+        getPlayer(match.playerIds[0]).firstName
         + " "
-        + getPlayer(match.players[0]).lastName
+        + getPlayer(match.playerIds[0]).lastName
     );
     const blackName = (
-        getPlayer(match.players[1]).firstName
+        getPlayer(match.playerIds[1]).firstName
         + " "
-        + getPlayer(match.players[1]).lastName
+        + getPlayer(match.playerIds[1]).lastName
     );
 
     function setMatchResult(event) {
@@ -65,8 +65,8 @@ export default function MatchRow({
                 throw new Error();
             }
         }());
-        const white = players[match.players[WHITE]];
-        const black = players[match.players[BLACK]];
+        const white = players[match.playerIds[WHITE]];
+        const black = players[match.playerIds[BLACK]];
         const newRating = (
             (event.currentTarget.value === "NOTSET")
             ? match.origRating
@@ -135,11 +135,11 @@ export default function MatchRow({
             </td>
             <td className="data__input row__controls">
                 <select
+                    className={winnerSelect}
+                    disabled={match.playerIds.includes(DUMMY_ID)}
+                    value={resultCode}
                     onBlur={setMatchResult}
                     onChange={setMatchResult}
-                    disabled={match.players.includes(DUMMY_ID)}
-                    value={resultCode}
-                    className={winnerSelect}
                 >
                     <option value="NOTSET">
                         Select a winner
@@ -160,24 +160,24 @@ export default function MatchRow({
                 ? (
                     <button
                         className="iconButton"
-                        onClick={() => setSelectedMatch(match.id)}
                         title="Edit match"
+                        onClick={() => setSelectedMatch(match.id)}
                     >
                         <Icons.Edit />
                     </button>
                 ) : (
                     <button
                         className="iconButton"
-                        onClick={() => setSelectedMatch(null)}
                         title="End editing match"
+                        onClick={() => setSelectedMatch(null)}
                     >
                         <Icons.Check />
                     </button>
                 )}
                 <button
                     className="iconButton"
-                    onClick={() => setOpenModal(true)}
                     title="Open match information."
+                    onClick={() => setOpenModal(true)}
                 >
                     <Icons.Info />
                     <Hidden>
@@ -194,18 +194,18 @@ export default function MatchRow({
                     <PanelContainer>
                         <Panel>
                             <PlayerMatchInfo
-                                matchId={match.id}
                                 color={0}
-                                tourneyId={tourneyId}
+                                matchId={match.id}
                                 roundId={roundId}
+                                tourneyId={tourneyId}
                             />
                         </Panel>
                         <Panel>
                             <PlayerMatchInfo
-                                matchId={match.id}
                                 color={1}
-                                tourneyId={tourneyId}
+                                matchId={match.id}
                                 roundId={roundId}
+                                tourneyId={tourneyId}
                             />
                         </Panel>
                     </PanelContainer>

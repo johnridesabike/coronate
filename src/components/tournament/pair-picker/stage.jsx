@@ -22,8 +22,7 @@ export default function Stage({
     function match() {
         dispatch({
             byeValue: options.byeValue,
-            pair: [white, black],
-            players: Object.values(players),
+            pair: [players[white], players[black]],
             roundId,
             type: "MANUAL_PAIR"
         });
@@ -58,18 +57,18 @@ export default function Stage({
                 }
             </p>
             <button
-                onClick={() => setStagedPlayers(
-                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
-                )}
                 disabled={
                     stagedPlayers.every((id) => id === null)
                 }
+                onClick={() => setStagedPlayers(
+                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
+                )}
             >
                 <Icons.Repeat/> Swap colors
             </button>{" "}
             <button
-                onClick={match}
                 disabled={stagedPlayers.includes(null)}
+                onClick={match}
             >
                 <Icons.Check/> Match selected
             </button>{" "}
@@ -79,5 +78,5 @@ export default function Stage({
 Stage.propTypes = {
     roundId: PropTypes.number,
     setStagedPlayers: PropTypes.func,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.number)
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string)
 };

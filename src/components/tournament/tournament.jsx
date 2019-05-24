@@ -6,9 +6,8 @@ import {TournamentProvider} from "../../hooks";
 import styles from "./tournament.module.css";
 
 export default function Tournament(props) {
-    const tourneyId = Number(props.tourneyId);
     return (
-        <TournamentProvider tourneyId={tourneyId}>
+        <TournamentProvider tourneyId={props.tourneyId}>
             <div className={styles.tournament}>
                 <Header className={styles.header} />
                 <Sidebar className={styles.sidebar} navigate={props.navigate} />
@@ -23,5 +22,5 @@ Tournament.propTypes = {
     children: PropTypes.node,
     navigate: PropTypes.func,
     path: PropTypes.string,
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    tourneyId: PropTypes.string
 };

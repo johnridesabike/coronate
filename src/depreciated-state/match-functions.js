@@ -1,5 +1,5 @@
 import {
-    AvoidList,
+    AvoidPair,
     BLACK,
     DUMMY_ID,
     Player,
@@ -19,7 +19,7 @@ export function autoPair({
     roundId,
     tourney
 }) {
-    AvoidList(avoidList);
+    t.list(AvoidPair)(avoidList);
     t.Number(byeValue);
     t.list(Player)(playerDataList);
     Tournament(tourney);
@@ -52,10 +52,10 @@ export function autoPair({
     return newMatchList.reduce(
         // Set match results for bye matches
         function (acc, match) {
-            if (match.players[WHITE] === DUMMY_ID) {
+            if (match.playerIds[WHITE] === DUMMY_ID) {
                 return acc.concat([assoc("result", [0, byeValue], match)]);
             }
-            if (match.players[BLACK] === DUMMY_ID) {
+            if (match.playerIds[BLACK] === DUMMY_ID) {
                 return acc.concat([assoc("result", [byeValue, 0], match)]);
             }
             return acc.concat([match]);

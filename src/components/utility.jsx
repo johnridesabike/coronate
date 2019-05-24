@@ -1,9 +1,7 @@
-import {DUMMY_ID} from "../data-types";
-import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import React from "react";
 import styles from "./utility.module.css";
-import {usePlayers} from "../state";
+// import {usePlayers} from "../state";
 
 export const Button = ({children, action}) => (
     <button onClick={action}>
@@ -31,7 +29,7 @@ OpenButton.propTypes = {
 
 export function Panel({children, style}) {
     return (
-        <div style={{...style}} className={styles.panel}>
+        <div className={styles.panel} style={{...style}}>
             {children}
         </div>
     );
@@ -53,38 +51,38 @@ PanelContainer.propTypes = {
     children: PropTypes.node.isRequired
 };
 
-export function PlayerLink({id, firstName, lastName}) {
-    const {getPlayer} = usePlayers();
-    const player = getPlayer(id);
-    const name = (function () {
-        if (firstName && lastName) {
-            return player.firstName + " " + player.lastName;
-        } else if (firstName && !lastName) {
-            return player.firstName;
-        } else if (!firstName && lastName) {
-            return player.lastName;
-        } else {
-            return null;
-        }
-    }());
-    if (id === DUMMY_ID) { // there's no bye player profile
-        return name;
-    }
-    if (!name) {
-        return null;
-    }
-    return (
-        <Link to={"/players/" + id}>
-            {firstName && getPlayer(id).firstName}{" "}
-            {lastName && getPlayer(id).lastName}
-        </Link>
-    );
-}
-PlayerLink.propTypes = {
-    firstName: PropTypes.bool,
-    id: PropTypes.number.isRequired,
-    lastName: PropTypes.bool
-};
+// export function PlayerLink({id, firstName, lastName}) {
+//     const {getPlayer} = usePlayers();
+//     const player = getPlayer(id);
+//     const name = (function () {
+//         if (firstName && lastName) {
+//             return player.firstName + " " + player.lastName;
+//         } else if (firstName && !lastName) {
+//             return player.firstName;
+//         } else if (!firstName && lastName) {
+//             return player.lastName;
+//         } else {
+//             return null;
+//         }
+//     }());
+//     if (id === DUMMY_ID) { // there's no bye player profile
+//         return name;
+//     }
+//     if (!name) {
+//         return null;
+//     }
+//     return (
+//         <Link to={"/players/" + id}>
+//             {firstName && getPlayer(id).firstName}{" "}
+//             {lastName && getPlayer(id).lastName}
+//         </Link>
+//     );
+// }
+// PlayerLink.propTypes = {
+//     firstName: PropTypes.bool,
+//     id: PropTypes.number.isRequired,
+//     lastName: PropTypes.bool
+// };
 
 /*******************************************************************************
  * Non-JSX functions

@@ -1,9 +1,9 @@
-import React from "react";
-import {render, cleanup} from "react-testing-library";
 import "jest-dom/extend-expect";
-import dashify from "dashify";
-import {TournamentProvider, PlayersProvider} from "../../state";
+import {PlayersProvider, TournamentProvider} from "../../state";
+import {cleanup, render} from "react-testing-library";
+import React from "react";
 import Scores from "../tournament/scores";
+import dashify from "dashify";
 
 afterEach(cleanup);
 

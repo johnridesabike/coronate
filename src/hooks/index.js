@@ -14,10 +14,10 @@ import {difference} from "ramda";
 export function useRound(tourney, roundId) {
     const matchList = tourney.roundList[roundId];
     const matched = matchList.reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     );
-    const unmatched = difference(tourney.players, matched);
+    const unmatched = difference(tourney.playerIds, matched);
     return {matchList, unmatched};
 }
 

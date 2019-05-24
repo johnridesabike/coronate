@@ -42,6 +42,7 @@
     "localforage": "^1.7.3",
     "localforage-getitems": "^1.4.2",
     "localforage-setitems": "^1.4.0",
+    "nanoid": "^2.0.3",
     "numeral": "^2.0.6",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",

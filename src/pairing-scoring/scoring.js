@@ -2,6 +2,7 @@
 import {
     BLACK,
     DUMMY_ID,
+    Id,
     Match,
     ScoreCalulator,
     WHITE
@@ -26,7 +27,7 @@ import {firstBy} from "thenby";
 import t from "tcomb";
 
 export function getDueColor(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const lastMatch = last(getMatchesByPlayer(playerId, matchList));
     if (!lastMatch) {
@@ -40,13 +41,13 @@ export function getDueColor(playerId, matchList) {
  * @returns {boolean}
  */
 function hasHadBye(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
         matchList
     ).reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     ).includes(DUMMY_ID);
 }
@@ -56,13 +57,13 @@ export {hasHadBye};
  * @returns {number[]}
  */
 export function getPlayersByOpponent(opponentId, matchList) {
-    t.Number(opponentId);
+    Id(opponentId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         opponentId,
         matchList
     ).reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     ).filter(
         (playerId) => playerId !== opponentId
@@ -74,7 +75,7 @@ export function getPlayersByOpponent(opponentId, matchList) {
  * @returns {number[]}
  */
 function getOpponentScores(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const scores = getPlayersByOpponent(
         playerId,
@@ -104,7 +105,7 @@ export {getPlayerScore};
  */
 const getCumulativeScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function cumulativeScoreFunction(playerId, matchList) {
+    function _getCumulativeScore(playerId, matchList) {
         const scoreList = getPlayerScoreListNoByes(
             playerId,
             matchList
@@ -121,7 +122,7 @@ const getCumulativeScore = ScoreCalulator.of(
  */
 const getCumulativeOfOpponentScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function cumulativeOfOpponentFunction(playerId, matchList) {
+    function _getCumulativeOfOpponentScore(playerId, matchList) {
         const oppScores = getPlayersByOpponent(
             playerId,
             matchList
@@ -140,7 +141,7 @@ const getCumulativeOfOpponentScore = ScoreCalulator.of(
  */
 const getColorBalanceScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function colorBalanceFunction(playerId, matchList) {
+    function _getColorBalanceScore(playerId, matchList) {
         const colorList = getMatchesByPlayer(
             playerId,
             matchList
@@ -148,7 +149,7 @@ const getColorBalanceScore = ScoreCalulator.of(
             isNotBye
         ).reduce(
             (acc, match) => (
-                (match.players[WHITE] === playerId)
+                (match.playerIds[WHITE] === playerId)
                 ? acc.concat(-1) // White = -1
                 : acc.concat(1) // Black = +1
             ),
@@ -164,7 +165,7 @@ export {getColorBalanceScore};
  */
 const getModifiedMedianScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function modifiedMedianFunction(playerId, matchList) {
+    function _getModifiedMedianScore(playerId, matchList) {
         const scores = getOpponentScores(playerId, matchList);
         return pipe(
             sort((a, b) => a - b),
@@ -177,7 +178,7 @@ const getModifiedMedianScore = ScoreCalulator.of(
 
 const getSolkoffScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function solkoffFunction(playerId, matchList) {
+    function _getSolkoffScore(playerId, matchList) {
         const scoreList = getOpponentScores(playerId, matchList);
         return sum(scoreList);
     }

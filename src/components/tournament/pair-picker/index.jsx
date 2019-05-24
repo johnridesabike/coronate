@@ -27,17 +27,17 @@ export default function PairPicker({tourneyId, roundId}) {
                     createPlayerStats({
                         avoidList: options.avoidPairs,
                         id,
-                        playerDataSource: Object.values(players),
+                        players,
                         roundId,
                         roundList: tourney.roundList
                     })
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
-            )(tourney.players)
+            )(tourney.playerIds)
         ),
         [
-            tourney.players,
+            tourney.playerIds,
             tourney.roundList,
             roundId,
             options.avoidPairs,
@@ -60,18 +60,18 @@ export default function PairPicker({tourneyId, roundId}) {
         <PanelContainer>
             <Panel>
                 <SelectList
-                    tourneyId={tourneyId}
                     roundId={roundId}
-                    stagedPlayers={stagedPlayers}
                     setStagedPlayers={setStagedPlayers}
+                    stagedPlayers={stagedPlayers}
+                    tourneyId={tourneyId}
                 />
             </Panel>
             <Panel>
                 <Stage
-                    tourneyId={tourneyId}
                     roundId={roundId}
-                    stagedPlayers={stagedPlayers}
                     setStagedPlayers={setStagedPlayers}
+                    stagedPlayers={stagedPlayers}
+                    tourneyId={tourneyId}
                 />
                 <PanelContainer>
                     {stagedPlayers.map((id) =>
@@ -79,8 +79,8 @@ export default function PairPicker({tourneyId, roundId}) {
                             <Panel key={id}>
                                 <PlayerInfo
                                     playerId={id}
-                                    tourneyId={tourneyId}
                                     roundId={roundId}
+                                    tourneyId={tourneyId}
                                 />
                             </Panel>
                         )

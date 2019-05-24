@@ -61,7 +61,7 @@ it("Original match counts are shown correctly.", function () {
 
 it("Ratings are updated after a match is scored.", function () {
     const {getByText, getByDisplayValue, getByTestId} = render(
-        <RoundPanels tourneyId={1} roundId={1} />,
+        <RoundPanels roundId={1} tourneyId={1} />,
         {wrapper: AllTheProviders}
     );
     click(getByText(/^unmatched players$/i));
@@ -118,7 +118,7 @@ it("Ratings are updated after a match is scored.", function () {
 it("Players are auto-paired correctly", function () {
     // This will need to be updated as the pairing algorithm changes.
     const {getByText, getByTestId} = render(
-        <RoundPanels tourneyId={1} roundId={1} />,
+        <RoundPanels roundId={1} tourneyId={1} />,
         {wrapper: AllTheProviders}
     );
     fireEvent.click(getByText(/auto-pair unmatched players/i));

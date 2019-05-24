@@ -5,19 +5,18 @@ import React from "react";
 
 export default function Selecting(props) {
     const {tourney, tourneyDispatch} = useTournament();
-    const dispatch = tourneyDispatch;
-    const [players] = useAllPlayersDb();
+    const [players, allPlayersDispatch] = useAllPlayersDb();
 
     function togglePlayer(event) {
-        const id = Number(event.target.value);
+        const id = event.target.value;
         if (event.target.checked) {
-            dispatch({
-                players: tourney.players.concat([id]),
+            tourneyDispatch({
+                playerIds: tourney.playerIds.concat([id]),
                 type: "SET_TOURNEY_PLAYERS"
             });
         } else {
-            dispatch({
-                players: tourney.players.filter((pId) => pId !== id),
+            tourneyDispatch({
+                playerIds: tourney.playerIds.filter((pId) => pId !== id),
                 type: "SET_TOURNEY_PLAYERS"
             });
         }
@@ -27,10 +26,8 @@ export default function Selecting(props) {
         <div>
             <button
                 onClick={() =>
-                    dispatch({
-                        players: players.map(
-                            (p) => p.id
-                        ),
+                    tourneyDispatch({
+                        playerIds: Object.keys(players),
                         type: "SET_TOURNEY_PLAYERS"
                     })
                 }
@@ -39,17 +36,14 @@ export default function Selecting(props) {
             </button>
             <button
                 onClick={() =>
-                    dispatch({
-                        players: [],
+                    tourneyDispatch({
+                        playerIds: [],
                         type: "SET_TOURNEY_PLAYERS"
                     })
                 }
             >
                 Select none
             </button>
-            {/* <button onClick={() => setIsSelecting(false)}>
-                Done
-            </button> */}
             <table>
                 <caption>Select players</caption>
                 <thead>
@@ -66,9 +60,9 @@ export default function Selecting(props) {
                             <td>{lastName}</td>
                             <td>
                                 <input
+                                    checked={tourney.playerIds.includes(id)}
                                     type="checkbox"
                                     value={id}
-                                    checked={tourney.players.includes(id)}
                                     onChange={togglePlayer}
                                 />
                             </td>
@@ -76,7 +70,7 @@ export default function Selecting(props) {
                     ))}
                 </tbody>
             </table>
-            <NewPlayer />
+            <NewPlayer dispatch={allPlayersDispatch}/>
         </div>
     );
 }

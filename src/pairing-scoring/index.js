@@ -1,14 +1,4 @@
-import {kFactor, calcNewRatings} from "./ratings";
-import {
-    hasHadBye,
-    tieBreakMethods
-} from "./scoring";
-import pairPlayers, {
-    calcPairIdeal,
-    maxPriority,
-    setUpperHalves,
-    sortPlayersForPairing
-} from "./pairing";
+import {calcNewRatings, kFactor} from "./ratings";
 import {
     calcNumOfRounds,
     getAllPlayersFromMatches,
@@ -23,6 +13,16 @@ import {
     getPerformanceRatings,
     getResultsByOpponent
 } from "./factories";
+import {
+    hasHadBye,
+    tieBreakMethods
+} from "./scoring";
+import pairPlayers, {
+    calcPairIdeal,
+    maxPriority,
+    setUpperHalves,
+    sortPlayersForPairing
+} from "./pairing";
 
 export {
     calcNewRatings,

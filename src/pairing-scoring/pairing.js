@@ -2,7 +2,7 @@
 // tweaked a lot, and the pairing function itself needs to be cleaned up and
 // made more reusable.
 import {
-    AvoidList,
+    AvoidPair,
     DUMMY_ID,
     Player,
     PlayerStats,
@@ -172,25 +172,24 @@ export function sortPlayersForPairing(playerStatsList) {
  * rules yet.
  */
 export default function pairPlayers({
-    playerIds,
+    players,
     roundId,
     roundList,
-    playerDataSource,
     avoidList,
     byeQueue
 }) {
-    t.list(t.Number)(playerIds);
     t.Number(roundId);
-    t.list(Player)(playerDataSource);
+    t.dict(t.String, Player)(players);
     t.list(t.Number)(byeQueue);
     RoundList(roundList);
-    AvoidList(avoidList);
+    t.list(AvoidPair)(avoidList);
+    const playerIds = Object.keys(players);
     const playerStatsList = pipe(
         map((id) => (
             createPlayerStats({
                 avoidList,
                 id,
-                playerDataSource,
+                players,
                 roundId,
                 roundList
             })
@@ -206,8 +205,8 @@ export default function pairPlayers({
         function (acc, player1, ignore, src) {
             const playerMatches = src.map(
                 (player2) => [
-                    player1.id,
-                    player2.id,
+                    playerIds.indexOf(player1.id),
+                    playerIds.indexOf(player2.id),
                     calcPairIdeal(player1, player2)
                 ]
             );
@@ -219,23 +218,27 @@ export default function pairPlayers({
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
     const blossomResults = blossom(potentialMatches);
-    // Translate those IDs into actual pairs of players.
-    /** @type {[PlayerStats, PlayerStats, number][]} */
+    // Translate those IDs into actual pairs of player Ids.
     const reducedResults = blossomResults.reduce(
-        function (acc, p1Id, p2Id) {
+        function (acc, p1Index, p2Index) {
             // Filter out unmatched players. Blossom will automatically include
             // their missing IDs in its results.
-            if (p1Id !== -1) {
+            if (p1Index !== -1) {
+                // const p1 = playerStatsList.filter((p) => p.id === p1Id)[0];
+                // const p2 = playerStatsList.filter((p) => p.id === p2Id)[0];
+                // Translate the indices into ID strings
+                const p1Id = playerIds[p1Index];
+                const p2Id = playerIds[p2Index];
                 const p1 = playerStatsList.filter((p) => p.id === p1Id)[0];
                 const p2 = playerStatsList.filter((p) => p.id === p2Id)[0];
-                const ideal = potentialMatches.filter(
-                    (pair) => pair[0] === p1Id && pair[1] === p2Id
-                )[0][2];
+                // const ideal = potentialMatches.filter(
+                //     (pair) => pair[0] === p1Id && pair[1] === p2Id
+                // )[0][2];
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
                 const matched = acc.map((pair) => pair[0]);
                 if (!matched.includes(p1) && !matched.includes(p2)) {
-                    return acc.concat([[p1, p2, ideal]]);
+                    return acc.concat([[p1, p2]]);
                 }
             }
             return acc;
