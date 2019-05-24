@@ -1,7 +1,6 @@
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import NewPlayer from "./new-player";
-import {PlayerLink} from "../utility";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
 import {useAllPlayersDb} from "../../hooks";
@@ -28,10 +27,10 @@ export default function PlayerList(props) {
                 <tbody>{Object.values(players).map((player) =>
                     <tr key={player.id}>
                         <td className="table__player">
-                            <PlayerLink id={player.id} firstName />
+                            {player.firstName}
                         </td>
                         <td className="table__player">
-                            <PlayerLink id={player.id} lastName />
+                            {player.lastName}
                         </td>
                         <td className="table__number">{player.rating}</td>
                         <td>
@@ -59,7 +58,7 @@ export default function PlayerList(props) {
                 )}
                 </tbody>
             </table>
-            <NewPlayer />
+            <NewPlayer dispatch={dispatch} />
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import {assoc, dissoc, head, inc, keys, map, pipe, sort} from "ramda";
-import {createTournament, createPlayer} from "../../data-types";
+import {createPlayer, createTournament} from "../../data-types";
 import t from "tcomb";
 
 const ActionLoadState = t.interface({
@@ -62,7 +62,7 @@ export default function genericDbReducer(state, action) {
             getNextId(state),
             createPlayer({
                 firstName: action.firstName,
-                id: getNextId(state),
+                id: Number(getNextId(state)),
                 lastName: action.lastName,
                 rating: action.rating
             }),
