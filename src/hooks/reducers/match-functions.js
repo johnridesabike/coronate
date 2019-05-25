@@ -10,7 +10,6 @@ import {
     dummyPlayer
 } from "../../data-types";
 import {assoc} from "ramda";
-import nanoid from "nanoid";
 import {pairPlayers} from "../../pairing-scoring";
 import t from "tcomb";
 
@@ -40,7 +39,6 @@ export function autoPair({
     const newMatchList = pairs.map(
         (idsPair) => (
             createMatch({
-                id: nanoid(),
                 newRating: [
                     playersWithDummy[idsPair[WHITE]].rating,
                     playersWithDummy[idsPair[BLACK]].rating
@@ -71,7 +69,6 @@ export function autoPair({
 export function manualPair(pair, byeValue) {
     t.tuple([Player, Player])(pair);
     const match = createMatch({
-        id: nanoid(),
         newRating: [pair[WHITE].rating, pair[BLACK].rating],
         origRating: [pair[WHITE].rating, pair[BLACK].rating],
         playerIds: [pair[WHITE].id, pair[BLACK].id]

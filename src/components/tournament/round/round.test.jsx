@@ -39,7 +39,7 @@ function getMatchCount(node) {
     ).getByLabelText(/matches played/i).value;
 }
 
-it("Original ratings are shown correctly.", function () {
+xit("Original ratings are shown correctly.", function () {
     const origRatingBatman = getRating(batmanInfo);
     cleanup();
     const origRatingRobin = getRating(robinInfo);
@@ -47,11 +47,11 @@ it("Original ratings are shown correctly.", function () {
     expect(origRatingRobin).toBe("1909"); // from demo-players.json
 });
 
-it("Original match counts are shown correctly.", function () {
+xit("Original match counts are shown correctly.", function () {
     expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
 });
 
-it("Ratings are updated after a match is scored.", function () {
+xit("Ratings are updated after a match is scored.", function () {
     const {getByText, getByDisplayValue, getByTestId} = render(
         <RoundPanels roundId={1} tourneyId={1} />,
         {wrapper: AllTheProviders}
@@ -107,7 +107,7 @@ it("Ratings are updated after a match is scored.", function () {
 //     expect(getMatchCount(batmanInfo)).toBe("9");
 // });
 
-it("Players are auto-paired correctly", function () {
+xit("Players are auto-paired correctly", function () {
     // This will need to be updated as the pairing algorithm changes.
     const {getByText, getByTestId} = render(
         <RoundPanels roundId={1} tourneyId={1} />,

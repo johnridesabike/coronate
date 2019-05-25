@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import Icons from "../icons";
 import {Link} from "@reach/router";
-// import {useTournaments} from "../../state";
 import {useAllTournamentsDb} from "../../hooks";
 
 export default function TournamentList(props) {

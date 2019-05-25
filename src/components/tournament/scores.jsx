@@ -160,7 +160,7 @@ function SelectTieBreaks(props) {
             </ol>
             <h3>Available tiebreak methods</h3>
             <ol>
-                {tieBreakMethods.map((method, id) => (
+                {Object.values(tieBreakMethods).map(({name, id}) => (
                     <li key={id}>
                         <span
                             className={
@@ -169,7 +169,7 @@ function SelectTieBreaks(props) {
                                     : "disabled"
                             }
                         >
-                            {method.name}
+                            {name}
                         </span>
                         {!tieBreaks.includes(id) && (
                             <button onClick={() => toggleTb(id)}>

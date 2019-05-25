@@ -1,15 +1,17 @@
+import {useAllPlayersDb, useOptionsDb} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import NewPlayer from "./new-player";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
-import {useAllPlayersDb} from "../../hooks";
 
 export default function PlayerList(props) {
     const [players, dispatch] = useAllPlayersDb();
+    const optionsDispatch = useOptionsDb()[1];
     const delPlayer = function (event, id) {
         event.preventDefault();
         dispatch({id, type: "DEL_ITEM"});
+        optionsDispatch({id, type: "DEL_AVOID_SINGLE"});
     };
     return (
         <div>

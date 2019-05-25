@@ -5,17 +5,17 @@ import {
 import {
     useAllPlayersDb,
     useAllTournamentsDb,
-    useOptionsDb,
-    usePlayersDb,
-    useTournamentDb
+    useOptionsDb
+    // usePlayersDb,
+    // useTournamentDb
 } from "./db";
 
 export {
     useAllPlayersDb,
-    usePlayersDb,
+    // usePlayersDb,
     useAllTournamentsDb,
     useOptionsDb,
     useTournament,
-    useTournamentDb,
+    // useTournamentDb,
     TournamentProvider
 };

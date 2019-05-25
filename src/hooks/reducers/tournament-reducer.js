@@ -78,7 +78,6 @@ const ActionTypes = t.union([
     ActionEditMatch,
     ActionMoveMatch
 ]);
-// TODO: Am I doing this right?
 ActionTypes.dispatch = function (action) {
     const typeToConstructor = {
         "ADD_ROUND": ActionAddRound,

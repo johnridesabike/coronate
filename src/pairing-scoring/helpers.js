@@ -61,11 +61,17 @@ export function getPlayerById(playerList, id) {
 const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
 export {isNotBye};
 
-function getMatchesByPlayer(playerId, matchList) {
+export function getMatchesByPlayer(playerId, matchList) {
     t.list(Match)(matchList);
     return matchList.filter((match) => match.playerIds.includes(playerId));
 }
-export {getMatchesByPlayer};
+
+export function getMatchesByPlayerNoByes(playerId, matchList) {
+    t.list(Match)(matchList);
+    return matchList.filter(
+        (match) => match.playerIds.includes(playerId) && isNotBye(match)
+    );
+}
 
 function getMatchDetailsForPlayer(playerId, match) {
     Id(playerId);
@@ -121,6 +127,17 @@ export function getPlayerScoreList(playerId, matchList) {
     );
 }
 
+export function getPlayerScoreListNoByes(playerId, matchList) {
+    Id(playerId);
+    t.list(Match)(matchList);
+    return getMatchesByPlayerNoByes(
+        playerId,
+        matchList
+    ).map(
+        (match) => getMatchDetailsForPlayer(playerId, match).result
+    );
+}
+
 /**
  * This creates a filtered version of `players` with only the players that are
  * not matched for the specified round.
@@ -143,23 +160,6 @@ export function getUnmatched(tourney, players, roundId) {
         {}
     );
     return unmatched;
-}
-
-/**
- * TODO: Maybe merge this with the other function?
- * @returns {number[]}
- */
-export function getPlayerScoreListNoByes(playerId, matchList) {
-    Id(playerId);
-    t.list(Match)(matchList);
-    return getMatchesByPlayer(
-        playerId,
-        matchList
-    ).filter(
-        isNotBye
-    ).map(
-        (match) => getMatchDetailsForPlayer(playerId, match).result
-    );
 }
 
 /*******************************************************************************

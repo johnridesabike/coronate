@@ -30,9 +30,8 @@ import t from "tcomb";
 
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (value) => (divider) => value / divider;
-/**
- * TODO: These probably need to be tweaked a lot.
- */
+
+// TODO: These probably need to be tweaked a lot.
 /**
  * @constant avoidMeetingTwicePriority The weight given to avoid players
  * meeting twice. This same weight is given to avoid matching players on each

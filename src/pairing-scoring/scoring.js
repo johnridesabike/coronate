@@ -1,4 +1,3 @@
-// TODO: Clean this up. Refactor unnecessary functions, etc.
 import {
     BLACK,
     DUMMY_ID,
@@ -10,9 +9,9 @@ import {
 import {
     getMatchDetailsForPlayer,
     getMatchesByPlayer,
+    getMatchesByPlayerNoByes,
     getPlayerScoreList,
     getPlayerScoreListNoByes,
-    isNotBye,
     isNotDummy
 } from "./helpers";
 import {
@@ -142,11 +141,9 @@ const getCumulativeOfOpponentScore = ScoreCalulator.of(
 const getColorBalanceScore = ScoreCalulator.of(
     // named functions are better for debugging
     function _getColorBalanceScore(playerId, matchList) {
-        const colorList = getMatchesByPlayer(
+        const colorList = getMatchesByPlayerNoByes(
             playerId,
             matchList
-        ).filter(
-            isNotBye
         ).reduce(
             (acc, match) => (
                 (match.playerIds[WHITE] === playerId)
@@ -184,42 +181,47 @@ const getSolkoffScore = ScoreCalulator.of(
     }
 );
 
-const tieBreakMethods = [
-    {
+const tieBreakMethods = {
+    0: {
         func: getModifiedMedianScore,
+        id: 0,
         name: "Modified median"
     },
-    {
+    1: {
         func: getSolkoffScore,
+        id: 1,
         name: "Solkoff"
     },
-    {
+    2: {
         func: getCumulativeScore,
+        id: 2,
         name: "Cumulative score"
     },
-    {
+    3: {
         func: getCumulativeOfOpponentScore,
+        id: 3,
         name: "Cumulative of opposition"
     },
-    {
+    4: {
         func: getColorBalanceScore,
+        id: 4,
         name: "Most black"
     }
-];
+};
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
 /**
  * Create a function to sort the standings. This dynamically creates a `thenBy`
- * function based on the desired tiebreak sort methods.
+ * function based on the list of desired tiebreak sort methods.
  * @returns A function to be used with a list of standings and `sort()`.
  */
-export function createTieBreakSorter(tieBreaks) {
-    return tieBreaks.reduce(
-        (acc, ignore, index) => (
+export function createTieBreakSorter(selectedTiebreakMethods) {
+    return Object.keys(selectedTiebreakMethods).reduce(
+        (acc, key) => (
             acc.thenBy(
                 (standing1, standing2) => (
-                    standing2.tieBreaks[index] - standing1.tieBreaks[index]
+                    standing2.tieBreaks[key] - standing1.tieBreaks[key]
                 )
             )
         ),

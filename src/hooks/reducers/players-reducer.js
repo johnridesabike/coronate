@@ -34,9 +34,6 @@ const ActionSetRating = t.interface({
     id: Id,
     rating: t.Number
 });
-const ActionAvoidPair = t.interface({
-    pair: t.tuple([t.Number, t.Number])
-});
 const ActionLoadState = t.interface({state: t.Any});
 const ActionTypes = t.union([
     ActionSetPlayer,
@@ -44,14 +41,11 @@ const ActionTypes = t.union([
     ActionDelPlayer,
     ActionSetMatchcount,
     ActionSetRating,
-    ActionAvoidPair,
     ActionLoadState
 ]);
 ActionTypes.dispatch = function (x) {
     const typeToConstructor = {
-        "ADD_AVOID_PAIR": ActionAvoidPair,
         "ADD_PLAYER": ActionAddPlayer,
-        "DEL_AVOID_PAIR": ActionAvoidPair,
         "DEL_PLAYER": ActionDelPlayer,
         "LOAD_STATE": ActionLoadState,
         "SET_PLAYER": ActionSetPlayer,
@@ -90,20 +84,20 @@ export default function playersReducer(state, action) {
             state
         );
     case "DEL_PLAYER":
-        // TODO: Make this clean the avoidlist too
+        // You should delete all avoid-pairs with the id too.
         return dissoc(
-            lensPath(String(action.id)),
+            lensPath(action.id),
             state
         );
     case "SET_PLAYER_MATCHCOUNT":
         return set(
-            lensPath([String(action.id), "matchCount"]),
+            lensPath([action.id, "matchCount"]),
             action.matchCount,
             state
         );
     case "SET_PLAYER_RATING":
         return set(
-            lensPath([String(action.id), "rating"]),
+            lensPath([action.id, "rating"]),
             action.rating,
             state
         );

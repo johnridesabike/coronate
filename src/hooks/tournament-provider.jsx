@@ -23,35 +23,39 @@ export function useTournament() {
     return state;
 }
 
-export function TournamentProvider(props) {
+export function TournamentProvider({children, tourneyId}) {
     const [tourney, tourneyDispatch] = useReducer(tournamentReducer, {});
     const [players, playersDispatch] = useReducer(playersReducer, {});
     const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
     const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
     useEffect(
         function initTourneyFromDb() {
-            tourneyStore.getItem(props.tourneyId).then(
+            tourneyStore.getItem(tourneyId).then(
                 function tourneyWasLoaded(value) {
-                    console.log("loaded", props.tourneyId, value);
+                    console.log("loaded:", tourneyId);
                     tourneyDispatch({state: value, type: "SET_STATE"});
                     setIsTourneyLoaded(true);
                 }
             );
         },
-        [props.tourneyId]
+        [tourneyId]
     );
     useEffect(
         function hydrateTourneyPlayersFromDb() {
             if (!tourney.roundList || !tourney.playerIds) {
                 return; // the tournament hasn't been loaded yet
             }
+            // This includes players who have played matches but left the
+            // tournament, as well as players who are registered but havne't
+            // played yet.
             const allTheIds = getAllPlayersFromMatches(
                 rounds2Matches(tourney.roundList)
             ).concat(
                 tourney.playerIds
             );
+            // If we don't filter out the dummy, then this effect will always
+            // fire and create a memory leak.
             const idsNoDummy = allTheIds.filter((id) => id !== DUMMY_ID);
-            // TODO: Make this smarter
             const changedPlayers = difference(idsNoDummy, Object.keys(players));
             if (changedPlayers.length > 0) {
                 playerStore.getItems(idsNoDummy).then(function (values) {
@@ -70,14 +74,11 @@ export function TournamentProvider(props) {
             if (!isTourneyLoaded) {
                 return;
             }
-            tourneyStore.setItem(props.tourneyId, tourney).catch(
-                function (error) {
-                    console.log("error saving tourney", error);
-                    console.log(props.tourneyId, tourney);
-                }
-            );
+            tourneyStore.setItem(tourneyId, tourney).catch(function (error) {
+                console.log("error saving tourney:", tourneyId, error);
+            });
         },
-        [props.tourneyId, tourney, isTourneyLoaded]
+        [tourneyId, tourney, isTourneyLoaded]
     );
     useEffect(
         function savePlayersToDb() {
@@ -85,9 +86,9 @@ export function TournamentProvider(props) {
                 return;
             }
             playerStore.setItems(players).then(function (values) {
-                console.log("saved player changes to DB", values);
+                console.log("saved player changes to DB:", values);
             }).catch(function (error) {
-                console.log("couldn't save players to db", error);
+                console.log("couldn't save players to DB:", error);
             });
         },
         [players, isPlayersLoaded]
@@ -106,7 +107,7 @@ export function TournamentProvider(props) {
                 tourneyDispatch
             }}
         >
-            {props.children}
+            {children}
         </TournamentContext.Provider>
     );
 }

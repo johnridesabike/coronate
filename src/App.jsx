@@ -9,18 +9,19 @@ import {
     createHistory
 } from "@reach/router";
 import Players, {PlayerInfo, PlayerList} from "./components/players";
-// import {PlayersProvider, TournamentProvider} from "./state";
-import {Tournament, TournamentList} from "./components/tournament";
+import TournamentIndex, {
+    Crosstable,
+    PlayerSelect,
+    Round,
+    Scores,
+    Tournament,
+    TournamentList
+} from "./components/tournament";
 import About from "./components/about";
 import Caution from "./components/caution";
-import Crosstable from "./components/tournament/crosstable";
 import NotFound from "./components/404";
 import {Options} from "./components/options";
-import PlayerSelect from "./components/tournament/player-select";
 import React from "react";
-import Round from "./components/tournament/round";
-import Scores from "./components/tournament/scores";
-import TournamentIndex from "./components/tournament";
 import createHashSource from "hash-source";
 import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.

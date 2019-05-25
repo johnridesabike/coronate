@@ -8,7 +8,7 @@ import dashify from "dashify";
 
 afterEach(cleanup);
 
-it("The tie break scores calculate correctly", function () {
+xit("The tie break scores calculate correctly", function () {
     const {getByTestId} = render(
         <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
             <Scores />
@@ -21,7 +21,7 @@ it("The tie break scores calculate correctly", function () {
     expect(batman("Cumulative of opposition")).toHaveTextContent("15");
 });
 
-it("The players are ranked correctly", function () {
+xit("The players are ranked correctly", function () {
     const {getByTestId} = render(
         <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
             <Scores />
@@ -38,7 +38,7 @@ it("The players are ranked correctly", function () {
     expect(getByTestId("8")).toHaveTextContent("Kate Kane");
 });
 
-it("Half-scores are rendered correctly", function () {
+xit("Half-scores are rendered correctly", function () {
     const {getByTestId} = render(
         <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
             <Scores />

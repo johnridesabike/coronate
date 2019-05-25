@@ -63,6 +63,7 @@ export default function genericDbReducer(state, action) {
             state
         );
     case "DEL_ITEM":
+        // If using the player DB, be sure to delete avoid-pairs too.
         return dissoc(action.id, state);
     case "LOAD_STATE":
         return action.state;

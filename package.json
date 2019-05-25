@@ -55,14 +55,14 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
-    "electron": "^5.0.1",
-    "electron-builder": "^20.40.2",
+    "electron": "^5.0.2",
+    "electron-builder": "^20.41.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-ramda": "^2.5.1",
     "eslint-plugin-react": "^7.13.0",
     "gh-pages": "^2.0.1",
-    "jest-dom": "^3.2.2",
+    "jest-dom": "^3.4.0",
     "react-scripts": "3.0.1",
     "react-testing-library": "^7.0.1",
     "typescript": "^3.4.5",
@@ -83,6 +83,9 @@
     "copyright": "Copyright © 2019 ${author}",
     "mac": {
       "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "portable"
     },
     "directories": {
       "buildResources": "assets"
