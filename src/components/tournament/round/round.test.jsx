@@ -1,26 +1,18 @@
 import "jest-dom/extend-expect";
-import {
-    OptionsProvider,
-    PlayersProvider,
-    TournamentProvider
-} from "../../../state";
 import {cleanup, fireEvent, render} from "react-testing-library";
 import PlayerInfoBox from "../../players/info-box";
 import PropTypes from "prop-types";
 import React from "react";
 import RoundPanels from "./index";
-const {click, change} = fireEvent;
+import {TournamentProvider} from "../../../hooks";
 
+const {click, change} = fireEvent;
 afterEach(cleanup);
 
 const AllTheProviders = ({children}) => (
-    <OptionsProvider>
-        <PlayersProvider>
-            <TournamentProvider>
-                {children}
-            </TournamentProvider>
-        </PlayersProvider>
-    </OptionsProvider>
+    <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+        {children}
+    </TournamentProvider>
 );
 AllTheProviders.propTypes = {
     children: PropTypes.node

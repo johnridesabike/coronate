@@ -1,4 +1,5 @@
-import React, {useEffect, useMemo} from "react";
+import React, {useEffect} from "react";
+import {useTournament, useUnmatched} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../icons";
 import {Link} from "@reach/router";
@@ -6,7 +7,6 @@ import PropTypes from "prop-types";
 import Tooltip from "@reach/tooltip";
 import {calcNumOfRounds} from "../../pairing-scoring";
 import last from "ramda/src/last";
-import {useTournament} from "../../hooks";
 
 export default function Sidebar(props) {
     const {
@@ -16,31 +16,23 @@ export default function Sidebar(props) {
         playersDispatch,
         tourneyDispatch
     } = useTournament();
-    const dispatch = tourneyDispatch;
     const {roundList} = tourney;
-    // const {playerState, getPlayer, playerDispatch} = usePlayers();
+    const unmatched = useUnmatched(tourney, players, roundList.length - 1);
 
     // This isn't expensive, but why not memoize it?
-    const isNewRoundReady = useMemo(
-        function () {
-            const lastRound = last(roundList);
-            if (!lastRound) {
-                return true;
-            }
-            const matchedPlayers = lastRound.reduce(
-                (acc, match) => acc.concat(match.playerIds),
-                []
-            );
-            const unMatchedPlayers = Object.keys(players).filter(
-                (pId) => !matchedPlayers.includes(Number(pId))
-            );
-            const results = lastRound.map(
-                (match) => match.result[0] + match.result[1]
-            );
-            return (unMatchedPlayers.length === 0 && !results.includes(0));
-        },
-        [players, roundList]
-    );
+    const isNewRoundReady = (function () {
+        const lastRound = last(roundList);
+        if (!lastRound) {
+            return true;
+        }
+        const results = lastRound.map(
+            (match) => match.result[0] + match.result[1]
+        );
+        return (
+            Object.keys(unmatched).length === 0
+            && !results.includes(0)
+        );
+    }());
     useEffect(
         function () {
             const origTitle = document.title;
@@ -77,7 +69,7 @@ export default function Sidebar(props) {
                 return;
             }
         }
-        dispatch({type: "ADD_ROUND"});
+        tourneyDispatch({type: "ADD_ROUND"});
         return;
     }
 
@@ -107,7 +99,11 @@ export default function Sidebar(props) {
                     });
                 });
             });
-            dispatch({type: "DEL_LAST_ROUND"});
+            tourneyDispatch({type: "DEL_LAST_ROUND"});
+            if (tourney.roundList.length === 1) {
+                // Automatically remake round 1.
+                tourneyDispatch({type: "ADD_ROUND"});
+            }
         }
     }
 

@@ -1,7 +1,7 @@
-import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
+import {BLACK, DUMMY_ID, WHITE, dummyPlayer} from "../../../data-types";
 import React, {useState} from "react";
-import {append, lensIndex, set} from "ramda";
-import {useOptionsDb, useRound, useTournament} from "../../../hooks";
+import {assoc, lensIndex, set} from "ramda";
+import {useOptionsDb, useTournament, useUnmatched} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
@@ -14,9 +14,9 @@ export default function SelectList({
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {tourney, getPlayer, tourneyDispatch} = useTournament();
+    const {tourney, players, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
-    const {unmatched} = useRound(tourney, roundId);
+    const unmatched = useUnmatched(tourney, players, roundId);
     const [options] = useOptionsDb();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,17 +35,18 @@ export default function SelectList({
 
     // make a new list so as not to affect auto-pairing
     const unmatchedWithDummy = (
-        (unmatched.length % 2 !== 0)
-        ? append(DUMMY_ID, unmatched)
+        (Object.keys(unmatched).length % 2 !== 0)
+        ? assoc(DUMMY_ID, dummyPlayer, unmatched)
         : unmatched
     );
-    if (unmatched.length === 0) {
+    if (Object.keys(unmatched).length === 0) {
         return null;
     }
+    console.log("unmatched players", unmatched);
     return (
         <div>
             <button
-                disabled={unmatched.length === 0}
+                disabled={Object.keys(unmatched).length === 0}
                 onClick={() => dispatch({
                     avoidList: options.avoidPairs,
                     byeValue: options.byeValue,
@@ -60,25 +61,26 @@ export default function SelectList({
                 Add or remove players from the roster.
             </button>
             <ul>
-                {unmatchedWithDummy.map((pId) => (
-                    <li key={pId}>
-                        {stagedPlayers.includes(pId)
-                        ? <button disabled>Selected</button>
-                        : (
-                            <button
-                                disabled={!stagedPlayers.includes(null)}
-                                onClick={() => selectPlayer(pId)}
-                            >
-                                <Icons.UserPlus/>
-                                <Hidden>
-                                    Select {getPlayer(pId).firstName}{" "}
-                                    {getPlayer(pId).lastName}
-                                </Hidden>
-                            </button>
-                        )}{" "}
-                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
-                    </li>
-                ))}
+                {Object.values(unmatchedWithDummy).map(
+                    ({id, firstName, lastName}) => (
+                        <li key={id}>
+                            {stagedPlayers.includes(id)
+                            ? <button disabled>Selected</button>
+                            : (
+                                <button
+                                    disabled={!stagedPlayers.includes(null)}
+                                    onClick={() => selectPlayer(id)}
+                                >
+                                    <Icons.UserPlus/>
+                                    <Hidden>
+                                        Select {firstName} {lastName}
+                                    </Hidden>
+                                </button>
+                            )}{" "}
+                            {firstName} {lastName}
+                        </li>
+                    )
+                )}
             </ul>
             <Dialog isOpen={isModalOpen}>
                 <button onClick={() => setIsModalOpen(false)}>Done</button>

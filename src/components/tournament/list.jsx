@@ -38,10 +38,7 @@ export default function TournamentList(props) {
                                 aria-label={`Delete “${name}”`}
                                 className="danger iconButton"
                                 title={`Delete “${name}”`}
-                                onClick={() => dispatch({
-                                    index: id,
-                                    type: "DEL_TOURNEY"
-                                })}
+                                onClick={() => dispatch({id, type: "DEL_ITEM"})}
                             >
                                 <Icons.Trash />
                             </button>

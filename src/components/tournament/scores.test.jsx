@@ -1,19 +1,18 @@
 import "jest-dom/extend-expect";
-import {PlayersProvider, TournamentProvider} from "../../state";
+// import {PlayersProvider, TournamentProvider} from "../../state";
 import {cleanup, render} from "react-testing-library";
 import React from "react";
 import Scores from "../tournament/scores";
+import {TournamentProvider} from "../../hooks";
 import dashify from "dashify";
 
 afterEach(cleanup);
 
 it("The tie break scores calculate correctly", function () {
     const {getByTestId} = render(
-        <PlayersProvider>
-            <TournamentProvider>
-                <Scores tourneyId={0} />
-            </TournamentProvider>
-        </PlayersProvider>
+        <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+            <Scores />
+        </TournamentProvider>
     );
     const batman = (score) => getByTestId(dashify("Bruce Wayne " + score));
     expect(batman("Modified median")).toHaveTextContent("4");
@@ -24,11 +23,9 @@ it("The tie break scores calculate correctly", function () {
 
 it("The players are ranked correctly", function () {
     const {getByTestId} = render(
-        <PlayersProvider>
-            <TournamentProvider>
-                <Scores tourneyId={0} />
-            </TournamentProvider>
-        </PlayersProvider>
+        <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+            <Scores />
+        </TournamentProvider>
     );
     expect(getByTestId("0")).toHaveTextContent("Bruce Wayne");
     expect(getByTestId("1")).toHaveTextContent("Selina Kyle");
@@ -43,11 +40,9 @@ it("The players are ranked correctly", function () {
 
 it("Half-scores are rendered correctly", function () {
     const {getByTestId} = render(
-        <PlayersProvider>
-            <TournamentProvider>
-                <Scores tourneyId={0} />
-            </TournamentProvider>
-        </PlayersProvider>
+        <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+            <Scores />
+        </TournamentProvider>
     );
     expect(getByTestId("barbara-gordon-score")).toHaveTextContent("2½");
     expect(getByTestId("kate-kane-score")).toHaveTextContent("½");

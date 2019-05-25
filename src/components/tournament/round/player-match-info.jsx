@@ -1,4 +1,4 @@
-import {useOptionsDb, useRound, useTournament} from "../../../hooks";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import PropTypes from "prop-types";
 import React from "react";
 import {createPlayerStats} from "../../../pairing-scoring";
@@ -7,13 +7,13 @@ import numeral from "numeral";
 
 export default function PlayerMatchInfo({matchId, color, roundId}) {
     const {tourney, players, getPlayer} = useTournament();
-    const {matchList} = useRound(tourney, roundId);
+    const matchList = tourney.roundList[roundId];
     const [options] = useOptionsDb();
     const match = findById(matchId, matchList);
     const playerData = createPlayerStats({
         avoidList: options.avoidPairs,
         id: match.playerIds[color],
-        playerDataSource: Object.values(players),
+        players,
         roundId,
         roundList: tourney.roundList
     });

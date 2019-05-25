@@ -1,17 +1,20 @@
 import React, {useState} from "react";
 import {findById, findIndexById} from "../../utility";
-import {useRound, useTournament} from "../../../hooks";
 import Icons from "../../icons";
 import MatchRow from "./match-row";
 import PropTypes from "prop-types";
 import style from "./round.module.css";
+import {useTournament} from "../../../hooks";
 
 export default function Round({roundId, tourneyId}) {
-    const {tourney, tourneyDispatch} = useTournament();
+    const {
+        tourney,
+        players,
+        tourneyDispatch,
+        playersDispatch
+    } = useTournament();
     const dispatch = tourneyDispatch;
-    const {matchList} = useRound(tourney, roundId);
-    const playerDispatch = () => null;
-    const getPlayer = () => ({matchCount: 1});
+    const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
         throw new Error("Round " + roundId + " does not exist.");
@@ -22,12 +25,12 @@ export default function Round({roundId, tourneyId}) {
             // checks if the match has been scored yet & resets the players'
             // records
             match.playerIds.forEach(function (pId, color) {
-                playerDispatch({
+                playersDispatch({
                     id: pId,
-                    matchCount: getPlayer(pId).matchCount - 1,
+                    matchCount: players[pId].matchCount - 1,
                     type: "SET_PLAYER_MATCHCOUNT"
                 });
-                playerDispatch({
+                playersDispatch({
                     id: pId,
                     rating: match.origRating[color],
                     type: "SET_PLAYER_RATING"

@@ -6,7 +6,8 @@ import {
     Player,
     Tournament,
     WHITE,
-    createMatch
+    createMatch,
+    dummyPlayer
 } from "../../data-types";
 import {assoc} from "ramda";
 import nanoid from "nanoid";
@@ -35,17 +36,18 @@ export function autoPair({
     });
     console.log("pairs", pairs);
     console.log("players", players);
+    const playersWithDummy = assoc(DUMMY_ID, dummyPlayer, players);
     const newMatchList = pairs.map(
         (idsPair) => (
             createMatch({
                 id: nanoid(),
                 newRating: [
-                    players[idsPair[WHITE]].rating,
-                    players[idsPair[BLACK]].rating
+                    playersWithDummy[idsPair[WHITE]].rating,
+                    playersWithDummy[idsPair[BLACK]].rating
                 ],
                 origRating: [
-                    players[idsPair[WHITE]].rating,
-                    players[idsPair[BLACK]].rating
+                    playersWithDummy[idsPair[WHITE]].rating,
+                    playersWithDummy[idsPair[BLACK]].rating
                 ],
                 playerIds: [idsPair[WHITE], idsPair[BLACK]]
             })

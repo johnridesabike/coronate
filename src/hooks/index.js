@@ -9,17 +9,28 @@ import {
     usePlayersDb,
     useTournamentDb
 } from "./db";
-import {difference} from "ramda";
+import {assoc} from "ramda";
 
-export function useRound(tourney, roundId) {
-    const matchList = tourney.roundList[roundId];
-    // TODO: make this return a dict instead
-    const matched = matchList.reduce(
+/**
+ * This creates a filtered version of `players` with only the players that are
+ * not matched for the specified round.
+ * This isn't really a "hook" but multiple components use this logic.
+ */
+export function useUnmatched(tourney, players, roundId) {
+    const matchList = tourney.roundList[roundId] || [];
+    const matchedIds = matchList.reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
-    const unmatched = difference(tourney.playerIds, matched);
-    return {matchList, unmatched};
+    const unmatched = Object.values(players).reduce(
+        (acc, player) => (
+            (matchedIds.includes(player.id))
+            ? acc
+            : assoc(player.id, player, acc)
+        ),
+        {}
+    );
+    return unmatched;
 }
 
 export {

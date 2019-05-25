@@ -53,6 +53,7 @@ export function TournamentProvider(props) {
             const idsNoDummy = allTheIds.filter((id) => id !== DUMMY_ID);
             // TODO: Make this smarter
             const changedPlayers = difference(idsNoDummy, Object.keys(players));
+            console.log("hydrating", allTheIds, idsNoDummy, changedPlayers);
             if (changedPlayers.length > 0) {
                 playerStore.getItems(idsNoDummy).then(function (values) {
                     console.log("hydrated player data");
