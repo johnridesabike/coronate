@@ -1,12 +1,13 @@
 import {BLACK, DUMMY_ID, WHITE, dummyPlayer} from "../../../data-types";
 import React, {useState} from "react";
 import {assoc, lensIndex, set} from "ramda";
-import {useOptionsDb, useTournament, useUnmatched} from "../../../hooks";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 import Selecting from "../player-select/selecting";
+import {getUnmatched} from "../../../pairing-scoring";
 
 export default function SelectList({
     tourneyId,
@@ -16,7 +17,10 @@ export default function SelectList({
 }) {
     const {tourney, players, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
-    const unmatched = useUnmatched(tourney, players, roundId);
+    // only use unmatched players if this is the last round.
+    const unmatched = (roundId === tourney.roundList.length - 1)
+        ? getUnmatched(tourney, players, roundId)
+        : {};
     const [options] = useOptionsDb();
     const [isModalOpen, setIsModalOpen] = useState(false);
 

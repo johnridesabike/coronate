@@ -6,9 +6,11 @@ import {
     Player,
     RoundList,
     Standing,
+    Tournament,
     dummyPlayer,
     missingPlayer
 } from "../data-types";
+import {assoc} from "ramda";
 import t from "tcomb";
 /*******************************************************************************
  * Player functions
@@ -117,6 +119,30 @@ export function getPlayerScoreList(playerId, matchList) {
     ).map(
         (match) => getMatchDetailsForPlayer(playerId, match).result
     );
+}
+
+/**
+ * This creates a filtered version of `players` with only the players that are
+ * not matched for the specified round.
+ */
+export function getUnmatched(tourney, players, roundId) {
+    Tournament(tourney);
+    t.dict(t.String, Player)(players);
+    t.Number(roundId);
+    const matchList = tourney.roundList[roundId] || [];
+    const matchedIds = matchList.reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    );
+    const unmatched = Object.values(players).reduce(
+        (acc, player) => (
+            (matchedIds.includes(player.id))
+            ? acc
+            : assoc(player.id, player, acc)
+        ),
+        {}
+    );
+    return unmatched;
 }
 
 /**

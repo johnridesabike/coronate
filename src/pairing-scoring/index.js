@@ -4,6 +4,7 @@ import {
     getAllPlayersFromMatches,
     getPlayerAvoidList,
     getPlayerById,
+    getUnmatched,
     rounds2Matches
 } from "./helpers";
 import {
@@ -35,6 +36,7 @@ export {
     getPlayerAvoidList,
     getPlayerById,
     getAllPlayersFromMatches,
+    getUnmatched,
     getResultsByOpponent,
     hasHadBye,
     kFactor,

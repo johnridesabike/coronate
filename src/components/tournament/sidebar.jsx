@@ -1,12 +1,12 @@
 import React, {useEffect} from "react";
-import {useTournament, useUnmatched} from "../../hooks";
+import {calcNumOfRounds, getUnmatched} from "../../pairing-scoring";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import Tooltip from "@reach/tooltip";
-import {calcNumOfRounds} from "../../pairing-scoring";
 import last from "ramda/src/last";
+import {useTournament} from "../../hooks";
 
 export default function Sidebar(props) {
     const {
@@ -17,9 +17,8 @@ export default function Sidebar(props) {
         tourneyDispatch
     } = useTournament();
     const {roundList} = tourney;
-    const unmatched = useUnmatched(tourney, players, roundList.length - 1);
+    const unmatched = getUnmatched(tourney, players, roundList.length - 1);
 
-    // This isn't expensive, but why not memoize it?
     const isNewRoundReady = (function () {
         const lastRound = last(roundList);
         if (!lastRound) {

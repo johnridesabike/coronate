@@ -1,15 +1,19 @@
 import React, {useEffect, useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
-import {useTournament, useUnmatched} from "../../../hooks";
 import Icons from "../../icons";
 import PairPicker from "../pair-picker";
 import PropTypes from "prop-types";
 import Round from "./round";
+import {getUnmatched} from "../../../pairing-scoring";
+import {useTournament} from "../../../hooks";
 
 export default function Index(props) {
     const roundId = Number(props.roundId); // Reach Router passes a string.
     const {tourney, players} = useTournament();
-    const unmatched = useUnmatched(tourney, players, roundId);
+    // only use unmatched players if this is the last round.
+    const unmatched = (roundId === tourney.roundList.length - 1)
+        ? getUnmatched(tourney, players, roundId)
+        : {};
     const [openTab, setOpenTab] = useState(0);
     useEffect(
         function () {

@@ -42,8 +42,7 @@ export default function optionsReducer(state, action) {
         return over(
             lensProp("avoidPairs"),
             filter((pair) => !(
-                pair.includes(action.pair[0])
-                && pair.includes(action.pair[1])
+                pair.includes(action.pair[0]) && pair.includes(action.pair[1])
             )),
             state
         );
