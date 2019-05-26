@@ -5,7 +5,6 @@ import React, {
     useReducer,
     useState
 } from "react";
-import {curry, symmetricDifference} from "ramda";
 import {
     getAllPlayersFromMatches,
     getPlayerMaybe,
@@ -14,6 +13,7 @@ import {
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
 import PropTypes from "prop-types";
+import {symmetricDifference} from "ramda";
 
 const TournamentContext = createContext(null);
 
@@ -29,13 +29,11 @@ export function TournamentProvider({children, tourneyId}) {
     const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
     useEffect(
         function initTourneyFromDb() {
-            tourneyStore.getItem(tourneyId).then(
-                function tourneyWasLoaded(value) {
-                    console.log("loaded:", tourneyId);
-                    tourneyDispatch({state: value, type: "SET_STATE"});
-                    setIsTourneyLoaded(true);
-                }
-            );
+            tourneyStore.getItem(tourneyId).then(function (value) {
+                console.log("loaded:", tourneyId);
+                tourneyDispatch({state: value, type: "SET_STATE"});
+                setIsTourneyLoaded(true);
+            });
         },
         [tourneyId]
     );
@@ -44,18 +42,17 @@ export function TournamentProvider({children, tourneyId}) {
             if (!tourney.roundList || !tourney.playerIds) {
                 return; // the tournament hasn't been loaded yet
             }
-            // This includes players who have played matches but left the
-            // tournament, as well as players who are registered but havne't
-            // played yet.
+            // Include players who have played matches but left the tournament,
+            // as well as players who are registered but havne't played yet.
             const allTheIds = getAllPlayersFromMatches(
                 rounds2Matches(tourney.roundList)
             ).concat(
                 tourney.playerIds
             );
+            // If there are no ids, update the player state and exit early.
             if (allTheIds.length === 0) {
-                // If there are no ids, update the player state and exit early.
+                // This check prevents an infinite loop & memory leak.
                 if (Object.keys(players).length !== 0) {
-                    // This check prevents an infinite loop & memory leak.
                     playersDispatch({state: {}, type: "LOAD_STATE"});
                 }
                 setIsPlayersLoaded(true);
@@ -107,7 +104,7 @@ export function TournamentProvider({children, tourneyId}) {
         },
         [players, isPlayersLoaded]
     );
-    const getPlayer = curry(getPlayerMaybe)(players);
+    const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     if (!isTourneyLoaded || !isPlayersLoaded) {
         return <div>Loading...</div>;
     }

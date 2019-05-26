@@ -1,14 +1,11 @@
 import "localforage-getitems";
-// import {curry, difference} from "ramda";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
 import demoData from "../demo-data";
 import {difference} from "ramda";
-// import {getPlayerById} from "../pairing-scoring";
 import localForage from "localforage";
 import {extendPrototype as removeItemsPrototype} from "localforage-removeitems";
 import {extendPrototype as setItemsPrototype} from "localforage-setitems";
-// import t from "tcomb";
 
 /*******************************************************************************
  * Initialize the databases
@@ -69,35 +66,15 @@ function useAllItemsFromDb(store) {
 }
 
 /*******************************************************************************
- * Player database hooks
+ * Player & tournament wrapper hooks
  ******************************************************************************/
 export function useAllPlayersDb() {
     return useAllItemsFromDb(playerStore);
 }
 
-// export function usePlayersDb(ids) {
-//     t.list(t.Number)(ids);
-//     const [players, setPlayers] = useState({});
-//     useEffect(
-//         function () {
-//             const idStrings = ids.map((id) => String(id));
-//             if (idStrings.length > 0) {
-//                 playerStore.getItems(idStrings).then(function (values) {
-//                     setPlayers(values);
-//                 });
-//             }
-//         },
-//         [ids]
-//     );
-//     useEffect(
-//         function () {
-//             console.log("player list was updated", players);
-//         },
-//         [players]
-//     );
-//     const getPlayer = curry(getPlayerById)(players);
-//     return [players, getPlayer];
-// }
+export function useAllTournamentsDb() {
+    return useAllItemsFromDb(tourneyStore);
+}
 
 /*******************************************************************************
  * Options database hooks
@@ -125,31 +102,4 @@ export function useOptionsDb() {
         [options, isLoaded]
     );
     return [options, dispatch];
-}
-
-/*******************************************************************************
- * Tournament database hooks
- ******************************************************************************/
-// export function useTournamentDb(id) {
-//     const [tourney, setTourney] = useState({});
-//     useEffect(
-//         function loadTournamentFromDb() {
-//             tourneyStore.getItem(String(id)).then(function (value) {
-//                 console.log("got tourney", id, value);
-//                 setTourney(value);
-//             });
-//         },
-//         [id]
-//     );
-//     useEffect(
-//         function saveChangesToDb() {
-//             tourneyStore.setItem(String(id), tourney);
-//         },
-//         [id, tourney]
-//     );
-//     return [tourney, setTourney];
-// }
-
-export function useAllTournamentsDb() {
-    return useAllItemsFromDb(tourneyStore);
 }

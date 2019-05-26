@@ -9,8 +9,8 @@ import {
     WHITE,
     createMatch
 } from "../../data-types";
-import {assoc, curry} from "ramda";
 import {getPlayerMaybe, pairPlayers} from "../../pairing-scoring";
+import {assoc} from "ramda";
 import t from "tcomb";
 
 export function autoPair({
@@ -35,7 +35,7 @@ export function autoPair({
     });
     console.log("pairs", pairs);
     console.log("players", players);
-    const getPlayer = curry(getPlayerMaybe)(players);
+    const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     const newMatchList = pairs.map(
         (idsPair) => (
             createMatch({

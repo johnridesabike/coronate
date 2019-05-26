@@ -1,4 +1,3 @@
-import {assoc, curry} from "ramda";
 import {
     createStandingList,
     getPerformanceRatings,
@@ -8,6 +7,7 @@ import {
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import React from "react";
+import {assoc} from "ramda";
 import numeral from "numeral";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
@@ -16,7 +16,7 @@ export default function Crosstable(props) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
     const matches = rounds2Matches(roundList);
-    const oppResults = curry(getResultsByOpponent)(matches);
+    const oppResults = (id) => getResultsByOpponent(matches, id); // curry
     const [standings] = createStandingList(tieBreaks, roundList);
     const opponentScores = standings.reduce(
         (acc, {id}) => assoc(id, oppResults(id), acc),
