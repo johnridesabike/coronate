@@ -32,19 +32,21 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
         // else... nothing happens
     }
 
+    const unmatchedCount = Object.keys(unmatched).length;
+
     // make a new list so as not to affect auto-pairing
     const unmatchedWithDummy = (
-        (Object.keys(unmatched).length % 2 !== 0)
+        (unmatchedCount % 2 !== 0)
         ? assoc(DUMMY_ID, dummyPlayer, unmatched)
         : unmatched
     );
-    if (Object.keys(unmatched).length === 0) {
+    if (unmatchedCount === 0) {
         return null;
     }
     return (
         <div>
             <button
-                disabled={Object.keys(unmatched).length === 0}
+                disabled={unmatchedCount === 0}
                 onClick={() => dispatch({
                     avoidList: options.avoidPairs,
                     byeValue: options.byeValue,
@@ -90,6 +92,5 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
 SelectList.propTypes = {
     roundId: PropTypes.number,
     setStagedPlayers: PropTypes.func,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.string),
-    tourneyId: PropTypes.number
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string)
 };

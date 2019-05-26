@@ -77,7 +77,8 @@
                     {"object": "event"},
                     {"property": "propTypes"},
                     {"property": "dispatch"}
-                ]
+                ],
+                "commonjs": true
             }
         ]
     }

@@ -1,3 +1,6 @@
+// "The tests here mostly don't work because of IndexedDB is async.
+// If you know how to fix them, please help me out!
+// https://github.com/johnridesabike/chessahoochee/issues
 import "jest-dom/extend-expect";
 // import {PlayersProvider, TournamentProvider} from "../../state";
 import {cleanup, render} from "react-testing-library";

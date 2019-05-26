@@ -44,7 +44,7 @@ export function areScoresEqual(standing1, standing2) {
 export function getPlayerById(playerList, id) {
     t.union([
         t.list(Player),
-        t.dict(t.String, Player)
+        t.dict(Id, Player)
     ])(playerList);
     if (id === DUMMY_ID) {
         return dummyPlayer;
@@ -52,6 +52,21 @@ export function getPlayerById(playerList, id) {
     const player = (playerList.filter)
         ? playerList.filter((p) => p.id === id)[0]
         : playerList[id];
+    return (player) ? player : missingPlayer(id);
+}
+
+/**
+ * A replacement for `getPlayerById`, with an emphasis on the indented feature
+ * of *maybe* getting a player, *maybe* getting a `dummyPlayer`, or *maybe*
+ * getting a missing (deleted) player.
+ */
+export function getPlayerMaybe(playerDict, id) {
+    t.dict(Id, Player)(playerDict);
+    Id(id);
+    if (id === DUMMY_ID) {
+        return dummyPlayer;
+    }
+    const player = playerDict[id];
     return (player) ? player : missingPlayer(id);
 }
 
@@ -73,7 +88,7 @@ export function getMatchesByPlayerNoByes(playerId, matchList) {
     );
 }
 
-function getMatchDetailsForPlayer(playerId, match) {
+export function getMatchDetailsForPlayer(playerId, match) {
     Id(playerId);
     Match(match);
     const index = match.playerIds.indexOf(playerId);
@@ -84,7 +99,6 @@ function getMatchDetailsForPlayer(playerId, match) {
         result: match.result[index]
     };
 }
-export {getMatchDetailsForPlayer};
 
 /**
  * Flatten a list of rounds to a list of matches.
@@ -100,10 +114,6 @@ export function rounds2Matches(roundList, roundId = null) {
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
-
-/**
- * @returns {number[]}
- */
 export function getAllPlayersFromMatches(matchList) {
     t.list(Match)(matchList);
     const allPlayers = matchList.reduce(
@@ -144,7 +154,7 @@ export function getPlayerScoreListNoByes(playerId, matchList) {
  */
 export function getUnmatched(tourney, players, roundId) {
     Tournament(tourney);
-    t.dict(t.String, Player)(players);
+    t.dict(Id, Player)(players);
     t.Number(roundId);
     const matchList = tourney.roundList[roundId] || [];
     const matchedIds = matchList.reduce(
@@ -166,8 +176,8 @@ export function getUnmatched(tourney, players, roundId) {
  * Round functions
  ******************************************************************************/
 export function calcNumOfRounds(playerCount) {
-    const rounds = Math.ceil(Math.log2(playerCount));
-    return (Number.isFinite(rounds)) ? rounds : 0;
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
 }
 
 /*******************************************************************************
@@ -186,6 +196,7 @@ export function getPlayerAvoidList(playerId, avoidList) {
     );
 }
 
+// TODO: This isn't currently in use, but it probably should be.
 export function cleanAvoidList(avoidList, playerList) {
     t.list(AvoidPair)(avoidList);
     t.list(Player)(playerList);

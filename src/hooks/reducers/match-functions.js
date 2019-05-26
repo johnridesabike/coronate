@@ -3,14 +3,14 @@ import {
     AvoidPair,
     BLACK,
     DUMMY_ID,
+    Id,
     Player,
     Tournament,
     WHITE,
-    createMatch,
-    dummyPlayer
+    createMatch
 } from "../../data-types";
-import {assoc} from "ramda";
-import {pairPlayers} from "../../pairing-scoring";
+import {assoc, curry} from "ramda";
+import {getPlayerMaybe, pairPlayers} from "../../pairing-scoring";
 import t from "tcomb";
 
 export function autoPair({
@@ -23,7 +23,7 @@ export function autoPair({
     t.list(AvoidPair)(avoidList);
     t.Number(byeValue);
     Tournament(tourney);
-    t.dict(t.String, Player)(players);
+    t.dict(Id, Player)(players);
     t.Number(roundId);
     const roundList = tourney.roundList;
     const pairs = pairPlayers({
@@ -35,17 +35,17 @@ export function autoPair({
     });
     console.log("pairs", pairs);
     console.log("players", players);
-    const playersWithDummy = assoc(DUMMY_ID, dummyPlayer, players);
+    const getPlayer = curry(getPlayerMaybe)(players);
     const newMatchList = pairs.map(
         (idsPair) => (
             createMatch({
                 newRating: [
-                    playersWithDummy[idsPair[WHITE]].rating,
-                    playersWithDummy[idsPair[BLACK]].rating
+                    getPlayer(idsPair[WHITE]).rating,
+                    getPlayer(idsPair[BLACK]).rating
                 ],
                 origRating: [
-                    playersWithDummy[idsPair[WHITE]].rating,
-                    playersWithDummy[idsPair[BLACK]].rating
+                    getPlayer(idsPair[WHITE]).rating,
+                    getPlayer(idsPair[BLACK]).rating
                 ],
                 playerIds: [idsPair[WHITE], idsPair[BLACK]]
             })

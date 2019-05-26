@@ -3,7 +3,8 @@ import {
     calcNumOfRounds,
     getAllPlayersFromMatches,
     getPlayerAvoidList,
-    getPlayerById,
+    // getPlayerById,
+    getPlayerMaybe,
     getUnmatched,
     rounds2Matches
 } from "./helpers";
@@ -34,7 +35,8 @@ export {
     createStandingTree,
     getPerformanceRatings,
     getPlayerAvoidList,
-    getPlayerById,
+    // getPlayerById,
+    getPlayerMaybe,
     getAllPlayersFromMatches,
     getUnmatched,
     getResultsByOpponent,

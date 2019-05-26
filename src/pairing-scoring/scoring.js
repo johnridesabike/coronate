@@ -36,10 +36,7 @@ export function getDueColor(playerId, matchList) {
     return (color === WHITE) ? BLACK : WHITE;
 }
 
-/**
- * @returns {boolean}
- */
-function hasHadBye(playerId, matchList) {
+export function hasHadBye(playerId, matchList) {
     Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
@@ -50,11 +47,7 @@ function hasHadBye(playerId, matchList) {
         []
     ).includes(DUMMY_ID);
 }
-export {hasHadBye};
 
-/**
- * @returns {number[]}
- */
 export function getPlayersByOpponent(opponentId, matchList) {
     Id(opponentId);
     t.list(Match)(matchList);
@@ -71,7 +64,6 @@ export function getPlayersByOpponent(opponentId, matchList) {
 
 /**
  * Used for `modifiedMedian` and `solkoff`.
- * @returns {number[]}
  */
 function getOpponentScores(playerId, matchList) {
     Id(playerId);
@@ -92,7 +84,7 @@ function getOpponentScores(playerId, matchList) {
  ******************************************************************************/
 const getPlayerScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function playerScoreFunction(playerId, matchList) {
+    function _getPlayerScore(playerId, matchList) {
         const scoreList = getPlayerScoreList(playerId, matchList);
         return sum(scoreList);
     }

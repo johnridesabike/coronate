@@ -5,15 +5,14 @@ import React, {
     useReducer,
     useState
 } from "react";
-import {curry, difference} from "ramda";
+import {curry, symmetricDifference} from "ramda";
 import {
     getAllPlayersFromMatches,
-    getPlayerById,
+    getPlayerMaybe,
     rounds2Matches
 } from "../pairing-scoring";
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
-import {DUMMY_ID} from "data-types";
 import PropTypes from "prop-types";
 
 const TournamentContext = createContext(null);
@@ -53,19 +52,34 @@ export function TournamentProvider({children, tourneyId}) {
             ).concat(
                 tourney.playerIds
             );
-            // If we don't filter out the dummy, then this effect will always
-            // fire and create a memory leak.
-            const idsNoDummy = allTheIds.filter((id) => id !== DUMMY_ID);
-            const changedPlayers = difference(idsNoDummy, Object.keys(players));
-            if (changedPlayers.length > 0) {
-                playerStore.getItems(idsNoDummy).then(function (values) {
+            if (allTheIds.length === 0) {
+                // If there are no ids, update the player state and exit early.
+                if (Object.keys(players).length !== 0) {
+                    // This check prevents an infinite loop & memory leak.
+                    playersDispatch({state: {}, type: "LOAD_STATE"});
+                }
+                setIsPlayersLoaded(true);
+                return;
+            }
+            playerStore.getItems(allTheIds).then(function (values) {
+                // This safeguards against trying to fetch dummy IDs or IDs from
+                // deleted players. If we updated without this condition, then
+                // this `useEffect` would trigger an infinite loop and a memory
+                // leak.
+                const unChangedPlayers = symmetricDifference(
+                    Object.keys(values),
+                    Object.keys(players)
+                );
+                console.log("unchanged players:", unChangedPlayers);
+                if (unChangedPlayers.length !== 0) {
                     console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
-                    setIsPlayersLoaded(true);
-                });
-            } else {
+                }
                 setIsPlayersLoaded(true);
-            }
+            }).catch(function (error) {
+                console.error("Couldn't load ids:", allTheIds);
+                console.error(error);
+            });
         },
         [tourney.roundList, players, tourney.playerIds]
     );
@@ -93,7 +107,7 @@ export function TournamentProvider({children, tourneyId}) {
         },
         [players, isPlayersLoaded]
     );
-    const getPlayer = curry(getPlayerById)(players);
+    const getPlayer = curry(getPlayerMaybe)(players);
     if (!isTourneyLoaded || !isPlayersLoaded) {
         return <div>Loading...</div>;
     }

@@ -4,6 +4,7 @@
 import {
     AvoidPair,
     DUMMY_ID,
+    Id,
     Player,
     PlayerStats,
     RoundList
@@ -178,7 +179,7 @@ export default function pairPlayers({
     byeQueue
 }) {
     t.Number(roundId);
-    t.dict(t.String, Player)(players);
+    t.dict(Id, Player)(players);
     t.list(t.Number)(byeQueue);
     RoundList(roundList);
     t.list(AvoidPair)(avoidList);

@@ -109,10 +109,9 @@ export function createPlayerStats({
 }) {
     Id(id);
     t.Number(roundId);
-    t.dict(t.String, Player)(players);
+    t.dict(Id, Player)(players);
     t.list(AvoidPair)(avoidList);
     RoundList(roundList);
-    // const player = getPlayerById(playerDataSource, id);
     const matches = rounds2Matches(roundList, roundId);
     return PlayerStats({
         avoidList: getPlayerAvoidList(id, avoidList),

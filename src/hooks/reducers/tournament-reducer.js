@@ -38,7 +38,7 @@ const ActionSetByeQueue = t.interface({
 const ActionAutoPair = t.interface({
     avoidList: t.list(AvoidPair),
     byeValue: t.Number,
-    players: t.dict(t.String, Player),
+    players: t.dict(Id, Player),
     roundId: t.Number
 });
 const ActionManualPair = t.interface({
