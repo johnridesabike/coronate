@@ -14,22 +14,19 @@ export default function Index(props) {
     const unmatched = (roundId === tourney.roundList.length - 1)
         ? getUnmatched(tourney, players, roundId)
         : {};
+    const unmatchedCount = Object.keys(unmatched).length;
     const [openTab, setOpenTab] = useState(0);
     useEffect(
         function () {
-            if (Object.keys(unmatched).length > 0) {
-                setOpenTab(1);
-            } else {
-                setOpenTab(0);
-            }
+            (unmatchedCount > 0) ? setOpenTab(1) : setOpenTab(0);
         },
-        [unmatched]
+        [unmatchedCount]
     );
     return (
         <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
             <TabList>
                 <Tab><Icons.List/> Matches</Tab>
-                <Tab disabled={Object.keys(unmatched).length === 0}>
+                <Tab disabled={unmatchedCount === 0}>
                     <Icons.Users/> Unmatched players
                 </Tab>
             </TabList>

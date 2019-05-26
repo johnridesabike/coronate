@@ -9,12 +9,7 @@ import PropTypes from "prop-types";
 import Selecting from "../player-select/selecting";
 import {getUnmatched} from "../../../pairing-scoring";
 
-export default function SelectList({
-    tourneyId,
-    roundId,
-    stagedPlayers,
-    setStagedPlayers
-}) {
+export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
     const {tourney, players, tourneyDispatch} = useTournament();
     const dispatch = tourneyDispatch;
     // only use unmatched players if this is the last round.
@@ -46,7 +41,6 @@ export default function SelectList({
     if (Object.keys(unmatched).length === 0) {
         return null;
     }
-    console.log("unmatched players", unmatched);
     return (
         <div>
             <button
@@ -88,7 +82,7 @@ export default function SelectList({
             </ul>
             <Dialog isOpen={isModalOpen}>
                 <button onClick={() => setIsModalOpen(false)}>Done</button>
-                <Selecting tourneyId={tourneyId} />
+                <Selecting />
             </Dialog>
         </div>
     );

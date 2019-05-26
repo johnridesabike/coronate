@@ -3,12 +3,11 @@ import React, {useState} from "react";
 import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
-import PropTypes from "prop-types";
 import Selecting from "./selecting";
 import {useTournament} from "../../../hooks";
 
 export default function PlayerSelect(props) {
-    const {tourney, tourneyDispatch, getPlayer} = useTournament();
+    const {tourney, tourneyDispatch, players} = useTournament();
     const {playerIds, roundList, byeQueue} = tourney;
     const dispatch = tourneyDispatch;
     const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
@@ -29,38 +28,34 @@ export default function PlayerSelect(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {playerIds.map((pId) => (
-                            <tr
-                                key={pId}
-                                className={getPlayer(pId).type + " player"}
-                            >
-                                <td>{getPlayer(pId).firstName}</td>
-                                <td>{getPlayer(pId).lastName}</td>
-                                <td>
-                                    <button
-                                        disabled={byeQueue.includes(
-                                            pId
-                                        )}
-                                        onClick={() =>
-                                            dispatch({
-                                                byeQueue: byeQueue.concat(
-                                                    [pId]
-                                                ),
-                                                type: "SET_BYE_QUEUE"
-                                            })
-                                        }
-                                    >
-                                        Bye signup
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {Object.values(players).map(
+                            ({type, id, firstName, lastName}) => (
+                                <tr key={id} className={type + " player"}>
+                                    <td>{firstName}</td>
+                                    <td>{lastName}</td>
+                                    <td>
+                                        <button
+                                            disabled={byeQueue.includes(id)}
+                                            onClick={() =>
+                                                dispatch({
+                                                    byeQueue:
+                                                        byeQueue.concat([id]),
+                                                    type: "SET_BYE_QUEUE"
+                                                })
+                                            }
+                                        >
+                                            Bye signup
+                                        </button>
+                                    </td>
+                                </tr>
+                            )
+                        )}
                     </tbody>
                 </table>
             </Panel>
             <Panel>
                 <h3>Bye queue</h3>
-                {(byeQueue.length === 0) &&
+                {byeQueue.length === 0 &&
                     <p>No players have signed up for a bye round.</p>
                 }
                 <ol>
@@ -68,13 +63,13 @@ export default function PlayerSelect(props) {
                         <li
                             key={pId}
                             className={
-                                hasHadBye(pId, matches)
+                                (hasHadBye(pId, matches))
                                 ? "disabled"
                                 : ""
                             }
                         >
-                            {getPlayer(pId).firstName}{" "}
-                            {getPlayer(pId).lastName}
+                            {players[pId].firstName}{" "}
+                            {players[pId].lastName}
                             <button
                                 onClick={() =>
                                     dispatch({
@@ -93,12 +88,9 @@ export default function PlayerSelect(props) {
             </Panel>
             <Dialog isOpen={isSelecting}>
                 <button onClick={() => setIsSelecting(false)}>Done</button>
-                <Selecting tourneyId={props.tourneyId} />
+                <Selecting />
             </Dialog>
         </PanelContainer>
     );
 }
-PlayerSelect.propTypes = {
-    path: PropTypes.string,
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-};
+PlayerSelect.propTypes = {};

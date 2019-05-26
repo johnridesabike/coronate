@@ -1,6 +1,5 @@
 import {useAllPlayersDb, useTournament} from "../../../hooks";
-import NewPlayer from "../../players/new-player";
-// import PropTypes from "prop-types";
+import NewPlayer from "../../new-player";
 import React from "react";
 
 export default function Selecting(props) {
@@ -25,22 +24,18 @@ export default function Selecting(props) {
     return (
         <div>
             <button
-                onClick={() =>
-                    tourneyDispatch({
-                        playerIds: Object.keys(players),
-                        type: "SET_TOURNEY_PLAYERS"
-                    })
-                }
+                onClick={() => tourneyDispatch({
+                    playerIds: Object.keys(players),
+                    type: "SET_TOURNEY_PLAYERS"
+                })}
             >
                 Select all
             </button>
             <button
-                onClick={() =>
-                    tourneyDispatch({
-                        playerIds: [],
-                        type: "SET_TOURNEY_PLAYERS"
-                    })
-                }
+                onClick={() => tourneyDispatch({
+                    playerIds: [],
+                    type: "SET_TOURNEY_PLAYERS"
+                })}
             >
                 Select none
             </button>
@@ -54,7 +49,7 @@ export default function Selecting(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(players).map(({id, firstName, lastName}) => (
+                    {Object.values(players).map(({id, firstName, lastName}) =>
                         <tr key={id}>
                             <td>{firstName}</td>
                             <td>{lastName}</td>
@@ -67,7 +62,7 @@ export default function Selecting(props) {
                                 />
                             </td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
             <NewPlayer dispatch={allPlayersDispatch}/>

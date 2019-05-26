@@ -1,7 +1,7 @@
 import {useAllPlayersDb, useOptionsDb} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
-import NewPlayer from "./new-player";
+import NewPlayer from "../new-player";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
 
@@ -52,8 +52,8 @@ export default function PlayerList(props) {
                             Open
                                 <VisuallyHidden>
                                     {" "}{player.firstName} {player.lastName}
-                                </VisuallyHidden>
-                                {" "}<Icons.ChevronRight />
+                                </VisuallyHidden>{" "}
+                                <Icons.ChevronRight />
                             </Link>
                         </td>
                     </tr>

@@ -16,7 +16,7 @@ import Stage from "./stage";
 import {findById} from "../../utility";
 import numeral from "numeral";
 
-export default function PairPicker({tourneyId, roundId}) {
+export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const [options] = useOptionsDb();
     const {tourney, players} = useTournament();
@@ -63,7 +63,6 @@ export default function PairPicker({tourneyId, roundId}) {
                     roundId={roundId}
                     setStagedPlayers={setStagedPlayers}
                     stagedPlayers={stagedPlayers}
-                    tourneyId={tourneyId}
                 />
             </Panel>
             <Panel>
@@ -71,7 +70,6 @@ export default function PairPicker({tourneyId, roundId}) {
                     roundId={roundId}
                     setStagedPlayers={setStagedPlayers}
                     stagedPlayers={stagedPlayers}
-                    tourneyId={tourneyId}
                 />
                 <PanelContainer>
                     {stagedPlayers.map((id) =>
@@ -80,7 +78,6 @@ export default function PairPicker({tourneyId, roundId}) {
                                 <PlayerInfo
                                     playerId={id}
                                     roundId={roundId}
-                                    tourneyId={tourneyId}
                                 />
                             </Panel>
                         )

@@ -6,14 +6,13 @@ import PropTypes from "prop-types";
 import style from "./round.module.css";
 import {useTournament} from "../../../hooks";
 
-export default function Round({roundId, tourneyId}) {
+export default function Round({roundId}) {
     const {
         tourney,
         players,
         tourneyDispatch,
         playersDispatch
     } = useTournament();
-    const dispatch = tourneyDispatch;
     const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
@@ -37,22 +36,18 @@ export default function Round({roundId, tourneyId}) {
                 });
             });
         }
-        dispatch({matchId, roundId, tourneyId, type: "DEL_MATCH"});
+        tourneyDispatch({matchId, roundId, type: "DEL_MATCH"});
         setSelectedMatch(null);
     }
 
     function swapColors(matchId) {
-        dispatch({matchId, roundId, tourneyId,  type: "SWAP_COLORS"});
+        tourneyDispatch({matchId, roundId, type: "SWAP_COLORS"});
     }
 
     function moveMatch(matchId, direction) {
         const oldIndex = findIndexById(matchId, matchList);
-        const newIndex = (
-            (oldIndex + direction >= 0)
-            ? oldIndex + direction
-            : 0
-        );
-        dispatch({newIndex, oldIndex, roundId, tourneyId, type: "MOVE_MATCH"});
+        const newIndex = (oldIndex + direction >= 0) ? oldIndex + direction : 0;
+        tourneyDispatch({newIndex, oldIndex, roundId, type: "MOVE_MATCH"});
     }
 
     return (
@@ -87,15 +82,15 @@ export default function Round({roundId, tourneyId}) {
                     <Icons.ArrowDown /> Move down
                 </button>
             </div>
-            {(matchList.length === 0) &&
+            {matchList.length === 0 &&
                 <p>No players matched yet.</p>
             }
             <table className={style.table}>
-                {(matchList.length > 0) &&
+                {matchList.length > 0 &&
                     <caption>Round {roundId + 1} results</caption>
                 }
                 <tbody>
-                    {(matchList.length > 0) &&
+                    {matchList.length > 0 &&
                         <tr>
                             <th className="row__id" scope="col">
                                 #
@@ -122,7 +117,6 @@ export default function Round({roundId, tourneyId}) {
                             roundId={roundId}
                             selectedMatch={selectedMatch}
                             setSelectedMatch={setSelectedMatch}
-                            tourneyId={tourneyId}
                         />
                     ))}
                 </tbody>

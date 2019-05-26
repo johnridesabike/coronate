@@ -11,8 +11,7 @@ export default function Players(props) {
     );
 }
 Players.propTypes = {
-    children: PropTypes.node,
-    path: PropTypes.string
+    children: PropTypes.node
 };
 
 export {PlayerInfo, PlayerList};

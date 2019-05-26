@@ -22,7 +22,7 @@ export default function TournamentList(props) {
 
     return (
         <div>
-            {(Object.keys(tourneys).length > 0) &&
+            {Object.keys(tourneys).length > 0 &&
                 <h2>Tournament list</h2>
             }
             {(Object.keys(tourneys).length > 0)

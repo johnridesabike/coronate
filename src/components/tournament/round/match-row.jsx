@@ -14,7 +14,6 @@ import {winnerSelect} from "./round.module.css";
 export default function MatchRow({
     pos,
     match,
-    tourneyId,
     roundId,
     selectedMatch,
     setSelectedMatch
@@ -197,7 +196,6 @@ export default function MatchRow({
                                 color={0}
                                 matchId={match.id}
                                 roundId={roundId}
-                                tourneyId={tourneyId}
                             />
                         </Panel>
                         <Panel>
@@ -205,7 +203,6 @@ export default function MatchRow({
                                 color={1}
                                 matchId={match.id}
                                 roundId={roundId}
-                                tourneyId={tourneyId}
                             />
                         </Panel>
                     </PanelContainer>

@@ -5,22 +5,18 @@ import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import numeral from "numeral";
-// import {usePlayers} from "../../state";
-// const usePlayers = () => ({});
 
 export default function PlayerInfoBox({playerId}) {
-    // const {playerState, playerDispatch, getPlayer} = usePlayers();
     const [players, playersDispatch] = useAllPlayersDb();
     const player = players[playerId];
     const [options, optionsDispatch] = useOptionsDb();
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, options.avoidPairs)
     );
+    // Memoize this so useEffect doesn't cause a memory leak.
     const unAvoided = useMemo(
-        () => (
-            Object.keys(players).filter(
-                (pId) => !singAvoidList.includes(pId) && pId !== playerId
-            )
+        () => Object.keys(players).filter(
+            (id) => !singAvoidList.includes(id) && id !== playerId
         ),
         [players, playerId, singAvoidList]
     );
@@ -79,8 +75,7 @@ export default function PlayerInfoBox({playerId}) {
         <div>
             <Link to=".."><Icons.ChevronLeft /> Back</Link>
             <h2>
-                Profile for{" "}
-                {player.firstName} {player.lastName}
+                Profile for {player.firstName} {player.lastName}
             </h2>
             <form onChange={handleChange} onSubmit={handleChange}>
                 <p>
@@ -107,9 +102,7 @@ export default function PlayerInfoBox({playerId}) {
                     <label>
                     Matches played{" "}
                         <input
-                            defaultValue={
-                                String(player.matchCount)
-                            }
+                            defaultValue={String(player.matchCount)}
                             name="matchCount"
                             type="number"
                         />
@@ -142,10 +135,9 @@ export default function PlayerInfoBox({playerId}) {
             </form>
             <h3>Players to avoid</h3>
             <ul>
-                {singAvoidList.map((pId) => (
+                {singAvoidList.map((pId) =>
                     <li key={pId}>
-                        {players[pId].firstName}{" "}
-                        {players[pId].lastName}{" "}
+                        {players[pId].firstName} {players[pId].lastName}
                         <button
                             arial-label={`Remove 
 ${players[pId].firstName} ${players[pId].lastName} from avoid list.`}
@@ -153,7 +145,7 @@ ${players[pId].firstName} ${players[pId].lastName} from avoid list.`}
                             title={`Remove ${players[pId].firstName} 
 ${players[pId].lastName}`}
                             onClick={() =>
-                                playersDispatch({
+                                optionsDispatch({
                                     pair: [playerId, pId],
                                     type: "DEL_AVOID_PAIR"
                                 })
@@ -162,10 +154,12 @@ ${players[pId].lastName}`}
                             <Icons.Trash />
                         </button>
                     </li>
-                ))}
-                {singAvoidList.length === 0 && <li>None</li>}
+                )}
+                {singAvoidList.length === 0 &&
+                    <li>None</li>
+                }
             </ul>
-            <form onSubmit={(event) => avoidAdd(event)}>
+            <form onSubmit={avoidAdd}>
                 <fieldset>
                     <legend>Add player to avoid</legend>
                     <select
@@ -175,8 +169,7 @@ ${players[pId].lastName}`}
                     >
                         {unAvoided.map((pId) => (
                             <option key={pId} value={pId}>
-                                {players[pId].firstName}{" "}
-                                {players[pId].lastName}
+                                {players[pId].firstName} {players[pId].lastName}
                             </option>
                         ))}
                     </select>{" "}

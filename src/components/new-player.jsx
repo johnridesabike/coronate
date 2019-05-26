@@ -1,11 +1,8 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
 import {assoc} from "ramda";
-// import {usePlayers} from "../../state";
-// import {useAllPlayersDb} from "../../hooks";
 
 export default function NewPlayer({dispatch}) {
-    // const {playerDispatch} = usePlayers();
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
 
@@ -33,7 +30,8 @@ export default function NewPlayer({dispatch}) {
                             name="firstName"
                             type="text"
                             value={newPlayerData.firstName}
-                            required onChange={updateField}
+                            required
+                            onChange={updateField}
                         />
                     </label>
                 </p>
@@ -44,7 +42,8 @@ export default function NewPlayer({dispatch}) {
                             name="lastName"
                             type="text"
                             value={newPlayerData.lastName}
-                            required onChange={updateField}
+                            required
+                            onChange={updateField}
                         />
                     </label>
                 </p>

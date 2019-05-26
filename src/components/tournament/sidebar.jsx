@@ -27,10 +27,7 @@ export default function Sidebar(props) {
         const results = lastRound.map(
             (match) => match.result[0] + match.result[1]
         );
-        return (
-            Object.keys(unmatched).length === 0
-            && !results.includes(0)
-        );
+        return Object.keys(unmatched).length === 0 && !results.includes(0);
     }());
     useEffect(
         function () {
@@ -42,9 +39,8 @@ export default function Sidebar(props) {
         },
         [tourney.name]
     );
-    const isItOver = (
-        roundList.length >= calcNumOfRounds(Object.keys(players).length)
-    );
+    const roundCount = calcNumOfRounds(Object.keys(players).length);
+    const isItOver = roundList.length >= roundCount;
     const [tooltipText, tooltipWarn] = (function () {
         if (!isNewRoundReady) {
             return [
@@ -59,17 +55,14 @@ export default function Sidebar(props) {
     }());
 
     function newRound() {
-        const confirmText = (
-            "All rounds have completed. Are you sure you want to begin a new "
-            + "one?"
-        );
+        const confirmText = "All rounds have completed. Are you sure you want "
+            + "to begin a new one?";
         if (isItOver) {
             if (!window.confirm(confirmText)) {
                 return;
             }
         }
         tourneyDispatch({type: "ADD_ROUND"});
-        return;
     }
 
     async function delLastRound() {
@@ -165,8 +158,7 @@ export default function Sidebar(props) {
                     </button>
                 </li>
                 <li>
-                Round progress: {roundList.length}/
-                    {calcNumOfRounds(Object.keys(players).length)}{" "}
+                    Round progress: {roundList.length}/{roundCount}
                 </li>
             </ul>
         </div>
