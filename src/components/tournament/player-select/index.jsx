@@ -22,8 +22,7 @@ export default function PlayerSelect(props) {
                     <caption>Current roster</caption>
                     <thead>
                         <tr>
-                            <th>First name</th>
-                            <th>Last name</th>
+                            <th colSpan={2}>Name</th>
                             <th>Options</th>
                         </tr>
                     </thead>

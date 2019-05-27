@@ -1,6 +1,11 @@
+import Crosstable from "./crosstable";
 import Header from "./header";
+import PlayerSelect from "./player-select";
 import PropTypes from "prop-types";
 import React from "react";
+import Round from "./round";
+import {Router} from "@reach/router";
+import Scores from "./scores";
 import Sidebar from "./sidebar";
 import {TournamentProvider} from "../../hooks";
 import styles from "./tournament.module.css";
@@ -12,7 +17,12 @@ export default function Tournament(props) {
                 <Header className={styles.header} />
                 <Sidebar className={styles.sidebar} navigate={props.navigate} />
                 <div className={styles.content}>
-                    {props.children}
+                    <Router>
+                        <PlayerSelect path="/" />
+                        <Crosstable path="crosstable" />
+                        <Scores path="scores" />
+                        <Round path=":roundId" />
+                    </Router>
                 </div>
             </div>
         </TournamentProvider>

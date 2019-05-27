@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useAllPlayersDb, useAllTournamentsDb, useOptionsDb} from "../hooks";
 import demoData from "../demo-data";
 
-export function Options(props) {
+export default function Options(props) {
     const [tourneys, tourneysDispatch] = useAllTournamentsDb();
     const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");

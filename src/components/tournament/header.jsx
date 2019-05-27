@@ -9,11 +9,11 @@ export default function Header(props) {
     return (
         <div className={props.className}>
             <nav>
-                <Link to="/">
+                <Link to="..">
                     <Icons.ChevronLeft/> Back
                 </Link>
             </nav>
-            <h2>{tourney.name}</h2>
+            <h1>{tourney.name}</h1>
         </div>
     );
 }

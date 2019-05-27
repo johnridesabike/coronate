@@ -1,0 +1,21 @@
+.splash {
+    display: flex;
+    flex-flow: column;
+    align-content: center;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.hint {
+    font-size: 0.8em;
+}
+
+.footer {
+    text-align: right;
+    font-size: 0.8em;
+}
+
+.title {
+    opacity: 0.8;
+    font-size: 2em;
+}

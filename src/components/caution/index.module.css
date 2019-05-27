@@ -9,6 +9,7 @@
     align-items: center;
     font-weight: 700;
     background-image: url("./caution.svg");
+    border-bottom: 1px slategray solid;
 }
   
 .caution__text {

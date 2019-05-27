@@ -4,24 +4,20 @@ import "side-effects";
 import {
     Link,
     LocationProvider,
-    Redirect,
     Router,
     createHistory
 } from "@reach/router";
-import Players, {PlayerInfo, PlayerList} from "./components/players";
 import TournamentIndex, {
-    Crosstable,
-    PlayerSelect,
-    Round,
-    Scores,
     Tournament,
     TournamentList
 } from "./components/tournament";
 import About from "./components/about";
 import Caution from "./components/caution";
 import NotFound from "./components/404";
-import {Options} from "./components/options";
+import Options from "./components/options";
+import Players from "./components/players";
 import React from "react";
+import Splash from "./components/splash";
 import createHashSource from "hash-source";
 import {link} from "./App.module.css";
 // These are just for deploying to GitHub pages.
@@ -33,12 +29,8 @@ let history = createHistory(source);
 function App() {
     return (
         <div className="app">
-            <Caution />
             <LocationProvider history={history}>
                 <header className="header">
-                    <h1>
-                        ♘ Chessahoochee: <small>a chess tournament app.</small>
-                    </h1>
                     <nav>
                         <Link className={link} to="tourneys">
                             Tournaments
@@ -56,26 +48,21 @@ function App() {
                 </header>
                 <main className="content">
                     <Router>
+                        <Splash path="/" />
                         <TournamentIndex path="tourneys">
                             <TournamentList path="/" />
-                            <Tournament path=":tourneyId">
-                                <PlayerSelect path="/" />
-                                <Crosstable path="crosstable" />
-                                <Scores path="scores" />
-                                <Round path=":roundId" />
-                            </Tournament>
+                            <Tournament path=":tourneyId/*" />
                         </TournamentIndex>
-                        <Players path="players">
-                            <PlayerList path="/"/>
-                            <PlayerInfo path=":playerId" />
-                        </Players>
+                        <Players path="players/*" />
                         <Options path="options" />
                         <About path="about" />
                         <NotFound default />
-                        <Redirect from="/" to="tourneys" noThrow />
                     </Router>
                 </main>
             </LocationProvider>
+            <footer className="footer">
+                <Caution />
+            </footer>
         </div>
     );
 }

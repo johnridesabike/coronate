@@ -62,7 +62,7 @@ export default function Crosstable(props) {
                 {/* Output a row for each player */}
                 {standings.map((standing, index)=>
                     <tr key={index} className={style.row}>
-                        <th scope="col">
+                        <th className={style.rank} scope="col">
                             {index + 1}
                         </th>
                         <th className={style.playerName} scope="row">

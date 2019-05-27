@@ -8,7 +8,7 @@ import Tournament from "./tournament";
 import TournamentList from "./tournament-list";
 
 const TournamentIndex = (props) => (
-    <div>
+    <div className="passthrough">
         {props.children}
     </div>
 );

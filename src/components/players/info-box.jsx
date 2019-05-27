@@ -1,15 +1,19 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
-import {useAllPlayersDb, useOptionsDb} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import numeral from "numeral";
+import styles from "./index.module.css";
 
-export default function PlayerInfoBox({playerId}) {
-    const [players, playersDispatch] = useAllPlayersDb();
+export default function PlayerInfoBox({
+    playerId,
+    players,
+    playersDispatch,
+    options,
+    optionsDispatch
+}) {
     const player = players[playerId];
-    const [options, optionsDispatch] = useOptionsDb();
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, options.avoidPairs)
     );
@@ -72,7 +76,7 @@ export default function PlayerInfoBox({playerId}) {
         return <div>Loading...</div>;
     }
     return (
-        <div>
+        <div className={styles.playerInfo}>
             <Link to=".."><Icons.ChevronLeft /> Back</Link>
             <h2>
                 Profile for {player.firstName} {player.lastName}
@@ -180,5 +184,9 @@ ${players[pId].lastName}`}
     );
 }
 PlayerInfoBox.propTypes = {
-    playerId: PropTypes.string
+    options: PropTypes.object.isRequired,
+    optionsDispatch: PropTypes.func.isRequired,
+    playerId: PropTypes.string.isRequired,
+    players: PropTypes.object.isRequired,
+    playersDispatch: PropTypes.object.isRequired
 };

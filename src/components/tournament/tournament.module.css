@@ -1,7 +1,10 @@
 @media screen and (min-width: 600px) {
     .tournament {
+        width: 100%;
+        height: 100%;
         display: grid;
-        grid-template-columns: 250px auto;
+        grid-template-columns: 11em auto;
+        grid-template-rows: max-content auto;
         grid-template-areas:
             "header header"
             "sidebar content"
@@ -10,11 +13,20 @@
 
 .header {
     grid-area: header;
+    background-color: whitesmoke;
+    border-bottom: 1px slategray solid;
+}
+
+.header h1 {
+    text-align: center;
+    font-size: 1.5em;
 }
 
 .sidebar {
     grid-area: sidebar;
-    margin-right: 0.5em;
+    background-color: whitesmoke;
+    border-right: 1px slategray solid;
+    padding: 0.5em;
 }
 
 .sidebar ul {
@@ -24,4 +36,9 @@
 
 .content {
     grid-area: content;
+    overflow: auto;
+}
+
+.content [data-reach-tab-list] {
+    padding: 0.25em 0.25em 0 0.25em;
 }

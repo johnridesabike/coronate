@@ -15,11 +15,6 @@
     width: min-content;
 }
 
-.table td,
-.table th {
-    padding: 0.25em;
-}
-
 .row td,
 .row th {
     border-width: 1px;
@@ -29,10 +24,12 @@
 
 .playerName {
     text-align: left;
+    color: black;
 }
 
 .rank {
     text-align: center;
+    color: black;
 }
 
 .table :global(.table__number) {

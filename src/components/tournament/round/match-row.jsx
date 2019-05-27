@@ -38,16 +38,10 @@ export default function MatchRow({
             return "NOTSET";
         }
     }());
-    const whiteName = (
-        getPlayer(match.playerIds[0]).firstName
-        + " "
-        + getPlayer(match.playerIds[0]).lastName
-    );
-    const blackName = (
-        getPlayer(match.playerIds[1]).firstName
-        + " "
-        + getPlayer(match.playerIds[1]).lastName
-    );
+    const whitePlayer = getPlayer(match.playerIds[WHITE]);
+    const blackPlayer = getPlayer(match.playerIds[BLACK]);
+    const whiteName = whitePlayer.firstName + " " + whitePlayer.lastName;
+    const blackName = blackPlayer.firstName + " " + blackPlayer.lastName;
 
     function setMatchResult(event) {
         const result = (function () {
@@ -111,7 +105,7 @@ export default function MatchRow({
         <tr className={match.id === selectedMatch ? "selected" : ""}>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
             <td
-                className="table__player row__player"
+                className={"table__player row__player " + whitePlayer.type}
                 data-testid={`match-${pos}-white`}
             >
                 {whiteName}{" "}
@@ -122,7 +116,7 @@ export default function MatchRow({
                 )}
             </td>
             <td
-                className="table__player row__player"
+                className={"table__player row__player " + blackPlayer.type}
                 data-testid={`match-${pos}-black`}
             >
                 {blackName}{" "}
