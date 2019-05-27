@@ -1,18 +1,20 @@
-import React from "react";
-import PropTypes from "prop-types";
+import {useAllPlayersDb, useOptionsDb} from "../../hooks";
 import PlayerInfo from "./info-box";
-import PlayerList from "./list";
+import PlayerList from "./player-list";
+import React from "react";
+import {Router} from "@reach/router";
 
 export default function Players(props) {
+    const [players, playersDispatch] = useAllPlayersDb();
+    const [options, optionsDispatch] = useOptionsDb();
+    const childProps = {options, optionsDispatch, players, playersDispatch};
     return (
-        <div>
-            {props.children}
-        </div>
+        <Router basepath="players">
+            <PlayerList path="/" {...childProps} />
+            <PlayerInfo path=":playerId" {...childProps} />
+        </Router>
     );
 }
-Players.propTypes = {
-    children: PropTypes.node,
-    path: PropTypes.string
-};
+Players.propTypes = {};
 
 export {PlayerInfo, PlayerList};

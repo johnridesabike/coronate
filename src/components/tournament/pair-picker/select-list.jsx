@@ -1,22 +1,22 @@
+import {BLACK, DUMMY_ID, WHITE, dummyPlayer} from "../../../data-types";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
-import {set, lensIndex, append} from "ramda";
+import {assoc, lensIndex, set} from "ramda";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
+import PropTypes from "prop-types";
 import Selecting from "../player-select/selecting";
-import {useRound, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK, DUMMY_ID} from "../../../data-types";
+import {getUnmatched} from "../../../pairing-scoring";
 
-export default function SelectList({
-    tourneyId,
-    roundId,
-    stagedPlayers,
-    setStagedPlayers
-}) {
-    const {dispatch, unmatched} = useRound(tourneyId, roundId);
-    const {playerState, getPlayer} = usePlayers();
-    const [{byeValue}] = useOptions();
+export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
+    const {tourney, players, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
+    // only use unmatched players if this is the last round.
+    const unmatched = (roundId === tourney.roundList.length - 1)
+        ? getUnmatched(tourney, players, roundId)
+        : {};
+    const [options] = useOptionsDb();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     function selectPlayer(id) {
@@ -32,27 +32,28 @@ export default function SelectList({
         // else... nothing happens
     }
 
+    const unmatchedCount = Object.keys(unmatched).length;
+
     // make a new list so as not to affect auto-pairing
     const unmatchedWithDummy = (
-        (unmatched.length % 2 !== 0)
-        ? append(DUMMY_ID, unmatched)
+        (unmatchedCount % 2 !== 0)
+        ? assoc(DUMMY_ID, dummyPlayer, unmatched)
         : unmatched
     );
-    if (unmatched.length === 0) {
+    if (unmatchedCount === 0) {
         return null;
     }
     return (
         <div>
             <button
+                disabled={unmatchedCount === 0}
                 onClick={() => dispatch({
-                    type: "AUTO_PAIR",
-                    unpairedPlayers: unmatched,
-                    tourneyId,
+                    avoidList: options.avoidPairs,
+                    byeValue: options.byeValue,
+                    players: unmatched,
                     roundId,
-                    playerState,
-                    byeValue
+                    type: "AUTO_PAIR"
                 })}
-                disabled={unmatched.length === 0}
             >
                 Auto-pair unmatched players
             </button><br/>
@@ -60,36 +61,36 @@ export default function SelectList({
                 Add or remove players from the roster.
             </button>
             <ul>
-                {unmatchedWithDummy.map((pId) => (
-                    <li key={pId}>
-                        {stagedPlayers.includes(pId)
-                        ? <button disabled>Selected</button>
-                        : (
-                            <button
-                                disabled={!stagedPlayers.includes(null)}
-                                onClick={() => selectPlayer(pId)}
-                            >
-                                <Icons.UserPlus/>
-                                <Hidden>
-                                    Select {getPlayer(pId).firstName}{" "}
-                                    {getPlayer(pId).lastName}
-                                </Hidden>
-                            </button>
-                        )}{" "}
-                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
-                    </li>
-                ))}
+                {Object.values(unmatchedWithDummy).map(
+                    ({id, firstName, lastName}) => (
+                        <li key={id}>
+                            {stagedPlayers.includes(id)
+                            ? <button disabled>Selected</button>
+                            : (
+                                <button
+                                    disabled={!stagedPlayers.includes(null)}
+                                    onClick={() => selectPlayer(id)}
+                                >
+                                    <Icons.UserPlus/>
+                                    <Hidden>
+                                        Select {firstName} {lastName}
+                                    </Hidden>
+                                </button>
+                            )}{" "}
+                            {firstName} {lastName}
+                        </li>
+                    )
+                )}
             </ul>
             <Dialog isOpen={isModalOpen}>
                 <button onClick={() => setIsModalOpen(false)}>Done</button>
-                <Selecting tourneyId={tourneyId} />
+                <Selecting />
             </Dialog>
         </div>
     );
 }
 SelectList.propTypes = {
-    tourneyId: PropTypes.number,
     roundId: PropTypes.number,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.number),
-    setStagedPlayers: PropTypes.func
+    setStagedPlayers: PropTypes.func,
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string)
 };

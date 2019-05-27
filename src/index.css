@@ -1,10 +1,24 @@
+/*******************************************************************************
+ * Setup
+ ******************************************************************************/
 @import-normalize;
+
+:root {
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
+        "Courier New", monospace;
+    --color-primary-light: #86A666;
+    --color-primary-dark: #393E41;
+    --color-secondary-light: #FBFEF9;
+    --color-secondary-dark: #E6E8E6;
+    --color-tertiary: #0E79B2;
+}
 
 html {
     font-size: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
+    font-family: var(--font-main);
 }
 
 body {
@@ -12,40 +26,67 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* height: 100vh;
-  width: 100vw; */
-  /* overflow: hidden; */
+  height: 100vh;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+#root {
+    height: 100vh;
 }
 
 a {
-  color: blue;
+  color: var(--color-primary-dark);
   text-decoration: none;
 }
 
 a:hover {
-  color: skyblue;
+    color: var(--color-primary-light);
 }
 
-/* .app {
-    overflow: visible; /* required for position:sticky *//*
-} */
+p a {
+    color: var(--color-tertiary);
+}
+
+/*******************************************************************************
+ * Layout
+ ******************************************************************************/
+.app {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+    grid-template-areas:
+        "app-header"
+        "app-content"
+        "app-footer";
+}
 
 .header {
-    /* position: sticky; */
-    top: 0;
-    background-color: white !important;
+    grid-area: app-header;
+    background-color: var(--color-secondary-dark);
+    border-bottom: 1px var(--color-primary-dark) solid;
 }
 
 .content {
-    padding: 1em;
+    grid-area: app-content;
     overflow: auto;
 }
 
+.content > div[role="group"] {
+    height: 100%;
+}
+
+.footer {
+    grid-area: app-footer;
+}
+
+.passthrough,
+.passthrough > div[role="group"] {
+    width: 100%;
+    height: 100%;
+}
+
+/*******************************************************************************
+ * Typography
+ ******************************************************************************/
 h1 {
     font-size: 1.5em;
     font-weight: 400;
@@ -55,17 +96,38 @@ h1 {
 
 h2 {
     font-size: 1.25em;
-    font-weight: 700;
+    font-weight: 400;
 }
 
 h3 {
     font-weight: 1.125em;
-    font-weight: 700;
+    font-weight: 400;
+}
+
+code {
+  font-family: var(--font-monospace);
+}
+
+/*******************************************************************************
+ * Tables
+ ******************************************************************************/
+table {
+    border-collapse: collapse;
+    margin: auto;
 }
 
 caption {
-    font-size: 1.125em;
-    font-weight: 700;
+    font-size: 1.25em;
+    font-weight: 400;
+}
+
+th {
+    color: var(--color-primary-dark);
+    font-weight: 400;
+}
+
+th, td {
+    padding: 0.25em 0.25em;
 }
 
 .table__number {
@@ -104,6 +166,7 @@ textarea {
 
 textarea.json {
     font-family: "Fira Code", Menlo, Monaco, "Courier New", monospace;
+    white-space: pre;
 }
 
 
@@ -139,4 +202,9 @@ svg {
 
 .selected {
     background-color: lightblue;
+}
+
+.svg-icon {
+    height: 1em;
+    width: auto;
 }

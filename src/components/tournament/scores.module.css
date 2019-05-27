@@ -2,22 +2,12 @@
     border-collapse: collapse;
 }
 
-.table caption {
-    font-size: 1.125em;
-    font-weight: 700;
-}
-
 .topHeader {
     vertical-align: bottom;
 }
 
 .table {
     width: min-content;
-}
-
-.table td,
-.table th {
-    padding: 0.25em;
 }
 
 .row td,
@@ -29,10 +19,12 @@
 
 .playerName {
     text-align: left;
+    color: black;
 }
 
 .rank {
     text-align: center;
+    color: black;
 }
 
 .table :global(.table__number) {

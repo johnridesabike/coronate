@@ -1,9 +1,8 @@
 import React, {useState} from "react";
-import {usePlayers} from "../../state";
+import PropTypes from "prop-types";
 import {assoc} from "ramda";
 
-export default function NewPlayer() {
-    const {playerDispatch} = usePlayers();
+export default function NewPlayer({dispatch}) {
     const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
     const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
 
@@ -11,7 +10,7 @@ export default function NewPlayer() {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
         setNewPlayerdata(newPlayerDefault);
-        playerDispatch({type: "ADD_PLAYER", firstName, lastName, rating});
+        dispatch({firstName, lastName, rating, type: "ADD_PLAYER"});
     };
 
     const updateField = function (event) {
@@ -27,18 +26,24 @@ export default function NewPlayer() {
                 <p>
                     <label>
                         First name{" "}
-                        <input type="text" name="firstName"
+                        <input
+                            name="firstName"
+                            type="text"
+                            value={newPlayerData.firstName}
+                            required
                             onChange={updateField}
-                            value={newPlayerData.firstName} required
                         />
                     </label>
                 </p>
                 <p>
                     <label>
                         Last name{" "}
-                        <input type="text" name="lastName"
+                        <input
+                            name="lastName"
+                            type="text"
+                            value={newPlayerData.lastName}
+                            required
                             onChange={updateField}
-                            value={newPlayerData.lastName} required
                         />
                     </label>
                 </p>
@@ -46,11 +51,11 @@ export default function NewPlayer() {
                     <label>
                         Rating {" "}
                         <input
-                            type="number"
                             name="rating"
-                            onChange={updateField}
+                            type="number"
                             value={newPlayerData.rating}
                             required
+                            onChange={updateField}
                         />
                     </label>
                 </p>
@@ -61,3 +66,6 @@ export default function NewPlayer() {
         </form>
     );
 }
+NewPlayer.propTypes = {
+    dispatch: PropTypes.func.isRequired
+};

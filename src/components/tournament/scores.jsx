@@ -1,20 +1,20 @@
 import React, {useState} from "react";
-import numeral from "numeral";
-import dashify from "dashify";
-import {defaultTo} from "ramda";
-import PropTypes from "prop-types";
-import Icons from "../icons";
-import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
-import {useTournament, usePlayers} from "../../state";
+import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
     createStandingTree,
     tieBreakMethods
 } from "../../pairing-scoring";
+import Icons from "../icons";
+import PropTypes from "prop-types";
+import dashify from "dashify";
+import {defaultTo} from "ramda";
+import numeral from "numeral";
 import style from "./scores.module.css";
+import {useTournament} from "../../hooks";
 
-function ScoreTable({tourneyId}) {
-    const [{tieBreaks, roundList}] = useTournament(tourneyId);
-    const {getPlayer} = usePlayers();
+function ScoreTable(props) {
+    const {tourney, getPlayer} = useTournament();
+    const {tieBreaks, roundList} = tourney;
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>
@@ -35,17 +35,17 @@ function ScoreTable({tourneyId}) {
                         <tr key={standing.id} className={style.row}>
                             {j === 0 && ( // Only display the rank once
                                 <th
-                                    scope="row"
                                     className={"table__number " + style.rank}
                                     rowSpan={src.length}
+                                    scope="row"
                                 >
                                     {numeral(rank + 1).format("0o")}
                                 </th>
                             )}
                             <th
-                                scope="row"
                                 className={style.playerName}
                                 data-testid={rank}
+                                scope="row"
                             >
                                 {getPlayer(standing.id).firstName}&nbsp;
                                 {getPlayer(standing.id).lastName}
@@ -80,31 +80,30 @@ function ScoreTable({tourneyId}) {
         </table>
     );
 }
-ScoreTable.propTypes = {
-    tourneyId: PropTypes.number.isRequired
-};
+ScoreTable.propTypes = {};
 
-function SelectTieBreaks({tourneyId}) {
-    const [{tieBreaks}, dispatch] = useTournament(tourneyId);
+function SelectTieBreaks(props) {
+    const {tourney, tourneyDispatch} = useTournament();
+    const dispatch = tourneyDispatch;
+    const {tieBreaks} = tourney;
     const [selectedTb, setSelectedTb] = useState(null);
 
     function toggleTb(id = null) {
         const defaultId = defaultTo(selectedTb);
         if (tieBreaks.includes(defaultId(id))) {
-            dispatch({type: "DEL_TIEBREAK", id: defaultId(id), tourneyId});
+            dispatch({id: defaultId(id), type: "DEL_TIEBREAK"});
             setSelectedTb(null);
         } else {
-            dispatch({type: "ADD_TIEBREAK", id: defaultId(id), tourneyId});
+            dispatch({id: defaultId(id), type: "ADD_TIEBREAK"});
         }
     }
 
     function moveTb(direction) {
         const index = tieBreaks.indexOf(selectedTb);
         dispatch({
-            type: "MOVE_TIEBREAK",
-            oldIndex: index,
             newIndex: index + direction,
-            tourneyId
+            oldIndex: index,
+            type: "MOVE_TIEBREAK"
         });
     }
 
@@ -113,26 +112,26 @@ function SelectTieBreaks({tourneyId}) {
             <h3>Selected tiebreak methods</h3>
             <div className="toolbar">
                 <button
-                    onClick={() => toggleTb()}
                     disabled={selectedTb === null}
+                    onClick={() => toggleTb()}
                 >
                     Toggle
                 </button>
                 <button
-                    onClick={() => moveTb(-1)}
                     disabled={selectedTb === null}
+                    onClick={() => moveTb(-1)}
                 >
                     <Icons.ArrowUp/> Move up
                 </button>
                 <button
-                    onClick={() => moveTb(1)}
                     disabled={selectedTb === null}
+                    onClick={() => moveTb(1)}
                 >
                     <Icons.ArrowDown/> Move down
                 </button>
                 <button
-                    onClick={() => setSelectedTb(null)}
                     disabled={selectedTb === null}
+                    onClick={() => setSelectedTb(null)}
                 >
                     Done
                 </button>
@@ -145,13 +144,13 @@ function SelectTieBreaks({tourneyId}) {
                     >
                         {tieBreakMethods[id].name}{" "}
                         <button
+                            disabled={
+                                selectedTb !== null && selectedTb !== id
+                            }
                             onClick={() =>
                                 selectedTb === id
                                     ? setSelectedTb(null)
                                     : setSelectedTb(id)
-                            }
-                            disabled={
-                                selectedTb !== null && selectedTb !== id
                             }
                         >
                             {selectedTb === id ? "Done" : "Edit"}
@@ -161,7 +160,7 @@ function SelectTieBreaks({tourneyId}) {
             </ol>
             <h3>Available tiebreak methods</h3>
             <ol>
-                {tieBreakMethods.map((method, id) => (
+                {Object.values(tieBreakMethods).map(({name, id}) => (
                     <li key={id}>
                         <span
                             className={
@@ -170,7 +169,7 @@ function SelectTieBreaks({tourneyId}) {
                                     : "disabled"
                             }
                         >
-                            {method.name}
+                            {name}
                         </span>
                         {!tieBreaks.includes(id) && (
                             <button onClick={() => toggleTb(id)}>
@@ -183,11 +182,9 @@ function SelectTieBreaks({tourneyId}) {
         </div>
     );
 }
-SelectTieBreaks.propTypes = {
-    tourneyId: PropTypes.number.isRequired
-};
+SelectTieBreaks.propTypes = {};
 
-const Scores = ({tourneyId}) => (
+const Scores = (props) => (
     <Tabs>
         <TabList>
             <Tab><Icons.List /> Scores</Tab>
@@ -195,16 +192,15 @@ const Scores = ({tourneyId}) => (
         </TabList>
         <TabPanels>
             <TabPanel>
-                <ScoreTable tourneyId={Number(tourneyId)}/>
+                <ScoreTable />
             </TabPanel>
             <TabPanel>
-                <SelectTieBreaks tourneyId={Number(tourneyId)} />
+                <SelectTieBreaks />
             </TabPanel>
         </TabPanels>
     </Tabs>
 );
 Scores.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     path: PropTypes.string
 };
 

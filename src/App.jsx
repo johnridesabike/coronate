@@ -1,28 +1,25 @@
-import React from "react";
-import {
-    Router,
-    Link,
-    LocationProvider,
-    createHistory,
-    Redirect
-} from "@reach/router";
-import createHashSource from "hash-source";
-import About from "./components/about";
-import NotFound from "./components/404";
-import TournamentIndex from "./components/tournament";
-import {TournamentList, Tournament} from "./components/tournament";
-import Players, {PlayerList, PlayerInfo} from "./components/players";
-import Scores from "./components/tournament/scores";
-import PlayerSelect from "./components/tournament/player-select";
-import Crosstable from "./components/tournament/crosstable";
-import Round from "./components/tournament/round";
-import {Options} from "./components/options";
-import Caution from "./components/caution";
-import {OptionsProvider, TournamentProvider, PlayersProvider} from "./state";
-import "side-effects";
 import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
-import {link} from "./App.module.css";
+import "side-effects";
+import {
+    Link,
+    LocationProvider,
+    Router,
+    createHistory
+} from "@reach/router";
+import TournamentIndex, {
+    Tournament,
+    TournamentList
+} from "./components/tournament";
+import {link, mainMenu} from "./App.module.css";
+import Caution from "./components/caution";
+import NotFound from "./components/404";
+import Options from "./components/options";
+import Players from "./components/players";
+import React from "react";
+import Splash from "./components/splash";
+import createHashSource from "hash-source";
+import {useDocumentTitle} from "./hooks";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
 let history = createHistory(source);
@@ -30,58 +27,42 @@ let history = createHistory(source);
 // const electron = window.require("electron");
 
 function App() {
+    useDocumentTitle("a chess tournament app");
     return (
         <div className="app">
-            <Caution />
             <LocationProvider history={history}>
                 <header className="header">
-                    <h1>
-                        ♘ Chessahoochee: <small>a chess tournament app.</small>
-                    </h1>
-                    <nav>
-                        <Link to="tourneys" className={link}>
+                    <nav className={mainMenu}>
+                        <Link className={link} to="tourneys">
                             Tournaments
                         </Link>
-                        <Link to="players" className={link}>
+                        <Link className={link} to="players">
                             Players
                         </Link>
-                        <Link to="options" className={link}>
+                        <Link className={link} to="options">
                             Options
                         </Link>
-                        <Link to="about" className={link}>
+                        <Link className={link} to="/">
                             About
                         </Link>
                     </nav>
                 </header>
                 <main className="content">
-                    {/* Lots of nested contexts. Is there a better way? */}
-                    <OptionsProvider>
-                        <PlayersProvider>
-                            <TournamentProvider>
-                                <Router>
-                                    <TournamentIndex path="tourneys">
-                                        <TournamentList path="/" />
-                                        <Tournament path=":tourneyId">
-                                            <PlayerSelect path="/" />
-                                            <Crosstable path="crosstable" />
-                                            <Scores path="scores" />
-                                            <Round path=":roundId" />
-                                        </Tournament>
-                                    </TournamentIndex>
-                                    <Players path="players">
-                                        <PlayerList path="/"/>
-                                        <PlayerInfo path=":playerId" />
-                                    </Players>
-                                    <Options path="options" />
-                                    <About path="about" />
-                                    <NotFound default />
-                                    <Redirect from="/" to="tourneys" noThrow />
-                                </Router>
-                            </TournamentProvider>
-                        </PlayersProvider>
-                    </OptionsProvider>
+                    <Router>
+                        <Splash path="/" />
+                        <TournamentIndex path="tourneys">
+                            <TournamentList path="/" />
+                            <Tournament path=":tourneyId/*" />
+                        </TournamentIndex>
+                        <Players path="players/*" />
+                        <Options path="options" />
+                        <NotFound default />
+                    </Router>
                 </main>
             </LocationProvider>
+            <footer className="footer">
+                <Caution />
+            </footer>
         </div>
     );
 }

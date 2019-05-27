@@ -1,46 +1,33 @@
-// TODO: This component is in need of a major cleanup. I made this way too
-// complex and fragile.
-import React, {useMemo} from "react";
-import PropTypes from "prop-types";
-import numeral from "numeral";
-import {assoc} from "ramda";
-import Icons from "../icons";
-import {useTournament, usePlayers} from "../../state";
 import {
     createStandingList,
-    getResultsByOpponent,
     getPerformanceRatings,
+    getResultsByOpponent,
     rounds2Matches
 } from "../../pairing-scoring";
+import Icons from "../icons";
+import PropTypes from "prop-types";
+import React from "react";
+import {assoc} from "ramda";
+import numeral from "numeral";
 import style from "./scores.module.css";
+import {useTournament} from "../../hooks";
 
-export default function Crosstable({tourneyId}) {
-    const [{tieBreaks, roundList}] = useTournament(Number(tourneyId));
-    const {getPlayer} = usePlayers();
-    const [standings, opponentScores] = useMemo(
-        function () {
-            const [standingsFlat] = createStandingList(tieBreaks, roundList);
-            const matches = rounds2Matches(roundList);
-            const opponentResults = standingsFlat.reduce(
-                (acc, standing) => (
-                    assoc(
-                        String(standing.id),
-                        getResultsByOpponent(standing.id, matches),
-                        acc
-                    )
-                ),
-                {}
-            );
-            return [standingsFlat, opponentResults];
-        },
-        [roundList, tieBreaks]
+export default function Crosstable(props) {
+    const {tourney, getPlayer} = useTournament();
+    const {tieBreaks, roundList} = tourney;
+    const matches = rounds2Matches(roundList);
+    const oppResults = (id) => getResultsByOpponent(matches, id); // curry
+    const [standings] = createStandingList(tieBreaks, roundList);
+    const opponentScores = standings.reduce(
+        (acc, {id}) => assoc(id, oppResults(id), acc),
+        {}
     );
 
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {
             return <Icons.X/>;
         }
-        const result = opponentScores[String(player1Id)][player2Id];
+        const result = opponentScores[player1Id][player2Id];
         if (result === undefined) {
             return null;
         }
@@ -48,14 +35,14 @@ export default function Crosstable({tourneyId}) {
     }
 
     function getRatingChange(playerId) {
-        const matches = rounds2Matches(roundList);
         const [
             firstRating,
             lastRating
-        ] = getPerformanceRatings(playerId, matches);
+        ] = getPerformanceRatings(matches, playerId);
         const change = numeral(lastRating - firstRating).format("+0");
         return `${lastRating}\xA0(${change})`; // \xA0 = &nsbp;
     }
+
     return (
         <table className={style.table}>
             <caption>Crosstable</caption>
@@ -63,37 +50,33 @@ export default function Crosstable({tourneyId}) {
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
-                    {standings.map((ignore, index) =>
-                        <th key={index}>
-                            {index + 1}
+                    {/* Display a rank as a shorthand for each player. */}
+                    {Object.keys(standings).map((rank) =>
+                        <th key={rank}>
+                            {Number(rank) + 1}
                         </th>
                     )}
                     <th>Score</th>
                     <th>Rating</th>
                 </tr>
+                {/* Output a row for each player */}
                 {standings.map((standing, index)=>
                     <tr key={index} className={style.row}>
-                        <th scope="col">
+                        <th className={style.rank} scope="col">
                             {index + 1}
                         </th>
-                        <th
-                            scope="row"
-                            className={style.playerName}
-                        >
+                        <th className={style.playerName} scope="row">
                             {getPlayer(standing.id).firstName}&nbsp;
                             {getPlayer(standing.id).lastName}
                         </th>
+                        {/* Output a cell for each other player */}
                         {standings.map((opponent, index2) =>
-                            <td
-                                key={index2}
-                                className="table__number"
-                            >
+                            <td key={index2} className="table__number">
                                 {getXScore(standing.id, opponent.id)}
                             </td>
                         )}
-                        <td
-                            className="table__number"
-                        >
+                        {/* Output their score and rating change */}
+                        <td className="table__number">
                             {numeral(standing.score).format("1/2")}
                         </td>
                         <td className="table__number">
@@ -106,6 +89,5 @@ export default function Crosstable({tourneyId}) {
     );
 }
 Crosstable.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    path: PropTypes.string
+    tourneyId: PropTypes.string
 };

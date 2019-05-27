@@ -1,25 +1,22 @@
+import {useAllPlayersDb, useTournament} from "../../../hooks";
+import NewPlayer from "../../new-player";
 import React from "react";
-import PropTypes from "prop-types";
-import NewPlayer from "../../players/new-player";
-import {useTournament, usePlayers} from "../../../state";
 
-export default function Selecting({tourneyId}) {
-    const [{players}, dispatch] = useTournament(tourneyId);
-    const {playerState, getPlayer} = usePlayers();
+export default function Selecting(props) {
+    const {tourney, tourneyDispatch} = useTournament();
+    const [players, allPlayersDispatch] = useAllPlayersDb();
 
     function togglePlayer(event) {
-        const id = Number(event.target.value);
+        const id = event.target.value;
         if (event.target.checked) {
-            dispatch({
-                type: "SET_TOURNEY_PLAYERS",
-                players: players.concat([id]),
-                tourneyId
+            tourneyDispatch({
+                playerIds: tourney.playerIds.concat([id]),
+                type: "SET_TOURNEY_PLAYERS"
             });
         } else {
-            dispatch({
-                type: "SET_TOURNEY_PLAYERS",
-                players: players.filter((pId) => pId !== id),
-                tourneyId
+            tourneyDispatch({
+                playerIds: tourney.playerIds.filter((pId) => pId !== id),
+                type: "SET_TOURNEY_PLAYERS"
             });
         }
     }
@@ -27,32 +24,21 @@ export default function Selecting({tourneyId}) {
     return (
         <div>
             <button
-                onClick={() =>
-                    dispatch({
-                        type: "SET_TOURNEY_PLAYERS",
-                        players: playerState.players.map(
-                            (p) => p.id
-                        ),
-                        tourneyId
-                    })
-                }
+                onClick={() => tourneyDispatch({
+                    playerIds: Object.keys(players),
+                    type: "SET_TOURNEY_PLAYERS"
+                })}
             >
                 Select all
             </button>
             <button
-                onClick={() =>
-                    dispatch({
-                        type: "SET_TOURNEY_PLAYERS",
-                        players: [],
-                        tourneyId
-                    })
-                }
+                onClick={() => tourneyDispatch({
+                    playerIds: [],
+                    type: "SET_TOURNEY_PLAYERS"
+                })}
             >
                 Select none
             </button>
-            {/* <button onClick={() => setIsSelecting(false)}>
-                Done
-            </button> */}
             <table>
                 <caption>Select players</caption>
                 <thead>
@@ -63,26 +49,24 @@ export default function Selecting({tourneyId}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {playerState.players.map(({id}) => (
+                    {Object.values(players).map(({id, firstName, lastName}) =>
                         <tr key={id}>
-                            <td>{getPlayer(id).firstName}</td>
-                            <td>{getPlayer(id).lastName}</td>
+                            <td>{firstName}</td>
+                            <td>{lastName}</td>
                             <td>
                                 <input
+                                    checked={tourney.playerIds.includes(id)}
                                     type="checkbox"
                                     value={id}
-                                    checked={players.includes(id)}
                                     onChange={togglePlayer}
                                 />
                             </td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
-            <NewPlayer />
+            <NewPlayer dispatch={allPlayersDispatch}/>
         </div>
     );
 }
-Selecting.propTypes = {
-    tourneyId: PropTypes.number
-};
+Selecting.propTypes = {};

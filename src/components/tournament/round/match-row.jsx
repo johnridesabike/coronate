@@ -1,26 +1,31 @@
+import "@reach/dialog/styles.css";
+import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
-import {PanelContainer, Panel} from "../../utility";
-import {calcNewRatings} from "../../../pairing-scoring";
-import {BLACK, WHITE, DUMMY_ID} from "../../../data-types";
-import {useRound, usePlayers} from "../../../state";
 import PlayerMatchInfo from "./player-match-info";
+import PropTypes from "prop-types";
+import {calcNewRatings} from "../../../pairing-scoring";
+import {useTournament} from "../../../hooks";
 import {winnerSelect} from "./round.module.css";
-import "@reach/dialog/styles.css";
 
 export default function MatchRow({
     pos,
     match,
-    tourneyId,
     roundId,
     selectedMatch,
     setSelectedMatch
 }) {
-    const {tourney, dispatch} = useRound(tourneyId, roundId);
-    const {playerDispatch, getPlayer} = usePlayers();
+    const {
+        tourney,
+        tourneyDispatch,
+        players,
+        getPlayer,
+        playersDispatch
+    } = useTournament();
+    const dispatch = tourneyDispatch;
     const [openModal, setOpenModal] = useState(false);
     const resultCode = (function () {
         if (match.result[0] > match.result[1]) {
@@ -33,16 +38,10 @@ export default function MatchRow({
             return "NOTSET";
         }
     }());
-    const whiteName = (
-        getPlayer(match.players[0]).firstName
-        + " "
-        + getPlayer(match.players[0]).lastName
-    );
-    const blackName = (
-        getPlayer(match.players[1]).firstName
-        + " "
-        + getPlayer(match.players[1]).lastName
-    );
+    const whitePlayer = getPlayer(match.playerIds[WHITE]);
+    const blackPlayer = getPlayer(match.playerIds[BLACK]);
+    const whiteName = whitePlayer.firstName + " " + whitePlayer.lastName;
+    const blackName = blackPlayer.firstName + " " + blackPlayer.lastName;
 
     function setMatchResult(event) {
         const result = (function () {
@@ -59,8 +58,8 @@ export default function MatchRow({
                 throw new Error();
             }
         }());
-        const white = getPlayer(match.players[WHITE]);
-        const black = getPlayer(match.players[BLACK]);
+        const white = players[match.playerIds[WHITE]];
+        const black = players[match.playerIds[BLACK]];
         const newRating = (
             (event.currentTarget.value === "NOTSET")
             ? match.origRating
@@ -70,36 +69,35 @@ export default function MatchRow({
                 result
             )
         );
-        playerDispatch({
-            type: "SET_PLAYER_RATING",
+        playersDispatch({
             id: white.id,
-            rating: newRating[WHITE]
+            rating: newRating[WHITE],
+            type: "SET_PLAYER_RATING"
         });
-        playerDispatch({
-            type: "SET_PLAYER_RATING",
+        playersDispatch({
             id: black.id,
-            rating: newRating[BLACK]
+            rating: newRating[BLACK],
+            type: "SET_PLAYER_RATING"
         });
         // if the result hasn't been scored yet, increment the matchCount
         if (match.result.reduce((a, b) => a + b) === 0) {
-            playerDispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
+            playersDispatch({
                 id: white.id,
-                matchCount: white.matchCount + 1
+                matchCount: white.matchCount + 1,
+                type: "SET_PLAYER_MATCHCOUNT"
             });
-            playerDispatch({
-                type: "SET_PLAYER_MATCHCOUNT",
+            playersDispatch({
                 id: black.id,
-                matchCount: black.matchCount + 1
+                matchCount: black.matchCount + 1,
+                type: "SET_PLAYER_MATCHCOUNT"
             });
         }
         dispatch({
-            type: "SET_MATCH_RESULT",
-            tourneyId,
-            roundId,
             matchId: match.id,
+            newRating,
             result,
-            newRating
+            roundId,
+            type: "SET_MATCH_RESULT"
         });
     }
 
@@ -107,7 +105,7 @@ export default function MatchRow({
         <tr className={match.id === selectedMatch ? "selected" : ""}>
             <th className="table__number row__id" scope="row">{pos + 1}</th>
             <td
-                className="table__player row__player"
+                className={"table__player row__player " + whitePlayer.type}
                 data-testid={`match-${pos}-white`}
             >
                 {whiteName}{" "}
@@ -118,7 +116,7 @@ export default function MatchRow({
                 )}
             </td>
             <td
-                className="table__player row__player"
+                className={"table__player row__player " + blackPlayer.type}
                 data-testid={`match-${pos}-black`}
             >
                 {blackName}{" "}
@@ -130,11 +128,11 @@ export default function MatchRow({
             </td>
             <td className="data__input row__controls">
                 <select
+                    className={winnerSelect}
+                    disabled={match.playerIds.includes(DUMMY_ID)}
+                    value={resultCode}
                     onBlur={setMatchResult}
                     onChange={setMatchResult}
-                    disabled={match.players.includes(DUMMY_ID)}
-                    value={resultCode}
-                    className={winnerSelect}
                 >
                     <option value="NOTSET">
                         Select a winner
@@ -155,24 +153,24 @@ export default function MatchRow({
                 ? (
                     <button
                         className="iconButton"
-                        onClick={() => setSelectedMatch(match.id)}
                         title="Edit match"
+                        onClick={() => setSelectedMatch(match.id)}
                     >
                         <Icons.Edit />
                     </button>
                 ) : (
                     <button
                         className="iconButton"
-                        onClick={() => setSelectedMatch(null)}
                         title="End editing match"
+                        onClick={() => setSelectedMatch(null)}
                     >
                         <Icons.Check />
                     </button>
                 )}
                 <button
                     className="iconButton"
-                    onClick={() => setOpenModal(true)}
                     title="Open match information."
+                    onClick={() => setOpenModal(true)}
                 >
                     <Icons.Info />
                     <Hidden>
@@ -189,17 +187,15 @@ export default function MatchRow({
                     <PanelContainer>
                         <Panel>
                             <PlayerMatchInfo
-                                matchId={match.id}
                                 color={0}
-                                tourneyId={tourneyId}
+                                matchId={match.id}
                                 roundId={roundId}
                             />
                         </Panel>
                         <Panel>
                             <PlayerMatchInfo
-                                matchId={match.id}
                                 color={1}
-                                tourneyId={tourneyId}
+                                matchId={match.id}
                                 roundId={roundId}
                             />
                         </Panel>
@@ -210,10 +206,10 @@ export default function MatchRow({
     );
 }
 MatchRow.propTypes = {
-    pos: PropTypes.number,
     match: PropTypes.object,
-    tourneyId: PropTypes.number,
+    pos: PropTypes.number,
     roundId: PropTypes.number,
     selectedMatch: PropTypes.string,
-    setSelectedMatch: PropTypes.func
+    setSelectedMatch: PropTypes.func,
+    tourneyId: PropTypes.number
 };

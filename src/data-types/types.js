@@ -1,15 +1,22 @@
 import t from "tcomb";
 
-const AvoidList = t.list(t.tuple([t.Number, t.Number]));
-export {AvoidList};
+const Id = t.refinement(
+    t.String,
+    (id) => /^[A-Za-z0-9_-]{21}$/.test(id),
+    "NanoId"
+);
+export {Id};
+
+const AvoidPair = t.tuple([Id, Id], "AvoidPair");
+export {AvoidPair};
 
 const Player = t.interface(
     {
-        id: t.Number,
         firstName: t.String,
+        id: Id,
         lastName: t.String,
-        rating: t.Number,
         matchCount: t.Number,
+        rating: t.Number,
         type: t.String // used for CSS styling etc
     },
     "Player"
@@ -18,17 +25,17 @@ export {Player};
 
 const PlayerStats = t.interface(
     {
-        profile: Player,
-        id: t.Number,
-        score: t.Number,
-        dueColor: t.maybe(t.Number),
+        avoidList: t.list(Id),
         colorBalance: t.Number,
-        opponentHistory: t.list(t.Number),
-        upperHalf: t.Boolean,
-        rating: t.Number,
-        avoidList: t.list(t.Number),
+        dueColor: t.maybe(t.Number),
         hasHadBye: t.Boolean,
-        isDueBye: t.Boolean
+        id: Id,
+        isDueBye: t.Boolean,
+        opponentHistory: t.list(Id),
+        profile: Player,
+        rating: t.Number,
+        score: t.Number,
+        upperHalf: t.Boolean
     },
     "PlayerStats"
 );
@@ -36,33 +43,34 @@ export {PlayerStats};
 
 const Match = t.interface(
     {
-        id: t.String,
-        players: t.tuple([t.Number, t.Number]),
-        result: t.tuple([t.Number, t.Number]),
+        id: Id,
+        newRating: t.tuple([t.Number, t.Number]),
         origRating: t.tuple([t.Number, t.Number]),
-        newRating: t.tuple([t.Number, t.Number])
+        playerIds: t.tuple([Id, Id]),
+        result: t.tuple([t.Number, t.Number])
     },
     "Match"
 );
 export {Match};
 
-const RoundList = t.list(t.list(Match));
+const RoundList = t.list(t.list(Match), "Round list");
 export {RoundList};
 
 const Tournament = t.interface(
     {
+        byeQueue: t.list(t.String),
+        id: Id,
         name: t.String,
-        tieBreaks: t.list(t.Number),
-        byeQueue: t.list(t.Number),
-        players: t.list(t.Number),
-        roundList: t.list(t.list(Match))
+        playerIds: t.list(t.String),
+        roundList: RoundList,
+        tieBreaks: t.list(t.Number)
     },
     "Tournament"
 );
 export {Tournament};
 
 const ScoreCalulator = t.func(
-    [t.Number, t.list(Match)],
+    [Id, t.list(Match)],
     t.Number,
     "ScoreCalulator"
 );
@@ -70,7 +78,7 @@ export {ScoreCalulator};
 
 const Standing = t.interface(
     {
-        id: t.Number,
+        id: Id,
         score: t.Number,
         tieBreaks: t.list(t.Number)
     },

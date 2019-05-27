@@ -1,20 +1,18 @@
+import {BLACK, WHITE} from "../../../data-types";
 import React, {Fragment} from "react";
-import PropTypes from "prop-types";
-import {set, lensIndex} from "ramda";
+import {lensIndex, set} from "ramda";
+import {useOptionsDb, useTournament} from "../../../hooks";
 import Icons from "../../icons";
-import {useTournament, usePlayers, useOptions} from "../../../state";
-import {WHITE, BLACK} from "../../../data-types";
+import PropTypes from "prop-types";
 
 export default function Stage({
-    tourneyId,
     roundId,
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {playerState, getPlayer} = usePlayers();
-    const {players} = playerState;
-    const dispatch = useTournament(tourneyId)[1];
-    const [{byeValue}] = useOptions();
+    const {tourneyDispatch, players} = useTournament();
+    const dispatch = tourneyDispatch;
+    const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
 
     function unstage(color) {
@@ -23,12 +21,10 @@ export default function Stage({
 
     function match() {
         dispatch({
-            type: "MANUAL_PAIR",
-            pair: [white, black],
-            tourneyId,
+            byeValue: options.byeValue,
+            pair: [players[white], players[black]],
             roundId,
-            byeValue,
-            players
+            type: "MANUAL_PAIR"
         });
         setStagedPlayers([null, null]);
     }
@@ -40,8 +36,8 @@ export default function Stage({
                 White:{" "}
                 {white !== null &&
                     <Fragment>
-                        {getPlayer(white).firstName}{" "}
-                        {getPlayer(white).lastName}{" "}
+                        {players[white].firstName}{" "}
+                        {players[white].lastName}{" "}
                         <button onClick={() => unstage(WHITE)}>
                             <Icons.UserMinus /> Remove
                         </button>
@@ -52,8 +48,8 @@ export default function Stage({
                 Black:{" "}
                 {black !== null &&
                     <Fragment>
-                        {getPlayer(black).firstName}{" "}
-                        {getPlayer(black).lastName}{" "}
+                        {players[black].firstName}{" "}
+                        {players[black].lastName}{" "}
                         <button onClick={() => unstage(BLACK)}>
                             <Icons.UserMinus /> Remove
                         </button>
@@ -61,18 +57,18 @@ export default function Stage({
                 }
             </p>
             <button
-                onClick={() => setStagedPlayers(
-                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
-                )}
                 disabled={
                     stagedPlayers.every((id) => id === null)
                 }
+                onClick={() => setStagedPlayers(
+                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
+                )}
             >
                 <Icons.Repeat/> Swap colors
             </button>{" "}
             <button
-                onClick={match}
                 disabled={stagedPlayers.includes(null)}
+                onClick={match}
             >
                 <Icons.Check/> Match selected
             </button>{" "}
@@ -80,8 +76,7 @@ export default function Stage({
     );
 }
 Stage.propTypes = {
-    tourneyId: PropTypes.number,
     roundId: PropTypes.number,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.number),
-    setStagedPlayers: PropTypes.func
+    setStagedPlayers: PropTypes.func,
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string)
 };

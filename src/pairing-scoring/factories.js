@@ -1,4 +1,12 @@
-import t from "tcomb";
+import {
+    AvoidPair,
+    Id,
+    Match,
+    Player,
+    PlayerStats,
+    RoundList,
+    Standing
+} from "../data-types";
 import {
     add,
     append,
@@ -11,35 +19,27 @@ import {
     sort
 } from "ramda";
 import {
-    AvoidList,
-    Match,
-    Player,
-    PlayerStats,
-    RoundList,
-    Standing
-} from "../data-types";
-import {
     areScoresEqual,
     getAllPlayersFromMatches,
+    getMatchDetailsForPlayer,
     getMatchesByPlayer,
     getPlayerAvoidList,
-    getPlayerById,
-    getMatchDetailsForPlayer,
     isNotDummy,
     rounds2Matches
 } from "./helpers";
 import {
     createTieBreakSorter,
-    getDueColor,
     getColorBalanceScore,
+    getDueColor,
     getPlayerScore,
     getPlayersByOpponent,
     hasHadBye,
     tieBreakMethods
 } from "./scoring";
+import t from "tcomb";
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
- * @returns {[typeof Standing[], string[]]} The standings and the list of method used
+ * @returns {[Standing[], string[]]} The standings and the list of method used
  */
 export function createStandingList(methods, roundList, roundId) {
     t.list(t.Number)(methods);
@@ -51,15 +51,11 @@ export function createStandingList(methods, roundList, roundId) {
     // Get a flat list of all of the players and their scores.
     const standings = getAllPlayersFromMatches(
         matchList
-    ).filter(
-        isNotDummy
     ).map(
         (id) => Standing({
             id,
             score: getPlayerScore(id, matchList),
-            tieBreaks: selectedTieBreaks.map(
-                (method) => method.func(id, matchList)
-            )
+            tieBreaks: selectedTieBreaks.map(({func}) => func(id, matchList))
         })
     );
     const sortFunc = createTieBreakSorter(selectedTieBreaks);
@@ -81,14 +77,14 @@ export function createStandingTree(methods, roundList, roundId = null) {
         standingsFlat,
         tieBreakNames
     ] = createStandingList(methods, roundList, roundId);
-    const standingsTree = standingsFlat.reduce(
+    const standingsFlatNoByes = standingsFlat.filter(isNotDummy);
+    const standingsTree = standingsFlatNoByes.reduce(
         /** @param {Standing[][]} acc*/
-        function (acc, standing, i, orig) {
+        function assignStandingsToTree(acc, standing, i, orig) {
             const prevStanding = orig[i - 1];
             const isNewRank = (
-                (i === 0)
-                ? true // Always make a new rank for the first player
-                : !areScoresEqual(standing, prevStanding)
+                // Always make a new rank for the first player
+                (i === 0) ? true : !areScoresEqual(standing, prevStanding)
             );
             if (isNewRank) {
                 return append([standing], acc);
@@ -105,44 +101,44 @@ export function createStandingTree(methods, roundList, roundId = null) {
  * @returns {PlayerStats}
  */
 export function createPlayerStats({
-    id,
-    playerDataSource,
     avoidList,
+    id,
+    players,
     roundList,
     roundId
 }) {
-    t.Number(id);
+    Id(id);
     t.Number(roundId);
-    t.list(Player)(playerDataSource);
-    AvoidList(avoidList);
+    t.dict(Id, Player)(players);
+    t.list(AvoidPair)(avoidList);
     RoundList(roundList);
-    const player = getPlayerById(playerDataSource, id);
     const matches = rounds2Matches(roundList, roundId);
     return PlayerStats({
-        profile: player,
-        rating: player.rating, // is this shortcut necessary?
-        id: id, // is this shortcut necessary?
-        score: getPlayerScore(id, matches),
-        dueColor: getDueColor(id, matches),
-        colorBalance: getColorBalanceScore(id, matches),
-        opponentHistory: getPlayersByOpponent(id, matches),
-        upperHalf: false,
         avoidList: getPlayerAvoidList(id, avoidList),
+        colorBalance: getColorBalanceScore(id, matches),
+        dueColor: getDueColor(id, matches),
         hasHadBye: hasHadBye(id, matches),
-        isDueBye: false
+        id: id, // is this shortcut necessary?
+        isDueBye: false,
+        opponentHistory: getPlayersByOpponent(id, matches),
+        profile: players[id],
+        rating: players[id].rating, // is this shortcut necessary?
+        score: getPlayerScore(id, matches),
+        upperHalf: false
     });
 }
 
 /**
+ * NOTE: these params are flipped. Should others be flipped too?
  * @returns {Object.<string, number>} {opponentId: result}
  */
-function getResultsByOpponent(playerId, matchList) {
-    t.Number(playerId);
+function getResultsByOpponent(matchList, playerId) {
+    Id(playerId);
     t.list(Match)(matchList);
     const matches = getMatchesByPlayer(playerId, matchList);
     return matches.reduce(
         function (acc, match) {
-            const opponent = match.players.filter(
+            const opponent = match.playerIds.filter(
                 (id) => id !== playerId
             )[0];
             const {result} = getMatchDetailsForPlayer(playerId, match);
@@ -151,7 +147,7 @@ function getResultsByOpponent(playerId, matchList) {
             // `set()` with the result, but if two players play each other
             // multiple times then the total results will be displayed.
             return over(
-                lensProp(String(opponent)),
+                lensProp(opponent),
                 pipe(defaultTo(0), add(result)),
                 acc
             );
@@ -161,8 +157,11 @@ function getResultsByOpponent(playerId, matchList) {
 }
 export {getResultsByOpponent};
 
-function getPerformanceRatings(playerId, matchList) {
-    t.Number(playerId);
+/**
+ * NOTE: these params are flipped. Should others be flipped too?
+ */
+function getPerformanceRatings(matchList, playerId) {
+    Id(playerId);
     t.list(Match)(matchList);
     const matches = getMatchesByPlayer(playerId, matchList);
     const firstMatch = matches[0];

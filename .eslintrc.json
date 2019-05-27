@@ -30,18 +30,40 @@
             "named": "never",
             "asyncArrow": "always"
         }],
-        "no-unused-vars": ["error", {"argsIgnorePattern": "^ignore$|^props$"}],
+        "no-unused-vars": ["warn", {"argsIgnorePattern": "^ignore$|^props$"}],
         "no-shadow": "error",
         "no-var": 1,
         "arrow-parens": "warn",
         "arrow-body-style": ["warn", "never"],
-        "no-unused-expressions": "error",
+        "no-unused-expressions": "warn",
         "no-unneeded-ternary": "error",
         "multiline-ternary": ["error", "always-multiline"],
+        "sort-keys": "warn",
+        "sort-imports": [
+            "warn",
+            {
+                "ignoreCase": false,
+                "ignoreDeclarationSort": false,
+                "ignoreMemberSort": false,
+                "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+            }
+        ],
         "react/prop-types": [2],
         "react/jsx-closing-tag-location": [1],
         "react/jsx-closing-bracket-location": [1],
         "react/jsx-handler-names": [1],
+        "react/jsx-first-prop-new-line": ["warn", "multiline"],
+        "react/jsx-sort-props": [
+            "warn",
+            {
+                "callbacksLast": true,
+                "shorthandFirst": false,
+                "shorthandLast": true,
+                "ignoreCase": false,
+                "noSortAlphabetically": false,
+                "reservedFirst": true
+            }
+        ],
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",
@@ -55,7 +77,8 @@
                     {"object": "event"},
                     {"property": "propTypes"},
                     {"property": "dispatch"}
-                ]
+                ],
+                "commonjs": true
             }
         ]
     }

@@ -1,9 +1,7 @@
-import React from "react";
 import PropTypes from "prop-types";
-import {Link} from "@reach/router";
-import {usePlayers} from "../state";
+import React from "react";
 import styles from "./utility.module.css";
-import {DUMMY_ID} from "../data-types";
+// import {usePlayers} from "../state";
 
 export const Button = ({children, action}) => (
     <button onClick={action}>
@@ -11,8 +9,8 @@ export const Button = ({children, action}) => (
     </button>
 );
 Button.propTypes = {
-    children: PropTypes.node.isRequired,
-    action: PropTypes.func.isRequired
+    action: PropTypes.func.isRequired,
+    children: PropTypes.node.isRequired
 };
 
 export const BackButton = ({action}) => (
@@ -31,7 +29,7 @@ OpenButton.propTypes = {
 
 export function Panel({children, style}) {
     return (
-        <div style={{...style}} className={styles.panel}>
+        <div className={styles.panel} style={{...style}}>
             {children}
         </div>
     );
@@ -44,7 +42,8 @@ Panel.propTypes = {
 export function PanelContainer(props) {
     return (
         <div {...props} className={styles.panels}>
-            {React.Children.map(props.children, (child) => child)}
+            {props.children}
+            {/* {React.Children.map(props.children, (child) => child)} */}
         </div>
     );
 }
@@ -52,38 +51,38 @@ PanelContainer.propTypes = {
     children: PropTypes.node.isRequired
 };
 
-export function PlayerLink({id, firstName, lastName}) {
-    const {getPlayer} = usePlayers();
-    const player = getPlayer(id);
-    const name = (function () {
-        if (firstName && lastName) {
-            return player.firstName + " " + player.lastName;
-        } else if (firstName && !lastName) {
-            return player.firstName;
-        } else if (!firstName && lastName) {
-            return player.lastName;
-        } else {
-            return null;
-        }
-    }());
-    if (id === DUMMY_ID) { // there's no bye player profile
-        return name;
-    }
-    if (!name) {
-        return null;
-    }
-    return (
-        <Link to={"/players/" + id}>
-            {firstName && getPlayer(id).firstName}{" "}
-            {lastName && getPlayer(id).lastName}
-        </Link>
-    );
-}
-PlayerLink.propTypes = {
-    id: PropTypes.number.isRequired,
-    firstName: PropTypes.bool,
-    lastName: PropTypes.bool
-};
+// export function PlayerLink({id, firstName, lastName}) {
+//     const {getPlayer} = usePlayers();
+//     const player = getPlayer(id);
+//     const name = (function () {
+//         if (firstName && lastName) {
+//             return player.firstName + " " + player.lastName;
+//         } else if (firstName && !lastName) {
+//             return player.firstName;
+//         } else if (!firstName && lastName) {
+//             return player.lastName;
+//         } else {
+//             return null;
+//         }
+//     }());
+//     if (id === DUMMY_ID) { // there's no bye player profile
+//         return name;
+//     }
+//     if (!name) {
+//         return null;
+//     }
+//     return (
+//         <Link to={"/players/" + id}>
+//             {firstName && getPlayer(id).firstName}{" "}
+//             {lastName && getPlayer(id).lastName}
+//         </Link>
+//     );
+// }
+// PlayerLink.propTypes = {
+//     firstName: PropTypes.bool,
+//     id: PropTypes.number.isRequired,
+//     lastName: PropTypes.bool
+// };
 
 /*******************************************************************************
  * Non-JSX functions

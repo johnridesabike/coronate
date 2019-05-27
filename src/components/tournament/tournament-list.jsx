@@ -1,11 +1,12 @@
 import React, {useState} from "react";
+import {useAllTournamentsDb, useDocumentTitle} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
-import {useTournaments} from "../../state";
 
 export default function TournamentList(props) {
-    const [tourneys, dispatch] = useTournaments();
+    const [tourneys, dispatch] = useAllTournamentsDb();
     const [newTourneyName, setNewTourneyName] = useState("");
+    useDocumentTitle("tournament list");
 
     function updateNewName(event) {
         setNewTourneyName(event.target.value);
@@ -14,35 +15,30 @@ export default function TournamentList(props) {
     function makeTournament(event) {
         event.preventDefault();
         dispatch({
-            type: "ADD_TOURNEY",
-            name: newTourneyName
+            name: newTourneyName,
+            type: "ADD_TOURNEY"
         });
         setNewTourneyName("");
     }
 
     return (
         <div>
-            {(tourneys.length > 0) &&
+            {Object.keys(tourneys).length > 0 &&
                 <h2>Tournament list</h2>
             }
-            {(tourneys.length > 0)
+            {(Object.keys(tourneys).length > 0)
                 ?
                 <ol>
-                    {tourneys.map((tourney, i) =>
-                        <li key={i}>
-                            <Link to={String(i)}>
-                                {tourney.name}
+                    {Object.values(tourneys).map(({name, id}) =>
+                        <li key={id}>
+                            <Link to={id}>
+                                {name}
                             </Link>{" "}
                             <button
-                                title={`Delete “${tourney.name}”`}
-                                aria-label={`Delete “${tourney.name}”`}
+                                aria-label={`Delete “${name}”`}
                                 className="danger iconButton"
-                                onClick={
-                                    () => dispatch({
-                                        type: "DEL_TOURNEY",
-                                        index: i
-                                    })
-                                }
+                                title={`Delete “${name}”`}
+                                onClick={() => dispatch({id, type: "DEL_ITEM"})}
                             >
                                 <Icons.Trash />
                             </button>
@@ -56,11 +52,11 @@ export default function TournamentList(props) {
                     <legend>Make a new tournament</legend>
                     <label>Name:{" "}
                         <input
-                            type="text"
                             placeholder="tournament name"
+                            required={true}
+                            type="text"
                             value={newTourneyName}
                             onChange={updateNewName}
-                            required={true}
                         />
                     </label>
                     <input type="submit" value="Create" />

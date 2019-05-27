@@ -1,54 +1,47 @@
-import React, {useState, useEffect} from "react";
-import PropTypes from "prop-types";
-import {Tab, Tabs, TabList, TabPanel, TabPanels} from "@reach/tabs";
+import React, {useEffect, useState} from "react";
+import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import Icons from "../../icons";
-import Round from "./round";
 import PairPicker from "../pair-picker";
-import {useRound} from "../../../state";
+import PropTypes from "prop-types";
+import Round from "./round";
+import {getUnmatched} from "../../../pairing-scoring";
+import {useTournament} from "../../../hooks";
 
 export default function Index(props) {
-    // reach router passes strings instead
-    const tourneyId = Number(props.tourneyId);
-    const roundId = Number(props.roundId);
-    const {unmatched} = useRound(tourneyId, roundId);
+    const roundId = Number(props.roundId); // Reach Router passes a string.
+    const {tourney, players} = useTournament();
+    // only use unmatched players if this is the last round.
+    const unmatched = (roundId === tourney.roundList.length - 1)
+        ? getUnmatched(tourney, players, roundId)
+        : {};
+    const unmatchedCount = Object.keys(unmatched).length;
     const [openTab, setOpenTab] = useState(0);
     useEffect(
         function () {
-            if (unmatched.length > 0) {
-                setOpenTab(1);
-            } else {
-                setOpenTab(0);
-            }
+            (unmatchedCount > 0) ? setOpenTab(1) : setOpenTab(0);
         },
-        [unmatched.length]
+        [unmatchedCount]
     );
     return (
         <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
             <TabList>
                 <Tab><Icons.List/> Matches</Tab>
-                <Tab disabled={unmatched.length === 0}>
+                <Tab disabled={unmatchedCount === 0}>
                     <Icons.Users/> Unmatched players
                 </Tab>
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Round
-                        tourneyId={tourneyId}
-                        roundId={roundId}
-                    />
+                    <Round roundId={roundId}/>
                 </TabPanel>
                 <TabPanel>
-                    <PairPicker
-                        tourneyId={tourneyId}
-                        roundId={roundId}
-                    />
+                    <PairPicker roundId={roundId} />
                 </TabPanel>
             </TabPanels>
         </Tabs>
     );
 }
 Index.propTypes = {
-    tourneyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    path: PropTypes.string
+    path: PropTypes.string,
+    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

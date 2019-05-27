@@ -1,19 +1,22 @@
-import React, {useState, useEffect, useMemo} from "react";
-import {useTournaments, useOptions, usePlayers} from "../state";
-import {createPlayer} from "../data-types";
-import defaultPlayers from "../state/demo-players.json";
-import defaultOptions from "../state/demo-options.json";
-import defaultTourneys from "../state/demo-tourney.json";
+import React, {useEffect, useMemo, useState} from "react";
+import {
+    useAllPlayersDb,
+    useAllTournamentsDb,
+    useDocumentTitle,
+    useOptionsDb
+} from "../hooks";
+import demoData from "../demo-data";
 
-export function Options(props) {
-    const [tourneys, tourneysDispatch] = useTournaments();
-    const [options, optionsDispatch] = useOptions();
-    const {playerState, playerDispatch} = usePlayers();
+export default function Options(props) {
+    const [tourneys, tourneysDispatch] = useAllTournamentsDb();
+    const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");
-    // memoize this so the `useEffect` hook syncs with the correct state
+    const [options, optionsDispatch] = useOptionsDb();
+    useDocumentTitle("Options");
+    // memoize this so the `useEffect` hook syncs with the correct states
     const exportData = useMemo(
-        () => ({options, tourneys, playerState}),
-        [options, tourneys, playerState]
+        () => ({options, players, tourneys}),
+        [options, tourneys, players]
     );
     useEffect(
         function () {
@@ -22,9 +25,9 @@ export function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({type: "LOAD_STATE", state: data.tourneys});
-        optionsDispatch({type: "LOAD_STATE", state: data.options});
-        playerDispatch({type: "LOAD_STATE", state: data.playerState});
+        tourneysDispatch({state: data.tournaments, type: "LOAD_STATE"});
+        optionsDispatch({state: data.options, type: "LOAD_STATE"});
+        playersDispatch({state: data.players, type: "LOAD_STATE"});
         window.alert("Data loaded!");
     }
     function handleText(event) {
@@ -46,14 +49,7 @@ export function Options(props) {
     }
     function reloadDemoData(event) {
         event.preventDefault();
-        loadData({
-            options: defaultOptions,
-            playerState: {
-                players: defaultPlayers.playerList.map((p) => createPlayer(p)),
-                avoid: defaultPlayers.avoidList
-            },
-            tourneys: defaultTourneys
-        });
+        loadData(demoData);
     }
     return (
         <div>
@@ -64,22 +60,24 @@ export function Options(props) {
                     <label>
                         1
                         <input
-                            type="radio"
                             checked={options.byeValue === 1}
+                            type="radio"
                             onChange={() => optionsDispatch({
-                                type: "SET_BYE_VALUE",
-                                byeValue: 1
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 1
                             })}
                         />
                     </label>{" "}
                     <label>
                         ½
                         <input
-                            type="radio"
                             checked={options.byeValue === 0.5}
+                            type="radio"
                             onChange={() => optionsDispatch({
-                                type: "SET_BYE_VALUE",
-                                byeValue: 0.5
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 0.5
                             })}
                         />
                     </label>
@@ -89,18 +87,18 @@ export function Options(props) {
                 <legend>Manage data</legend>
                 <p>
                     <a
+                        download="chessahoochee.json"
                         href={
                             "data:application/json,"
                             + encodeURIComponent(JSON.stringify(exportData))
                         }
-                        download="chessahoochee.json"
                     >
                         Download all data
                     </a>
                 </p>
                 <label>
                     Load data file:{" "}
-                    <input type="file" id="file" onChange={handleFile}/>
+                    <input id="file" type="file" onChange={handleFile}/>
                 </label>
             </fieldset>
             <fieldset>
@@ -114,12 +112,12 @@ export function Options(props) {
                     </legend>
                     <textarea
                         className="json"
-                        rows={25}
                         cols={50}
-                        value={text}
                         name="playerdata"
-                        onChange={(event) => setText(event.currentTarget.value)}
+                        rows={25}
                         spellCheck={false}
+                        value={text}
+                        onChange={(event) => setText(event.currentTarget.value)}
                     />
                     <p>
                         <input type="submit" value="Load" />

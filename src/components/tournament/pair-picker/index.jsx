@@ -1,47 +1,47 @@
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
-import numeral from "numeral";
-import {pipe, map} from "ramda";
-import SelectList  from "./select-list";
-import Stage from "./stage";
-import PlayerInfo from "./player-info";
-import {PanelContainer, Panel} from "../../utility";
-import {usePlayers, useTournament} from "../../../state";
-import {findById} from "../../utility";
 import {
     calcPairIdeal,
+    createPlayerStats,
     maxPriority,
-    sortPlayersForPairing,
     setUpperHalves,
-    createPlayerStats
+    sortPlayersForPairing
 } from "../../../pairing-scoring";
+import {map, pipe} from "ramda";
+import {useOptionsDb, useTournament} from "../../../hooks";
+import PlayerInfo from "./player-info";
+import PropTypes from "prop-types";
+import SelectList  from "./select-list";
+import Stage from "./stage";
+import {findById} from "../../utility";
+import numeral from "numeral";
 
-export default function PairPicker({tourneyId, roundId}) {
+export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
-    const {playerState} = usePlayers();
-    const [tourney] = useTournament(tourneyId);
+    const [options] = useOptionsDb();
+    const {tourney, players} = useTournament();
     const statsList = React.useMemo(
         () => (
             pipe(
-                map((id) => (
+                Object.values,
+                map((player) => (
                     createPlayerStats({
-                        id,
-                        playerDataSource: playerState.players,
-                        avoidList: playerState.avoid,
-                        roundList: tourney.roundList,
-                        roundId
+                        avoidList: options.avoidPairs,
+                        id: player.id,
+                        players,
+                        roundId,
+                        roundList: tourney.roundList
                     })
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
-            )(tourney.players)
+            )(players)
         ),
         [
-            tourney.players,
             tourney.roundList,
-            playerState.avoid,
-            playerState.players,
-            roundId
+            roundId,
+            options.avoidPairs,
+            players
         ]
     );
     const matchIdeal = React.useMemo(
@@ -60,18 +60,16 @@ export default function PairPicker({tourneyId, roundId}) {
         <PanelContainer>
             <Panel>
                 <SelectList
-                    tourneyId={tourneyId}
                     roundId={roundId}
-                    stagedPlayers={stagedPlayers}
                     setStagedPlayers={setStagedPlayers}
+                    stagedPlayers={stagedPlayers}
                 />
             </Panel>
             <Panel>
                 <Stage
-                    tourneyId={tourneyId}
                     roundId={roundId}
-                    stagedPlayers={stagedPlayers}
                     setStagedPlayers={setStagedPlayers}
+                    stagedPlayers={stagedPlayers}
                 />
                 <PanelContainer>
                     {stagedPlayers.map((id) =>
@@ -79,7 +77,6 @@ export default function PairPicker({tourneyId, roundId}) {
                             <Panel key={id}>
                                 <PlayerInfo
                                     playerId={id}
-                                    tourneyId={tourneyId}
                                     roundId={roundId}
                                 />
                             </Panel>
@@ -92,6 +89,6 @@ export default function PairPicker({tourneyId, roundId}) {
     );
 }
 PairPicker.propTypes = {
-    tourneyId: PropTypes.number,
-    roundId: PropTypes.number
+    roundId: PropTypes.number,
+    tourneyId: PropTypes.number
 };

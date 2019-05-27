@@ -1,11 +1,7 @@
 import numeral from "numeral";
 
 // let's make a custom numeral format. I don't really know how this works.
-numeral.register("format", "half", {
-    regexps: {
-        format: /(1\/2)/,
-        unformat: /(1\/2)/
-    },
+numeral.register("format", "fraction", {
     // eslint-disable-next-line no-unused-vars
     format: function (value, format, roundingFunction) {
         const whole = Math.floor(value);
@@ -29,8 +25,12 @@ numeral.register("format", "half", {
         );
         return stringedWhole + fraction;
     },
-    /** @param {string} value */
+    regexps: {
+        format: /(1\/2)/,
+        unformat: /(1\/2)/
+    },
     unformat: function (value) {
-        return Number(value); // doesn't work... todo?
+        // TODO: This doesn't do anything currently
+        return Number(value);
     }
 });

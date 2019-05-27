@@ -1,14 +1,17 @@
-import t from "tcomb";
 import {
-    AvoidList,
+    AvoidPair,
     DUMMY_ID,
+    Id,
     Match,
     Player,
     RoundList,
     Standing,
+    Tournament,
     dummyPlayer,
     missingPlayer
 } from "../data-types";
+import {assoc} from "ramda";
+import t from "tcomb";
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
@@ -31,30 +34,64 @@ export function areScoresEqual(standing1, standing2) {
     );
 }
 
+/**
+ * Retrive a specific player from a list or object.
+ * @param playerList This can either be typed as `[Player1, Player1]` or
+ * `{"1": Player, "2": Player}`, where `Player1.id` equals its dict key.
+ * @param id the `id` property of the desired `Player` object.
+ * @returns The desired Player object.
+ */
 export function getPlayerById(playerList, id) {
+    t.union([
+        t.list(Player),
+        t.dict(Id, Player)
+    ])(playerList);
     if (id === DUMMY_ID) {
         return dummyPlayer;
     }
-    const player = playerList.filter((p) => p.id === id)[0];
+    const player = (playerList.filter)
+        ? playerList.filter((p) => p.id === id)[0]
+        : playerList[id];
+    return (player) ? player : missingPlayer(id);
+}
+
+/**
+ * A replacement for `getPlayerById`, with an emphasis on the indented feature
+ * of *maybe* getting a player, *maybe* getting a `dummyPlayer`, or *maybe*
+ * getting a missing (deleted) player.
+ */
+export function getPlayerMaybe(playerDict, id) {
+    t.dict(Id, Player)(playerDict);
+    Id(id);
+    if (id === DUMMY_ID) {
+        return dummyPlayer;
+    }
+    const player = playerDict[id];
     return (player) ? player : missingPlayer(id);
 }
 
 /*******************************************************************************
  * Match functions
  ******************************************************************************/
-const isNotBye = (match) => !match.players.includes(DUMMY_ID);
+const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
 export {isNotBye};
 
-function getMatchesByPlayer(playerId, matchList) {
+export function getMatchesByPlayer(playerId, matchList) {
     t.list(Match)(matchList);
-    return matchList.filter((match) => match.players.includes(playerId));
+    return matchList.filter((match) => match.playerIds.includes(playerId));
 }
-export {getMatchesByPlayer};
 
-function getMatchDetailsForPlayer(playerId, match) {
-    t.Number(playerId);
+export function getMatchesByPlayerNoByes(playerId, matchList) {
+    t.list(Match)(matchList);
+    return matchList.filter(
+        (match) => match.playerIds.includes(playerId) && isNotBye(match)
+    );
+}
+
+export function getMatchDetailsForPlayer(playerId, match) {
+    Id(playerId);
     Match(match);
-    const index = match.players.indexOf(playerId);
+    const index = match.playerIds.indexOf(playerId);
     return {
         color: index,
         newRating: match.newRating[index],
@@ -62,7 +99,6 @@ function getMatchDetailsForPlayer(playerId, match) {
         result: match.result[index]
     };
 }
-export {getMatchDetailsForPlayer};
 
 /**
  * Flatten a list of rounds to a list of matches.
@@ -78,14 +114,10 @@ export function rounds2Matches(roundList, roundId = null) {
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
-
-/**
- * @returns {number[]}
- */
 export function getAllPlayersFromMatches(matchList) {
     t.list(Match)(matchList);
     const allPlayers = matchList.reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     );
     return Array.from(new Set(allPlayers));
@@ -95,7 +127,7 @@ export function getAllPlayersFromMatches(matchList) {
  * Get a list of all of a player's scores from each match.
  */
 export function getPlayerScoreList(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
@@ -105,37 +137,55 @@ export function getPlayerScoreList(playerId, matchList) {
     );
 }
 
-/**
- * TODO: Maybe merge this with the other function?
- * @returns {number[]}
- */
 export function getPlayerScoreListNoByes(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
-    return getMatchesByPlayer(
+    return getMatchesByPlayerNoByes(
         playerId,
         matchList
-    ).filter(
-        isNotBye
     ).map(
         (match) => getMatchDetailsForPlayer(playerId, match).result
     );
+}
+
+/**
+ * This creates a filtered version of `players` with only the players that are
+ * not matched for the specified round.
+ */
+export function getUnmatched(tourney, players, roundId) {
+    Tournament(tourney);
+    t.dict(Id, Player)(players);
+    t.Number(roundId);
+    const matchList = tourney.roundList[roundId] || [];
+    const matchedIds = matchList.reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    );
+    const unmatched = Object.values(players).reduce(
+        (acc, player) => (
+            (matchedIds.includes(player.id))
+            ? acc
+            : assoc(player.id, player, acc)
+        ),
+        {}
+    );
+    return unmatched;
 }
 
 /*******************************************************************************
  * Round functions
  ******************************************************************************/
 export function calcNumOfRounds(playerCount) {
-    const rounds = Math.ceil(Math.log2(playerCount));
-    return (Number.isFinite(rounds)) ? rounds : 0;
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
 }
 
 /*******************************************************************************
  * Avoid list functions
  ******************************************************************************/
 export function getPlayerAvoidList(playerId, avoidList) {
-    AvoidList(avoidList);
-    t.Number(playerId);
+    t.list(AvoidPair)(avoidList);
+    Id(playerId);
     return avoidList.filter( // get pairings with the player
         (pair) => pair.includes(playerId)
     ).reduce( // Flatten the array
@@ -146,8 +196,9 @@ export function getPlayerAvoidList(playerId, avoidList) {
     );
 }
 
+// TODO: This isn't currently in use, but it probably should be.
 export function cleanAvoidList(avoidList, playerList) {
-    AvoidList(avoidList);
+    t.list(AvoidPair)(avoidList);
     t.list(Player)(playerList);
     const ids = playerList.map((p) => p.id);
     return avoidList.filter(

@@ -1,4 +1,19 @@
-// TODO: Clean this up. Refactor unnecessary functions, etc.
+import {
+    BLACK,
+    DUMMY_ID,
+    Id,
+    Match,
+    ScoreCalulator,
+    WHITE
+} from "../data-types";
+import {
+    getMatchDetailsForPlayer,
+    getMatchesByPlayer,
+    getMatchesByPlayerNoByes,
+    getPlayerScoreList,
+    getPlayerScoreListNoByes,
+    isNotDummy
+} from "./helpers";
 import {
     init,
     last,
@@ -9,24 +24,9 @@ import {
 } from "ramda";
 import {firstBy} from "thenby";
 import t from "tcomb";
-import {
-    BLACK,
-    DUMMY_ID,
-    Match,
-    ScoreCalulator,
-    WHITE
-} from "../data-types";
-import {
-    getMatchesByPlayer,
-    getMatchDetailsForPlayer,
-    isNotBye,
-    isNotDummy,
-    getPlayerScoreList,
-    getPlayerScoreListNoByes
-} from "./helpers";
 
 export function getDueColor(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const lastMatch = last(getMatchesByPlayer(playerId, matchList));
     if (!lastMatch) {
@@ -36,33 +36,26 @@ export function getDueColor(playerId, matchList) {
     return (color === WHITE) ? BLACK : WHITE;
 }
 
-/**
- * @returns {boolean}
- */
-function hasHadBye(playerId, matchList) {
-    t.Number(playerId);
+export function hasHadBye(playerId, matchList) {
+    Id(playerId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         playerId,
         matchList
     ).reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     ).includes(DUMMY_ID);
 }
-export {hasHadBye};
 
-/**
- * @returns {number[]}
- */
 export function getPlayersByOpponent(opponentId, matchList) {
-    t.Number(opponentId);
+    Id(opponentId);
     t.list(Match)(matchList);
     return getMatchesByPlayer(
         opponentId,
         matchList
     ).reduce(
-        (acc, match) => acc.concat(match.players),
+        (acc, match) => acc.concat(match.playerIds),
         []
     ).filter(
         (playerId) => playerId !== opponentId
@@ -71,10 +64,9 @@ export function getPlayersByOpponent(opponentId, matchList) {
 
 /**
  * Used for `modifiedMedian` and `solkoff`.
- * @returns {number[]}
  */
 function getOpponentScores(playerId, matchList) {
-    t.Number(playerId);
+    Id(playerId);
     t.list(Match)(matchList);
     const scores = getPlayersByOpponent(
         playerId,
@@ -92,7 +84,7 @@ function getOpponentScores(playerId, matchList) {
  ******************************************************************************/
 const getPlayerScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function playerScoreFunction(playerId, matchList) {
+    function _getPlayerScore(playerId, matchList) {
         const scoreList = getPlayerScoreList(playerId, matchList);
         return sum(scoreList);
     }
@@ -104,7 +96,7 @@ export {getPlayerScore};
  */
 const getCumulativeScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function cumulativeScoreFunction(playerId, matchList) {
+    function _getCumulativeScore(playerId, matchList) {
         const scoreList = getPlayerScoreListNoByes(
             playerId,
             matchList
@@ -121,7 +113,7 @@ const getCumulativeScore = ScoreCalulator.of(
  */
 const getCumulativeOfOpponentScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function cumulativeOfOpponentFunction(playerId, matchList) {
+    function _getCumulativeOfOpponentScore(playerId, matchList) {
         const oppScores = getPlayersByOpponent(
             playerId,
             matchList
@@ -140,15 +132,13 @@ const getCumulativeOfOpponentScore = ScoreCalulator.of(
  */
 const getColorBalanceScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function colorBalanceFunction(playerId, matchList) {
-        const colorList = getMatchesByPlayer(
+    function _getColorBalanceScore(playerId, matchList) {
+        const colorList = getMatchesByPlayerNoByes(
             playerId,
             matchList
-        ).filter(
-            isNotBye
         ).reduce(
             (acc, match) => (
-                (match.players[WHITE] === playerId)
+                (match.playerIds[WHITE] === playerId)
                 ? acc.concat(-1) // White = -1
                 : acc.concat(1) // Black = +1
             ),
@@ -164,7 +154,7 @@ export {getColorBalanceScore};
  */
 const getModifiedMedianScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function modifiedMedianFunction(playerId, matchList) {
+    function _getModifiedMedianScore(playerId, matchList) {
         const scores = getOpponentScores(playerId, matchList);
         return pipe(
             sort((a, b) => a - b),
@@ -177,48 +167,53 @@ const getModifiedMedianScore = ScoreCalulator.of(
 
 const getSolkoffScore = ScoreCalulator.of(
     // named functions are better for debugging
-    function solkoffFunction(playerId, matchList) {
+    function _getSolkoffScore(playerId, matchList) {
         const scoreList = getOpponentScores(playerId, matchList);
         return sum(scoreList);
     }
 );
 
-const tieBreakMethods = [
-    {
-        name: "Modified median",
-        func: getModifiedMedianScore
+const tieBreakMethods = {
+    0: {
+        func: getModifiedMedianScore,
+        id: 0,
+        name: "Modified median"
     },
-    {
-        name: "Solkoff",
-        func: getSolkoffScore
+    1: {
+        func: getSolkoffScore,
+        id: 1,
+        name: "Solkoff"
     },
-    {
-        name: "Cumulative score",
-        func: getCumulativeScore
+    2: {
+        func: getCumulativeScore,
+        id: 2,
+        name: "Cumulative score"
     },
-    {
-        name: "Cumulative of opposition",
-        func: getCumulativeOfOpponentScore
+    3: {
+        func: getCumulativeOfOpponentScore,
+        id: 3,
+        name: "Cumulative of opposition"
     },
-    {
-        name: "Most black",
-        func: getColorBalanceScore
+    4: {
+        func: getColorBalanceScore,
+        id: 4,
+        name: "Most black"
     }
-];
+};
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
 /**
  * Create a function to sort the standings. This dynamically creates a `thenBy`
- * function based on the desired tiebreak sort methods.
+ * function based on the list of desired tiebreak sort methods.
  * @returns A function to be used with a list of standings and `sort()`.
  */
-export function createTieBreakSorter(tieBreaks) {
-    return tieBreaks.reduce(
-        (acc, ignore, index) => (
+export function createTieBreakSorter(selectedTiebreakMethods) {
+    return Object.keys(selectedTiebreakMethods).reduce(
+        (acc, key) => (
             acc.thenBy(
                 (standing1, standing2) => (
-                    standing2.tieBreaks[index] - standing1.tieBreaks[index]
+                    standing2.tieBreaks[key] - standing1.tieBreaks[key]
                 )
             )
         ),

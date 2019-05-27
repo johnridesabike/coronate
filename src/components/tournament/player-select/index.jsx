@@ -1,17 +1,16 @@
+import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import PropTypes from "prop-types";
+import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
 import Selecting from "./selecting";
-import {useTournament, usePlayers} from "../../../state";
-import {PanelContainer, Panel} from "../../utility";
-import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
+import {useTournament} from "../../../hooks";
 
 export default function PlayerSelect(props) {
-    const tourneyId = Number(props.tourneyId);
-    const [{players, byeQueue, roundList}, dispatch] = useTournament(tourneyId);
-    const {getPlayer} = usePlayers();
-    const [isSelecting, setIsSelecting] = useState(players.length === 0);
+    const {tourney, tourneyDispatch, players} = useTournament();
+    const {playerIds, roundList, byeQueue} = tourney;
+    const dispatch = tourneyDispatch;
+    const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
     const matches = rounds2Matches(roundList);
     return (
         <PanelContainer>
@@ -23,45 +22,39 @@ export default function PlayerSelect(props) {
                     <caption>Current roster</caption>
                     <thead>
                         <tr>
-                            <th>First name</th>
-                            <th>Last name</th>
+                            <th colSpan={2}>Name</th>
                             <th>Options</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {players.map((pId) => (
-                            <tr
-                                key={pId}
-                                className={getPlayer(pId).type + " player"}
-                            >
-                                <td>{getPlayer(pId).firstName}</td>
-                                <td>{getPlayer(pId).lastName}</td>
-                                <td>
-                                    <button
-                                        onClick={() =>
-                                            dispatch({
-                                                type: "SET_BYE_QUEUE",
-                                                byeQueue: byeQueue.concat(
-                                                    [pId]
-                                                ),
-                                                tourneyId
-                                            })
-                                        }
-                                        disabled={byeQueue.includes(
-                                            pId
-                                        )}
-                                    >
-                                        Bye signup
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {Object.values(players).map(
+                            ({type, id, firstName, lastName}) => (
+                                <tr key={id} className={type + " player"}>
+                                    <td>{firstName}</td>
+                                    <td>{lastName}</td>
+                                    <td>
+                                        <button
+                                            disabled={byeQueue.includes(id)}
+                                            onClick={() =>
+                                                dispatch({
+                                                    byeQueue:
+                                                        byeQueue.concat([id]),
+                                                    type: "SET_BYE_QUEUE"
+                                                })
+                                            }
+                                        >
+                                            Bye signup
+                                        </button>
+                                    </td>
+                                </tr>
+                            )
+                        )}
                     </tbody>
                 </table>
             </Panel>
             <Panel>
                 <h3>Bye queue</h3>
-                {(byeQueue.length === 0) &&
+                {byeQueue.length === 0 &&
                     <p>No players have signed up for a bye round.</p>
                 }
                 <ol>
@@ -69,21 +62,20 @@ export default function PlayerSelect(props) {
                         <li
                             key={pId}
                             className={
-                                hasHadBye(pId, matches)
+                                (hasHadBye(pId, matches))
                                 ? "disabled"
                                 : ""
                             }
                         >
-                            {getPlayer(pId).firstName}{" "}
-                            {getPlayer(pId).lastName}
+                            {players[pId].firstName}{" "}
+                            {players[pId].lastName}
                             <button
                                 onClick={() =>
                                     dispatch({
-                                        type: "SET_BYE_QUEUE",
                                         byeQueue: byeQueue.filter(
                                             (id) => pId !== id
                                         ),
-                                        tourneyId
+                                        type: "SET_BYE_QUEUE"
                                     })
                                 }
                             >
@@ -95,12 +87,9 @@ export default function PlayerSelect(props) {
             </Panel>
             <Dialog isOpen={isSelecting}>
                 <button onClick={() => setIsSelecting(false)}>Done</button>
-                <Selecting tourneyId={tourneyId} />
+                <Selecting />
             </Dialog>
         </PanelContainer>
     );
 }
-PlayerSelect.propTypes = {
-    path: PropTypes.string,
-    tourneyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-};
+PlayerSelect.propTypes = {};

@@ -1,15 +1,12 @@
+import {BLACK, WHITE} from "../data-types";
 import EloRank from "elo-rank";
 import t from "tcomb";
-import {WHITE, BLACK} from "../data-types";
 
 export function kFactor(matchCount) {
     const ne = t.Number(matchCount) || 1;
     return (800 / ne);
 }
 
-/**
- * @returns {[number, number]}
- */
 export function calcNewRatings(origRatings, matchCounts, result) {
     t.tuple([t.Number, t.Number])(origRatings);
     t.tuple([t.Number, t.Number])(matchCounts);
@@ -33,7 +30,5 @@ export function calcNewRatings(origRatings, matchCounts, result) {
             origRatings[BLACK]
         )
     ];
-    return newRating.map(
-        (rating) => (rating < FLOOR) ? FLOOR : rating
-    );
+    return newRating.map((rating) => (rating < FLOOR) ? FLOOR : rating);
 }

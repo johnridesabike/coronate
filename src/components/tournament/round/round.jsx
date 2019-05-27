@@ -1,14 +1,19 @@
 import React, {useState} from "react";
-import PropTypes from "prop-types";
+import {findById, findIndexById} from "../../utility";
 import Icons from "../../icons";
 import MatchRow from "./match-row";
-import {findById, findIndexById} from "../../utility";
-import {useRound, usePlayers} from "../../../state";
+import PropTypes from "prop-types";
 import style from "./round.module.css";
+import {useTournament} from "../../../hooks";
 
-export default function Round({roundId, tourneyId}) {
-    const {matchList, dispatch} = useRound(tourneyId, roundId);
-    const {playerDispatch, getPlayer} = usePlayers();
+export default function Round({roundId}) {
+    const {
+        tourney,
+        players,
+        tourneyDispatch,
+        playersDispatch
+    } = useTournament();
+    const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
         throw new Error("Round " + roundId + " does not exist.");
@@ -18,35 +23,31 @@ export default function Round({roundId, tourneyId}) {
         if (match.result.reduce((a, b) => a + b) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
-            match.players.forEach(function (pId, color) {
-                playerDispatch({
-                    type: "SET_PLAYER_MATCHCOUNT",
+            match.playerIds.forEach(function (pId, color) {
+                playersDispatch({
                     id: pId,
-                    matchCount: getPlayer(pId).matchCount - 1
+                    matchCount: players[pId].matchCount - 1,
+                    type: "SET_PLAYER_MATCHCOUNT"
                 });
-                playerDispatch({
-                    type: "SET_PLAYER_RATING",
+                playersDispatch({
                     id: pId,
-                    rating: match.origRating[color]
+                    rating: match.origRating[color],
+                    type: "SET_PLAYER_RATING"
                 });
             });
         }
-        dispatch({type: "DEL_MATCH", tourneyId, roundId, matchId});
+        tourneyDispatch({matchId, roundId, type: "DEL_MATCH"});
         setSelectedMatch(null);
     }
 
     function swapColors(matchId) {
-        dispatch({type: "SWAP_COLORS", tourneyId, roundId, matchId});
+        tourneyDispatch({matchId, roundId, type: "SWAP_COLORS"});
     }
 
     function moveMatch(matchId, direction) {
         const oldIndex = findIndexById(matchId, matchList);
-        const newIndex = (
-            (oldIndex + direction >= 0)
-            ? oldIndex + direction
-            : 0
-        );
-        dispatch({type: "MOVE_MATCH", tourneyId, roundId, oldIndex, newIndex});
+        const newIndex = (oldIndex + direction >= 0) ? oldIndex + direction : 0;
+        tourneyDispatch({newIndex, oldIndex, roundId, type: "MOVE_MATCH"});
     }
 
     return (
@@ -54,42 +55,42 @@ export default function Round({roundId, tourneyId}) {
             <div className={style.toolbar}>
                 <button
                     className="danger iconButton"
-                    onClick={() => unMatch(selectedMatch)}
                     disabled={selectedMatch === null}
+                    onClick={() => unMatch(selectedMatch)}
                 >
                     <Icons.Trash /> Unmatch
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => swapColors(selectedMatch)}
                     disabled={selectedMatch === null}
+                    onClick={() => swapColors(selectedMatch)}
                 >
                     <Icons.Repeat /> Swap colors
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => moveMatch(selectedMatch, -1)}
                     disabled={selectedMatch === null}
+                    onClick={() => moveMatch(selectedMatch, -1)}
                 >
                     <Icons.ArrowUp /> Move up
                 </button>
                 <button
                     className="iconButton"
-                    onClick={() => moveMatch(selectedMatch, 1)}
                     disabled={selectedMatch === null}
+                    onClick={() => moveMatch(selectedMatch, 1)}
                 >
                     <Icons.ArrowDown /> Move down
                 </button>
             </div>
-            {(matchList.length === 0) &&
+            {matchList.length === 0 &&
                 <p>No players matched yet.</p>
             }
             <table className={style.table}>
-                {(matchList.length > 0) &&
+                {matchList.length > 0 &&
                     <caption>Round {roundId + 1} results</caption>
                 }
                 <tbody>
-                    {(matchList.length > 0) &&
+                    {matchList.length > 0 &&
                         <tr>
                             <th className="row__id" scope="col">
                                 #
@@ -111,9 +112,8 @@ export default function Round({roundId, tourneyId}) {
                     {matchList.map((match, pos) => (
                         <MatchRow
                             key={match.id}
-                            pos={pos}
                             match={match}
-                            tourneyId={tourneyId}
+                            pos={pos}
                             roundId={roundId}
                             selectedMatch={selectedMatch}
                             setSelectedMatch={setSelectedMatch}
@@ -125,6 +125,6 @@ export default function Round({roundId, tourneyId}) {
     );
 }
 Round.propTypes = {
-    tourneyId: PropTypes.number,
-    roundId: PropTypes.number
+    roundId: PropTypes.number,
+    tourneyId: PropTypes.number
 };

@@ -1,4 +1,20 @@
-import {kFactor, calcNewRatings} from "./ratings";
+import {calcNewRatings, kFactor} from "./ratings";
+import {
+    calcNumOfRounds,
+    getAllPlayersFromMatches,
+    getPlayerAvoidList,
+    // getPlayerById,
+    getPlayerMaybe,
+    getUnmatched,
+    rounds2Matches
+} from "./helpers";
+import {
+    createPlayerStats,
+    createStandingList,
+    createStandingTree,
+    getPerformanceRatings,
+    getResultsByOpponent
+} from "./factories";
 import {
     hasHadBye,
     tieBreakMethods
@@ -9,19 +25,6 @@ import pairPlayers, {
     setUpperHalves,
     sortPlayersForPairing
 } from "./pairing";
-import {
-    calcNumOfRounds,
-    getPlayerAvoidList,
-    getPlayerById,
-    rounds2Matches
-} from "./helpers";
-import {
-    createPlayerStats,
-    createStandingList,
-    createStandingTree,
-    getPerformanceRatings,
-    getResultsByOpponent
-} from "./factories";
 
 export {
     calcNewRatings,
@@ -32,7 +35,10 @@ export {
     createStandingTree,
     getPerformanceRatings,
     getPlayerAvoidList,
-    getPlayerById,
+    // getPlayerById,
+    getPlayerMaybe,
+    getAllPlayersFromMatches,
+    getUnmatched,
     getResultsByOpponent,
     hasHadBye,
     kFactor,
