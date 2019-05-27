@@ -6,6 +6,7 @@ import NewPlayer from "../new-player";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
 import styles from "./index.module.css";
+import {useDocumentTitle} from "../../hooks";
 
 export default function PlayerList({
     players,
@@ -13,6 +14,7 @@ export default function PlayerList({
     optionsDispatch
 }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
+    useDocumentTitle("Players");
     const delPlayer = function (event, id) {
         event.preventDefault();
         const message = "Are you sure you want to delete "
@@ -82,5 +84,5 @@ export default function PlayerList({
 PlayerList.propTypes = {
     optionsDispatch: PropTypes.func.isRequired,
     players: PropTypes.object.isRequired,
-    playersDispatch: PropTypes.object.isRequired
+    playersDispatch: PropTypes.func.isRequired
 };

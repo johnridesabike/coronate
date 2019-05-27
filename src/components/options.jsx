@@ -1,5 +1,10 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {useAllPlayersDb, useAllTournamentsDb, useOptionsDb} from "../hooks";
+import {
+    useAllPlayersDb,
+    useAllTournamentsDb,
+    useDocumentTitle,
+    useOptionsDb
+} from "../hooks";
 import demoData from "../demo-data";
 
 export default function Options(props) {
@@ -7,6 +12,7 @@ export default function Options(props) {
     const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");
     const [options, optionsDispatch] = useOptionsDb();
+    useDocumentTitle("Options");
     // memoize this so the `useEffect` hook syncs with the correct states
     const exportData = useMemo(
         () => ({options, players, tourneys}),

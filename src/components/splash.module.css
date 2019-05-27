@@ -4,19 +4,39 @@
     align-content: center;
     height: 100%;
     justify-content: space-between;
+    background-color: var(--color-secondary-light);
 }
 
 .hint {
     font-size: 0.8em;
-    margin-left: 2em;
+    margin: 0 auto;
+}
+
+.hint li {
+    margin: 0.25em 0;
 }
 
 .footer {
-    text-align: right;
     font-size: 0.8em;
+    background-color: var(--color-primary-dark);
+    color: var(--color-secondary-light);
+    padding: 0 2em;
+}
+
+.footer p {
+    width: 50%;
+    margin-left: auto;
+}
+
+.footer a {
+    color: skyblue;
+}
+
+.footer a:hover {
+    color: var(--color-primary-light);
 }
 
 .title {
-    opacity: 0.8;
+    color: var(--color-primary-dark);
     font-size: 2em;
 }

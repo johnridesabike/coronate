@@ -2,11 +2,6 @@
     border-collapse: collapse;
 }
 
-.table caption {
-    font-size: 1.125em;
-    font-weight: 700;
-}
-
 .topHeader {
     vertical-align: bottom;
 }

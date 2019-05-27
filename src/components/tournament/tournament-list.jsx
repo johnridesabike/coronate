@@ -1,11 +1,12 @@
 import React, {useState} from "react";
+import {useAllTournamentsDb, useDocumentTitle} from "../../hooks";
 import Icons from "../icons";
 import {Link} from "@reach/router";
-import {useAllTournamentsDb} from "../../hooks";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
     const [newTourneyName, setNewTourneyName] = useState("");
+    useDocumentTitle("tournament list");
 
     function updateNewName(event) {
         setNewTourneyName(event.target.value);

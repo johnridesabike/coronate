@@ -5,6 +5,7 @@ import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import numeral from "numeral";
 import styles from "./index.module.css";
+import {useDocumentTitle} from "../../hooks";
 
 export default function PlayerInfoBox({
     playerId,
@@ -17,6 +18,8 @@ export default function PlayerInfoBox({
     const [singAvoidList, setSingAvoidList] = useState(
         getPlayerAvoidList(playerId, options.avoidPairs)
     );
+    const playerName = (player) ? player.firstName + " " + player.lastName : "";
+    useDocumentTitle("profile for " + playerName);
     // Memoize this so useEffect doesn't cause a memory leak.
     const unAvoided = useMemo(
         () => Object.keys(players).filter(
@@ -43,22 +46,6 @@ export default function PlayerInfoBox({
             setSelectedAvoider(unAvoided[0]);
         },
         [setSelectedAvoider, unAvoided]
-    );
-    useEffect(
-        function () {
-            if (!player) {
-                return;
-            }
-            const origTitle = document.title;
-            document.title = (
-                player.firstName
-                + " " + player.lastName
-            );
-            return function () {
-                document.title = origTitle;
-            };
-        },
-        [playerId, player]
     );
     function handleChange(event) {
         event.preventDefault();
@@ -186,7 +173,7 @@ ${players[pId].lastName}`}
 PlayerInfoBox.propTypes = {
     options: PropTypes.object.isRequired,
     optionsDispatch: PropTypes.func.isRequired,
-    playerId: PropTypes.string.isRequired,
+    playerId: PropTypes.string,
     players: PropTypes.object.isRequired,
-    playersDispatch: PropTypes.object.isRequired
+    playersDispatch: PropTypes.func.isRequired
 };

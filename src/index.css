@@ -1,10 +1,24 @@
+/*******************************************************************************
+ * Setup
+ ******************************************************************************/
 @import-normalize;
+
+:root {
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
+        "Courier New", monospace;
+    --color-primary-light: #86A666;
+    --color-primary-dark: #393E41;
+    --color-secondary-light: #FBFEF9;
+    --color-secondary-dark: #E6E8E6;
+    --color-tertiary: #0E79B2;
+}
 
 html {
     font-size: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
+    font-family: var(--font-main);
 }
 
 body {
@@ -13,27 +27,28 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
-  /* overflow: hidden; */
 }
 
 #root {
     height: 100vh;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-
 a {
-  color: blue;
+  color: var(--color-primary-dark);
   text-decoration: none;
 }
 
 a:hover {
-  color: skyblue;
+    color: var(--color-primary-light);
 }
 
+p a {
+    color: var(--color-tertiary);
+}
+
+/*******************************************************************************
+ * Layout
+ ******************************************************************************/
 .app {
     height: 100vh;
     display: grid;
@@ -46,8 +61,8 @@ a:hover {
 
 .header {
     grid-area: app-header;
-    background-color: whitesmoke;
-    border-bottom: 1px slategray solid;
+    background-color: var(--color-secondary-dark);
+    border-bottom: 1px var(--color-primary-dark) solid;
 }
 
 .content {
@@ -69,6 +84,9 @@ a:hover {
     height: 100%;
 }
 
+/*******************************************************************************
+ * Typography
+ ******************************************************************************/
 h1 {
     font-size: 1.5em;
     font-weight: 400;
@@ -78,25 +96,34 @@ h1 {
 
 h2 {
     font-size: 1.25em;
-    font-weight: 700;
+    font-weight: 400;
 }
 
 h3 {
     font-weight: 1.125em;
-    font-weight: 700;
+    font-weight: 400;
+}
+
+code {
+  font-family: var(--font-monospace);
+}
+
+/*******************************************************************************
+ * Tables
+ ******************************************************************************/
+table {
+    border-collapse: collapse;
+    margin: auto;
 }
 
 caption {
-    font-size: 1.125em;
-    font-weight: 700;
-}
-
-table {
-    border-collapse: collapse;
+    font-size: 1.25em;
+    font-weight: 400;
 }
 
 th {
-    color: dimgray;
+    color: var(--color-primary-dark);
+    font-weight: 400;
 }
 
 th, td {

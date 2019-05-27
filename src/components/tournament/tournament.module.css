@@ -6,32 +6,48 @@
         grid-template-columns: 11em auto;
         grid-template-rows: max-content auto;
         grid-template-areas:
-            "header header"
+            "sidebar header"
             "sidebar content"
     }
 }
 
 .header {
     grid-area: header;
-    background-color: whitesmoke;
-    border-bottom: 1px slategray solid;
 }
 
 .header h1 {
     text-align: center;
     font-size: 1.5em;
+    border-width: 2px;
+    border-color: var(--color-secondary-dark);
+    border-bottom-style: solid;
+    margin-right: 1em;
+    margin-left: 1em;
+    padding-bottom: 0.25em;
 }
 
 .sidebar {
     grid-area: sidebar;
-    background-color: whitesmoke;
-    border-right: 1px slategray solid;
+    background-color: var(--color-secondary-light);
     padding: 0.5em;
+    border-width: 1px;
+    border-color: var(--color-primary-dark);
+    border-right-style: solid;
 }
 
 .sidebar ul {
     list-style-type: none;
     padding: 0;
+}
+
+.sidebar a {
+    display: block;
+}
+
+.sidebar a[aria-current] {
+    padding-left: 0.5em;
+    background-color: var(--color-secondary-dark);
+    color: var(--color-primary-light);
 }
 
 .content {

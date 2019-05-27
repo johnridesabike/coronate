@@ -1,12 +1,12 @@
-import React, {useEffect} from "react";
 import {calcNumOfRounds, getUnmatched} from "../../pairing-scoring";
+import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
+import React from "react";
 import Tooltip from "@reach/tooltip";
 import last from "ramda/src/last";
-import {useTournament} from "../../hooks";
 
 export default function Sidebar(props) {
     const {
@@ -16,6 +16,7 @@ export default function Sidebar(props) {
         playersDispatch,
         tourneyDispatch
     } = useTournament();
+    useDocumentTitle(tourney.name);
     const {roundList} = tourney;
     const unmatched = getUnmatched(tourney, players, roundList.length - 1);
 
@@ -29,16 +30,6 @@ export default function Sidebar(props) {
         );
         return Object.keys(unmatched).length === 0 && !results.includes(0);
     }());
-    useEffect(
-        function () {
-            const origTitle = document.title;
-            document.title = tourney.name;
-            return function () {
-                document.title = origTitle;
-            };
-        },
-        [tourney.name]
-    );
     const roundCount = calcNumOfRounds(Object.keys(players).length);
     const isItOver = roundList.length >= roundCount;
     const [tooltipText, tooltipWarn] = (function () {
@@ -102,6 +93,14 @@ export default function Sidebar(props) {
     return (
         <div className={props.className}>
             <nav>
+                <ul>
+                    <li>
+                        <Link to="..">
+                            <Icons.ChevronLeft/> Back
+                        </Link>
+                    </li>
+                </ul>
+                <hr />
                 <ul>
                     <li>
                         <Link to=".">

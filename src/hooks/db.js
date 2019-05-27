@@ -25,7 +25,15 @@ const tourneyStore = localForage.createInstance({
     name: DATABASE_NAME,
     storeName: "Tournaments"
 });
+
 export {optionsStore, playerStore, tourneyStore};
+
+export function loadDemoDB() {
+    optionsStore.setItems(demoData.options);
+    playerStore.setItems(demoData.players);
+    tourneyStore.setItems(demoData.tournaments);
+    window.alert("Demo data loaded!");
+}
 
 /*******************************************************************************
  * Generic database hooks
