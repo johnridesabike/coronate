@@ -176,3 +176,8 @@ svg {
 .selected {
     background-color: lightblue;
 }
+
+.svg-icon {
+    height: 1em;
+    width: auto;
+}
