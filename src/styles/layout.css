@@ -1,0 +1,42 @@
+/*******************************************************************************
+ * Layout
+ ******************************************************************************/
+ .app {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+    grid-template-areas:
+        "app-header"
+        "app-content"
+        "app-footer";
+}
+
+.header {
+    grid-area: app-header;
+    background: linear-gradient(var(--grey-20), var(--grey-30));
+    border-bottom: 1px var(--grey-40) solid;
+}
+
+.content {
+    grid-area: app-content;
+    overflow: auto;
+}
+
+div[role="group"] {
+    height: 100%;
+}
+
+.footer {
+    grid-area: app-footer;
+}
+
+.passthrough,
+.passthrough > div[role="group"] {
+    width: 100%;
+    height: 100%;
+}
+
+.content-area {
+    width: max-content;
+    margin: 0 auto;
+}

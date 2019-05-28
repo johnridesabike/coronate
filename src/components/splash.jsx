@@ -25,18 +25,23 @@ const Splash = (props) => (
                 </li>
             </ol>
         </aside>
-        <h1 className={styles.title}>
-            <span aria-hidden={true}>♘</span>{" "}
-            Chessahoochee: <small>a chess tournament app</small>
-        </h1>
+        <div className={styles.title}>
+            <h1>
+                <span aria-hidden>♘</span>{" "}
+                Chessahoochee
+            </h1>
+            <p className={styles.subtitle + " caption-30"}>
+                a chess tournament app
+            </p>
+        </div>
         <footer className={"body-20 " + styles.footer}>
             <p>
-                This is an early, proof-of-concept chess tournament app.{" "}
+                This is an early, proof-of-concept chess tournament app.<br />
                 <a href="https://github.com/johnridesabike/chessahoochee">
                     Suggetions, bug reports, and contributions are welcome.
                 </a>
             </p>
-            <p style={{textAlign: "right"}}>
+            <p>
                 Built with JavaScript and{" "}
                 <a href="https://reactjs.org/">React</a>.{" "}
                 <span style={{fontSize: "1.125em"}}>

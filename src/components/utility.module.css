@@ -10,5 +10,5 @@
 }
 
 .panel:not(:last-child) {
-    margin-right: 1em;
+    margin-right: 16px;
 }

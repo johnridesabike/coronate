@@ -12,17 +12,17 @@
 }
 
 .hint li {
-    margin: 0.25em 0;
+    margin: 8px 0;
 }
 
 .footer {
     background-color: var(--grey-80);
     color: var(--grey-20);
-    padding: 0 2em;
+    padding: 0 16px;
 }
 
 .footer p {
-    width: 50%;
+    width: max-content;
     margin-left: auto;
 }
 
@@ -36,4 +36,14 @@
 
 .title {
     color: var(--grey-90);
+    margin: 0 auto;
+}
+
+h1 {
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    text-align: right;
+    margin: 0;
 }

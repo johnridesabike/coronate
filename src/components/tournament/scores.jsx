@@ -109,7 +109,6 @@ function SelectTieBreaks(props) {
 
     return (
         <div>
-            <h3>Selected tiebreak methods</h3>
             <div className="toolbar">
                 <button
                     disabled={selectedTb === null}
@@ -136,49 +135,74 @@ function SelectTieBreaks(props) {
                     Done
                 </button>
             </div>
-            <ol>
+            <table>
+                <caption className="title-30">
+                    Selected Tiebreak methods
+                </caption>
+                <tr>
+                    <th>Name</th>
+                    <th>Controls</th>
+                </tr>
                 {tieBreaks.map((id) => (
-                    <li
+                    <tr
                         key={id}
                         className={selectedTb === id ? "selected" : ""}
                     >
-                        {tieBreakMethods[id].name}{" "}
-                        <button
-                            disabled={
-                                selectedTb !== null && selectedTb !== id
-                            }
-                            onClick={() =>
-                                selectedTb === id
-                                    ? setSelectedTb(null)
-                                    : setSelectedTb(id)
-                            }
-                        >
-                            {selectedTb === id ? "Done" : "Edit"}
-                        </button>
-                    </li>
-                ))}
-            </ol>
-            <h3>Available tiebreak methods</h3>
-            <ol>
-                {Object.values(tieBreakMethods).map(({name, id}) => (
-                    <li key={id}>
-                        <span
-                            className={
-                                tieBreaks.includes(id)
-                                    ? "enabled"
-                                    : "disabled"
-                            }
-                        >
-                            {name}
-                        </span>
-                        {!tieBreaks.includes(id) && (
-                            <button onClick={() => toggleTb(id)}>
-                                Add
+                        <td>
+                            {tieBreakMethods[id].name}
+                        </td>
+                        <td>
+                            <button
+                                className="button-micro"
+                                disabled={
+                                    selectedTb !== null && selectedTb !== id
+                                }
+                                onClick={() =>
+                                    selectedTb === id
+                                        ? setSelectedTb(null)
+                                        : setSelectedTb(id)
+                                }
+                            >
+                                {selectedTb === id ? "Done" : "Edit"}
                             </button>
-                        )}
-                    </li>
+                        </td>
+                    </tr>
                 ))}
-            </ol>
+            </table>
+            <table style={{marginTop: "16px"}}>
+                <caption className="title-30">
+                    Available tiebreak methods
+                </caption>
+                <tr>
+                    <th>Name</th>
+                    <th>Controls</th>
+                </tr>
+                {Object.values(tieBreakMethods).map(({name, id}) => (
+                    <tr key={id}>
+                        <td>
+                            <span
+                                className={
+                                    tieBreaks.includes(id)
+                                        ? "enabled"
+                                        : "disabled"
+                                }
+                            >
+                                {name}
+                            </span>
+                        </td>
+                        <td>
+                            {!tieBreaks.includes(id) && (
+                                <button
+                                    className="button-micro"
+                                    onClick={() => toggleTb(id)}
+                                >
+                                    Add
+                                </button>
+                            )}
+                        </td>
+                    </tr>
+                ))}
+            </table>
         </div>
     );
 }

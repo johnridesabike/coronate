@@ -1,0 +1,40 @@
+
+/*******************************************************************************
+ * Colors
+ ******************************************************************************/
+
+a {
+    color: var(--blue-60);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--blue-60);
+    text-decoration: underline;
+}
+
+a:active {
+    color: var(--blue-70);
+}
+
+a:focus {
+    box-shadow: 0 0 0 2px #0a84ff, 0 0 0 6px rgba(10, 132, 255, 0.3);
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: var(--grey-40);
+}
+
+.selected {
+    background-color: var(--teal-50);
+}
+
+.status-alert {
+    color: var(--yellow-70);
+}
+
+.status-ok {
+    color: var(--green-80);
+}

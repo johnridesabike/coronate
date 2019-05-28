@@ -23,24 +23,26 @@ export default function Selecting(props) {
 
     return (
         <div>
-            <button
-                className="micro"
-                onClick={() => tourneyDispatch({
-                    playerIds: Object.keys(players),
-                    type: "SET_TOURNEY_PLAYERS"
-                })}
-            >
-                Select all
-            </button>
-            <button
-                className="micro"
-                onClick={() => tourneyDispatch({
-                    playerIds: [],
-                    type: "SET_TOURNEY_PLAYERS"
-                })}
-            >
-                Select none
-            </button>
+            <div className="toolbar">
+                <button
+                    className="button-micro"
+                    onClick={() => tourneyDispatch({
+                        playerIds: Object.keys(players),
+                        type: "SET_TOURNEY_PLAYERS"
+                    })}
+                >
+                    Select all
+                </button>
+                <button
+                    className="button-micro"
+                    onClick={() => tourneyDispatch({
+                        playerIds: [],
+                        type: "SET_TOURNEY_PLAYERS"
+                    })}
+                >
+                    Select none
+                </button>
+            </div>
             <table>
                 <caption>Select players</caption>
                 <thead>

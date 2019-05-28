@@ -10,11 +10,11 @@
 }
   
 .caution__text {
-    margin: 0.5em 0;
-    padding: 2px;
+    margin:4px 0;
+    padding: 4px;
     background-color: var(--grey-90);
     color: var(--grey-10);
-    border-radius: 0.5em;
+    border-radius: 4px;
 }
   
 .caution__link,

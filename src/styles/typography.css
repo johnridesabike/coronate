@@ -1,0 +1,62 @@
+/*******************************************************************************
+ * Typography
+ ******************************************************************************/
+.display-20,
+h1 {
+    font-size: 36px;
+    font-weight: 200;
+    text-align: center;
+    margin: 0.25em 0;
+}
+
+.title-40,
+h2,
+caption {
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.title-30,
+h3 {
+    font-size: 22px;
+    font-weight: 300;
+}
+
+.title-20,
+th,
+h4 {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.title-10,
+h5 {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.body-30 {
+    font-size: 17px;
+    font-weight: 400;
+}
+
+.body-20 {
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.body-10 {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.monospace,
+code {
+font-family: var(--font-monospace);
+}
+
+.caption-30 {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--grey-50);
+}

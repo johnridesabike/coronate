@@ -45,7 +45,7 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
                     ({id, firstName, lastName}) => (
                         <li key={id}>
                             <button
-                                className="ghost"
+                                className="button-ghost"
                                 disabled={
                                     !stagedPlayers.includes(null)
                                     || stagedPlayers.includes(id)

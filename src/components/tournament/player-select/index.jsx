@@ -13,32 +13,35 @@ export default function PlayerSelect(props) {
     const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
     const matches = rounds2Matches(roundList);
     return (
-        <PanelContainer>
-            <Panel>
+        <div className="content-area">
+            <div className="toolbar">
                 <button onClick={() => setIsSelecting(true)}>
                     <Icons.Edit /> Edit player roster
                 </button>
-                <table>
-                    <caption>Current roster</caption>
-                    <thead>
-                        <tr>
-                            <th colSpan={2}>Name</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.values(players).map(
-                            ({type, id, firstName, lastName}) => (
-                                <tr key={id} className={type + " player"}>
-                                    <td>{firstName}</td>
-                                    <td>{lastName}</td>
+            </div>
+            <PanelContainer>
+                <Panel>
+                    <table>
+                        <caption>Current roster</caption>
+                        <thead>
+                            <tr>
+                                <th colSpan={2}>Name</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.values(players).map((p) => (
+                                <tr key={p.id} className={p.type + " player"}>
+                                    <td>{p.firstName}</td>
+                                    <td>{p.lastName}</td>
                                     <td>
                                         <button
-                                            disabled={byeQueue.includes(id)}
+                                            className="button-micro"
+                                            disabled={byeQueue.includes(p.id)}
                                             onClick={() =>
                                                 dispatch({
                                                     byeQueue:
-                                                        byeQueue.concat([id]),
+                                                        byeQueue.concat([p.id]),
                                                     type: "SET_BYE_QUEUE"
                                                 })
                                             }
@@ -48,53 +51,55 @@ export default function PlayerSelect(props) {
                                     </td>
                                 </tr>
                             )
-                        )}
-                    </tbody>
-                </table>
-            </Panel>
-            <Panel>
-                <h3>Bye queue</h3>
-                {byeQueue.length === 0 &&
-                    <p>No players have signed up for a bye round.</p>
-                }
-                <ol>
-                    {byeQueue.map((pId) => (
-                        <li
-                            key={pId}
-                            className={
-                                (hasHadBye(pId, matches))
-                                ? "disabled"
-                                : ""
-                            }
-                        >
-                            {players[pId].firstName}{" "}
-                            {players[pId].lastName}
-                            <button
-                                onClick={() =>
-                                    dispatch({
-                                        byeQueue: byeQueue.filter(
-                                            (id) => pId !== id
-                                        ),
-                                        type: "SET_BYE_QUEUE"
-                                    })
+                            )}
+                        </tbody>
+                    </table>
+                </Panel>
+                <Panel>
+                    <h3>Bye queue</h3>
+                    {byeQueue.length === 0 &&
+                        <p>No players have signed up for a bye round.</p>
+                    }
+                    <ol>
+                        {byeQueue.map((pId) => (
+                            <li
+                                key={pId}
+                                className={
+                                    (hasHadBye(pId, matches))
+                                    ? "disabled"
+                                    : ""
                                 }
                             >
-                                Remove
-                            </button>
-                        </li>
-                    ))}
-                </ol>
-            </Panel>
-            <Dialog isOpen={isSelecting}>
-                <button
-                    className="micro button-primary"
-                    onClick={() => setIsSelecting(false)}
-                >
-                    Done
-                </button>
-                <Selecting />
-            </Dialog>
-        </PanelContainer>
+                                {players[pId].firstName}{" "}
+                                {players[pId].lastName}{" "}
+                                <button
+                                    className="button-micro"
+                                    onClick={() =>
+                                        dispatch({
+                                            byeQueue: byeQueue.filter(
+                                                (id) => pId !== id
+                                            ),
+                                            type: "SET_BYE_QUEUE"
+                                        })
+                                    }
+                                >
+                                    Remove
+                                </button>
+                            </li>
+                        ))}
+                    </ol>
+                </Panel>
+                <Dialog isOpen={isSelecting}>
+                    <button
+                        className="button-micro button-primary"
+                        onClick={() => setIsSelecting(false)}
+                    >
+                        Done
+                    </button>
+                    <Selecting />
+                </Dialog>
+            </PanelContainer>
+        </div>
     );
 }
 PlayerSelect.propTypes = {};

@@ -152,7 +152,7 @@ export default function MatchRow({
                 {(selectedMatch !== match.id)
                 ? (
                     <button
-                        className="ghost"
+                        className="button-ghost"
                         title="Edit match"
                         onClick={() => setSelectedMatch(match.id)}
                     >
@@ -160,7 +160,7 @@ export default function MatchRow({
                     </button>
                 ) : (
                     <button
-                        className="ghost"
+                        className="button-ghost"
                         title="End editing match"
                         onClick={() => setSelectedMatch(null)}
                     >
@@ -168,7 +168,7 @@ export default function MatchRow({
                     </button>
                 )}
                 <button
-                    className="ghost"
+                    className="button-ghost"
                     title="Open match information."
                     onClick={() => setOpenModal(true)}
                 >
@@ -180,7 +180,7 @@ export default function MatchRow({
                 </button>
                 <Dialog isOpen={openModal}>
                     <button
-                        className="micro button-primary"
+                        className="button-micro button-primary"
                         onClick={() => setOpenModal(false)}
                     >
                         close

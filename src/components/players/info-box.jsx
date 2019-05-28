@@ -119,7 +119,7 @@ export default function PlayerInfoBox({
                         <button
                             arial-label={`Remove 
 ${players[pId].firstName} ${players[pId].lastName} from avoid list.`}
-                            className="danger ghost"
+                            className="danger button-ghost"
                             title={`Remove ${players[pId].firstName} 
 ${players[pId].lastName}`}
                             onClick={() =>

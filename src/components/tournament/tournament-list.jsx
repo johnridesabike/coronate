@@ -24,12 +24,14 @@ export default function TournamentList(props) {
     }
 
     return (
-        <div>
-            <button
-                onClick={() => setIsFormOpen(true)}
-            >
-                <Icons.Plus /> Add tournament
-            </button>
+        <div className="content-area">
+            <div className="toolbar toolbar__left">
+                <button
+                    onClick={() => setIsFormOpen(true)}
+                >
+                    <Icons.Plus /> Add tournament
+                </button>
+            </div>
             {(Object.keys(tourneys).length > 0)
             ?
             <table>
@@ -49,7 +51,7 @@ export default function TournamentList(props) {
                             <td>
                                 <button
                                     aria-label={`Delete “${name}”`}
-                                    className="danger ghost"
+                                    className="danger button-ghost"
                                     title={`Delete “${name}”`}
                                     onClick={
                                         () => dispatch({id, type: "DEL_ITEM"})
@@ -66,7 +68,7 @@ export default function TournamentList(props) {
             }
             <Dialog isOpen={isFormOpen}>
                 <button
-                    className="micro"
+                    className="button-micro"
                     onClick={() => setIsFormOpen(false)}
                 >
                     Close

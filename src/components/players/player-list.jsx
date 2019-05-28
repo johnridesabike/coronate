@@ -25,10 +25,12 @@ export default function PlayerList({
         }
     };
     return (
-        <div>
-            <button onClick={() => setIsFormOpen(true)}>
-                <Icons.UserPlus /> Add a new player
-            </button>
+        <div className="content-area">
+            <div className="toolbar toolbar__left">
+                <button onClick={() => setIsFormOpen(true)}>
+                    <Icons.UserPlus /> Add a new player
+                </button>
+            </div>
             <table className={styles.table}>
                 <caption>Player roster</caption>
                 <thead>
@@ -53,7 +55,7 @@ export default function PlayerList({
                             <button
                                 // eslint-disable-next-line max-len
                                 aria-label={`Delete ${player.firstName} ${player.lastName}`}
-                                className="danger iconButton ghost"
+                                className="danger button-ghost"
                                 // eslint-disable-next-line max-len
                                 title={`Delete ${player.firstName} ${player.lastName}`}
                                 onClick={(event) => delPlayer(event, player.id)}
@@ -74,7 +76,7 @@ export default function PlayerList({
             </table>
             <Dialog isOpen={isFormOpen}>
                 <button
-                    className="micro"
+                    className="button-micro"
                     onClick={() => setIsFormOpen(false)}
                 >
                     Close

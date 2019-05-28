@@ -1,0 +1,43 @@
+/*******************************************************************************
+ * Forms
+ ******************************************************************************/
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.833rem;
+    line-height: 1.4;
+}
+
+input[type="text"] {
+    border-color: var(--grey-90-a20);
+    border-width: 1px;
+    border-radius: 2px;
+    padding: 0 8px;
+    width: auto;
+    height: 32px;
+    font-size: 1em;
+}
+
+input:hover {
+    border-color: var(--grey-90-a30);
+}
+
+input:focus {
+    border-color: var(--blue-50);
+    box-shadow:
+        0 0 0 1px #0a84ff,
+        0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
+/* input:invalid {
+    border-color: var(--red-60);
+    box-shadow:
+        0 0 0 1px #d70022,
+        0 0 0 4px rgba(251, 0, 34, 0.3);
+} */
+
+::placeholder {
+    color: var(--grey-50);
+    /* font-size: 0.833rem;
+    line-height: 1.4; */
+}

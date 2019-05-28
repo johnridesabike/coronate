@@ -65,7 +65,7 @@ export default function PairPicker({roundId}) {
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     return (
-        <div>
+        <div className="content-area">
             <div className="toolbar">
                 <button
                     className="button-primary"
@@ -115,7 +115,7 @@ export default function PairPicker({roundId}) {
             </PanelContainer>
             <Dialog isOpen={isModalOpen}>
                 <button
-                    className="micro"
+                    className="button-micro"
                     onClick={() => setIsModalOpen(false)}
                 >
                     Done

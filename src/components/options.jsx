@@ -52,7 +52,8 @@ export default function Options(props) {
         loadData(demoData);
     }
     return (
-        <div>
+        <div className="content-area">
+            <h2>Game settings</h2>
             <form>
                 <fieldset>
                     <legend>Bye options</legend>
@@ -83,6 +84,7 @@ export default function Options(props) {
                     </label>
                 </fieldset>
             </form>
+            <h2>Data</h2>
             <fieldset>
                 <legend>Manage data</legend>
                 <p>

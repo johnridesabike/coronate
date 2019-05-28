@@ -1,0 +1,14 @@
+.toolbar {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.toolbar > *:not(:first-child) {
+    margin-left: 2px;
+}
+
+.toolbar__left {
+    justify-content: flex-start;
+}

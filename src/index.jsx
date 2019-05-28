@@ -1,4 +1,4 @@
-import "./index.css";
+import "./styles";
 import * as serviceWorker from "./serviceWorker";
 import React, {StrictMode} from "react";
 import App from "./App";

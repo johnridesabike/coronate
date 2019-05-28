@@ -3,7 +3,7 @@
         width: 100%;
         height: 100%;
         display: grid;
-        grid-template-columns: 11em auto;
+        grid-template-columns: 192px auto;
         grid-template-rows: max-content auto;
         grid-template-areas:
             "sidebar header"
@@ -17,19 +17,18 @@
 
 .header h1 {
     text-align: center;
-    font-size: 1.5em;
     border-width: 1px;
     border-color: var(--grey-40);
     border-bottom-style: solid;
-    margin-right: 1em;
-    margin-left: 1em;
-    padding-bottom: 0.25em;
+    margin-right: 32px;
+    margin-left: 32px;
+    padding-bottom: 8px;
 }
 
 .sidebar {
     grid-area: sidebar;
-    background-color: var(--grey-10);
-    padding: 0.5em;
+    background-color: var(--grey-20);
+    padding: 8px;
     border-width: 1px;
     border-color: var(--grey-30);
     border-right-style: solid;
@@ -46,10 +45,13 @@
 
 .sidebar a {
     display: block;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .sidebar a[aria-current] {
-    padding-left: 0.5em;
+    padding-left: 8px;
+    margin-right: -8px;
     background-color: var(--grey-30);
     color: var(--grey-90);
 }
@@ -60,5 +62,5 @@
 }
 
 .content [data-reach-tab-list] {
-    padding: 0.25em 0.25em 0 0.25em;
+    padding: 4px 4px 0 4px;
 }
