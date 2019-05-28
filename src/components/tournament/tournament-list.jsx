@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 import {useAllTournamentsDb, useDocumentTitle} from "../../hooks";
+import {Dialog} from "@reach/dialog";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
     const [newTourneyName, setNewTourneyName] = useState("");
+    const [isFormOpen, setIsFormOpen] = useState(false);
     useDocumentTitle("tournament list");
 
     function updateNewName(event) {
@@ -23,45 +25,72 @@ export default function TournamentList(props) {
 
     return (
         <div>
-            {Object.keys(tourneys).length > 0 &&
-                <h2>Tournament list</h2>
-            }
+            <button
+                onClick={() => setIsFormOpen(true)}
+            >
+                <Icons.Plus /> Add tournament
+            </button>
             {(Object.keys(tourneys).length > 0)
-                ?
-                <ol>
+            ?
+            <table>
+                <caption>Tournament list</caption>
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <th>Controls</th>
+                    </tr>
                     {Object.values(tourneys).map(({name, id}) =>
-                        <li key={id}>
-                            <Link to={id}>
-                                {name}
-                            </Link>{" "}
-                            <button
-                                aria-label={`Delete “${name}”`}
-                                className="danger iconButton"
-                                title={`Delete “${name}”`}
-                                onClick={() => dispatch({id, type: "DEL_ITEM"})}
-                            >
-                                <Icons.Trash />
-                            </button>
-                        </li>
+                        <tr key={id}>
+                            <td>
+                                <Link to={id}>
+                                    {name}
+                                </Link>
+                            </td>
+                            <td>
+                                <button
+                                    aria-label={`Delete “${name}”`}
+                                    className="danger ghost"
+                                    title={`Delete “${name}”`}
+                                    onClick={
+                                        () => dispatch({id, type: "DEL_ITEM"})
+                                    }
+                                >
+                                    <Icons.Trash />
+                                </button>
+                            </td>
+                        </tr>
                     )}
-                </ol>
-                : <p>No tournaments added yet.</p>
+                </tbody>
+            </table>
+            : <p>No tournaments added yet.</p>
             }
-            <form onSubmit={makeTournament}>
-                <fieldset>
-                    <legend>Make a new tournament</legend>
-                    <label>Name:{" "}
+            <Dialog isOpen={isFormOpen}>
+                <button
+                    className="micro"
+                    onClick={() => setIsFormOpen(false)}
+                >
+                    Close
+                </button>
+                <form onSubmit={makeTournament}>
+                    <fieldset>
+                        <legend>Make a new tournament</legend>
+                        <label htmlFor="tourney-name">Name:</label>
                         <input
+                            name="tourney-name"
                             placeholder="tournament name"
                             required={true}
                             type="text"
                             value={newTourneyName}
                             onChange={updateNewName}
+                        />{" "}
+                        <input
+                            className="button-primary"
+                            type="submit"
+                            value="Create"
                         />
-                    </label>
-                    <input type="submit" value="Create" />
-                </fieldset>
-            </form>
+                    </fieldset>
+                </form>
+            </Dialog>
         </div>
     );
 }

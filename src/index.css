@@ -2,6 +2,8 @@
  * Setup
  ******************************************************************************/
 @import-normalize;
+@import url("../node_modules/photon-colors/photon-colors.css");
+/* https://design.firefox.com/photon/ */
 
 :root {
     --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -9,16 +11,12 @@
         "Helvetica Neue", sans-serif;
     --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
         "Courier New", monospace;
-    --color-primary-light: #86A666;
-    --color-primary-dark: #393E41;
-    --color-secondary-light: #FBFEF9;
-    --color-secondary-dark: #E6E8E6;
-    --color-tertiary: #0E79B2;
 }
 
 html {
-    font-size: 20px;
+    font-size: 17px;
     font-family: var(--font-main);
+    color: var(--grey-90);
 }
 
 body {
@@ -33,17 +31,200 @@ body {
     height: 100vh;
 }
 
+svg {
+    vertical-align: middle;
+    height: 1em;
+    width: auto;
+}
+
+/*******************************************************************************
+ * Colors
+ ******************************************************************************/
+
 a {
-  color: var(--color-primary-dark);
+  color: var(--blue-60);
   text-decoration: none;
 }
 
 a:hover {
-    color: var(--color-primary-light);
+    color: var(--blue-60);
+    text-decoration: underline;
 }
 
-p a {
-    color: var(--color-tertiary);
+a:active {
+    color: var(--blue-70);
+}
+
+a:focus {
+    box-shadow: 0 0 0 2px #0a84ff, 0 0 0 6px rgba(10, 132, 255, 0.3);
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: var(--grey-40);
+}
+
+.selected {
+    background-color: var(--teal-50);
+}
+
+.status-alert {
+    color: var(--yellow-70);
+}
+
+.status-ok {
+    color: var(--green-80);
+}
+
+/*******************************************************************************
+ * Buttons
+ ******************************************************************************/
+button,
+input[type="submit"],
+.button {
+    color: var(--grey-90);
+    background-color: var(--grey-90-a10);
+    border-radius: 2px;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 13px;
+    min-width: 132px;
+    width: auto;
+    border: none;
+    border-width: 1px;
+}
+
+button.micro {
+    height: 24px;
+    font-size: 11px;
+    min-width: auto;
+}
+
+.button-primary,
+input[type="submit"].button-primary {
+    color: var(--white-100);
+    background: var(--blue-60);
+}
+
+.button-primary:hover,
+input[type="submit"].button-primary:hover {
+    background-color: var(--blue-70);
+}
+
+.button-primary:active,
+input[type="submit"].button-primary:active {
+    background-color: var(--blue-80);
+}
+
+.button-primary:focus,
+input[type="submit"].button-primary:focus {
+    box-shadow:
+        0 0 0 1px #0a84ff inset,
+        0 0 0 1px #0a84ff,
+        0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
+.ghost {
+    font-size: 16px;
+    color: var(--grey-90-a80);
+    background-color: transparent;
+    border: none;
+    height: 32px;
+    min-width: 32px;
+    width: 32px;
+    padding: 8px;
+}
+
+button:hover,
+input[type="submit"]:hover,
+.button:hover {
+    background: var(--grey-90-a20);
+}
+
+button:active,
+input[type="submit"]:active,
+.button:active {
+    background: var(--grey-90-a30);
+}
+
+button:focus,
+input[type="submit"]:focus,
+.button:focus {
+    box-shadow:
+        0 0 0 1px #0a84ff inset,
+        0 0 0 1px #0a84ff,
+        0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
+/* .danger:not([disabled]) {
+    color: darkred;
+} */
+
+[disabled],
+.disabled {
+    opacity: 0.4;
+}
+
+select[disabled] {
+    opacity: 1; /* fixes a visual bug */
+}
+
+button[disabled]:hover,
+input[type="text"][disabled]:hover,
+.disabled:hover {
+    border-color: transparent;
+    background-color: var(--grey-90-a10);
+}
+
+
+
+.iconButton {
+    padding: 0.125em 0.25em;
+}
+
+/*******************************************************************************
+ * Forms
+ ******************************************************************************/
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.833rem;
+    line-height: 1.4;
+}
+
+input[type="text"] {
+    border-color: var(--grey-90-a20);
+    border-width: 1px;
+    border-radius: 2px;
+    padding: 0 8px;
+    width: auto;
+    height: 32px;
+    font-size: 1em;
+}
+
+input:hover {
+    border-color: var(--grey-90-a30);
+}
+
+input:focus {
+    border-color: var(--blue-50);
+    box-shadow:
+        0 0 0 1px #0a84ff,
+        0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
+/* input:invalid {
+    border-color: var(--red-60);
+    box-shadow:
+        0 0 0 1px #d70022,
+        0 0 0 4px rgba(251, 0, 34, 0.3);
+} */
+
+::placeholder {
+    color: var(--grey-50);
+    /* font-size: 0.833rem;
+    line-height: 1.4; */
 }
 
 /*******************************************************************************
@@ -61,8 +242,8 @@ p a {
 
 .header {
     grid-area: app-header;
-    background-color: var(--color-secondary-dark);
-    border-bottom: 1px var(--color-primary-dark) solid;
+    background-color: var(--grey-20);
+    border-bottom: 1px var(--grey-40) solid;
 }
 
 .content {
@@ -70,7 +251,7 @@ p a {
     overflow: auto;
 }
 
-.content > div[role="group"] {
+div[role="group"] {
     height: 100%;
 }
 
@@ -84,26 +265,63 @@ p a {
     height: 100%;
 }
 
+.toolbar {
+    margin: 4px 2px;
+}
+
 /*******************************************************************************
  * Typography
  ******************************************************************************/
+.display-20,
 h1 {
-    font-size: 1.5em;
-    font-weight: 400;
+    font-size: 36px;
+    font-weight: 200;
     text-align: center;
     margin: 0.25em 0;
 }
 
-h2 {
-    font-size: 1.25em;
-    font-weight: 400;
+.title-40,
+h2,
+caption {
+    font-size: 28px;
+    font-weight: 300;
 }
 
+.title-30,
 h3 {
-    font-weight: 1.125em;
+    font-size: 22px;
+    font-weight: 300;
+}
+
+.title-20,
+th,
+h4 {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.title-10,
+h5 {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.body-30 {
+    font-size: 17px;
     font-weight: 400;
 }
 
+.body-20 {
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.body-10 {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.monospace,
 code {
   font-family: var(--font-monospace);
 }
@@ -114,16 +332,6 @@ code {
 table {
     border-collapse: collapse;
     margin: auto;
-}
-
-caption {
-    font-size: 1.25em;
-    font-weight: 400;
-}
-
-th {
-    color: var(--color-primary-dark);
-    font-weight: 400;
 }
 
 th, td {
@@ -157,54 +365,81 @@ li.player.missing {
     font-style: italic;
 }
 
-button,
-input,
-select,
-textarea {
-    font-size: 0.8em;
-}
-
 textarea.json {
     font-family: "Fira Code", Menlo, Monaco, "Courier New", monospace;
     white-space: pre;
-}
-
-
-.danger:not([disabled]) {
-    color: darkred;
-}
-
-.disabled {
-    opacity: 0.5;
-}
-
-svg {
-    vertical-align: middle;
-    height: 1em;
-    width: auto;
-}
-
-.iconButton {
-    padding: 0.125em 0.25em;
 }
 
 .helpIcon {
     cursor: help;
 }
 
-.status-alert {
-    color: darkgoldenrod;
-}
-
-.status-ok {
-    color: green;
-}
-
-.selected {
-    background-color: lightblue;
-}
-
 .svg-icon {
     height: 1em;
     width: auto;
+}
+
+/*******************************************************************************
+ * Tabs
+ ******************************************************************************/
+[data-reach-tabs] {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: min-content auto;
+    grid-template-areas:
+        "tab-list"
+        "tab-panels"
+}
+
+[data-reach-tab-list] {
+    grid-area: tab-list;
+    display: flex;
+    background: transparent;
+    height: 48px;
+}
+
+[data-reach-tab-panels] {
+    grid-area: tab-panels;
+    overflow: auto;
+}
+
+[data-reach-tab] {
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    background-color: transparent;
+    color: var(--grey-90-a80);
+    padding: 16px 8px;
+    height: auto;
+    font-size: 1em;
+}
+
+[data-reach-tab]:hover {
+    background-color: var(--grey-90-a10);
+    border-bottom-color: var(--grey-90-a20);
+}
+
+[data-reach-tab]:active {
+    background-color: var(--grey-90-a20);
+    border-bottom-color: var(--grey-90-a20);
+}
+
+[data-reach-tab][aria-selected="true"] {
+    color: var(--blue-60);
+    border-bottom-color: var(--blue-50);
+}
+
+[data-reach-tab][aria-selected="true"]:hover {
+    background-color: var(--grey-90-a10);
+}
+
+[data-reach-tab][aria-selected="true"]:active {
+    background-color: var(--grey-90-a20);
+}
+[data-reach-tab][disabled] {
+    background-color: transparent;
+}
+[data-reach-tab][disabled]:hover {
+    background-color: transparent;
 }

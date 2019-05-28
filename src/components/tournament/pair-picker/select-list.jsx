@@ -1,23 +1,18 @@
 import {BLACK, DUMMY_ID, WHITE, dummyPlayer} from "../../../data-types";
-import React, {useState} from "react";
 import {assoc, lensIndex, set} from "ramda";
-import {useOptionsDb, useTournament} from "../../../hooks";
-import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
-import Selecting from "../player-select/selecting";
+import React from "react";
 import {getUnmatched} from "../../../pairing-scoring";
+import {useTournament} from "../../../hooks";
 
 export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
-    const {tourney, players, tourneyDispatch} = useTournament();
-    const dispatch = tourneyDispatch;
+    const {tourney, players} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
         ? getUnmatched(tourney, players, roundId)
         : {};
-    const [options] = useOptionsDb();
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     function selectPlayer(id) {
         if (stagedPlayers[WHITE] === null) {
@@ -45,47 +40,29 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
     }
     return (
         <div>
-            <button
-                disabled={unmatchedCount === 0}
-                onClick={() => dispatch({
-                    avoidList: options.avoidPairs,
-                    byeValue: options.byeValue,
-                    players: unmatched,
-                    roundId,
-                    type: "AUTO_PAIR"
-                })}
-            >
-                Auto-pair unmatched players
-            </button><br/>
-            <button onClick={() => setIsModalOpen(true)}>
-                Add or remove players from the roster.
-            </button>
             <ul>
                 {Object.values(unmatchedWithDummy).map(
                     ({id, firstName, lastName}) => (
                         <li key={id}>
-                            {stagedPlayers.includes(id)
-                            ? <button disabled>Selected</button>
-                            : (
-                                <button
-                                    disabled={!stagedPlayers.includes(null)}
-                                    onClick={() => selectPlayer(id)}
-                                >
-                                    <Icons.UserPlus/>
-                                    <Hidden>
-                                        Select {firstName} {lastName}
-                                    </Hidden>
-                                </button>
-                            )}{" "}
+                            <button
+                                className="ghost"
+                                disabled={
+                                    !stagedPlayers.includes(null)
+                                    || stagedPlayers.includes(id)
+                                }
+                                onClick={() => selectPlayer(id)}
+                            >
+                                <Icons.UserPlus/>
+                                <Hidden>
+                                    Select {firstName} {lastName}
+                                </Hidden>
+                            </button>
+                            {" "}
                             {firstName} {lastName}
                         </li>
                     )
                 )}
             </ul>
-            <Dialog isOpen={isModalOpen}>
-                <button onClick={() => setIsModalOpen(false)}>Done</button>
-                <Selecting />
-            </Dialog>
         </div>
     );
 }

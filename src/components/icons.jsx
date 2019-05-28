@@ -1,6 +1,7 @@
 import Alert from "react-feather/dist/icons/alert-circle";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
+import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";
 import Check from "react-feather/dist/icons/check";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
@@ -34,6 +35,7 @@ export default {
     Alert,
     ArrowDown,
     ArrowUp,
+    ArrowUpLeft,
     Check,
     ChevronLeft,
     ChevronRight,

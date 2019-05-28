@@ -3,14 +3,16 @@
     margin: 0 0.5em;
     padding: 0.25em 0;
     border-bottom: 2px solid rgba(0, 0, 0, 0);
-    font-weight: 700;
 }
 
 .link[aria-current="page"] {
-    border-bottom: 2px solid var(--color-primary-light);
+    border-bottom-color: var(--blue-50);
+}
+
+.link[aria-current="page"]:hover {
+    text-decoration: none;
 }
 
 .mainMenu {
-    text-align: center;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+    text-align: left;
 }

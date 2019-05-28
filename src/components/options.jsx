@@ -56,9 +56,9 @@ export default function Options(props) {
             <form>
                 <fieldset>
                     <legend>Bye options</legend>
-                    Select how many points a bye is worth:{" "}
-                    <label>
-                        1
+                    Select how many points a bye is worth:
+                    <label className="monospace">
+                        1{" "}
                         <input
                             checked={options.byeValue === 1}
                             type="radio"
@@ -68,9 +68,9 @@ export default function Options(props) {
                                 value: 1
                             })}
                         />
-                    </label>{" "}
-                    <label>
-                        ½
+                    </label>
+                    <label className="monospace">
+                        ½{" "}
                         <input
                             checked={options.byeValue === 0.5}
                             type="radio"
@@ -96,10 +96,13 @@ export default function Options(props) {
                         Download all data
                     </a>
                 </p>
-                <label>
-                    Load data file:{" "}
-                    <input id="file" type="file" onChange={handleFile}/>
-                </label>
+                <label htmlFor="file">Load data file:</label>
+                <input
+                    id="file"
+                    name="file"
+                    type="file"
+                    onChange={handleFile}
+                />
             </fieldset>
             <fieldset>
                 <legend>Reset all changes</legend>

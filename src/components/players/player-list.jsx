@@ -49,11 +49,11 @@ export default function PlayerList({
                         </td>
                         <td className="table__number">{player.rating}</td>
                         <td className="table__number">{player.matchCount}</td>
-                        <td className={styles.controls}>
+                        <td>
                             <button
                                 // eslint-disable-next-line max-len
                                 aria-label={`Delete ${player.firstName} ${player.lastName}`}
-                                className="danger iconButton"
+                                className="danger iconButton ghost"
                                 // eslint-disable-next-line max-len
                                 title={`Delete ${player.firstName} ${player.lastName}`}
                                 onClick={(event) => delPlayer(event, player.id)}
@@ -73,7 +73,10 @@ export default function PlayerList({
                 </tbody>
             </table>
             <Dialog isOpen={isFormOpen}>
-                <button onClick={() => setIsFormOpen(false)}>
+                <button
+                    className="micro"
+                    onClick={() => setIsFormOpen(false)}
+                >
                     Close
                 </button>
                 <NewPlayer dispatch={playersDispatch} />

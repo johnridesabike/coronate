@@ -45,6 +45,7 @@
     "localforage-setitems": "^1.4.0",
     "nanoid": "^2.0.3",
     "numeral": "^2.0.6",
+    "photon-colors": "^3.3.2",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "react": "^16.8.6",

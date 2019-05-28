@@ -24,40 +24,34 @@ export default function NewPlayer({dispatch}) {
             <fieldset>
                 <legend>Register a new player</legend>
                 <p>
-                    <label>
-                        First name{" "}
-                        <input
-                            name="firstName"
-                            type="text"
-                            value={newPlayerData.firstName}
-                            required
-                            onChange={updateField}
-                        />
-                    </label>
+                    <label htmlFor="firstName">First name</label>
+                    <input
+                        name="firstName"
+                        type="text"
+                        value={newPlayerData.firstName}
+                        required
+                        onChange={updateField}
+                    />
                 </p>
                 <p>
-                    <label>
-                        Last name{" "}
-                        <input
-                            name="lastName"
-                            type="text"
-                            value={newPlayerData.lastName}
-                            required
-                            onChange={updateField}
-                        />
-                    </label>
+                    <label htmlFor="lastName">Last name</label>
+                    <input
+                        name="lastName"
+                        type="text"
+                        value={newPlayerData.lastName}
+                        required
+                        onChange={updateField}
+                    />
                 </p>
                 <p>
-                    <label>
-                        Rating {" "}
-                        <input
-                            name="rating"
-                            type="number"
-                            value={newPlayerData.rating}
-                            required
-                            onChange={updateField}
-                        />
-                    </label>
+                    <label htmlFor="rating">Rating</label>
+                    <input
+                        name="rating"
+                        type="number"
+                        value={newPlayerData.rating}
+                        required
+                        onChange={updateField}
+                    />
                 </p>
                 <p>
                     <input type="submit" value="Add"/>

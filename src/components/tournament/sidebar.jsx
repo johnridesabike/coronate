@@ -96,7 +96,7 @@ export default function Sidebar(props) {
                 <ul>
                     <li>
                         <Link to="..">
-                            <Icons.ChevronLeft/> Back
+                            <Icons.X/>Close
                         </Link>
                     </li>
                 </ul>

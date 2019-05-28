@@ -24,6 +24,7 @@ export default function Selecting(props) {
     return (
         <div>
             <button
+                className="micro"
                 onClick={() => tourneyDispatch({
                     playerIds: Object.keys(players),
                     type: "SET_TOURNEY_PLAYERS"
@@ -32,6 +33,7 @@ export default function Selecting(props) {
                 Select all
             </button>
             <button
+                className="micro"
                 onClick={() => tourneyDispatch({
                     playerIds: [],
                     type: "SET_TOURNEY_PLAYERS"

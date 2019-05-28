@@ -52,28 +52,28 @@ export default function Round({roundId}) {
 
     return (
         <div>
-            <div className={style.toolbar}>
+            <div className="toolbar">
                 <button
                     className="danger iconButton"
                     disabled={selectedMatch === null}
                     onClick={() => unMatch(selectedMatch)}
                 >
                     <Icons.Trash /> Unmatch
-                </button>
+                </button>{" "}
                 <button
                     className="iconButton"
                     disabled={selectedMatch === null}
                     onClick={() => swapColors(selectedMatch)}
                 >
                     <Icons.Repeat /> Swap colors
-                </button>
+                </button>{" "}
                 <button
                     className="iconButton"
                     disabled={selectedMatch === null}
                     onClick={() => moveMatch(selectedMatch, -1)}
                 >
                     <Icons.ArrowUp /> Move up
-                </button>
+                </button>{" "}
                 <button
                     className="iconButton"
                     disabled={selectedMatch === null}

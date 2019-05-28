@@ -4,11 +4,10 @@
     align-content: center;
     height: 100%;
     justify-content: space-between;
-    background-color: var(--color-secondary-light);
+    background-color: var(--grey-10);
 }
 
 .hint {
-    font-size: 0.8em;
     margin: 0 auto;
 }
 
@@ -17,9 +16,8 @@
 }
 
 .footer {
-    font-size: 0.8em;
-    background-color: var(--color-primary-dark);
-    color: var(--color-secondary-light);
+    background-color: var(--grey-80);
+    color: var(--grey-20);
     padding: 0 2em;
 }
 
@@ -29,14 +27,13 @@
 }
 
 .footer a {
-    color: skyblue;
+    color: var(--teal-50);
 }
 
 .footer a:hover {
-    color: var(--color-primary-light);
+    color: var(--teal-60);
 }
 
 .title {
-    color: var(--color-primary-dark);
-    font-size: 2em;
+    color: var(--grey-90);
 }

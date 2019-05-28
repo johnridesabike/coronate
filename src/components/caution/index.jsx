@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./index.module.css";
 
 const Caution = () => (
-    <aside className={styles.caution}>
+    <aside className={styles.caution + " body-20"}>
         <p className={styles.caution__text}>
             This is beta software. Want to help make it better? Check out the
             {" "}

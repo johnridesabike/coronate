@@ -86,7 +86,12 @@ export default function PlayerSelect(props) {
                 </ol>
             </Panel>
             <Dialog isOpen={isSelecting}>
-                <button onClick={() => setIsSelecting(false)}>Done</button>
+                <button
+                    className="micro button-primary"
+                    onClick={() => setIsSelecting(false)}
+                >
+                    Done
+                </button>
                 <Selecting />
             </Dialog>
         </PanelContainer>

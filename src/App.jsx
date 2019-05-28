@@ -1,4 +1,4 @@
-import "@reach/tabs/styles.css";
+// import "@reach/tabs/styles.css";
 import "@reach/tooltip/styles.css";
 import "side-effects";
 import {

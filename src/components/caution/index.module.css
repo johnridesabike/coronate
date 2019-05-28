@@ -1,5 +1,4 @@
 .caution {
-    font-size: 0.8em;
     width: 100%;
     background-repeat: repeat;
     display: flex;
@@ -7,26 +6,24 @@
     justify-content: center;
     text-align: center;
     align-items: center;
-    font-weight: 700;
     background-image: url("./caution.svg");
-    border-bottom: 1px slategray solid;
 }
   
 .caution__text {
     margin: 0.5em 0;
     padding: 2px;
-    background-color: black;
-    color: white;
+    background-color: var(--grey-90);
+    color: var(--grey-10);
     border-radius: 0.5em;
 }
   
 .caution__link,
 .caution__link:visited {
-    color: skyblue;
+    color: var(--teal-50);
 }
   
 .caution__link:active,
 .caution__link:focus,
 .caution__link:hover {
-    color: blue;
+    color: var(--teal-60);
 }

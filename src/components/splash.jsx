@@ -6,16 +6,18 @@ import styles from "./splash.module.css";
 const Splash = (props) => (
     <div className={styles.splash}>
         <aside className={styles.hint}>
-            <h3>Quick-start instructions:</h3>
             <ol>
                 <li>
-                    <button onClick={() => loadDemoDB()}>
+                    <button
+                        className="button-primary"
+                        onClick={() => loadDemoDB()}
+                    >
                         Click here to load the demo data
                     </button>{" "}
                     (optional)
                 </li>
                 <li>
-                    <span role="img" aria-hidden>☝️</span>{" "}
+                    <Icons.ArrowUpLeft />
                     Select a menu item above.
                 </li>
                 <li>
@@ -27,7 +29,7 @@ const Splash = (props) => (
             <span aria-hidden={true}>♘</span>{" "}
             Chessahoochee: <small>a chess tournament app</small>
         </h1>
-        <footer className={styles.footer}>
+        <footer className={"body-20 " + styles.footer}>
             <p>
                 This is an early, proof-of-concept chess tournament app.{" "}
                 <a href="https://github.com/johnridesabike/chessahoochee">

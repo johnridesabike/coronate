@@ -70,58 +70,45 @@ export default function PlayerInfoBox({
             </h2>
             <form onChange={handleChange} onSubmit={handleChange}>
                 <p>
-                    <label>
-                    First name{" "}
-                        <input
-                            defaultValue={player.firstName}
-                            name="firstName"
-                            type="text"
-                        />
-                    </label>
+                    <label htmlFor="firstName">First name</label>
+                    <input
+                        defaultValue={player.firstName}
+                        name="firstName"
+                        type="text"
+                    />
                 </p>
                 <p>
-                    <label>
-                    Last name{" "}
-                        <input
-                            defaultValue={player.lastName}
-                            name="lastName"
-                            type="text"
-                        />
-                    </label>
+                    <label htmlFor="lastName">Last name</label>
+                    <input
+                        defaultValue={player.lastName}
+                        name="lastName"
+                        type="text"
+                    />
                 </p>
                 <p>
-                    <label>
-                    Matches played{" "}
-                        <input
-                            defaultValue={String(player.matchCount)}
-                            name="matchCount"
-                            type="number"
-                        />
-                    </label>
+                    <label htmlFor="matchCount">Matches played</label>
+                    <input
+                        defaultValue={String(player.matchCount)}
+                        name="matchCount"
+                        type="number"
+                    />
                 </p>
                 <p>
-                    <label>
-                    Rating
-                        <input
-                            defaultValue={String(player.rating)}
-                            name="rating"
-                            type="number"
-                        />
-                    </label>
+                    <label htmlFor="rating">Rating</label>
+                    <input
+                        defaultValue={String(player.rating)}
+                        name="rating"
+                        type="number"
+                    />
                 </p>
                 <p>
-                    <label>
-                    K factor
-                        <input
-                            type="number"
-                            value={(
-                                numeral(
-                                    kFactor(player.matchCount)
-                                ).format("00")
-                            )}
-                            readOnly
-                        />
-                    </label>
+                    <label htmlFor="Kfactor">K factor</label>
+                    <input
+                        name="kfactor"
+                        type="number"
+                        value={numeral(kFactor(player.matchCount)).format("00")}
+                        readOnly
+                    />
                 </p>
             </form>
             <h3>Players to avoid</h3>
@@ -132,7 +119,7 @@ export default function PlayerInfoBox({
                         <button
                             arial-label={`Remove 
 ${players[pId].firstName} ${players[pId].lastName} from avoid list.`}
-                            className="danger iconButton"
+                            className="danger ghost"
                             title={`Remove ${players[pId].firstName} 
 ${players[pId].lastName}`}
                             onClick={() =>
