@@ -45,7 +45,7 @@ function App() {
                         </Link>
                     </nav>
                 </header>
-                <main className="content">
+                <main className="main">
                     <Router>
                         <Splash path="/" />
                         <TournamentIndex path="tourneys">

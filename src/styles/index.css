@@ -36,3 +36,12 @@ svg {
     height: 1em;
     width: auto;
 }
+
+textarea.json {
+    font-family: var(--font-monospace);
+    white-space: pre;
+}
+
+.content {
+    background-color: var(--white-100);
+}

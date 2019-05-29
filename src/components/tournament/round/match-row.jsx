@@ -8,8 +8,8 @@ import Icons from "../../icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
 import {calcNewRatings} from "../../../pairing-scoring";
+import styles from "./round.module.css";
 import {useTournament} from "../../../hooks";
-import {winnerSelect} from "./round.module.css";
 
 export default function MatchRow({
     pos,
@@ -102,8 +102,16 @@ export default function MatchRow({
     }
 
     return (
-        <tr className={match.id === selectedMatch ? "selected" : ""}>
-            <th className="table__number row__id" scope="row">{pos + 1}</th>
+        <tr
+            className={
+                (match.id === selectedMatch)
+                ? "selected buttons-on-hover"
+                : "buttons-on-hover"
+            }
+        >
+            <th className={"table__number " + styles.rowId} scope="row">
+                {pos + 1}
+            </th>
             <td
                 className={"table__player row__player " + whitePlayer.type}
                 data-testid={`match-${pos}-white`}
@@ -128,7 +136,7 @@ export default function MatchRow({
             </td>
             <td className="data__input row__controls">
                 <select
-                    className={winnerSelect}
+                    className={styles.winnerSelect}
                     disabled={match.playerIds.includes(DUMMY_ID)}
                     value={resultCode}
                     onBlur={setMatchResult}
@@ -148,7 +156,7 @@ export default function MatchRow({
                     </option>
                 </select>
             </td>
-            <td className="data__input row__controls">
+            <td className={styles.controls + " data__input"}>
                 {(selectedMatch !== match.id)
                 ? (
                     <button

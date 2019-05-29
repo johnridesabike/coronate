@@ -140,7 +140,11 @@ export default function Sidebar(props) {
                         <Icons.Plus/> New round
                     </button>
                     <Notification
-                        style={{marginLeft: "-8px", marginRight: "-8px"}}
+                        style={{
+                            borderRadius: "0",
+                            marginLeft: "-8px",
+                            marginRight: "-8px"
+                        }}
                         success={!tooltipWarn}
                     >
                         {tooltipText}

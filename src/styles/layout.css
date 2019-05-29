@@ -20,7 +20,7 @@
     align-items: flex-end;
 }
 
-.content {
+.main {
     grid-area: app-content;
     overflow: auto;
 }

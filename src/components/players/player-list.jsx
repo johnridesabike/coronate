@@ -35,7 +35,7 @@ export default function PlayerList({
                 <caption>Player roster</caption>
                 <thead>
                     <tr>
-                        <th colSpan={2}>Name</th>
+                        <th>Name</th>
                         <th>Rating</th>
                         <th>Matches</th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
@@ -44,31 +44,22 @@ export default function PlayerList({
                 <tbody>{Object.values(players).map((player) =>
                     <tr key={player.id}  className="buttons-on-hover">
                         <td className="table__player">
-                            {player.firstName}
-                        </td>
-                        <td className="table__player">
-                            {player.lastName}
+                            <Link to={player.id}>
+                                {player.firstName} {player.lastName}
+                            </Link>
                         </td>
                         <td className="table__number">{player.rating}</td>
                         <td className="table__number">{player.matchCount}</td>
                         <td>
                             <button
-                                // eslint-disable-next-line max-len
-                                aria-label={`Delete ${player.firstName} ${player.lastName}`}
                                 className="danger button-ghost"
-                                // eslint-disable-next-line max-len
-                                title={`Delete ${player.firstName} ${player.lastName}`}
                                 onClick={(event) => delPlayer(event, player.id)}
                             >
                                 <Icons.Trash />
-                            </button>{" "}
-                            <Link to={String(player.id)}>
-                            Open
                                 <VisuallyHidden>
-                                    {" "}{player.firstName} {player.lastName}
-                                </VisuallyHidden>{" "}
-                                <Icons.ChevronRight />
-                            </Link>
+                                    Delete {player.firstName} {player.lastName}
+                                </VisuallyHidden>
+                            </button>
                         </td>
                     </tr>
                 )}

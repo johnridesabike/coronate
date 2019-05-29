@@ -16,7 +16,7 @@ export default function Tournament(props) {
             <div className={styles.tournament}>
                 <Header className={styles.header} />
                 <Sidebar className={styles.sidebar} navigate={props.navigate} />
-                <div className={styles.content}>
+                <div className={styles.contentFrame}>
                     <Router>
                         <PlayerSelect path="/" />
                         <Crosstable path="crosstable" />

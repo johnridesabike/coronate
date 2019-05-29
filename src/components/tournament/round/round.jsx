@@ -3,6 +3,7 @@ import {findById, findIndexById} from "../../utility";
 import Icons from "../../icons";
 import MatchRow from "./match-row";
 import PropTypes from "prop-types";
+import VisuallyHidden from "@reach/visually-hidden";
 import style from "./round.module.css";
 import {useTournament} from "../../../hooks";
 
@@ -87,12 +88,11 @@ export default function Round({roundId}) {
             }
             <table className={style.table}>
                 {matchList.length > 0 &&
+                    <>
                     <caption>Round {roundId + 1} results</caption>
-                }
-                <tbody>
-                    {matchList.length > 0 &&
+                    <thead>
                         <tr>
-                            <th className="row__id" scope="col">
+                            <th className={style.rowId} scope="col">
                                 #
                             </th>
                             <th className="row__player" scope="col">
@@ -105,10 +105,13 @@ export default function Round({roundId}) {
                                 Result
                             </th>
                             <th className="row__controls" scope="col">
-                                Controls
+                                <VisuallyHidden>Controls</VisuallyHidden>
                             </th>
                         </tr>
-                    }
+                    </thead>
+                    </>
+                }
+                <tbody className={style.tbody + " content"}>
                     {matchList.map((match, pos) => (
                         <MatchRow
                             key={match.id}

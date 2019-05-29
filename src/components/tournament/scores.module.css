@@ -13,18 +13,22 @@
 .row td,
 .row th {
     border-width: 1px;
-    border-color: black;
+    border-color: var(--grey-40);
     border-style: solid;
+}
+
+.row:nth-child(odd) {
+    background-color: var(--grey-20);
 }
 
 .playerName {
     text-align: left;
-    color: black;
+    color: var(--grey-90);
 }
 
 .rank {
     text-align: center;
-    color: black;
+    color: var(--grey-90);
 }
 
 .table :global(.table__number) {

@@ -19,17 +19,19 @@ function ScoreTable(props) {
     return (
         <table className={style.table}>
             <caption>Score detail</caption>
-            <tbody>
+            <thead>
                 <tr className={style.topHeader}>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Score</th>
+                    <th className="title-10" scope="col">Rank</th>
+                    <th className="title-10" scope="col">Name</th>
+                    <th className="title-10" scope="col">Score</th>
                     {tbMethods.map((name, i) => (
-                        <th key={i} scope="col">
+                        <th key={i} className="title-10" scope="col">
                             {name}
                         </th>
                     ))}
                 </tr>
+            </thead>
+            <tbody className="content">
                 {standingTree.map((standingsFlat, rank) =>
                     standingsFlat.map((standing, j, src) => (
                         <tr key={standing.id} className={style.row}>

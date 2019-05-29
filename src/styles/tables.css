@@ -35,13 +35,3 @@ li.inactive {
 li.player.missing {
     font-style: italic;
 }
-
-textarea.json {
-    font-family: var(--font-monospace);
-    white-space: pre;
-}
-
-.svg-icon {
-    height: 1em;
-    width: auto;
-}

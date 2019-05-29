@@ -59,11 +59,11 @@
     color: var(--grey-90);
 }
 
-.content {
+.contentFrame {
     grid-area: content;
     overflow: auto;
 }
 
-.content [data-reach-tab-list] {
+.contentFrame [data-reach-tab-list] {
     padding: 4px 4px 0 4px;
 }

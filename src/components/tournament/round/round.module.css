@@ -2,3 +2,21 @@
     width: 100%;
     font-size: 1em;
 }
+
+.table {
+    width: 100%;
+}
+
+.tbody td {
+    padding: 8px 0;
+}
+
+.rowId {
+    width: 20px;
+    padding: 4px;
+    text-align: center;
+}
+
+.controls {
+    width: 72px;
+}

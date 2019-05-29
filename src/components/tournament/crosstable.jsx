@@ -46,7 +46,7 @@ export default function Crosstable(props) {
     return (
         <table className={style.table}>
             <caption>Crosstable</caption>
-            <tbody>
+            <thead>
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
@@ -59,6 +59,8 @@ export default function Crosstable(props) {
                     <th>Score</th>
                     <th>Rating</th>
                 </tr>
+            </thead>
+            <tbody className="content">
                 {/* Output a row for each player */}
                 {standings.map((standing, index)=>
                     <tr key={index} className={style.row}>
