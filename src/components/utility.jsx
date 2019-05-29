@@ -1,5 +1,7 @@
+import Icons from "./icons";
 import PropTypes from "prop-types";
 import React from "react";
+import {omit} from "ramda";
 import styles from "./utility.module.css";
 // import {usePlayers} from "../state";
 
@@ -51,38 +53,56 @@ PanelContainer.propTypes = {
     children: PropTypes.node.isRequired
 };
 
-// export function PlayerLink({id, firstName, lastName}) {
-//     const {getPlayer} = usePlayers();
-//     const player = getPlayer(id);
-//     const name = (function () {
-//         if (firstName && lastName) {
-//             return player.firstName + " " + player.lastName;
-//         } else if (firstName && !lastName) {
-//             return player.firstName;
-//         } else if (!firstName && lastName) {
-//             return player.lastName;
-//         } else {
-//             return null;
-//         }
-//     }());
-//     if (id === DUMMY_ID) { // there's no bye player profile
-//         return name;
-//     }
-//     if (!name) {
-//         return null;
-//     }
-//     return (
-//         <Link to={"/players/" + id}>
-//             {firstName && getPlayer(id).firstName}{" "}
-//             {lastName && getPlayer(id).lastName}
-//         </Link>
-//     );
-// }
-// PlayerLink.propTypes = {
-//     firstName: PropTypes.bool,
-//     id: PropTypes.number.isRequired,
-//     lastName: PropTypes.bool
-// };
+export function DateFormat(props) {
+    const dateFormat = new Intl.DateTimeFormat(
+        "en-US",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+    const cleanProps = omit(["date"], props);
+    return (
+        <time dateTime={props.date.toISOString()} {...cleanProps}>
+            {dateFormat.format(props.date)}
+        </time>
+    );
+}
+DateFormat.propTypes = {
+    date: PropTypes.instanceOf(Date)
+};
+
+export function Notification(props) {
+    const [icon, className] = (function () {
+        if (props.success) {
+            return [<Icons.Check />, "notification__success"];
+        } else if (props.warning) {
+            return [<Icons.Alert />, "notification__warning"];
+        } else if (props.error) {
+            return [<Icons.X />, "notification__error"];
+        } else {
+            return [<Icons.Info />, "notification__generic"];
+        }
+    }());
+    const cleanProps = omit(["warning", "error", "success"], props);
+    return (
+        <div {...cleanProps} className={"notification " + className}>
+            <div className="notification__icon">
+                {icon}
+            </div>
+            <div className="notification__text">
+                {props.children}
+            </div>
+        </div>
+    );
+}
+Notification.propTypes = {
+    children: PropTypes.node.isRequired,
+    error: PropTypes.bool,
+    success: PropTypes.bool,
+    warning: PropTypes.bool
+};
 
 /*******************************************************************************
  * Non-JSX functions

@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import {useAllTournamentsDb, useDocumentTitle} from "../../hooks";
+import {DateFormat} from "../utility";
 import {Dialog} from "@reach/dialog";
 import Icons from "../icons";
 import {Link} from "@reach/router";
+import VisuallyHidden from "@reach/visually-hidden";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
@@ -39,14 +41,18 @@ export default function TournamentList(props) {
                 <tbody>
                     <tr>
                         <th>Name</th>
-                        <th>Controls</th>
+                        <th>Date</th>
+                        <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
-                    {Object.values(tourneys).map(({name, id}) =>
-                        <tr key={id}>
+                    {Object.values(tourneys).map(({date, id, name}) =>
+                        <tr key={id} className="buttons-on-hover">
                             <td>
                                 <Link to={id}>
                                     {name}
                                 </Link>
+                            </td>
+                            <td>
+                                <DateFormat date={date} />
                             </td>
                             <td>
                                 <button

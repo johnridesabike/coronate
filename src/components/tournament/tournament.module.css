@@ -4,7 +4,7 @@
         height: 100%;
         display: grid;
         grid-template-columns: 192px auto;
-        grid-template-rows: max-content auto;
+        grid-template-rows: 112px auto;
         grid-template-areas:
             "sidebar header"
             "sidebar content"
@@ -13,16 +13,18 @@
 
 .header {
     grid-area: header;
-}
-
-.header h1 {
-    text-align: center;
     border-width: 1px;
     border-color: var(--grey-40);
     border-bottom-style: solid;
     margin-right: 32px;
     margin-left: 32px;
+    margin-bottom: 8px;
     padding-bottom: 8px;
+    text-align: center;
+}
+
+.header p {
+    margin: 0;
 }
 
 .sidebar {
@@ -50,7 +52,8 @@
 }
 
 .sidebar a[aria-current] {
-    padding-left: 8px;
+    padding-left: 16px;
+    margin-left: -8px;
     margin-right: -8px;
     background-color: var(--grey-30);
     color: var(--grey-90);

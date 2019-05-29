@@ -3,9 +3,9 @@ import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../icons";
 import {Link} from "@reach/router";
+import {Notification} from "../utility";
 import PropTypes from "prop-types";
 import React from "react";
-import Tooltip from "@reach/tooltip";
 import last from "ramda/src/last";
 
 export default function Sidebar(props) {
@@ -35,7 +35,7 @@ export default function Sidebar(props) {
     const [tooltipText, tooltipWarn] = (function () {
         if (!isNewRoundReady) {
             return [
-                "You must complete the last round before beginning a new one.",
+                "Complete the last round before beginning a new one.",
                 true
             ];
         } else if (isItOver) {
@@ -133,19 +133,18 @@ export default function Sidebar(props) {
             <ul>
                 <li>
                     <button
+                        className={(tooltipWarn ? "" : "button-primary")}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
                     >
                         <Icons.Plus/> New round
-                    </button>{" "}
-                    <Tooltip label={tooltipText}>
-                        <span className="helpIcon">
-                            {(tooltipWarn)
-                            ? <Icons.Alert className="status-alert" />
-                            : <Icons.Check className="status-ok" />
-                            }
-                        </span>
-                    </Tooltip>
+                    </button>
+                    <Notification
+                        style={{marginLeft: "-8px", marginRight: "-8px"}}
+                        success={!tooltipWarn}
+                    >
+                        {tooltipText}
+                    </Notification>
                 </li>
                 <li>
                     <button
@@ -156,7 +155,7 @@ export default function Sidebar(props) {
                         <Icons.Trash /> Remove last round
                     </button>
                 </li>
-                <li>
+                <li className="caption-30">
                     Round progress: {roundList.length}/{roundCount}
                 </li>
             </ul>

@@ -97,3 +97,8 @@ input[type="text"][disabled]:hover,
     border-color: transparent;
     background-color: var(--grey-90-a10);
 }
+
+/* Any buttons wrapped in this will only display on hover. */
+.buttons-on-hover:not(:hover) button {
+    opacity: 0;
+}

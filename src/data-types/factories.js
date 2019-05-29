@@ -26,6 +26,7 @@ export function createPlayer(importObj = {}) {
 export function createTournament(importObj) {
     return Tournament({
         byeQueue: importObj.byeQueue || [],
+        date: importObj.date || new Date(),
         id: importObj.id || nanoid(),
         name: importObj.name || "",
         playerIds: importObj.playerIds || [],

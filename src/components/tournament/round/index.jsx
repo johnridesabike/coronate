@@ -23,7 +23,10 @@ export default function Index(props) {
         [unmatchedCount]
     );
     return (
-        <Tabs index={openTab} onChange={(index) => setOpenTab(index)}>
+        <Tabs
+            index={openTab}
+            onChange={(index) => setOpenTab(index)}
+        >
             <TabList>
                 <Tab><Icons.List/> Matches</Tab>
                 <Tab disabled={unmatchedCount === 0}>

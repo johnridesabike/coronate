@@ -4,7 +4,7 @@
  .app {
     height: 100vh;
     display: grid;
-    grid-template-rows: max-content auto max-content;
+    grid-template-rows: 32px auto 32px;
     grid-template-areas:
         "app-header"
         "app-content"
@@ -13,8 +13,11 @@
 
 .header {
     grid-area: app-header;
-    background: linear-gradient(var(--grey-20), var(--grey-30));
+    background: linear-gradient(var(--grey-10), var(--grey-20), var(--grey-30));
     border-bottom: 1px var(--grey-40) solid;
+    display: flex;
+    flex-flow: row;
+    align-items: flex-end;
 }
 
 .content {
@@ -37,6 +40,13 @@ div[role="group"] {
 }
 
 .content-area {
-    width: max-content;
+    width: 600px;
+    padding-bottom: 16px;
     margin: 0 auto;
+}
+
+/* Empty space used for balancing visual elements */
+.placeholder {
+    opacity: 0;
+    background-color: transparent;
 }

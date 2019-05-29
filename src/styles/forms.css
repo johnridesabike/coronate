@@ -8,14 +8,25 @@ label {
     line-height: 1.4;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"] {
     border-color: var(--grey-90-a20);
     border-width: 1px;
     border-radius: 2px;
     padding: 0 8px;
     width: auto;
-    height: 32px;
+    min-height: 32px;
     font-size: 1em;
+}
+
+/**
+ * Used in places where an <input> may switch places with another element.
+ * Wrap the other element in this class to make the transition seamless.
+ * TODO: I've stopped working on this until more visual elements are stable.
+ */
+.inputPlaceholder {
+    /* padding: 12px 24px; */
+    display: inline-block;
 }
 
 input:hover {

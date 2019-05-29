@@ -59,6 +59,7 @@ export {RoundList};
 const Tournament = t.interface(
     {
         byeQueue: t.list(t.String),
+        date: Date,
         id: Id,
         name: t.String,
         playerIds: t.list(t.String),

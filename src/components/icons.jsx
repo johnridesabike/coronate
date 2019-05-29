@@ -1,4 +1,4 @@
-import Alert from "react-feather/dist/icons/alert-circle";
+import Alert from "react-feather/dist/icons/alert-triangle";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";

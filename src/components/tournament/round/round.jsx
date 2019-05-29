@@ -51,7 +51,7 @@ export default function Round({roundId}) {
     }
 
     return (
-        <div>
+        <div className="content-area">
             <div className="toolbar">
                 <button
                     className="danger"

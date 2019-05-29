@@ -38,11 +38,11 @@ export default function PlayerList({
                         <th colSpan={2}>Name</th>
                         <th>Rating</th>
                         <th>Matches</th>
-                        <th>Controls</th>
+                        <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
                 </thead>
                 <tbody>{Object.values(players).map((player) =>
-                    <tr key={player.id}>
+                    <tr key={player.id}  className="buttons-on-hover">
                         <td className="table__player">
                             {player.firstName}
                         </td>

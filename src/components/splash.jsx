@@ -1,4 +1,5 @@
 import Icons from "./icons";
+import {Notification} from "./utility";
 import React from "react";
 import {loadDemoDB} from "../hooks/db";
 import styles from "./splash.module.css";
@@ -24,6 +25,10 @@ const Splash = (props) => (
                     Start creating your tournaments!
                 </li>
             </ol>
+            <Notification warning>
+                If you experience any glitches or crashes,<br />
+                clear your browser cache and try again.
+            </Notification>
         </aside>
         <div className={styles.title}>
             <h1>
@@ -44,7 +49,7 @@ const Splash = (props) => (
             <p>
                 Built with JavaScript and{" "}
                 <a href="https://reactjs.org/">React</a>.{" "}
-                <span style={{fontSize: "1.125em"}}>
+                <span style={{fontSize: "16px"}}>
                     <Icons.Javascript /> <Icons.React />
                 </span>
             </p>

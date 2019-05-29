@@ -61,6 +61,12 @@ const ActionMoveMatch = t.interface({
     oldIndex: t.Number,
     roundId: t.Number
 });
+const ActionSetName = t.interface({
+    name: t.String
+});
+const ActionSetDate = t.interface({
+    date: Date
+});
 const ActionLoadState = t.interface({
     state: t.Any
 });
@@ -70,8 +76,10 @@ const ActionTypes = t.union([
     ActionAddRemoveTieBreak,
     ActionAddRemoveTieBreak,
     ActionMoveTieBreak,
+    ActionSetName,
     ActionSetTourneyPlayers,
     ActionSetByeQueue,
+    ActionSetDate,
     ActionAutoPair,
     ActionManualPair,
     ActionSetMatchResult,
@@ -90,7 +98,9 @@ ActionTypes.dispatch = function (action) {
         "MOVE_MATCH": ActionMoveMatch,
         "MOVE_TIEBREAK": ActionMoveTieBreak,
         "SET_BYE_QUEUE": ActionSetByeQueue,
+        "SET_DATE": ActionSetDate,
         "SET_MATCH_RESULT": ActionSetMatchResult,
+        "SET_NAME": ActionSetName,
         "SET_STATE": ActionLoadState,
         "SET_TOURNEY_PLAYERS": ActionSetTourneyPlayers,
         "SWAP_COLORS": ActionEditMatch
@@ -143,6 +153,12 @@ export default function tournamentReducer(state, action) {
             action.byeQueue,
             state
         );
+    case "SET_NAME":
+        return assoc(
+            "name",
+            action.name,
+            state
+        );
     case "AUTO_PAIR":
         return over(
             lensPath(["roundList", action.roundId]),
@@ -162,6 +178,12 @@ export default function tournamentReducer(state, action) {
         return over(
             lensPath(["roundList", action.roundId]),
             append(manualPair(action.pair, action.byeValue)),
+            state
+        );
+    case "SET_DATE":
+        return assoc(
+            "date",
+            action.date,
             state
         );
     case "SET_MATCH_RESULT":

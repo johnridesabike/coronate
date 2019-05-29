@@ -20,7 +20,7 @@ export default function PlayerSelect(props) {
                 </button>
             </div>
             <PanelContainer>
-                <Panel>
+                <Panel style={{flexShrink: "0"}}>
                     <table>
                         <caption>Current roster</caption>
                         <thead>
@@ -66,8 +66,8 @@ export default function PlayerSelect(props) {
                                 key={pId}
                                 className={
                                     (hasHadBye(pId, matches))
-                                    ? "disabled"
-                                    : ""
+                                    ? "disabled buttons-on-hover"
+                                    : "buttons-on-hover"
                                 }
                             >
                                 {players[pId].firstName}{" "}

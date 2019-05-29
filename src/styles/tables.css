@@ -41,10 +41,6 @@ textarea.json {
     white-space: pre;
 }
 
-.helpIcon {
-    cursor: help;
-}
-
 .svg-icon {
     height: 1em;
     width: auto;
