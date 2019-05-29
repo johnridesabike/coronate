@@ -86,10 +86,15 @@
       "category": "public.app-category.productivity"
     },
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "compression": "store"
     },
     "directories": {
       "buildResources": "assets"
-    }
+    },
+    "extraFiles" : [
+      "LICENSE",
+      "README.md"
+    ]
   }
 }

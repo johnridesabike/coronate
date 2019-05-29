@@ -10,11 +10,11 @@ let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 900,
         height: 680,
-        webPreferences: {
-            nodeIntegration: true
-        }
+        width: 900
+        // webPreferences: {
+        //     nodeIntegration: true
+        // }
     });
     mainWindow.loadURL((
         (isDev)
@@ -42,6 +42,12 @@ function createWindow() {
     mainWindow.on("closed", () => mainWindow = null);
 }
 
+if (process.env.PORTABLE_EXECUTABLE_DIR) {
+    app.setPath(
+        "userData",
+        path.join(process.env.PORTABLE_EXECUTABLE_DIR, "data")
+    );
+}
 
 app.on("ready", createWindow);
 
