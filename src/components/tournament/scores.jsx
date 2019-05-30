@@ -12,19 +12,19 @@ import numeral from "numeral";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
 
-function ScoreTable(props) {
+export function ScoreTable({compact, title}) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>
-            <caption>Score detail</caption>
+            <caption>{title}</caption>
             <thead>
                 <tr className={style.topHeader}>
                     <th className="title-10" scope="col">Rank</th>
                     <th className="title-10" scope="col">Name</th>
                     <th className="title-10" scope="col">Score</th>
-                    {tbMethods.map((name, i) => (
+                    {!compact && tbMethods.map((name, i) => (
                         <th key={i} className="title-10" scope="col">
                             {name}
                         </th>
@@ -33,9 +33,9 @@ function ScoreTable(props) {
             </thead>
             <tbody>
                 {standingTree.map((standingsFlat, rank) =>
-                    standingsFlat.map((standing, j, src) => (
+                    standingsFlat.map((standing, i, src) => (
                         <tr key={standing.id} className={style.row}>
-                            {j === 0 && ( // Only display the rank once
+                            {i === 0 && ( // Only display the rank once
                                 <th
                                     className={"table__number " + style.rank}
                                     rowSpan={src.length}
@@ -62,14 +62,14 @@ function ScoreTable(props) {
                             >
                                 {numeral(standing.score).format("1/2")}
                             </td>
-                            {standing.tieBreaks.map((score, i) => (
+                            {!compact && standing.tieBreaks.map((score, j) => (
                                 <td
-                                    key={i}
+                                    key={j}
                                     className="table__number"
                                     data-testid={dashify(
                                         getPlayer(standing.id).firstName
                                         + getPlayer(standing.id).lastName
-                                        + tbMethods[i]
+                                        + tbMethods[j]
                                     )}
                                 >
                                     {numeral(score).format("1/2")}
@@ -82,7 +82,10 @@ function ScoreTable(props) {
         </table>
     );
 }
-ScoreTable.propTypes = {};
+ScoreTable.propTypes = {
+    compact: PropTypes.bool,
+    title: PropTypes.string.isRequired
+};
 
 function SelectTieBreaks(props) {
     const {tourney, tourneyDispatch} = useTournament();
@@ -149,69 +152,78 @@ function SelectTieBreaks(props) {
                 <caption className="title-30">
                     Selected Tiebreak methods
                 </caption>
-                <tr>
-                    <th>Name</th>
-                    <th>Controls</th>
-                </tr>
-                {tieBreaks.map((id) => (
-                    <tr
-                        key={id}
-                        className={selectedTb === id ? "selected" : ""}
-                    >
-                        <td>
-                            {tieBreakMethods[id].name}
-                        </td>
-                        <td>
-                            <button
-                                className="button-micro"
-                                disabled={
-                                    selectedTb !== null && selectedTb !== id
-                                }
-                                onClick={() =>
-                                    selectedTb === id
-                                        ? setSelectedTb(null)
-                                        : setSelectedTb(id)
-                                }
-                            >
-                                {selectedTb === id ? "Done" : "Edit"}
-                            </button>
-                        </td>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Controls</th>
                     </tr>
-                ))}
+                </thead>
+                <tbody>
+                    {tieBreaks.map((id) => (
+                        <tr
+                            key={id}
+                            className={selectedTb === id ? "selected" : ""}
+                        >
+                            <td>
+                                {tieBreakMethods[id].name}
+                            </td>
+                            <td>
+                                <button
+                                    className="button-micro"
+                                    disabled={
+                                        selectedTb !== null
+                                        && selectedTb !== id
+                                    }
+                                    onClick={() =>
+                                        selectedTb === id
+                                            ? setSelectedTb(null)
+                                            : setSelectedTb(id)
+                                    }
+                                >
+                                    {selectedTb === id ? "Done" : "Edit"}
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
             </table>
             <table style={{marginTop: "16px"}}>
                 <caption className="title-30">
                     Available tiebreak methods
                 </caption>
-                <tr>
-                    <th>Name</th>
-                    <th>Controls</th>
-                </tr>
-                {Object.values(tieBreakMethods).map(({name, id}) => (
-                    <tr key={id}>
-                        <td>
-                            <span
-                                className={
-                                    tieBreaks.includes(id)
-                                        ? "enabled"
-                                        : "disabled"
-                                }
-                            >
-                                {name}
-                            </span>
-                        </td>
-                        <td>
-                            {!tieBreaks.includes(id) && (
-                                <button
-                                    className="button-micro"
-                                    onClick={() => toggleTb(id)}
-                                >
-                                    Add
-                                </button>
-                            )}
-                        </td>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Controls</th>
                     </tr>
-                ))}
+                </thead>
+                <tbody>
+                    {Object.values(tieBreakMethods).map(({name, id}) => (
+                        <tr key={id}>
+                            <td>
+                                <span
+                                    className={
+                                        tieBreaks.includes(id)
+                                            ? "enabled"
+                                            : "disabled"
+                                    }
+                                >
+                                    {name}
+                                </span>
+                            </td>
+                            <td>
+                                {!tieBreaks.includes(id) && (
+                                    <button
+                                        className="button-micro"
+                                        onClick={() => toggleTb(id)}
+                                    >
+                                        Add
+                                    </button>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
             </table>
         </div>
     );
@@ -226,7 +238,7 @@ const Scores = (props) => (
         </TabList>
         <TabPanels>
             <TabPanel>
-                <ScoreTable />
+                <ScoreTable title="Score detail" />
             </TabPanel>
             <TabPanel>
                 <SelectTieBreaks />

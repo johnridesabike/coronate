@@ -1,10 +1,8 @@
 import React, {useState} from "react";
 import {findById, findIndexById} from "../../utility";
 import Icons from "../../icons";
-import MatchRow from "./match-row";
 import PropTypes from "prop-types";
-import VisuallyHidden from "@reach/visually-hidden";
-import style from "./round.module.css";
+import RoundTable from "./round-table";
 import {useTournament} from "../../../hooks";
 
 export default function Round({roundId}) {
@@ -86,50 +84,11 @@ export default function Round({roundId}) {
             {matchList.length === 0 &&
                 <p>No players matched yet.</p>
             }
-            <table className={style.table}>
-                {matchList.length > 0 &&
-                    <>
-                    <caption>Round {roundId + 1} results</caption>
-                    <thead>
-                        <tr>
-                            <th className={style.rowId} scope="col">
-                                #
-                            </th>
-                            <th scope="col">
-                                <VisuallyHidden>White result</VisuallyHidden>
-                            </th>
-                            <th className="row__player" scope="col">
-                                White
-                            </th>
-                            <th scope="col">
-                                <VisuallyHidden>Black result</VisuallyHidden>
-                            </th>
-                            <th className="row__player" scope="col">
-                                Black
-                            </th>
-                            <th className="row__result" scope="col">
-                                Match result
-                            </th>
-                            <th className="row__controls" scope="col">
-                                <VisuallyHidden>Controls</VisuallyHidden>
-                            </th>
-                        </tr>
-                    </thead>
-                    </>
-                }
-                <tbody className={style.tbody + " content"}>
-                    {matchList.map((match, pos) => (
-                        <MatchRow
-                            key={match.id}
-                            match={match}
-                            pos={pos}
-                            roundId={roundId}
-                            selectedMatch={selectedMatch}
-                            setSelectedMatch={setSelectedMatch}
-                        />
-                    ))}
-                </tbody>
-            </table>
+            <RoundTable
+                roundId={roundId}
+                selectedMatch={selectedMatch}
+                setSelectedMatch={setSelectedMatch}
+            />
         </div>
     );
 }

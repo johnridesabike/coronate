@@ -13,6 +13,7 @@ import styles from "./round.module.css";
 import {useTournament} from "../../../hooks";
 
 export default function MatchRow({
+    compact,
     pos,
     match,
     roundId,
@@ -166,71 +167,73 @@ export default function MatchRow({
                     </option>
                 </select>
             </td>
-            <td className={styles.controls + " data__input"}>
-                {(selectedMatch !== match.id)
-                ? (
+            {!compact &&
+                <td className={styles.controls + " data__input"}>
+                    {(selectedMatch !== match.id)
+                    ? (
+                        <button
+                            className="button-ghost"
+                            title="Edit match"
+                            onClick={() => setSelectedMatch(match.id)}
+                        >
+                            <Icons.Circle />
+                        </button>
+                    ) : (
+                        <button
+                            className="button-ghost button-pressed"
+                            title="End editing match"
+                            onClick={() => setSelectedMatch(null)}
+                        >
+                            <Icons.CheckCircle />
+                        </button>
+                    )}
                     <button
                         className="button-ghost"
-                        title="Edit match"
-                        onClick={() => setSelectedMatch(match.id)}
+                        title="Open match information."
+                        onClick={() => setOpenModal(true)}
                     >
-                        <Icons.Circle />
+                        <Icons.Info />
+                        <Hidden>
+                            View information for match:{" "}
+                            {whiteName} versus {blackName}
+                        </Hidden>
                     </button>
-                ) : (
-                    <button
-                        className="button-ghost button-pressed"
-                        title="End editing match"
-                        onClick={() => setSelectedMatch(null)}
-                    >
-                        <Icons.CheckCircle />
-                    </button>
-                )}
-                <button
-                    className="button-ghost"
-                    title="Open match information."
-                    onClick={() => setOpenModal(true)}
-                >
-                    <Icons.Info />
-                    <Hidden>
-                        View information for match:{" "}
-                        {whiteName} versus {blackName}
-                    </Hidden>
-                </button>
-                <Dialog isOpen={openModal}>
-                    <button
-                        className="button-micro button-primary"
-                        onClick={() => setOpenModal(false)}
-                    >
-                        close
-                    </button>
-                    <p>{tourney.name}</p>
-                    <p>Round {roundId + 1}, match {pos + 1}</p>
-                    <PanelContainer>
-                        <Panel>
-                            <PlayerMatchInfo
-                                color={0}
-                                matchId={match.id}
-                                roundId={roundId}
-                            />
-                        </Panel>
-                        <Panel>
-                            <PlayerMatchInfo
-                                color={1}
-                                matchId={match.id}
-                                roundId={roundId}
-                            />
-                        </Panel>
-                    </PanelContainer>
-                </Dialog>
-            </td>
+                    <Dialog isOpen={openModal}>
+                        <button
+                            className="button-micro button-primary"
+                            onClick={() => setOpenModal(false)}
+                        >
+                            close
+                        </button>
+                        <p>{tourney.name}</p>
+                        <p>Round {roundId + 1}, match {pos + 1}</p>
+                        <PanelContainer>
+                            <Panel>
+                                <PlayerMatchInfo
+                                    color={0}
+                                    matchId={match.id}
+                                    roundId={roundId}
+                                />
+                            </Panel>
+                            <Panel>
+                                <PlayerMatchInfo
+                                    color={1}
+                                    matchId={match.id}
+                                    roundId={roundId}
+                                />
+                            </Panel>
+                        </PanelContainer>
+                    </Dialog>
+                </td>
+            }
         </tr>
     );
 }
 MatchRow.propTypes = {
+    compact: PropTypes.bool,
     match: PropTypes.object,
     pos: PropTypes.number,
     roundId: PropTypes.number,
     selectedMatch: PropTypes.string,
-    setSelectedMatch: PropTypes.func,
-    tourneyId: PropTypes.number
+    setSelectedMatch: PropTypes.func
 };

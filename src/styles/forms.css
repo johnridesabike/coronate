@@ -50,3 +50,7 @@ input:focus {
     /* font-size: 0.833rem;
     line-height: 1.4; */
 }
+
+fieldset {
+    background-color: var(--white-100);
+}
