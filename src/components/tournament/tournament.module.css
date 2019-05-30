@@ -4,7 +4,7 @@
         height: 100%;
         display: grid;
         grid-template-columns: 164px auto;
-        grid-template-rows: 104px auto;
+        grid-template-rows: 96px auto;
         grid-template-areas:
             "sidebar header"
             "sidebar content"
@@ -16,6 +16,11 @@
     margin-right: 32px;
     margin-left: 32px;
     text-align: center;
+}
+
+.header h1,
+.header input[type="text"] {
+    margin-bottom: 0;
 }
 
 .header p {

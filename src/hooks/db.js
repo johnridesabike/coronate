@@ -48,10 +48,14 @@ function useAllItemsFromDb(store) {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function loadItemsFromDb() {
+            document.body.style.cursor = "wait";
             store.getItems().then(function (results) {
                 console.log("loaded items from", store._config.storeName);
                 dispatch({state: results, type: "LOAD_STATE"});
                 setIsLoaded(true);
+                document.body.style.cursor = "auto";
+            }).catch(function () {
+                document.body.style.cursor = "auto";
             });
         },
         [store]
@@ -97,10 +101,14 @@ export function useOptionsDb() {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initOptionsFromDb() {
+            document.body.style.cursor = "wait";
             optionsStore.iterate(function (value, key) {
                 dispatch({option: key, type: "SET_OPTION", value: value});
             }).then(function () {
                 setIsLoaded(true);
+                document.body.style.cursor = "auto";
+            }).catch(function () {
+                document.body.style.cursor = "auto";
             });
         },
         []

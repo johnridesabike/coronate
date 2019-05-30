@@ -154,7 +154,7 @@ export default function MatchRow({
                     onChange={setMatchResult}
                 >
                     <option value="NOTSET">
-                        Select a winner
+                        Select winner
                     </option>
                     <option value="WHITE">
                         White won

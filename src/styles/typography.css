@@ -14,25 +14,27 @@ h2,
 caption {
     font-size: 28px;
     font-weight: 300;
+    margin: 0.25em 0;
 }
 
 .title-30,
 h3 {
     font-size: 22px;
     font-weight: 300;
+    margin: 0.25em 0;
 }
 
 .title-20,
 th,
 h4 {
     font-size: 17px;
-    font-weight: 500;
+    margin: 0.25em 0;
 }
 
 .title-10,
 h5 {
     font-size: 13px;
-    font-weight: 500;
+    margin: 0.25em 0;
 }
 
 .body-30 {

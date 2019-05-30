@@ -23,6 +23,7 @@ export default function TournamentList(props) {
             type: "ADD_TOURNEY"
         });
         setNewTourneyName("");
+        setIsFormOpen(false);
     }
 
     function deleteTournament(id, name) {
