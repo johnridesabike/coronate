@@ -7,6 +7,7 @@ import Round from "./round";
 import {Router} from "@reach/router";
 import Scores from "./scores";
 import Sidebar from "./sidebar";
+import Status from "./status";
 import {TournamentProvider} from "../../hooks";
 import styles from "./tournament.module.css";
 
@@ -19,6 +20,7 @@ export default function Tournament(props) {
                 <div className={styles.contentFrame}>
                     <Router>
                         <PlayerSelect path="/" />
+                        <Status path="status" />
                         <Crosstable path="crosstable" />
                         <Scores path="scores" />
                         <Round path=":roundId" />

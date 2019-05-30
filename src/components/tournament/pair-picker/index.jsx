@@ -92,7 +92,7 @@ export default function PairPicker({roundId}) {
                         stagedPlayers={stagedPlayers}
                     />
                 </Panel>
-                <Panel>
+                <Panel style={{flexGrow: "1"}}>
                     <Stage
                         roundId={roundId}
                         setStagedPlayers={setStagedPlayers}
@@ -110,7 +110,9 @@ export default function PairPicker({roundId}) {
                             )
                         )}
                     </PanelContainer>
-                    Match ideal: {matchIdeal}
+                    {!stagedPlayers.includes(null) &&
+                        <span>Match ideal: {matchIdeal}</span>
+                    }
                 </Panel>
             </PanelContainer>
             <Dialog isOpen={isModalOpen}>

@@ -35,9 +35,7 @@ input:hover {
 
 input:focus {
     border-color: var(--blue-50);
-    box-shadow:
-        0 0 0 1px #0a84ff,
-        0 0 0 4px rgba(10, 132, 255, 0.3);
+    box-shadow: var(--selected-box-shadow);
 }
 
 /* input:invalid {

@@ -18,7 +18,7 @@ a:active {
 }
 
 a:focus {
-    box-shadow: 0 0 0 2px #0a84ff, 0 0 0 6px rgba(10, 132, 255, 0.3);
+    box-shadow: var(--selected-box-shadow);
 }
 
 hr {
@@ -28,7 +28,8 @@ hr {
 }
 
 .selected {
-    background-color: var(--teal-50);
+    background-color: var(--grey-20);
+    box-shadow: var(--selected-box-shadow);
 }
 
 .status-alert {

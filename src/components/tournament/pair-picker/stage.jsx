@@ -32,46 +32,57 @@ export default function Stage({
     return (
         <div>
             <h2>Selected for matching:</h2>
-            <p>
-                White:{" "}
-                {white !== null &&
-                    <Fragment>
-                        {players[white].firstName}{" "}
-                        {players[white].lastName}{" "}
-                        <button onClick={() => unstage(WHITE)}>
-                            <Icons.UserMinus /> Remove
-                        </button>
-                    </Fragment>
-                }
-            </p>
-            <p>
-                Black:{" "}
-                {black !== null &&
-                    <Fragment>
-                        {players[black].firstName}{" "}
-                        {players[black].lastName}{" "}
-                        <button onClick={() => unstage(BLACK)}>
-                            <Icons.UserMinus /> Remove
-                        </button>
-                    </Fragment>
-                }
-            </p>
-            <button
-                disabled={
-                    stagedPlayers.every((id) => id === null)
-                }
-                onClick={() => setStagedPlayers(
-                    (prevState) => ([prevState[BLACK], prevState[WHITE]])
-                )}
-            >
-                <Icons.Repeat/> Swap colors
-            </button>{" "}
-            <button
-                disabled={stagedPlayers.includes(null)}
-                onClick={match}
-            >
-                <Icons.Check/> Match selected
-            </button>{" "}
+            <div className="content">
+                <p>
+                    White:{" "}
+                    {white !== null &&
+                        <Fragment>
+                            {players[white].firstName}{" "}
+                            {players[white].lastName}{" "}
+                            <button
+                                className="button-micro"
+                                onClick={() => unstage(WHITE)}
+                            >
+                                <Icons.UserMinus /> Remove
+                            </button>
+                        </Fragment>
+                    }
+                </p>
+                <p>
+                    Black:{" "}
+                    {black !== null &&
+                        <Fragment>
+                            {players[black].firstName}{" "}
+                            {players[black].lastName}{" "}
+                            <button
+                                className="button-micro"
+                                onClick={() => unstage(BLACK)}
+                            >
+                                <Icons.UserMinus /> Remove
+                            </button>
+                        </Fragment>
+                    }
+                </p>
+            </div>
+            <div className="toolbar">
+                <button
+                    disabled={
+                        stagedPlayers.every((id) => id === null)
+                    }
+                    onClick={() => setStagedPlayers(
+                        (prevState) => ([prevState[BLACK], prevState[WHITE]])
+                    )}
+                >
+                    <Icons.Repeat/> Swap colors
+                </button>{" "}
+                <button
+                    className="button-primary"
+                    disabled={stagedPlayers.includes(null)}
+                    onClick={match}
+                >
+                    <Icons.Check/> Match selected
+                </button>
+            </div>
         </div>
     );
 }

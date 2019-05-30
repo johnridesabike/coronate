@@ -29,7 +29,7 @@ export default function PlayerSelect(props) {
                                 <th>Options</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="content">
                             {Object.values(players).map((p) => (
                                 <tr key={p.id} className={p.type + " player"}>
                                     <td>{p.firstName}</td>

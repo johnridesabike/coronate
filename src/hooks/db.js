@@ -29,10 +29,15 @@ const tourneyStore = localForage.createInstance({
 export {optionsStore, playerStore, tourneyStore};
 
 export function loadDemoDB() {
-    optionsStore.setItems(demoData.options);
-    playerStore.setItems(demoData.players);
-    tourneyStore.setItems(demoData.tournaments);
-    window.alert("Demo data loaded!");
+    document.body.style.cursor = "wait";
+    Promise.all([
+        optionsStore.setItems(demoData.options),
+        playerStore.setItems(demoData.players),
+        tourneyStore.setItems(demoData.tournaments)
+    ]).then(function () {
+        window.alert("Demo data loaded!");
+        document.body.style.cursor = "auto";
+    });
 }
 
 /*******************************************************************************

@@ -20,3 +20,12 @@
 .controls {
     width: 72px;
 }
+
+.matchResult {
+    width: 128px;
+}
+
+.playerResult {
+    width: 32px;
+    text-align: center;
+}

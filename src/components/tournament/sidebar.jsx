@@ -39,7 +39,7 @@ export default function Sidebar(props) {
                 true
             ];
         } else if (isItOver) {
-            return ["All necessary rounds have completed.", true];
+            return ["All rounds have completed.", true];
         } else {
             return ["Ready to begin a new round.", false];
         }
@@ -108,6 +108,11 @@ export default function Sidebar(props) {
                         </Link>
                     </li>
                     <li>
+                        <Link to="status">
+                            <Icons.Activity /> Status
+                        </Link>
+                    </li>
+                    <li>
                         <Link to="crosstable">
                             <Icons.Layers /> Crosstable
                         </Link>
@@ -131,6 +136,9 @@ export default function Sidebar(props) {
             </nav>
             <hr />
             <ul>
+                <li className="caption-30">
+                    Round progress: {roundList.length}/{roundCount}
+                </li>
                 <li>
                     <button
                         className={(tooltipWarn ? "" : "button-primary")}
@@ -152,15 +160,12 @@ export default function Sidebar(props) {
                 </li>
                 <li>
                     <button
-                        className={"danger"}
+                        className="button-micro"
                         disabled={roundList.length === 0}
                         onClick={delLastRound}
                     >
                         <Icons.Trash /> Remove last round
                     </button>
-                </li>
-                <li className="caption-30">
-                    Round progress: {roundList.length}/{roundCount}
                 </li>
             </ul>
         </div>

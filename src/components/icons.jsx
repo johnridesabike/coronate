@@ -1,10 +1,13 @@
+import Activity from "react-feather/dist/icons/activity";
 import Alert from "react-feather/dist/icons/alert-triangle";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";
 import Check from "react-feather/dist/icons/check";
+import CheckCircle from "react-feather/dist/icons/check-circle";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
+import Circle from "react-feather/dist/icons/circle";
 import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
 import Javascript from "simple-icons/icons/javascript";
@@ -32,13 +35,16 @@ const simpleIcon = (icon) => (props) => (
 );
 
 export default {
+    Activity,
     Alert,
     ArrowDown,
     ArrowUp,
     ArrowUpLeft,
     Check,
+    CheckCircle,
     ChevronLeft,
     ChevronRight,
+    Circle,
     Edit,
     Info,
     Javascript: simpleIcon(Javascript),

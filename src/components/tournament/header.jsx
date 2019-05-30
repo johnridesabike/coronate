@@ -41,7 +41,7 @@ export default function Header(props) {
             type: "SET_DATE"
         });
     }
-
+    // TODO: Audit accesibility of these edit controls. (Keyboard focus etc.)
     return (
         <div className={props.className}>
             {(isEditingName)

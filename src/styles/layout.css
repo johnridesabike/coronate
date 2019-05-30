@@ -50,3 +50,8 @@ div[role="group"] {
     opacity: 0;
     background-color: transparent;
 }
+
+.plain-list {
+    list-style-type: none;
+    padding: 0;
+}

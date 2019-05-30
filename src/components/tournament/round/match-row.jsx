@@ -7,6 +7,7 @@ import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
+import VisuallyHidden from "@reach/visually-hidden";
 import {calcNewRatings} from "../../../pairing-scoring";
 import styles from "./round.module.css";
 import {useTournament} from "../../../hooks";
@@ -42,6 +43,19 @@ export default function MatchRow({
     const blackPlayer = getPlayer(match.playerIds[BLACK]);
     const whiteName = whitePlayer.firstName + " " + whitePlayer.lastName;
     const blackName = blackPlayer.firstName + " " + blackPlayer.lastName;
+
+
+    function ResultDisplay(color) {
+        if (resultCode === "NOTSET") {
+            return <VisuallyHidden>Not set</VisuallyHidden>;
+        } else if (resultCode === "DRAW") {
+            return <span aria-label="Draw" role="img" >🤝</span>;
+        } else if (resultCode === color) {
+            return <span aria-label="Won" role="img" >🏆</span>;
+        } else {
+            return <VisuallyHidden>Lost</VisuallyHidden>;
+        }
+    }
 
     function setMatchResult(event) {
         const result = (function () {
@@ -105,36 +119,32 @@ export default function MatchRow({
         <tr
             className={
                 (match.id === selectedMatch)
-                ? "selected buttons-on-hover"
+                ? "selected"
                 : "buttons-on-hover"
             }
         >
             <th className={"table__number " + styles.rowId} scope="row">
                 {pos + 1}
             </th>
+            <td className={styles.playerResult}>
+                {ResultDisplay("WHITE")}
+            </td>
             <td
                 className={"table__player row__player " + whitePlayer.type}
                 data-testid={`match-${pos}-white`}
             >
-                {whiteName}{" "}
-                {resultCode === "WHITE" && (
-                    <span role="img" aria-hidden>
-                        🏆
-                    </span>
-                )}
+                {whiteName}
+            </td>
+            <td className={styles.playerResult}>
+                {ResultDisplay("BLACK")}
             </td>
             <td
                 className={"table__player row__player " + blackPlayer.type}
                 data-testid={`match-${pos}-black`}
             >
-                {blackName}{" "}
-                {resultCode === "BLACK" && (
-                    <span role="img" aria-hidden>
-                        🏆
-                    </span>
-                )}
+                {blackName}
             </td>
-            <td className="data__input row__controls">
+            <td className={styles.matchResult + " data__input row__controls"}>
                 <select
                     className={styles.winnerSelect}
                     disabled={match.playerIds.includes(DUMMY_ID)}
@@ -146,10 +156,10 @@ export default function MatchRow({
                         Select a winner
                     </option>
                     <option value="WHITE">
-                        {whiteName} won
+                        White won
                     </option>
                     <option value="BLACK">
-                        {blackName} won
+                        Black won
                     </option>
                     <option value="DRAW">
                         Draw
@@ -164,15 +174,15 @@ export default function MatchRow({
                         title="Edit match"
                         onClick={() => setSelectedMatch(match.id)}
                     >
-                        <Icons.Edit />
+                        <Icons.Circle />
                     </button>
                 ) : (
                     <button
-                        className="button-ghost"
+                        className="button-ghost button-pressed"
                         title="End editing match"
                         onClick={() => setSelectedMatch(null)}
                     >
-                        <Icons.Check />
+                        <Icons.CheckCircle />
                     </button>
                 )}
                 <button

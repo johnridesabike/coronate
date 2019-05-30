@@ -65,7 +65,8 @@ input[type="submit"]:hover,
 
 button:active,
 input[type="submit"]:active,
-.button:active {
+.button:active,
+.button-pressed {
     background: var(--grey-90-a30);
 }
 

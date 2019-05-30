@@ -38,12 +38,14 @@ export default function TournamentList(props) {
             ?
             <table>
                 <caption>Tournament list</caption>
-                <tbody>
+                <thead>
                     <tr>
                         <th>Name</th>
                         <th>Date</th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
+                </thead>
+                <tbody className="content">
                     {Object.values(tourneys).map(({date, id, name}) =>
                         <tr key={id} className="buttons-on-hover">
                             <td>

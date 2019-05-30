@@ -41,28 +41,35 @@ export default function PlayerList({
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
                 </thead>
-                <tbody>{Object.values(players).map((player) =>
-                    <tr key={player.id}  className="buttons-on-hover">
-                        <td className="table__player">
-                            <Link to={player.id}>
-                                {player.firstName} {player.lastName}
-                            </Link>
-                        </td>
-                        <td className="table__number">{player.rating}</td>
-                        <td className="table__number">{player.matchCount}</td>
-                        <td>
-                            <button
-                                className="danger button-ghost"
-                                onClick={(event) => delPlayer(event, player.id)}
-                            >
-                                <Icons.Trash />
-                                <VisuallyHidden>
+                <tbody className="content">
+                    {Object.values(players).map((player) =>
+                        <tr key={player.id}  className="buttons-on-hover">
+                            <td className="table__player">
+                                <Link to={player.id}>
+                                    {player.firstName} {player.lastName}
+                                </Link>
+                            </td>
+                            <td className="table__number">
+                                {player.rating}
+                            </td>
+                            <td className="table__number">
+                                {player.matchCount}
+                            </td>
+                            <td>
+                                <button
+                                    className="danger button-ghost"
+                                    onClick={
+                                        (event) => delPlayer(event, player.id)
+                                    }
+                                >
+                                    <Icons.Trash />
+                                    <VisuallyHidden>
                                     Delete {player.firstName} {player.lastName}
-                                </VisuallyHidden>
-                            </button>
-                        </td>
-                    </tr>
-                )}
+                                    </VisuallyHidden>
+                                </button>
+                            </td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
             <Dialog isOpen={isFormOpen}>

@@ -55,28 +55,28 @@ export default function Round({roundId}) {
         <div className="content-area">
             <div className="toolbar">
                 <button
-                    className="danger"
+                    className="button-micro"
                     disabled={selectedMatch === null}
                     onClick={() => unMatch(selectedMatch)}
                 >
                     <Icons.Trash /> Unmatch
                 </button>{" "}
                 <button
-                    className=""
+                    className="button-micro"
                     disabled={selectedMatch === null}
                     onClick={() => swapColors(selectedMatch)}
                 >
                     <Icons.Repeat /> Swap colors
                 </button>{" "}
                 <button
-                    className=""
+                    className="button-micro"
                     disabled={selectedMatch === null}
                     onClick={() => moveMatch(selectedMatch, -1)}
                 >
                     <Icons.ArrowUp /> Move up
                 </button>{" "}
                 <button
-                    className=""
+                    className="button-micro"
                     disabled={selectedMatch === null}
                     onClick={() => moveMatch(selectedMatch, 1)}
                 >
@@ -95,14 +95,20 @@ export default function Round({roundId}) {
                             <th className={style.rowId} scope="col">
                                 #
                             </th>
+                            <th scope="col">
+                                <VisuallyHidden>White result</VisuallyHidden>
+                            </th>
                             <th className="row__player" scope="col">
                                 White
+                            </th>
+                            <th scope="col">
+                                <VisuallyHidden>Black result</VisuallyHidden>
                             </th>
                             <th className="row__player" scope="col">
                                 Black
                             </th>
                             <th className="row__result" scope="col">
-                                Result
+                                Match result
                             </th>
                             <th className="row__controls" scope="col">
                                 <VisuallyHidden>Controls</VisuallyHidden>

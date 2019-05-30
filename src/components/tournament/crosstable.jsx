@@ -25,7 +25,7 @@ export default function Crosstable(props) {
 
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {
-            return <Icons.X/>;
+            return <Icons.X className="disabled" />;
         }
         const result = opponentScores[player1Id][player2Id];
         if (result === undefined) {
@@ -34,13 +34,22 @@ export default function Crosstable(props) {
         return numeral(result).format("1/2");
     }
 
-    function getRatingChange(playerId) {
+    function getRatingChangeTds(playerId) {
         const [
             firstRating,
             lastRating
         ] = getPerformanceRatings(matches, playerId);
         const change = numeral(lastRating - firstRating).format("+0");
-        return `${lastRating}\xA0(${change})`; // \xA0 = &nsbp;
+        return (
+            <>
+            <td className="table__number">
+                {lastRating}
+            </td>
+            <td className="table__number body-10">
+                ({change})
+            </td>
+            </>
+        );
     }
 
     return (
@@ -48,7 +57,7 @@ export default function Crosstable(props) {
             <caption>Crosstable</caption>
             <thead>
                 <tr>
-                    <th>Rank</th>
+                    <th>#</th>
                     <th>Name</th>
                     {/* Display a rank as a shorthand for each player. */}
                     {Object.keys(standings).map((rank) =>
@@ -57,10 +66,10 @@ export default function Crosstable(props) {
                         </th>
                     )}
                     <th>Score</th>
-                    <th>Rating</th>
+                    <th colSpan={2}>Rating</th>
                 </tr>
             </thead>
-            <tbody className="content">
+            <tbody>
                 {/* Output a row for each player */}
                 {standings.map((standing, index)=>
                     <tr key={index} className={style.row}>
@@ -73,7 +82,10 @@ export default function Crosstable(props) {
                         </th>
                         {/* Output a cell for each other player */}
                         {standings.map((opponent, index2) =>
-                            <td key={index2} className="table__number">
+                            <td
+                                key={index2}
+                                className="table__number"
+                            >
                                 {getXScore(standing.id, opponent.id)}
                             </td>
                         )}
@@ -81,9 +93,7 @@ export default function Crosstable(props) {
                         <td className="table__number">
                             {numeral(standing.score).format("1/2")}
                         </td>
-                        <td className="table__number">
-                            {getRatingChange(standing.id)}
-                        </td>
+                        {getRatingChangeTds(standing.id)}
                     </tr>
                 )}
             </tbody>

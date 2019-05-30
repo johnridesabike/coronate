@@ -9,6 +9,9 @@
         "Helvetica Neue", sans-serif;
     --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
         "Courier New", monospace;
+    --selected-box-shadow: 
+        0 0 0 1px #0a84ff,
+        0 0 0 4px rgba(10, 132, 255, 0.3);
 }
 
 html {
@@ -44,4 +47,9 @@ textarea.json {
 
 .content {
     background-color: var(--white-100);
+    border-radius: 4px;
+}
+
+.content:not(table) {
+    padding: 4px;
 }

@@ -40,7 +40,7 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
     }
     return (
         <div>
-            <ul>
+            <ul className="content plain-list">
                 {Object.values(unmatchedWithDummy).map(
                     ({id, firstName, lastName}) => (
                         <li key={id}>

@@ -31,7 +31,7 @@ function ScoreTable(props) {
                     ))}
                 </tr>
             </thead>
-            <tbody className="content">
+            <tbody>
                 {standingTree.map((standingsFlat, rank) =>
                     standingsFlat.map((standing, j, src) => (
                         <tr key={standing.id} className={style.row}>
@@ -113,24 +113,32 @@ function SelectTieBreaks(props) {
         <div>
             <div className="toolbar">
                 <button
+                    className="button-micro"
                     disabled={selectedTb === null}
                     onClick={() => toggleTb()}
                 >
                     Toggle
                 </button>
                 <button
+                    className="button-micro"
                     disabled={selectedTb === null}
                     onClick={() => moveTb(-1)}
                 >
                     <Icons.ArrowUp/> Move up
                 </button>
                 <button
+                    className="button-micro"
                     disabled={selectedTb === null}
                     onClick={() => moveTb(1)}
                 >
                     <Icons.ArrowDown/> Move down
                 </button>
                 <button
+                    className={
+                        (selectedTb !== null)
+                        ? "button-micro button-primary"
+                        : "button-micro"
+                    }
                     disabled={selectedTb === null}
                     onClick={() => setSelectedTb(null)}
                 >
