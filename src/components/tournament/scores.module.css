@@ -20,12 +20,13 @@
     border-bottom-style: solid;
     border-width: 1px;
     border-color: var(--grey-40);
+    background-color: var(--white-100);
 }
 
-.row:nth-child(odd) td {
+.row:nth-child(odd) {
     background-color: var(--grey-20);
 }
-.row:nth-child(even) td {
+.row:nth-child(even) {
     background-color: var(--white-100);
 }
 

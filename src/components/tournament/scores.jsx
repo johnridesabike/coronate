@@ -1,3 +1,4 @@
+import {Panel, PanelContainer} from "../utility";
 import React, {useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
@@ -6,6 +7,7 @@ import {
 } from "../../pairing-scoring";
 import Icons from "../icons";
 import PropTypes from "prop-types";
+import VisuallyHidden from "@reach/visually-hidden";
 import dashify from "dashify";
 import {defaultTo} from "ramda";
 import numeral from "numeral";
@@ -18,7 +20,11 @@ export function ScoreTable({compact, title}) {
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
         <table className={style.table}>
-            <caption>{title}</caption>
+            <caption
+                className={(compact) ? "title-30" : "title-40"}
+            >
+                {title}
+            </caption>
             <thead>
                 <tr className={style.topHeader}>
                     <th className="title-10" scope="col">Rank</th>
@@ -44,14 +50,22 @@ export function ScoreTable({compact, title}) {
                                     {numeral(rank + 1).format("0o")}
                                 </th>
                             )}
-                            <th
-                                className={style.playerName}
-                                data-testid={rank}
-                                scope="row"
-                            >
-                                {getPlayer(standing.id).firstName}&nbsp;
-                                {getPlayer(standing.id).lastName}
-                            </th>
+                            {(compact) // use <td> if it's compact.
+                            ? (
+                                <td className={style.playerName}>
+                                    {getPlayer(standing.id).firstName}&nbsp;
+                                    {getPlayer(standing.id).lastName}
+                                </td>
+                            ) : ( // Use the name as a header if not compact.
+                                <th
+                                    className={style.playerName}
+                                    data-testid={rank}
+                                    scope="row"
+                                >
+                                    {getPlayer(standing.id).firstName}&nbsp;
+                                    {getPlayer(standing.id).lastName}
+                                </th>
+                            )}
                             <td
                                 className="table__number"
                                 data-testid={dashify(
@@ -113,119 +127,124 @@ function SelectTieBreaks(props) {
     }
 
     return (
-        <div>
-            <div className="toolbar">
-                <button
-                    className="button-micro"
-                    disabled={selectedTb === null}
-                    onClick={() => toggleTb()}
-                >
-                    Toggle
-                </button>
-                <button
-                    className="button-micro"
-                    disabled={selectedTb === null}
-                    onClick={() => moveTb(-1)}
-                >
-                    <Icons.ArrowUp/> Move up
-                </button>
-                <button
-                    className="button-micro"
-                    disabled={selectedTb === null}
-                    onClick={() => moveTb(1)}
-                >
-                    <Icons.ArrowDown/> Move down
-                </button>
-                <button
-                    className={
-                        (selectedTb !== null)
-                        ? "button-micro button-primary"
-                        : "button-micro"
-                    }
-                    disabled={selectedTb === null}
-                    onClick={() => setSelectedTb(null)}
-                >
-                    Done
-                </button>
-            </div>
-            <table>
-                <caption className="title-30">
-                    Selected Tiebreak methods
-                </caption>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Controls</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tieBreaks.map((id) => (
-                        <tr
-                            key={id}
-                            className={selectedTb === id ? "selected" : ""}
-                        >
-                            <td>
-                                {tieBreakMethods[id].name}
-                            </td>
-                            <td>
-                                <button
-                                    className="button-micro"
-                                    disabled={
-                                        selectedTb !== null
-                                        && selectedTb !== id
-                                    }
-                                    onClick={() =>
-                                        selectedTb === id
-                                            ? setSelectedTb(null)
-                                            : setSelectedTb(id)
-                                    }
-                                >
-                                    {selectedTb === id ? "Done" : "Edit"}
-                                </button>
-                            </td>
+        <PanelContainer className="content-area">
+            <Panel>
+                <div className="toolbar">
+                    <button
+                        className="button-micro"
+                        disabled={selectedTb === null}
+                        onClick={() => toggleTb()}
+                    >
+                        Toggle
+                    </button>
+                    <button
+                        className="button-micro"
+                        disabled={selectedTb === null}
+                        onClick={() => moveTb(-1)}
+                    >
+                        <Icons.ArrowUp/> Move up
+                    </button>
+                    <button
+                        className="button-micro"
+                        disabled={selectedTb === null}
+                        onClick={() => moveTb(1)}
+                    >
+                        <Icons.ArrowDown/> Move down
+                    </button>
+                    <button
+                        className={
+                            (selectedTb !== null)
+                            ? "button-micro button-primary"
+                            : "button-micro"
+                        }
+                        disabled={selectedTb === null}
+                        onClick={() => setSelectedTb(null)}
+                    >
+                        Done
+                    </button>
+                </div>
+                <table>
+                    <caption className="title-30">
+                        Selected Tiebreak methods
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th><VisuallyHidden>Controls</VisuallyHidden></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <table style={{marginTop: "16px"}}>
-                <caption className="title-30">
-                    Available tiebreak methods
-                </caption>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Controls</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Object.values(tieBreakMethods).map(({name, id}) => (
-                        <tr key={id}>
-                            <td>
-                                <span
-                                    className={
-                                        tieBreaks.includes(id)
-                                            ? "enabled"
-                                            : "disabled"
-                                    }
-                                >
-                                    {name}
-                                </span>
-                            </td>
-                            <td>
-                                {!tieBreaks.includes(id) && (
+                    </thead>
+                    <tbody className="content">
+                        {tieBreaks.map((id) => (
+                            <tr
+                                key={id}
+                                className={selectedTb === id ? "selected" : ""}
+                            >
+                                <td>
+                                    {tieBreakMethods[id].name}
+                                </td>
+                                <td style={{width: "48px"}}>
                                     <button
                                         className="button-micro"
-                                        onClick={() => toggleTb(id)}
+                                        disabled={
+                                            selectedTb !== null
+                                            && selectedTb !== id
+                                        }
+                                        onClick={() =>
+                                            selectedTb === id
+                                                ? setSelectedTb(null)
+                                                : setSelectedTb(id)
+                                        }
                                     >
-                                        Add
+                                        {selectedTb === id ? "Done" : "Edit"}
                                     </button>
-                                )}
-                            </td>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </Panel>
+            <Panel>
+                <div className="toolbar">&nbsp;</div>
+                <table style={{marginTop: "16px"}}>
+                    <caption className="title-30">
+                        Available tiebreak methods
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th><VisuallyHidden>Controls</VisuallyHidden></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody className="content">
+                        {Object.values(tieBreakMethods).map(({name, id}) => (
+                            <tr key={id}>
+                                <td>
+                                    <span
+                                        className={
+                                            tieBreaks.includes(id)
+                                                ? "disabled"
+                                                : "enabled"
+                                        }
+                                    >
+                                        {name}
+                                    </span>
+                                </td>
+                                <td>
+                                    {!tieBreaks.includes(id) && (
+                                        <button
+                                            className="button-micro"
+                                            onClick={() => toggleTb(id)}
+                                        >
+                                            Add
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </Panel>
+        </PanelContainer>
     );
 }
 SelectTieBreaks.propTypes = {};

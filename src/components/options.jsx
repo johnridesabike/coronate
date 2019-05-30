@@ -5,6 +5,7 @@ import {
     useDocumentTitle,
     useOptionsDb
 } from "../hooks";
+import Icons from "./icons";
 import demoData from "../demo-data";
 
 export default function Options(props) {
@@ -95,7 +96,7 @@ export default function Options(props) {
                             + encodeURIComponent(JSON.stringify(exportData))
                         }
                     >
-                        Download all data
+                        <Icons.Download /> Export all data
                     </a>
                 </p>
                 <label htmlFor="file">Load data file:</label>

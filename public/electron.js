@@ -6,10 +6,14 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
+const photon = require("photon-colors");
+
 let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
+        backgroundColor: photon.GREY_10,
+        // frame: false,
         height: 680,
         width: 900
         // webPreferences: {

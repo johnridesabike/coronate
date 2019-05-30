@@ -50,6 +50,6 @@ textarea.json {
     border-radius: 4px;
 }
 
-.content:not(table) {
+.content:not(tbody) {
     padding: 4px;
 }

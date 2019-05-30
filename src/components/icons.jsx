@@ -3,16 +3,19 @@ import Alert from "react-feather/dist/icons/alert-triangle";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
 import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";
+import Award from "react-feather/dist/icons/award";
 import Check from "react-feather/dist/icons/check";
 import CheckCircle from "react-feather/dist/icons/check-circle";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
 import Circle from "react-feather/dist/icons/circle";
+import Download from "react-feather/dist/icons/download";
 import Edit from "react-feather/dist/icons/edit";
 import Info from "react-feather/dist/icons/info";
 import Javascript from "simple-icons/icons/javascript";
 import Layers from "react-feather/dist/icons/layers";
 import List from "react-feather/dist/icons/list";
+import Minus from "react-feather/dist/icons/minus";
 import Plus from "react-feather/dist/icons/plus";
 import React from "react";
 import ReactIcon from "simple-icons/icons/react";
@@ -40,16 +43,19 @@ export default {
     ArrowDown,
     ArrowUp,
     ArrowUpLeft,
+    Award,
     Check,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
     Circle,
+    Download,
     Edit,
     Info,
     Javascript: simpleIcon(Javascript),
     Layers,
     List,
+    Minus,
     Plus,
     React: simpleIcon(ReactIcon),
     Repeat,

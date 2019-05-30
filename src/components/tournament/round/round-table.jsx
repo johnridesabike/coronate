@@ -17,7 +17,11 @@ export default function RoundTable({
         <table className={style.table}>
             {matchList.length > 0 &&
                 <>
-                <caption>Round {roundId + 1} matches</caption>
+                <caption
+                    className={(compact) ? "title-30" : "title-40"}
+                >
+                    Round {roundId + 1} matches
+                </caption>
                 <thead>
                     <tr>
                         <th className={style.rowId} scope="col">

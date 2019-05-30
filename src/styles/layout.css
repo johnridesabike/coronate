@@ -13,11 +13,17 @@
 
 .header {
     grid-area: app-header;
-    background: linear-gradient(var(--grey-10), var(--grey-20), var(--grey-30));
+    background-color: var(--grey-30);
     border-bottom: 1px var(--grey-40) solid;
     display: flex;
     flex-flow: row;
     align-items: flex-end;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+}
+
+.header a {
+    -webkit-app-region: no-drag;
 }
 
 .main {

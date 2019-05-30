@@ -63,7 +63,7 @@ export default function PlayerInfoBox({
         return <div>Loading...</div>;
     }
     return (
-        <div className={styles.playerInfo}>
+        <div className={styles.playerInfo + " content-area"}>
             <Link to=".."><Icons.ChevronLeft /> Back</Link>
             <h2>
                 Profile for {player.firstName} {player.lastName}

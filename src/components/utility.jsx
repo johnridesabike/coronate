@@ -43,14 +43,15 @@ Panel.propTypes = {
 
 export function PanelContainer(props) {
     return (
-        <div {...props} className={styles.panels}>
+        <div {...props} className={styles.panels + " " + props.className}>
             {props.children}
             {/* {React.Children.map(props.children, (child) => child)} */}
         </div>
     );
 }
 PanelContainer.propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    className: PropTypes.string
 };
 
 export function DateFormat(props) {

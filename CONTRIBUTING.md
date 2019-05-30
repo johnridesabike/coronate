@@ -12,14 +12,10 @@ This project is built using Node.js and React, so familiarity with those will co
 
 - Improve code documentation.
 
-## React
-
-- This was my first React project. I already rewrote it once to correct my bad practices, but it still needs a lot of work. Any advice or help on improving the JSX code or the state management is appreciated!
-
 ## User interface
 
+- Improve responsiveness across devices.
 - Improve accessibility.
-- Improve the player editor screen.
 - Implement drag-and-drop to supplement buttons.
 
 ## Low-priority
@@ -42,6 +38,6 @@ Shortly after I began writing tests, I changed the app to use IndexedDB for data
 
 ## Code quality
 
-When feasible, I like to follow the Crockford ([JSLint](https://www.jslint.com)) style guide, even though it is often inadequate for frameworks like React. I use [Ramda](https://ramdajs.com/) to manage state changes. I recently started using [tcomb](https://github.com/gcanti/tcomb) to ensure type-safety across the project.
+In general, I like to follow the Crockford ([JSLint](https://www.jslint.com)) style guide, even though it is often inadequate for frameworks like React. I use [Ramda](https://ramdajs.com/) to manage state changes. I recently started using [tcomb](https://github.com/gcanti/tcomb) to ensure type-safety across the project.
 
 These are general guidelines and personal preferences, and they are not always followed (or necessary to follow). The ESLint configuration mostly mirrors my preferred style.

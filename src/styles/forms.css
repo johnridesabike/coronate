@@ -19,6 +19,10 @@ input[type="date"] {
     font-size: 1em;
 }
 
+select {
+    border-color: var(--grey-90-a20);
+}
+
 /**
  * Used in places where an <input> may switch places with another element.
  * Wrap the other element in this class to make the transition seamless.

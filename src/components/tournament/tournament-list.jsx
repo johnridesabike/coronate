@@ -25,6 +25,13 @@ export default function TournamentList(props) {
         setNewTourneyName("");
     }
 
+    function deleteTournament(id, name) {
+        const message = "Are you sure you want to delete “" + name + "”?";
+        if (window.confirm(message)) {
+            dispatch({id, type: "DEL_ITEM"});
+        }
+    }
+
     return (
         <div className="content-area">
             <div className="toolbar toolbar__left">
@@ -61,9 +68,7 @@ export default function TournamentList(props) {
                                     aria-label={`Delete “${name}”`}
                                     className="danger button-ghost"
                                     title={`Delete “${name}”`}
-                                    onClick={
-                                        () => dispatch({id, type: "DEL_ITEM"})
-                                    }
+                                    onClick={() => deleteTournament(id, name)}
                                 >
                                     <Icons.Trash />
                                 </button>

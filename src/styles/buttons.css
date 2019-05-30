@@ -103,3 +103,7 @@ input[type="text"][disabled]:hover,
 .buttons-on-hover:not(:hover) button {
     opacity: 0;
 }
+
+.buttons-on-hover:not(:hover) select {
+    border-color: transparent;
+}

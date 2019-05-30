@@ -50,9 +50,9 @@ export default function MatchRow({
         if (resultCode === "NOTSET") {
             return <VisuallyHidden>Not set</VisuallyHidden>;
         } else if (resultCode === "DRAW") {
-            return <span aria-label="Draw" role="img" >🤝</span>;
+            return <Icons.Minus aria-label="Draw" />;
         } else if (resultCode === color) {
-            return <span aria-label="Won" role="img" >🏆</span>;
+            return <Icons.Award  aria-label="Won" />;
         } else {
             return <VisuallyHidden>Lost</VisuallyHidden>;
         }

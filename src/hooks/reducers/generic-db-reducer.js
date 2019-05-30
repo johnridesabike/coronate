@@ -1,5 +1,11 @@
-import {assoc, dissoc} from "ramda";
-import {createPlayer, createTournament} from "../../data-types";
+import {Id, createPlayer, createTournament} from "../../data-types";
+import {
+    assoc,
+    dissoc,
+    lensProp,
+    mergeLeft,
+    over
+} from "ramda";
 import nanoid from "nanoid";
 import t from "tcomb";
 
@@ -20,12 +26,22 @@ const AdctionAddPlayer = t.interface({
     lastName: t.String,
     rating: t.Number
 });
+// This is copied from players-reducer.js since the profile editor uses it
+// TODO: unify those
+const ActionSetPlayer = t.interface({
+    firstName: t.String,
+    id: Id,
+    lastName: t.String,
+    matchCount: t.Number,
+    rating: t.Number
+});
 const ActionTypes = t.union([
     ActionLoadState,
     ActionDelItem,
     ActionAddItem,
     AdctionAddPlayer,
-    ActionAddTourney
+    ActionAddTourney,
+    ActionSetPlayer
 ]);
 ActionTypes.dispatch = function (x) {
     const typeToConstructor = {
@@ -33,7 +49,8 @@ ActionTypes.dispatch = function (x) {
         "ADD_PLAYER": AdctionAddPlayer,
         "ADD_TOURNEY": ActionAddTourney,
         "DEL_ITEM": ActionDelItem,
-        "LOAD_STATE": ActionLoadState
+        "LOAD_STATE": ActionLoadState,
+        "SET_PLAYER": ActionSetPlayer
     };
     return typeToConstructor[x.type];
 };
@@ -65,6 +82,20 @@ export default function genericDbReducer(state, action) {
     case "DEL_ITEM":
         // If using the player DB, be sure to delete avoid-pairs too.
         return dissoc(action.id, state);
+    case "SET_PLAYER":
+        // This is copied from players-reducer since the profile editor uses it
+        return over(
+            lensProp(action.id),
+            mergeLeft(
+                {
+                    firstName: action.firstName,
+                    lastName: action.lastName,
+                    matchCount: action.matchCount,
+                    rating: action.rating
+                }
+            ),
+            state
+        );
     case "LOAD_STATE":
         return action.state;
     default:
