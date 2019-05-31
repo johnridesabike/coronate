@@ -6,8 +6,10 @@ import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";
 import Award from "react-feather/dist/icons/award";
 import Check from "react-feather/dist/icons/check";
 import CheckCircle from "react-feather/dist/icons/check-circle";
+import ChevronDown from "react-feather/dist/icons/chevron-down";
 import ChevronLeft from "react-feather/dist/icons/chevron-left";
 import ChevronRight from "react-feather/dist/icons/chevron-right";
+import ChevronUp from "react-feather/dist/icons/chevron-up";
 import Circle from "react-feather/dist/icons/circle";
 import Download from "react-feather/dist/icons/download";
 import Edit from "react-feather/dist/icons/edit";
@@ -27,6 +29,9 @@ import UserPlus from "react-feather/dist/icons/user-plus";
 import Users from "react-feather/dist/icons/users";
 import X from "react-feather/dist/icons/x";
 
+/**
+ * This converts a specified `simple-icons` icon into a React component.
+ */
 const simpleIcon = (icon) => (props) => (
     <span
         dangerouslySetInnerHTML={{__html: icon.svg}}
@@ -46,8 +51,10 @@ export default {
     Award,
     Check,
     CheckCircle,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
+    ChevronUp,
     Circle,
     Download,
     Edit,

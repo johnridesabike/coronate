@@ -57,6 +57,13 @@ input[type="submit"].button-primary:focus {
     padding: 8px;
 }
 
+.button-text-ghost {
+    background-color: transparent;
+    border: none;
+    min-width: auto;
+    width: auto;
+}
+
 button:hover,
 input[type="submit"]:hover,
 .button:hover {
@@ -102,6 +109,11 @@ input[type="text"][disabled]:hover,
 /* Any buttons wrapped in this will only display on hover. */
 .buttons-on-hover:not(:hover) button {
     opacity: 0;
+}
+
+/* Use `dont-hide` on buttons that should always be visible. */
+.buttons-on-hover:not(:hover) .dont-hide {
+    opacity: 1;
 }
 
 .buttons-on-hover:not(:hover) select {

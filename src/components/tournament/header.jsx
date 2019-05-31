@@ -1,16 +1,8 @@
+import {DateFormat, PlaceholderButton} from "../utility";
 import React, {useState} from "react";
-import {DateFormat} from "../utility";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import {useTournament} from "../../hooks";
-
-const PlaceholderButton = () => (
-    <button
-        className="button-ghost placeholder"
-        aria-hidden
-        disabled
-    />
-);
 
 export default function Header(props) {
     const {tourney, tourneyDispatch} = useTournament();

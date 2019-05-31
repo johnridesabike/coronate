@@ -6,28 +6,15 @@ import {
     useAllPlayersDb,
     useAllTournamentsDb,
     useOptionsDb
-    // usePlayersDb,
-    // useTournamentDb
 } from "./db";
-import {useEffect} from "react";
-
-export function useDocumentTitle(title) {
-    useEffect(
-        function () {
-            const origTitle = document.title;
-            document.title = "Chessahoochee: " + title;
-            return function () {
-                document.title = origTitle;
-            };
-        },
-        [title]
-    );
-}
+import {useDocumentTitle, useSortedTable} from "./hooks";
 
 export {
     useAllPlayersDb,
     useAllTournamentsDb,
+    useDocumentTitle,
     useOptionsDb,
+    useSortedTable,
     useTournament,
     TournamentProvider
 };

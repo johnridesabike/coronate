@@ -105,6 +105,60 @@ Notification.propTypes = {
     warning: PropTypes.bool
 };
 
+/**
+ * This just creates empty space to balance the layout, e.g. if there's a button
+ * on one side of a label that's offsetting it.
+ */
+const PlaceholderButton = () => (
+    <button
+        className="button-ghost placeholder"
+        aria-hidden
+        disabled
+    />
+);
+export {PlaceholderButton};
+
+export function SortLabel({label, sortKey, data}) {
+    function toggleDirAndSetKey() {
+        data.setKey(sortKey);
+        data.toggleDirection();
+    }
+    function setKeyOrToggleDir() {
+        if (data.key === sortKey) {
+            data.toggleDirection();
+        } else {
+            data.setKey(sortKey);
+        }
+    }
+    return (
+        <span className="buttons-on-hover">
+            <PlaceholderButton />
+            <button
+                className="button-micro dont-hide button-text-ghost title-20"
+                onClick={setKeyOrToggleDir}
+            >
+                {label}
+            </button>
+            <button
+                className={
+                    (data.key === sortKey)
+                    ? "dont-hide button-ghost"
+                    : "button-ghost"}
+                onClick={toggleDirAndSetKey}
+            >
+                {(data.isDescending)
+                    ? <Icons.ChevronUp />
+                    : <Icons.ChevronDown />}
+            </button>
+        </span>
+    );
+}
+SortLabel.propTypes = {
+    data: PropTypes.object.isRequired,
+    label: PropTypes.string.isRequired,
+    sortKey: PropTypes.string.isRequired
+};
+
 /*******************************************************************************
  * Non-JSX functions
  ******************************************************************************/

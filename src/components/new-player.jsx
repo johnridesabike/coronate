@@ -10,7 +10,12 @@ export default function NewPlayer({dispatch}) {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
         setNewPlayerdata(newPlayerDefault);
-        dispatch({firstName, lastName, rating, type: "ADD_PLAYER"});
+        dispatch({
+            firstName,
+            lastName,
+            rating: Number(rating),
+            type: "ADD_PLAYER"
+        });
     };
 
     const updateField = function (event) {

@@ -4,11 +4,13 @@ import Icons from "../icons";
 import {Link} from "@reach/router";
 import NewPlayer from "../new-player";
 import PropTypes from "prop-types";
+import {SortLabel} from "../utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import styles from "./index.module.css";
 import {useDocumentTitle} from "../../hooks";
 
 export default function PlayerList({
+    sorted,
     players,
     playersDispatch,
     optionsDispatch
@@ -35,14 +37,32 @@ export default function PlayerList({
                 <caption>Player roster</caption>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Rating</th>
-                        <th>Matches</th>
+                        <th>
+                            <SortLabel
+                                data={sorted}
+                                label="Name"
+                                sortKey="firstName"
+                            />
+                        </th>
+                        <th>
+                            <SortLabel
+                                data={sorted}
+                                label="Rating"
+                                sortKey="rating"
+                            />
+                        </th>
+                        <th>
+                            <SortLabel
+                                data={sorted}
+                                label="Matches"
+                                sortKey="matchCount"
+                            />
+                        </th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
                 </thead>
                 <tbody className="content">
-                    {Object.values(players).map((player) =>
+                    {sorted.table.map((player) =>
                         <tr key={player.id}  className="buttons-on-hover">
                             <td className="table__player">
                                 <Link to={player.id}>
@@ -87,5 +107,6 @@ export default function PlayerList({
 PlayerList.propTypes = {
     optionsDispatch: PropTypes.func.isRequired,
     players: PropTypes.object.isRequired,
-    playersDispatch: PropTypes.func.isRequired
+    playersDispatch: PropTypes.func.isRequired,
+    sorted: PropTypes.object.isRequired
 };

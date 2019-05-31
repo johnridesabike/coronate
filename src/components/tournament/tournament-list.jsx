@@ -1,6 +1,10 @@
+import {DateFormat, SortLabel} from "../utility";
 import React, {useState} from "react";
-import {useAllTournamentsDb, useDocumentTitle} from "../../hooks";
-import {DateFormat} from "../utility";
+import {
+    useAllTournamentsDb,
+    useDocumentTitle,
+    useSortedTable
+} from "../../hooks";
 import {Dialog} from "@reach/dialog";
 import Icons from "../icons";
 import {Link} from "@reach/router";
@@ -8,6 +12,7 @@ import VisuallyHidden from "@reach/visually-hidden";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
+    const sorted = useSortedTable(Object.values(tourneys), "date", true);
     const [newTourneyName, setNewTourneyName] = useState("");
     const [isFormOpen, setIsFormOpen] = useState(false);
     useDocumentTitle("tournament list");
@@ -48,13 +53,25 @@ export default function TournamentList(props) {
                 <caption>Tournament list</caption>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Date</th>
+                        <th>
+                            <SortLabel
+                                data={sorted}
+                                label="Name"
+                                sortKey="name"
+                            />
+                        </th>
+                        <th>
+                            <SortLabel
+                                data={sorted}
+                                label="Date"
+                                sortKey="date"
+                            />
+                        </th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>
                 </thead>
                 <tbody className="content">
-                    {Object.values(tourneys).map(({date, id, name}) =>
+                    {sorted.table.map(({date, id, name}) =>
                         <tr key={id} className="buttons-on-hover">
                             <td>
                                 <Link to={id}>
