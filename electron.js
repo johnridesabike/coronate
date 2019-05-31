@@ -15,10 +15,11 @@ function createWindow() {
         backgroundColor: photon.GREY_10,
         // frame: false,
         height: 680,
+        titleBarStyle: "hidden",
+        webPreferences: {
+            nodeIntegration: true
+        },
         width: 900
-        // webPreferences: {
-        //     nodeIntegration: true
-        // }
     });
     mainWindow.loadURL((
         (isDev)
