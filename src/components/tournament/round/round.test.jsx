@@ -3,7 +3,7 @@
 // https://github.com/johnridesabike/chessahoochee/issues
 import "jest-dom/extend-expect";
 import {cleanup, fireEvent, render} from "react-testing-library";
-import PlayerInfoBox from "../../players/info-box";
+import PlayerInfoBox from "../../players/player-profile";
 import PropTypes from "prop-types";
 import React from "react";
 import RoundPanels from "./index";

@@ -27,15 +27,20 @@ export function TournamentProvider({children, tourneyId}) {
     const [players, playersDispatch] = useReducer(playersReducer, {});
     const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
     const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
+    const [isDbError, setIsDbError] = useState(false);
     useEffect(
         function initTourneyFromDb() {
             document.body.style.cursor = "wait";
             tourneyStore.getItem(tourneyId).then(function (value) {
                 console.log("loaded:", tourneyId);
-                tourneyDispatch({state: value, type: "SET_STATE"});
+                if (!value) {
+                    setIsDbError(true);
+                }
+                tourneyDispatch({state: value || {}, type: "SET_STATE"});
                 setIsTourneyLoaded(true);
                 document.body.style.cursor = "auto";
             }).catch(function () {
+                setIsDbError(true);
                 document.body.style.cursor = "auto";
             });
         },
@@ -89,7 +94,13 @@ export function TournamentProvider({children, tourneyId}) {
     );
     useEffect(
         function saveTourneyToDb() {
-            if (!isTourneyLoaded) {
+            if (
+                !isTourneyLoaded
+                // The tourney length is 0 when it wasn't found in the DB
+                || Object.keys(tourney).length === 0
+                // I don't know why, but this happens sometimes with a bad URL
+                || tourneyId !== tourney.id
+            ) {
                 return;
             }
             tourneyStore.setItem(tourneyId, tourney).catch(function (error) {
@@ -112,6 +123,9 @@ export function TournamentProvider({children, tourneyId}) {
         [players, isPlayersLoaded]
     );
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
+    if (isDbError) {
+        return <div>Error: tournament not found.</div>;
+    }
     if (!isTourneyLoaded || !isPlayersLoaded) {
         return <div>Loading...</div>;
     }

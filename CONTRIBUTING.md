@@ -5,7 +5,6 @@ This project is built using Node.js and React, so familiarity with those will co
 ## General API
 
 - The matchup algorithm probably needs to be adjusted. It uses the blossom algorithm ([Wikipedia link](https://en.wikipedia.org/wiki/Blossom_algorithm)) to determine matches. I based its priorities on the USCF tiebreak options ([read about them here](http://www.uschess.org/content/view/7752/369/)), but my implementation is probably not 100% perfect. The source code at [/src/pairing-scoring/pairing.js](https://github.com/johnridesabike/chessahoochee/blob/master/src/pairing-scoring/pairing.js) has documentation on how it currently works. Where applicable, I tagged sections of code with USCF section numbers to explain their purpose.
-- Improve the way bye points are scored and stored. Currently, if you wanted your bye points to be worth ½ a point but you had the option set to 1 instead, there's no easy way to correct previous bye matches.
 - Improve the durability of data storage to guard against malformed database objects or other errors.
 
 ## Housekeeping

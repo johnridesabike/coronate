@@ -5,6 +5,7 @@ import {
     useDocumentTitle,
     useOptionsDb
 } from "../hooks";
+import HasSidebar from "./sidebar-default";
 import Icons from "./icons";
 import demoData from "../demo-data";
 
@@ -53,83 +54,86 @@ export default function Options(props) {
         loadData(demoData);
     }
     return (
-        <div className="content-area">
-            <h2>Game settings</h2>
-            <form>
+        <HasSidebar>
+            <div className="content-area">
+                <h2>Game settings</h2>
+                <form>
+                    <fieldset>
+                        <legend>Default bye value</legend>
+                        <label className="monospace body-30">
+                            1{" "}
+                            <input
+                                checked={options.byeValue === 1}
+                                type="radio"
+                                onChange={() => optionsDispatch({
+                                    option: "byeValue",
+                                    type: "SET_OPTION",
+                                    value: 1
+                                })}
+                            />
+                        </label>
+                        <label className="monospace body-30">
+                            ½{" "}
+                            <input
+                                checked={options.byeValue === 0.5}
+                                type="radio"
+                                onChange={() => optionsDispatch({
+                                    option: "byeValue",
+                                    type: "SET_OPTION",
+                                    value: 0.5
+                                })}
+                            />
+                        </label>
+                    </fieldset>
+                </form>
+                <h2>Data</h2>
                 <fieldset>
-                    <legend>Bye options</legend>
-                    Select how many points a bye is worth:
-                    <label className="monospace">
-                        1{" "}
-                        <input
-                            checked={options.byeValue === 1}
-                            type="radio"
-                            onChange={() => optionsDispatch({
-                                option: "byeValue",
-                                type: "SET_OPTION",
-                                value: 1
-                            })}
-                        />
-                    </label>
-                    <label className="monospace">
-                        ½{" "}
-                        <input
-                            checked={options.byeValue === 0.5}
-                            type="radio"
-                            onChange={() => optionsDispatch({
-                                option: "byeValue",
-                                type: "SET_OPTION",
-                                value: 0.5
-                            })}
-                        />
-                    </label>
-                </fieldset>
-            </form>
-            <h2>Data</h2>
-            <fieldset>
-                <legend>Manage data</legend>
-                <p>
-                    <a
-                        download="chessahoochee.json"
-                        href={
-                            "data:application/json,"
-                            + encodeURIComponent(JSON.stringify(exportData))
-                        }
-                    >
-                        <Icons.Download /> Export all data
-                    </a>
-                </p>
-                <label htmlFor="file">Load data file:</label>
-                <input
-                    id="file"
-                    name="file"
-                    type="file"
-                    onChange={handleFile}
-                />
-            </fieldset>
-            <fieldset>
-                <legend>Reset all changes</legend>
-                <button onClick={reloadDemoData}>Reload demo data</button>
-            </fieldset>
-            <form onSubmit={handleText}>
-                <fieldset>
-                    <legend>
-                        Advanced: manually edit data
-                    </legend>
-                    <textarea
-                        className="json"
-                        cols={50}
-                        name="playerdata"
-                        rows={25}
-                        spellCheck={false}
-                        value={text}
-                        onChange={(event) => setText(event.currentTarget.value)}
-                    />
+                    <legend>Manage data</legend>
                     <p>
-                        <input type="submit" value="Load" />
+                        <a
+                            download="chessahoochee.json"
+                            href={
+                                "data:application/json,"
+                                + encodeURIComponent(JSON.stringify(exportData))
+                            }
+                        >
+                            <Icons.Download /> Export all data
+                        </a>
                     </p>
+                    <label htmlFor="file">Load data file:</label>
+                    <input
+                        id="file"
+                        name="file"
+                        type="file"
+                        onChange={handleFile}
+                    />
                 </fieldset>
-            </form>
-        </div>
+                <fieldset>
+                    <legend>Reset all changes</legend>
+                    <button onClick={reloadDemoData}>Reload demo data</button>
+                </fieldset>
+                <form onSubmit={handleText}>
+                    <fieldset>
+                        <legend>
+                            Advanced: manually edit data
+                        </legend>
+                        <textarea
+                            className="json"
+                            cols={50}
+                            name="playerdata"
+                            rows={25}
+                            spellCheck={false}
+                            value={text}
+                            onChange={
+                                (event) => setText(event.currentTarget.value)
+                            }
+                        />
+                        <p>
+                            <input type="submit" value="Load" />
+                        </p>
+                    </fieldset>
+                </form>
+            </div>
+        </HasSidebar>
     );
 }

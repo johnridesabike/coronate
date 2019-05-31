@@ -7,7 +7,7 @@ import numeral from "numeral";
 import styles from "./index.module.css";
 import {useDocumentTitle} from "../../hooks";
 
-export default function PlayerInfoBox({
+function PlayerProfile({
     playerId,
     players,
     playersDispatch,
@@ -157,10 +157,22 @@ ${players[pId].lastName}`}
         </div>
     );
 }
-PlayerInfoBox.propTypes = {
+PlayerProfile.propTypes = {
     options: PropTypes.object.isRequired,
     optionsDispatch: PropTypes.func.isRequired,
     playerId: PropTypes.string,
     players: PropTypes.object.isRequired,
     playersDispatch: PropTypes.func.isRequired
+};
+
+export default function PlayerProfileWrapper(props) {
+    if (!props.players[props.playerId]) {
+        return <div>Error: player profile not found.</div>;
+    } else {
+        return <PlayerProfile {...props} />;
+    }
+}
+PlayerProfileWrapper.propTypes = {
+    playerId: PropTypes.string,
+    players: PropTypes.object.isRequired
 };

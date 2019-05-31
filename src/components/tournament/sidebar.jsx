@@ -127,7 +127,7 @@ export default function Sidebar(props) {
                 <ul>
                     {Object.keys(roundList).map((id) => (
                         <li key={id}>
-                            <Link to={`${id}`}>
+                            <Link to={`round/${id}`}>
                             Round {Number(id) + 1}
                             </Link>
                         </li>
@@ -147,14 +147,7 @@ export default function Sidebar(props) {
                     >
                         <Icons.Plus/> New round
                     </button>
-                    <Notification
-                        style={{
-                            borderRadius: "0",
-                            marginLeft: "-8px",
-                            marginRight: "-8px"
-                        }}
-                        success={!tooltipWarn}
-                    >
+                    <Notification success={!tooltipWarn}>
                         {tooltipText}
                     </Notification>
                 </li>
@@ -166,6 +159,12 @@ export default function Sidebar(props) {
                     >
                         <Icons.Trash /> Remove last round
                     </button>
+                </li>
+            </ul>
+            <hr />
+            <ul>
+                <li>
+                    <Link to="options"><Icons.Settings /> Options</Link>
                 </li>
             </ul>
         </div>

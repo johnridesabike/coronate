@@ -13,20 +13,22 @@ import {
     add,
     assoc,
     curry,
+    descend,
     filter,
     findLastIndex,
     lensIndex,
     map,
     over,
     pipe,
+    prop,
     reverse,
-    sort,
+    sortWith,
     splitAt,
     view
 } from "ramda";
 import blossom from "edmonds-blossom";
 import {createPlayerStats} from "./factories";
-import {firstBy} from "thenby";
+// import {firstBy} from "thenby";
 import t from "tcomb";
 
 const priority = (value) => (condition) => condition ? value : 0;
@@ -156,12 +158,13 @@ function setByePlayer(byeQueue, playerStatsList) {
  */
 export function sortPlayersForPairing(playerStatsList) {
     t.list(PlayerStats)(playerStatsList);
-    return sort(
-        firstBy(
-            (a, b) => b.score - a.score
-        ).thenBy(
-            (a, b) => b.rating - a.rating
-        ),
+    return sortWith(
+        // firstBy(
+        //     (a, b) => b.score - a.score
+        // ).thenBy(
+        //     (a, b) => b.rating - a.rating
+        // ),
+        [descend(prop("score")), descend(prop("rating"))],
         playerStatsList
     );
 }
@@ -246,13 +249,17 @@ export default function pairPlayers({
         []
     );
     // Sort by net score and rating for board placement.
-    const sortedResults = sort(
-        firstBy((pair1, pair2) => (
-            pair2[0].score + pair2[1].score - pair1[0].score - pair1[1].score
-        )).thenBy((pair1, pair2) => (
-            pair2[0].rating + pair2[1].rating
-            - pair1[0].rating - pair1[1].rating
-        )),
+    const sortedResults = sortWith(
+        [
+            (pair1, pair2) => (
+                pair2[0].score + pair2[1].score
+                - pair1[0].score - pair1[1].score
+            ),
+            (pair1, pair2) => (
+                pair2[0].rating + pair2[1].rating
+                - pair1[0].rating - pair1[1].rating
+            )
+        ],
         reducedResults
     );
     const matches = sortedResults.map(

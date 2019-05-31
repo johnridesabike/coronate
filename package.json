@@ -33,6 +33,7 @@
     "@reach/router": "^1.2.1",
     "@reach/tabs": "^0.1.5",
     "@reach/visually-hidden": "^0.1.4",
+    "classnames": "^2.2.6",
     "dashify": "^2.0.0",
     "edmonds-blossom": "^1.0.0",
     "electron-is-dev": "^1.1.0",
@@ -51,10 +52,10 @@
     "react-dom": "^16.8.6",
     "react-feather": "^1.1.6",
     "simple-icons": "^1.9.27",
-    "tcomb": "^3.2.29",
-    "thenby": "^1.3.0"
+    "tcomb": "^3.2.29"
   },
   "devDependencies": {
+    "@testing-library/react": "^8.0.1",
     "concurrently": "^4.1.0",
     "electron": "^5.0.2",
     "electron-builder": "^20.41.0",
@@ -65,8 +66,7 @@
     "gh-pages": "^2.0.1",
     "jest-dom": "^3.4.0",
     "react-scripts": "3.0.1",
-    "react-testing-library": "^7.0.1",
-    "typescript": "^3.4.5",
+    "typescript": "^3.5.1",
     "wait-on": "^3.2.0"
   },
   "eslintConfig": {
@@ -92,7 +92,7 @@
     "directories": {
       "buildResources": "assets"
     },
-    "extraFiles" : [
+    "extraFiles": [
       "LICENSE",
       "README.md"
     ]

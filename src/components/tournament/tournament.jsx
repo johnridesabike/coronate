@@ -1,5 +1,7 @@
 import Crosstable from "./crosstable";
 import Header from "./header";
+import NotFound from "../404";
+import Options from "./options";
 import PlayerSelect from "./player-select";
 import PropTypes from "prop-types";
 import React from "react";
@@ -14,16 +16,21 @@ import styles from "./tournament.module.css";
 export default function Tournament(props) {
     return (
         <TournamentProvider tourneyId={props.tourneyId}>
-            <div className={styles.tournament}>
+            <div className={styles.tournament + " has-sidebar"}>
                 <Header className={styles.header} />
-                <Sidebar className={styles.sidebar} navigate={props.navigate} />
-                <div className={styles.contentFrame}>
+                <Sidebar
+                    className={styles.sidebar + " has-sidebar__sidebar"}
+                    navigate={props.navigate}
+                />
+                <div className={styles.contentFrame + " has-sidebar__content"}>
                     <Router>
                         <PlayerSelect path="/" />
                         <Status path="status" />
                         <Crosstable path="crosstable" />
                         <Scores path="scores" />
-                        <Round path=":roundId" />
+                        <Round path="round/:roundId" />
+                        <Options path="options" />
+                        <NotFound default />
                     </Router>
                 </div>
             </div>

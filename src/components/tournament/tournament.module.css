@@ -1,21 +1,28 @@
-@media screen and (min-width: 600px) {
-    .tournament {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: 164px auto;
-        grid-template-rows: 96px auto;
-        grid-template-areas:
-            "sidebar header"
-            "sidebar content"
-    }
+.tournament {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 164px auto;
+    grid-template-rows: 96px auto;
+    grid-template-areas:
+        "sidebar header"
+        "sidebar content-with-sidebar"
+}
+
+:global(.closed-sidebar) .tournament {
+    grid-template-columns: auto;
+    grid-template-areas:
+        "header"
+        "content-with-sidebar"
 }
 
 .header {
     grid-area: header;
-    margin-right: 32px;
-    margin-left: 32px;
     text-align: center;
+    background-color: var(--grey-20);
+    border-width: 1px;
+    border-color: var(--grey-30);
+    border-bottom-style: solid;
 }
 
 .header h1,
@@ -25,44 +32,6 @@
 
 .header p {
     margin: 0;
-}
-
-.sidebar {
-    grid-area: sidebar;
-    background-color: var(--grey-20);
-    padding: 8px;
-    border-width: 1px;
-    border-color: var(--grey-30);
-    border-right-style: solid;
-    overflow: auto;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar li {
-    margin: 4px 0;
-}
-
-.sidebar a {
-    display: block;
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-
-.sidebar a[aria-current] {
-    padding-left: 16px;
-    margin-left: -8px;
-    margin-right: -8px;
-    background-color: var(--grey-30);
-    color: var(--grey-90);
-}
-
-.contentFrame {
-    grid-area: content;
-    overflow: auto;
 }
 
 .contentFrame [data-reach-tab-list] {

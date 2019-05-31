@@ -43,7 +43,8 @@ h5 {
     font-weight: 400;
 }
 
-.body-20 {
+.body-20,
+legend {
     font-size: 15px;
     font-weight: 400;
 }

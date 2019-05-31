@@ -19,7 +19,13 @@ export function ScoreTable({compact, title}) {
     const {tieBreaks, roundList} = tourney;
     const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
     return (
-        <table className={style.table}>
+        <table
+            className={
+                (compact)
+                ? style.compact + " " + style.table
+                : style.table
+            }
+        >
             <caption
                 className={(compact) ? "title-30" : "title-40"}
             >
@@ -165,7 +171,7 @@ function SelectTieBreaks(props) {
                 </div>
                 <table>
                     <caption className="title-30">
-                        Selected Tiebreak methods
+                        Selected tiebreak methods
                     </caption>
                     <thead>
                         <tr>

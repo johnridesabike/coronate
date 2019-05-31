@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {findById, findIndexById} from "../../utility";
 import Icons from "../../icons";
+import NotFound from "../../404";
 import PropTypes from "prop-types";
 import RoundTable from "./round-table";
 import {useTournament} from "../../../hooks";
@@ -15,7 +16,7 @@ export default function Round({roundId}) {
     const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
-        throw new Error("Round " + roundId + " does not exist.");
+        return <NotFound />;
     }
     function unMatch(matchId) {
         const match = findById(matchId, matchList);

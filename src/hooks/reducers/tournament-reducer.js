@@ -1,4 +1,4 @@
-import {AvoidPair, Id, Player} from "../../data-types";
+import {AvoidPair, BLACK, DUMMY_ID, Id, Player, WHITE} from "../../data-types";
 import {
     __,
     append,
@@ -8,6 +8,7 @@ import {
     findIndex,
     lensPath,
     lensProp,
+    map,
     mergeRight,
     move,
     over,
@@ -67,6 +68,9 @@ const ActionSetName = t.interface({
 const ActionSetDate = t.interface({
     date: Date
 });
+const ActionUpdateByeScores = t.interface({
+    value: t.Number
+});
 const ActionLoadState = t.interface({
     state: t.Any
 });
@@ -84,7 +88,8 @@ const ActionTypes = t.union([
     ActionManualPair,
     ActionSetMatchResult,
     ActionEditMatch,
-    ActionMoveMatch
+    ActionMoveMatch,
+    ActionUpdateByeScores
 ]);
 ActionTypes.dispatch = function (action) {
     const typeToConstructor = {
@@ -103,7 +108,8 @@ ActionTypes.dispatch = function (action) {
         "SET_NAME": ActionSetName,
         "SET_STATE": ActionLoadState,
         "SET_TOURNEY_PLAYERS": ActionSetTourneyPlayers,
-        "SWAP_COLORS": ActionEditMatch
+        "SWAP_COLORS": ActionEditMatch,
+        "UPDATE_BYE_SCORES": ActionUpdateByeScores
     };
     return typeToConstructor[action.type];
 };
@@ -244,6 +250,25 @@ export default function tournamentReducer(state, action) {
         return over(
             lensPath(["roundList", action.roundId]),
             move(action.oldIndex, action.newIndex),
+            state
+        );
+    case "UPDATE_BYE_SCORES":
+        return assoc(
+            "roundList",
+            map(
+                map(
+                    function (match) {
+                        if (match.playerIds[WHITE] === DUMMY_ID) {
+                            return assoc("result", [0, action.value], match);
+                        } else if (match.playerIds[BLACK] === DUMMY_ID) {
+                            return assoc("result", [action.value, 0], match);
+                        } else {
+                            return match;
+                        }
+                    }
+                ),
+                state.roundList
+            ),
             state
         );
     case "SET_STATE":

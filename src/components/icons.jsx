@@ -1,8 +1,8 @@
 import Activity from "react-feather/dist/icons/activity";
 import Alert from "react-feather/dist/icons/alert-triangle";
 import ArrowDown from "react-feather/dist/icons/arrow-down";
+import ArrowLeft from "react-feather/dist/icons/arrow-left";
 import ArrowUp from "react-feather/dist/icons/arrow-up";
-import ArrowUpLeft from "react-feather/dist/icons/arrow-up-left";
 import Award from "react-feather/dist/icons/award";
 import Check from "react-feather/dist/icons/check";
 import CheckCircle from "react-feather/dist/icons/check-circle";
@@ -17,12 +17,12 @@ import Info from "react-feather/dist/icons/info";
 import Javascript from "simple-icons/icons/javascript";
 import Layers from "react-feather/dist/icons/layers";
 import List from "react-feather/dist/icons/list";
-import Minus from "react-feather/dist/icons/minus";
 import Plus from "react-feather/dist/icons/plus";
 import React from "react";
 import ReactIcon from "simple-icons/icons/react";
 import Repeat from "react-feather/dist/icons/repeat";
 import Settings from "react-feather/dist/icons/settings";
+import Sidebar from "react-feather/dist/icons/sidebar";
 import Trash from "react-feather/dist/icons/trash-2";
 import UserMinus from "react-feather/dist/icons/user-minus";
 import UserPlus from "react-feather/dist/icons/user-plus";
@@ -46,8 +46,8 @@ export default {
     Activity,
     Alert,
     ArrowDown,
+    ArrowLeft,
     ArrowUp,
-    ArrowUpLeft,
     Award,
     Check,
     CheckCircle,
@@ -62,11 +62,11 @@ export default {
     Javascript: simpleIcon(Javascript),
     Layers,
     List,
-    Minus,
     Plus,
     React: simpleIcon(ReactIcon),
     Repeat,
     Settings,
+    Sidebar,
     Trash,
     UserMinus,
     UserPlus,

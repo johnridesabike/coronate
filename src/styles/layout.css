@@ -4,7 +4,7 @@
  .app {
     height: 100vh;
     display: grid;
-    grid-template-rows: 32px auto 32px;
+    grid-template-rows: 40px auto 32px;
     grid-template-areas:
         "app-header"
         "app-content"
@@ -17,18 +17,80 @@
     border-bottom: 1px var(--grey-40) solid;
     display: flex;
     flex-flow: row;
-    align-items: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 4px;
     -webkit-user-select: none;
     -webkit-app-region: drag;
 }
 
-.header a {
+.header.traffic-light-padding {
+    padding-left: 72px;
+}
+
+.header a,
+.header button {
     -webkit-app-region: no-drag;
 }
 
 .main {
     grid-area: app-content;
     overflow: auto;
+}
+
+.has-sidebar {
+    display: grid;
+    grid-template-columns: 164px auto;
+    grid-template-areas: "sidebar content-with-sidebar";
+    width: 100%;
+    height: 100%;
+}
+
+.closed-sidebar .has-sidebar {
+    grid-template-columns: auto;
+    grid-template-areas: "content-with-sidebar";
+}
+
+.closed-sidebar .has-sidebar__sidebar {
+    display: none;
+}
+
+.has-sidebar__content {
+    grid-area: content-with-sidebar;
+    overflow: auto;
+}
+
+.has-sidebar__sidebar {
+    grid-area: sidebar;
+    background-color: var(--grey-20);
+    padding: 8px;
+    border-width: 1px;
+    border-color: var(--grey-30);
+    border-right-style: solid;
+    overflow: auto;
+}
+
+.has-sidebar__sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.has-sidebar__sidebar li {
+    margin: 4px 0;
+}
+
+.has-sidebar__sidebar a {
+    display: block;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.has-sidebar__sidebar a[aria-current] {
+    padding-left: 16px;
+    margin-left: -8px;
+    margin-right: -8px;
+    background-color: var(--grey-30);
+    color: var(--grey-90);
 }
 
 div[role="group"] {

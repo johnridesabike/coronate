@@ -8,7 +8,7 @@
 }
 
 .tbody td {
-    padding: 8px 0;
+    padding: 8px 4px;
 }
 
 .rowId {
@@ -22,7 +22,7 @@
 }
 
 .matchResult {
-    width: 128px;
+    width: 140px;
 }
 
 .playerResult {

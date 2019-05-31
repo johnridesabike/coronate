@@ -22,16 +22,18 @@ export default function Status() {
         );
     }());
     return (
-        <div className="content-area" style={{width: "712px"}}>
+        <>
             <h2 style={{textAlign: "center"}}>Tournament status</h2>
-            <PanelContainer>
-                <Panel>
-                    <ScoreTable title="Rankings" compact />
-                </Panel>
+            <PanelContainer
+                style={{justifyContent: "center"}}
+            >
                 <Panel>
                     {lastRound}
                 </Panel>
+                <Panel>
+                    <ScoreTable title="Rankings" compact />
+                </Panel>
             </PanelContainer>
-        </div>
+        </>
     );
 }

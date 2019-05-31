@@ -1,6 +1,7 @@
 import {useAllPlayersDb, useOptionsDb, useSortedTable} from "../../hooks";
-import PlayerInfo from "./info-box";
+import HasSidebar from "../sidebar-default";
 import PlayerList from "./player-list";
+import PlayerProfile from "./player-profile";
 import React from "react";
 import {Router} from "@reach/router";
 
@@ -10,12 +11,14 @@ export default function Players(props) {
     const [options, optionsDispatch] = useOptionsDb();
     const childProps = {options, optionsDispatch, players, playersDispatch};
     return (
-        <Router basepath="players">
-            <PlayerList path="/" sorted={sorted} {...childProps} />
-            <PlayerInfo path=":playerId" {...childProps} />
-        </Router>
+        <HasSidebar>
+            <Router basepath="players">
+                <PlayerList path="/" sorted={sorted} {...childProps} />
+                <PlayerProfile path=":playerId" {...childProps} />
+            </Router>
+        </HasSidebar>
     );
 }
 Players.propTypes = {};
 
-export {PlayerInfo, PlayerList};
+export {PlayerProfile, PlayerList};
