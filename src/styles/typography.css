@@ -95,6 +95,7 @@ font-family: var(--font-monospace);
     flex-shrink: 1;
     margin: 0 4px;
     font-size: 16px;
+    cursor: help;
 }
 
 .notification__success {

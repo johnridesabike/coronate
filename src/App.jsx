@@ -31,6 +31,7 @@ function App() {
     useDocumentTitle("a chess tournament app");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isWindowBlur, setIsWindowBlur] = useState(false);
     useEffect(
         function () {
             if (!electron) {
@@ -39,7 +40,10 @@ function App() {
             const appWindow = electron.remote.getCurrentWindow();
             appWindow.on("enter-full-screen", () => setIsFullScreen(true));
             appWindow.on("leave-full-screen", () => setIsFullScreen(false));
+            appWindow.on("blur", () => setIsWindowBlur(true));
+            appWindow.on("focus", () => setIsWindowBlur(false));
             setIsFullScreen(appWindow.isFullScreen());
+            setIsWindowBlur(!appWindow.isFocused());
         },
         []
     );
@@ -47,8 +51,15 @@ function App() {
     /**
      * https://github.com/electron/electron/issues/16385#issuecomment-453955377
      */
-    function macOSDoubleClick() {
+    function macOSDoubleClick(event) {
         if (!electron) {
+            return;
+        }
+        if (!event.target.className.includes) {
+            return; // sometimes `className` isn't a string.
+        }
+        // We don't want double-clicking buttons to (un)maximize.
+        if (!event.target.className.includes("double-click-control")) {
             return;
         }
         const systemPrefs = electron.remote.systemPreferences;
@@ -72,13 +83,15 @@ function App() {
             className={classNames(
                 "app",
                 {"open-sidebar": isSidebarOpen},
-                {"closed-sidebar": !isSidebarOpen}
+                {"closed-sidebar": !isSidebarOpen},
+                {"window-blur": isWindowBlur}
             )}
         >
             <LocationProvider history={history}>
                 <header
                     className={classNames(
                         "header",
+                        "double-click-control",
                         {"traffic-light-padding": (
                             navigator.appVersion.includes("Mac")
                             && electron
@@ -109,7 +122,11 @@ function App() {
                         </Location>
                     </div>
                     <div
-                        className="body-20"
+                        className={classNames(
+                            "body-20",
+                            "double-click-control",
+                            {"disabled": isWindowBlur}
+                        )}
                         style={{
                             left: "0",
                             marginLeft: "auto",

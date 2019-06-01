@@ -50,7 +50,8 @@ input[type="submit"].button-primary:focus {
         0 0 0 4px rgba(10, 132, 255, 0.3);
 }
 
-.button-ghost {
+.button-ghost,
+.closed-sidebar .has-sidebar__sidebar button {
     font-size: 16px;
     color: var(--grey-90-a80);
     background-color: transparent;
@@ -95,7 +96,8 @@ input[type="submit"]:focus,
 } */
 
 [disabled],
-.disabled {
+.disabled,
+.window-blur button {
     opacity: 0.4;
 }
 

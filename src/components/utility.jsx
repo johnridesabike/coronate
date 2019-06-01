@@ -86,10 +86,17 @@ export function Notification(props) {
             return [<Icons.Info />, "notification__generic"];
         }
     }());
-    const cleanProps = omit(["warning", "error", "success"], props);
+    const cleanProps = omit(["warning", "error", "success", "tooltip"], props);
     return (
-        <div {...cleanProps} className={"notification " + className}>
-            <div className="notification__icon">
+        <div
+            {...cleanProps}
+            className={"notification " + className + " " + props.className}
+        >
+            <div
+                aria-label={props.tooltip}
+                className="notification__icon"
+                title={props.tooltip}
+            >
                 {icon}
             </div>
             <div className="notification__text">
@@ -100,8 +107,10 @@ export function Notification(props) {
 }
 Notification.propTypes = {
     children: PropTypes.node.isRequired,
+    className: PropTypes.string,
     error: PropTypes.bool,
     success: PropTypes.bool,
+    tooltip: PropTypes.string,
     warning: PropTypes.bool
 };
 

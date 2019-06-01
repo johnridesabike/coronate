@@ -9,17 +9,26 @@ function Sidebar() {
             <ul>
                 <li>
                     <Link to="/tourneys">
-                        <Icons.Award /> Tournaments
+                        <Icons.Award />
+                        <span className="sidebar__hide-on-close">
+                            Tournaments
+                        </span>
                     </Link>
                 </li>
                 <li>
                     <Link  to="/players">
-                        <Icons.Users /> Players
+                        <Icons.Users />
+                        <span className="sidebar__hide-on-close">
+                            Players
+                        </span>
                     </Link>
                 </li>
                 <li>
                     <Link to="/options">
-                        <Icons.Settings /> Options
+                        <Icons.Settings />
+                        <span className="sidebar__hide-on-close">
+                            Options
+                        </span>
                     </Link>
                 </li>
             </ul>

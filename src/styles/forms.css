@@ -9,7 +9,8 @@ label {
 }
 
 input[type="text"],
-input[type="date"] {
+input[type="date"],
+input[type="number"] {
     border-color: var(--grey-90-a20);
     border-width: 1px;
     border-radius: 2px;

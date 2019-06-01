@@ -10,10 +10,10 @@
 }
 
 :global(.closed-sidebar) .tournament {
-    grid-template-columns: auto;
+    grid-template-columns: 48px auto;
     grid-template-areas:
-        "header"
-        "content-with-sidebar"
+        "sidebar header"
+        "sidebar content-with-sidebar"
 }
 
 .header {

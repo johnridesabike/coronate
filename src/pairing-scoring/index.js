@@ -3,9 +3,9 @@ import {
     calcNumOfRounds,
     getAllPlayersFromMatches,
     getPlayerAvoidList,
-    // getPlayerById,
     getPlayerMaybe,
     getUnmatched,
+    isRoundComplete,
     rounds2Matches
 } from "./helpers";
 import {
@@ -35,12 +35,12 @@ export {
     createStandingTree,
     getPerformanceRatings,
     getPlayerAvoidList,
-    // getPlayerById,
     getPlayerMaybe,
     getAllPlayersFromMatches,
     getUnmatched,
     getResultsByOpponent,
     hasHadBye,
+    isRoundComplete,
     kFactor,
     maxPriority,
     pairPlayers,

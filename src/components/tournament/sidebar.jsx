@@ -1,4 +1,5 @@
-import {calcNumOfRounds, getUnmatched} from "../../pairing-scoring";
+import {calcNumOfRounds, isRoundComplete} from "../../pairing-scoring";
+import {curry, last} from "ramda";
 import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../icons";
@@ -6,7 +7,6 @@ import {Link} from "@reach/router";
 import {Notification} from "../utility";
 import PropTypes from "prop-types";
 import React from "react";
-import last from "ramda/src/last";
 
 export default function Sidebar(props) {
     const {
@@ -18,24 +18,20 @@ export default function Sidebar(props) {
     } = useTournament();
     useDocumentTitle(tourney.name);
     const {roundList} = tourney;
-    const unmatched = getUnmatched(tourney, players, roundList.length - 1);
+    const isComplete = curry(isRoundComplete)(tourney, players);
 
     const isNewRoundReady = (function () {
-        const lastRound = last(roundList);
-        if (!lastRound) {
+        if (roundList.length === 0) {
             return true;
         }
-        const results = lastRound.map(
-            (match) => match.result[0] + match.result[1]
-        );
-        return Object.keys(unmatched).length === 0 && !results.includes(0);
+        return isComplete(roundList.length - 1);
     }());
     const roundCount = calcNumOfRounds(Object.keys(players).length);
     const isItOver = roundList.length >= roundCount;
     const [tooltipText, tooltipWarn] = (function () {
         if (!isNewRoundReady) {
             return [
-                "Complete the last round before beginning a new one.",
+                "Round in progress.",
                 true
             ];
         } else if (isItOver) {
@@ -96,7 +92,10 @@ export default function Sidebar(props) {
                 <ul>
                     <li>
                         <Link to="..">
-                            <Icons.X/>Close
+                            <Icons.X/>
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Close
+                            </span>
                         </Link>
                     </li>
                 </ul>
@@ -104,31 +103,62 @@ export default function Sidebar(props) {
                 <ul>
                     <li>
                         <Link to=".">
-                            <Icons.Users /> Players
+                            <Icons.Users />
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Players
+                            </span>
                         </Link>
                     </li>
                     <li>
                         <Link to="status">
-                            <Icons.Activity /> Status
+                            <Icons.Activity />
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Status
+                            </span>
                         </Link>
                     </li>
                     <li>
                         <Link to="crosstable">
-                            <Icons.Layers /> Crosstable
+                            <Icons.Layers />
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Crosstable
+                            </span>
                         </Link>
                     </li>
                     <li>
                         <Link to="scores">
-                            <Icons.List /> Score detail
+                            <Icons.List />
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Score detail
+                            </span>
                         </Link>
                     </li>
                 </ul>
                 <hr />
+                <h5 className="sidebar__hide-on-close">Rounds</h5>
                 <ul>
                     {Object.keys(roundList).map((id) => (
                         <li key={id}>
                             <Link to={`round/${id}`}>
-                            Round {Number(id) + 1}
+                                {Number(id) + 1}
+                                {(isComplete(Number(id)))
+                                ? (
+                                    <span
+                                        className={
+                                            "sidebar__hide-on-close "
+                                            + "caption-20"}
+                                    >
+                                        &nbsp;Complete&nbsp;<Icons.Check />
+                                    </span>
+                                ) : (
+                                    <span
+                                        className={
+                                            "sidebar__hide-on-close "
+                                            + "caption-20"}
+                                    >
+                                        &nbsp;Not complete&nbsp;<Icons.Alert />
+                                    </span>
+                                )}
                             </Link>
                         </li>
                     ))}
@@ -137,34 +167,58 @@ export default function Sidebar(props) {
             <hr />
             <ul>
                 <li className="caption-30">
-                    Round progress: {roundList.length}/{roundCount}
+                    <span className=" sidebar__hide-on-close">
+                        Completion:{" "}
+                    </span>
+                    {roundList.length}/{roundCount}
                 </li>
+                <li>
+                    <Notification
+                        className="caption-20"
+                        success={!tooltipWarn}
+                        tooltip={tooltipText}
+                    >
+                        <span className="sidebar__hide-on-close">
+                            {tooltipText}
+                        </span>
+                    </Notification>
+                </li>
+            </ul>
+            <hr />
+            <ul>
                 <li>
                     <button
                         className={(tooltipWarn ? "" : "button-primary")}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
                     >
-                        <Icons.Plus/> New round
+                        <Icons.Plus/>
+                        <span className="sidebar__hide-on-close">
+                            &nbsp;New round
+                        </span>
                     </button>
-                    <Notification success={!tooltipWarn}>
-                        {tooltipText}
-                    </Notification>
                 </li>
                 <li>
                     <button
-                        className="button-micro"
                         disabled={roundList.length === 0}
                         onClick={delLastRound}
                     >
-                        <Icons.Trash /> Remove last round
+                        <Icons.Trash />
+                        <span className="sidebar__hide-on-close">
+                            &nbsp;Remove last round
+                        </span>
                     </button>
                 </li>
             </ul>
             <hr />
             <ul>
                 <li>
-                    <Link to="options"><Icons.Settings /> Options</Link>
+                    <Link to="options">
+                        <Icons.Settings />
+                        <span className="sidebar__hide-on-close">
+                            &nbsp;Options
+                        </span>
+                    </Link>
                 </li>
             </ul>
         </div>

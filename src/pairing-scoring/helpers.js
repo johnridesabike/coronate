@@ -148,6 +148,13 @@ export function getPlayerScoreListNoByes(playerId, matchList) {
     );
 }
 
+/*******************************************************************************
+ * Round functions
+ ******************************************************************************/
+export function calcNumOfRounds(playerCount) {
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
+}
 /**
  * This creates a filtered version of `players` with only the players that are
  * not matched for the specified round.
@@ -172,12 +179,12 @@ export function getUnmatched(tourney, players, roundId) {
     return unmatched;
 }
 
-/*******************************************************************************
- * Round functions
- ******************************************************************************/
-export function calcNumOfRounds(playerCount) {
-    const roundCount = Math.ceil(Math.log2(playerCount));
-    return (Number.isFinite(roundCount)) ? roundCount : 0;
+export function isRoundComplete(tourney, players, roundId) {
+    const unmatched = getUnmatched(tourney, players, roundId);
+    const results = tourney.roundList[roundId].map(
+        (match) => match.result[0] + match.result[1]
+    );
+    return Object.keys(unmatched).length === 0 && !results.includes(0);
 }
 
 /*******************************************************************************
