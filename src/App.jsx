@@ -1,11 +1,11 @@
 import "side-effects";
 import {
-    Link,
+    Location,
     LocationProvider,
     Router,
     createHistory
 } from "@reach/router";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import TournamentIndex, {
     Tournament,
     TournamentList
@@ -16,9 +16,10 @@ import NotFound from "./components/404";
 import Options from "./components/options";
 import Players from "./components/players";
 import Splash from "./components/splash";
+import VisuallyHidden from "@reach/visually-hidden";
+import WindowsControls from "./components/windows-controls";
 import classNames from "classnames";
 import createHashSource from "hash-source";
-import {link} from "./App.module.css";
 import {useDocumentTitle} from "./hooks";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
@@ -29,6 +30,43 @@ const electron = (window.require) ? window.require("electron") : false;
 function App() {
     useDocumentTitle("a chess tournament app");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    useEffect(
+        function () {
+            if (!electron) {
+                return;
+            }
+            const appWindow = electron.remote.getCurrentWindow();
+            appWindow.on("enter-full-screen", () => setIsFullScreen(true));
+            appWindow.on("leave-full-screen", () => setIsFullScreen(false));
+            setIsFullScreen(appWindow.isFullScreen());
+        },
+        []
+    );
+
+    /**
+     * https://github.com/electron/electron/issues/16385#issuecomment-453955377
+     */
+    function macOSDoubleClick() {
+        if (!electron) {
+            return;
+        }
+        const systemPrefs = electron.remote.systemPreferences;
+        const doubleClickAction = systemPrefs.getUserDefault(
+            "AppleActionOnDoubleClick",
+            "string"
+        );
+        const win = electron.remote.getCurrentWindow();
+        if (doubleClickAction === "Minimize") {
+            win.minimize();
+        } else if (doubleClickAction === "Maximize") {
+            if (!win.isMaximized()) {
+                win.maximize();
+            } else {
+                win.unmaximize();
+            }
+        }
+    };
     return (
         <div
             className={classNames(
@@ -42,21 +80,50 @@ function App() {
                     className={classNames(
                         "header",
                         {"traffic-light-padding": (
-                            navigator.appVersion.includes("Mac") && electron
+                            navigator.appVersion.includes("Mac")
+                            && electron
+                            && !isFullScreen
                         )}
                     )}
+                    onDoubleClick={macOSDoubleClick}
                 >
-                    <button
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    <div>
+                        <button
+                            className="button-ghost"
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        >
+                            <Icons.Sidebar/>
+                            <VisuallyHidden>Toggle sidebar</VisuallyHidden>
+                        </button>
+                        <Location>
+                            {({location, navigate}) => (
+                                <button
+                                    className="button-ghost"
+                                    disabled={location.pathname === "/"}
+                                    onClick={() => navigate("/")}
+                                >
+                                    <Icons.Help />
+                                    <VisuallyHidden>About</VisuallyHidden>
+                                </button>
+                            )}
+                        </Location>
+                    </div>
+                    <div
+                        className="body-20"
+                        style={{
+                            left: "0",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            position: "absolute",
+                            right: "0",
+                            width: "100px"
+                        }}
                     >
-                        <Icons.Sidebar/> Toggle sidebar
-                    </button>
-                    <span className="body-20">
                         Chessahoochee
-                    </span>
-                    <Link className={link} to="/">
-                        About
-                    </Link>
+                    </div>
+                    {(navigator.appVersion.includes("Windows")) && electron &&
+                        <WindowsControls />
+                    }
                 </header>
                 <main className="main">
                     <Router>

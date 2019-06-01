@@ -13,6 +13,7 @@ import ChevronUp from "react-feather/dist/icons/chevron-up";
 import Circle from "react-feather/dist/icons/circle";
 import Download from "react-feather/dist/icons/download";
 import Edit from "react-feather/dist/icons/edit";
+import Help from "react-feather/dist/icons/help-circle";
 import Info from "react-feather/dist/icons/info";
 import Javascript from "simple-icons/icons/javascript";
 import Layers from "react-feather/dist/icons/layers";
@@ -58,6 +59,7 @@ export default {
     Circle,
     Download,
     Edit,
+    Help,
     Info,
     Javascript: simpleIcon(Javascript),
     Layers,

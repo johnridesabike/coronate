@@ -16,6 +16,10 @@ input[type="submit"],
     border-width: 1px;
 }
 
+a.button {
+    text-decoration: none;
+}
+
 .button-micro {
     height: 24px;
     font-size: 11px;
@@ -118,4 +122,8 @@ input[type="text"][disabled]:hover,
 
 .buttons-on-hover:not(:hover) select {
     border-color: transparent;
+}
+
+.button-ghost svg {
+    display: block;
 }

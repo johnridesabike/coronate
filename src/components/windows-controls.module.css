@@ -1,0 +1,16 @@
+.container {
+    height: 100%;
+}
+
+.winButton {
+    height: 22px;
+    width: 22px;
+    font-size: 12px;
+    padding: 0;
+}
+
+.winButton:focus {
+    box-shadow: none;
+    border-style: none;
+    outline: none;
+}

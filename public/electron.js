@@ -15,7 +15,7 @@ function createWindow() {
         backgroundColor: photon.GREY_10,
         // frame: false,
         height: 680,
-        titleBarStyle: "hidden",
+        titleBarStyle: "hiddenInset",
         webPreferences: {
             nodeIntegration: true
         },
