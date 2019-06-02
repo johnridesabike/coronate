@@ -33,8 +33,6 @@ export function autoPair({
         roundId,
         roundList
     });
-    console.log("pairs", pairs);
-    console.log("players", players);
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     const newMatchList = pairs.map(
         (idsPair) => (

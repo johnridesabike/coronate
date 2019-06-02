@@ -67,6 +67,7 @@
         "fp/no-this": "error",
         "fp/no-class": "error",
         "fp/no-delete": "error",
-        "fp/no-mutating-methods": "warn"
+        "fp/no-mutating-methods": "warn",
+        "ramda/prefer-ramda-boolean": "off"
     }
 }

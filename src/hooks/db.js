@@ -1,6 +1,7 @@
 import "localforage-getitems";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
+import defaultOptions from "./default-options.json";
 import demoData from "../demo-data";
 import {difference} from "ramda";
 import localForage from "localforage";
@@ -97,18 +98,15 @@ export function useAllTournamentsDb() {
  * Options database hooks
  ******************************************************************************/
 export function useOptionsDb() {
-    const [options, dispatch] = useReducer(optionsReducer, demoData.options);
+    const [options, dispatch] = useReducer(optionsReducer, defaultOptions);
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initOptionsFromDb() {
-            document.body.style.cursor = "wait";
+            // I don't remember why I used `iterate()` instead of `getItems()`.
             optionsStore.iterate(function (value, key) {
                 dispatch({option: key, type: "SET_OPTION", value: value});
             }).then(function () {
                 setIsLoaded(true);
-                document.body.style.cursor = "auto";
-            }).catch(function () {
-                document.body.style.cursor = "auto";
             });
         },
         []

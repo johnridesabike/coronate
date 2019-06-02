@@ -113,6 +113,7 @@ export default function TournamentList(props) {
                             <legend>Make a new tournament</legend>
                             <label htmlFor="tourney-name">Name:</label>
                             <input
+                                id="tourney-name"
                                 name="tourney-name"
                                 placeholder="tournament name"
                                 required={true}

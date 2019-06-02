@@ -28,7 +28,6 @@ import {
 } from "ramda";
 import blossom from "edmonds-blossom";
 import {createPlayerStats} from "./factories";
-// import {firstBy} from "thenby";
 import t from "tcomb";
 
 const priority = (value) => (condition) => condition ? value : 0;
@@ -159,14 +158,17 @@ function setByePlayer(byeQueue, playerStatsList) {
 export function sortPlayersForPairing(playerStatsList) {
     t.list(PlayerStats)(playerStatsList);
     return sortWith(
-        // firstBy(
-        //     (a, b) => b.score - a.score
-        // ).thenBy(
-        //     (a, b) => b.rating - a.rating
-        // ),
         [descend(prop("score")), descend(prop("rating"))],
         playerStatsList
     );
+    // return sort(
+    //     firstBy(
+    //         (a, b) => b.score - a.score
+    //     ).thenBy(
+    //         (a, b) => b.rating - a.rating
+    //     ),
+    //     playerStatsList
+    // );
 }
 
 /**
@@ -262,6 +264,20 @@ export default function pairPlayers({
         ],
         reducedResults
     );
+    // const sortedResults = sort(
+    //     firstBy(
+    //         (pair1, pair2) => (
+    //             pair2[0].score + pair2[1].score
+    //             - pair1[0].score - pair1[1].score
+    //         )
+    //     ).thenBy(
+    //         (pair1, pair2) => (
+    //             pair2[0].rating + pair2[1].rating
+    //             - pair1[0].rating - pair1[1].rating
+    //         )
+    //     ),
+    //     reducedResults
+    // );
     const matches = sortedResults.map(
         function (pair) {
             const player1 = pair[0];

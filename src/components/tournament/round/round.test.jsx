@@ -1,76 +1,80 @@
-// "The tests here mostly don't work because of IndexedDB is async.
-// If you know how to fix them, please help me out!
-// https://github.com/johnridesabike/chessahoochee/issues
 import "jest-dom/extend-expect";
-import {cleanup, fireEvent, render} from "react-testing-library";
-import PlayerInfoBox from "../../players/player-profile";
+import {cleanup, fireEvent, render} from "@testing-library/react";
+// import PlayerInfoBox from "../../players/player-profile";
 import PropTypes from "prop-types";
 import React from "react";
 import RoundPanels from "./index";
 import {TournamentProvider} from "../../../hooks";
 
-const {click, change} = fireEvent;
+const {click} = fireEvent;
 afterEach(cleanup);
 
-const AllTheProviders = ({children}) => (
-    <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+const BattleForGothamCity = ({children}) => (
+    <TournamentProvider tourneyId="tvAdS4YbSOznrBgrg0ITA">
         {children}
     </TournamentProvider>
 );
-AllTheProviders.propTypes = {
-    children: PropTypes.node
-};
+BattleForGothamCity.propTypes = {children: PropTypes.node.isRequired};
 
-const batmanInfo = (
-    <PlayerInfoBox playerId={0} />
-);
-const robinInfo = (
-    <PlayerInfoBox playerId={1} />
-);
+// const AllTheProviders = ({children}) => (
+//     <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+//         {children}
+//     </TournamentProvider>
+// );
+// AllTheProviders.propTypes = {
+//     children: PropTypes.node
+// };
 
-function getRating(node) {
-    return render(
-        node,
-        {wrapper: AllTheProviders}
-    ).getByLabelText(/rating/i).value;
-}
+// const batmanInfo = (
+//     <PlayerInfoBox playerId={0} />
+// );
+// const robinInfo = (
+//     <PlayerInfoBox playerId={1} />
+// );
 
-function getMatchCount(node) {
-    return render(
-        node,
-        {wrapper: AllTheProviders}
-    ).getByLabelText(/matches played/i).value;
-}
+// function getRating(node) {
+//     return render(
+//         node,
+//         {wrapper: AllTheProviders}
+//     ).getByLabelText(/rating/i).value;
+// }
 
-xit("Original ratings are shown correctly.", function () {
-    const origRatingBatman = getRating(batmanInfo);
-    cleanup();
-    const origRatingRobin = getRating(robinInfo);
-    expect(origRatingBatman).toBe("1998"); // from demo-players.json
-    expect(origRatingRobin).toBe("1909"); // from demo-players.json
-});
+// function getMatchCount(node) {
+//     return render(
+//         node,
+//         {wrapper: AllTheProviders}
+//     ).getByLabelText(/matches played/i).value;
+// }
 
-xit("Original match counts are shown correctly.", function () {
-    expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
-});
+// xit("Original ratings are shown correctly.", function () {
+//     const origRatingBatman = getRating(batmanInfo);
+//     cleanup();
+//     const origRatingRobin = getRating(robinInfo);
+//     expect(origRatingBatman).toBe("1998"); // from demo-players.json
+//     expect(origRatingRobin).toBe("1909"); // from demo-players.json
+// });
 
-xit("Ratings are updated after a match is scored.", function () {
-    const {getByText, getByDisplayValue, getByTestId} = render(
-        <RoundPanels roundId={1} tourneyId={1} />,
-        {wrapper: AllTheProviders}
-    );
-    click(getByText(/^unmatched players$/i));
-    click(getByText(/select bruce wayne/i));
-    click(getByText(/select dick grayson/i));
-    click(getByText(/match selected/i));
-    click(getByText(/matches/i));
-    change(getByDisplayValue(/select a winner/i), {target: {value: "WHITE"}});
-    click(getByText(
-        /view information for match: bruce wayne versus dick grayson/i
-    ));
-    expect(getByTestId("rating-0")).toHaveTextContent("1998 (+33)");
-    expect(getByTestId("rating-1")).toHaveTextContent("1909 (-33)");
-});
+// xit("Original match counts are shown correctly.", function () {
+//     expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
+// });
+
+// xit("Ratings are updated after a match is scored.", function () {
+//     const {getByText, getByDisplayValue, getByTestId} = render(
+//         <RoundPanels roundId={1} tourneyId={1} />,
+//         {wrapper: AllTheProviders}
+//     );
+//     click(getByText(/^unmatched players$/i));
+//     click(getByText(/select bruce wayne/i));
+//     click(getByText(/select dick grayson/i));
+//     click(getByText(/match selected/i));
+//     click(getByText(/matches/i));
+//     change(getByDisplayValue(/select a winner/i), {target: {value: "WHITE"}});
+//     click(getByText(
+//         /view information for match: bruce wayne versus dick grayson/i
+//     ));
+//     expect(getByTestId("rating-0")).toHaveTextContent("1998 (+33)");
+//     expect(getByTestId("rating-1")).toHaveTextContent("1909 (-33)");
+// });
 
 // it("Match counts are updated.", function () {
 //     expect(getMatchCount(batmanInfo)).toBe("10");
@@ -110,18 +114,17 @@ xit("Ratings are updated after a match is scored.", function () {
 //     expect(getMatchCount(batmanInfo)).toBe("9");
 // });
 
-xit("Players are auto-paired correctly", function () {
+it("Players are auto-paired correctly", function () {
     // This will need to be updated as the pairing algorithm changes.
     const {getByText, getByTestId} = render(
-        <RoundPanels roundId={1} tourneyId={1} />,
-        {wrapper: AllTheProviders}
+        <BattleForGothamCity><RoundPanels roundId={1} /></BattleForGothamCity>,
     );
-    fireEvent.click(getByText(/auto-pair unmatched players/i));
+    click(getByText(/auto-pair unmatched players/i));
     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
     expect(getByTestId("match-0-black")).toHaveTextContent("Harley Quinn");
-    expect(getByTestId("match-1-white")).toHaveTextContent("Joker");
+    expect(getByTestId("match-1-white")).toHaveTextContent("Kate Kane");
     expect(getByTestId("match-1-black")).toHaveTextContent("Oswald Cobblepot");
-    expect(getByTestId("match-2-white")).toHaveTextContent("Kate Kane");
+    expect(getByTestId("match-2-white")).toHaveTextContent("Joker");
     expect(getByTestId("match-2-black")).toHaveTextContent("Harvey Dent");
     expect(getByTestId("match-3-white")).toHaveTextContent("Alfred Pennyworth");
     expect(getByTestId("match-3-black")).toHaveTextContent("Helena Wayne");

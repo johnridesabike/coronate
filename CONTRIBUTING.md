@@ -25,10 +25,6 @@ This project is built using Node.js and React, so familiarity with those will co
 
 ## Test coverage
 
-Shortly after I began writing tests, I changed the app to use IndexedDB for data storage. The async nature of IndexedDB broke all the tests. I'm not very knowledgable in this area, and I have not had the time to learn how to fix them. If you're familiar with React testing, [pull requests are welcome](https://github.com/johnridesabike/chessahoochee/pulls)!
-
-### Testing to-dos (once the tests work again): 
-
 - When players are auto-paired, and there's a bye-queue, the next player on the bye-queue gets paired with the dummy player.
 - When players are auto-paired without the bye-queue, the lowest-ranking, lowest-rated player get paired with the dummy player.
 - There is only ever one dummy player per round.

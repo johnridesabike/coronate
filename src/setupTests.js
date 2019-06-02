@@ -1,11 +1,11 @@
 import "side-effects";
-import {optionsStore, playerStore, tourneyStore} from "./hooks/db";
-import demoData from "./demo-data";
 
 // This stops @reach packages from nagging us about adding their styles.
 window.getComputedStyle = jest.fn().mockImplementation(
     () => ({getPropertyValue: () => 1})
 );
-optionsStore.setItems(demoData.options);
-playerStore.setItems(demoData.players);
-tourneyStore.setItems(demoData.tournaments);
+// Our tester will click "yes" to everything.
+window.confirm = jest.fn(() => true);
+
+jest.mock("./hooks/db");
+jest.mock("./hooks/tournament-provider");
