@@ -33,8 +33,7 @@ const Splash = (props) => (
             </aside>
             <div className={styles.title}>
                 <h1>
-                    <span aria-hidden>♘</span>{" "}
-                    Chessahoochee
+                    <Icons.Logo /> Chessahoochee
                 </h1>
                 <p className={styles.subtitle + " caption-30"}>
                     a chess tournament app

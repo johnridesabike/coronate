@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "svg-prettify": "svgo icon_inkscape.svg -o icon.svg --indent=4 --pretty",
+    "svg-jsx": "npm run svg-prettify && svg-to-jsx icon.svg -o icon.jsx.svg"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
+    "svg-to-jsx": "^1.0.0",
+    "svg-to-png": "^4.0.0",
     "svgo": "^1.2.2"
   }
 }
