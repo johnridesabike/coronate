@@ -8,10 +8,10 @@ import {getUnmatched} from "../../../pairing-scoring";
 import {useTournament} from "../../../hooks";
 
 export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
-    const {tourney, players} = useTournament();
+    const {tourney, activePlayers} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, players, roundId)
+        ? getUnmatched(tourney, activePlayers, roundId)
         : {};
 
     function selectPlayer(id) {

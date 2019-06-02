@@ -5,6 +5,7 @@ import React, {
     useReducer,
     useState
 } from "react";
+import {filter, symmetricDifference} from "ramda";
 import {
     getAllPlayersFromMatches,
     getPlayerMaybe,
@@ -13,7 +14,6 @@ import {
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
 import PropTypes from "prop-types";
-import {symmetricDifference} from "ramda";
 
 const TournamentContext = createContext(null);
 
@@ -123,6 +123,11 @@ export function TournamentProvider({children, tourneyId}) {
         [players, isPlayersLoaded]
     );
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
+    // `players` includes players in past matches who may have left
+    const activePlayers = filter(
+        (p) => tourney.playerIds.includes(p.id),
+        players
+    );
     if (isDbError) {
         return <div>Error: tournament not found.</div>;
     }
@@ -132,6 +137,7 @@ export function TournamentProvider({children, tourneyId}) {
     return (
         <TournamentContext.Provider
             value={{
+                activePlayers,
                 getPlayer,
                 players,
                 playersDispatch,

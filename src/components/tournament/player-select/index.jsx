@@ -3,11 +3,46 @@ import React, {useState} from "react";
 import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
+import PropTypes from "prop-types";
 import Selecting from "./selecting";
 import {useTournament} from "../../../hooks";
 
+function PlayerList({players, dispatch, byeQueue}) {
+    return (
+        <>
+        {Object.values(players).map((p) => (
+            <tr key={p.id} className={p.type + " player"}>
+                <td>{p.firstName}</td>
+                <td>{p.lastName}</td>
+                <td>
+                    <button
+                        className="button-micro"
+                        disabled={byeQueue.includes(p.id)}
+                        onClick={() =>
+                            dispatch({
+                                byeQueue:
+                                    byeQueue.concat([p.id]),
+                                type: "SET_BYE_QUEUE"
+                            })
+                        }
+                    >
+                        Bye signup
+                    </button>
+                </td>
+            </tr>
+        )
+        )}
+        </>
+    );
+}
+PlayerList.propTypes = {
+    byeQueue: PropTypes.arrayOf(PropTypes.string).isRequired,
+    dispatch: PropTypes.func.isRequired,
+    players: PropTypes.object.isRequired
+};
+
 export default function PlayerSelect(props) {
-    const {tourney, tourneyDispatch, players} = useTournament();
+    const {tourney, tourneyDispatch, activePlayers} = useTournament();
     const {playerIds, roundList, byeQueue} = tourney;
     const dispatch = tourneyDispatch;
     const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
@@ -30,28 +65,11 @@ export default function PlayerSelect(props) {
                             </tr>
                         </thead>
                         <tbody className="content">
-                            {Object.values(players).map((p) => (
-                                <tr key={p.id} className={p.type + " player"}>
-                                    <td>{p.firstName}</td>
-                                    <td>{p.lastName}</td>
-                                    <td>
-                                        <button
-                                            className="button-micro"
-                                            disabled={byeQueue.includes(p.id)}
-                                            onClick={() =>
-                                                dispatch({
-                                                    byeQueue:
-                                                        byeQueue.concat([p.id]),
-                                                    type: "SET_BYE_QUEUE"
-                                                })
-                                            }
-                                        >
-                                            Bye signup
-                                        </button>
-                                    </td>
-                                </tr>
-                            )
-                            )}
+                            <PlayerList
+                                byeQueue={byeQueue}
+                                dispatch={dispatch}
+                                players={activePlayers}
+                            />
                         </tbody>
                     </table>
                 </Panel>
@@ -70,8 +88,8 @@ export default function PlayerSelect(props) {
                                     : "buttons-on-hover"
                                 }
                             >
-                                {players[pId].firstName}{" "}
-                                {players[pId].lastName}{" "}
+                                {activePlayers[pId].firstName}{" "}
+                                {activePlayers[pId].lastName}{" "}
                                 <button
                                     className="button-micro"
                                     onClick={() =>

@@ -22,7 +22,7 @@ import numeral from "numeral";
 export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const [options] = useOptionsDb();
-    const {tourney, players, tourneyDispatch} = useTournament();
+    const {tourney, activePlayers, tourneyDispatch} = useTournament();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const statsList = React.useMemo(
         () => (
@@ -32,20 +32,20 @@ export default function PairPicker({roundId}) {
                     createPlayerStats({
                         avoidList: options.avoidPairs,
                         id: player.id,
-                        players,
+                        players: activePlayers,
                         roundId,
                         roundList: tourney.roundList
                     })
                 )),
                 sortPlayersForPairing,
                 setUpperHalves
-            )(players)
+            )(activePlayers)
         ),
         [
             tourney.roundList,
             roundId,
             options.avoidPairs,
-            players
+            activePlayers
         ]
     );
     const matchIdeal = React.useMemo(
@@ -61,7 +61,7 @@ export default function PairPicker({roundId}) {
         [stagedPlayers, statsList]
     );
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, players, roundId)
+        ? getUnmatched(tourney, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     return (
