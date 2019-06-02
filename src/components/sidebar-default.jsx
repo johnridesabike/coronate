@@ -11,7 +11,7 @@ function Sidebar() {
                     <Link to="/tourneys">
                         <Icons.Award />
                         <span className="sidebar__hide-on-close">
-                            Tournaments
+                            &nbsp;Tournaments
                         </span>
                     </Link>
                 </li>
@@ -19,7 +19,7 @@ function Sidebar() {
                     <Link  to="/players">
                         <Icons.Users />
                         <span className="sidebar__hide-on-close">
-                            Players
+                            &nbsp;Players
                         </span>
                     </Link>
                 </li>
@@ -27,7 +27,7 @@ function Sidebar() {
                     <Link to="/options">
                         <Icons.Settings />
                         <span className="sidebar__hide-on-close">
-                            Options
+                            &nbsp;Options
                         </span>
                     </Link>
                 </li>

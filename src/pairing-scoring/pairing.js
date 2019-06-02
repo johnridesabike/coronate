@@ -129,22 +129,18 @@ function setByePlayer(byeQueue, playerStatsList) {
         (p) => !p.hasHadBye
     ).map((p) => p.id);
     const nextByeSignup = byeQueue.filter((id) => hasNotHadBye.includes(id))[0];
-    const indexOfDueBye = (
-        (nextByeSignup)
+    const indexOfDueBye = (nextByeSignup)
         // Assign the bye to the next person who signed up.
         ? findLastIndex((p) => p.id === nextByeSignup, playerStatsList)
         // Assign a bye to the lowest-rated player in the lowest score group.
         // Because the list is sorted, the last player is the lowest.
         // (USCF § 29L2.)
-        : findLastIndex((p) => !p.hasHadBye, playerStatsList)
-    );
+        : findLastIndex((p) => !p.hasHadBye, playerStatsList);
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
-    const index = (
-        (indexOfDueBye === -1)
+    const index = (indexOfDueBye === -1)
         ? playerStatsList.length - 1
-        : indexOfDueBye
-    );
+        : indexOfDueBye;
     return over(
         lensIndex(index),
         assoc("isDueBye", true),
@@ -229,8 +225,6 @@ export default function pairPlayers({
             // Filter out unmatched players. Blossom will automatically include
             // their missing IDs in its results.
             if (p1Index !== -1) {
-                // const p1 = playerStatsList.filter((p) => p.id === p1Id)[0];
-                // const p2 = playerStatsList.filter((p) => p.id === p2Id)[0];
                 // Translate the indices into ID strings
                 const p1Id = playerIds[p1Index];
                 const p2Id = playerIds[p2Index];

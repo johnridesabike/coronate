@@ -2,6 +2,7 @@ import React, {createContext, useContext, useReducer} from "react";
 import {playersReducer,tournamentReducer} from "../reducers";
 import PropTypes from "prop-types";
 import demoData from "../../demo-data";
+import {filter} from "ramda";
 import {getPlayerMaybe} from "../../pairing-scoring";
 
 const TournamentContext = createContext(null);
@@ -16,10 +17,14 @@ export function TournamentProvider({children, tourneyId}) {
         tourney,
         tourneyDispatch
     ] = useReducer(tournamentReducer, demoData.tournaments[tourneyId]);
+    const filteredPlayers = filter(
+        (p) => tourney.playerIds.includes(p.id),
+        demoData.players
+    );
     const [
         players,
         playersDispatch
-    ] = useReducer(playersReducer, demoData.players);
+    ] = useReducer(playersReducer, filteredPlayers);
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     return (
         <TournamentContext.Provider
