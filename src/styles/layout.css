@@ -33,6 +33,11 @@
     -webkit-app-region: no-drag;
 }
 
+.header button:focus {
+    box-shadow: none;
+    outline: none;
+}
+
 .main {
     grid-area: app-content;
     overflow: auto;

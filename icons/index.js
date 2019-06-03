@@ -1,6 +1,6 @@
 let svg2Png = require("svg-to-png");
 svg2Png.convert(
-    __dirname + "/icon.svg",
+    __dirname + "/icon_full_inkscape.svg",
     __dirname + "/",
     {
         defaultHeight: 512,

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "svg-prettify": "svgo icon_inkscape.svg -o icon.svg --indent=4 --pretty",
-    "svg-jsx": "npm run svg-prettify && svg-to-jsx icon.svg -o icon.jsx.svg"
+    "svg-jsx": "npm run svg-prettify && svg-to-jsx icon.svg -o icon.jsx.svg",
+    "build-full-icon": "node index.js"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
