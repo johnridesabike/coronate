@@ -14,21 +14,22 @@ export function createMatch(importObj) {
 
 export function createPlayer(importObj = {}) {
     return Player({
-        firstName: importObj.firstName || "",
+        firstName: importObj.firstName,
         id: importObj.id || nanoid(),
-        lastName: importObj.lastName || "",
+        lastName: importObj.lastName,
         matchCount: importObj.matchCount || 0,
         rating: importObj.rating || 0,
         type: importObj.type || "person" // used for CSS styling etc.
     });
 }
 
+// eslint-disable-next-line complexity
 export function createTournament(importObj) {
     return Tournament({
         byeQueue: importObj.byeQueue || [],
         date: importObj.date || new Date(),
         id: importObj.id || nanoid(),
-        name: importObj.name || "",
+        name: importObj.name,
         playerIds: importObj.playerIds || [],
         roundList: importObj.roundList || [],
         tieBreaks: importObj.tieBreaks || [0, 1, 2, 3]

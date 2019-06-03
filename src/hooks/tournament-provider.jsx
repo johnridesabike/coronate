@@ -124,6 +124,7 @@ export function TournamentProvider({children, tourneyId}) {
     );
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     // `players` includes players in past matches who may have left
+    // `activePlayers` is only players to be matched in future matches.
     const activePlayers = filter(
         (p) => tourney.playerIds.includes(p.id),
         players

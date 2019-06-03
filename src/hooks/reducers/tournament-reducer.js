@@ -114,6 +114,7 @@ ActionTypes.dispatch = function (action) {
     return typeToConstructor[action.type];
 };
 
+// eslint-disable-next-line complexity
 export default function tournamentReducer(state, action) {
     ActionTypes(action);
     switch (action.type) {

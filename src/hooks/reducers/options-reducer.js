@@ -34,6 +34,7 @@ ActionTypes.dispatch = function (x) {
     return typeToConstructor[x.type];
 };
 
+// eslint-disable-next-line complexity
 export default function optionsReducer(state, action) {
     ActionTypes(action);
     switch (action.type) {

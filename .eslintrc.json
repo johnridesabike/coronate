@@ -25,6 +25,7 @@
         "eol-last": ["warn", "always"],
         "block-spacing": ["warn", "never"],
         "computed-property-spacing": ["warn", "never"],
+        "complexity": ["warn", 5],
         "space-before-function-paren": ["warn", {
             "anonymous": "always",
             "named": "never",

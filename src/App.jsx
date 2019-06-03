@@ -10,6 +10,7 @@ import TournamentIndex, {
     Tournament,
     TournamentList
 } from "./components/tournament";
+import {electron, ifElectron, macOSDoubleClick} from "./electron-utils";
 import Caution from "./components/caution";
 import Icons from "./components/icons";
 import NotFound from "./components/404";
@@ -25,38 +26,6 @@ import {useDocumentTitle} from "./hooks";
 let source = createHashSource();
 let history = createHistory(source);
 
-const electron = (window.require) ? window.require("electron") : false;
-/**
- * https://github.com/electron/electron/issues/16385#issuecomment-453955377
- */
-function macOSDoubleClick(event) {
-    if (!electron) {
-        return;
-    }
-    if (!event.target.className.includes) {
-        return; // sometimes `className` isn't a string.
-    }
-    // We don't want double-clicking buttons to (un)maximize.
-    if (!event.target.className.includes("double-click-control")) {
-        return;
-    }
-    const systemPrefs = electron.remote.systemPreferences;
-    const doubleClickAction = systemPrefs.getUserDefault(
-        "AppleActionOnDoubleClick",
-        "string"
-    );
-    const win = electron.remote.getCurrentWindow();
-    if (doubleClickAction === "Minimize") {
-        win.minimize();
-    } else if (doubleClickAction === "Maximize") {
-        if (!win.isMaximized()) {
-            win.maximize();
-        } else {
-            win.unmaximize();
-        }
-    }
-};
-
 function App() {
     useDocumentTitle("a chess tournament app");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -64,16 +33,15 @@ function App() {
     const [isWindowBlur, setIsWindowBlur] = useState(false);
     useEffect(
         function () {
-            if (!electron) {
-                return;
-            }
-            const appWindow = electron.remote.getCurrentWindow();
-            appWindow.on("enter-full-screen", () => setIsFullScreen(true));
-            appWindow.on("leave-full-screen", () => setIsFullScreen(false));
-            appWindow.on("blur", () => setIsWindowBlur(true));
-            appWindow.on("focus", () => setIsWindowBlur(false));
-            setIsFullScreen(appWindow.isFullScreen());
-            setIsWindowBlur(!appWindow.isFocused());
+            ifElectron(function () {
+                const win = electron.remote.getCurrentWindow();
+                win.on("enter-full-screen", () => setIsFullScreen(true));
+                win.on("leave-full-screen", () => setIsFullScreen(false));
+                win.on("blur", () => setIsWindowBlur(true));
+                win.on("focus", () => setIsWindowBlur(false));
+                setIsFullScreen(win.isFullScreen());
+                setIsWindowBlur(!win.isFocused());
+            });
         },
         []
     );

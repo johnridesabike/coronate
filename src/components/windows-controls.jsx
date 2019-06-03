@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React, {useEffect, useState} from "react";
-// import PropTypes from "prop-types";
+import {electron, ifElectron} from "../electron-utils";
 import styles from "./windows-controls.module.css";
 
 // https://github.com/microsoft/vscode/tree/master/src/vs/workbench/browser/parts/titlebar/media
@@ -58,25 +58,25 @@ const Restore = () => (
     </svg>
 );
 
-const appWindow = (window.require)
-    ? window.require("electron").remote.getCurrentWindow()
-    : false;
-
 export default function Controls() {
     const [isMaximized, setIsMaximized] = useState(false);
     useEffect(
         function () {
-            appWindow.on("maximize", () => setIsMaximized(true));
-            appWindow.on("unmaximize", () => setIsMaximized(false));
-            setIsMaximized(appWindow.isMaximized());
+            ifElectron(function () {
+                const win = electron.remote.getCurrentWindow();
+                win.on("maximize", () => setIsMaximized(true));
+                win.on("unmaximize", () => setIsMaximized(false));
+                setIsMaximized(win.isMaximized());
+            });
         },
         []
     );
+    const win = electron.remote.getCurrentWindow();
     return (
         <div className={styles.container}>
             <button
                 className={styles.winButton + " button-ghost"}
-                onClick={() => appWindow.minimize()}
+                onClick={() => win.minimize()}
             >
                 <Minimize />
             </button>
@@ -84,21 +84,21 @@ export default function Controls() {
             ? (
                 <button
                     className={styles.winButton + " button-ghost"}
-                    onClick={() => appWindow.unmaximize()}
+                    onClick={() => win.unmaximize()}
                 >
                     <Restore />
                 </button>
             ) : (
                 <button
                     className={styles.winButton + " button-ghost"}
-                    onClick={() => appWindow.maximize()}
+                    onClick={() => win.maximize()}
                 >
                     <Maximize />
                 </button>
             )}
             <button
                 className={styles.winButton + " button-ghost"}
-                onClick={() => appWindow.close()}
+                onClick={() => win.close()}
             >
                 <Close />
             </button>

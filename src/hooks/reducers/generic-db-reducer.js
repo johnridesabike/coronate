@@ -55,6 +55,7 @@ ActionTypes.dispatch = function (x) {
     return typeToConstructor[x.type];
 };
 
+// eslint-disable-next-line complexity
 export default function genericDbReducer(state, action) {
     ActionTypes(action);
     const nextId = nanoid();
