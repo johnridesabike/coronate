@@ -17,18 +17,19 @@ export function TournamentProvider({children, tourneyId}) {
         tourney,
         tourneyDispatch
     ] = useReducer(tournamentReducer, demoData.tournaments[tourneyId]);
-    const filteredPlayers = filter(
+    const activePlayers = filter(
         (p) => tourney.playerIds.includes(p.id),
         demoData.players
     );
     const [
         players,
         playersDispatch
-    ] = useReducer(playersReducer, filteredPlayers);
+    ] = useReducer(playersReducer, activePlayers);
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     return (
         <TournamentContext.Provider
             value={{
+                activePlayers,
                 getPlayer,
                 players,
                 playersDispatch,

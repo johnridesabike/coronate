@@ -6,11 +6,14 @@
   "scripts": {
     "svg-prettify": "svgo icon_inkscape.svg -o icon.svg --indent=4 --pretty",
     "svg-jsx": "npm run svg-prettify && svg-to-jsx icon.svg -o icon.jsx.svg",
-    "build-full-icon": "node index.js"
+    "build-rasters": "node index.js"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "favicons": "^5.4.1",
+    "gulp": "^4.0.2",
+    "gulp-favicons": "^2.3.1",
     "svg-to-jsx": "^1.0.0",
     "svg-to-png": "^4.0.0",
     "svgo": "^1.2.2"

@@ -23,11 +23,11 @@
        inkscape:collect="always"
        id="linearGradient2285">
       <stop
-         style="stop-color:#a9e7da;stop-opacity:1"
+         style="stop-color:#91eaff;stop-opacity:1"
          offset="0"
          id="stop2281" />
       <stop
-         style="stop-color:#00a8d2;stop-opacity:1"
+         style="stop-color:#00ccff;stop-opacity:1"
          offset="1"
          id="stop2283" />
     </linearGradient>
@@ -35,15 +35,15 @@
        inkscape:collect="always"
        id="linearGradient1999">
       <stop
-         style="stop-color:#003e1d;stop-opacity:1"
+         style="stop-color:#00ff78;stop-opacity:1"
          offset="0"
          id="stop1995" />
       <stop
          id="stop2359"
          offset="0.68208545"
-         style="stop-color:#00d765;stop-opacity:1" />
+         style="stop-color:#81ffbc;stop-opacity:1" />
       <stop
-         style="stop-color:#00ff78;stop-opacity:1"
+         style="stop-color:#c1ffde;stop-opacity:1"
          offset="1"
          id="stop1997" />
     </linearGradient>
@@ -148,11 +148,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.2539062"
-     inkscape:cx="256"
-     inkscape:cy="256"
+     inkscape:zoom="0.15673828"
+     inkscape:cx="213.8947"
+     inkscape:cy="287.32319"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer2"
      showgrid="true"
      units="px"
      inkscape:window-width="1440"
@@ -240,9 +240,9 @@
     <g
        id="g2255"
        transform="matrix(0.07516942,0,0,0.07516942,-9.239856,-8.9710737)"
-       style="fill:#22241c;fill-opacity:1">
+       style="fill:#001e0e;fill-opacity:1">
       <path
-         style="fill:#22241c;fill-opacity:1;stroke-width:0.28537303"
+         style="fill:#001e0e;fill-opacity:1;stroke-width:0.28537303"
          d="m 242.58984,21.986328 v 27.111328 h -30.53711 v 27.109375 h 30.53711 l -0.002,43.968749 c -13.13001,5.03485 -26.35322,17.41007 -39.39062,36.80078 -8.36377,-6.92243 -18.263,-14.207 -30.09571,-21.69531 -15.31502,-8.94168 -30.39302,-13.41211 -45.23242,-13.41211 -26.82506,0 -52.222025,10.98721 -76.193359,32.96094 -23.971334,21.97373 -35.86408,48.08444 -35.673828,78.33398 0.190249,48.51341 31.202379,99.40418 93.033207,152.67383 L 91.626953,490 H 154 v 46 h 216 v -46 h 50.375 L 402.96875,385.83789 C 464.60935,332.56824 495.61953,281.67747 496,233.16406 c 0,-30.24954 -11.98568,-56.36025 -35.95703,-78.33398 -23.97133,-21.97373 -49.27535,-32.96094 -75.91016,-32.96094 -14.83938,0 -29.96289,4.47043 -45.37304,13.41211 -10.78605,6.25858 -20.63663,13.68673 -29.5586,22.27539 -13.27021,-19.67845 -26.62898,-32.22546 -39.78711,-37.33789 V 76.207031 h 30.53516 V 49.097656 H 269.41406 V 21.986328 Z"
          id="path2241"
          clip-path="url(#clipPath2290)"

@@ -32,12 +32,17 @@ const Splash = (props) => (
                 </Notification>
             </aside>
             <div className={styles.title}>
-                <h1>
-                    <Icons.Logo /> Chessahoochee
-                </h1>
-                <p className={styles.subtitle + " caption-30"}>
-                    a chess tournament app
-                </p>
+                <div className={styles.titleIcon}>
+                    <Icons.Logo />
+                </div>
+                <div className={styles.titleText}>
+                    <h1>
+                        Chessahoochee
+                    </h1>
+                    <p className={styles.subtitle + " caption-30"}>
+                        a chess tournament app
+                    </p>
+                </div>
             </div>
             <footer className={"body-20 " + styles.footer}>
                 <p>

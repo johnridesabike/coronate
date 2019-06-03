@@ -39,6 +39,22 @@
 .title {
     color: var(--grey-90);
     margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.titleIcon {
+    flex-shrink: 1;
+    margin-right: 8px;
+}
+
+.titleIcon svg {
+    height: 64px;
+    width: 64px;
+}
+
+.titleText {
+    flex-grow: 1;
 }
 
 h1 {
