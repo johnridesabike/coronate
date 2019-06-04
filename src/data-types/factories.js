@@ -1,4 +1,4 @@
-// These factories are mainly useful as a shortcut to provide default values.
+// These factories are mainly useful as a shortcut for default values.
 import {Match, Player, Tournament} from "./types";
 import nanoid from "nanoid";
 

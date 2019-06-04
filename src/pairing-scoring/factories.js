@@ -11,11 +11,14 @@ import {
     add,
     append,
     defaultTo,
+    descend,
     last,
     lensIndex,
     lensProp,
     over,
+    path,
     pipe,
+    prop,
     sortWith
 } from "ramda";
 import {
@@ -28,7 +31,6 @@ import {
     rounds2Matches
 } from "./helpers";
 import {
-    createTiebreakSorter,
     getColorBalanceScore,
     getDueColor,
     getPlayerScore,
@@ -40,7 +42,10 @@ import t from "tcomb";
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * TODO: this needs performance improvements.
- * @returns {[Standing[], string[]]} The standings and the list of method used
+ * @returns {[Standing[], string[]]} The the list of the standings and a list
+ * of the methods used. Each standing has a `tieBreaks` property which lists the
+ * score associated with each method. The order of these coresponds to the order
+ * of the method names in the second list.
  */
 export function createStandingList(methods, roundList, roundId) {
     t.list(t.Number)(methods);
@@ -59,7 +64,12 @@ export function createStandingList(methods, roundList, roundId) {
             tieBreaks: selectedTieBreaks.map(({func}) => func(id, matchList))
         })
     );
-    const sortFuncList = createTiebreakSorter(selectedTieBreaks);
+    // create a list of functions to pass to `sortWith`. This will sort by
+    // scores and then by each tiebreak value.
+    const sortFuncList = Object.keys(selectedTieBreaks).reduce(
+        (acc, key) => acc.concat([descend(path(["tieBreaks", key]))]),
+        [descend(prop("score"))]
+    );
     const standingsSorted = sortWith(sortFuncList, standings);
     return [standingsSorted, tieBreakNames];
 }

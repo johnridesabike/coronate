@@ -7,17 +7,6 @@ import {
     WHITE
 } from "../data-types";
 import {
-    descend,
-    init,
-    last,
-    path,
-    pipe,
-    prop,
-    sort,
-    sum,
-    tail
-} from "ramda";
-import {
     getMatchDetailsForPlayer,
     getMatchesByPlayer,
     getMatchesByPlayerNoByes,
@@ -25,6 +14,14 @@ import {
     getPlayerScoreListNoByes,
     isNotDummy
 } from "./helpers";
+import {
+    init,
+    last,
+    pipe,
+    sort,
+    sum,
+    tail
+} from "ramda";
 // import {firstBy} from "thenby";
 import t from "tcomb";
 
@@ -205,26 +202,3 @@ const tieBreakMethods = {
 };
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
-
-/**
- * Create a function to sort the standings. This dynamically creates a `thenBy`
- * function based on the list of desired tiebreak sort methods.
- * TODO: improve the way this is structured to be more intuitive.
- * @returns A function to be used with a list of standings and `sort()`.
- */
-export function createTiebreakSorter(selectedTiebreakMethods) {
-    // return Object.keys(selectedTiebreakMethods).reduce(
-    //     (acc, key) => (
-    //         acc.thenBy(
-    //             (standing1, standing2) => (
-    //                 standing2.tieBreaks[key] - standing1.tieBreaks[key]
-    //             )
-    //         )
-    //     ),
-    //     firstBy((standing1, standing2) => standing2.score - standing1.score)
-    // );
-    return Object.keys(selectedTiebreakMethods).reduce(
-        (acc, key) => acc.concat([descend(path(["tieBreaks", key]))]),
-        [descend(prop("score"))]
-    );
-}
