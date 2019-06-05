@@ -1,7 +1,8 @@
-import {BLACK, WHITE} from "../data-types";
-import {BLACKVALUE, Color, WHITEVALUE} from "./types";
-import {append, assoc, lensProp, over, pipe, when} from "ramda";
+import {BLACK, Id, WHITE} from "../data-types";
+import {BLACKVALUE, Color, ScoreData, WHITEVALUE} from "./types";
+import {append, assoc, last, lensProp, over, pipe, sum, when} from "ramda";
 import {isNotDummy} from "./helpers";
+import t from "tcomb";
 
 function color2Score(color) {
     return (Color(color) === BLACK) ? BLACKVALUE : WHITEVALUE;
@@ -35,5 +36,36 @@ export function matches2ScoreData(matchList) {
         },
         {}
     );
-    return data;
+    // TODO: remove this tcomb check for production
+    return t.dict(Id, ScoreData)(data);
+}
+
+/*******************************************************************************
+ * The main scoring methods
+ ******************************************************************************/
+function getPlayerScore(scoreData, id) {
+    return sum(scoreData[id].results);
+}
+
+function getCumulativeScore(scoreData, id) {
+    const scoreList = scoreData[id].resultsNoByes.reduce(
+        // turn the regular score list into a "running" score list
+        (acc, score) => acc.concat([last(acc) + score]),
+        [0]
+    );
+    return sum(scoreList);
+}
+
+function getCumulativeOfOpponentScore(scoreData, id) {
+    const scoreList = scoreData[id].opponentIds.filter(
+        isNotDummy
+    ).map(
+        // TODO: properly curry this function
+        (oppId) => getCumulativeScore(scoreData, oppId)
+    );
+    return sum(scoreList);
+}
+
+function getColorBalanceScore(scoredata, id) {
+    
 }
