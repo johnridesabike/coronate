@@ -11,10 +11,13 @@ const photon = require("photon-colors");
 let mainWindow;
 
 function createWindow() {
+    console.log(process.platform);
     mainWindow = new BrowserWindow({
         backgroundColor: photon.GREY_10,
-        // frame: false,
+        // On Windows we hide the title bar and controls.
+        frame: (process.platform !== "win32"),
         height: 680,
+        // on MacOS we hide the title bar
         titleBarStyle: "hiddenInset",
         webPreferences: {
             nodeIntegration: true
