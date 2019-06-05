@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Logo" src="graphics-src/icon.jsx.svg" height="64" width="64" />
+<img alt="Logo" src="graphics-src/icon_inkscape.svg" height="64" width="64" />
 <h1>Chessahoochee</h1>
 </div>
 
