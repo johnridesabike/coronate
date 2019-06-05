@@ -6,7 +6,8 @@ table {
     margin: auto;
 }
 
-th, td {
+th,
+td {
     padding: 4px;
 }
 
@@ -28,8 +29,9 @@ li.inactive {
 .dummy {
     font-style: italic;
 }
+
 .data__input {
-    text-align:center;
+    text-align: center;
 }
 
 li.player.missing {

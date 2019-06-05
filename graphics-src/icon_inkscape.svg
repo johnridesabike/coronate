@@ -60,6 +60,16 @@
          id="circle6352"
          style="opacity:1;fill:#363959;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:16.30694008;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke" />
     </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath935">
+      <circle
+         style="opacity:1;fill:#363959;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:16.30694008;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+         id="circle937"
+         cx="512"
+         cy="544"
+         r="480" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -69,10 +79,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.5"
-     inkscape:cx="492"
-     inkscape:cy="539"
+     inkscape:cx="455"
+     inkscape:cy="505"
      inkscape:document-units="px"
-     inkscape:current-layer="g1039"
+     inkscape:current-layer="g933"
      showgrid="true"
      units="px"
      inkscape:window-width="1440"
@@ -110,18 +120,6 @@
   </metadata>
   <g
      inkscape:groupmode="layer"
-     id="layer6"
-     inkscape:label="circle background"
-     style="display:inline">
-    <circle
-       style="opacity:1;fill:#363959;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:16.30694008;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
-       id="path6328"
-       cx="512"
-       cy="544"
-       r="480" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Full background"
      style="display:none">
@@ -132,6 +130,20 @@
        height="1024"
        x="0"
        y="0" />
+  </g>
+  <g
+     style="display:inline"
+     inkscape:label="Circle Background"
+     id="g933"
+     inkscape:groupmode="layer">
+    <rect
+       y="0"
+       x="0"
+       height="1024"
+       width="1024"
+       id="rect931"
+       style="opacity:1;fill:#363959;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:15.75399971;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       clip-path="url(#clipPath935)" />
   </g>
   <g
      inkscape:groupmode="layer"

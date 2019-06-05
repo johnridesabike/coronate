@@ -3,7 +3,6 @@
 <h1>Chessahoochee</h1>
 </div>
 
-
 This is an app for managing Swiss chess tournaments. I built it to help the chess players at Chattahoochee Valley Libraries, which is where the name comes from.
 
 **Why use Chessahoochee?** A while ago, I began facilitating a chess tournament and discovered an absence of free tournament software. Although directing a tournament the old-fashioned way is possible, software ensures that your tournament runs smoothly and correctly. This app aims to fill that gap.
@@ -26,3 +25,9 @@ Goals for this project include:
 - Create readable, documented source code so the larger community can continue to develop new tournament apps as needed.
 
 [You can view a demo here.](https://johnridesa.bike/chessahoochee/)
+
+## Credits
+
+The "kings" in the logo are derived from from Armando Hernandez Marroquin's "Merida" chess icon set, which is licensed as [GPLv2+](https://www.gnu.org/licenses/gpl-2.0.txt).
+
+Other icons come from [Feather](https://feathericons.com) ([MIT](https://github.com/feathericons/feather/blob/master/LICENSE) lincensed) and [Simple Icons](http://simpleicons.org) ([CC0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md) licensed).

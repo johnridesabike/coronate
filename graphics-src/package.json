@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "svg-prettify": "svgo icon_inkscape.svg -o icon_pretty.svg --indent=4 --pretty",
-    "jsxify-logo": "npm run svg-prettify && svg-to-jsx icon_pretty.svg -o icon.jsx.svg"
+    "jsxify-logo": "npm run svg-prettify && svg-to-jsx icon_pretty.svg -o icon.jsx.svg",
+    "build:web-icons": "gulp svg-to-web-icons"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
-  "dependencies": {
+  "devDependencies": {
     "fancy-log": "^1.3.3",
     "favicons": "^5.4.1",
     "gulp": "^4.0.2",

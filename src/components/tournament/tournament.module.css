@@ -6,14 +6,14 @@
     grid-template-rows: 96px auto;
     grid-template-areas:
         "sidebar header"
-        "sidebar content-with-sidebar"
+        "sidebar content-with-sidebar";
 }
 
 :global(.closed-sidebar) .tournament {
     grid-template-columns: 48px auto;
     grid-template-areas:
         "sidebar header"
-        "sidebar content-with-sidebar"
+        "sidebar content-with-sidebar";
 }
 
 .header {

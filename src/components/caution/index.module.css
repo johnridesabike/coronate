@@ -8,20 +8,20 @@
     align-items: center;
     background-image: url("./caution.svg");
 }
-  
+
 .caution__text {
-    margin:4px 0;
+    margin: 4px 0;
     padding: 4px;
     background-color: var(--grey-90);
     color: var(--grey-10);
     border-radius: 4px;
 }
-  
+
 .caution__link,
 .caution__link:visited {
     color: var(--teal-50);
 }
-  
+
 .caution__link:active,
 .caution__link:focus,
 .caution__link:hover {

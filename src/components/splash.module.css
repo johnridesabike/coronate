@@ -9,9 +9,10 @@
 
 .hint {
     margin: 0 auto;
+
     /* This reduces the offset of the main title: */
     height: 64px;
-    overflow: visible
+    overflow: visible;
 }
 
 .hint li {

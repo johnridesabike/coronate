@@ -12,22 +12,21 @@
     "url": "https://github.com/johnridesabike/chessahoochee.git"
   },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "coverage": "npm run test -- --coverage",
+    "build:electron-all": "npm run build && electron-builder build -mw",
+    "build:electron-win": "npm run build && electron-builder build -w",
+    "deploy:github-pages": "npm run build && gh-pages -d build",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "sourcemaps": "source-map-explorer './build/static/js/*'",
-    "lint": "eslint --ext .jsx,.js src/",
-    "electron-start": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-start-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "lint:javascript": "eslint --ext .jsx,.js src/",
+    "lint:stylesheets": "stylelint \"src/**/*.css\"",
+    "lint:all": "npm run lint:javascript && npm run lint:stylesheets",
     "postinstall": "electron-builder install-app-deps",
-    "preelectron-build": "npm run build",
-    "electron-build": "electron-builder build -mw",
-    "preelectron-build-win": "npm run build",
-    "electron-build-win": "electron-builder build -w"
+    "sourcemaps": "source-map-explorer './build/static/js/*'",
+    "start": "react-scripts start",
+    "start:electron-mac": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start:electron-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "test": "react-scripts test",
+    "test:coverage": "npm run test -- --coverage"
   },
   "dependencies": {
     "@reach/dialog": "^0.2.8",
@@ -67,6 +66,9 @@
     "gh-pages": "^2.0.1",
     "jest-dom": "^3.4.0",
     "react-scripts": "3.0.1",
+    "stylelint": "^10.0.1",
+    "stylelint-config-css-modules": "^1.4.0",
+    "stylelint-config-standard": "^18.3.0",
     "typescript": "^3.5.1",
     "wait-on": "^3.2.0"
   },
@@ -97,5 +99,5 @@
       "LICENSE",
       "README.md"
     ]
-}
+  }
 }

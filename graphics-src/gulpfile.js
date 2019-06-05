@@ -3,9 +3,9 @@ const favicons = require("favicons").stream;
 const gulp = require("gulp");
 const log = require("fancy-log");
 
-gulp.task("default", function () {
+gulp.task("svg-to-web-icons", function () {
     return gulp
-        .src("./icon_pretty.svg")
+        .src("./icon_inkscape.svg")
         .pipe(favicons({
             appDescription: "A free, easy-to-use Swiss chess tournament manager.",                     // Your application's description. `string`
             appName: "Chessahoochee: a chess tournament manager",                            // Your application's name. `string`

@@ -4,12 +4,27 @@
 @import-normalize;
 
 :root {
-    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
-    --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
-        "Courier New", monospace;
-    --selected-box-shadow: 
+    --font-main:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Roboto",
+        "Oxygen",
+        "Ubuntu",
+        "Cantarell",
+        "Fira Sans",
+        "Droid Sans",
+        "Helvetica Neue",
+        sans-serif;
+    --font-monospace:
+        "Fira Code",
+        source-code-pro,
+        Menlo,
+        Monaco,
+        Consolas,
+        "Courier New",
+        monospace;
+    --selected-box-shadow:
         0 0 0 1px #0a84ff,
         0 0 0 4px rgba(10, 132, 255, 0.3);
 }
@@ -22,12 +37,12 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
-  overflow: hidden;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100vh;
+    overflow: hidden;
 }
 
 #root {

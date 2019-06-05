@@ -52,6 +52,7 @@ input:focus {
 
 ::placeholder {
     color: var(--grey-50);
+
     /* font-size: 0.833rem;
     line-height: 1.4; */
 }

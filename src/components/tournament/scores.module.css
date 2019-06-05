@@ -20,15 +20,15 @@
     background-color: var(--white-100);
 }
 
+.row:nth-child(even) {
+    background-color: var(--white-100);
+}
+
 .row:nth-child(odd) {
     background-color: var(--grey-20);
 }
 
 .compact .row:nth-child(odd) {
-    background-color: var(--white-100);
-}
-
-.row:nth-child(even) {
     background-color: var(--white-100);
 }
 

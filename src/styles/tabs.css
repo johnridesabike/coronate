@@ -8,7 +8,7 @@
     grid-template-rows: min-content auto;
     grid-template-areas:
         "tab-list"
-        "tab-panels"
+        "tab-panels";
 }
 
 [data-reach-tab-list] {
@@ -57,9 +57,11 @@
 [data-reach-tab][aria-selected="true"]:active {
     background-color: var(--grey-90-a20);
 }
+
 [data-reach-tab][disabled] {
     background-color: transparent;
 }
+
 [data-reach-tab][disabled]:hover {
     background-color: transparent;
 }

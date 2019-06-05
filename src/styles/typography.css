@@ -1,6 +1,3 @@
-/*******************************************************************************
- * Typography
- ******************************************************************************/
 .display-20,
 h1 {
     font-size: 36px;
@@ -56,7 +53,7 @@ legend {
 
 .monospace,
 code {
-font-family: var(--font-monospace);
+    font-family: var(--font-monospace);
 }
 
 .caption-30 {
