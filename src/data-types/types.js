@@ -1,3 +1,4 @@
+import {BLACK, WHITE} from "./constants";
 import t from "tcomb";
 
 const Id = t.refinement(
@@ -6,6 +7,13 @@ const Id = t.refinement(
     "NanoId"
 );
 export {Id};
+
+const Color = t.refinement(
+    t.Number,
+    (num) => num === BLACK || num === WHITE,
+    "Color"
+);
+export {Color};
 
 const AvoidPair = t.tuple([Id, Id], "AvoidPair");
 export {AvoidPair};
