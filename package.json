@@ -26,6 +26,7 @@
     "postinstall": "electron-builder install-app-deps",
     "preelectron-build": "npm run build",
     "electron-build": "electron-builder build -mw",
+    "preelectron-build-win": "npm run build",
     "electron-build-win": "electron-builder build -w"
   },
   "dependencies": {
@@ -58,7 +59,7 @@
     "@testing-library/react": "^8.0.1",
     "concurrently": "^4.1.0",
     "electron": "^5.0.2",
-    "electron-builder": "^20.41.0",
+    "electron-builder": "^20.43.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-ramda": "^2.5.1",
@@ -96,5 +97,5 @@
       "LICENSE",
       "README.md"
     ]
-  }
+}
 }

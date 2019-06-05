@@ -1,4 +1,8 @@
-# Chessahoochee
+<div align="center">
+<img alt="Logo" src="icons/icon_pretty.svg" height="64" width="64" />
+<h1>Chessahoochee</h1>
+</div>
+
 
 This is an app for managing Swiss chess tournaments. I built it to help the chess players at Chattahoochee Valley Libraries, which is where the name comes from.
 
