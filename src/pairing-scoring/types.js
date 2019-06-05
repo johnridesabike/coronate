@@ -13,7 +13,8 @@ const ScoreData = t.interface(
         colorScores: t.list(ColorScore),
         colors: t.list(Color),
         id: Id,
-        opponentIds: t.list(Id),
+        opponentResults: t.dict(Id, t.Number),
+        ratings: t.list(t.Number),
         results: t.list(t.Number),
         resultsNoByes: t.list(t.Number)
     },
@@ -27,4 +28,4 @@ const PairingData = ScoreData.extend(
     "PairingData"
 );
 
-export {PairingData, ScoreData};
+export {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE};

@@ -1,6 +1,22 @@
 import {BLACK, Id, WHITE} from "../data-types";
 import {BLACKVALUE, Color, ScoreData, WHITEVALUE} from "./types";
-import {append, assoc, last, lensProp, over, pipe, sum, when} from "ramda";
+import {
+    add,
+    append,
+    ascend,
+    assoc,
+    defaultTo,
+    init,
+    last,
+    lensPath,
+    lensProp,
+    over,
+    pipe,
+    sort,
+    sum,
+    tail,
+    when
+} from "ramda";
 import {isNotDummy} from "./helpers";
 import t from "tcomb";
 
@@ -11,13 +27,15 @@ function color2Score(color) {
 export function matches2ScoreData(matchList) {
     const data = matchList.reduce(
         function (acc, match) {
-            const {playerIds, result} = match;
+            const {playerIds, result, newRating, origRating} = match;
             const [p1Data, p2Data] = [WHITE, BLACK].map(function (color) {
                 const oppColor = (color === WHITE) ? BLACK : WHITE;
                 const id = playerIds[color];
                 const oppId = playerIds[oppColor];
                 // Get existing score data to update, or create it fresh
-                const origData = acc[id] || {id};
+                // The ratings will always begin with the `origRating` of the
+                // first match they were in.
+                const origData = acc[id] || {id, ratings: [origRating[color]]};
                 return pipe(
                     over(lensProp("results"), append(result[color])),
                     when(
@@ -26,7 +44,11 @@ export function matches2ScoreData(matchList) {
                     ),
                     over(lensProp("colors"), append(color)),
                     over(lensProp("colorScores"), append(color2Score(color))),
-                    over(lensProp("opponentIds"), append(oppId))
+                    over(
+                        lensPath(["opponentResults", oppId]),
+                        pipe(defaultTo(0), add(result[color]))
+                    ),
+                    over(lensProp("ratings"), append(newRating[color]))
                 )(origData);
             });
             return pipe(
@@ -40,10 +62,19 @@ export function matches2ScoreData(matchList) {
     return t.dict(Id, ScoreData)(data);
 }
 
+function getOpponentScores(scoreData, id) {
+    const opponentIds = Object.keys(scoreData[id].opponentResults);
+    return opponentIds.filter(
+        isNotDummy
+    ).map(
+        (oppId) => getPlayerScore(scoreData, oppId)
+    );
+}
+
 /*******************************************************************************
  * The main scoring methods
  ******************************************************************************/
-function getPlayerScore(scoreData, id) {
+export function getPlayerScore(scoreData, id) {
     return sum(scoreData[id].results);
 }
 
@@ -57,7 +88,8 @@ function getCumulativeScore(scoreData, id) {
 }
 
 function getCumulativeOfOpponentScore(scoreData, id) {
-    const scoreList = scoreData[id].opponentIds.filter(
+    const opponentIds = Object.keys(scoreData[id].opponentResults);
+    const scoreList = opponentIds.filter(
         isNotDummy
     ).map(
         // TODO: properly curry this function
@@ -66,6 +98,51 @@ function getCumulativeOfOpponentScore(scoreData, id) {
     return sum(scoreList);
 }
 
-function getColorBalanceScore(scoredata, id) {
-    
+function getColorBalanceScore(scoreData, id) {
+    return sum(scoreData[id].colorScores);
 }
+
+function getModifiedMedianScore(scoreData, id) {
+    const scores = getOpponentScores(scoreData, id);
+    t.list(t.Number)(scores);
+    return pipe(
+        sort(ascend),
+        init,
+        tail,
+        sum
+    )(scores);
+}
+
+function getSolkoffScore(scoreData, id) {
+    return sum(getOpponentScores(scoreData, id));
+}
+
+const tieBreakMethods = {
+    0: {
+        func: getModifiedMedianScore,
+        id: 0,
+        name: "Modified median"
+    },
+    1: {
+        func: getSolkoffScore,
+        id: 1,
+        name: "Solkoff"
+    },
+    2: {
+        func: getCumulativeScore,
+        id: 2,
+        name: "Cumulative score"
+    },
+    3: {
+        func: getCumulativeOfOpponentScore,
+        id: 3,
+        name: "Cumulative of opposition"
+    },
+    4: {
+        func: getColorBalanceScore,
+        id: 4,
+        name: "Most black"
+    }
+};
+Object.freeze(tieBreakMethods);
+export {tieBreakMethods};
