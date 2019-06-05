@@ -1,14 +1,13 @@
 import {
     createStandingList,
-    getPerformanceRatings,
-    matches2ScoreData,
-    rounds2Matches
+    matches2ScoreData
 } from "../../pairing-scoring/index2";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import React from "react";
-import {assoc} from "ramda";
+import {last} from "ramda";
 import numeral from "numeral";
+import {rounds2Matches} from "../../pairing-scoring";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
 
@@ -28,7 +27,7 @@ export default function Crosstable(props) {
         if (player1Id === player2Id) {
             return <Icons.X className="disabled" />;
         }
-        const result = scoreData[player1Id][player2Id];
+        const result = scoreData[player1Id].opponentResults[player2Id];
         if (result === undefined) {
             return null;
         }
@@ -36,10 +35,8 @@ export default function Crosstable(props) {
     }
 
     function getRatingChangeTds(playerId) {
-        const [
-            firstRating,
-            lastRating
-        ] = getPerformanceRatings(matches, playerId);
+        const firstRating = scoreData[playerId].ratings[0];
+        const lastRating = last(scoreData[playerId].ratings);
         const change = numeral(lastRating - firstRating).format("+0");
         return (
             <>

@@ -23,6 +23,9 @@ const ScoreData = t.interface(
 const PairingData = ScoreData.extend(
     {
         avoidIds: t.list(Id),
+        isDueBye: t.Boolean,
+        rating: t.Number,
+        score: t.Number,
         upperHalf: t.Boolean
     },
     "PairingData"

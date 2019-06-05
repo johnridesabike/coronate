@@ -4,7 +4,6 @@ import {
     Id,
     Match,
     Player,
-    RoundList,
     Standing,
     Tournament,
     dummyPlayer,
@@ -104,8 +103,6 @@ export function getMatchDetailsForPlayer(playerId, match) {
  * Flatten a list of rounds to a list of matches.
  */
 export function rounds2Matches(roundList, roundId = null) {
-    RoundList(roundList);
-    t.maybe(t.Number)(roundId);
     const rounds = (
         (roundId === null)
         ? roundList
