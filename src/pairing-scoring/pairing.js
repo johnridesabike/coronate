@@ -164,15 +164,16 @@ export function pairPlayers(pairingData) {
     // we'll use `playerIdArray` as our source for that.
     const playerIdArray = pairingData.map((p) => p.id);
     // Turn the data into blossom-compatible input.
-    function pairIdealReducer(acc, player1, ignore, src) {
-        const playerMatches = src.map(
+    function pairIdealReducer(accArr, player1, index, srcArr) {
+        // slice out players who have already computed, plus the current one
+        const playerMatches = srcArr.slice(index + 1).map(
             (player2) => [
                 playerIdArray.indexOf(player1.id),
                 playerIdArray.indexOf(player2.id),
                 calcPairIdeal(player1, player2)
             ]
         );
-        return acc.concat(playerMatches);
+        return accArr.concat(playerMatches);
     }
     const potentialMatches = pairingData.filter(
         (p) => !p.isDueBye
@@ -183,7 +184,6 @@ export function pairPlayers(pairingData) {
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
-    console.log(potentialMatches);
     const blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of player Ids.
     const reducedResults = blossomResults.reduce(

@@ -41,8 +41,8 @@ function color2Score(color) {
 function match2ScoreDataReducer(acc, match) {
     const {playerIds, result, newRating, origRating} = match;
     const [p1Data, p2Data] = [WHITE, BLACK].map(function (color) {
-        const oppColor = (color === WHITE) ? BLACK : WHITE;
         const id = playerIds[color];
+        const oppColor = (color === WHITE) ? BLACK : WHITE;
         const oppId = playerIds[oppColor];
         // Get existing score data to update, or create it fresh
         // The ratings will always begin with the `origRating` of the
