@@ -1,13 +1,13 @@
 import {
     createStandingList,
-    matches2ScoreData
-} from "../../pairing-scoring/index2";
+    matches2ScoreData,
+    rounds2Matches
+} from "../../pairing-scoring";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import React from "react";
 import {last} from "ramda";
 import numeral from "numeral";
-import {rounds2Matches} from "../../pairing-scoring";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
 

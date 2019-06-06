@@ -1,44 +1,123 @@
 import {
-    AvoidPair,
+    BLACK,
     Id,
-    Match,
-    Player,
-    PlayerStats,
     RoundList,
-    Standing
+    Standing,
+    WHITE
 } from "../data-types";
+import {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE} from "./types";
 import {
     add,
     append,
+    assoc,
     defaultTo,
     descend,
-    last,
     lensIndex,
+    lensPath,
     lensProp,
     over,
     path,
     pipe,
     prop,
-    sortWith
+    sortWith,
+    sum,
+    when
 } from "ramda";
 import {
     areScoresEqual,
-    getAllPlayersFromMatches,
-    getMatchDetailsForPlayer,
-    getMatchesByPlayer,
-    getPlayerAvoidList,
     isNotDummy,
     rounds2Matches
 } from "./helpers";
 import {
-    getColorBalanceScore,
-    getDueColor,
     getPlayerScore,
-    getPlayersByOpponent,
-    hasHadBye,
     tieBreakMethods
 } from "./scoring";
 import t from "tcomb";
+
+function color2Score(color) {
+    return (Color(color) === BLACK) ? BLACKVALUE : WHITEVALUE;
+}
+
+function match2ScoreDataReducer(acc, match) {
+    const {playerIds, result, newRating, origRating} = match;
+    const [p1Data, p2Data] = [WHITE, BLACK].map(function (color) {
+        const oppColor = (color === WHITE) ? BLACK : WHITE;
+        const id = playerIds[color];
+        const oppId = playerIds[oppColor];
+        // Get existing score data to update, or create it fresh
+        // The ratings will always begin with the `origRating` of the
+        // first match they were in.
+        const origData = acc[id] || {id, ratings: [origRating[color]]};
+        return pipe(
+            over(lensProp("results"), append(result[color])),
+            when(
+                () => isNotDummy(oppId),
+                over(lensProp("resultsNoByes"), append(result[color]))
+            ),
+            over(lensProp("colors"), append(color)),
+            over(lensProp("colorScores"), append(color2Score(color))),
+            over(
+                lensPath(["opponentResults", oppId]),
+                pipe(defaultTo(0), add(result[color]))
+            ),
+            over(lensProp("ratings"), append(newRating[color]))
+        )(origData);
+    });
+    return pipe(
+        assoc(p1Data.id, p1Data),
+        assoc(p2Data.id, p2Data)
+    )(acc);
+}
+
+export function matches2ScoreData(matchList) {
+    const data = matchList.reduce(match2ScoreDataReducer, {});
+    // TODO: remove this tcomb check for production
+    return t.dict(Id, ScoreData)(data);
+}
+
+export function avoidPairReducer(acc, pair) {
+    return pipe(
+        over(lensProp(pair[0]), append(pair[1])),
+        over(lensProp(pair[1]), append(pair[0]))
+    )(acc);
+}
+
+export function createPairingData(playerData, avoidPairs, scoreData) {
+    const avoidDict = avoidPairs.reduce(avoidPairReducer, {});
+    const pairingData = Object.values(playerData).reduce(
+        function pairingDataReducer(acc, data) {
+            // If there's no scoreData for a player, use empty values
+            const playerStats = (scoreData[data.id])
+                ? scoreData[data.id]
+                : {
+                    colorScores: [],
+                    colors: [],
+                    opponentResults: {},
+                    results: []
+                };
+            // `isUpperHalf` and `isDueBye` default to `false` and will have to be
+            // set by another function later.
+            const pairData = {
+                avoidIds: avoidDict[data.id] || [],
+                colorScores: playerStats.colorScores,
+                colors: playerStats.colors,
+                id: data.id,
+                isDueBye: false,
+                isUpperHalf: false,
+                opponents: Object.keys(playerStats.opponentResults),
+                rating: data.rating,
+                // `score` is calculated and cached here because the blossom
+                // pairing will reuse it many times.
+                score: sum(playerStats.results)
+            };
+            return acc.concat([pairData]);
+        },
+        []
+    );
+    // TODO: remove this tcomb check for production
+    return t.list(PairingData)(pairingData);
+}
+
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * TODO: this needs performance improvements.
@@ -47,21 +126,18 @@ import t from "tcomb";
  * score associated with each method. The order of these coresponds to the order
  * of the method names in the second list.
  */
-export function createStandingList(methods, roundList, roundId) {
+export function createStandingList(scoreData, methods) {
+    t.dict(Id, ScoreData)(scoreData);
     t.list(t.Number)(methods);
-    t.list(t.Array)(roundList);
-    t.maybe(t.Number)(roundId);
-    const matchList = rounds2Matches(roundList, roundId);
+    // const scoreData = matches2ScoreData(rounds2Matches(roundList, roundId));
     const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
     const tieBreakNames = selectedTieBreaks.map((m) => m.name);
     // Get a flat list of all of the players and their scores.
-    const standings = getAllPlayersFromMatches(
-        matchList
-    ).map(
+    const standings = Object.keys(scoreData).map(
         (id) => Standing({
             id,
-            score: getPlayerScore(id, matchList),
-            tieBreaks: selectedTieBreaks.map(({func}) => func(id, matchList))
+            score: getPlayerScore(scoreData, id),
+            tieBreaks: selectedTieBreaks.map(({func}) => func(scoreData, id))
         })
     );
     // create a list of functions to pass to `sortWith`. This will sort by
@@ -84,10 +160,11 @@ export function createStandingTree(methods, roundList, roundId = null) {
     t.list(t.Number)(methods);
     RoundList(roundList);
     t.maybe(t.Number)(roundId);
+    const scoreData = matches2ScoreData(rounds2Matches(roundList, roundId));
     const [
         standingsFlat,
         tieBreakNames
-    ] = createStandingList(methods, roundList, roundId);
+    ] = createStandingList(scoreData, methods);
     const standingsFlatNoByes = standingsFlat.filter(isNotDummy);
     const standingsTree = standingsFlatNoByes.reduce(
         /** @param {Standing[][]} acc*/
@@ -107,79 +184,3 @@ export function createStandingTree(methods, roundList, roundId = null) {
     );
     return [standingsTree, tieBreakNames];
 }
-
-/**
- * @returns {PlayerStats}
- */
-export function createPlayerStats({
-    avoidList,
-    id,
-    players,
-    roundList,
-    roundId
-}) {
-    Id(id);
-    t.Number(roundId);
-    t.dict(Id, Player)(players);
-    t.list(AvoidPair)(avoidList);
-    RoundList(roundList);
-    const matches = rounds2Matches(roundList, roundId);
-    return PlayerStats({
-        avoidList: getPlayerAvoidList(id, avoidList),
-        colorBalance: getColorBalanceScore(id, matches),
-        dueColor: getDueColor(id, matches),
-        hasHadBye: hasHadBye(id, matches),
-        id: id, // is this shortcut necessary?
-        isDueBye: false,
-        opponentHistory: getPlayersByOpponent(id, matches),
-        profile: players[id],
-        rating: players[id].rating, // is this shortcut necessary?
-        score: getPlayerScore(id, matches),
-        upperHalf: false
-    });
-}
-
-/**
- * NOTE: these params are flipped. Should others be flipped too?
- * @returns {Object.<string, number>} {opponentId: result}
- */
-function getResultsByOpponent(matchList, playerId) {
-    Id(playerId);
-    t.list(Match)(matchList);
-    const matches = getMatchesByPlayer(playerId, matchList);
-    return matches.reduce(
-        function (acc, match) {
-            const opponent = match.playerIds.filter(
-                (id) => id !== playerId
-            )[0];
-            const {result} = getMatchDetailsForPlayer(playerId, match);
-            // This sets a default result of 0 and then adds the existing
-            // result. Most of the time, this would be the same as using
-            // `set()` with the result, but if two players play each other
-            // multiple times then the total results will be displayed.
-            return over(
-                lensProp(opponent),
-                pipe(defaultTo(0), add(result)),
-                acc
-            );
-        },
-        {}
-    );
-}
-export {getResultsByOpponent};
-
-/**
- * NOTE: these params are flipped. Should others be flipped too?
- */
-function getPerformanceRatings(matchList, playerId) {
-    Id(playerId);
-    t.list(Match)(matchList);
-    const matches = getMatchesByPlayer(playerId, matchList);
-    const firstMatch = matches[0];
-    const lastMatch = last(matches);
-    return [
-        getMatchDetailsForPlayer(playerId, firstMatch).origRating,
-        getMatchDetailsForPlayer(playerId, lastMatch).newRating
-    ];
-}
-export {getPerformanceRatings};

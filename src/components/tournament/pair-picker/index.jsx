@@ -2,12 +2,14 @@ import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
 import {
     calcPairIdeal,
-    createPlayerStats,
+    createPairingData,
+    getUnmatched,
+    matches2ScoreData,
     maxPriority,
+    rounds2Matches,
     setUpperHalves,
-    sortPlayersForPairing
+    sortDataForPairing
 } from "../../../pairing-scoring";
-import {map, pipe} from "ramda";
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";
@@ -16,8 +18,8 @@ import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
 import {findById} from "../../utility";
-import {getUnmatched} from "../../../pairing-scoring";
 import numeral from "numeral";
+import {pipe} from "ramda";
 
 export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
@@ -27,19 +29,16 @@ export default function PairPicker({roundId}) {
     const statsList = React.useMemo(
         () => (
             pipe(
-                Object.values,
-                map((player) => (
-                    createPlayerStats({
-                        avoidList: options.avoidPairs,
-                        id: player.id,
-                        players: activePlayers,
-                        roundId,
-                        roundList: tourney.roundList
-                    })
-                )),
-                sortPlayersForPairing,
+                (rounds) => rounds2Matches(rounds, roundId),
+                matches2ScoreData,
+                (data) => createPairingData(
+                    activePlayers,
+                    options.avoidPairs,
+                    data
+                ),
+                sortDataForPairing,
                 setUpperHalves
-            )(activePlayers)
+            )(tourney.roundList)
         ),
         [
             tourney.roundList,

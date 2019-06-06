@@ -4,7 +4,7 @@ import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
     createStandingTree,
     tieBreakMethods
-} from "../../pairing-scoring/index2";
+} from "../../pairing-scoring";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";

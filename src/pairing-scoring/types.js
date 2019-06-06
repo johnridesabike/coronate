@@ -20,13 +20,17 @@ const ScoreData = t.interface(
     },
     "ScoreData"
 );
-const PairingData = ScoreData.extend(
+const PairingData = t.interface(
     {
         avoidIds: t.list(Id),
+        colorScores: t.list(ColorScore),
+        colors: t.list(Color),
+        id: Id,
         isDueBye: t.Boolean,
+        isUpperHalf: t.Boolean,
+        opponents: t.list(Id),
         rating: t.Number,
-        score: t.Number,
-        upperHalf: t.Boolean
+        score: t.Number
     },
     "PairingData"
 );
