@@ -29,9 +29,9 @@
     "test:coverage": "npm run test -- --coverage"
   },
   "dependencies": {
-    "@reach/dialog": "^0.2.8",
+    "@reach/dialog": "^0.2.9",
     "@reach/router": "^1.2.1",
-    "@reach/tabs": "^0.1.5",
+    "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
     "classnames": "^2.2.6",
     "dashify": "^2.0.0",

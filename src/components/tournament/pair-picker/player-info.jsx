@@ -1,5 +1,6 @@
 import {
     avoidPairReducer,
+    emptyScoreData,
     matches2ScoreData,
     rounds2Matches
 } from "../../../pairing-scoring";
@@ -11,37 +12,23 @@ import React from "react";
 import {sum} from "ramda";
 
 export default function PlayerInfo({playerId, roundId}) {
-    const {tourney, players, getPlayer} = useTournament();
+    const {tourney, getPlayer} = useTournament();
     const [options] = useOptionsDb();
     const avoidDict = options.avoidPairs.reduce(avoidPairReducer, {});
     // TODO: This should probably be computed by a parent component and passed
     // down via props.
     const matches = rounds2Matches(tourney.roundList, roundId);
     const scoreData = matches2ScoreData(matches);
+    const playerData = scoreData[playerId] || emptyScoreData(playerId);
     const {
         colorScores,
         opponentResults,
         results
-    } = scoreData[playerId];
+    } = playerData;
     const colorBalance = sum(colorScores);
-    const player = players[playerId];
+    const player = getPlayer(playerId);
     const hasBye = Object.keys(opponentResults).includes(DUMMY_ID);
     const avoidList = avoidDict[playerId] || [];
-    // const {
-    //     profile,
-    //     rating,
-    //     score,
-    //     colorBalance,
-    //     hasHadBye,
-    //     opponentHistory,
-    //     avoidList
-    // } = createPlayerStats({
-    //     avoidList: options.avoidPairs,
-    //     id: playerId,
-    //     players,
-    //     roundId,
-    //     roundList: tourney.roundList
-    // });
     const prettyBalance = (function () {
         if (colorBalance < 0) {
             return "White +" + Math.abs(colorBalance);

@@ -8,13 +8,13 @@ import {
     sum,
     tail
 } from "ramda";
-import {isNotDummy} from "./helpers";
+import {isNotDummyId} from "./helpers";
 import t from "tcomb";
 
 function getOpponentScores(scoreData, id) {
     const opponentIds = Object.keys(scoreData[id].opponentResults);
     return opponentIds.filter(
-        isNotDummy
+        isNotDummyId
     ).map(
         (oppId) => getPlayerScore(scoreData, oppId)
     );
@@ -39,7 +39,7 @@ function getCumulativeScore(scoreData, id) {
 function getCumulativeOfOpponentScore(scoreData, id) {
     const opponentIds = Object.keys(scoreData[id].opponentResults);
     const scoreList = opponentIds.filter(
-        isNotDummy
+        isNotDummyId
     ).map(
         // TODO: properly curry this function
         (oppId) => getCumulativeScore(scoreData, oppId)

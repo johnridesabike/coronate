@@ -26,6 +26,11 @@ import {useDocumentTitle} from "./hooks";
 let source = createHashSource();
 let history = createHistory(source);
 
+const isWindowsAndElectron = (
+    navigator.appVersion.includes("Windows")
+    && electron
+);
+
 function App() {
     useDocumentTitle("a chess tournament app");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -51,7 +56,9 @@ function App() {
                 "app",
                 {"open-sidebar": isSidebarOpen},
                 {"closed-sidebar": !isSidebarOpen},
-                {"window-blur": isWindowBlur}
+                {"window-blur": isWindowBlur},
+                {"isWindows": navigator.appVersion.includes("Windows")},
+                {"isElectron": electron}
             )}
         >
             <LocationProvider history={history}>
@@ -68,6 +75,17 @@ function App() {
                     onDoubleClick={macOSDoubleClick}
                 >
                     <div>
+                        {isWindowsAndElectron &&
+                            <span
+                                style={{
+                                    alignItems: "center",
+                                    display: "inline-flex",
+                                    marginRight: "8px"}
+                                }
+                            >
+                                <Icons.Logo/>
+                            </span>
+                        }
                         <button
                             className="button-ghost"
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -105,7 +123,7 @@ function App() {
                     >
                         Chessahoochee
                     </div>
-                    {(navigator.appVersion.includes("Windows")) && electron &&
+                    {isWindowsAndElectron &&
                         <WindowsControls />
                     }
                 </header>

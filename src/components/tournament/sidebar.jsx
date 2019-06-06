@@ -11,14 +11,14 @@ import React from "react";
 export default function Sidebar(props) {
     const {
         tourney,
-        players,
         getPlayer,
+        activePlayers,
         playersDispatch,
         tourneyDispatch
     } = useTournament();
     useDocumentTitle(tourney.name);
     const {roundList} = tourney;
-    const isComplete = curry(isRoundComplete)(tourney, players);
+    const isComplete = curry(isRoundComplete)(tourney, activePlayers);
 
     const isNewRoundReady = (function () {
         if (roundList.length === 0) {
@@ -26,7 +26,7 @@ export default function Sidebar(props) {
         }
         return isComplete(roundList.length - 1);
     }());
-    const roundCount = calcNumOfRounds(Object.keys(players).length);
+    const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
     const isItOver = roundList.length >= roundCount;
     const [tooltipText, tooltipWarn] = (function () {
         if (!isNewRoundReady) {

@@ -3,6 +3,7 @@ import {
     createPairingData,
     createStandingList,
     createStandingTree,
+    emptyScoreData,
     matches2ScoreData
 } from "./factories";
 import {
@@ -36,6 +37,7 @@ export {
     createPairingData,
     createStandingList,
     createStandingTree,
+    emptyScoreData,
     getAllPlayersFromMatches,
     getPlayerAvoidList,
     getPlayerMaybe,

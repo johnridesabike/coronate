@@ -10,7 +10,7 @@ export default function Stage({
     stagedPlayers,
     setStagedPlayers
 }) {
-    const {tourneyDispatch, players} = useTournament();
+    const {tourneyDispatch, getPlayer} = useTournament();
     const dispatch = tourneyDispatch;
     const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
@@ -22,7 +22,7 @@ export default function Stage({
     function match() {
         dispatch({
             byeValue: options.byeValue,
-            pair: [players[white], players[black]],
+            pair: [getPlayer(white), getPlayer(black)],
             roundId,
             type: "MANUAL_PAIR"
         });
@@ -37,8 +37,8 @@ export default function Stage({
                     White:{" "}
                     {white !== null &&
                         <Fragment>
-                            {players[white].firstName}{" "}
-                            {players[white].lastName}{" "}
+                            {getPlayer(white).firstName}{" "}
+                            {getPlayer(white).lastName}{" "}
                             <button
                                 className="button-micro"
                                 onClick={() => unstage(WHITE)}
@@ -52,8 +52,8 @@ export default function Stage({
                     Black:{" "}
                     {black !== null &&
                         <Fragment>
-                            {players[black].firstName}{" "}
-                            {players[black].lastName}{" "}
+                            {getPlayer(black).firstName}{" "}
+                            {getPlayer(black).lastName}{" "}
                             <button
                                 className="button-micro"
                                 onClick={() => unstage(BLACK)}

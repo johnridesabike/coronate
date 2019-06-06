@@ -9,10 +9,10 @@ import {useTournament} from "../../../hooks";
 
 export default function Index(props) {
     const roundId = Number(props.roundId); // Reach Router passes a string.
-    const {tourney, players} = useTournament();
+    const {tourney, activePlayers} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, players, roundId)
+        ? getUnmatched(tourney, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     const [openTab, setOpenTab] = useState(0);

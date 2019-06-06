@@ -14,8 +14,11 @@ import t from "tcomb";
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
-const isNotDummy = (playerId) => playerId !== DUMMY_ID;
-export {isNotDummy};
+const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
+export {isNotDummyId};
+
+const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
+export {isNotDummyObj};
 
 export function hasHadBye(playerId, matchList) {
     Id(playerId);
@@ -189,6 +192,10 @@ export function getUnmatched(tourney, players, roundId) {
 }
 
 export function isRoundComplete(tourney, players, roundId) {
+    if (roundId < tourney.roundList.length - 1) {
+        // If it's not the last round, it's complete
+        return true;
+    }
     const unmatched = getUnmatched(tourney, players, roundId);
     const results = tourney.roundList[roundId].map(
         (match) => match.result[0] + match.result[1]

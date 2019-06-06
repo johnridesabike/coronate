@@ -11,7 +11,6 @@ const photon = require("photon-colors");
 let mainWindow;
 
 function createWindow() {
-    console.log(process.platform);
     mainWindow = new BrowserWindow({
         backgroundColor: photon.GREY_10,
         // On Windows we hide the title bar and controls.
@@ -22,7 +21,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true
         },
-        width: 900
+        width: 1024
     });
     mainWindow.loadURL((
         (isDev)

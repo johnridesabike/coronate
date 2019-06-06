@@ -86,6 +86,8 @@ export function calcPairIdeal(player1, player2) {
 
 /**
  * Sort the data so matchups default to order by score and rating.
+ * TODO: I'm not sure if this should be necessary to use, but it seems to break
+ * the algorithm if it's removed. In the future, it may be made obsolete.
  */
 export function sortDataForPairing(data) {
     return sortWith(

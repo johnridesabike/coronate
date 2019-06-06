@@ -20,12 +20,12 @@ import {
     pipe,
     prop,
     sortWith,
-    sum,
-    when
+    sum
 } from "ramda";
 import {
     areScoresEqual,
-    isNotDummy,
+    isNotDummyId,
+    isNotDummyObj,
     rounds2Matches
 } from "./helpers";
 import {
@@ -50,9 +50,9 @@ function match2ScoreDataReducer(acc, match) {
         const origData = acc[id] || {id, ratings: [origRating[color]]};
         return pipe(
             over(lensProp("results"), append(result[color])),
-            when(
-                () => isNotDummy(oppId),
-                over(lensProp("resultsNoByes"), append(result[color]))
+            over(
+                lensProp("resultsNoByes"),
+                (isNotDummyId(oppId)) ? append(result[color]) : defaultTo([])
             ),
             over(lensProp("colors"), append(color)),
             over(lensProp("colorScores"), append(color2Score(color))),
@@ -74,6 +74,17 @@ export function matches2ScoreData(matchList) {
     // TODO: remove this tcomb check for production
     return t.dict(Id, ScoreData)(data);
 }
+
+const emptyScoreData = (id) => ScoreData({
+    colorScores: [],
+    colors: [],
+    id,
+    opponentResults: {},
+    ratings: [],
+    results: [],
+    resultsNoByes: []
+});
+export {emptyScoreData};
 
 export function avoidPairReducer(acc, pair) {
     return pipe(
@@ -165,7 +176,7 @@ export function createStandingTree(methods, roundList, roundId = null) {
         standingsFlat,
         tieBreakNames
     ] = createStandingList(scoreData, methods);
-    const standingsFlatNoByes = standingsFlat.filter(isNotDummy);
+    const standingsFlatNoByes = standingsFlat.filter(isNotDummyObj);
     const standingsTree = standingsFlatNoByes.reduce(
         /** @param {Standing[][]} acc*/
         function assignStandingsToTree(acc, standing, i, orig) {

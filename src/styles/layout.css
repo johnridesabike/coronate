@@ -8,6 +8,10 @@
         "app-footer";
 }
 
+.app.isWindows.isElectron {
+    grid-template-rows: 32px auto 32px;
+}
+
 .header {
     grid-area: app-header;
     background-color: var(--grey-30);

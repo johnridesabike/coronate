@@ -54,6 +54,9 @@ export default function PairPicker({roundId}) {
             }
             const player0stats = findById(stagedPlayers[0], statsList);
             const player1stats = findById(stagedPlayers[1], statsList);
+            if (!player0stats || !player1stats) {
+                return null;
+            }
             const ideal = calcPairIdeal(player0stats, player1stats);
             return numeral(ideal / maxPriority).format("%");
         },
