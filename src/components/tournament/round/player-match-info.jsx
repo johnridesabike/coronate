@@ -1,23 +1,31 @@
-import {useOptionsDb, useTournament} from "../../../hooks";
+import {
+    matches2ScoreData,
+    rounds2Matches
+} from "../../../pairing-scoring";
+import {DUMMY_ID} from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
-import {createPlayerStats} from "../../../pairing-scoring";
 import {findById} from "../../utility";
 import numeral from "numeral";
+import {sum} from "ramda";
+import {useTournament} from "../../../hooks";
 
 export default function PlayerMatchInfo({matchId, color, roundId}) {
-    const {tourney, players, getPlayer} = useTournament();
+    const {tourney, getPlayer} = useTournament();
     const matchList = tourney.roundList[roundId];
-    const [options] = useOptionsDb();
     const match = findById(matchId, matchList);
-    const playerData = createPlayerStats({
-        avoidList: options.avoidPairs,
-        id: match.playerIds[color],
-        players,
-        roundId,
-        roundList: tourney.roundList
-    });
-    const colorBalance = playerData.colorBalance;
+    // TODO: This should probably be computed by a parent component and passed
+    // down via props.
+    const scoreData = matches2ScoreData(rounds2Matches(tourney.roundList));
+    const playerId = match.playerIds[color];
+    const player = getPlayer(playerId);
+    const {
+        colorScores,
+        opponentResults,
+        results
+    } = scoreData[match.playerIds[color]];
+    const colorBalance = sum(colorScores);
+    const hasBye = Object.keys(opponentResults).includes(DUMMY_ID);
     const prettyBalance = (function () {
         if (colorBalance < 0) {
             return "White +" + Math.abs(colorBalance);
@@ -30,12 +38,12 @@ export default function PlayerMatchInfo({matchId, color, roundId}) {
     return (
         <dl className="player-card">
             <h3>
-                {playerData.profile.firstName} {playerData.profile.lastName}
+                {player.firstName} {player.lastName}
             </h3>
             <dt>Score</dt>
-            <dd>{playerData.score}</dd>
+            <dd>{sum(results)}</dd>
             <dt>Rating</dt>
-            <dd data-testid={`rating-${playerData.id}`}>
+            <dd data-testid={`rating-${playerId}`}>
                 {match.origRating[color]} (
                 {numeral(
                     match.newRating[color] - match.origRating[color]
@@ -45,15 +53,24 @@ export default function PlayerMatchInfo({matchId, color, roundId}) {
             <dt>Color balance</dt>
             <dd>{prettyBalance}</dd>
             <dt>Has had a bye round</dt>
-            <dd>{playerData.hasHadBye ? "Yes" : "No"}</dd>
+            <dd>{hasBye ? "Yes" : "No"}</dd>
             <dt>Opponent history</dt>
             <dd>
                 <ol>
-                    {playerData.opponentHistory.map((opId) => (
-                        <li key={opId}>
-                            {getPlayer(opId).firstName}{" "}
-                            {getPlayer(opId).lastName}
-                        </li>
+                    {Object.entries(
+                        opponentResults
+                    ).map(([opId, result], i, src) => (
+                        // don't show the most recent (current) opponent
+                        i < src.length - 1 && (
+                            <li key={opId}>
+                                {getPlayer(opId).firstName}{" "}
+                                {getPlayer(opId).lastName}{" "}
+                                -{" "}
+                                {result === 0 && "Lost"}
+                                {result === 1 && "Won"}
+                                {result === 0.5 && "Draw"}
+                            </li>
+                        )
                     ))}
                 </ol>
             </dd>

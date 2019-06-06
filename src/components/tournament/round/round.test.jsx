@@ -122,24 +122,34 @@ it("Players are auto-paired correctly", function () {
     click(getByText(/auto-pair unmatched players/i));
     expect(getByTestId("match-0-white")).toHaveTextContent("Bruce Wayne");
     expect(getByTestId("match-0-black")).toHaveTextContent("Harley Quinn");
-    // TODO: for some reason these two are reversed in the test results, but
-    // appear correctly in production.
-    // expect(getByTestId("match-1-white")).toHaveTextContent("Kate Kane");
+    // TODO: Some of these provide two options because the players have an equal
+    // match ideal, so which one gets picked is an implementation detail.
+    // In the future, the pairing algorithm could be modified to avoid
+    // ambiguities like that
+    expect(getByTestId("match-1-white")).toHaveTextContent(/Kate Kane|Joker/);
     expect(getByTestId("match-1-black")).toHaveTextContent("Oswald Cobblepot");
-    // expect(getByTestId("match-2-white")).toHaveTextContent("Joker");
+    expect(getByTestId("match-2-white")).toHaveTextContent(/Kate Kane|Joker/);
     expect(getByTestId("match-2-black")).toHaveTextContent("Harvey Dent");
     expect(getByTestId("match-3-white")).toHaveTextContent("Alfred Pennyworth");
     expect(getByTestId("match-3-black")).toHaveTextContent("Helena Wayne");
     expect(getByTestId("match-4-white")).toHaveTextContent("Jason Todd");
     expect(getByTestId("match-4-black")).toHaveTextContent("Ra's al Ghul");
     expect(getByTestId("match-5-white")).toHaveTextContent("Selina Kyle");
-    expect(getByTestId("match-5-black")).toHaveTextContent("Victor Fries");
+    expect(
+        getByTestId("match-5-black")
+    ).toHaveTextContent(/Pamela Isley|Victor Fries/);
     expect(getByTestId("match-6-white")).toHaveTextContent("Dick Grayson");
-    expect(getByTestId("match-6-black")).toHaveTextContent("Jonathan Crane");
+    expect(
+        getByTestId("match-6-black")
+    ).toHaveTextContent(/Jonathan Crane|Victor Fries/);
     expect(getByTestId("match-7-white")).toHaveTextContent("Barbara Gordon");
-    expect(getByTestId("match-7-black")).toHaveTextContent("Edward Nigma");
+    expect(
+        getByTestId("match-7-black")
+    ).toHaveTextContent(/Edward Nigma|Jonathan Crane/);
     expect(getByTestId("match-8-white")).toHaveTextContent("James Gordon");
-    expect(getByTestId("match-8-black")).toHaveTextContent("Pamela Isley");
+    expect(
+        getByTestId("match-8-black")
+    ).toHaveTextContent(/Pamela Isley|Edward Nigma/);
 });
 
 // it("Moving matches works.", function () {

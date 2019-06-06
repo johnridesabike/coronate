@@ -1,54 +1,51 @@
-import {
-    avoidPairReducer,
-    createPairingData,
-    createStandingList,
-    createStandingTree,
-    matches2ScoreData
-} from "./factories";
-import {
-    calcNewRatings,
-    kFactor
-} from "./ratings";
+import {calcNewRatings, kFactor} from "./ratings";
 import {
     calcNumOfRounds,
     getAllPlayersFromMatches,
     getPlayerAvoidList,
     getPlayerMaybe,
     getUnmatched,
-    hasHadBye,
     isRoundComplete,
     rounds2Matches
 } from "./helpers";
 import {
+    createPlayerStats,
+    createStandingList,
+    createStandingTree,
+    getPerformanceRatings,
+    getResultsByOpponent
+} from "./factories";
+import {
+    hasHadBye,
+    tieBreakMethods
+} from "./scoring";
+import pairPlayers, {
     calcPairIdeal,
     maxPriority,
-    pairPlayers,
-    setByePlayer,
     setUpperHalves,
-    sortDataForPairing
+    sortPlayersForPairing
 } from "./pairing";
-import {tieBreakMethods} from "./scoring";
+
 export {
-    avoidPairReducer,
     calcNewRatings,
     calcNumOfRounds,
     calcPairIdeal,
-    createPairingData,
+    createPlayerStats,
     createStandingList,
     createStandingTree,
-    getAllPlayersFromMatches,
+    getPerformanceRatings,
     getPlayerAvoidList,
     getPlayerMaybe,
+    getAllPlayersFromMatches,
     getUnmatched,
+    getResultsByOpponent,
     hasHadBye,
     isRoundComplete,
     kFactor,
-    matches2ScoreData,
     maxPriority,
     pairPlayers,
     rounds2Matches,
-    setByePlayer,
     setUpperHalves,
-    sortDataForPairing,
+    sortPlayersForPairing,
     tieBreakMethods
 };

@@ -4,7 +4,6 @@ import {
     Id,
     Match,
     Player,
-    RoundList,
     Standing,
     Tournament,
     dummyPlayer,
@@ -17,6 +16,18 @@ import t from "tcomb";
  ******************************************************************************/
 const isNotDummy = (playerId) => playerId !== DUMMY_ID;
 export {isNotDummy};
+
+export function hasHadBye(playerId, matchList) {
+    Id(playerId);
+    t.list(Match)(matchList);
+    return getMatchesByPlayer(
+        playerId,
+        matchList
+    ).reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    ).includes(DUMMY_ID);
+}
 
 export function areScoresEqual(standing1, standing2) {
     Standing(standing1);
@@ -104,8 +115,6 @@ export function getMatchDetailsForPlayer(playerId, match) {
  * Flatten a list of rounds to a list of matches.
  */
 export function rounds2Matches(roundList, roundId = null) {
-    RoundList(roundList);
-    t.maybe(t.Number)(roundId);
     const rounds = (
         (roundId === null)
         ? roundList

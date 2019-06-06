@@ -1,16 +1,22 @@
 // TODO: this file needs to be replaced with something more organized.
 import {
-    AvoidPair,
     BLACK,
     DUMMY_ID,
-    Id,
     Player,
-    Tournament,
     WHITE,
     createMatch
 } from "../../data-types";
-import {getPlayerMaybe, pairPlayers} from "../../pairing-scoring";
-import {assoc} from "ramda";
+import {assoc, pipe} from "ramda";
+import {
+    createPairingData,
+    getPlayerMaybe,
+    matches2ScoreData,
+    pairPlayers,
+    rounds2Matches,
+    setByePlayer,
+    setUpperHalves,
+    sortDataForPairing
+} from "../../pairing-scoring";
 import t from "tcomb";
 
 export function autoPair({
@@ -20,19 +26,16 @@ export function autoPair({
     roundId,
     tourney
 }) {
-    t.list(AvoidPair)(avoidList);
-    t.Number(byeValue);
-    Tournament(tourney);
-    t.dict(Id, Player)(players);
-    t.Number(roundId);
     const roundList = tourney.roundList;
-    const pairs = pairPlayers({
-        avoidList: avoidList,
-        byeQueue: tourney.byeQueue,
-        players,
-        roundId,
-        roundList
-    });
+    const pairs = pipe(
+        (rounds) => rounds2Matches(rounds, roundId),
+        matches2ScoreData,
+        (data) => createPairingData(players, avoidList, data),
+        sortDataForPairing,
+        setUpperHalves,
+        (data) => setByePlayer(tourney.byeQueue, data),
+        pairPlayers
+    )(roundList);
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
     const newMatchList = pairs.map(
         (idsPair) => (

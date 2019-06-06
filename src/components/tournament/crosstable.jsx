@@ -1,13 +1,12 @@
 import {
     createStandingList,
-    getPerformanceRatings,
-    getResultsByOpponent,
+    matches2ScoreData,
     rounds2Matches
 } from "../../pairing-scoring";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import React from "react";
-import {assoc} from "ramda";
+import {last} from "ramda";
 import numeral from "numeral";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
@@ -16,18 +15,19 @@ export default function Crosstable(props) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
     const matches = rounds2Matches(roundList);
-    const oppResults = (id) => getResultsByOpponent(matches, id); // curry
-    const [standings] = createStandingList(tieBreaks, roundList);
-    const opponentScores = standings.reduce(
-        (acc, {id}) => assoc(id, oppResults(id), acc),
-        {}
-    );
+    // const oppResults = (id) => getResultsByOpponent(matches, id); // curry
+    const scoreData = matches2ScoreData(matches);
+    const [standings] = createStandingList(scoreData, tieBreaks);
+    // const opponentScores = standings.reduce(
+    //     (acc, {id}) => assoc(id, oppResults(id), acc),
+    //     {}
+    // );
 
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {
             return <Icons.X className="disabled" />;
         }
-        const result = opponentScores[player1Id][player2Id];
+        const result = scoreData[player1Id].opponentResults[player2Id];
         if (result === undefined) {
             return null;
         }
@@ -35,10 +35,8 @@ export default function Crosstable(props) {
     }
 
     function getRatingChangeTds(playerId) {
-        const [
-            firstRating,
-            lastRating
-        ] = getPerformanceRatings(matches, playerId);
+        const firstRating = scoreData[playerId].ratings[0];
+        const lastRating = last(scoreData[playerId].ratings);
         const change = numeral(lastRating - firstRating).format("+0");
         return (
             <>

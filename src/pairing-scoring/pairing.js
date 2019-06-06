@@ -1,34 +1,24 @@
-// This file is a work in progress. The weighting for the ratings needs to be
-// tweaked a lot, and the pairing function itself needs to be cleaned up and
-// made more reusable.
-import {
-    AvoidPair,
-    DUMMY_ID,
-    Id,
-    Player,
-    PlayerStats,
-    RoundList
-} from "../data-types";
 import {
     add,
     assoc,
-    curry,
     descend,
     filter,
     findLastIndex,
+    last,
     lensIndex,
     map,
     over,
     pipe,
+    pluck,
     prop,
-    reverse,
+    sort,
     sortWith,
     splitAt,
+    sum,
     view
 } from "ramda";
+import {DUMMY_ID} from "../data-types";
 import blossom from "edmonds-blossom";
-import {createPlayerStats} from "./factories";
-import t from "tcomb";
 
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (value) => (divider) => value / divider;
@@ -74,21 +64,20 @@ export {maxPriority};
  * @returns {number}
  */
 export function calcPairIdeal(player1, player2) {
-    PlayerStats(player1);
-    PlayerStats(player2);
     if (player1.id === player2.id) {
         return 0;
     }
-    const metBefore = player1.opponentHistory.includes(player2.id);
-    const mustAvoid = player1.avoidList.includes(player2.id);
+    const metBefore = player1.opponents.includes(player2.id);
+    const mustAvoid = player1.avoidIds.includes(player2.id);
+    const p1LastColor = last(player1.colors);
+    const p2LastColor = last(player2.colors);
     return pipe(
         add(differentHalf(
-            player1.upperHalf !== player2.upperHalf
+            player1.isUpperHalf !== player2.isUpperHalf
             && player1.score === player2.score
         )),
         add(differentDueColor(
-            player1.dueColor === null
-            || player1.dueColor !== player2.dueColor
+            (p1LastColor === undefined) || (p1LastColor !== p2LastColor)
         )),
         add(sameScores(Math.abs(player1.score - player2.score) + 1)),
         add(avoidMeetingTwice(!metBefore && !mustAvoid))
@@ -96,123 +85,100 @@ export function calcPairIdeal(player1, player2) {
 }
 
 /**
- * Determine which players are in the upper and lower halves of their score
- * groups.
- * This function does not sort the list. The list should be sorted first.
+ * Sort the data so matchups default to order by score and rating.
  */
-export function setUpperHalves(playerStatsList) {
-    t.list(PlayerStats)(playerStatsList);
-    const splitInHalf = (list) => splitAt(list.length / 2, list);
-    return playerStatsList.reduce(
-        function (acc, player, ignore, src) {
-            const upperHalfIds = pipe(
-                filter((a) => a.score === player.score),
-                splitInHalf,
-                view(lensIndex(0)),
-                map((a) => a.id)
-            )(src);
-            const isUpperHalf = upperHalfIds.includes(player.id);
-            return acc.concat([assoc("upperHalf", isUpperHalf, player)]);
-        },
-        []
+export function sortDataForPairing(data) {
+    return sortWith(
+        [descend(prop("score")), descend(prop("rating"))],
+        data
     );
 }
 
-function setByePlayer(byeQueue, playerStatsList) {
-    t.list(t.Number)(byeQueue);
-    t.list(PlayerStats)(playerStatsList);
+const splitInHalf = (list) => splitAt(list.length / 2, list);
+
+function upperHalfReducer(acc, playerData, ignore, src) {
+    const upperHalfIds = pipe(
+        filter((p2) => p2.score === playerData.score),
+        // this may be redundant if the list was already sorted.
+        sort(descend(prop("rating"))),
+        splitInHalf,
+        view(lensIndex(0)),
+        map((p) => p.id)
+    )(src);
+    const isUpperHalf = upperHalfIds.includes(playerData.id);
+    return acc.concat([assoc("isUpperHalf", isUpperHalf, playerData)]);
+}
+/**
+ * Determine which players are in the upper and lower halves of their score
+ * groups.
+ */
+export function setUpperHalves(data) {
+    return data.reduce(upperHalfReducer, []);
+}
+
+const hasNotHadBye = (p) => !p.opponents.includes(DUMMY_ID);
+
+export function setByePlayer(byeQueue, data) {
     // if the list is even, just return it.
-    if (playerStatsList.length % 2 === 0) {
-        return playerStatsList;
+    if (data.length % 2 === 0) {
+        return data;
     }
-    const hasNotHadBye = playerStatsList.filter(
-        (p) => !p.hasHadBye
-    ).map((p) => p.id);
-    const nextByeSignup = byeQueue.filter((id) => hasNotHadBye.includes(id))[0];
+    const playersWithoutByes = data.filter(hasNotHadBye).map((p) => p.id);
+    const nextByeSignup = byeQueue.filter(
+        (id) => playersWithoutByes.includes(id)
+    )[0];
     const indexOfDueBye = (nextByeSignup)
         // Assign the bye to the next person who signed up.
-        ? findLastIndex((p) => p.id === nextByeSignup, playerStatsList)
+        ? findLastIndex((p) => p.id === nextByeSignup, data)
         // Assign a bye to the lowest-rated player in the lowest score group.
         // Because the list is sorted, the last player is the lowest.
         // (USCF § 29L2.)
-        : findLastIndex((p) => !p.hasHadBye, playerStatsList);
+        : findLastIndex(hasNotHadBye, data);
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
     const index = (indexOfDueBye === -1)
-        ? playerStatsList.length - 1
+        ? data.length - 1
         : indexOfDueBye;
     return over(
         lensIndex(index),
         assoc("isDueBye", true),
-        playerStatsList
+        data
     );
 }
 
-/**
- * Sort the data so matchups default to order by score and rating.
- */
-export function sortPlayersForPairing(playerStatsList) {
-    t.list(PlayerStats)(playerStatsList);
-    return sortWith(
-        [descend(prop("score")), descend(prop("rating"))],
-        playerStatsList
-    );
-    // return sort(
-    //     firstBy(
-    //         (a, b) => b.score - a.score
-    //     ).thenBy(
-    //         (a, b) => b.rating - a.rating
-    //     ),
-    //     playerStatsList
-    // );
-}
+const netScoreDescend = (pair1, pair2) => (
+    sum(pluck("score", pair2)) - sum(pluck("score", pair1))
+);
+
+const netRatingDescend = (pair1, pair2) => (
+    sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
+);
 
 /**
  * Creates pairings according to the rules specified in USCF § 27, § 28,
  * and § 29. This is a work in progress and does not account for all of the
  * rules yet.
  */
-export default function pairPlayers({
-    players,
-    roundId,
-    roundList,
-    avoidList,
-    byeQueue
-}) {
-    t.Number(roundId);
-    t.dict(Id, Player)(players);
-    t.list(t.Number)(byeQueue);
-    RoundList(roundList);
-    t.list(AvoidPair)(avoidList);
-    const playerIds = Object.keys(players);
-    const playerStatsList = pipe(
-        map((id) => (
-            createPlayerStats({
-                avoidList,
-                id,
-                players,
-                roundId,
-                roundList
-            })
-        )),
-        sortPlayersForPairing,
-        setUpperHalves,
-        curry(setByePlayer)(byeQueue)
-    )(playerIds);
+export function pairPlayers(pairingData) {
+    // Because `blossom` has to use numbers that correspond to array indices,
+    // we'll use `playerIdArray` as our source for that.
+    const playerIdArray = pairingData.map((p) => p.id);
     // Turn the data into blossom-compatible input.
-    const potentialMatches = playerStatsList.filter(
+    function pairIdealReducer(accArr, player1, index, srcArr) {
+        // slice out players who have already computed, plus the current one
+        const playerMatches = srcArr.slice(index + 1).map(
+            (player2) => [
+                playerIdArray.indexOf(player1.id),
+                playerIdArray.indexOf(player2.id),
+                calcPairIdeal(player1, player2)
+            ]
+        );
+        return accArr.concat(playerMatches);
+    }
+    const potentialMatches = pairingData.filter(
         (p) => !p.isDueBye
     ).reduce(
-        function (acc, player1, ignore, src) {
-            const playerMatches = src.map(
-                (player2) => [
-                    playerIds.indexOf(player1.id),
-                    playerIds.indexOf(player2.id),
-                    calcPairIdeal(player1, player2)
-                ]
-            );
-            return acc.concat(playerMatches);
-        },
+        pairIdealReducer,
         []
     );
     // Feed all of the potential matches to Edmonds-blossom and let the
@@ -226,10 +192,10 @@ export default function pairPlayers({
             // their missing IDs in its results.
             if (p1Index !== -1) {
                 // Translate the indices into ID strings
-                const p1Id = playerIds[p1Index];
-                const p2Id = playerIds[p2Index];
-                const p1 = playerStatsList.filter((p) => p.id === p1Id)[0];
-                const p2 = playerStatsList.filter((p) => p.id === p2Id)[0];
+                const p1Id = playerIdArray[p1Index];
+                const p2Id = playerIdArray[p2Index];
+                const p1 = pairingData.filter((p) => p.id === p1Id)[0];
+                const p2 = pairingData.filter((p) => p.id === p2Id)[0];
                 // const ideal = potentialMatches.filter(
                 //     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 // )[0][2];
@@ -246,47 +212,24 @@ export default function pairPlayers({
     );
     // Sort by net score and rating for board placement.
     const sortedResults = sortWith(
-        [
-            (pair1, pair2) => (
-                pair2[0].score + pair2[1].score
-                - pair1[0].score - pair1[1].score
-            ),
-            (pair1, pair2) => (
-                pair2[0].rating + pair2[1].rating
-                - pair1[0].rating - pair1[1].rating
-            )
-        ],
+        [netScoreDescend, netRatingDescend],
         reducedResults
     );
-    // const sortedResults = sort(
-    //     firstBy(
-    //         (pair1, pair2) => (
-    //             pair2[0].score + pair2[1].score
-    //             - pair1[0].score - pair1[1].score
-    //         )
-    //     ).thenBy(
-    //         (pair1, pair2) => (
-    //             pair2[0].rating + pair2[1].rating
-    //             - pair1[0].rating - pair1[1].rating
-    //         )
-    //     ),
-    //     reducedResults
-    // );
     const matches = sortedResults.map(
         function (pair) {
             const player1 = pair[0];
             const player2 = pair[1];
-            const match = [player1.id, player2.id];
-            if (player1.colorBalance < player2.colorBalance) {
-                return reverse(match);
-            }
-            return match;
+            return (sum(player1.colorScores) < sum(player2.colorScores))
+                // player 1 has played as white more than player 2
+                ? [player2.id, player1.id]
+                // player 1 has played as black more than player 2
+                // (or they're equal).
+                : [player1.id, player2.id];
         }
     );
     // The bye match always gets added last so the the numbering isn't affected.
-    const byePlayer = playerStatsList.filter((p) => p.isDueBye)[0];
-    if (byePlayer) {
-        return matches.concat([[byePlayer.id, DUMMY_ID]]);
-    }
-    return matches;
+    const byePlayer = pairingData.filter((p) => p.isDueBye)[0];
+    return (byePlayer)
+        ? matches.concat([[byePlayer.id, DUMMY_ID]])
+        : matches;
 }

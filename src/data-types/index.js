@@ -1,5 +1,6 @@
 import {
     AvoidPair,
+    Color,
     Id,
     Match,
     Player,
@@ -34,6 +35,7 @@ const missingPlayer = (id) => createPlayer({
 export {
     AvoidPair,
     BLACK,
+    Color,
     DUMMY_ID,
     Id,
     Match,
