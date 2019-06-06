@@ -97,7 +97,9 @@ export default function Controls() {
                 </button>
             )}
             <button
-                className={styles.winButton + " button-ghost"}
+                className={
+                    styles.winButton + " " + styles.close + " button-ghost"
+                }
                 onClick={() => win.close()}
             >
                 <Close />

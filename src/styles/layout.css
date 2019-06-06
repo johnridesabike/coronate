@@ -42,7 +42,7 @@
 
 .has-sidebar {
     display: grid;
-    grid-template-columns: 164px auto;
+    grid-template-columns: 180px auto;
     grid-template-areas: "sidebar content-with-sidebar";
     width: 100%;
     height: 100%;
