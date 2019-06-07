@@ -1,15 +1,15 @@
 const electron = (window.require) ? window.require("electron") : false;
 export {electron};
 
+/**
+ * Returns the result of a function. If Electron is not enabled, then it returns
+ * `null`.
+ * @param {function} fn
+ */
 export function ifElectron(fn) {
-    if (electron) {
-        fn();
-    }
+    return (electron) ? fn() : null;
 }
 
-/**
- * https://github.com/electron/electron/issues/16385#issuecomment-453955377
- */
 function toggleMaximize(win) {
     if (!win.isMaximized()) {
         win.maximize();
@@ -17,7 +17,9 @@ function toggleMaximize(win) {
         win.unmaximize();
     }
 }
-
+/**
+ * https://github.com/electron/electron/issues/16385#issuecomment-453955377
+ */
 export function macOSDoubleClick(event) {
     ifElectron(function () {
         if (!event.target.className.includes) {

@@ -6,8 +6,6 @@ import {
     Player,
     PlayerStats,
     RoundList,
-    ScoreCalulator,
-    Standing,
     Tournament
 } from "./types";
 import {BLACK, DUMMY_ID, WHITE} from "./constants";
@@ -42,8 +40,6 @@ export {
     Player,
     PlayerStats,
     RoundList,
-    ScoreCalulator,
-    Standing,
     Tournament,
     WHITE,
     createMatch,

@@ -4,11 +4,11 @@ import {
     Id,
     Match,
     Player,
-    Standing,
     Tournament,
     dummyPlayer,
     missingPlayer
 } from "../data-types";
+import {Standing} from "./types";
 import {assoc} from "ramda";
 import t from "tcomb";
 /*******************************************************************************
@@ -95,34 +95,35 @@ export function getMatchesByPlayer(playerId, matchList) {
     return matchList.filter((match) => match.playerIds.includes(playerId));
 }
 
-export function getMatchesByPlayerNoByes(playerId, matchList) {
-    t.list(Match)(matchList);
-    return matchList.filter(
-        (match) => match.playerIds.includes(playerId) && isNotBye(match)
-    );
-}
+// export function getMatchesByPlayerNoByes(playerId, matchList) {
+//     t.list(Match)(matchList);
+//     return matchList.filter(
+//         (match) => match.playerIds.includes(playerId) && isNotBye(match)
+//     );
+// }
 
-export function getMatchDetailsForPlayer(playerId, match) {
-    Id(playerId);
-    Match(match);
-    const index = match.playerIds.indexOf(playerId);
-    return {
-        color: index,
-        newRating: match.newRating[index],
-        origRating: match.origRating[index],
-        result: match.result[index]
-    };
-}
+// export function getMatchDetailsForPlayer(playerId, match) {
+//     Id(playerId);
+//     Match(match);
+//     const index = match.playerIds.indexOf(playerId);
+//     return {
+//         color: index,
+//         newRating: match.newRating[index],
+//         origRating: match.origRating[index],
+//         result: match.result[index]
+//     };
+// }
 
 /**
  * Flatten a list of rounds to a list of matches.
+ * @param {number?} lastRound An optional index for the last round to use. It's
+ * useful if you only want to, for example, view the results for rounds 1-2 and
+ * not 3-4.
  */
-export function rounds2Matches(roundList, roundId = null) {
-    const rounds = (
-        (roundId === null)
+export function rounds2Matches(roundList, lastRound = null) {
+    const rounds = (lastRound === null)
         ? roundList
-        : roundList.slice(0, roundId + 1)
-    );
+        : roundList.slice(0, lastRound + 1);
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
@@ -138,27 +139,27 @@ export function getAllPlayersFromMatches(matchList) {
 /**
  * Get a list of all of a player's scores from each match.
  */
-export function getPlayerScoreList(playerId, matchList) {
-    Id(playerId);
-    t.list(Match)(matchList);
-    return getMatchesByPlayer(
-        playerId,
-        matchList,
-    ).map(
-        (match) => getMatchDetailsForPlayer(playerId, match).result
-    );
-}
+// export function getPlayerScoreList(playerId, matchList) {
+//     Id(playerId);
+//     t.list(Match)(matchList);
+//     return getMatchesByPlayer(
+//         playerId,
+//         matchList,
+//     ).map(
+//         (match) => getMatchDetailsForPlayer(playerId, match).result
+//     );
+// }
 
-export function getPlayerScoreListNoByes(playerId, matchList) {
-    Id(playerId);
-    t.list(Match)(matchList);
-    return getMatchesByPlayerNoByes(
-        playerId,
-        matchList
-    ).map(
-        (match) => getMatchDetailsForPlayer(playerId, match).result
-    );
-}
+// export function getPlayerScoreListNoByes(playerId, matchList) {
+//     Id(playerId);
+//     t.list(Match)(matchList);
+//     return getMatchesByPlayerNoByes(
+//         playerId,
+//         matchList
+//     ).map(
+//         (match) => getMatchDetailsForPlayer(playerId, match).result
+//     );
+// }
 
 /*******************************************************************************
  * Round functions

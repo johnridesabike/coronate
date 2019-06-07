@@ -1,11 +1,11 @@
 import "jest-dom/extend-expect";
 import {cleanup, fireEvent, render} from "@testing-library/react";
 import React from "react";
-import TournamentList from "./tournament-list";
+import TournamentList from "../tournament-list";
 
 afterEach(cleanup);
 
-it("Creating a new tournament works.", async function () {
+it("Creating a new tournament works.", function () {
     const {getByText, getByLabelText} = render(<TournamentList/>);
     fireEvent.click(getByText(/Add tournament/i));
     fireEvent.change(
@@ -18,13 +18,13 @@ it("Creating a new tournament works.", async function () {
     ).toBeInTheDocument();
 });
 
-it("Deleting a tournament works.", async function () {
+it("Deleting a tournament works.", function () {
     const {getByLabelText, queryByText} = render(<TournamentList/>);
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     expect(queryByText(/wayne manor open/i)).not.toBeInTheDocument();
 });
 
-it("Deleting all tournaments displays a message", async function () {
+it("Deleting all tournaments displays a message", function () {
     const {getByText, getByLabelText} = render(<TournamentList/>);
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     fireEvent.click(getByLabelText(/delete “the battle for gotham city”/i));

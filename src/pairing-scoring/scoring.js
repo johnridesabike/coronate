@@ -8,6 +8,7 @@ import {
     sum,
     tail
 } from "ramda";
+import {ScoreCalculator} from "./types";
 import {isNotDummyId} from "./helpers";
 import t from "tcomb";
 
@@ -23,48 +24,62 @@ function getOpponentScores(scoreData, id) {
 /*******************************************************************************
  * The main scoring methods
  ******************************************************************************/
-export function getPlayerScore(scoreData, id) {
-    return sum(scoreData[id].results);
-}
+const getPlayerScore = ScoreCalculator.of(
+    function _getPlayerScore(scoreData, id) {
+        return sum(scoreData[id].results);
+    }
+);
+export {getPlayerScore};
 
-function getCumulativeScore(scoreData, id) {
-    const scoreList = scoreData[id].resultsNoByes.reduce(
-        // turn the regular score list into a "running" score list
-        (acc, score) => acc.concat([last(acc) + score]),
-        [0]
-    );
-    return sum(scoreList);
-}
+const getCumulativeScore = ScoreCalculator.of(
+    function _getCumulativeScore(scoreData, id) {
+        const scoreList = scoreData[id].resultsNoByes.reduce(
+            // turn the regular score list into a "running" score list
+            (acc, score) => acc.concat([last(acc) + score]),
+            [0]
+        );
+        return sum(scoreList);
+    }
+);
 
-function getCumulativeOfOpponentScore(scoreData, id) {
-    const opponentIds = Object.keys(scoreData[id].opponentResults);
-    const scoreList = opponentIds.filter(
-        isNotDummyId
-    ).map(
-        // TODO: properly curry this function
-        (oppId) => getCumulativeScore(scoreData, oppId)
-    );
-    return sum(scoreList);
-}
+const getCumulativeOfOpponentScore = ScoreCalculator.of(
+    function _getCumulativeOfOpponentScore(scoreData, id) {
+        const opponentIds = Object.keys(scoreData[id].opponentResults);
+        const scoreList = opponentIds.filter(
+            isNotDummyId
+        ).map(
+            // TODO: properly curry this function
+            (oppId) => getCumulativeScore(scoreData, oppId)
+        );
+        return sum(scoreList);
+    }
+);
 
-function getColorBalanceScore(scoreData, id) {
-    return sum(scoreData[id].colorScores);
-}
+const getColorBalanceScore = ScoreCalculator.of(
+    function getColorBalanceScore(scoreData, id) {
+        return sum(scoreData[id].colorScores);
+    }
+);
 
-function getModifiedMedianScore(scoreData, id) {
-    const scores = getOpponentScores(scoreData, id);
-    t.list(t.Number)(scores);
-    return pipe(
-        sort(ascend),
-        init,
-        tail,
-        sum
-    )(scores);
-}
+const getModifiedMedianScore = ScoreCalculator.of(
+    function getModifiedMedianScore(scoreData, id) {
+        const scores = getOpponentScores(scoreData, id);
+        t.list(t.Number)(scores);
+        return pipe(
+            sort(ascend),
+            init,
+            tail,
+            sum
+        )(scores);
+    }
+);
 
-function getSolkoffScore(scoreData, id) {
-    return sum(getOpponentScores(scoreData, id));
-}
+const getSolkoffScore = ScoreCalculator.of(
+    function getSolkoffScore(scoreData, id) {
+        return sum(getOpponentScores(scoreData, id));
+    }
+);
+
 
 const tieBreakMethods = {
     0: {

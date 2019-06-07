@@ -3,6 +3,8 @@ import React, {useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
     createStandingTree,
+    matches2ScoreData,
+    rounds2Matches,
     tieBreakMethods
 } from "../../pairing-scoring";
 import Icons from "../icons";
@@ -17,7 +19,8 @@ import {useTournament} from "../../hooks";
 export function ScoreTable({compact, title}) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
-    const [standingTree, tbMethods] = createStandingTree(tieBreaks, roundList);
+    const scoreData = matches2ScoreData(rounds2Matches(roundList));
+    const [standingTree, tbMethods] = createStandingTree(scoreData, tieBreaks);
     return (
         <table
             className={

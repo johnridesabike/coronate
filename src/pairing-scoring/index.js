@@ -1,11 +1,8 @@
 import {
     avoidPairReducer,
     createPairingData,
-    createStandingList,
-    createStandingTree,
-    emptyScoreData,
     matches2ScoreData
-} from "./factories";
+} from "./converters";
 import {
     calcNewRatings,
     kFactor
@@ -28,6 +25,11 @@ import {
     setUpperHalves,
     sortDataForPairing
 } from "./pairing";
+import {
+    createBlankScoreData,
+    createStandingList,
+    createStandingTree
+} from "./factories";
 import {tieBreakMethods} from "./scoring";
 export {
     avoidPairReducer,
@@ -37,7 +39,7 @@ export {
     createPairingData,
     createStandingList,
     createStandingTree,
-    emptyScoreData,
+    createBlankScoreData,
     getAllPlayersFromMatches,
     getPlayerAvoidList,
     getPlayerMaybe,

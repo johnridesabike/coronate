@@ -12,7 +12,7 @@ let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        backgroundColor: photon.GREY_10,
+        backgroundColor: photon.GREY_20,
         // On Windows we hide the title bar and controls.
         frame: (process.platform !== "win32"),
         height: 680,

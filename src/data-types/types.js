@@ -77,20 +77,3 @@ const Tournament = t.interface(
     "Tournament"
 );
 export {Tournament};
-
-const ScoreCalulator = t.func(
-    [Id, t.list(Match)],
-    t.Number,
-    "ScoreCalulator"
-);
-export {ScoreCalulator};
-
-const Standing = t.interface(
-    {
-        id: Id,
-        score: t.Number,
-        tieBreaks: t.list(t.Number)
-    },
-    "Standing"
-);
-export {Standing};

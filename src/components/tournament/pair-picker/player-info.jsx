@@ -1,6 +1,6 @@
 import {
     avoidPairReducer,
-    emptyScoreData,
+    createBlankScoreData,
     matches2ScoreData,
     rounds2Matches
 } from "../../../pairing-scoring";
@@ -19,7 +19,7 @@ export default function PlayerInfo({playerId, roundId}) {
     // down via props.
     const matches = rounds2Matches(tourney.roundList, roundId);
     const scoreData = matches2ScoreData(matches);
-    const playerData = scoreData[playerId] || emptyScoreData(playerId);
+    const playerData = scoreData[playerId] || createBlankScoreData(playerId);
     const {
         colorScores,
         opponentResults,
@@ -44,7 +44,9 @@ export default function PlayerInfo({playerId, roundId}) {
                 {player.firstName} {player.lastName}
             </h3>
             <p>Score: {sum(results)}</p>
-            <p>Rating: {player.rating}</p>
+            <p data-testid={"rating-" + player.id}>
+                Rating: {player.rating}
+            </p>
             <p>Color balance: {prettyBalance}</p>
             <p>Has had a bye round: {hasBye ? "Yes" : "No"}</p>
             <p>Opponent history:</p>

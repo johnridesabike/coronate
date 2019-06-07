@@ -2,8 +2,8 @@ import "jest-dom/extend-expect";
 import {cleanup, render} from "@testing-library/react";
 import PropTypes from "prop-types";
 import React from "react";
-import Scores from "../tournament/scores";
-import {TournamentProvider} from "../../hooks";
+import Scores from "../scores";
+import {TournamentProvider} from "../../../hooks";
 import dashify from "dashify";
 
 afterEach(cleanup);

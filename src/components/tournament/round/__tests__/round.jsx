@@ -3,10 +3,10 @@ import {cleanup, fireEvent, render} from "@testing-library/react";
 // import PlayerInfoBox from "../../players/player-profile";
 import PropTypes from "prop-types";
 import React from "react";
-import RoundPanels from "./index";
-import {TournamentProvider} from "../../../hooks";
+import RoundPanels from "../index";
+import {TournamentProvider} from "../../../../hooks";
 
-const {click} = fireEvent;
+const {change, click} = fireEvent;
 afterEach(cleanup);
 
 const BattleForGothamCity = ({children}) => (
@@ -16,65 +16,29 @@ const BattleForGothamCity = ({children}) => (
 );
 BattleForGothamCity.propTypes = {children: PropTypes.node.isRequired};
 
-// const AllTheProviders = ({children}) => (
-//     <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
-//         {children}
-//     </TournamentProvider>
-// );
-// AllTheProviders.propTypes = {
-//     children: PropTypes.node
-// };
-
-// const batmanInfo = (
-//     <PlayerInfoBox playerId={0} />
-// );
-// const robinInfo = (
-//     <PlayerInfoBox playerId={1} />
-// );
-
-// function getRating(node) {
-//     return render(
-//         node,
-//         {wrapper: AllTheProviders}
-//     ).getByLabelText(/rating/i).value;
-// }
-
-// function getMatchCount(node) {
-//     return render(
-//         node,
-//         {wrapper: AllTheProviders}
-//     ).getByLabelText(/matches played/i).value;
-// }
-
-// xit("Original ratings are shown correctly.", function () {
-//     const origRatingBatman = getRating(batmanInfo);
-//     cleanup();
-//     const origRatingRobin = getRating(robinInfo);
-//     expect(origRatingBatman).toBe("1998"); // from demo-players.json
-//     expect(origRatingRobin).toBe("1909"); // from demo-players.json
-// });
-
-// xit("Original match counts are shown correctly.", function () {
-//     expect(getMatchCount(batmanInfo)).toBe("9"); // from demo-players.json
-// });
-
-// xit("Ratings are updated after a match is scored.", function () {
-//     const {getByText, getByDisplayValue, getByTestId} = render(
-//         <RoundPanels roundId={1} tourneyId={1} />,
-//         {wrapper: AllTheProviders}
-//     );
-//     click(getByText(/^unmatched players$/i));
-//     click(getByText(/select bruce wayne/i));
-//     click(getByText(/select dick grayson/i));
-//     click(getByText(/match selected/i));
-//     click(getByText(/matches/i));
-//     change(getByDisplayValue(/select a winner/i), {target: {value: "WHITE"}});
-//     click(getByText(
-//         /view information for match: bruce wayne versus dick grayson/i
-//     ));
-//     expect(getByTestId("rating-0")).toHaveTextContent("1998 (+33)");
-//     expect(getByTestId("rating-1")).toHaveTextContent("1909 (-33)");
-// });
+it("Ratings are updated correctly after a match", function () {
+    const {getByDisplayValue, getByText, getByTestId} = render(
+        <BattleForGothamCity><RoundPanels roundId={1} /></BattleForGothamCity>,
+    );
+    click(getByText(/select bruce wayne/i));
+    click(getByText(/select dick grayson/i));
+    expect(
+        getByTestId("rating-BruceWayne_lv_ZsUHTU9")
+    ).toHaveTextContent(/rating: 1998/i);
+    expect(
+        getByTestId("rating-DickGrayson_1C2rCokHH")
+    ).toHaveTextContent(/rating: 1909/i);
+    click(getByText(/match selected/i));
+    change(getByDisplayValue(/select winner/i), {target: {value: "WHITE"}});
+    const info = /view information for match: bruce wayne versus dick grayson/i;
+    click(getByText(info));
+    expect(
+        getByTestId("rating-BruceWayne_lv_ZsUHTU9")
+    ).toHaveTextContent("1998 (+33)");
+    expect(
+        getByTestId("rating-DickGrayson_1C2rCokHH")
+    ).toHaveTextContent("1909 (-33)");
+});
 
 // it("Match counts are updated.", function () {
 //     expect(getMatchCount(batmanInfo)).toBe("10");

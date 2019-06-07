@@ -1,3 +1,7 @@
+/**
+ * This file is a complement to `../data-types/`, except its types are specific
+ * to the scoring and pairing functions.
+ */
 import {Color, Id} from "../data-types";
 import t from "tcomb";
 
@@ -35,4 +39,27 @@ const PairingData = t.interface(
     "PairingData"
 );
 
-export {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE};
+const ScoreCalculator = t.func(
+    [t.dict(t.String, ScoreData), Id],
+    t.Number,
+    "ScoreCalulator"
+);
+
+const Standing = t.interface(
+    {
+        id: Id,
+        score: t.Number,
+        tieBreaks: t.list(t.Number)
+    },
+    "Standing"
+);
+
+export {
+    BLACKVALUE,
+    Color,
+    PairingData,
+    Standing,
+    ScoreCalculator,
+    ScoreData,
+    WHITEVALUE
+};
