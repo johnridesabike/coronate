@@ -61,6 +61,25 @@ const maxPriority = pipe(
 export {maxPriority};
 
 /**
+ * The pairing code is broken up into several functions which take each other's
+ * input to build the data necessary to pair players appropriately.
+ * Using a function like Ramda's `pipe` to put them together, the final product
+ * will look something like this (arguments and other details removed for
+ * brevity):
+ * ```js
+ * const pairs = pipe(
+ *     rounds2Matches,
+ *     matches2ScoreData,
+ *     createPairingData,
+ *     sortDataForPairing,
+ *     setUpperHalves,
+ *     setByePlayer,
+ *     pairPlayers // <-- the function that actually pairs them!
+ * )(roundList);
+ * ```
+ */
+
+/**
  * @returns {number}
  */
 export function calcPairIdeal(player1, player2) {
