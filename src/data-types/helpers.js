@@ -1,4 +1,4 @@
-import {AvoidPair, Id, Match, Player, Tournament} from "./types";
+import {AvoidPair, Id, Match, Player, RoundList} from "./types";
 import {DUMMY_ID} from "./constants";
 import {assoc} from "ramda";
 import {createPlayer} from "./factories";
@@ -10,8 +10,7 @@ export {isNotDummyId};
 const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
 export {isNotDummyObj};
 
-export function getMatchesByPlayer(playerId, matchList) {
-    t.list(Match)(matchList);
+function getMatchesByPlayer(playerId, matchList) {
     return matchList.filter((match) => match.playerIds.includes(playerId));
 }
 
@@ -38,7 +37,7 @@ export {dummyPlayer};
 /**
  * When `getPlayerMaybe()` can't find a profile, it outputs this instead.
  */
-const missingPlayer = (id) => createPlayer({
+const createMissingPlayer = (id) => createPlayer({
     firstName: "Anonymous",
     id: id,
     lastName: "Player",
@@ -57,7 +56,7 @@ export function getPlayerMaybe(playerDict, id) {
         return dummyPlayer;
     }
     const player = playerDict[id];
-    return (player) ? player : missingPlayer(id);
+    return (player) ? player : createMissingPlayer(id);
 }
 
 const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
@@ -77,8 +76,7 @@ export function rounds2Matches(roundList, lastRound = null) {
 }
 
 export function getAllPlayersFromMatches(matchList) {
-    t.list(Match)(matchList);
-    const allPlayers = matchList.reduce(
+    const allPlayers = t.list(Match)(matchList).reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
@@ -97,16 +95,14 @@ export function calcNumOfRounds(playerCount) {
  * This creates a filtered version of `players` with only the players that are
  * not matched for the specified round.
  */
-export function getUnmatched(tourney, players, roundId) {
-    Tournament(tourney);
-    t.dict(Id, Player)(players);
-    t.Number(roundId);
-    const matchList = tourney.roundList[roundId] || [];
+export function getUnmatched(roundList, players, roundId) {
+    const matchList = RoundList(roundList)[t.Number(roundId)] || [];
     const matchedIds = matchList.reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
-    const unmatched = Object.values(players).reduce(
+    const playerList = t.list(Player)(Object.values(players));
+    const unmatched = playerList.reduce(
         (acc, player) => (
             (matchedIds.includes(player.id))
             ? acc

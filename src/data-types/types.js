@@ -61,7 +61,7 @@ const Match = t.interface(
 );
 export {Match};
 
-const RoundList = t.list(t.list(Match), "Round list");
+const RoundList = t.list(t.list(Match), "RoundList");
 export {RoundList};
 
 const Tournament = t.interface(

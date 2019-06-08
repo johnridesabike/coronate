@@ -16,7 +16,7 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
     const {tourney, activePlayers} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, activePlayers, roundId)
+        ? getUnmatched(tourney.roundList, activePlayers, roundId)
         : {};
 
     function selectPlayer(id) {

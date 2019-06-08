@@ -17,6 +17,9 @@ import {
     sum,
     view
 } from "ramda";
+// I don't like importing `DUMMY_ID` from `data-types` because I prefer that
+// This module be 100% independent. Passing it as function arguments seems
+// like it would add unnecessary complexity, though.
 import {DUMMY_ID} from "../data-types";
 import blossom from "edmonds-blossom";
 
@@ -64,8 +67,7 @@ export {maxPriority};
  * The pairing code is broken up into several functions which take each other's
  * input to build the data necessary to pair players appropriately.
  * Using a function like Ramda's `pipe` to put them together, the final product
- * will look something like this (arguments and other details removed for
- * brevity):
+ * will look something like this (arguments removed for brevity):
  * ```js
  * const pairs = pipe(
  *     rounds2Matches,

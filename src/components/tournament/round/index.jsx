@@ -12,7 +12,7 @@ export default function Index(props) {
     const {tourney, activePlayers} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, activePlayers, roundId)
+        ? getUnmatched(tourney.roundList, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     const [openTab, setOpenTab] = useState(0);

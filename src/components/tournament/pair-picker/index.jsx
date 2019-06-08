@@ -65,7 +65,7 @@ export default function PairPicker({roundId}) {
         [stagedPlayers, statsList]
     );
     const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney, activePlayers, roundId)
+        ? getUnmatched(tourney.roundList, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     return (
