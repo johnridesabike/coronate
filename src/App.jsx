@@ -1,4 +1,4 @@
-import "side-effects";
+import "./side-effects";
 import {
     Location,
     LocationProvider,

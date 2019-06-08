@@ -118,7 +118,7 @@ export function isRoundComplete(tourney, players, roundId) {
         // If it's not the last round, it's complete
         return true;
     }
-    const unmatched = getUnmatched(tourney, players, roundId);
+    const unmatched = getUnmatched(tourney.roundList, players, roundId);
     const results = tourney.roundList[roundId].map(
         (match) => match.result[0] + match.result[1]
     );
