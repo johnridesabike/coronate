@@ -1,6 +1,6 @@
 import {Panel, PanelContainer} from "../../utility";
 import React, {useState} from "react";
-import {hasHadBye, rounds2Matches} from "../../../pairing-scoring";
+import {hasHadBye, rounds2Matches} from "../../../data-types";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../icons";
 import PropTypes from "prop-types";

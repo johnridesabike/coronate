@@ -3,13 +3,15 @@ import React, {useState} from "react";
 import {
     calcPairIdeal,
     createPairingData,
-    getUnmatched,
     matches2ScoreData,
     maxPriority,
-    rounds2Matches,
     setUpperHalves,
     sortDataForPairing
 } from "../../../pairing-scoring";
+import {
+    getUnmatched,
+    rounds2Matches
+} from "../../../data-types";
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";

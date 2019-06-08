@@ -1,4 +1,4 @@
-import {calcNumOfRounds, isRoundComplete} from "../../pairing-scoring";
+import {calcNumOfRounds, isRoundComplete} from "../../data-types";
 import {curry, last} from "ramda";
 import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";

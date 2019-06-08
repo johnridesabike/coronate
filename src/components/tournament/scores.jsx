@@ -2,16 +2,18 @@ import {Panel, PanelContainer} from "../utility";
 import React, {useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
+    createStandingList,
     createStandingTree,
+    getTieBreakNames,
     matches2ScoreData,
-    rounds2Matches,
     tieBreakMethods
 } from "../../pairing-scoring";
+import {defaultTo, filter, pipe} from "ramda";
+import {isNotDummyObj, rounds2Matches} from "../../data-types";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
 import dashify from "dashify";
-import {defaultTo} from "ramda";
 import numeral from "numeral";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
@@ -19,8 +21,14 @@ import {useTournament} from "../../hooks";
 export function ScoreTable({compact, title}) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
-    const scoreData = matches2ScoreData(rounds2Matches(roundList));
-    const [standingTree, tbMethods] = createStandingTree(scoreData, tieBreaks);
+    const tieBreakNames = getTieBreakNames(tieBreaks);
+    const standingTree = pipe(
+        rounds2Matches,
+        matches2ScoreData,
+        (data) => createStandingList(tieBreaks, data),
+        filter(isNotDummyObj),
+        createStandingTree
+    )(roundList);
     return (
         <table
             className={
@@ -39,7 +47,7 @@ export function ScoreTable({compact, title}) {
                     <th className="title-10" scope="col">Rank</th>
                     <th className="title-10" scope="col">Name</th>
                     <th className="title-10" scope="col">Score</th>
-                    {!compact && tbMethods.map((name, i) => (
+                    {!compact && tieBreakNames.map((name, i) => (
                         <th key={i} className="title-10" scope="col">
                             {name}
                         </th>
@@ -92,7 +100,7 @@ export function ScoreTable({compact, title}) {
                                     data-testid={dashify(
                                         getPlayer(standing.id).firstName
                                         + getPlayer(standing.id).lastName
-                                        + tbMethods[j]
+                                        + tieBreakNames[j]
                                     )}
                                 >
                                     {numeral(score).format("1/2")}

@@ -1,27 +1,21 @@
 import {
     createStandingList,
-    matches2ScoreData,
-    rounds2Matches
+    matches2ScoreData
 } from "../../pairing-scoring";
 import Icons from "../icons";
 import PropTypes from "prop-types";
 import React from "react";
 import {last} from "ramda";
 import numeral from "numeral";
+import {rounds2Matches} from "../../data-types";
 import style from "./scores.module.css";
 import {useTournament} from "../../hooks";
 
 export default function Crosstable(props) {
     const {tourney, getPlayer} = useTournament();
     const {tieBreaks, roundList} = tourney;
-    const matches = rounds2Matches(roundList);
-    // const oppResults = (id) => getResultsByOpponent(matches, id); // curry
-    const scoreData = matches2ScoreData(matches);
-    const [standings] = createStandingList(scoreData, tieBreaks);
-    // const opponentScores = standings.reduce(
-    //     (acc, {id}) => assoc(id, oppResults(id), acc),
-    //     {}
-    // );
+    const scoreData = matches2ScoreData(rounds2Matches(roundList));
+    const standings = createStandingList(tieBreaks, scoreData);
 
     function getXScore(player1Id, player2Id) {
         if (player1Id === player2Id) {

@@ -4,15 +4,15 @@ import {
     DUMMY_ID,
     Player,
     WHITE,
-    createMatch
+    createMatch,
+    getPlayerMaybe,
+    rounds2Matches
 } from "../../data-types";
 import {assoc, pipe} from "ramda";
 import {
     createPairingData,
-    getPlayerMaybe,
     matches2ScoreData,
     pairPlayers,
-    rounds2Matches,
     setByePlayer,
     setUpperHalves,
     sortDataForPairing

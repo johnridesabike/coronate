@@ -10,7 +10,7 @@ import {
     getAllPlayersFromMatches,
     getPlayerMaybe,
     rounds2Matches
-} from "../pairing-scoring";
+} from "../data-types";
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
 import PropTypes from "prop-types";

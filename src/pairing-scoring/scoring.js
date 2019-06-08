@@ -9,9 +9,13 @@ import {
     tail
 } from "ramda";
 import {ScoreCalculator} from "./types";
-import {isNotDummyId} from "./helpers";
+import {isNotDummyId} from "../data-types";
 import t from "tcomb";
 
+// I don't like how this has to import `isNotDummyId` from `data-types`, since
+// I would prefer that this module be 100% independent of non-score related
+// types. Perhaps the filter can be passed as a callback? Would that make
+// this too complex?
 function getOpponentScores(scoreData, id) {
     const opponentIds = Object.keys(scoreData[id].opponentResults);
     return opponentIds.filter(
@@ -64,7 +68,6 @@ const getColorBalanceScore = ScoreCalculator.of(
 const getModifiedMedianScore = ScoreCalculator.of(
     function getModifiedMedianScore(scoreData, id) {
         const scores = getOpponentScores(scoreData, id);
-        t.list(t.Number)(scores);
         return pipe(
             sort(ascend),
             init,
@@ -79,7 +82,6 @@ const getSolkoffScore = ScoreCalculator.of(
         return sum(getOpponentScores(scoreData, id));
     }
 );
-
 
 const tieBreakMethods = {
     0: {
@@ -110,3 +112,9 @@ const tieBreakMethods = {
 };
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
+
+// Returns the names of the tiebreak methods selected for your tournament.
+const getTieBreakNames = (idList) => (
+    t.list(t.Number)(idList).map((i) => tieBreakMethods[i].name)
+);
+export {getTieBreakNames};

@@ -4,7 +4,7 @@ import Icons from "../../icons";
 import PairPicker from "../pair-picker";
 import PropTypes from "prop-types";
 import Round from "./round";
-import {getUnmatched} from "../../../pairing-scoring";
+import {getUnmatched} from "../../../data-types";
 import {useTournament} from "../../../hooks";
 
 export default function Index(props) {

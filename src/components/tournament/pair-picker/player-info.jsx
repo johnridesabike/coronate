@@ -1,14 +1,14 @@
 import {
     avoidPairReducer,
     createBlankScoreData,
-    matches2ScoreData,
-    rounds2Matches
+    matches2ScoreData
 } from "../../../pairing-scoring";
 // this component should eventually replace player-match-info.jsx
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {DUMMY_ID} from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
+import {rounds2Matches} from "../../../data-types";
 import {sum} from "ramda";
 
 export default function PlayerInfo({playerId, roundId}) {

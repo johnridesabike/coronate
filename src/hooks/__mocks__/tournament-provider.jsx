@@ -3,7 +3,7 @@ import {playersReducer,tournamentReducer} from "../reducers";
 import PropTypes from "prop-types";
 import demoData from "../../demo-data";
 import {filter} from "ramda";
-import {getPlayerMaybe} from "../../pairing-scoring";
+import {getPlayerMaybe} from "../../data-types";
 
 const TournamentContext = createContext(null);
 

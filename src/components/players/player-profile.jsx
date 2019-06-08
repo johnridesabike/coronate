@@ -1,8 +1,9 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {getPlayerAvoidList, kFactor} from "../../pairing-scoring";
 import Icons from "../icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
+import {getPlayerAvoidList} from "../../data-types";
+import {kFactor} from "../../pairing-scoring";
 import numeral from "numeral";
 import styles from "./index.module.css";
 import {useDocumentTitle} from "../../hooks";

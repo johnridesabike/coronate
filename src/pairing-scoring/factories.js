@@ -9,13 +9,26 @@ import {
     sortWith
 } from "ramda";
 import {
-    areScoresEqual,
-    isNotDummyObj
-} from "./helpers";
-import {
     getPlayerScore,
     tieBreakMethods
 } from "./scoring";
+import t from "tcomb";
+
+function areScoresEqual(standing1, standing2) {
+    Standing(standing1);
+    Standing(standing2);
+    // Check if any of them aren't equal
+    if (standing1.score !== standing2.score) {
+        return false;
+    }
+    // Check if any tie-break values are not equal
+    return !(
+        standing1.tieBreaks.reduce(
+            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
+            []
+        ).includes(true)
+    );
+}
 
 /**
  * This is useful for cases where the regular factory functions return empty
@@ -40,10 +53,8 @@ export {createBlankScoreData};
  * score associated with each method. The order of these coresponds to the order
  * of the method names in the second list.
  */
-export function createStandingList(scoreData, methods) {
-    // const scoreData = matches2ScoreData(rounds2Matches(roundList, roundId));
+export function createStandingList(methods, scoreData) {
     const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
-    const tieBreakNames = selectedTieBreaks.map((m) => m.name);
     // Get a flat list of all of the players and their scores.
     const standings = Object.keys(scoreData).map(
         (id) => Standing({
@@ -59,7 +70,7 @@ export function createStandingList(scoreData, methods) {
         [descend(prop("score"))]
     );
     const standingsSorted = sortWith(sortFuncList, standings);
-    return [standingsSorted, tieBreakNames];
+    return standingsSorted;
 }
 
 /**
@@ -68,13 +79,8 @@ export function createStandingList(scoreData, methods) {
  * Dale and Audrey are tied for first, Pete is 2nd, Bob is 3rd.
  * @returns {[Standing[][], string[]]} The standings and the list of method used
  */
-export function createStandingTree(scoreData, methods) {
-    const [
-        standingsFlat,
-        tieBreakNames
-    ] = createStandingList(scoreData, methods);
-    const standingsFlatNoByes = standingsFlat.filter(isNotDummyObj);
-    const standingsTree = standingsFlatNoByes.reduce(
+export function createStandingTree(standingList) {
+    const standingsTree = t.list(Standing)(standingList).reduce(
         /** @param {Standing[][]} acc*/
         function assignStandingsToTree(acc, standing, i, orig) {
             const prevStanding = orig[i - 1];
@@ -90,5 +96,5 @@ export function createStandingTree(scoreData, methods) {
         },
         []
     );
-    return [standingsTree, tieBreakNames];
+    return standingsTree;
 }

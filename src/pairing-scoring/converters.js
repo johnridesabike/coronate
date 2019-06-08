@@ -5,7 +5,8 @@
 import {
     BLACK,
     Id,
-    WHITE
+    WHITE,
+    isNotDummyId
 } from "../data-types";
 import {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE} from "./types";
 import {
@@ -20,7 +21,6 @@ import {
     sum
 } from "ramda";
 import {createBlankScoreData} from "./factories";
-import {isNotDummyId} from "./helpers";
 import t from "tcomb";
 
 function color2Score(color) {

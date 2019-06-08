@@ -1,11 +1,11 @@
 import {
-    matches2ScoreData,
+    DUMMY_ID,
     rounds2Matches
-} from "../../../pairing-scoring";
-import {DUMMY_ID} from "../../../data-types";
+} from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
 import {findById} from "../../utility";
+import {matches2ScoreData} from "../../../pairing-scoring";
 import numeral from "numeral";
 import {sum} from "ramda";
 import {useTournament} from "../../../hooks";

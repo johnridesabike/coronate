@@ -1,10 +1,15 @@
-import {BLACK, DUMMY_ID, WHITE, dummyPlayer} from "../../../data-types";
+import {
+    BLACK,
+    DUMMY_ID,
+    WHITE,
+    dummyPlayer,
+    getUnmatched
+} from "../../../data-types";
 import {assoc, lensIndex, set} from "ramda";
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../icons";
 import PropTypes from "prop-types";
 import React from "react";
-import {getUnmatched} from "../../../pairing-scoring";
 import {useTournament} from "../../../hooks";
 
 export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {

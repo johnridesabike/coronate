@@ -1,73 +1,49 @@
-import {
-    AvoidPair,
-    DUMMY_ID,
-    Id,
-    Match,
-    Player,
-    Tournament,
-    dummyPlayer,
-    missingPlayer
-} from "../data-types";
-import {Standing} from "./types";
+import {AvoidPair, Id, Match, Player, Tournament} from "./types";
+import {DUMMY_ID} from "./constants";
 import {assoc} from "ramda";
+import {createPlayer} from "./factories";
 import t from "tcomb";
-/*******************************************************************************
- * Player functions
- ******************************************************************************/
+
 const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
 export {isNotDummyId};
 
 const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
 export {isNotDummyObj};
 
-export function hasHadBye(playerId, matchList) {
-    Id(playerId);
+export function getMatchesByPlayer(playerId, matchList) {
     t.list(Match)(matchList);
+    return matchList.filter((match) => match.playerIds.includes(playerId));
+}
+
+export function hasHadBye(playerId, matchList) {
     return getMatchesByPlayer(
-        playerId,
-        matchList
+        Id(playerId),
+        t.list(Match)(matchList)
     ).reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     ).includes(DUMMY_ID);
 }
-
-export function areScoresEqual(standing1, standing2) {
-    Standing(standing1);
-    Standing(standing2);
-    // Check if any of them aren't equal
-    if (standing1.score !== standing2.score) {
-        return false;
-    }
-    // Check if any tie-break values are not equal
-    return !(
-        standing1.tieBreaks.reduce(
-            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
-            []
-        ).includes(true)
-    );
-}
+/**
+ * The dummy player profile data to display in bye matches.
+ */
+const dummyPlayer = createPlayer({
+    firstName: "Bye",
+    id: DUMMY_ID,
+    lastName: "Player",
+    type: "dummy"
+});
+export {dummyPlayer};
 
 /**
- * Retrive a specific player from a list or object.
- * @param playerList This can either be typed as `[Player1, Player1]` or
- * `{"1": Player, "2": Player}`, where `Player1.id` equals its dict key.
- * @param id the `id` property of the desired `Player` object.
- * @returns The desired Player object.
+ * When `getPlayerMaybe()` can't find a profile, it outputs this instead.
  */
-export function getPlayerById(playerList, id) {
-    t.union([
-        t.list(Player),
-        t.dict(Id, Player)
-    ])(playerList);
-    if (id === DUMMY_ID) {
-        return dummyPlayer;
-    }
-    const player = (playerList.filter)
-        ? playerList.filter((p) => p.id === id)[0]
-        : playerList[id];
-    return (player) ? player : missingPlayer(id);
-}
+const missingPlayer = (id) => createPlayer({
+    firstName: "Anonymous",
+    id: id,
+    lastName: "Player",
+    type: "missing"
+});
 
 /**
  * A replacement for `getPlayerById`, with an emphasis on the indented feature
@@ -84,35 +60,8 @@ export function getPlayerMaybe(playerDict, id) {
     return (player) ? player : missingPlayer(id);
 }
 
-/*******************************************************************************
- * Match functions
- ******************************************************************************/
 const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
 export {isNotBye};
-
-export function getMatchesByPlayer(playerId, matchList) {
-    t.list(Match)(matchList);
-    return matchList.filter((match) => match.playerIds.includes(playerId));
-}
-
-// export function getMatchesByPlayerNoByes(playerId, matchList) {
-//     t.list(Match)(matchList);
-//     return matchList.filter(
-//         (match) => match.playerIds.includes(playerId) && isNotBye(match)
-//     );
-// }
-
-// export function getMatchDetailsForPlayer(playerId, match) {
-//     Id(playerId);
-//     Match(match);
-//     const index = match.playerIds.indexOf(playerId);
-//     return {
-//         color: index,
-//         newRating: match.newRating[index],
-//         origRating: match.origRating[index],
-//         result: match.result[index]
-//     };
-// }
 
 /**
  * Flatten a list of rounds to a list of matches.
@@ -136,30 +85,6 @@ export function getAllPlayersFromMatches(matchList) {
     return Array.from(new Set(allPlayers));
 }
 
-/**
- * Get a list of all of a player's scores from each match.
- */
-// export function getPlayerScoreList(playerId, matchList) {
-//     Id(playerId);
-//     t.list(Match)(matchList);
-//     return getMatchesByPlayer(
-//         playerId,
-//         matchList,
-//     ).map(
-//         (match) => getMatchDetailsForPlayer(playerId, match).result
-//     );
-// }
-
-// export function getPlayerScoreListNoByes(playerId, matchList) {
-//     Id(playerId);
-//     t.list(Match)(matchList);
-//     return getMatchesByPlayerNoByes(
-//         playerId,
-//         matchList
-//     ).map(
-//         (match) => getMatchDetailsForPlayer(playerId, match).result
-//     );
-// }
 
 /*******************************************************************************
  * Round functions
