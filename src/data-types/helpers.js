@@ -7,8 +7,11 @@ import t from "tcomb";
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
-const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
-export {isNotDummyId};
+// const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
+// export {isNotDummyId};
+
+const isDummyId = (playerId) => Id(playerId) === DUMMY_ID;
+export {isDummyId};
 
 const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
 export {isNotDummyObj};

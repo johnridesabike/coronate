@@ -28,6 +28,6 @@ Goals for this project include:
 
 ## Credits
 
-The three "kings" in the logo are derived from from Armando Hernandez Marroquin's "Merida" chess icon set, which is licensed as [GPLv2+](https://www.gnu.org/licenses/gpl-2.0.txt).
+The three "kings" in the logo are derived from a [GPLv2+](https://www.gnu.org/licenses/gpl-2.0.txt) licensed derivation of the "Merida" icon set. The original Merida was informally licensed as "freeware."
 
 Other icons come from [Feather](https://feathericons.com) ([MIT](https://github.com/feathericons/feather/blob/master/LICENSE) lincensed) and [Simple Icons](http://simpleicons.org) ([CC0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md) licensed).

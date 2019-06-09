@@ -7,7 +7,7 @@ import {
     last,
     lensIndex,
     map,
-    over,
+    // over,
     pipe,
     pluck,
     prop,
@@ -20,8 +20,10 @@ import {
 // I don't like importing `DUMMY_ID` from `data-types` because I prefer that
 // This module be 100% independent. Passing it as function arguments seems
 // like it would add unnecessary complexity, though.
-import {DUMMY_ID} from "../data-types";
+// import {DUMMY_ID} from "../data-types";
+import {PairingData} from "./types";
 import blossom from "edmonds-blossom";
+import t from "tcomb";
 
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (value) => (divider) => value / divider;
@@ -139,15 +141,43 @@ export function setUpperHalves(data) {
     return data.reduce(upperHalfReducer, []);
 }
 
-const hasNotHadBye = (p) => !p.opponents.includes(DUMMY_ID);
+// const hasNotHadBye = (p) => !p.opponents.includes(DUMMY_ID);
 
-export function setByePlayer(byeQueue, data) {
+// export function setByePlayer(byeQueue, data) {
+//     // if the list is even, just return it.
+//     if (data.length % 2 === 0) {
+//         return data;
+//     }
+//     const playersWithoutByes = data.filter(hasNotHadBye).map((p) => p.id);
+//     const nextByeSignup = byeQueue.filter(
+//         (id) => playersWithoutByes.includes(id)
+//     )[0];
+//     const indexOfDueBye = (nextByeSignup)
+//         // Assign the bye to the next person who signed up.
+//         ? findLastIndex((p) => p.id === nextByeSignup, data)
+//         // Assign a bye to the lowest-rated player in the lowest score group.
+//         // Because the list is sorted, the last player is the lowest.
+//         // (USCF § 29L2.)
+//         : findLastIndex(hasNotHadBye, data);
+//     // In the impossible situation that *everyone* has played a bye round
+//     // previously, then just pick the last player.
+//     const index = (indexOfDueBye === -1)
+//         ? data.length - 1
+//         : indexOfDueBye;
+//     return over(
+//         lensIndex(index),
+//         assoc("isDueBye", true),
+//         data
+//     );
+// }
+export function setByePlayer(byeQueue, dummyId, data) {
+    const hasNotHadBye2 = (p) => !p.opponents.includes(t.String(dummyId));
     // if the list is even, just return it.
     if (data.length % 2 === 0) {
-        return data;
+        return [data, null];
     }
-    const playersWithoutByes = data.filter(hasNotHadBye).map((p) => p.id);
-    const nextByeSignup = byeQueue.filter(
+    const playersWithoutByes = data.filter(hasNotHadBye2).map((p) => p.id);
+    const nextByeSignup = t.list(t.String)(byeQueue).filter(
         (id) => playersWithoutByes.includes(id)
     )[0];
     const indexOfDueBye = (nextByeSignup)
@@ -156,17 +186,20 @@ export function setByePlayer(byeQueue, data) {
         // Assign a bye to the lowest-rated player in the lowest score group.
         // Because the list is sorted, the last player is the lowest.
         // (USCF § 29L2.)
-        : findLastIndex(hasNotHadBye, data);
+        : findLastIndex(hasNotHadBye2, data);
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
     const index = (indexOfDueBye === -1)
         ? data.length - 1
         : indexOfDueBye;
-    return over(
-        lensIndex(index),
-        assoc("isDueBye", true),
-        data
-    );
+    const byeData = data[index];
+    const dataWithoutBye = data.filter((ignore, i) => i !== index);
+    return [dataWithoutBye, byeData];
+    // return over(
+    //     lensIndex(index),
+    //     assoc("isDueBye", true),
+    //     data
+    // );
 }
 
 const netScoreDescend = (pair1, pair2) => (
@@ -185,7 +218,7 @@ const netRatingDescend = (pair1, pair2) => (
 export function pairPlayers(pairingData) {
     // Because `blossom` has to use numbers that correspond to array indices,
     // we'll use `playerIdArray` as our source for that.
-    const playerIdArray = pairingData.map((p) => p.id);
+    const playerIdArray = t.list(PairingData)(pairingData).map((p) => p.id);
     // Turn the data into blossom-compatible input.
     function pairIdealReducer(accArr, player1, index, srcArr) {
         // slice out players who have already computed, plus the current one
@@ -198,12 +231,14 @@ export function pairPlayers(pairingData) {
         );
         return accArr.concat(playerMatches);
     }
-    const potentialMatches = pairingData.filter(
-        (p) => !p.isDueBye
-    ).reduce(
-        pairIdealReducer,
-        []
-    );
+    // const potentialMatches = pairingData.filter(
+    //     (p) => !p.isDueBye
+    // ).reduce(
+    //     pairIdealReducer,
+    //     []
+    // );
+
+    const potentialMatches = pairingData.reduce(pairIdealReducer, []);
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
@@ -240,8 +275,10 @@ export function pairPlayers(pairingData) {
     );
     const matches = sortedResults.map(
         function (pair) {
-            const player1 = pair[0];
-            const player2 = pair[1];
+            const [player1, player2] = pair;
+            // This is a quick-and-dirty heuristic to keep color balances
+            // mostly equal. Ideally, it would also examine due colors and how
+            // many times a player played each color last.
             return (sum(player1.colorScores) < sum(player2.colorScores))
                 // player 1 has played as white more than player 2
                 ? [player2.id, player1.id]
@@ -250,9 +287,10 @@ export function pairPlayers(pairingData) {
                 : [player1.id, player2.id];
         }
     );
+    return matches;
     // The bye match always gets added last so the the numbering isn't affected.
-    const byePlayer = pairingData.filter((p) => p.isDueBye)[0];
-    return (byePlayer)
-        ? matches.concat([[byePlayer.id, DUMMY_ID]])
-        : matches;
+    // const byePlayer = pairingData.filter((p) => p.isDueBye)[0];
+    // return (byePlayer)
+    //     ? matches.concat([[byePlayer.id, DUMMY_ID]])
+    //     : matches;
 }

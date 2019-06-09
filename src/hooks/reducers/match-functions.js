@@ -27,17 +27,25 @@ export function autoPair({
     tourney
 }) {
     const roundList = tourney.roundList;
-    const pairs = pipe(
+    const scoreData = pipe(
         (rounds) => rounds2Matches(rounds, roundId),
         matches2ScoreData,
+    )(roundList);
+    const pairData = pipe(
         (data) => createPairingData(players, avoidList, data),
         sortDataForPairing,
         setUpperHalves,
-        (data) => setByePlayer(tourney.byeQueue, data),
-        pairPlayers
-    )(roundList);
+    )(scoreData);
+    const [
+        pairDataNoByes,
+        byePlayerData
+    ] = setByePlayer(tourney.byeQueue, DUMMY_ID, pairData);
+    const pairs = pairPlayers(pairDataNoByes);
+    const pairsWithBye = (byePlayerData)
+        ? pairs.concat([[byePlayerData.id, DUMMY_ID]])
+        : pairs;
     const getPlayer = (id) => getPlayerMaybe(players, id); // curry
-    const newMatchList = pairs.map(
+    const newMatchList = pairsWithBye.map(
         (idsPair) => (
             createMatch({
                 newRating: [

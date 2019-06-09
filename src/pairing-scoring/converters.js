@@ -6,7 +6,7 @@ import {
     BLACK,
     Id,
     WHITE,
-    isNotDummyId
+    isDummyId
 } from "../data-types";
 import {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE} from "./types";
 import {
@@ -41,7 +41,7 @@ function match2ScoreDataReducer(acc, match) {
             over(lensProp("results"), append(result[color])),
             over(
                 lensProp("resultsNoByes"),
-                (isNotDummyId(oppId)) ? append(result[color]) : defaultTo([])
+                (isDummyId(oppId)) ? defaultTo([]) : append(result[color])
             ),
             over(lensProp("colors"), append(color)),
             over(lensProp("colorScores"), append(color2Score(color))),
@@ -49,7 +49,8 @@ function match2ScoreDataReducer(acc, match) {
                 lensPath(["opponentResults", oppId]),
                 pipe(defaultTo(0), add(result[color]))
             ),
-            over(lensProp("ratings"), append(newRating[color]))
+            over(lensProp("ratings"), append(newRating[color])),
+            assoc("isDummy", isDummyId(id))
         )(origData);
     });
     return pipe(
@@ -91,7 +92,7 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
                 colorScores: playerStats.colorScores,
                 colors: playerStats.colors,
                 id: data.id,
-                isDueBye: false,
+                // isDueBye: false,
                 isUpperHalf: false,
                 opponents: Object.keys(playerStats.opponentResults),
                 rating: data.rating,

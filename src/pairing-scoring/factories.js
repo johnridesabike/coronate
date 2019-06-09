@@ -22,6 +22,7 @@ const createBlankScoreData = (id) => ScoreData({
     colorScores: [],
     colors: [],
     id,
+    isDummy: false,
     opponentResults: {},
     ratings: [],
     results: [],

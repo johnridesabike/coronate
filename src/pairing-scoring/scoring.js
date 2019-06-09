@@ -8,17 +8,12 @@ import {
     tail
 } from "ramda";
 import {ScoreCalculator} from "./types";
-import {isNotDummyId} from "../data-types";
 import t from "tcomb";
 
-// I don't like how this has to import `isNotDummyId` from `data-types`, since
-// I would prefer that this module be 100% independent of non-score related
-// types. Perhaps the filter can be passed as a callback? Would that make
-// this too complex?
 function getOpponentScores(scoreData, id) {
     const opponentIds = Object.keys(scoreData[id].opponentResults);
     return opponentIds.filter(
-        isNotDummyId
+        (oppId) => !scoreData[oppId].isDummy
     ).map(
         (oppId) => getPlayerScore(scoreData, oppId)
     );
@@ -49,7 +44,7 @@ const getCumulativeOfOpponentScore = ScoreCalculator.of(
     function _getCumulativeOfOpponentScore(scoreData, id) {
         const opponentIds = Object.keys(scoreData[id].opponentResults);
         const scoreList = opponentIds.filter(
-            isNotDummyId
+            (oppId) => !scoreData[oppId].isDummy
         ).map(
             // TODO: properly curry this function
             (oppId) => getCumulativeScore(scoreData, oppId)

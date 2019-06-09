@@ -1,5 +1,5 @@
-These files are coded specifically for use within the Chessahoochee app, but with an assumption that other tournament apps would be interested in using them in the future. They're purposely less integrated into the rest of the codebase.
+This module is written for use within Chessahoochee, but with the assumption that other Swiss chess tournament apps may be interested in using its functions.
 
-The code here is still dependent on other functions within this project, however. I need to work on making them fully resuable for third parties. In particular, it's highly dependent on my chosen structure for the data (see in `../data-types/`). Less opinionated code would probably be better.
+Once it becomes stable, I may be interested in separating it into its own module with a more permissive license like ISC.
 
-It also probably needs to be cleaned up a lot.
+Feel free to use the code here for your own app, but be warned that it's **not stable** and I probably can't provide much support. 
