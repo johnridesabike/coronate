@@ -14,22 +14,6 @@ import {
 } from "./scoring";
 import t from "tcomb";
 
-function areScoresEqual(standing1, standing2) {
-    Standing(standing1);
-    Standing(standing2);
-    // Check if any of them aren't equal
-    if (standing1.score !== standing2.score) {
-        return false;
-    }
-    // Check if any tie-break values are not equal
-    return !(
-        standing1.tieBreaks.reduce(
-            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
-            []
-        ).includes(true)
-    );
-}
-
 /**
  * This is useful for cases where the regular factory functions return empty
  * results because a player hasn't been added yet.
@@ -47,11 +31,10 @@ export {createBlankScoreData};
 
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
- * TODO: this needs performance improvements.
- * @returns {[Standing[], string[]]} The the list of the standings and a list
- * of the methods used. Each standing has a `tieBreaks` property which lists the
- * score associated with each method. The order of these coresponds to the order
- * of the method names in the second list.
+ * @returns {Standing[]} The the list of the standings. Each standing has a
+ * `tieBreaks` property which lists the score associated with each method. The
+ * order of these coresponds to the order of the method names in the second
+ * list.
  */
 export function createStandingList(methods, scoreData) {
     const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
@@ -73,26 +56,42 @@ export function createStandingList(methods, scoreData) {
     return standingsSorted;
 }
 
+function areScoresEqual(standing1, standing2) {
+    // Check if any of them aren't equal
+    if (standing1.score !== standing2.score) {
+        return false;
+    }
+    // Check if any tie-break values are not equal
+    return !(
+        standing1.tieBreaks.reduce(
+            (acc, value, i) => acc.concat(value !== standing2.tieBreaks[i]),
+            []
+        ).includes(true)
+    );
+}
+
 /**
  * Sort the standings by score, see USCF tie-break rules from § 34.
  * example: `[[Dale, Audrey], [Pete], [Bob]]`
  * Dale and Audrey are tied for first, Pete is 2nd, Bob is 3rd.
- * @returns {[Standing[][], string[]]} The standings and the list of method used
+ * @returns {Standing[][]} The standings
  */
 export function createStandingTree(standingList) {
     const standingsTree = t.list(Standing)(standingList).reduce(
-        /** @param {Standing[][]} acc*/
         function assignStandingsToTree(acc, standing, i, orig) {
             const prevStanding = orig[i - 1];
-            const isNewRank = (
-                // Always make a new rank for the first player
-                (i === 0) ? true : !areScoresEqual(standing, prevStanding)
-            );
-            if (isNewRank) {
-                return append([standing], acc);
-            }
-            // If this player has the same score as the last, list them together
-            return over(lensIndex(acc.length - 1), append(standing), acc);
+            // Always make a new rank for the first player
+            const isNewRank = (i === 0)
+                ? true
+                // Make a new rank if the scores aren't equal
+                : !areScoresEqual(standing, prevStanding);
+            return (isNewRank)
+                // If this player doesn't have the same score, create a new
+                // branch of the tree
+                ? append([standing], acc)
+                // If this player has the same score as the last, append it
+                // to the last branch
+                : over(lensIndex(acc.length - 1), append(standing), acc);
         },
         []
     );

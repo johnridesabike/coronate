@@ -38,13 +38,11 @@ const PairingData = t.interface(
     },
     "PairingData"
 );
-
 const ScoreCalculator = t.func(
     [t.dict(t.String, ScoreData), Id],
     t.Number,
     "ScoreCalulator"
 );
-
 const Standing = t.interface(
     {
         id: Id,

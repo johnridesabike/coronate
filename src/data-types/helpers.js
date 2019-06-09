@@ -4,25 +4,14 @@ import {assoc} from "ramda";
 import {createPlayer} from "./factories";
 import t from "tcomb";
 
+/*******************************************************************************
+ * Player functions
+ ******************************************************************************/
 const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
 export {isNotDummyId};
 
 const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
 export {isNotDummyObj};
-
-function getMatchesByPlayer(playerId, matchList) {
-    return matchList.filter((match) => match.playerIds.includes(playerId));
-}
-
-export function hasHadBye(playerId, matchList) {
-    return getMatchesByPlayer(
-        Id(playerId),
-        t.list(Match)(matchList)
-    ).reduce(
-        (acc, match) => acc.concat(match.playerIds),
-        []
-    ).includes(DUMMY_ID);
-}
 /**
  * The dummy player profile data to display in bye matches.
  */
@@ -50,17 +39,23 @@ const createMissingPlayer = (id) => createPlayer({
  * getting a missing (deleted) player.
  */
 export function getPlayerMaybe(playerDict, id) {
-    t.dict(Id, Player)(playerDict);
-    Id(id);
     if (id === DUMMY_ID) {
         return dummyPlayer;
     }
-    const player = playerDict[id];
+    const player = t.dict(Id, Player)(playerDict)[id];
     return (player) ? player : createMissingPlayer(id);
 }
 
 const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
 export {isNotBye};
+
+/*******************************************************************************
+ * Round functions
+ ******************************************************************************/
+export function calcNumOfRounds(playerCount) {
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
+}
 
 /**
  * Flatten a list of rounds to a list of matches.
@@ -75,22 +70,6 @@ export function rounds2Matches(roundList, lastRound = null) {
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
-export function getAllPlayersFromMatches(matchList) {
-    const allPlayers = t.list(Match)(matchList).reduce(
-        (acc, match) => acc.concat(match.playerIds),
-        []
-    );
-    return Array.from(new Set(allPlayers));
-}
-
-
-/*******************************************************************************
- * Round functions
- ******************************************************************************/
-export function calcNumOfRounds(playerCount) {
-    const roundCount = Math.ceil(Math.log2(playerCount));
-    return (Number.isFinite(roundCount)) ? roundCount : 0;
-}
 /**
  * This creates a filtered version of `players` with only the players that are
  * not matched for the specified round.
@@ -115,7 +94,7 @@ export function getUnmatched(roundList, players, roundId) {
 
 export function isRoundComplete(tourney, players, roundId) {
     if (roundId < tourney.roundList.length - 1) {
-        // If it's not the last round, it's complete
+        // If it's not the last round, it's complete.
         return true;
     }
     const unmatched = getUnmatched(tourney.roundList, players, roundId);
@@ -123,6 +102,32 @@ export function isRoundComplete(tourney, players, roundId) {
         (match) => match.result[0] + match.result[1]
     );
     return Object.keys(unmatched).length === 0 && !results.includes(0);
+}
+
+/*******************************************************************************
+ * Match functions
+ ******************************************************************************/
+
+function getMatchesByPlayer(playerId, matchList) {
+    return matchList.filter((match) => match.playerIds.includes(playerId));
+}
+
+export function hasHadBye(playerId, matchList) {
+    return getMatchesByPlayer(
+        Id(playerId),
+        t.list(Match)(matchList)
+    ).reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    ).includes(DUMMY_ID);
+}
+
+export function getAllPlayersFromMatches(matchList) {
+    const allPlayers = t.list(Match)(matchList).reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    );
+    return Array.from(new Set(allPlayers));
 }
 
 /*******************************************************************************
