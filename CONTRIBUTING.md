@@ -58,4 +58,4 @@ To-dos:
 
 This project uses [Ramda](https://ramdajs.com/) as it's utility library, and a lot of its code is optimized to play nicely with Ramda's flavor of functional programming. 
 
-In general, I like to follow the Crockford ([JSLint](https://www.jslint.com)) style guide. Aside from that, my ESlint configuration mirros my preferred style. I don't really like using Prettier.
+My ESlint configuration mirrors my preferred style. I don't really like using Prettier. In general, I like to follow the Crockford ([JSLint](https://www.jslint.com)) style guide. 
