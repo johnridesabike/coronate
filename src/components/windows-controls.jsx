@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+// This handles the window controls for when the Electron app is running on
+// Windows.
 import React, {useEffect, useState} from "react";
 import {electron, ifElectron} from "../electron-utils";
 import styles from "./windows-controls.module.css";

@@ -14,6 +14,7 @@ import {
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
 import PropTypes from "prop-types";
+import {useLoadingCursor} from "./hooks";
 
 const TournamentContext = createContext(null);
 
@@ -28,9 +29,9 @@ export function TournamentProvider({children, tourneyId}) {
     const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
     const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
     const [isDbError, setIsDbError] = useState(false);
+    useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
     useEffect(
         function initTourneyFromDb() {
-            document.body.style.cursor = "wait";
             tourneyStore.getItem(tourneyId).then(function (value) {
                 console.log("loaded:", tourneyId);
                 if (!value) {
@@ -38,10 +39,8 @@ export function TournamentProvider({children, tourneyId}) {
                 }
                 tourneyDispatch({state: value || {}, type: "SET_STATE"});
                 setIsTourneyLoaded(true);
-                document.body.style.cursor = "auto";
             }).catch(function () {
                 setIsDbError(true);
-                document.body.style.cursor = "auto";
             });
         },
         [tourneyId]
@@ -67,7 +66,6 @@ export function TournamentProvider({children, tourneyId}) {
                 setIsPlayersLoaded(true);
                 return;
             }
-            document.body.style.cursor = "wait";
             playerStore.getItems(allTheIds).then(function (values) {
                 // This safeguards against trying to fetch dummy IDs or IDs from
                 // deleted players. If we updated without this condition, then
@@ -83,11 +81,9 @@ export function TournamentProvider({children, tourneyId}) {
                     playersDispatch({state: values, type: "LOAD_STATE"});
                 }
                 setIsPlayersLoaded(true);
-                document.body.style.cursor = "auto";
             }).catch(function (error) {
                 console.error("Couldn't load ids:", allTheIds);
                 console.error(error);
-                document.body.style.cursor = "auto";
             });
         },
         [tourney.roundList, players, tourney.playerIds]

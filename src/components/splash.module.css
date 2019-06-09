@@ -20,7 +20,7 @@
 }
 
 .footer {
-    background-color: var(--grey-80);
+    background-color: var(--ink-80);
     color: var(--grey-20);
     padding: 0 16px;
 }

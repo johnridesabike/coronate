@@ -1,12 +1,14 @@
 import "localforage-getitems";
+import {Player, Tournament} from "../data-types";
+import {difference, filter} from "ramda";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
 import defaultOptions from "./default-options.json";
 import demoData from "../demo-data";
-import {difference} from "ramda";
 import localForage from "localforage";
 import {extendPrototype as removeItemsPrototype} from "localforage-removeitems";
 import {extendPrototype as setItemsPrototype} from "localforage-setitems";
+import {useLoadingCursor} from "./hooks";
 
 /*******************************************************************************
  * Initialize the databases
@@ -44,22 +46,30 @@ export function loadDemoDB() {
 /*******************************************************************************
  * Generic database hooks
  ******************************************************************************/
-function useAllItemsFromDb(store) {
+function useAllItemsFromDb(store, type) {
     const [items, dispatch] = useReducer(genericDbReducer, {});
     const [isLoaded, setIsLoaded] = useState(false);
+    useLoadingCursor(isLoaded);
     useEffect(
         function loadItemsFromDb() {
-            document.body.style.cursor = "wait";
             store.getItems().then(function (results) {
                 console.log("loaded items from", store._config.storeName);
-                dispatch({state: results, type: "LOAD_STATE"});
+                // TODO: This will silently delete invalid entries from the DB.
+                // Because invalid entries are typically just older data that
+                // was created with a different tcomb interface, this should
+                // ideally update the data to a valid type instead of removing
+                // it completely.
+                const cleanResults =  filter(type.is, results);
+                dispatch({state: cleanResults, type: "LOAD_STATE"});
                 setIsLoaded(true);
-                document.body.style.cursor = "auto";
             }).catch(function () {
-                document.body.style.cursor = "auto";
+                console.error(
+                    "Couldn't load items from",
+                    store._config.storeName
+                );
             });
         },
-        [store]
+        [store, type]
     );
     useEffect(
         function saveChangesToDb() {
@@ -87,11 +97,11 @@ function useAllItemsFromDb(store) {
  * Player & tournament wrapper hooks
  ******************************************************************************/
 export function useAllPlayersDb() {
-    return useAllItemsFromDb(playerStore);
+    return useAllItemsFromDb(playerStore, Player);
 }
 
 export function useAllTournamentsDb() {
-    return useAllItemsFromDb(tourneyStore);
+    return useAllItemsFromDb(tourneyStore, Tournament);
 }
 
 /*******************************************************************************

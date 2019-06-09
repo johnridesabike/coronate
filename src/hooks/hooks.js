@@ -1,5 +1,6 @@
 import {ascend, descend, prop, sort} from "ramda";
 import {useEffect, useState} from "react";
+import t from "tcomb";
 
 export function useSortedTable(origTable, defaultKey, defaultDescend = true) {
     const [table, setTable] = useState(origTable);
@@ -36,5 +37,22 @@ export function useDocumentTitle(title) {
             };
         },
         [title]
+    );
+}
+
+export function useLoadingCursor(isLoaded) {
+    useEffect(
+        function () {
+            if (t.Boolean(isLoaded)) {
+                document.body.style.cursor = "auto";
+            } else {
+                document.body.style.cursor = "wait";
+            }
+            // Just in case the component unmounts before the data loads.
+            return function () {
+                document.body.style.cursor = "auto";
+            };
+        },
+        [isLoaded]
     );
 }
