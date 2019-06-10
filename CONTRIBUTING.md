@@ -10,7 +10,7 @@ My own work environment has some very specific (and ususual) conditions which le
 
 ## Directories of interest
 
-- [`/src/pairing-scoring/`](https://github.com/johnridesabike/chessahoochee/tree/master/src/pairing-scoring) includes the logic for pairing players and calculating tiebreaks. It does its best to conform to USCF rules.
+- [`/src/pairing-scoring/`](https://github.com/johnridesabike/chessahoochee/tree/master/src/pairing-scoring) includes the logic for pairing players and calculating tiebreaks. It does its best to conform to USCF rules. ([Read about them here.](http://www.uschess.org/content/view/7752/369/))
 - The React JSX components are stored in [`/src/pages/`](https://github.com/johnridesabike/chessahoochee/tree/master/src/pages) (top-level pages and their sub-pages) and [`/src/components/`](https://github.com/johnridesabike/chessahoochee/tree/master/src/components) (smaller components reused throughout the pages).
 - [`/graphics-src/`](https://github.com/johnridesabike/chessahoochee/tree/master/graphics-src) includes the files for the logo, along with scripts to build them into different formats.
 

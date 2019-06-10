@@ -30,6 +30,8 @@ If you have Git installed, you can also run:
 git clone https://github.com/johnridesabike/chessahoochee.git
 ```
 
+If you want to make your own changes, then it's recommended to fork the repository on GitHub and clone your forked version.
+
 #### 2: Install the dependencies
 
 Once you have a local copy of the code, run this command in the project's directory to install its dependencies:
