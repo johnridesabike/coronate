@@ -18,18 +18,22 @@ export default function Index(props) {
     const activePlayersCount = Object.keys(activePlayers).length;
     const [openTab, setOpenTab] = useState(0);
     useEffect(
-        function () {
-            (unmatchedCount === activePlayersCount)
-                ? setOpenTab(1)
-                : setOpenTab(0);
+        function autoSwitchTab() {
+            if (openTab === 0) {
+                // If all of the players are unmatched then switch to the
+                // pair-picking tab
+                (unmatchedCount === activePlayersCount)
+                    ? setOpenTab(1)
+                    : setOpenTab(0);
+            }
+            if (openTab === 1 && unmatchedCount === 0) {
+                setOpenTab(0);
+            }
         },
-        [unmatchedCount, activePlayersCount]
+        [unmatchedCount, activePlayersCount, openTab]
     );
     return (
-        <Tabs
-            index={openTab}
-            onChange={setOpenTab}
-        >
+        <Tabs index={openTab} onChange={setOpenTab}>
             <TabList>
                 <Tab><Icons.List/> Matches</Tab>
                 <Tab disabled={unmatchedCount === 0}>
