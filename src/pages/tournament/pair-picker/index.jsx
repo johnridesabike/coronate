@@ -28,46 +28,53 @@ export default function PairPicker({roundId}) {
     const [options] = useOptionsDb();
     const {tourney, activePlayers, tourneyDispatch} = useTournament();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const statsList = React.useMemo(
-        () => (
-            pipe(
-                (rounds) => rounds2Matches(rounds, roundId),
-                matches2ScoreData,
-                (data) => createPairingData(
-                    activePlayers,
-                    options.avoidPairs,
-                    data
-                ),
+    const [scoreData, pairData] = React.useMemo(
+        function memoizedGetStats() {
+            const matches = rounds2Matches(tourney.roundList, roundId);
+            const _scoreData = matches2ScoreData(matches);
+            const _pairData = pipe(
+                createPairingData(activePlayers, options.avoidPairs),
                 sortDataForPairing,
                 setUpperHalves
-            )(tourney.roundList)
-        ),
-        [
-            tourney.roundList,
-            roundId,
-            options.avoidPairs,
-            activePlayers
-        ]
-    );
-    const matchIdeal = React.useMemo(
-        function () {
-            if (stagedPlayers.includes(null)) {
-                return null;
-            }
-            const player0stats = findById(stagedPlayers[0], statsList);
-            const player1stats = findById(stagedPlayers[1], statsList);
-            if (!player0stats || !player1stats) {
-                return null;
-            }
-            const ideal = calcPairIdeal(player0stats, player1stats);
-            return numeral(ideal / maxPriority).format("%");
+            )(_scoreData);
+            return [_scoreData, _pairData];
         },
-        [stagedPlayers, statsList]
+        [tourney.roundList, activePlayers, roundId, options.avoidPairs]
     );
+    const matchIdeal = (function () {
+        if (stagedPlayers.includes(null)) {
+            return null;
+        }
+        const player0stats = findById(stagedPlayers[0], pairData);
+        const player1stats = findById(stagedPlayers[1], pairData);
+        if (!player0stats || !player1stats) {
+            return null;
+        }
+        const ideal = calcPairIdeal(player0stats, player1stats);
+        return numeral(ideal / maxPriority).format("%");
+    }());
     const unmatched = (roundId === tourney.roundList.length - 1)
         ? getUnmatched(tourney.roundList, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
+    React.useEffect(
+        function cleanPlayersThatWereRemoved() {
+            const activeIds = Object.keys(activePlayers);
+            const [p1, p2] = stagedPlayers;
+            if (!activeIds.includes(p1) && p1 !== null) {
+                setStagedPlayers((pair) => [null, pair[1]]);
+            }
+            if (!activeIds.includes(p2) && p2 !== null) {
+                setStagedPlayers((pair) => [pair[1], null]);
+            }
+        },
+        [activePlayers, stagedPlayers]
+    );
+    React.useEffect(
+        function () {
+            console.log("rendered");
+        }
+    );
     return (
         <div className="content-area">
             <div className="toolbar">
@@ -109,6 +116,7 @@ export default function PairPicker({roundId}) {
                                     <PlayerInfo
                                         playerId={id}
                                         roundId={roundId}
+                                        scoreData={scoreData}
                                     />
                                 </Panel>
                             )

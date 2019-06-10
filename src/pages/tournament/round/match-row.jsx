@@ -18,7 +18,8 @@ export default function MatchRow({
     match,
     roundId,
     selectedMatch,
-    setSelectedMatch
+    setSelectedMatch,
+    scoreData
 }) {
     const {
         tourney,
@@ -45,12 +46,12 @@ export default function MatchRow({
     const whiteName = whitePlayer.firstName + " " + whitePlayer.lastName;
     const blackName = blackPlayer.firstName + " " + blackPlayer.lastName;
 
-
     function ResultDisplay(color) {
         if (resultCode === "NOTSET") {
             return <VisuallyHidden>Not set</VisuallyHidden>;
         } else if (resultCode === "DRAW") {
             // return <Icons.Minus aria-label="Draw" />;
+            // TODO: find a better icon for draws.
             return (
                 <span
                     aria-label="Draw"
@@ -222,6 +223,7 @@ export default function MatchRow({
                                     color={0}
                                     matchId={match.id}
                                     roundId={roundId}
+                                    scoreData={scoreData}
                                 />
                             </Panel>
                             <Panel>
@@ -229,6 +231,7 @@ export default function MatchRow({
                                     color={1}
                                     matchId={match.id}
                                     roundId={roundId}
+                                    scoreData={scoreData}
                                 />
                             </Panel>
                         </PanelContainer>
@@ -243,6 +246,7 @@ MatchRow.propTypes = {
     match: PropTypes.object,
     pos: PropTypes.number,
     roundId: PropTypes.number,
+    scoreData: PropTypes.object,
     selectedMatch: PropTypes.string,
     setSelectedMatch: PropTypes.func
 };

@@ -51,7 +51,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-feather": "^1.1.6",
-    "simple-icons": "^1.9.27",
+    "simple-icons": "^1.9.28",
     "tcomb": "^3.2.29"
   },
   "devDependencies": {

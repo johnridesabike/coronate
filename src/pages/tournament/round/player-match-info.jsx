@@ -1,22 +1,19 @@
 import {
-    DUMMY_ID,
-    rounds2Matches
+    DUMMY_ID
+    // rounds2Matches
 } from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
 import {findById} from "../../../components/utility";
-import {matches2ScoreData} from "../../../pairing-scoring";
+// import {matches2ScoreData} from "../../../pairing-scoring";
 import numeral from "numeral";
 import {sum} from "ramda";
 import {useTournament} from "../../../hooks";
 
-export default function PlayerMatchInfo({matchId, color, roundId}) {
+export default function PlayerMatchInfo({matchId, color, roundId, scoreData}) {
     const {tourney, getPlayer} = useTournament();
     const matchList = tourney.roundList[roundId];
     const match = findById(matchId, matchList);
-    // TODO: This should probably be computed by a parent component and passed
-    // down via props.
-    const scoreData = matches2ScoreData(rounds2Matches(tourney.roundList));
     const playerId = match.playerIds[color];
     const player = getPlayer(playerId);
     const {
@@ -80,5 +77,6 @@ export default function PlayerMatchInfo({matchId, color, roundId}) {
 PlayerMatchInfo.propTypes = {
     color: PropTypes.number,
     matchId: PropTypes.string,
-    roundId: PropTypes.number
+    roundId: PropTypes.number,
+    scoreData: PropTypes.object
 };

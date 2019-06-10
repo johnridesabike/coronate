@@ -1,6 +1,6 @@
 ## Bug reports, suggestions, and questions:
 
-[Go here to open a new issue](https://github.com/johnridesabike/chessahoochee/issues).
+[Click here to open a new issue](https://github.com/johnridesabike/chessahoochee/issues).
 
 ## Other types of feedback:
 
@@ -17,7 +17,6 @@ My own work environment has some very specific (and ususual) conditions which le
 ## About the code style
 
 This project uses [Ramda](https://ramdajs.com/) as it's utility library, and a lot of its code is optimized to play nicely with Ramda's flavor of functional programming. 
-
 
 ## Type system
 

@@ -26,16 +26,13 @@ export function autoPair({
     roundId,
     tourney
 }) {
-    const roundList = tourney.roundList;
-    const scoreData = pipe(
+    const pairData = pipe(
         (rounds) => rounds2Matches(rounds, roundId),
         matches2ScoreData,
-    )(roundList);
-    const pairData = pipe(
         createPairingData(players, avoidList),
         sortDataForPairing,
         setUpperHalves,
-    )(scoreData);
+    )(tourney.roundList);
     const [
         pairDataNoByes,
         byePlayerData

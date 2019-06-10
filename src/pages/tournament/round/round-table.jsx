@@ -2,6 +2,8 @@ import MatchRow from "./match-row";
 import PropTypes from "prop-types";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
+import {matches2ScoreData} from "../../../pairing-scoring";
+import {rounds2Matches} from "../../../data-types";
 import style from "./round.module.css";
 import {useTournament} from "../../../hooks";
 
@@ -13,6 +15,7 @@ export default function RoundTable({
 }) {
     const {tourney} = useTournament();
     const matchList = tourney.roundList[roundId];
+    const scoreData = matches2ScoreData(rounds2Matches(tourney.roundList));
     return (
         <table className={style.table}>
             {matchList.length > 0 &&
@@ -61,6 +64,7 @@ export default function RoundTable({
                         roundId={roundId}
                         selectedMatch={selectedMatch}
                         setSelectedMatch={setSelectedMatch}
+                        scoreData={scoreData}
                     />
                 ))}
             </tbody>

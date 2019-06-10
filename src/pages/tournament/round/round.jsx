@@ -24,11 +24,18 @@ export default function Round({roundId}) {
             // checks if the match has been scored yet & resets the players'
             // records
             match.playerIds.forEach(function (pId, color) {
+                // If there was a dummy player or a deleted player then bail
+                // on the dispatch.
+                if (!players[pId]) {
+                    return;
+                }
+                // Decrement the matchcount for each player
                 playersDispatch({
                     id: pId,
                     matchCount: players[pId].matchCount - 1,
                     type: "SET_PLAYER_MATCHCOUNT"
                 });
+                // Set each player's rating to the original rating of the match
                 playersDispatch({
                     id: pId,
                     rating: match.origRating[color],

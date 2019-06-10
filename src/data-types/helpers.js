@@ -46,14 +46,12 @@ export function getPlayerMaybe(playerDict, id) {
     return (player) ? player : createMissingPlayer(id);
 }
 
-// const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
-// export {isNotBye};
-
 /*******************************************************************************
  * Round functions
  ******************************************************************************/
 export function calcNumOfRounds(playerCount) {
     const roundCount = Math.ceil(Math.log2(playerCount));
+    // If there aren't any players then `roundCount` === `-Infinity`.
     return (Number.isFinite(roundCount)) ? roundCount : 0;
 }
 
@@ -143,17 +141,17 @@ export function getPlayerAvoidList(avoidList, playerId) {
     ).reduce( // Flatten the array
         (accumulator, pair) => pair.concat(accumulator),
         []
-    ).filter( // filter out the player's id
+    ).filter( // filter out the player's own id
         (id) => id !== playerId
     );
 }
 
 // TODO: This isn't currently in use, but it probably should be.
-export function cleanAvoidList(avoidList, playerList) {
-    t.list(types.AvoidPair)(avoidList);
-    t.list(types.Player)(playerList);
-    const ids = playerList.map((p) => p.id);
-    return avoidList.filter(
-        (pairs) => (ids.includes(pairs[0]) && ids.includes(pairs[1]))
-    );
-}
+// export function cleanAvoidList(avoidList, playerList) {
+//     t.list(types.AvoidPair)(avoidList);
+//     t.list(types.Player)(playerList);
+//     const ids = playerList.map((p) => p.id);
+//     return avoidList.filter(
+//         (pairs) => (ids.includes(pairs[0]) && ids.includes(pairs[1]))
+//     );
+// }

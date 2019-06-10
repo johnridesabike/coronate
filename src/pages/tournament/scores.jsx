@@ -64,7 +64,7 @@ export function ScoreTable({compact, title}) {
                                     rowSpan={src.length}
                                     scope="row"
                                 >
-                                    {numeral(rank + 1).format("0o")}
+                                    {rank + 1}
                                 </th>
                             )}
                             {(compact) // use <td> if it's compact.

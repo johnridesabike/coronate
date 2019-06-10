@@ -1,24 +1,18 @@
 import {
     avoidPairReducer,
-    createBlankScoreData,
-    matches2ScoreData
+    createBlankScoreData
 } from "../../../pairing-scoring";
 // this component should eventually replace player-match-info.jsx
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {DUMMY_ID} from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
-import {rounds2Matches} from "../../../data-types";
 import {sum} from "ramda";
 
-export default function PlayerInfo({playerId, roundId}) {
-    const {tourney, getPlayer} = useTournament();
+export default function PlayerInfo({playerId, scoreData}) {
+    const {getPlayer} = useTournament();
     const [options] = useOptionsDb();
     const avoidDict = options.avoidPairs.reduce(avoidPairReducer, {});
-    // TODO: This should probably be computed by a parent component and passed
-    // down via props.
-    const matches = rounds2Matches(tourney.roundList, roundId);
-    const scoreData = matches2ScoreData(matches);
     const playerData = scoreData[playerId] || createBlankScoreData(playerId);
     const {
         colorScores,
@@ -77,5 +71,5 @@ export default function PlayerInfo({playerId, roundId}) {
 }
 PlayerInfo.propTypes = {
     playerId: PropTypes.string,
-    roundId: PropTypes.number
+    scoreData: PropTypes.object
 };

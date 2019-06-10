@@ -1,6 +1,7 @@
 import {useAllPlayersDb, useTournament} from "../../../hooks";
 import NewPlayer from "../../../components/new-player";
 import React from "react";
+import VisuallyHidden from "@reach/visually-hidden";
 
 export default function Selecting(props) {
     const {tourney, tourneyDispatch} = useTournament();
@@ -58,10 +59,16 @@ export default function Selecting(props) {
                             <td>{firstName}</td>
                             <td>{lastName}</td>
                             <td>
+                                <VisuallyHidden>
+                                    <label htmlFor={"select-" + id}>
+                                        Select {firstName} {lastName}
+                                    </label>
+                                </VisuallyHidden>
                                 <input
                                     checked={tourney.playerIds.includes(id)}
                                     type="checkbox"
                                     value={id}
+                                    id={"select-" + id}
                                     onChange={togglePlayer}
                                 />
                             </td>

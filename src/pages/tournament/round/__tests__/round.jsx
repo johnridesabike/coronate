@@ -142,3 +142,13 @@ it("Players are auto-paired correctly", function () {
 //     expect(getByTestId("match-8-white")).toHaveTextContent("James Gordon");
 // });
 
+it("Auto-matching with bye players works", function () {
+    const {getByText, getByTestId} = render(
+        <BattleForGothamCity><RoundPanels roundId={1} /></BattleForGothamCity>,
+    );
+    click(getByText(/add or remove players from the roster/i));
+    click(getByText(/select hugo strange/i));
+    click(getByText(/^done$/i));
+    click(getByText(/auto-pair unmatched players/i));
+    expect(getByTestId("match-9-black")).toHaveTextContent("Bye Player");
+});
