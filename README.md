@@ -11,7 +11,7 @@ Chessahoochee was originally built to help the chess players at Chattahoochee Va
 
 <p align="center"><a href="https://johnridesa.bike/chessahoochee/">👉 Click here for a live demo ♟</a></p>
 
-It's mostly version 1.0 feature-complete, but it is definitely still in beta.
+[Read more about how to use the app here](https://johnridesa.bike/software/chessahoochee/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
 
 ## 🏁 Getting Started
 

@@ -41,6 +41,18 @@ export default function PairPicker({roundId}) {
         },
         [tourney.roundList, activePlayers, roundId, options.avoidPairs]
     );
+    React.useEffect(
+        function cleanPlayersThatWereRemoved() {
+            const [p1, p2] = stagedPlayers;
+            if (!activePlayers[p1] && p1 !== null) {
+                setStagedPlayers((pair) => [null, pair[1]]);
+            }
+            if (!activePlayers[p2] && p2 !== null) {
+                setStagedPlayers((pair) => [pair[0], null]);
+            }
+        },
+        [activePlayers, stagedPlayers]
+    );
     const matchIdeal = (function () {
         if (stagedPlayers.includes(null)) {
             return null;
@@ -57,24 +69,6 @@ export default function PairPicker({roundId}) {
         ? getUnmatched(tourney.roundList, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
-    React.useEffect(
-        function cleanPlayersThatWereRemoved() {
-            const activeIds = Object.keys(activePlayers);
-            const [p1, p2] = stagedPlayers;
-            if (!activeIds.includes(p1) && p1 !== null) {
-                setStagedPlayers((pair) => [null, pair[1]]);
-            }
-            if (!activeIds.includes(p2) && p2 !== null) {
-                setStagedPlayers((pair) => [pair[1], null]);
-            }
-        },
-        [activePlayers, stagedPlayers]
-    );
-    React.useEffect(
-        function () {
-            console.log("rendered");
-        }
-    );
     return (
         <div className="content-area">
             <div className="toolbar">
