@@ -11,6 +11,8 @@ Chessahoochee was originally built to help the chess players at Chattahoochee Va
 
 <p align="center"><a href="https://johnridesa.bike/chessahoochee/">👉 Click here for a live demo ♟</a></p>
 
+It's mostly version 1.0 feature-complete, but it is definitely still in beta.
+
 ## 🏁 Getting Started
 
 These are the basic steps you'll need to follow to get a development copy of Chessahoochee running on your machine:
@@ -70,20 +72,33 @@ The Electron functionality is almost identical to the web version. The biggest d
 
 ## 🚀 Deployment 
 
-Chessahoochee has several build commands for different deployment methods:
+To create an optimized version that can be uploaded to your own website, run:
 
-`npm run build` will create an optimized version that can be uploaded to your own website.
+```
+npm run build
+```
 
-`npm run build:electron-all` Will create standalone Electron bundles for Mac and Windows. The Windows version is "portable", which means it has no installer and it stores all of its data in the same folder as its executable. If you're on a Windows system, run `npm run build:electron-win` to only build the Windows version.
+To create a standalone Electron app for Mac and Windows, run: 
+```
+npm run build:electron-all
+```
 
-Linux builds have not been tested yet.
+If you're on a Windows system, run this to only build the Windows version:
+```
+npm run build:electron-win
+```
+
+
+The Windows version is "portable." It has no installer and stores all of its data in the same folder as its executable.
+
+Linux builds have not been tested.
 
 ## ⛏️ Built Using
 
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime
 - [React](https://reactjs.org/) - interface
 - [Electron](https://electronjs.org/) - standalone executables
-- [Ramda](https://ramdajs.com/) - utility functions and state management
+- [Ramda](https://ramdajs.com/) - utility functions
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
 - [tcomb](https://github.com/gcanti/tcomb) - type safety
 - [Feather](https://feathericons.com/) - icons
