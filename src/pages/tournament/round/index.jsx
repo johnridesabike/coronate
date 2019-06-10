@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
-import Icons from "../../icons";
+import Icons from "../../../components/icons";
 import PairPicker from "../pair-picker";
 import PropTypes from "prop-types";
 import Round from "./round";

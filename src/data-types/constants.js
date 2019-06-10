@@ -5,9 +5,10 @@
 const WHITE = 0;
 const BLACK = 1;
 /**
- * Used in by matches to indicate a dummy player. Used with the
- * `getPlayerMaybe()` method to return a dummy player profile.
- * Conforms to the NanoID regex.
+ * This is used in by matches to indicate a dummy player. The
+ * `getPlayerMaybe()` method returns a special dummy player profile when
+ * fetching this ID.
+ * This ID conforms to the NanoID regex.
  */
 const DUMMY_ID = "________DUMMY________";
 

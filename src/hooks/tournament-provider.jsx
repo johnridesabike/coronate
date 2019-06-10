@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import {filter, symmetricDifference} from "ramda";
 import {
-    getAllPlayersFromMatches,
+    getAllPlayerIdsFromMatches,
     getPlayerMaybe,
     rounds2Matches
 } from "../data-types";
@@ -52,7 +52,7 @@ export function TournamentProvider({children, tourneyId}) {
             }
             // Include players who have played matches but left the tournament,
             // as well as players who are registered but havne't played yet.
-            const allTheIds = getAllPlayersFromMatches(
+            const allTheIds = getAllPlayerIdsFromMatches(
                 rounds2Matches(tourney.roundList)
             ).concat(
                 tourney.playerIds
@@ -118,7 +118,7 @@ export function TournamentProvider({children, tourneyId}) {
         },
         [players, isPlayersLoaded]
     );
-    const getPlayer = (id) => getPlayerMaybe(players, id); // curry
+    const getPlayer = getPlayerMaybe(players);
     // `players` includes players in past matches who may have left
     // `activePlayers` is only players to be matched in future matches.
     const activePlayers = filter(

@@ -2,13 +2,13 @@ import {
     createStandingList,
     matches2ScoreData
 } from "../../pairing-scoring";
-import Icons from "../icons";
+import Icons from "../../components/icons";
 import PropTypes from "prop-types";
 import React from "react";
 import {last} from "ramda";
 import numeral from "numeral";
 import {rounds2Matches} from "../../data-types";
-import style from "./scores.module.css";
+import style from "./index.module.css";
 import {useTournament} from "../../hooks";
 
 export default function Crosstable(props) {

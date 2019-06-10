@@ -31,9 +31,7 @@ import UserPlus from "react-feather/dist/icons/user-plus";
 import Users from "react-feather/dist/icons/users";
 import X from "react-feather/dist/icons/x";
 
-/**
- * This converts a specified `simple-icons` icon into a React component.
- */
+// This converts a specified `simple-icons` icon into a React component.
 const simpleIcon = (icon) => (props) => (
     <span
         dangerouslySetInnerHTML={{__html: icon.svg}}

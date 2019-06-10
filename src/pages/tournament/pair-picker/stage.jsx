@@ -2,7 +2,7 @@ import {BLACK, WHITE} from "../../../data-types";
 import React, {Fragment} from "react";
 import {lensIndex, set} from "ramda";
 import {useOptionsDb, useTournament} from "../../../hooks";
-import Icons from "../../icons";
+import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 
 export default function Stage({

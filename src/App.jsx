@@ -9,14 +9,14 @@ import React, {useEffect, useState} from "react";
 import TournamentIndex, {
     Tournament,
     TournamentList
-} from "./components/tournament";
+} from "./pages/tournament";
 import {electron, ifElectron, macOSDoubleClick} from "./electron-utils";
 import Caution from "./components/caution";
 import Icons from "./components/icons";
 import NotFound from "./components/404";
-import Options from "./components/options";
-import Players from "./components/players";
-import Splash from "./components/splash";
+import Options from "./pages/options";
+import Players from "./pages/players";
+import Splash from "./pages/splash";
 import VisuallyHidden from "@reach/visually-hidden";
 import WindowsControls from "./components/windows-controls";
 import classNames from "classnames";

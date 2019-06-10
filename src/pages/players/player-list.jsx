@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {Dialog} from "@reach/dialog";
-import Icons from "../icons";
+import Icons from "../../components/icons";
 import {Link} from "@reach/router";
-import NewPlayer from "../new-player";
+import NewPlayer from "../../components/new-player";
 import PropTypes from "prop-types";
-import {SortLabel} from "../utility";
+import {SortLabel} from "../../components/utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import styles from "./index.module.css";
 import {useDocumentTitle} from "../../hooks";

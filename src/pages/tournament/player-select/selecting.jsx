@@ -1,5 +1,5 @@
 import {useAllPlayersDb, useTournament} from "../../../hooks";
-import NewPlayer from "../../new-player";
+import NewPlayer from "../../../components/new-player";
 import React from "react";
 
 export default function Selecting(props) {

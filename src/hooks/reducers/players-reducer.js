@@ -1,4 +1,3 @@
-import {Id, createPlayer} from "../../data-types";
 import {
     assoc,
     dissoc,
@@ -8,59 +7,20 @@ import {
     over,
     set
 } from "ramda";
+import {createPlayer, types} from "../../data-types";
 import nanoid from "nanoid";
 import t from "tcomb";
 
-const ActionSetPlayer = t.interface({
-    firstName: t.String,
-    id: Id,
-    lastName: t.String,
-    matchCount: t.Number,
-    rating: t.Number
-});
-const ActionAddPlayer = t.interface({
-    firstName: t.String,
-    lastName: t.String,
-    rating: t.Number
-});
-const ActionDelPlayer = t.interface({
-    id: Id
-});
-const ActionSetMatchcount = t.interface({
-    id: Id,
-    matchCount: t.Number
-});
-const ActionSetRating = t.interface({
-    id: Id,
-    rating: t.Number
-});
-const ActionLoadState = t.interface({state: t.Any});
-const ActionTypes = t.union([
-    ActionSetPlayer,
-    ActionAddPlayer,
-    ActionDelPlayer,
-    ActionSetMatchcount,
-    ActionSetRating,
-    ActionLoadState
-]);
-ActionTypes.dispatch = function (x) {
-    const typeToConstructor = {
-        "ADD_PLAYER": ActionAddPlayer,
-        "DEL_PLAYER": ActionDelPlayer,
-        "LOAD_STATE": ActionLoadState,
-        "SET_PLAYER": ActionSetPlayer,
-        "SET_PLAYER_MATCHCOUNT": ActionSetMatchcount,
-        "SET_PLAYER_RATING": ActionSetRating
-    };
-    return typeToConstructor[x.type];
-};
-
 // eslint-disable-next-line complexity
 export default function playersReducer(state, action) {
-    ActionTypes(action);
     const nextId = nanoid();
     switch (action.type) {
     case "ADD_PLAYER":
+        t.interface({
+            firstName: t.String,
+            lastName: t.String,
+            rating: t.Number
+        })(action);
         return assoc(
             nextId,
             createPlayer({
@@ -72,6 +32,13 @@ export default function playersReducer(state, action) {
             state
         );
     case "SET_PLAYER":
+        t.interface({
+            firstName: t.String,
+            id: types.Id,
+            lastName: t.String,
+            matchCount: t.Number,
+            rating: t.Number
+        })(action);
         return over(
             lensProp(action.id),
             mergeLeft(
@@ -86,17 +53,23 @@ export default function playersReducer(state, action) {
         );
     case "DEL_PLAYER":
         // You should delete all avoid-pairs with the id too.
+        t.interface({id: types.Id})(action);
         return dissoc(
             lensPath(action.id),
             state
         );
     case "SET_PLAYER_MATCHCOUNT":
+        t.interface({
+            id: types.Id,
+            matchCount: t.Number
+        })(action);
         return set(
             lensPath([action.id, "matchCount"]),
             action.matchCount,
             state
         );
     case "SET_PLAYER_RATING":
+        t.interface({id: types.Id, rating: t.Number})(action);
         return set(
             lensPath([action.id, "rating"]),
             action.rating,

@@ -2,8 +2,8 @@
  * This file is a complement to `../data-types/`, except its types are specific
  * to the scoring and pairing functions.
  */
-import {Color, Id} from "../data-types";
 import t from "tcomb";
+import {types} from "../data-types";
 
 const BLACKVALUE = 1;
 const WHITEVALUE = -1;
@@ -15,10 +15,10 @@ const ColorScore = t.refinement(
 const ScoreData = t.interface(
     {
         colorScores: t.list(ColorScore),
-        colors: t.list(Color),
-        id: Id,
+        colors: t.list(types.Color),
+        id: types.Id,
         isDummy: t.Boolean,
-        opponentResults: t.dict(Id, t.Number),
+        opponentResults: t.dict(types.Id, t.Number),
         ratings: t.list(t.Number),
         results: t.list(t.Number),
         resultsNoByes: t.list(t.Number)
@@ -27,38 +27,37 @@ const ScoreData = t.interface(
 );
 const PairingData = t.interface(
     {
-        avoidIds: t.list(Id),
+        avoidIds: t.list(types.Id),
         colorScores: t.list(ColorScore),
-        colors: t.list(Color),
-        id: Id,
+        colors: t.list(types.Color),
+        id: types.Id,
         // isDueBye: t.Boolean,
         isUpperHalf: t.Boolean,
-        opponents: t.list(Id),
+        opponents: t.list(types.Id),
         rating: t.Number,
         score: t.Number
     },
     "PairingData"
 );
 const ScoreCalculator = t.func(
-    [t.dict(t.String, ScoreData), Id],
+    [t.dict(t.String, ScoreData), types.Id],
     t.Number,
     "ScoreCalulator"
 );
 const Standing = t.interface(
     {
-        id: Id,
+        id: types.Id,
         score: t.Number,
         tieBreaks: t.list(t.Number)
     },
     "Standing"
 );
 
-export {
+export default Object.freeze({
     BLACKVALUE,
-    Color,
     PairingData,
-    Standing,
     ScoreCalculator,
     ScoreData,
+    Standing,
     WHITEVALUE
-};
+});

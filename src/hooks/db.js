@@ -1,5 +1,4 @@
 import "localforage-getitems";
-import {Player, Tournament} from "../data-types";
 import {difference, filter} from "ramda";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
@@ -8,6 +7,7 @@ import demoData from "../demo-data";
 import localForage from "localforage";
 import {extendPrototype as removeItemsPrototype} from "localforage-removeitems";
 import {extendPrototype as setItemsPrototype} from "localforage-setitems";
+import {types} from "../data-types";
 import {useLoadingCursor} from "./hooks";
 
 /*******************************************************************************
@@ -97,11 +97,11 @@ function useAllItemsFromDb(store, type) {
  * Player & tournament wrapper hooks
  ******************************************************************************/
 export function useAllPlayersDb() {
-    return useAllItemsFromDb(playerStore, Player);
+    return useAllItemsFromDb(playerStore, types.Player);
 }
 
 export function useAllTournamentsDb() {
-    return useAllItemsFromDb(tourneyStore, Tournament);
+    return useAllItemsFromDb(tourneyStore, types.Tournament);
 }
 
 /*******************************************************************************

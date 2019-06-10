@@ -4,7 +4,7 @@ import {
 } from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
-import {findById} from "../../utility";
+import {findById} from "../../../components/utility";
 import {matches2ScoreData} from "../../../pairing-scoring";
 import numeral from "numeral";
 import {sum} from "ramda";

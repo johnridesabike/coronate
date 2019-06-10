@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {findById, findIndexById} from "../../utility";
-import Icons from "../../icons";
-import NotFound from "../../404";
+import {findById, findIndexById} from "../../../components/utility";
+import Icons from "../../../components/icons";
+import NotFound from "../../../components/404";
 import PropTypes from "prop-types";
 import RoundTable from "./round-table";
 import {useTournament} from "../../../hooks";

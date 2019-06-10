@@ -4,10 +4,6 @@ import {
     matches2ScoreData
 } from "./converters";
 import {
-    calcNewRatings,
-    kFactor
-} from "./ratings";
-import {
     calcPairIdeal,
     maxPriority,
     pairPlayers,
@@ -21,19 +17,19 @@ import {
     createStandingTree
 } from "./factories";
 import {getTieBreakNames, tieBreakMethods} from "./scoring";
+import ratings from "./ratings";
 export {
     avoidPairReducer,
-    calcNewRatings,
     calcPairIdeal,
+    createBlankScoreData,
     createPairingData,
     createStandingList,
     createStandingTree,
-    createBlankScoreData,
     getTieBreakNames,
-    kFactor,
     matches2ScoreData,
     maxPriority,
     pairPlayers,
+    ratings,
     setByePlayer,
     setUpperHalves,
     sortDataForPairing,

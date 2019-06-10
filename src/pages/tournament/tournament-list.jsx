@@ -1,4 +1,4 @@
-import {DateFormat, SortLabel} from "../utility";
+import {DateFormat, SortLabel} from "../../components/utility";
 import React, {useState} from "react";
 import {
     useAllTournamentsDb,
@@ -6,8 +6,8 @@ import {
     useSortedTable
 } from "../../hooks";
 import {Dialog} from "@reach/dialog";
-import HasSidebar from "../sidebar-default";
-import Icons from "../icons";
+import HasSidebar from "../../components/sidebar-default";
+import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
 

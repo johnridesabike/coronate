@@ -1,5 +1,5 @@
 import {useAllPlayersDb, useOptionsDb, useSortedTable} from "../../hooks";
-import HasSidebar from "../sidebar-default";
+import HasSidebar from "../../components/sidebar-default";
 import PlayerList from "./player-list";
 import PlayerProfile from "./player-profile";
 import React from "react";

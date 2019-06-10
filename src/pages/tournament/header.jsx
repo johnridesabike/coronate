@@ -1,6 +1,6 @@
-import {DateFormat, PlaceholderButton} from "../utility";
+import {DateFormat, PlaceholderButton} from "../../components/utility";
 import React, {useState} from "react";
-import Icons from "../icons";
+import Icons from "../../components/icons";
 import PropTypes from "prop-types";
 import {useTournament} from "../../hooks";
 

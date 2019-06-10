@@ -1,8 +1,8 @@
-import {Panel, PanelContainer} from "../../utility";
+import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useState} from "react";
 import {hasHadBye, rounds2Matches} from "../../../data-types";
 import {Dialog} from "@reach/dialog";
-import Icons from "../../icons";
+import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import Selecting from "./selecting";
 import {useTournament} from "../../../hooks";
@@ -83,7 +83,7 @@ export default function PlayerSelect(props) {
                             <li
                                 key={pId}
                                 className={
-                                    (hasHadBye(pId, matches))
+                                    (hasHadBye(matches, pId))
                                     ? "disabled buttons-on-hover"
                                     : "buttons-on-hover"
                                 }

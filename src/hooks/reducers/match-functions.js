@@ -2,11 +2,11 @@
 import {
     BLACK,
     DUMMY_ID,
-    Player,
     WHITE,
     createMatch,
     getPlayerMaybe,
-    rounds2Matches
+    rounds2Matches,
+    types
 } from "../../data-types";
 import {assoc, pipe} from "ramda";
 import {
@@ -32,7 +32,7 @@ export function autoPair({
         matches2ScoreData,
     )(roundList);
     const pairData = pipe(
-        (data) => createPairingData(players, avoidList, data),
+        createPairingData(players, avoidList),
         sortDataForPairing,
         setUpperHalves,
     )(scoreData);
@@ -44,7 +44,7 @@ export function autoPair({
     const pairsWithBye = (byePlayerData)
         ? pairs.concat([[byePlayerData.id, DUMMY_ID]])
         : pairs;
-    const getPlayer = (id) => getPlayerMaybe(players, id); // curry
+    const getPlayer = getPlayerMaybe(players);
     const newMatchList = pairsWithBye.map(
         (idsPair) => (
             createMatch({
@@ -76,7 +76,7 @@ export function autoPair({
 }
 
 export function manualPair(pair, byeValue) {
-    t.tuple([Player, Player])(pair);
+    t.tuple([types.Player, types.Player])(pair);
     const match = createMatch({
         newRating: [pair[WHITE].rating, pair[BLACK].rating],
         origRating: [pair[WHITE].rating, pair[BLACK].rating],

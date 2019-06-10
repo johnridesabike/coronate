@@ -1,6 +1,6 @@
 import Crosstable from "./crosstable";
 import Header from "./header";
-import NotFound from "../404";
+import NotFound from "../../components/404";
 import Options from "./options";
 import PlayerSelect from "./player-select";
 import PropTypes from "prop-types";
@@ -11,7 +11,7 @@ import Scores from "./scores";
 import Sidebar from "./sidebar";
 import Status from "./status";
 import {TournamentProvider} from "../../hooks";
-import styles from "./tournament.module.css";
+import styles from "./index.module.css";
 
 export default function Tournament(props) {
     return (

@@ -1,4 +1,4 @@
-import {Panel, PanelContainer} from "../utility";
+import {Panel, PanelContainer} from "../../components/utility";
 import React, {useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
 import {
@@ -9,13 +9,13 @@ import {
     tieBreakMethods
 } from "../../pairing-scoring";
 import {defaultTo, filter, pipe} from "ramda";
-import {isNotDummyObj, rounds2Matches} from "../../data-types";
-import Icons from "../icons";
+import {isDummyObj, rounds2Matches} from "../../data-types";
+import Icons from "../../components/icons";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
 import dashify from "dashify";
 import numeral from "numeral";
-import style from "./scores.module.css";
+import style from "./index.module.css";
 import {useTournament} from "../../hooks";
 
 export function ScoreTable({compact, title}) {
@@ -26,7 +26,7 @@ export function ScoreTable({compact, title}) {
         rounds2Matches,
         matches2ScoreData,
         (data) => createStandingList(tieBreaks, data),
-        filter(isNotDummyObj),
+        filter((obj) => !isDummyObj(obj)),
         createStandingTree
     )(roundList);
     return (

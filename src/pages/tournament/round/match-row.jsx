@@ -1,14 +1,14 @@
 import "@reach/dialog/styles.css";
 import {BLACK, DUMMY_ID, WHITE} from "../../../data-types";
-import {Panel, PanelContainer} from "../../utility";
+import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useState} from "react";
 import {Dialog} from "@reach/dialog";
 import Hidden from "@reach/visually-hidden";
-import Icons from "../../icons";
+import Icons from "../../../components/icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
-import {calcNewRatings} from "../../../pairing-scoring";
+import {ratings} from "../../../pairing-scoring";
 import styles from "./round.module.css";
 import {useTournament} from "../../../hooks";
 
@@ -87,7 +87,7 @@ export default function MatchRow({
         const newRating = (
             (event.currentTarget.value === "NOTSET")
             ? match.origRating
-            : calcNewRatings(
+            : ratings.calcNewRatings(
                 match.origRating,
                 [white.matchCount, black.matchCount],
                 result

@@ -1,34 +1,29 @@
-import {AvoidPair, Id, Match, Player, RoundList} from "./types";
 import {DUMMY_ID} from "./constants";
 import {assoc} from "ramda";
 import {createPlayer} from "./factories";
 import t from "tcomb";
+import types from "./types";
 
 /*******************************************************************************
  * Player functions
  ******************************************************************************/
-// const isNotDummyId = (playerId) => Id(playerId) !== DUMMY_ID;
-// export {isNotDummyId};
-
-const isDummyId = (playerId) => Id(playerId) === DUMMY_ID;
+// These are useful for passing to `filter()` methods.
+const isDummyId = (playerId) => types.Id(playerId) === DUMMY_ID;
 export {isDummyId};
+// This can take any object with a compliant `id` property.
+const isDummyObj = (playerObj) => types.Id(playerObj.id) === DUMMY_ID;
+export {isDummyObj};
 
-const isNotDummyObj = (playerObj) => playerObj.id !== DUMMY_ID;
-export {isNotDummyObj};
-/**
- * The dummy player profile data to display in bye matches.
- */
+// This is the dummy profile that `getPlayerMaybe()` returns for bye rounds.
 const dummyPlayer = createPlayer({
     firstName: "Bye",
     id: DUMMY_ID,
     lastName: "Player",
     type: "dummy"
 });
-export {dummyPlayer};
 
-/**
- * When `getPlayerMaybe()` can't find a profile, it outputs this instead.
- */
+// If `getPlayerMaybe()` can't find a profile (e.g. if it was deleted) then it
+// outputs this instead. The ID will be the same as missing player's ID.
 const createMissingPlayer = (id) => createPlayer({
     firstName: "Anonymous",
     id: id,
@@ -36,21 +31,23 @@ const createMissingPlayer = (id) => createPlayer({
     type: "missing"
 });
 
-/**
- * A replacement for `getPlayerById`, with an emphasis on the indented feature
- * of *maybe* getting a player, *maybe* getting a `dummyPlayer`, or *maybe*
- * getting a missing (deleted) player.
- */
+// This function should always be used in components that *might* not be able to
+// display current player information. This includes bye rounds with "dummy"
+// players, or scoreboards where a player may have been deleted.
+// This automatically curries for easy use across the same context.
 export function getPlayerMaybe(playerDict, id) {
+    if (id === undefined) {
+        return getPlayerMaybe.bind(null, playerDict);
+    }
     if (id === DUMMY_ID) {
         return dummyPlayer;
     }
-    const player = t.dict(Id, Player)(playerDict)[id];
+    const player = t.dict(types.Id, types.Player)(playerDict)[id];
     return (player) ? player : createMissingPlayer(id);
 }
 
-const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
-export {isNotBye};
+// const isNotBye = (match) => !match.playerIds.includes(DUMMY_ID);
+// export {isNotBye};
 
 /*******************************************************************************
  * Round functions
@@ -60,12 +57,10 @@ export function calcNumOfRounds(playerCount) {
     return (Number.isFinite(roundCount)) ? roundCount : 0;
 }
 
-/**
- * Flatten a list of rounds to a list of matches.
- * @param {number?} lastRound An optional index for the last round to use. It's
- * useful if you only want to, for example, view the results for rounds 1-2 and
- * not 3-4.
- */
+// This flattens a list of rounds to a list of matches.
+// The optional `lastRound` parameter will slice the rounds to only the last
+// index specified. For example: if you just want to see the scores through
+// round 2 and not include round 3.
 export function rounds2Matches(roundList, lastRound = null) {
     const rounds = (lastRound === null)
         ? roundList
@@ -73,17 +68,15 @@ export function rounds2Matches(roundList, lastRound = null) {
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
-/**
- * This creates a filtered version of `players` with only the players that are
- * not matched for the specified round.
- */
+// This creates a filtered version of `players` with only the players that are
+// not matched for the specified round.
 export function getUnmatched(roundList, players, roundId) {
-    const matchList = RoundList(roundList)[t.Number(roundId)] || [];
+    const matchList = types.RoundList(roundList)[t.Number(roundId)] || [];
     const matchedIds = matchList.reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
-    const playerList = t.list(Player)(Object.values(players));
+    const playerList = t.list(types.Player)(Object.values(players));
     const unmatched = playerList.reduce(
         (acc, player) => (
             (matchedIds.includes(player.id))
@@ -95,7 +88,14 @@ export function getUnmatched(roundList, players, roundId) {
     return unmatched;
 }
 
+// Returns a boolean for whether or not a round has completed.
+// This automatically curries for easy application across a single component.
 export function isRoundComplete(tourney, players, roundId) {
+    if (players === undefined) {
+        return isRoundComplete.bind(null, tourney);
+    } else if (roundId === undefined) {
+        return isRoundComplete.bind(null, tourney, players);
+    }
     if (roundId < tourney.roundList.length - 1) {
         // If it's not the last round, it's complete.
         return true;
@@ -110,23 +110,18 @@ export function isRoundComplete(tourney, players, roundId) {
 /*******************************************************************************
  * Match functions
  ******************************************************************************/
-
-function getMatchesByPlayer(playerId, matchList) {
-    return matchList.filter((match) => match.playerIds.includes(playerId));
-}
-
-export function hasHadBye(playerId, matchList) {
-    return getMatchesByPlayer(
-        Id(playerId),
-        t.list(Match)(matchList)
+// Returns whether or not a player has played a bye round.
+export function hasHadBye(matchList, playerId) {
+    return t.list(types.Match)(matchList).filter(
+        (match) => match.playerIds.includes(playerId)
     ).reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     ).includes(DUMMY_ID);
 }
 
-export function getAllPlayersFromMatches(matchList) {
-    const allPlayers = t.list(Match)(matchList).reduce(
+export function getAllPlayerIdsFromMatches(matchList) {
+    const allPlayers = t.list(types.Match)(matchList).reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
@@ -136,10 +131,14 @@ export function getAllPlayersFromMatches(matchList) {
 /*******************************************************************************
  * Avoid list functions
  ******************************************************************************/
-export function getPlayerAvoidList(playerId, avoidList) {
-    t.list(AvoidPair)(avoidList);
-    Id(playerId);
-    return avoidList.filter( // get pairings with the player
+// Returns a flattened list of all of the player set to avoid a specific player
+// ID. This automatically curries for easy reuse across the same component.
+export function getPlayerAvoidList(avoidList, playerId) {
+    if (playerId === undefined) {
+        return getPlayerAvoidList.bind(null, avoidList);
+    }
+    return t.list(types.AvoidPair)(avoidList).filter(
+        // get pairings with the player
         (pair) => pair.includes(playerId)
     ).reduce( // Flatten the array
         (accumulator, pair) => pair.concat(accumulator),
@@ -151,8 +150,8 @@ export function getPlayerAvoidList(playerId, avoidList) {
 
 // TODO: This isn't currently in use, but it probably should be.
 export function cleanAvoidList(avoidList, playerList) {
-    t.list(AvoidPair)(avoidList);
-    t.list(Player)(playerList);
+    t.list(types.AvoidPair)(avoidList);
+    t.list(types.Player)(playerList);
     const ids = playerList.map((p) => p.id);
     return avoidList.filter(
         (pairs) => (ids.includes(pairs[0]) && ids.includes(pairs[1]))

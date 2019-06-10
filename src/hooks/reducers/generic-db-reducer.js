@@ -1,4 +1,3 @@
-import {Id, createPlayer, createTournament} from "../../data-types";
 import {
     assoc,
     dissoc,
@@ -6,70 +5,30 @@ import {
     mergeLeft,
     over
 } from "ramda";
+import {createPlayer, createTournament, types} from "../../data-types";
 import nanoid from "nanoid";
 import t from "tcomb";
 
-const ActionLoadState = t.interface({
-    state: t.Any
-});
-const ActionDelItem = t.interface({
-    id: t.String
-});
-const ActionAddItem = t.interface({
-    item: t.Any
-});
-const ActionAddTourney = t.interface({
-    name: t.String
-});
-const AdctionAddPlayer = t.interface({
-    firstName: t.String,
-    lastName: t.String,
-    rating: t.Number
-});
-// This is copied from players-reducer.js since the profile editor uses it
-// TODO: unify those
-const ActionSetPlayer = t.interface({
-    firstName: t.String,
-    id: Id,
-    lastName: t.String,
-    matchCount: t.Number,
-    rating: t.Number
-});
-const ActionTypes = t.union([
-    ActionLoadState,
-    ActionDelItem,
-    ActionAddItem,
-    AdctionAddPlayer,
-    ActionAddTourney,
-    ActionSetPlayer
-]);
-ActionTypes.dispatch = function (x) {
-    const typeToConstructor = {
-        "ADD_ITEM": ActionAddItem,
-        "ADD_PLAYER": AdctionAddPlayer,
-        "ADD_TOURNEY": ActionAddTourney,
-        "DEL_ITEM": ActionDelItem,
-        "LOAD_STATE": ActionLoadState,
-        "SET_PLAYER": ActionSetPlayer
-    };
-    return typeToConstructor[x.type];
-};
-
 // eslint-disable-next-line complexity
 export default function genericDbReducer(state, action) {
-    ActionTypes(action);
     const nextId = nanoid();
     switch (action.type) {
     case "ADD_ITEM":
         console.warn("Use a more specific action instead, please.");
         return assoc(nextId, action.item, state);
     case "ADD_TOURNEY":
+        t.interface({name: t.String})(action);
         return assoc(
             nextId,
             createTournament({id: nextId, name: action.name}),
             state
         );
     case "ADD_PLAYER":
+        t.interface({
+            firstName: t.String,
+            lastName: t.String,
+            rating: t.Number
+        })(action);
         return assoc(
             nextId,
             createPlayer({
@@ -82,9 +41,18 @@ export default function genericDbReducer(state, action) {
         );
     case "DEL_ITEM":
         // If using the player DB, be sure to delete avoid-pairs too.
+        t.interface({id: t.String})(action);
         return dissoc(action.id, state);
     case "SET_PLAYER":
         // This is copied from players-reducer since the profile editor uses it
+        // TODO: unify those
+        t.interface({
+            firstName: t.String,
+            id: types.Id,
+            lastName: t.String,
+            matchCount: t.Number,
+            rating: t.Number
+        })(action);
         return over(
             lensProp(action.id),
             mergeLeft(

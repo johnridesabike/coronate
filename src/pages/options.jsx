@@ -5,8 +5,8 @@ import {
     useDocumentTitle,
     useOptionsDb
 } from "../hooks";
-import HasSidebar from "./sidebar-default";
-import Icons from "./icons";
+import HasSidebar from "../components/sidebar-default";
+import Icons from "../components/icons";
 import demoData from "../demo-data";
 
 export default function Options(props) {

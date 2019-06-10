@@ -17,44 +17,34 @@ import {
     sum,
     view
 } from "ramda";
-// I don't like importing `DUMMY_ID` from `data-types` because I prefer that
-// This module be 100% independent. Passing it as function arguments seems
-// like it would add unnecessary complexity, though.
-// import {DUMMY_ID} from "../data-types";
-import {PairingData} from "./types";
 import blossom from "edmonds-blossom";
 import t from "tcomb";
+import types from "./types";
 
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (value) => (divider) => value / divider;
 
 // TODO: These probably need to be tweaked a lot.
-/**
- * @constant avoidMeetingTwicePriority The weight given to avoid players
- * meeting twice. This same weight is given to avoid matching players on each
- * other's "avoid" list. This is the highest priority. (USCF § 27A1)
- */
+
+// The weight given to avoid players meeting twice. This same weight is given to
+// avoid matching players on each other's "avoid" list.
+// This is the highest priority. (USCF § 27A1)
 const avoidMeetingTwice = priority(20);
-/**
- * @constant sameScoresPriority The weight given to match players with
- * equal scores. This gets divided against the difference between each players'
- * scores, plus one. For example, players with scores `1` and `3` would have
- * this priority divided by `3`. Players with scores `0` and `3` would have this
- * priority divided by `4`. Players with equal scores would divide it by `1`,
- * leaving it unchanged. (USCF § 27A2)
- */
+
+// The weight given to match players with equal scores. This gets divided
+// against the difference between each players' scores, plus one. For example,
+// players with scores `1` and `3` would have this priority divided by `3`.
+// Players with scores `0` and `3` would have this priority divided by `4`.
+// Players with equal scores would divide it by `1`, leaving it unchanged.
+// (USCF § 27A2)
 const sameScores = divisiblePriority(16);
 
-/**
- * @constant differentHalfPriority The weight given to match players in lower
- * versus upper halves. This is only applied to players being matched within
- * the same score group. (USCF § 27A3)
- */
+// The weight given to match players in lower versus upper halves. This is only
+// applied to players being matched within the same score group. (USCF § 27A3)
 const differentHalf = priority(2);
-/**
- * @constant differentDueColorPriority The weight given to match players with
- * opposite due colors. (USCF § 27A4 and § 27A5)
- */
+
+// The weight given to match players with opposite due colors.
+// (USCF § 27A4 and § 27A5)
 const differentDueColor = priority(1);
 
 const maxPriority = pipe(
@@ -81,11 +71,11 @@ export {maxPriority};
  *     pairPlayers // <-- the function that actually pairs them!
  * )(roundList);
  * ```
+ * (This may be outdated as the actual functions aren't quite stable yet.)
  */
 
-/**
- * @returns {number}
- */
+// Given two `PairingData` objects, this assigns a number for how much they
+// should be matched. The number gets fed to the `blossom` algorithm.
 export function calcPairIdeal(player1, player2) {
     if (player1.id === player2.id) {
         return 0;
@@ -107,11 +97,9 @@ export function calcPairIdeal(player1, player2) {
     )(0);
 }
 
-/**
- * Sort the data so matchups default to order by score and rating.
- * TODO: I'm not sure if this should be necessary to use, but it seems to break
- * the algorithm if it's removed. In the future, it may be made obsolete.
- */
+// Sort the data so matchups default to order by score and rating.
+// TODO: I'm not sure if this should be necessary to use, but it seems to break
+// the algorithm if it's removed. In the future, it may become obsolete.
 export function sortDataForPairing(data) {
     return sortWith(
         [descend(prop("score")), descend(prop("rating"))],
@@ -121,6 +109,9 @@ export function sortDataForPairing(data) {
 
 const splitInHalf = (list) => splitAt(list.length / 2, list);
 
+// for each object sent to this, it determines whether or not it's in the
+// "upper half" of it's score group.
+// (USCF § 29C1.)
 function upperHalfReducer(acc, playerData, ignore, src) {
     const upperHalfIds = pipe(
         filter((p2) => p2.score === playerData.score),
@@ -133,43 +124,15 @@ function upperHalfReducer(acc, playerData, ignore, src) {
     const isUpperHalf = upperHalfIds.includes(playerData.id);
     return acc.concat([assoc("isUpperHalf", isUpperHalf, playerData)]);
 }
-/**
- * Determine which players are in the upper and lower halves of their score
- * groups.
- */
 export function setUpperHalves(data) {
     return data.reduce(upperHalfReducer, []);
 }
 
-// const hasNotHadBye = (p) => !p.opponents.includes(DUMMY_ID);
-
-// export function setByePlayer(byeQueue, data) {
-//     // if the list is even, just return it.
-//     if (data.length % 2 === 0) {
-//         return data;
-//     }
-//     const playersWithoutByes = data.filter(hasNotHadBye).map((p) => p.id);
-//     const nextByeSignup = byeQueue.filter(
-//         (id) => playersWithoutByes.includes(id)
-//     )[0];
-//     const indexOfDueBye = (nextByeSignup)
-//         // Assign the bye to the next person who signed up.
-//         ? findLastIndex((p) => p.id === nextByeSignup, data)
-//         // Assign a bye to the lowest-rated player in the lowest score group.
-//         // Because the list is sorted, the last player is the lowest.
-//         // (USCF § 29L2.)
-//         : findLastIndex(hasNotHadBye, data);
-//     // In the impossible situation that *everyone* has played a bye round
-//     // previously, then just pick the last player.
-//     const index = (indexOfDueBye === -1)
-//         ? data.length - 1
-//         : indexOfDueBye;
-//     return over(
-//         lensIndex(index),
-//         assoc("isDueBye", true),
-//         data
-//     );
-// }
+// This this returns a tuple of two objects: The modified array of player data
+// without the player assigned a bye, and the player assigned a bye.
+// If no player is assigned a bye, the second object is `null`.
+// After calling this, be sure to add the bye round after the non-bye'd
+// players are paired.
 export function setByePlayer(byeQueue, dummyId, data) {
     const hasNotHadBye2 = (p) => !p.opponents.includes(t.String(dummyId));
     // if the list is even, just return it.
@@ -195,30 +158,24 @@ export function setByePlayer(byeQueue, dummyId, data) {
     const byeData = data[index];
     const dataWithoutBye = data.filter((ignore, i) => i !== index);
     return [dataWithoutBye, byeData];
-    // return over(
-    //     lensIndex(index),
-    //     assoc("isDueBye", true),
-    //     data
-    // );
 }
 
 const netScoreDescend = (pair1, pair2) => (
     sum(pluck("score", pair2)) - sum(pluck("score", pair1))
 );
-
 const netRatingDescend = (pair1, pair2) => (
     sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
 );
 
-/**
- * Creates pairings according to the rules specified in USCF § 27, § 28,
- * and § 29. This is a work in progress and does not account for all of the
- * rules yet.
- */
+const PDataList = t.list(types.PairingData);
+
+// Create pairings according to the rules specified in USCF § 27, § 28,
+//  and § 29. This is a work in progress and does not account for all of the
+// rules yet.
 export function pairPlayers(pairingData) {
     // Because `blossom` has to use numbers that correspond to array indices,
     // we'll use `playerIdArray` as our source for that.
-    const playerIdArray = t.list(PairingData)(pairingData).map((p) => p.id);
+    const playerIdArray = PDataList(pairingData).map((p) => p.id);
     // Turn the data into blossom-compatible input.
     function pairIdealReducer(accArr, player1, index, srcArr) {
         // slice out players who have already computed, plus the current one
@@ -231,13 +188,6 @@ export function pairPlayers(pairingData) {
         );
         return accArr.concat(playerMatches);
     }
-    // const potentialMatches = pairingData.filter(
-    //     (p) => !p.isDueBye
-    // ).reduce(
-    //     pairIdealReducer,
-    //     []
-    // );
-
     const potentialMatches = pairingData.reduce(pairIdealReducer, []);
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
@@ -254,9 +204,14 @@ export function pairPlayers(pairingData) {
                 const p2Id = playerIdArray[p2Index];
                 const p1 = pairingData.filter((p) => p.id === p1Id)[0];
                 const p2 = pairingData.filter((p) => p.id === p2Id)[0];
+
+                // TODO: in the future, we may store the ideal for debugging
+                // Because it rarely serves a purpose, we're not including it
+                // for simplification.
                 // const ideal = potentialMatches.filter(
                 //     (pair) => pair[0] === p1Id && pair[1] === p2Id
                 // )[0][2];
+
                 // Blossom returns a lot of redundant matches. Check that this
                 // matchup wasn't already added.
                 const matched = acc.map((pair) => pair[0]);
@@ -288,9 +243,4 @@ export function pairPlayers(pairingData) {
         }
     );
     return matches;
-    // The bye match always gets added last so the the numbering isn't affected.
-    // const byePlayer = pairingData.filter((p) => p.isDueBye)[0];
-    // return (byePlayer)
-    //     ? matches.concat([[byePlayer.id, DUMMY_ID]])
-    //     : matches;
 }

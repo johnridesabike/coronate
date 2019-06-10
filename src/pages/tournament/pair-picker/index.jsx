@@ -1,4 +1,4 @@
-import {Panel, PanelContainer} from "../../utility";
+import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useState} from "react";
 import {
     calcPairIdeal,
@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
-import {findById} from "../../utility";
+import {findById} from "../../../components/utility";
 import numeral from "numeral";
 import {pipe} from "ramda";
 

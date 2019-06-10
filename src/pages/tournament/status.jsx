@@ -1,4 +1,4 @@
-import {Panel, PanelContainer} from "../utility";
+import {Panel, PanelContainer} from "../../components/utility";
 import React from "react";
 import RoundTable from "./round/round-table";
 import {ScoreTable} from "./scores";

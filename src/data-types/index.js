@@ -1,56 +1,35 @@
-import {
-    AvoidPair,
-    Color,
-    Id,
-    Match,
-    Player,
-    PlayerStats,
-    RoundList,
-    Tournament
-} from "./types";
 import {BLACK, DUMMY_ID, WHITE} from "./constants";
 import {
     calcNumOfRounds,
-    dummyPlayer,
-    getAllPlayersFromMatches,
+    getAllPlayerIdsFromMatches,
     getPlayerAvoidList,
     getPlayerMaybe,
     getUnmatched,
     hasHadBye,
     isDummyId,
-    // isNotDummyId,
-    isNotDummyObj,
+    isDummyObj,
     isRoundComplete,
     rounds2Matches
 } from "./helpers";
 import {createMatch, createPlayer, createTournament} from "./factories";
-
+import types from "./types";
 
 export {
-    AvoidPair,
     BLACK,
+    DUMMY_ID,
+    WHITE,
     calcNumOfRounds,
-    Color,
     createMatch,
     createPlayer,
     createTournament,
-    dummyPlayer,
-    DUMMY_ID,
-    getAllPlayersFromMatches,
+    getAllPlayerIdsFromMatches,
     getPlayerAvoidList,
     getPlayerMaybe,
     getUnmatched,
     hasHadBye,
-    Id,
     isDummyId,
+    isDummyObj,
     isRoundComplete,
-    // isNotDummyId,
-    isNotDummyObj,
-    Match,
-    Player,
-    PlayerStats,
-    RoundList,
     rounds2Matches,
-    Tournament,
-    WHITE
+    types
 };

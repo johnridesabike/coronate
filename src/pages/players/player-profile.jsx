@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo, useState} from "react";
-import Icons from "../icons";
+import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import {getPlayerAvoidList} from "../../data-types";
-import {kFactor} from "../../pairing-scoring";
 import numeral from "numeral";
+import {ratings} from "../../pairing-scoring";
 import styles from "./index.module.css";
 import {useDocumentTitle} from "../../hooks";
 
@@ -16,9 +16,8 @@ function PlayerProfile({
     optionsDispatch
 }) {
     const player = players[playerId];
-    const [singAvoidList, setSingAvoidList] = useState(
-        getPlayerAvoidList(playerId, options.avoidPairs)
-    );
+    const getAvoidList = getPlayerAvoidList(options.avoidPairs);
+    const [singAvoidList, setSingAvoidList] = useState(getAvoidList(playerId));
     const playerName = (player) ? player.firstName + " " + player.lastName : "";
     useDocumentTitle("profile for " + playerName);
     // Memoize this so useEffect doesn't cause a memory leak.
@@ -38,9 +37,9 @@ function PlayerProfile({
     }
     useEffect(
         function () {
-            setSingAvoidList(getPlayerAvoidList(playerId, options.avoidPairs));
+            setSingAvoidList(getAvoidList(playerId));
         },
-        [options.avoidPairs, playerId]
+        [getAvoidList, playerId]
     );
     useEffect(
         function () {
@@ -107,7 +106,11 @@ function PlayerProfile({
                     <input
                         name="kfactor"
                         type="number"
-                        value={numeral(kFactor(player.matchCount)).format("00")}
+                        value={
+                            numeral(
+                                ratings.kFactor(player.matchCount)
+                            ).format("00")
+                        }
                         readOnly
                     />
                 </p>

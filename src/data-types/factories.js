@@ -1,9 +1,9 @@
 // These factories are mainly useful as a shortcut for default values.
-import {Match, Player, Tournament} from "./types";
 import nanoid from "nanoid";
+import types from "./types";
 
 export function createMatch(importObj) {
-    return Match({
+    return types.Match({
         id: importObj.id || nanoid(),
         newRating: importObj.newRating,
         origRating: importObj.origRating,
@@ -13,7 +13,7 @@ export function createMatch(importObj) {
 }
 
 export function createPlayer(importObj = {}) {
-    return Player({
+    return types.Player({
         firstName: importObj.firstName,
         id: importObj.id || nanoid(),
         lastName: importObj.lastName,
@@ -25,7 +25,7 @@ export function createPlayer(importObj = {}) {
 
 // eslint-disable-next-line complexity
 export function createTournament(importObj) {
-    return Tournament({
+    return types.Tournament({
         byeQueue: importObj.byeQueue || [],
         date: importObj.date || new Date(),
         id: importObj.id || nanoid(),

@@ -2,18 +2,17 @@ import {
     BLACK,
     DUMMY_ID,
     WHITE,
-    dummyPlayer,
     getUnmatched
 } from "../../../data-types";
 import {assoc, lensIndex, set} from "ramda";
 import Hidden from "@reach/visually-hidden";
-import Icons from "../../icons";
+import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import React from "react";
 import {useTournament} from "../../../hooks";
 
 export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
-    const {tourney, activePlayers} = useTournament();
+    const {tourney, activePlayers, getPlayer} = useTournament();
     // only use unmatched players if this is the last round.
     const unmatched = (roundId === tourney.roundList.length - 1)
         ? getUnmatched(tourney.roundList, activePlayers, roundId)
@@ -37,7 +36,7 @@ export default function SelectList({roundId, stagedPlayers, setStagedPlayers}) {
     // make a new list so as not to affect auto-pairing
     const unmatchedWithDummy = (
         (unmatchedCount % 2 !== 0)
-        ? assoc(DUMMY_ID, dummyPlayer, unmatched)
+        ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
         : unmatched
     );
     if (unmatchedCount === 0) {

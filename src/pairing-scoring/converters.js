@@ -1,14 +1,11 @@
-/**
- * These functions are for converting data types defined in `../data-types` to
- * data that can be used by the scoring functions in rest of this module.
- */
+// These functions are for converting data types defined in `../data-types` to
+// data that can be used by the scoring functions in rest of this module.
 import {
     BLACK,
-    Id,
     WHITE,
-    isDummyId
+    isDummyId,
+    types
 } from "../data-types";
-import {BLACKVALUE, Color, PairingData, ScoreData, WHITEVALUE} from "./types";
 import {
     add,
     append,
@@ -21,10 +18,13 @@ import {
     sum
 } from "ramda";
 import {createBlankScoreData} from "./factories";
+import scoreTypes from "./types";
 import t from "tcomb";
 
 function color2Score(color) {
-    return (Color(color) === BLACK) ? BLACKVALUE : WHITEVALUE;
+    return (types.Color(color) === BLACK)
+        ? scoreTypes.BLACKVALUE
+        : scoreTypes.WHITEVALUE;
 }
 
 function match2ScoreDataReducer(acc, match) {
@@ -62,22 +62,25 @@ function match2ScoreDataReducer(acc, match) {
 export function matches2ScoreData(matchList) {
     const data = matchList.reduce(match2ScoreDataReducer, {});
     // TODO: remove this tcomb check for production
-    return t.dict(Id, ScoreData)(data);
+    return t.dict(types.Id, scoreTypes.ScoreData)(data);
 }
 
-/**
- * Flattens the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
- * `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure. Use with
- * `Array.prototype.reducer()`.
- */
+// Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
+// `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
 export function avoidPairReducer(acc, pair) {
     return pipe(
         over(lensProp(pair[0]), append(pair[1])),
         over(lensProp(pair[1]), append(pair[0]))
-    )(t.dict(Id, t.list(Id))(acc));
+    )(t.dict(types.Id, t.list(types.Id))(acc));
 }
 
+// This is automatically curried for easy `pipe()`ing
 export function createPairingData(playerData, avoidPairs, scoreData) {
+    if (avoidPairs === undefined) {
+        return createPairingData.bind(null, playerData);
+    } else if (scoreData === undefined) {
+        return createPairingData.bind(null, playerData, avoidPairs);
+    }
     const avoidDict = avoidPairs.reduce(avoidPairReducer, {});
     const pairingData = Object.values(playerData).reduce(
         function pairingDataReducer(acc, data) {
@@ -105,5 +108,5 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
         []
     );
     // TODO: remove this tcomb check for production
-    return t.list(PairingData)(pairingData);
+    return t.list(scoreTypes.PairingData)(pairingData);
 }

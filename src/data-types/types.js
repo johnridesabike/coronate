@@ -6,17 +6,14 @@ const Id = t.refinement(
     (id) => /^[A-Za-z0-9_-]{21}$/.test(id),
     "NanoId"
 );
-export {Id};
 
 const Color = t.refinement(
     t.Number,
     (num) => num === BLACK || num === WHITE,
     "Color"
 );
-export {Color};
 
 const AvoidPair = t.tuple([Id, Id], "AvoidPair");
-export {AvoidPair};
 
 const Player = t.interface(
     {
@@ -29,25 +26,6 @@ const Player = t.interface(
     },
     "Player"
 );
-export {Player};
-
-const PlayerStats = t.interface(
-    {
-        avoidList: t.list(Id),
-        colorBalance: t.Number,
-        dueColor: t.maybe(t.Number),
-        hasHadBye: t.Boolean,
-        id: Id,
-        isDueBye: t.Boolean,
-        opponentHistory: t.list(Id),
-        profile: Player,
-        rating: t.Number,
-        score: t.Number,
-        upperHalf: t.Boolean
-    },
-    "PlayerStats"
-);
-export {PlayerStats};
 
 const Match = t.interface(
     {
@@ -59,10 +37,8 @@ const Match = t.interface(
     },
     "Match"
 );
-export {Match};
 
 const RoundList = t.list(t.list(Match), "RoundList");
-export {RoundList};
 
 const Tournament = t.interface(
     {
@@ -76,4 +52,13 @@ const Tournament = t.interface(
     },
     "Tournament"
 );
-export {Tournament};
+
+export default Object.freeze({
+    AvoidPair,
+    Color,
+    Id,
+    Match,
+    Player,
+    RoundList,
+    Tournament
+});
