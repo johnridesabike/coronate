@@ -40,12 +40,24 @@ function App() {
         function () {
             ifElectron(function () {
                 const win = electron.remote.getCurrentWindow();
+                console.log(win.listeners("enter-full-screen"));
+                console.log(win.listeners("leave-full-screen"));
                 win.on("enter-full-screen", () => setIsFullScreen(true));
                 win.on("leave-full-screen", () => setIsFullScreen(false));
                 win.on("blur", () => setIsWindowBlur(true));
                 win.on("focus", () => setIsWindowBlur(false));
                 setIsFullScreen(win.isFullScreen());
                 setIsWindowBlur(!win.isFocused());
+                // This will ensure that stale event listeners aren't persisted
+                function unregisterListeners() {
+                    win.removeAllListeners("enter-full-screen");
+                    win.removeAllListeners("leave-full-screen");
+                    win.removeAllListeners("blur");
+                    win.removeAllListeners("focus");
+                    win.webContents.removeAllListeners("did-start-loading");
+                }
+                win.webContents.on("did-start-loading", unregisterListeners);
+                return unregisterListeners;
             });
         },
         []
