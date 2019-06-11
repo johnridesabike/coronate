@@ -106,9 +106,10 @@ function PlayerProfile({
                     <input
                         name="kfactor"
                         type="number"
+                        disabled
                         value={
                             numeral(
-                                ratings.kFactor(player.matchCount)
+                                ratings.getkFactor(player.matchCount)
                             ).format("00")
                         }
                         readOnly

@@ -31,16 +31,15 @@ const tourneyStore = localForage.createInstance({
 
 export {optionsStore, playerStore, tourneyStore};
 
-export function loadDemoDB() {
+export async function loadDemoDB() {
     document.body.style.cursor = "wait";
-    Promise.all([
-        optionsStore.setItems(demoData.options),
-        playerStore.setItems(demoData.players),
-        tourneyStore.setItems(demoData.tournaments)
-    ]).then(function () {
-        window.alert("Demo data loaded!");
-        document.body.style.cursor = "auto";
-    });
+    await optionsStore.setItems(demoData.options);
+    await playerStore.setItems(demoData.players);
+    await tourneyStore.setItems(demoData.tournaments);
+    // TODO: for some reason in Electron, this `window.alert()` will disable all
+    // focus after it runs. This affects other `window.alert()`s too.
+    // window.alert("Demo data loaded!");
+    document.body.style.cursor = "auto";
 }
 
 /*******************************************************************************
