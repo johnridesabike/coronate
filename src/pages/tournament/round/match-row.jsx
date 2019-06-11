@@ -187,6 +187,9 @@ export default function MatchRow({
                             onClick={() => setSelectedMatch(match.id)}
                         >
                             <Icons.Circle />
+                            <VisuallyHidden>
+                                Edit match for {whiteName} versus {blackName}
+                            </VisuallyHidden>
                         </button>
                     ) : (
                         <button
