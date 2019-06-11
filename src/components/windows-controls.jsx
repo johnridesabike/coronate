@@ -65,9 +65,16 @@ export default function Controls() {
         function () {
             ifElectron(function () {
                 const win = electron.remote.getCurrentWindow();
+                // see comments in ../App.jsx about removing stale listeners.
+                function unregisterListeners() {
+                    win.removeAllListeners("maximize");
+                    win.removeAllListeners("unmaximize");
+                }
+                unregisterListeners();
                 win.on("maximize", () => setIsMaximized(true));
                 win.on("unmaximize", () => setIsMaximized(false));
                 setIsMaximized(win.isMaximized());
+                return unregisterListeners;
             });
         },
         []

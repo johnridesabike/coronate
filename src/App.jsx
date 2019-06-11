@@ -16,6 +16,7 @@ import Icons from "./components/icons";
 import NotFound from "./components/404";
 import Options from "./pages/options";
 import Players from "./pages/players";
+import PropTypes from "prop-types";
 import Splash from "./pages/splash";
 import VisuallyHidden from "@reach/visually-hidden";
 import WindowsControls from "./components/windows-controls";
@@ -26,10 +27,16 @@ import {useDocumentTitle} from "./hooks";
 let source = createHashSource();
 let history = createHistory(source);
 
-const isWindowsAndElectron = (
-    navigator.appVersion.includes("Windows")
-    && electron
-);
+function IfIsWinApp({children}) {
+    if (electron && navigator.appVersion.includes("Windows")) {
+        return children;
+    } else {
+        return null;
+    }
+};
+IfIsWinApp.propTypes = {
+    children: PropTypes.node.isRequired
+};
 
 function App() {
     useDocumentTitle("a chess tournament app");
@@ -40,23 +47,26 @@ function App() {
         function () {
             ifElectron(function () {
                 const win = electron.remote.getCurrentWindow();
-                console.log(win.listeners("enter-full-screen"));
-                console.log(win.listeners("leave-full-screen"));
+                // This will ensure that stale event listeners aren't persisted.
+                // That typically won't be relevant to production builds, but
+                // in a dev environment, where the page reloads frequently,
+                // stale listeners will accumulate. Note that this can cause
+                // side effects if other listeners are added elsewhere.
+                function unregisterListeners() {
+                    win.removeAllListeners("enter-full-screen");
+                    win.removeAllListeners("leave-full-screen");
+                    win.removeAllListeners("blur");
+                    win.removeAllListeners("focus");
+                }
+                unregisterListeners();
+                // Add the event listeners. These will inform styling.
                 win.on("enter-full-screen", () => setIsFullScreen(true));
                 win.on("leave-full-screen", () => setIsFullScreen(false));
                 win.on("blur", () => setIsWindowBlur(true));
                 win.on("focus", () => setIsWindowBlur(false));
                 setIsFullScreen(win.isFullScreen());
                 setIsWindowBlur(!win.isFocused());
-                // This will ensure that stale event listeners aren't persisted
-                function unregisterListeners() {
-                    win.removeAllListeners("enter-full-screen");
-                    win.removeAllListeners("leave-full-screen");
-                    win.removeAllListeners("blur");
-                    win.removeAllListeners("focus");
-                    win.webContents.removeAllListeners("did-start-loading");
-                }
-                win.webContents.on("did-start-loading", unregisterListeners);
+                // I don't think this ever really fires, but can it hurt?
                 return unregisterListeners;
             });
         },
@@ -87,7 +97,7 @@ function App() {
                     onDoubleClick={macOSDoubleClick}
                 >
                     <div>
-                        {isWindowsAndElectron &&
+                        <IfIsWinApp>
                             <span
                                 style={{
                                     alignItems: "center",
@@ -97,7 +107,7 @@ function App() {
                             >
                                 <Icons.Logo/>
                             </span>
-                        }
+                        </IfIsWinApp>
                         <button
                             className="button-ghost"
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -135,9 +145,7 @@ function App() {
                     >
                         Chessahoochee
                     </div>
-                    {isWindowsAndElectron &&
-                        <WindowsControls />
-                    }
+                    <IfIsWinApp><WindowsControls /></IfIsWinApp>
                 </header>
                 <main className="main">
                     <Router>
