@@ -14,6 +14,12 @@ export default function Stage({
     const dispatch = tourneyDispatch;
     const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
+    const whiteName = (white)
+        ? getPlayer(white).firstName + " " + getPlayer(white).lastName
+        : "";
+    const blackName = (black)
+        ? getPlayer(black).firstName + " " + getPlayer(black).lastName
+        : "";
 
     function unstage(color) {
         setStagedPlayers((prevState) => set(lensIndex(color), null, prevState));
@@ -37,9 +43,9 @@ export default function Stage({
                     White:{" "}
                     {white !== null &&
                         <Fragment>
-                            {getPlayer(white).firstName}{" "}
-                            {getPlayer(white).lastName}{" "}
+                            {whiteName}{" "}
                             <button
+                                aria-label={"remove " + whiteName}
                                 className="button-micro"
                                 onClick={() => unstage(WHITE)}
                             >
@@ -52,9 +58,9 @@ export default function Stage({
                     Black:{" "}
                     {black !== null &&
                         <Fragment>
-                            {getPlayer(black).firstName}{" "}
-                            {getPlayer(black).lastName}{" "}
+                            {blackName}{" "}
                             <button
+                                aria-label={"remove " + blackName}
                                 className="button-micro"
                                 onClick={() => unstage(BLACK)}
                             >

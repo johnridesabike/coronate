@@ -24,13 +24,13 @@ it("Tabs auto-change correctly", function () {
     const matchesTab = getByText(/^matches$/i);
     // When no players are matched, it defaults to the pair-picker tab
     expect(selectTab).toHaveAttribute("aria-selected", "true");
-    click(getByText(/select bruce wayne/i));
-    click(getByText(/select dick grayson/i));
+    click(getByText(/add bruce wayne/i));
+    click(getByText(/add dick grayson/i));
     click(getByText(/^match selected$/i));
     // Tab doesn't change focus if there are still players to be matched.
     expect(selectTab).toHaveAttribute("aria-selected", "true");
-    click(getByText(/select alfred pennyworth/i));
-    click(getByText(/select barbara gordon/i));
+    click(getByText(/add alfred pennyworth/i));
+    click(getByText(/add barbara gordon/i));
     click(getByText(/^match selected$/i));
     click(matchesTab);
     expect(matchesTab).toHaveAttribute("aria-selected", "true");

@@ -4,7 +4,7 @@ import {
     rounds2Matches
 } from "../../../data-types";
 import {Panel, PanelContainer} from "../../../components/utility";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {assoc, pipe} from "ramda";
 import {
     calcPairIdeal,
@@ -35,7 +35,7 @@ export default function PairPicker({roundId}) {
     } = useTournament();
     const {roundList} = tourney;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [scoreData, pairData] = React.useMemo(
+    const [scoreData, pairData] = useMemo(
         function memoizedGetStats() {
             const matches = rounds2Matches(roundList, roundId);
             const _scoreData = matches2ScoreData(matches);
@@ -141,6 +141,7 @@ export default function PairPicker({roundId}) {
                 >
                     Done
                 </button>
+                <span>Test lol</span>
                 <Selecting />
             </Dialog>
         </div>

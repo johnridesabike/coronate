@@ -41,7 +41,7 @@ export default function SelectList({
                         >
                             <Icons.UserPlus/>
                             <Hidden>
-                                Select {firstName} {lastName}
+                                Add {firstName} {lastName}
                             </Hidden>
                         </button>
                         {" "}

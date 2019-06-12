@@ -19,8 +19,8 @@ it("Ratings are updated correctly after a match", function () {
     const {getByDisplayValue, getByText, getByTestId} = render(
         <BattleForGothamCity><RoundPanels roundId={1} /></BattleForGothamCity>,
     );
-    click(getByText(/select bruce wayne/i));
-    click(getByText(/select dick grayson/i));
+    click(getByText(/add bruce wayne/i));
+    click(getByText(/add dick grayson/i));
     expect(
         getByTestId("rating-BruceWayne_lv_ZsUHTU9")
     ).toHaveTextContent(/rating: 1998/i);
