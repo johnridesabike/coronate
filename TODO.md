@@ -20,6 +20,7 @@ The matchup algorithm probably needs to be adjusted. It uses the blossom algorit
 
 Jest's coverage report hasn't worked for this project in a while, and I don't know why. (It just returns no coverage, or occasionally just one random file.) Hopefully that can get fixed eventually!
 
+- [ ] Create meaningful test data. The data it's using right now was made arbitrarily and doesn't cover all test cases.
 - [ ] When players are auto-paired, and there's a bye-queue, the next player on the bye-queue gets paired with the dummy player.
 - [ ] When players are auto-paired without the bye-queue, the lowest-ranking, lowest-rated player get paired with the dummy player.
 - [ ] There is only ever one dummy player per round.
