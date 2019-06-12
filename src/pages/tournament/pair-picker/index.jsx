@@ -33,10 +33,12 @@ export default function PairPicker({roundId}) {
         getPlayer,
         tourneyDispatch
     } = useTournament();
+    const {roundList} = tourney;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [scoreData, pairData] = React.useMemo(
         function memoizedGetStats() {
-            const matches = rounds2Matches(tourney.roundList, roundId);
+            console.log("calculated");
+            const matches = rounds2Matches(roundList, roundId);
             const _scoreData = matches2ScoreData(matches);
             const _pairData = pipe(
                 createPairingData(activePlayers, options.avoidPairs),
@@ -45,18 +47,18 @@ export default function PairPicker({roundId}) {
             )(_scoreData);
             return [_scoreData, _pairData];
         },
-        [tourney.roundList, activePlayers, roundId, options.avoidPairs]
+        [roundList, activePlayers, roundId, options.avoidPairs]
     );
-    const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney.roundList, activePlayers, roundId)
+    // Only calculate unmatched players for the latest round. Old rounds don't
+    // get to add new players.
+    const unmatched = (roundId === roundList.length - 1)
+        ? getUnmatched(roundList, activePlayers, roundId)
         : {};
     const unmatchedCount = Object.keys(unmatched).length;
     // make a new list so as not to affect auto-pairing
-    const unmatchedWithDummy = (
-        (unmatchedCount % 2 !== 0)
+    const unmatchedWithDummy = (unmatchedCount % 2 !== 0)
         ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
-        : unmatched
-    );
+        : unmatched;
     useEffect(
         function cleanPlayersThatWereRemoved() {
             const [p1, p2] = stagedPlayers;
@@ -81,7 +83,6 @@ export default function PairPicker({roundId}) {
         const ideal = calcPairIdeal(player0stats, player1stats);
         return numeral(ideal / maxPriority).format("%");
     }());
-
     return (
         <div className="content-area">
             <div className="toolbar">

@@ -27,31 +27,29 @@ export default function SelectList({
         return null;
     }
     return (
-        <div>
-            <ul className="content plain-list">
-                {Object.values(unmatched).map(
-                    ({id, firstName, lastName}) => (
-                        <li key={id}>
-                            <button
-                                className="button-ghost"
-                                disabled={
-                                    !stagedPlayers.includes(null)
-                                    || stagedPlayers.includes(id)
-                                }
-                                onClick={() => selectPlayer(id)}
-                            >
-                                <Icons.UserPlus/>
-                                <Hidden>
-                                    Select {firstName} {lastName}
-                                </Hidden>
-                            </button>
-                            {" "}
-                            {firstName} {lastName}
-                        </li>
-                    )
-                )}
-            </ul>
-        </div>
+        <ul className="content plain-list">
+            {Object.values(unmatched).map(
+                ({id, firstName, lastName}) => (
+                    <li key={id}>
+                        <button
+                            className="button-ghost"
+                            disabled={
+                                !stagedPlayers.includes(null)
+                                || stagedPlayers.includes(id)
+                            }
+                            onClick={() => selectPlayer(id)}
+                        >
+                            <Icons.UserPlus/>
+                            <Hidden>
+                                Select {firstName} {lastName}
+                            </Hidden>
+                        </button>
+                        {" "}
+                        {firstName} {lastName}
+                    </li>
+                )
+            )}
+        </ul>
     );
 }
 SelectList.propTypes = {
