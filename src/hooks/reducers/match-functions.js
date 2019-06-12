@@ -19,7 +19,7 @@ import {
 } from "../../pairing-scoring";
 import t from "tcomb";
 
-function scoreByeMatch(match, byeValue) {
+export function scoreByeMatch(match, byeValue) {
     if (match.playerIds[WHITE] === DUMMY_ID) {
         return assoc("result", [0, byeValue], match);
     } else if (match.playerIds[BLACK] === DUMMY_ID) {
@@ -28,6 +28,12 @@ function scoreByeMatch(match, byeValue) {
     return match;
 }
 
+// TODO: This will calculate pairing data based on the players provided.
+// However, if there are players who were manually paired earlier, then their
+// presence will not be factored in (for calculating upper & lower halves, for
+// example). It may make sense to raise the `createPairingData()` result to the
+// component which calls this, since that component usually calculates that data
+// anyway for GUI purposes.
 export function autoPair({
     avoidList,
     byeValue,
