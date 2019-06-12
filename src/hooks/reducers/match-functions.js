@@ -19,6 +19,15 @@ import {
 } from "../../pairing-scoring";
 import t from "tcomb";
 
+function scoreByeMatch(match, byeValue) {
+    if (match.playerIds[WHITE] === DUMMY_ID) {
+        return assoc("result", [0, byeValue], match);
+    } else if (match.playerIds[BLACK] === DUMMY_ID) {
+        return assoc("result", [byeValue, 0], match);
+    }
+    return match;
+}
+
 export function autoPair({
     avoidList,
     byeValue,
@@ -59,15 +68,7 @@ export function autoPair({
     );
     return newMatchList.reduce(
         // Set match results for bye matches
-        function (acc, match) {
-            if (match.playerIds[WHITE] === DUMMY_ID) {
-                return acc.concat([assoc("result", [0, byeValue], match)]);
-            }
-            if (match.playerIds[BLACK] === DUMMY_ID) {
-                return acc.concat([assoc("result", [byeValue, 0], match)]);
-            }
-            return acc.concat([match]);
-        },
+        (acc, match) => acc.concat([scoreByeMatch(match, byeValue)]),
         []
     );
 }
@@ -79,11 +80,5 @@ export function manualPair(pair, byeValue) {
         origRating: [pair[WHITE].rating, pair[BLACK].rating],
         playerIds: [pair[WHITE].id, pair[BLACK].id]
     });
-    if (pair[WHITE].id === DUMMY_ID) {
-        return assoc("result", [0, byeValue], match);
-    }
-    if (pair[BLACK].id === DUMMY_ID) {
-        return assoc("result", [byeValue, 0], match);
-    }
-    return match;
+    return scoreByeMatch(match, byeValue);
 }

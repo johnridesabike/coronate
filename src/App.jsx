@@ -1,5 +1,11 @@
 import "./side-effects";
 import {
+    IfIsWinApp,
+    electron,
+    ifElectron,
+    macOSDoubleClick
+} from "./electron-utils";
+import {
     Location,
     LocationProvider,
     Router,
@@ -10,13 +16,11 @@ import TournamentIndex, {
     Tournament,
     TournamentList
 } from "./pages/tournament";
-import {electron, ifElectron, macOSDoubleClick} from "./electron-utils";
 import Caution from "./components/caution";
 import Icons from "./components/icons";
 import NotFound from "./components/404";
 import Options from "./pages/options";
 import Players from "./pages/players";
-import PropTypes from "prop-types";
 import Splash from "./pages/splash";
 import VisuallyHidden from "@reach/visually-hidden";
 import WindowsControls from "./components/windows-controls";
@@ -26,17 +30,6 @@ import {useDocumentTitle} from "./hooks";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
 let history = createHistory(source);
-
-function IfIsWinApp({children}) {
-    if (electron && navigator.appVersion.includes("Windows")) {
-        return children;
-    } else {
-        return null;
-    }
-};
-IfIsWinApp.propTypes = {
-    children: PropTypes.node.isRequired
-};
 
 function App() {
     useDocumentTitle("a chess tournament app");
