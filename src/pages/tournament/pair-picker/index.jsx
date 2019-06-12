@@ -37,7 +37,6 @@ export default function PairPicker({roundId}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [scoreData, pairData] = React.useMemo(
         function memoizedGetStats() {
-            console.log("calculated");
             const matches = rounds2Matches(roundList, roundId);
             const _scoreData = matches2ScoreData(matches);
             const _pairData = pipe(
