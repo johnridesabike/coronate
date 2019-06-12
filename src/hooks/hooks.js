@@ -10,7 +10,7 @@ export function useSortedTable(origTable, defaultKey, defaultDescend = true) {
         setIsDescending(!isDescending);
     }
     useEffect(
-        function () {
+        function updateSortOrder() {
             const direction = (isDescending) ? descend : ascend;
             setTable(sort(direction(prop(key)), origTable));
         },

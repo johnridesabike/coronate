@@ -62,7 +62,7 @@ const Restore = () => (
 export default function Controls() {
     const [isMaximized, setIsMaximized] = useState(false);
     useEffect(
-        function () {
+        function addEventListeners() {
             ifElectron(function () {
                 const win = electron.remote.getCurrentWindow();
                 // see comments in ../App.jsx about removing stale listeners.

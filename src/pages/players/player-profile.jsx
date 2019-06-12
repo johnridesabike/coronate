@@ -36,13 +36,13 @@ function PlayerProfile({
         });
     }
     useEffect(
-        function () {
+        function updateAvoidList() {
             setSingAvoidList(getAvoidList(playerId));
         },
         [getAvoidList, playerId]
     );
     useEffect(
-        function () {
+        function updateSelectedAvoider() {
             setSelectedAvoider(unAvoided[0]);
         },
         [setSelectedAvoider, unAvoided]

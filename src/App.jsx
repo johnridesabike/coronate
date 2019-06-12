@@ -37,7 +37,7 @@ function App() {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [isWindowBlur, setIsWindowBlur] = useState(false);
     useEffect(
-        function () {
+        function addEventListeners() {
             ifElectron(function () {
                 const win = electron.remote.getCurrentWindow();
                 // This will ensure that stale event listeners aren't persisted.

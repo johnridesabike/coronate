@@ -195,7 +195,7 @@ export function pairPlayers(pairingData) {
     const blossomResults = blossom(potentialMatches);
     // Translate those IDs into actual pairs of player Ids.
     const reducedResults = blossomResults.reduce(
-        function (acc, p1Index, p2Index) {
+        function blossom2Pairs(acc, p1Index, p2Index) {
             // Filter out unmatched players. Blossom will automatically include
             // their missing IDs in its results.
             if (p1Index !== -1) {
@@ -229,7 +229,7 @@ export function pairPlayers(pairingData) {
         reducedResults
     );
     const matches = sortedResults.map(
-        function (pair) {
+        function assignColorsForPair(pair) {
             const [player1, player2] = pair;
             // This is a quick-and-dirty heuristic to keep color balances
             // mostly equal. Ideally, it would also examine due colors and how

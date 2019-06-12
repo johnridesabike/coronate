@@ -1,4 +1,3 @@
-import {BLACK, DUMMY_ID, WHITE, types} from "../../data-types";
 import {
     __,
     append,
@@ -18,8 +17,9 @@ import {
     reverse,
     set
 } from "ramda";
-import {autoPair, manualPair} from "./match-functions";
+import {autoPair, manualPair, scoreByeMatch} from "./match-functions";
 import t from "tcomb";
+import {types} from "../../data-types";
 
 // eslint-disable-next-line complexity
 export default function tournamentReducer(state, action) {
@@ -182,17 +182,7 @@ export default function tournamentReducer(state, action) {
         return assoc(
             "roundList",
             map(
-                map(
-                    function (match) {
-                        if (match.playerIds[WHITE] === DUMMY_ID) {
-                            return assoc("result", [0, action.value], match);
-                        } else if (match.playerIds[BLACK] === DUMMY_ID) {
-                            return assoc("result", [action.value, 0], match);
-                        } else {
-                            return match;
-                        }
-                    }
-                ),
+                map((match) => scoreByeMatch(match, action.value)),
                 state.roundList
             ),
             state
