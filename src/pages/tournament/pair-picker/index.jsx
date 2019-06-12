@@ -1,5 +1,11 @@
+import {
+    DUMMY_ID,
+    getUnmatched,
+    rounds2Matches
+} from "../../../data-types";
 import {Panel, PanelContainer} from "../../../components/utility";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
+import {assoc, pipe} from "ramda";
 import {
     calcPairIdeal,
     createPairingData,
@@ -8,10 +14,6 @@ import {
     setUpperHalves,
     sortDataForPairing
 } from "../../../pairing-scoring";
-import {
-    getUnmatched,
-    rounds2Matches
-} from "../../../data-types";
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";
@@ -21,12 +23,16 @@ import Selecting from "../player-select/selecting";
 import Stage from "./stage";
 import {findById} from "../../../components/utility";
 import numeral from "numeral";
-import {pipe} from "ramda";
 
 export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const [options] = useOptionsDb();
-    const {tourney, activePlayers, tourneyDispatch} = useTournament();
+    const {
+        tourney,
+        activePlayers,
+        getPlayer,
+        tourneyDispatch
+    } = useTournament();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [scoreData, pairData] = React.useMemo(
         function memoizedGetStats() {
@@ -41,17 +47,27 @@ export default function PairPicker({roundId}) {
         },
         [tourney.roundList, activePlayers, roundId, options.avoidPairs]
     );
-    React.useEffect(
+    const unmatched = (roundId === tourney.roundList.length - 1)
+        ? getUnmatched(tourney.roundList, activePlayers, roundId)
+        : {};
+    const unmatchedCount = Object.keys(unmatched).length;
+    // make a new list so as not to affect auto-pairing
+    const unmatchedWithDummy = (
+        (unmatchedCount % 2 !== 0)
+        ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
+        : unmatched
+    );
+    useEffect(
         function cleanPlayersThatWereRemoved() {
             const [p1, p2] = stagedPlayers;
-            if (!activePlayers[p1] && p1 !== null) {
+            if (!unmatchedWithDummy[p1] && p1 !== null) {
                 setStagedPlayers((pair) => [null, pair[1]]);
             }
-            if (!activePlayers[p2] && p2 !== null) {
+            if (!unmatchedWithDummy[p2] && p2 !== null) {
                 setStagedPlayers((pair) => [pair[0], null]);
             }
         },
-        [activePlayers, stagedPlayers]
+        [unmatchedWithDummy, stagedPlayers]
     );
     const matchIdeal = (function () {
         if (stagedPlayers.includes(null)) {
@@ -65,10 +81,7 @@ export default function PairPicker({roundId}) {
         const ideal = calcPairIdeal(player0stats, player1stats);
         return numeral(ideal / maxPriority).format("%");
     }());
-    const unmatched = (roundId === tourney.roundList.length - 1)
-        ? getUnmatched(tourney.roundList, activePlayers, roundId)
-        : {};
-    const unmatchedCount = Object.keys(unmatched).length;
+
     return (
         <div className="content-area">
             <div className="toolbar">
@@ -92,9 +105,9 @@ export default function PairPicker({roundId}) {
             <PanelContainer>
                 <Panel>
                     <SelectList
-                        roundId={roundId}
                         setStagedPlayers={setStagedPlayers}
                         stagedPlayers={stagedPlayers}
+                        unmatched={unmatchedWithDummy}
                     />
                 </Panel>
                 <Panel style={{flexGrow: "1"}}>
