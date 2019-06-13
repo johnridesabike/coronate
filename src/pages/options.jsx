@@ -10,15 +10,15 @@ import Icons from "../components/icons";
 import demoData from "../demo-data";
 
 export default function Options(props) {
-    const [tourneys, tourneysDispatch] = useAllTournamentsDb();
+    const [tournaments, tourneysDispatch] = useAllTournamentsDb();
     const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");
     const [options, optionsDispatch] = useOptionsDb();
     useDocumentTitle("Options");
     // memoize this so the `useEffect` hook syncs with the correct states
     const exportData = useMemo(
-        () => ({options, players, tourneys}),
-        [options, tourneys, players]
+        () => ({options, players, tournaments}),
+        [options, tournaments, players]
     );
     useEffect(
         function () {
@@ -27,7 +27,7 @@ export default function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
+        tourneysDispatch({state: data.tournaments, type: "LOAD_STATE"});
         optionsDispatch({state: data.options, type: "LOAD_STATE"});
         playersDispatch({state: data.players, type: "LOAD_STATE"});
         window.alert("Data loaded!");
