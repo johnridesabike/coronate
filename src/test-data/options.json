@@ -1,0 +1,21 @@
+{
+    "byeValue": 1,
+    "avoidPairs": [
+        [
+            "TVs_Frank____________",
+            "TVs_Son_of_TVs_Frank_"
+        ],
+        [
+            "Pearl_Forrester______",
+            "Dr_Clayton_Forrester_"
+        ],
+        [
+            "Kinga_Forrester______",
+            "Dr_Clayton_Forrester_"
+        ],
+        [
+            "Kinga_Forrester______",
+            "Pearl_Forrester______"
+        ]
+    ]
+}

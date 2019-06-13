@@ -1,0 +1,26 @@
+{
+    "Bye_Round_Tourney____": {
+        "byeQueue": [],
+        "date": "2019-06-12T23:49:47.103Z",
+        "id": "Bye_Round_Tourney____",
+        "playerIds": [
+            "Joel_Robinson________",
+            "Crow_T_Robot_________",
+            "Tom_Servo____________",
+            "Gypsy________________",
+            "Cambot_______________",
+            "Newbie_McNewberson___",
+            "Grandy_McMaster______"
+        ],
+        "roundList": [
+            []
+        ],
+        "tieBreaks": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "name": "Bye Round Tourney"
+    }
+}

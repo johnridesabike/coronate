@@ -1,0 +1,138 @@
+{
+    "Cambot_______________": {
+        "id": "Cambot_______________",
+        "matchCount": 25,
+        "rating": 1500,
+        "type": "person",
+        "firstName": "Cambot",
+        "lastName": ""
+    },
+    "Crow_T_Robot_________": {
+        "id": "Crow_T_Robot_________",
+        "matchCount": 5,
+        "rating": 1700,
+        "type": "person",
+        "firstName": "Crow T",
+        "lastName": "Robot"
+    },
+    "Dr_Clayton_Forrester_": {
+        "id": "Dr_Clayton_Forrester_",
+        "matchCount": 40,
+        "rating": 2100,
+        "type": "person",
+        "firstName": "Clayton",
+        "lastName": "Forrester"
+    },
+    "Grandy_McMaster______": {
+        "id": "Grandy_McMaster______",
+        "matchCount": 100,
+        "rating": 2600,
+        "type": "person",
+        "firstName": "Grandy",
+        "lastName": "McMaster"
+    },
+    "Gypsy________________": {
+        "id": "Gypsy________________",
+        "matchCount": 15,
+        "rating": 1600,
+        "type": "person",
+        "firstName": "Gypsy",
+        "lastName": ""
+    },
+    "Joel_Robinson________": {
+        "id": "Joel_Robinson________",
+        "matchCount": 70,
+        "rating": 2400,
+        "type": "person",
+        "firstName": "Joel",
+        "lastName": "Robinson"
+    },
+    "Jonah_Heston_________": {
+        "id": "Jonah_Heston_________",
+        "matchCount": 50,
+        "rating": 2200,
+        "type": "person",
+        "firstName": "Jonah",
+        "lastName": "Heston"
+    },
+    "Kinga_Forrester______": {
+        "id": "Kinga_Forrester______",
+        "matchCount": 20,
+        "rating": 1900,
+        "type": "person",
+        "firstName": "Kinga",
+        "lastName": "Forrester"
+    },
+    "Larry_Erhardt________": {
+        "id": "Larry_Erhardt________",
+        "matchCount": 45,
+        "rating": 1300,
+        "type": "person",
+        "firstName": "Larry",
+        "lastName": "Erhardt"
+    },
+    "Mike_Nelson__________": {
+        "id": "Mike_Nelson__________",
+        "matchCount": 60,
+        "rating": 2300,
+        "type": "person",
+        "firstName": "Mike",
+        "lastName": "Nelson"
+    },
+    "Newbie_McNewberson___": {
+        "id": "Newbie_McNewberson___",
+        "matchCount": 0,
+        "rating": 800,
+        "type": "person",
+        "firstName": "Newbie",
+        "lastName": "McNewberson"
+    },
+    "Observer_Brain_Guy___": {
+        "id": "Observer_Brain_Guy___",
+        "matchCount": 55,
+        "rating": 1200,
+        "type": "person",
+        "firstName": "Brain",
+        "lastName": "Guy"
+    },
+    "Pearl_Forrester______": {
+        "id": "Pearl_Forrester______",
+        "matchCount": 30,
+        "rating": 2000,
+        "type": "person",
+        "firstName": "Pearl",
+        "lastName": "Forrester"
+    },
+    "Professor_Bobo_______": {
+        "id": "Professor_Bobo_______",
+        "matchCount": 75,
+        "rating": 1000,
+        "type": "person",
+        "firstName": "Bobo",
+        "lastName": "Professor"
+    },
+    "TVs_Frank____________": {
+        "id": "TVs_Frank____________",
+        "matchCount": 35,
+        "rating": 1400,
+        "type": "person",
+        "firstName": "Frank",
+        "lastName": "TV's"
+    },
+    "TVs_Son_of_TVs_Frank_": {
+        "id": "TVs_Son_of_TVs_Frank_",
+        "matchCount": 65,
+        "rating": 1100,
+        "type": "person",
+        "firstName": "Max",
+        "lastName": "TV's"
+    },
+    "Tom_Servo____________": {
+        "id": "Tom_Servo____________",
+        "matchCount": 10,
+        "rating": 1800,
+        "type": "person",
+        "firstName": "Tom",
+        "lastName": "Servo"
+    }
+}
