@@ -2,7 +2,7 @@ import {BLACK, WHITE} from "../data-types";
 import EloRank from "elo-rank";
 import t from "tcomb";
 
-function getkFactor(matchCount) {
+function getKFactor(matchCount) {
     const ne = t.Number(matchCount) || 1;
     return (800 / ne);
 }
@@ -11,8 +11,8 @@ function calcNewRatings(origRatings, matchCounts, result) {
     t.tuple([t.Number, t.Number])(origRatings);
     t.tuple([t.Number, t.Number])(matchCounts);
     t.tuple([t.Number, t.Number])(result);
-    const whiteElo = new EloRank(getkFactor(matchCounts[WHITE]));
-    const blackElo = new EloRank(getkFactor(matchCounts[BLACK]));
+    const whiteElo = new EloRank(getKFactor(matchCounts[WHITE]));
+    const blackElo = new EloRank(getKFactor(matchCounts[BLACK]));
     const FLOOR = 100;
     const scoreExpected = [
         whiteElo.getExpected(origRatings[WHITE], origRatings[BLACK]),
@@ -35,5 +35,5 @@ function calcNewRatings(origRatings, matchCounts, result) {
 
 export default Object.freeze({
     calcNewRatings,
-    getkFactor
+    getKFactor
 });

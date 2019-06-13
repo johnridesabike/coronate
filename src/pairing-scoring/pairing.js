@@ -47,6 +47,8 @@ const differentHalf = priority(2);
 // (USCF § 27A4 and § 27A5)
 const differentDueColor = priority(1);
 
+// This is useful for dividing against a calculated priority, to inspect how
+// "compatible" two players may be.
 const maxPriority = pipe(
     add(differentHalf(true)),
     add(differentDueColor(true)),
@@ -100,6 +102,8 @@ export function calcPairIdeal(player1, player2) {
 // Sort the data so matchups default to order by score and rating.
 // TODO: I'm not sure if this should be necessary to use, but it seems to break
 // the algorithm if it's removed. In the future, it may become obsolete.
+// `setByePlayer` requires it to work, but `setByePlayer` could do its own
+// sorting IMO.
 export function sortDataForPairing(data) {
     return sortWith(
         [descend(prop("score")), descend(prop("rating"))],
