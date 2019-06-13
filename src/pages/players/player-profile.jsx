@@ -16,7 +16,12 @@ function PlayerProfile({
     optionsDispatch
 }) {
     const player = players[playerId];
-    const getAvoidList = getPlayerAvoidList(options.avoidPairs);
+    // I think this needs to be memoized so it doesn't trigger an infinite
+    // rerender loop
+    const getAvoidList = useMemo(
+        () => getPlayerAvoidList(options.avoidPairs),
+        [options.avoidPairs]
+    );
     const [singAvoidList, setSingAvoidList] = useState(getAvoidList(playerId));
     const playerName = (player) ? player.firstName + " " + player.lastName : "";
     useDocumentTitle("profile for " + playerName);
@@ -109,7 +114,7 @@ function PlayerProfile({
                         disabled
                         value={
                             numeral(
-                                ratings.getkFactor(player.matchCount)
+                                ratings.getKFactor(player.matchCount)
                             ).format("00")
                         }
                         readOnly

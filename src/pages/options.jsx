@@ -27,7 +27,7 @@ export default function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({state: data.tournaments, type: "LOAD_STATE"});
+        tourneysDispatch({state: data.tourneys, type: "LOAD_STATE"});
         optionsDispatch({state: data.options, type: "LOAD_STATE"});
         playersDispatch({state: data.players, type: "LOAD_STATE"});
         window.alert("Data loaded!");
