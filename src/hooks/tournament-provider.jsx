@@ -32,16 +32,16 @@ export function TournamentProvider({children, tourneyId}) {
     useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
     useEffect(
         function initTourneyFromDb() {
-            tourneyStore.getItem(tourneyId).then(function (value) {
+            (async function () {
+                const value = await tourneyStore.getItem(tourneyId);
                 console.log("loaded:", tourneyId);
                 if (!value) {
                     setIsDbError(true);
+                } else {
+                    tourneyDispatch({state: value || {}, type: "SET_STATE"});
+                    setIsTourneyLoaded(true);
                 }
-                tourneyDispatch({state: value || {}, type: "SET_STATE"});
-                setIsTourneyLoaded(true);
-            }).catch(function () {
-                setIsDbError(true);
-            });
+            }());
         },
         [tourneyId]
     );
@@ -66,7 +66,8 @@ export function TournamentProvider({children, tourneyId}) {
                 setIsPlayersLoaded(true);
                 return;
             }
-            playerStore.getItems(allTheIds).then(function (values) {
+            (async function () {
+                const values = await playerStore.getItems(allTheIds);
                 // This safeguards against trying to fetch dummy IDs or IDs from
                 // deleted players. If we updated without this condition, then
                 // this `useEffect` would trigger an infinite loop and a memory
@@ -81,10 +82,7 @@ export function TournamentProvider({children, tourneyId}) {
                     playersDispatch({state: values, type: "LOAD_STATE"});
                 }
                 setIsPlayersLoaded(true);
-            }).catch(function (error) {
-                console.error("Couldn't load ids:", allTheIds);
-                console.error(error);
-            });
+            }());
         },
         [tourney.roundList, players, tourney.playerIds]
     );
@@ -110,11 +108,10 @@ export function TournamentProvider({children, tourneyId}) {
             if (!isPlayersLoaded) {
                 return;
             }
-            playerStore.setItems(players).then(function (values) {
+            (async function () {
+                const values = await playerStore.setItems(players);
                 console.log("saved player changes to DB:", values);
-            }).catch(function (error) {
-                console.log("couldn't save players to DB:", error);
-            });
+            }());
         },
         [players, isPlayersLoaded]
     );

@@ -51,7 +51,8 @@ function useAllItemsFromDb(store, type) {
     useLoadingCursor(isLoaded);
     useEffect(
         function loadItemsFromDb() {
-            store.getItems().then(function (results) {
+            (async function () {
+                const results = await store.getItems();
                 console.log("loaded items from", store._config.storeName);
                 // TODO: This will silently delete invalid entries from the DB.
                 // Because invalid entries are typically just older data that
@@ -61,12 +62,7 @@ function useAllItemsFromDb(store, type) {
                 const cleanResults =  filter(type.is, results);
                 dispatch({state: cleanResults, type: "LOAD_STATE"});
                 setIsLoaded(true);
-            }).catch(function () {
-                console.error(
-                    "Couldn't load items from",
-                    store._config.storeName
-                );
-            });
+            }());
         },
         [store, type]
     );
@@ -75,17 +71,16 @@ function useAllItemsFromDb(store, type) {
             if (!isLoaded) {
                 return;
             }
-            store.setItems(items).then(function () {
+            (async function () {
+                await store.setItems(items);
                 console.log("saved items to", store._config.storeName);
-            });
-            store.keys().then(function (keys) {
+                const keys = await store.keys();
                 const deleted = difference(keys, Object.keys(items));
                 if (deleted.length > 0 ) {
-                    store.removeItems(deleted).then(function () {
-                        console.log("Deleted " + deleted.length + " items.");
-                    });
+                    await store.removeItems(deleted);
+                    console.log("Deleted " + deleted.length + " items.");
                 }
-            });
+            }());
         },
         [store, items, isLoaded]
     );
@@ -111,7 +106,7 @@ export function useOptionsDb() {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initOptionsFromDb() {
-            // I don't remember why I used `iterate()` instead of `getItems()`.
+            // This uses `iterate` to easily set key-value pairs.
             optionsStore.iterate(function (value, key) {
                 dispatch({option: key, type: "SET_OPTION", value: value});
             }).then(function () {
