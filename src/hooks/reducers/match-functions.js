@@ -5,18 +5,10 @@ import {
     WHITE,
     createMatch,
     getPlayerMaybe,
-    rounds2Matches,
     types
 } from "../../data-types";
-import {assoc, pipe} from "ramda";
-import {
-    createPairingData,
-    matches2ScoreData,
-    pairPlayers,
-    setByePlayer,
-    setUpperHalves,
-    sortDataForPairing
-} from "../../pairing-scoring";
+import {pairPlayers, setByePlayer} from "../../pairing-scoring";
+import {assoc} from "ramda";
 import t from "tcomb";
 
 export function scoreByeMatch(match, byeValue) {
@@ -28,26 +20,21 @@ export function scoreByeMatch(match, byeValue) {
     return match;
 }
 
-// TODO: This will calculate pairing data based on the players provided.
-// However, if there are players who were manually paired earlier, then their
-// presence will not be factored in (for calculating upper & lower halves, for
-// example). It may make sense to raise the `createPairingData()` result to the
-// component which calls this, since that component usually calculates that data
-// anyway for GUI purposes.
 export function autoPair({
-    avoidList,
+    // avoidList,
+    pairData,
     byeValue,
     players,
-    roundId,
+    // roundId,
     tourney
 }) {
-    const pairData = pipe(
-        (rounds) => rounds2Matches(rounds, roundId),
-        matches2ScoreData,
-        createPairingData(players, avoidList),
-        sortDataForPairing,
-        setUpperHalves,
-    )(tourney.roundList);
+    // const pairData = pipe(
+    //     (rounds) => rounds2Matches(rounds, roundId),
+    //     matches2ScoreData,
+    //     createPairingData(players, avoidList),
+    //     sortDataForPairing,
+    //     setUpperHalves,
+    // )(tourney.roundList);
     const [
         pairDataNoByes,
         byePlayerData

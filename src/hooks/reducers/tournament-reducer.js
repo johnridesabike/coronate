@@ -18,6 +18,7 @@ import {
     set
 } from "ramda";
 import {autoPair, manualPair, scoreByeMatch} from "./match-functions";
+import scoreTypes from "../../pairing-scoring/types";
 import t from "tcomb";
 import {types} from "../../data-types";
 
@@ -71,8 +72,9 @@ export default function tournamentReducer(state, action) {
         return assoc("name", action.name, state);
     case "AUTO_PAIR":
         t.interface({
-            avoidList: t.list(types.AvoidPair),
+            // avoidList: t.list(types.AvoidPair),
             byeValue: t.Number,
+            pairData: t.list(scoreTypes.PairingData),
             players: t.dict(types.Id, types.Player),
             roundId: t.Number
         })(action);
@@ -81,10 +83,11 @@ export default function tournamentReducer(state, action) {
             concat(
                 __,
                 autoPair({
-                    avoidList: action.avoidList,
+                    // avoidList: action.avoidList,
                     byeValue: action.byeValue,
+                    pairData: action.pairData,
                     players: action.players,
-                    roundId: action.roundId,
+                    // roundId: action.roundId,
                     tourney: state
                 })
             ),

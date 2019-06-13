@@ -89,8 +89,9 @@ export default function PairPicker({roundId}) {
                     className="button-primary"
                     disabled={unmatchedCount === 0}
                     onClick={() => tourneyDispatch({
-                        avoidList: options.avoidPairs,
+                        // avoidList: options.avoidPairs,
                         byeValue: options.byeValue,
+                        pairData: pairData,
                         players: unmatched,
                         roundId,
                         type: "AUTO_PAIR"
@@ -141,7 +142,6 @@ export default function PairPicker({roundId}) {
                 >
                     Done
                 </button>
-                <span>Test lol</span>
                 <Selecting />
             </Dialog>
         </div>
