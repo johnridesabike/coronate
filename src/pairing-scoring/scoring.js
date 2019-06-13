@@ -62,7 +62,6 @@ function getCumulativeOfOpponentScore(scoreData, id) {
     const scoreList = opponentIds.filter(
         (oppId) => !scoreData[oppId].isDummy
     ).map(
-        // TODO: properly curry this function
         (oppId) => getCumulativeScore(scoreData, oppId)
     );
     return sum(scoreList);

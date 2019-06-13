@@ -28,5 +28,6 @@ it("Deleting all tournaments displays a message", function () {
     const {getByText, getByLabelText} = render(<TournamentList/>);
     fireEvent.click(getByLabelText(/delete “wayne manor open”/i));
     fireEvent.click(getByLabelText(/delete “the battle for gotham city”/i));
+    fireEvent.click(getByLabelText(/delete “bye round tourney”/i));
     expect(getByText(/No tournaments added yet./i)).toBeInTheDocument();
 });

@@ -16,6 +16,13 @@ const BattleForGothamCity = ({children}) => (
 );
 BattleForGothamCity.propTypes = {children: PropTypes.node.isRequired};
 
+const ByeTourney = ({children}) => (
+    <TournamentProvider tourneyId="Bye_Round_Tourney____">
+        {children}
+    </TournamentProvider>
+);
+ByeTourney.propTypes = {children: PropTypes.node.isRequired};
+
 it("Selecting and unselecting players works", function () {
     const {queryByText, getByText, getByLabelText} = render(
         <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
@@ -52,30 +59,20 @@ it("Removed players are removed from selection", function () {
     expect(queryByText(/white: bruce wayne/i)).not.toBeInTheDocument();
 });
 it("Selecting bye players works", function () {
-    const {getByText, getByLabelText} = render(
-        <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
+    const {getByText} = render(
+        <ByeTourney><PairPicker roundId={0}/></ByeTourney>
     );
-    // Remove a player to make the number uneven.
-    // TODO: use premade test data that doesn't require doing this manually.
-    click(getByText(/add or remove players from the roster/i));
-    click(getByLabelText(/Select Bruce Wayne/i));
-    click(getByText(/^done$/i));
     click(getByText(/add bye player/i));
     expect(getByText(/white: bye player/i)).toBeInTheDocument();
 });
 it("Selected bye players are removed when not needed anymore", function () {
     const {getByText, getByLabelText, queryByText} = render(
-        <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
+        <ByeTourney><PairPicker roundId={0}/></ByeTourney>
     );
-    // Remove a player to make the number uneven.
-    // TODO: use premade test data that doesn't require doing this manually.
-    click(getByText(/add or remove players from the roster/i));
-    click(getByLabelText(/Select Bruce Wayne/i));
-    click(getByText(/^done$/i));
     click(getByText(/add bye player/i));
-    // Add a player to make it even again.
+    // Remove a player to make it even
     click(getByText(/add or remove players from the roster/i));
-    click(getByLabelText(/Select Bruce Wayne/i));
+    click(getByLabelText(/Select joel robinson/i));
     click(getByText(/^done$/i));
     expect(queryByText(/white: bye player/i)).not.toBeInTheDocument();
 });

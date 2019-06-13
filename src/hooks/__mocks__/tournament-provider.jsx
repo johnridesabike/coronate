@@ -4,6 +4,16 @@ import PropTypes from "prop-types";
 import demoData from "../../demo-data";
 import {filter} from "ramda";
 import {getPlayerMaybe} from "../../data-types";
+import testData from "../../test-data";
+
+// We're deprecating the `demo-data` in favor of `test-data`. Until old tests
+// are updated, we'll merge them together.
+const tournaments = Object.assign(
+    {},
+    demoData.tournaments,
+    testData.tournaments
+);
+const playerData = Object.assign({}, demoData.players, testData.players);
 
 const TournamentContext = createContext(null);
 
@@ -16,10 +26,10 @@ export function TournamentProvider({children, tourneyId}) {
     const [
         tourney,
         tourneyDispatch
-    ] = useReducer(tournamentReducer, demoData.tournaments[tourneyId]);
+    ] = useReducer(tournamentReducer, tournaments[tourneyId]);
     const activePlayers = filter(
         (p) => tourney.playerIds.includes(p.id),
-        demoData.players
+        playerData
     );
     const [
         players,
