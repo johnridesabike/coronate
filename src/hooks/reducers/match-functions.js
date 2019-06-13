@@ -7,8 +7,8 @@ import {
     getPlayerMaybe,
     types
 } from "../../data-types";
+import {assoc, curry} from "ramda";
 import {pairPlayers, setByePlayer} from "../../pairing-scoring";
-import {assoc} from "ramda";
 import t from "tcomb";
 
 export function scoreByeMatch(match, byeValue) {
@@ -43,7 +43,7 @@ export function autoPair({
     const pairsWithBye = (byePlayerData)
         ? pairs.concat([[byePlayerData.id, DUMMY_ID]])
         : pairs;
-    const getPlayer = getPlayerMaybe(players);
+    const getPlayer = curry(getPlayerMaybe)(players);
     const newMatchList = pairsWithBye.map(
         (idsPair) => (
             createMatch({

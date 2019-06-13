@@ -74,13 +74,7 @@ export function avoidPairReducer(acc, pair) {
     )(t.dict(types.Id, t.list(types.Id))(acc));
 }
 
-// This is automatically curried for easy `pipe()`ing
 export function createPairingData(playerData, avoidPairs, scoreData) {
-    if (avoidPairs === undefined) {
-        return createPairingData.bind(null, playerData);
-    } else if (scoreData === undefined) {
-        return createPairingData.bind(null, playerData, avoidPairs);
-    }
     const avoidDict = avoidPairs.reduce(avoidPairReducer, {});
     const pairingData = Object.values(playerData).reduce(
         function pairingDataReducer(acc, data) {

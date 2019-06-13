@@ -1,11 +1,21 @@
+import {DUMMY_ID, rounds2Matches, types} from "../../../data-types";
 import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useState} from "react";
-import {hasHadBye, rounds2Matches} from "../../../data-types";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import Selecting from "./selecting";
+import t from "tcomb";
 import {useTournament} from "../../../hooks";
+
+function hasHadBye(matchList, playerId) {
+    return t.list(types.Match)(matchList).filter(
+        (match) => match.playerIds.includes(playerId)
+    ).reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    ).includes(DUMMY_ID);
+}
 
 function PlayerList({players, dispatch, byeQueue}) {
     return (

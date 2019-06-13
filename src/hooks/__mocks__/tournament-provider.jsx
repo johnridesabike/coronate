@@ -1,8 +1,8 @@
 import React, {createContext, useContext, useReducer} from "react";
+import {curry, filter} from "ramda";
 import {playersReducer,tournamentReducer} from "../reducers";
 import PropTypes from "prop-types";
 import demoData from "../../demo-data";
-import {filter} from "ramda";
 import {getPlayerMaybe} from "../../data-types";
 import testData from "../../test-data";
 
@@ -35,7 +35,7 @@ export function TournamentProvider({children, tourneyId}) {
         players,
         playersDispatch
     ] = useReducer(playersReducer, activePlayers);
-    const getPlayer = (id) => getPlayerMaybe(players, id); // curry
+    const getPlayer = curry(getPlayerMaybe)(players);
     return (
         <TournamentContext.Provider
             value={{

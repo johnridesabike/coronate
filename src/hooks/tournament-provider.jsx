@@ -5,16 +5,26 @@ import React, {
     useReducer,
     useState
 } from "react";
-import {filter, symmetricDifference} from "ramda";
+import {curry, filter, symmetricDifference} from "ramda";
 import {
-    getAllPlayerIdsFromMatches,
+    // getAllPlayerIdsFromMatches,
     getPlayerMaybe,
-    rounds2Matches
+    rounds2Matches,
+    types
 } from "../data-types";
 import {playerStore, tourneyStore} from "./db";
 import {playersReducer, tournamentReducer} from "./reducers";
 import PropTypes from "prop-types";
+import t from "tcomb";
 import {useLoadingCursor} from "./hooks";
+
+function getAllPlayerIdsFromMatches(matchList) {
+    const allPlayers = t.list(types.Match)(matchList).reduce(
+        (acc, match) => acc.concat(match.playerIds),
+        []
+    );
+    return Array.from(new Set(allPlayers));
+}
 
 const TournamentContext = createContext(null);
 
@@ -115,7 +125,7 @@ export function TournamentProvider({children, tourneyId}) {
         },
         [players, isPlayersLoaded]
     );
-    const getPlayer = getPlayerMaybe(players);
+    const getPlayer = curry(getPlayerMaybe)(players);
     // `players` includes players in past matches who may have left
     // `activePlayers` is only players to be matched in future matches.
     const activePlayers = filter(

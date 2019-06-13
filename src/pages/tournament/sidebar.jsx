@@ -1,4 +1,4 @@
-import {calcNumOfRounds, isRoundComplete} from "../../data-types";
+import {curry, last} from "ramda";
 import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../../components/icons";
@@ -6,7 +6,25 @@ import {Link} from "@reach/router";
 import {Notification} from "../../components/utility";
 import PropTypes from "prop-types";
 import React from "react";
-import {last} from "ramda";
+import {getUnmatched} from "../../data-types";
+
+function isRoundComplete(tourney, players, roundId) {
+    if (roundId < tourney.roundList.length - 1) {
+        // If it's not the last round, it's complete.
+        return true;
+    }
+    const unmatched = getUnmatched(tourney.roundList, players, roundId);
+    const results = tourney.roundList[roundId].map(
+        (match) => match.result[0] + match.result[1]
+    );
+    return Object.keys(unmatched).length === 0 && !results.includes(0);
+}
+
+function calcNumOfRounds(playerCount) {
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    // If there aren't any players then `roundCount` === `-Infinity`.
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
+}
 
 export default function Sidebar(props) {
     const {
@@ -18,7 +36,7 @@ export default function Sidebar(props) {
     } = useTournament();
     useDocumentTitle(tourney.name);
     const {roundList} = tourney;
-    const isComplete = isRoundComplete(tourney, activePlayers);
+    const isComplete = curry(isRoundComplete)(tourney, activePlayers);
 
     const isNewRoundReady = (function () {
         if (roundList.length === 0) {

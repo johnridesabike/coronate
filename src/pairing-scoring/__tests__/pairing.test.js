@@ -1,7 +1,7 @@
 import {DUMMY_ID, rounds2Matches} from "../../data-types";
 import {calcPairIdeal, setByePlayer, sortDataForPairing} from "../pairing";
 import {createPairingData, matches2ScoreData} from "../converters";
-import {filter, pipe} from "ramda";
+import {curry, filter, pipe} from "ramda";
 import data from "../../test-data";
 
 const tourney = data.tournaments["Bye_Round_Tourney____"];
@@ -9,7 +9,7 @@ const players = filter((p) => tourney.playerIds.includes(p.id), data.players);
 const pairData = pipe(
     rounds2Matches,
     matches2ScoreData,
-    createPairingData(players, data.options.avoidPairs),
+    curry(createPairingData)(players, data.options.avoidPairs),
     sortDataForPairing
 )(tourney.roundList);
 

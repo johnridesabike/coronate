@@ -5,7 +5,7 @@ import {
 } from "../../../data-types";
 import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useEffect, useMemo, useState} from "react";
-import {assoc, pipe} from "ramda";
+import {assoc, curry, pipe} from "ramda";
 import {
     calcPairIdeal,
     createPairingData,
@@ -40,7 +40,7 @@ export default function PairPicker({roundId}) {
             const matches = rounds2Matches(roundList, roundId);
             const _scoreData = matches2ScoreData(matches);
             const _pairData = pipe(
-                createPairingData(activePlayers, options.avoidPairs),
+                curry(createPairingData)(activePlayers, options.avoidPairs),
                 sortDataForPairing,
                 setUpperHalves
             )(_scoreData);
