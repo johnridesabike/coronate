@@ -148,21 +148,22 @@ ${players[pId].lastName}`}
                 }
             </ul>
             <form onSubmit={avoidAdd}>
-                <fieldset>
-                    <legend>Add player to avoid</legend>
-                    <select
-                        onBlur={(event) =>
-                            setSelectedAvoider(event.target.value)
-                        }
-                    >
-                        {unAvoided.map((pId) => (
-                            <option key={pId} value={pId}>
-                                {players[pId].firstName} {players[pId].lastName}
-                            </option>
-                        ))}
-                    </select>{" "}
-                    <input type="submit" value="Add" />
-                </fieldset>
+                <label htmlFor="avoid-select">
+                    Select a new player to avoid.
+                </label>
+                <select
+                    id="avoid-select"
+                    onBlur={(event) =>
+                        setSelectedAvoider(event.target.value)
+                    }
+                >
+                    {unAvoided.map((pId) => (
+                        <option key={pId} value={pId}>
+                            {players[pId].firstName} {players[pId].lastName}
+                        </option>
+                    ))}
+                </select>{" "}
+                <input className="button-micro" type="submit" value="Add" />
             </form>
         </div>
     );

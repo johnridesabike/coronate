@@ -20,7 +20,8 @@ a.button {
     text-decoration: none;
 }
 
-.button-micro {
+.button-micro,
+input[type="submit"].button-micro /* need that specificity*/ {
     height: 24px;
     font-size: 11px;
     min-width: auto;
