@@ -1,8 +1,8 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useState} from "react";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
-import {getPlayerAvoidList} from "../../data-types";
+import {avoidPairReducer} from "../../pairing-scoring";
 import numeral from "numeral";
 import {ratings} from "../../pairing-scoring";
 import styles from "./index.module.css";
@@ -16,21 +16,12 @@ function PlayerProfile({
     optionsDispatch
 }) {
     const player = players[playerId];
-    // I think this needs to be memoized so it doesn't trigger an infinite
-    // rerender loop
-    const getAvoidList = useMemo(
-        () => getPlayerAvoidList(options.avoidPairs),
-        [options.avoidPairs]
-    );
-    const [singAvoidList, setSingAvoidList] = useState(getAvoidList(playerId));
     const playerName = (player) ? player.firstName + " " + player.lastName : "";
     useDocumentTitle("profile for " + playerName);
-    // Memoize this so useEffect doesn't cause a memory leak.
-    const unAvoided = useMemo(
-        () => Object.keys(players).filter(
-            (id) => !singAvoidList.includes(id) && id !== playerId
-        ),
-        [players, playerId, singAvoidList]
+    const avoidObj = options.avoidPairs.reduce(avoidPairReducer, {});
+    const singAvoidList = (avoidObj[playerId]) ? avoidObj[playerId] : [];
+    const unAvoided = Object.keys(players).filter(
+        (id) => !singAvoidList.includes(id) && id !== playerId
     );
     const [selectedAvoider, setSelectedAvoider] = useState(unAvoided[0]);
     function avoidAdd(event) {
@@ -39,19 +30,9 @@ function PlayerProfile({
             pair: [playerId, selectedAvoider],
             type: "ADD_AVOID_PAIR"
         });
+        // const newUnavoided = unAvoided.filter((id) => id !== selectedAvoider);
+        // setSelectedAvoider(newUnavoided[0]);
     }
-    useEffect(
-        function updateAvoidList() {
-            setSingAvoidList(getAvoidList(playerId));
-        },
-        [getAvoidList, playerId]
-    );
-    useEffect(
-        function updateSelectedAvoider() {
-            setSelectedAvoider(unAvoided[0]);
-        },
-        [setSelectedAvoider, unAvoided]
-    );
     function handleChange(event) {
         event.preventDefault();
         const {firstName, lastName, matchCount, rating} = event.currentTarget;
@@ -63,6 +44,9 @@ function PlayerProfile({
             rating: Number(rating.value),
             type: "SET_PLAYER"
         });
+    }
+    function handleAvoidChange(event) {
+        setSelectedAvoider(event.target.value);
     }
     if (!player) {
         return <div>Loading...</div>;
@@ -153,9 +137,9 @@ ${players[pId].lastName}`}
                 </label>
                 <select
                     id="avoid-select"
-                    onBlur={(event) =>
-                        setSelectedAvoider(event.target.value)
-                    }
+                    onBlur={handleAvoidChange}
+                    onChange={handleAvoidChange}
+                    value={selectedAvoider}
                 >
                     {unAvoided.map((pId) => (
                         <option key={pId} value={pId}>

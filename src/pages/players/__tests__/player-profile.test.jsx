@@ -7,7 +7,7 @@ import {navigate} from "@reach/router";
 const {change, click} = fireEvent;
 afterEach(cleanup);
 
-it("Adding avoid pairs works", async function () {
+it("Adding a player-to-avoid works", async function () {
     const {getByText, getByLabelText} = render(<Players />);
     await navigate("/players/Newbie_McNewberson___");
     change(getByLabelText(
