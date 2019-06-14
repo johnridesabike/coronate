@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prettify-logo": "svgo icon_inkscape.svg -o icon_pretty.svg --indent=4 --pretty",
-    "jsxify-logo": "svgr < icon_inkscape.svg > ../src/components/logo.jsx --icon",
+    "prettify-logo": "svgo icon-src.svg -o icon-pretty.svg --indent=4 --pretty",
+    "jsxify-logo": "svgr < icon-src.svg > ../src/components/logo.jsx --icon",
     "build:web-icons": "gulp svg-to-web-icons"
   },
   "author": "",
@@ -16,5 +16,6 @@
     "favicons": "^5.4.1",
     "gulp": "^4.0.2",
     "svgo": "^1.2.2"
-  }
+  },
+  "dependencies": {}
 }
