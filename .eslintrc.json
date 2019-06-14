@@ -10,7 +10,7 @@
             "warn", {
                 "code": 80,
                 "ignoreComments": true,
-                "ignorePattern": "^(    )*d=\"M"
+                "ignorePattern": "( )*d=\"M"
             }
         ],
         "space-infix-ops": "warn",

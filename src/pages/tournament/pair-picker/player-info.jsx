@@ -10,7 +10,7 @@ import React from "react";
 import {sum} from "ramda";
 
 export default function PlayerInfo({playerId, scoreData}) {
-    const {getPlayer} = useTournament();
+    const {getPlayer, players} = useTournament();
     const [options] = useOptionsDb();
     const avoidDict = options.avoidPairs.reduce(avoidPairReducer, {});
     const playerData = scoreData[playerId] || createBlankScoreData(playerId);
@@ -61,9 +61,10 @@ export default function PlayerInfo({playerId, scoreData}) {
             </p>
             <ol>
                 {avoidList.map((pId) => (
-                    <li key={pId}>
-                        {getPlayer(pId).firstName} {getPlayer(pId).lastName}
-                    </li>
+                    players[pId] && // don't show players not in this tourney
+                        <li key={pId}>
+                            {getPlayer(pId).firstName} {getPlayer(pId).lastName}
+                        </li>
                 ))}
             </ol>
         </dl>

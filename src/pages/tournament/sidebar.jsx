@@ -185,10 +185,23 @@ export default function Sidebar(props) {
             <hr />
             <ul>
                 <li className="caption-30">
-                    <span className=" sidebar__hide-on-close">
-                        Completion:{" "}
-                    </span>
-                    {roundList.length}/{roundCount}
+                    <label
+                        className="sidebar__hide-on-close"
+                        htmlFor="round-progress"
+                    >
+                        Completion:
+                    </label>
+                    <meter
+                        id="round-progress"
+                        max={roundCount}
+                        // optimum={roundCount}
+                        // low={roundCount - 1}
+                        style={{width: "100%"}}
+                        title={roundList.length + "/" + roundCount}
+                        value={roundList.length}
+                    >
+                        {roundList.length}/{roundCount}
+                    </meter>
                 </li>
                 <li>
                     <Notification

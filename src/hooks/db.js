@@ -38,7 +38,7 @@ export async function loadDemoDB() {
     await tourneyStore.setItems(demoData.tournaments);
     // TODO: for some reason in Electron, this `window.alert()` will disable all
     // focus after it runs. This affects other `window.alert()`s too.
-    // window.alert("Demo data loaded!");
+    window.alert("Demo data loaded!");
     document.body.style.cursor = "auto";
 }
 
