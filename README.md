@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Logo" src="graphics-src/icon_inkscape.svg" height="128" width="128" />
+<img alt="Logo" src="graphics-src/icon-src.svg" height="128" width="128" />
 <h1>Chessahoochee</h1>
 </div>
 
@@ -110,4 +110,6 @@ Linux builds have not been tested.
 
 ## 🎉 Acknowledgements 
 
-The three "kings" in the logo are derived from a [GPLv2+](https://www.gnu.org/licenses/gpl-2.0.txt) licensed derivation of the "Merida" icon set. The original Merida was informally licensed as "freeware."
+The three "kings" in the logo are derived from Mérida chess font, which was informally licensed as "freeware."
+
+Some human interface decisions (colors, buttons, etc.) are based on the [Photon Design System](https://design.firefox.com/photon/) for an elegant, OS-neutral, appearance.

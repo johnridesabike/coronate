@@ -6,6 +6,7 @@ The matchup algorithm probably needs to be adjusted. It uses the blossom algorit
 
 ### User interface to-dos
 
+- [ ] Overhaul the pair-picker view. It should show more information about potential pairings and have a preview & confirmation for the auto-pairings.
 - [ ] Improve responsiveness across devices.
 - [ ] Improve accessibility.
 - [ ] Implement drag-and-drop to supplement buttons.
