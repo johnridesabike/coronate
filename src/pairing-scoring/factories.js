@@ -19,6 +19,7 @@ import types from "./types";
 const createBlankScoreData = (id) => types.ScoreData({
     colorScores: [],
     colors: [],
+    halfPos: 0,
     id,
     isDummy: false,
     opponentResults: {},

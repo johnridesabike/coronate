@@ -82,12 +82,13 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
             const playerStats = (scoreData[data.id])
                 ? scoreData[data.id]
                 : createBlankScoreData(data.id);
-            // `isUpperHalf` and `isDueBye` default to `false` and will have to
-            // be set by another function later.
+            // `isUpperHalf` and `halfPos` will have to be set by another
+            // function later.
             const pairData = {
                 avoidIds: avoidDict[data.id] || [],
                 colorScores: playerStats.colorScores,
                 colors: playerStats.colors,
+                halfPos: 0,
                 id: data.id,
                 // isDueBye: false,
                 isUpperHalf: false,

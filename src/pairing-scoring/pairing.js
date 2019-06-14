@@ -5,31 +5,28 @@ import {
     filter,
     findLastIndex,
     last,
-    lensIndex,
     map,
-    // over,
     pipe,
     pluck,
     prop,
     sort,
     sortWith,
     splitAt,
-    sum,
-    view
+    sum
 } from "ramda";
 import blossom from "edmonds-blossom";
 import t from "tcomb";
 import types from "./types";
 
-const priority = (value) => (condition) => condition ? value : 0;
-const divisiblePriority = (value) => (divider) => value / divider;
+const priority = (value) => (condition) => (condition) ? value : 0;
+const divisiblePriority = (value) => (divider) => t.Number(value / divider);
 
-// TODO: These probably need to be tweaked a lot.
+// These following consts probably need to be tweaked a lot.
 
 // The weight given to avoid players meeting twice. This same weight is given to
 // avoid matching players on each other's "avoid" list.
 // This is the highest priority. (USCF § 27A1)
-const avoidMeetingTwice = priority(20);
+const avoidMeetingTwice = priority(32);
 
 // The weight given to match players with equal scores. This gets divided
 // against the difference between each players' scores, plus one. For example,
@@ -41,40 +38,42 @@ const sameScores = divisiblePriority(16);
 
 // The weight given to match players in lower versus upper halves. This is only
 // applied to players being matched within the same score group. (USCF § 27A3)
-const differentHalf = priority(2);
+const halfPosition = divisiblePriority(8);
+const sameHalfPriority = () => 0;
+const differentHalf = (isDiffHalf) => (isDiffHalf)
+    ? halfPosition
+    : sameHalfPriority;
 
 // The weight given to match players with opposite due colors.
 // (USCF § 27A4 and § 27A5)
-const differentDueColor = priority(1);
+const differentDueColor = priority(4);
 
 // This is useful for dividing against a calculated priority, to inspect how
 // "compatible" two players may be.
 const maxPriority = pipe(
-    add(differentHalf(true)),
+    add(differentHalf(false)(1)),
     add(differentDueColor(true)),
     add(sameScores(1)),
     add(avoidMeetingTwice(true))
 )(0);
 export {maxPriority};
 
-/**
- * The pairing code is broken up into several functions which take each other's
- * input to build the data necessary to pair players appropriately.
- * Using a function like Ramda's `pipe` to put them together, the final product
- * will look something like this (arguments removed for brevity):
- * ```js
- * const pairs = pipe(
- *     rounds2Matches,
- *     matches2ScoreData,
- *     createPairingData,
- *     sortDataForPairing,
- *     setUpperHalves,
- *     setByePlayer,
- *     pairPlayers // <-- the function that actually pairs them!
- * )(roundList);
- * ```
- * (This may be outdated as the actual functions aren't quite stable yet.)
- */
+// The pairing code is broken up into several functions which take each other's
+// input to build the data necessary to pair players appropriately.
+// Using a function like Ramda's `pipe` to put them together, the final product
+// will look something like this:
+// ```js
+// const pairs = pipe(
+//     rounds2Matches,
+//     matches2ScoreData,
+//     createPairingData,
+//     sortDataForPairing,
+//     setUpperHalves,
+//     setByePlayer,
+//     pairPlayers // <-- the function that actually pairs them!
+// )(roundList);
+// ```
+// (This may be outdated as the actual functions aren't quite stable yet.)
 
 // Given two `PairingData` objects, this assigns a number for how much they
 // should be matched. The number gets fed to the `blossom` algorithm.
@@ -86,17 +85,20 @@ export function calcPairIdeal(player1, player2) {
     const mustAvoid = player1.avoidIds.includes(player2.id);
     const p1LastColor = last(player1.colors);
     const p2LastColor = last(player2.colors);
-    return pipe(
-        add(differentHalf(
-            player1.isUpperHalf !== player2.isUpperHalf
-            && player1.score === player2.score
-        )),
+    const scoreDiff = Math.abs(player1.score - player2.score) + 1;
+    const halfDiff = Math.abs(player1.halfPos - player2.halfPos) + 1;
+    const isDiffHalf = (
+        player1.isUpperHalf !== player2.isUpperHalf
+        && player1.score === player2.score
+    );
+    return t.Number(pipe(
         add(differentDueColor(
             (p1LastColor === undefined) || (p1LastColor !== p2LastColor)
         )),
-        add(sameScores(Math.abs(player1.score - player2.score) + 1)),
+        add(sameScores(scoreDiff)),
+        add(differentHalf(isDiffHalf)(halfDiff)),
         add(avoidMeetingTwice(!metBefore && !mustAvoid))
-    )(0);
+    )(0));
 }
 
 // Sort the data so matchups default to order by score and rating.
@@ -117,16 +119,21 @@ const splitInHalf = (list) => splitAt(list.length / 2, list);
 // "upper half" of it's score group.
 // (USCF § 29C1.)
 function upperHalfReducer(acc, playerData, ignore, src) {
-    const upperHalfIds = pipe(
+    const [upperHalfIds, lowerHalfIds] = pipe(
         filter((p2) => p2.score === playerData.score),
         // this may be redundant if the list was already sorted.
         sort(descend(prop("rating"))),
-        splitInHalf,
-        view(lensIndex(0)),
-        map((p) => p.id)
+        map((p) => p.id),
+        splitInHalf
     )(src);
     const isUpperHalf = upperHalfIds.includes(playerData.id);
-    return acc.concat([assoc("isUpperHalf", isUpperHalf, playerData)]);
+    const halfPos = (isUpperHalf)
+        ? upperHalfIds.indexOf(playerData.id)
+        : lowerHalfIds.indexOf(playerData.id);
+    return acc.concat([pipe(
+        assoc("isUpperHalf", isUpperHalf),
+        assoc("halfPos", halfPos)
+    )(playerData)]);
 }
 export function setUpperHalves(data) {
     return data.reduce(upperHalfReducer, []);

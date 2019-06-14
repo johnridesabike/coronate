@@ -30,6 +30,10 @@ const PairingData = t.interface(
         avoidIds: t.list(types.Id),
         colorScores: t.list(ColorScore),
         colors: t.list(types.Color),
+        // `halfPos` is the index of the player within their scoregroup that's
+        // split into upper and lower halves. Example: in a group of 8, the
+        // first and the fifth players would both be `halfPos: 0`.
+        halfPos: t.Number,
         id: types.Id,
         // isDueBye: t.Boolean,
         isUpperHalf: t.Boolean,

@@ -1,5 +1,6 @@
 import "jest-dom/extend-expect";
 import {cleanup, fireEvent, render} from "@testing-library/react";
+import {ByeTourney} from "../../../../test-data/components";
 import PairPicker from "../index";
 import PropTypes from "prop-types";
 import React from "react";
@@ -15,13 +16,6 @@ const BattleForGothamCity = ({children}) => (
     </TournamentProvider>
 );
 BattleForGothamCity.propTypes = {children: PropTypes.node.isRequired};
-
-const ByeTourney = ({children}) => (
-    <TournamentProvider tourneyId="Bye_Round_Tourney____">
-        {children}
-    </TournamentProvider>
-);
-ByeTourney.propTypes = {children: PropTypes.node.isRequired};
 
 it("Selecting and unselecting players works", function () {
     const {queryByText, getByText, getByLabelText} = render(

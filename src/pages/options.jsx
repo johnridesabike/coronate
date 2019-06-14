@@ -8,6 +8,7 @@ import {
 import HasSidebar from "../components/sidebar-default";
 import Icons from "../components/icons";
 import demoData from "../demo-data";
+import testData from "../test-data";
 
 export default function Options(props) {
     const [tournaments, tourneysDispatch] = useAllTournamentsDb();
@@ -40,7 +41,6 @@ export default function Options(props) {
     function handleFile(event) {
         event.preventDefault();
         const reader = new FileReader();
-        // eslint-disable-next-line fp/no-mutation
         reader.onload = function (ev) {
             const data = ev.target.result;
             const importData = JSON.parse(data);
@@ -52,6 +52,10 @@ export default function Options(props) {
     function reloadDemoData(event) {
         event.preventDefault();
         loadData(demoData);
+    }
+    function loadTestData(event) {
+        event.preventDefault();
+        loadData(testData);
     }
     return (
         <HasSidebar>
@@ -111,6 +115,8 @@ export default function Options(props) {
                 <fieldset>
                     <legend>Reset all changes</legend>
                     <button onClick={reloadDemoData}>Reload demo data</button>
+                    {" "}
+                    <button onClick={loadTestData}>Load testing data</button>
                 </fieldset>
                 <form onSubmit={handleText}>
                     <fieldset>

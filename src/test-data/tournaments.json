@@ -22,5 +22,211 @@
             3
         ],
         "name": "Bye Round Tourney"
+    },
+    "Simple_Pairing_______": {
+        "byeQueue": [],
+        "date": "2019-06-14T11:40:34.407Z",
+        "id": "Simple_Pairing_______",
+        "playerIds": [
+            "Newbie_McNewberson___",
+            "Grandy_McMaster______",
+            "Joel_Robinson________",
+            "Dr_Clayton_Forrester_",
+            "TVs_Frank____________",
+            "Crow_T_Robot_________",
+            "Tom_Servo____________",
+            "Gypsy________________"
+        ],
+        "roundList": [
+            [
+                {
+                    "id": "KdLva8hWqYHdaU9KnFTe2",
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "newRating": [
+                        1699,
+                        2600
+                    ],
+                    "origRating": [
+                        1700,
+                        2600
+                    ],
+                    "playerIds": [
+                        "Crow_T_Robot_________",
+                        "Grandy_McMaster______"
+                    ]
+                },
+                {
+                    "id": "WDPFsNF1yADs4qofFwCY0",
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "newRating": [
+                        1650,
+                        2389
+                    ],
+                    "origRating": [
+                        1600,
+                        2400
+                    ],
+                    "playerIds": [
+                        "Gypsy________________",
+                        "Joel_Robinson________"
+                    ]
+                },
+                {
+                    "id": "R5sXfTOJw5vrJ4IytAjSi",
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "newRating": [
+                        1400,
+                        2100
+                    ],
+                    "origRating": [
+                        1400,
+                        2100
+                    ],
+                    "playerIds": [
+                        "TVs_Frank____________",
+                        "Dr_Clayton_Forrester_"
+                    ]
+                },
+                {
+                    "id": "2YOsn_JJFnaUMhRBAc9KY",
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "newRating": [
+                        1597,
+                        1728
+                    ],
+                    "origRating": [
+                        800,
+                        1800
+                    ],
+                    "playerIds": [
+                        "Newbie_McNewberson___",
+                        "Tom_Servo____________"
+                    ]
+                }
+            ],
+            []
+        ],
+        "tieBreaks": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "name": "Simple Pairing"
+    },
+    "Pairing_With_Draws___": {
+        "byeQueue": [],
+        "date": "2019-06-14T14:18:06.686Z",
+        "id": "Pairing_With_Draws___",
+        "playerIds": [
+            "Newbie_McNewberson___",
+            "Grandy_McMaster______",
+            "Joel_Robinson________",
+            "Dr_Clayton_Forrester_",
+            "TVs_Frank____________",
+            "Crow_T_Robot_________",
+            "Tom_Servo____________",
+            "Gypsy________________"
+        ],
+        "roundList": [
+            [
+                {
+                    "id": "ryWXwvFGwBKQqGBbMYeps",
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "newRating": [
+                        1699,
+                        2600
+                    ],
+                    "origRating": [
+                        1700,
+                        2600
+                    ],
+                    "playerIds": [
+                        "Crow_T_Robot_________",
+                        "Grandy_McMaster______"
+                    ]
+                },
+                {
+                    "id": "2KKVbi0AfNxfJAJobTgP5",
+                    "result": [
+                        1,
+                        0
+                    ],
+                    "newRating": [
+                        1650,
+                        2389
+                    ],
+                    "origRating": [
+                        1600,
+                        2400
+                    ],
+                    "playerIds": [
+                        "Gypsy________________",
+                        "Joel_Robinson________"
+                    ]
+                },
+                {
+                    "id": "zdlBHBAqgV2qabn2oBa2a",
+                    "result": [
+                        0,
+                        1
+                    ],
+                    "newRating": [
+                        1400,
+                        2100
+                    ],
+                    "origRating": [
+                        1400,
+                        2100
+                    ],
+                    "playerIds": [
+                        "TVs_Frank____________",
+                        "Dr_Clayton_Forrester_"
+                    ]
+                },
+                {
+                    "id": "8fGxU3tLpd8GibuSQr9-Y",
+                    "result": [
+                        0.5,
+                        0.5
+                    ],
+                    "newRating": [
+                        1197,
+                        1764
+                    ],
+                    "origRating": [
+                        800,
+                        1800
+                    ],
+                    "playerIds": [
+                        "Newbie_McNewberson___",
+                        "Tom_Servo____________"
+                    ]
+                }
+            ],
+            []
+        ],
+        "tieBreaks": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "name": "Pairing with draws"
     }
 }
