@@ -47,7 +47,7 @@ gulp.task("svg-to-web-icons", function () {
 
 gulp.task("build-electron-icon", function() {
     return sharp("./icon-src.svg")
-        .resize({height: 1024, width: 1024, fit: "cover"})
+        .resize({height: 512, width: 512, fit: "cover"})
         .toFile("../assets/icon.png")
         .catch((err) => log(err))
 });
