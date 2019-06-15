@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="no"?>
-<svg height="512" width="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg height="512" width="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <g id="king" transform="scale(4.25, 4.25)">
             <path
@@ -27,13 +27,14 @@
         <clipPath id="circle">
             <circle r="240" cy="272" cx="256"/>
         </clipPath>
-        <clipPath id="tail-clip" transform="rotate(18)">
+        <clipPath id="tail-clip">
             <rect
                 id="back-tail"
                 x="240"
                 y="16"
                 width="200"
                 height="512"
+                transform="rotate(18)"
             />
             <rect
                 id="front-tail"
@@ -41,6 +42,7 @@
                 y="80"
                 width="200"
                 height="512"
+                transform="rotate(18)"
             />
             <rect
                 id="top-tail"
@@ -48,6 +50,7 @@
                 y="-37"
                 width="128"
                 height="128"
+                transform="rotate(18)"
             />
         </clipPath>
         <rect
@@ -70,7 +73,7 @@
     />
     <g id="green-tail" fill="#0d7758">
         <g clip-path="url(#circle)">
-            <use href="#tail" x="1.5" y="38"/>
+            <use href="#tail" xlink:href="#tail" x="1.5" y="38"/>
         </g>
         <rect
             id="green-tail-outside"
@@ -85,26 +88,29 @@
     <use
         id="green-king"
         href="#king"
+        xlink:href="#king"
         x="198"
         y="306"
         fill="#14b184"
     />
     <g id="red-tail" fill="#c00043" clip-path="url(#circle)">
-        <use href="#tail" x="-192.5" y="100" />
+        <use href="#tail" xlink:href="#tail" x="-192.5" y="100" />
     </g>
     <use
         id="red-king"
         href="#king"
+        xlink:href="#king"
         x="4"
         y="368"
         fill="#ff0059"
     />
     <g id="blue-tail" fill="#07a2ff" clip-path="url(#circle)">
-        <use href="#tail" x="-96" y="228"/>
+        <use href="#tail" xlink:href="#tail" x="-96" y="228"/>
     </g>
     <use
         id="blue-king"
         href="#king"
+        xlink:href="#king"
         x="100"
         y="496"
         fill="#47baff"

@@ -17,10 +17,10 @@ const SvgComponent = (props) => (
             <clipPath id="prefix__b">
                 <circle r={240} cy={272} cx={256} />
             </clipPath>
-            <clipPath id="prefix__a" transform="rotate(18)">
-                <path d="M240 16h200v512H240z" />
-                <path d="M291 80h200v512H291z" />
-                <path d="M361-37h128V91H361z" />
+            <clipPath id="prefix__a">
+                <path transform="rotate(18)" d="M240 16h200v512H240z" />
+                <path transform="rotate(18)" d="M291 80h200v512H291z" />
+                <path transform="rotate(18)" d="M361-37h128V91H361z" />
             </clipPath>
             <path
                 id="prefix__c"
@@ -36,19 +36,37 @@ const SvgComponent = (props) => (
         />
         <g fill="#0d7758">
             <g clipPath="url(#prefix__b)">
-                <use href="#prefix__c" x={1.5} y={38} />
+                <use href="#prefix__c" xlinkHref="#prefix__c" x={1.5} y={38} />
             </g>
             <path d="M355.172 119.608l121.736 39.555-39.555 121.735-121.735-39.554z" />
         </g>
-        <use href="#prefix__d" x={198} y={306} fill="#14b184" />
+        <use
+            href="#prefix__d"
+            xlinkHref="#prefix__d"
+            x={198}
+            y={306}
+            fill="#14b184"
+        />
         <g fill="#c00043" clipPath="url(#prefix__b)">
-            <use href="#prefix__c" x={-192.5} y={100} />
+            <use href="#prefix__c" xlinkHref="#prefix__c" x={-192.5} y={100} />
         </g>
-        <use href="#prefix__d" x={4} y={368} fill="#ff0059" />
+        <use
+            href="#prefix__d"
+            xlinkHref="#prefix__d"
+            x={4}
+            y={368}
+            fill="#ff0059"
+        />
         <g fill="#07a2ff" clipPath="url(#prefix__b)">
-            <use href="#prefix__c" x={-96} y={228} />
+            <use href="#prefix__c" xlinkHref="#prefix__c" x={-96} y={228} />
         </g>
-        <use href="#prefix__d" x={100} y={496} fill="#47baff" />
+        <use
+            href="#prefix__d"
+            xlinkHref="#prefix__d"
+            x={100}
+            y={496}
+            fill="#47baff"
+        />
     </svg>
 );
 
