@@ -2,7 +2,7 @@ I tend to insert `TODO` comments throughout my code as reminders for low-priorit
 
 ### General API
 
-The matchup algorithm probably needs to be adjusted. It uses the blossom algorithm ([Wikipedia link](https://en.wikipedia.org/wiki/Blossom_algorithm)) to determine matches. I based its priorities on the USCF tiebreak options ([read about them here](http://www.uschess.org/content/view/7752/369/)), but my implementation is far from perfect. The source code at [`/src/pairing-scoring/pairing.js`](https://github.com/johnridesabike/chessahoochee/blob/master/src/pairing-scoring/pairing.js) has documentation on how it currently works. Where applicable, I tagged sections of code with USCF section numbers to explain their purpose.
+[See the pairing & scoring TODO document.](https://github.com/johnridesabike/chessahoochee/tree/master/src/pairing-scoring/TODO.md)
 
 ### User interface to-dos
 

@@ -18,7 +18,7 @@ WaneManorOpen.propTypes = {children: PropTypes.node.isRequired};
 it("The tie break scores calculate correctly", function () {
     const {getByTestId} = render(<WaneManorOpen><Scores /></WaneManorOpen>);
     const batman = (score) => getByTestId(dashify("Bruce Wayne " + score));
-    expect(batman("Modified median")).toHaveTextContent("4");
+    expect(batman("Median")).toHaveTextContent("4");
     expect(batman("Solkoff")).toHaveTextContent("7½");
     expect(batman("Cumulative score")).toHaveTextContent("10");
     expect(batman("Cumulative of opposition")).toHaveTextContent("15");

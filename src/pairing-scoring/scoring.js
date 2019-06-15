@@ -32,7 +32,7 @@ export {getPlayerScore};
 
 
 // USCF § 34E1.
-function getModifiedMedianScore(scoreData, id) {
+function getMedianScore(scoreData, id) {
     const scores = getOpponentScores(scoreData, id);
     return pipe(
         sort(ascend),
@@ -56,7 +56,7 @@ function getCumulativeScore(scoreData, id) {
     return sum(scoreList);
 }
 
-// USCF § 34E9.
+// USCF § 34E4.
 function getCumulativeOfOpponentScore(scoreData, id) {
     const opponentIds = Object.keys(scoreData[id].opponentResults);
     const scoreList = opponentIds.filter(
@@ -74,9 +74,9 @@ function getColorBalanceScore(scoreData, id) {
 const {ScoreCalculator} = types;
 const tieBreakMethods = {
     0: {
-        func: ScoreCalculator.of(getModifiedMedianScore),
+        func: ScoreCalculator.of(getMedianScore),
         id: 0,
-        name: "Modified median"
+        name: "Median"
     },
     1: {
         func: ScoreCalculator.of(getSolkoffScore),
