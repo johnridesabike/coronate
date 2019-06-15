@@ -1,8 +1,10 @@
-/* eslint-disable */
+/* eslint-disable max-len */
+/* eslint-disable camelcase */
 const favicons = require("favicons").stream;
 const gulp = require("gulp");
 const log = require("fancy-log");
 const sharp = require("sharp");
+const photon = require("photon-colors");
 
 gulp.task("svg-to-web-icons", function () {
     return gulp
@@ -12,7 +14,7 @@ gulp.task("svg-to-web-icons", function () {
             appName: "Chessahoochee: a chess tournament manager",                            // Your application's name. `string`
             appShortName: "Chessahoochee",                       // Your application's short_name. `string`. Optional. If not set, appName will be used
             appleStatusBarStyle: "default", // Style for Apple status bar: "black-translucent", "default", "black". `string`
-            background: "#363959",                       // Background colour for flattened icons. `string`
+            background: photon.INK_70,                       // Background colour for flattened icons. `string`
             developerName: "John Jackson",                      // Your (or your developer's) name. `string`
             developerURL: "https://johnridesa.bike/",                       // Your (or your developer's) URL. `string`
             dir: "auto",                              // Primary text direction for name, short_name, and description
@@ -45,9 +47,17 @@ gulp.task("svg-to-web-icons", function () {
         .pipe(gulp.dest("../public"));
 });
 
-gulp.task("build-electron-icon", function() {
-    return sharp("./icon-src.svg")
-        .resize({height: 512, width: 512, fit: "cover"})
-        .toFile("../assets/icon.png")
-        .catch((err) => log(err))
+gulp.task("build-electron-icons", function () {
+    const src = sharp("./icon-src.svg");
+    return Promise.all([
+        src.resize(512).toFile("../assets/icon.png").catch(log),
+        src.resize(16).toFile("../assets/icons/16x16.png").catch(log),
+        src.resize(24).toFile("../assets/icons/24x24.png").catch(log),
+        src.resize(32).toFile("../assets/icons/32x32.png").catch(log),
+        src.resize(48).toFile("../assets/icons/48x48.png").catch(log),
+        src.resize(64).toFile("../assets/icons/64x64.png").catch(log),
+        src.resize(96).toFile("../assets/icons/96x96.png").catch(log),
+        src.resize(128).toFile("../assets/icons/128x128.png").catch(log),
+        src.resize(256).toFile("../assets/icons/256x256.png").catch(log)
+    ]);
 });

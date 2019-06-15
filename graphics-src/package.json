@@ -6,7 +6,8 @@
   "scripts": {
     "minify-logo": "svgo icon-src.svg -o icon-min.svg",
     "jsxify-logo": "svgr < icon-src.svg > ../src/components/logo.jsx --icon",
-    "build:web-icons": "gulp svg-to-web-icons"
+    "build:web-icons": "gulp svg-to-web-icons",
+    "build:electron-icons": "gulp build-electron-icons"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
@@ -18,5 +19,7 @@
     "sharp": "^0.22.1",
     "svgo": "^1.2.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "photon-colors": "^3.3.2"
+  }
 }
