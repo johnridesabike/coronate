@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
 import {ratings} from "../../../pairing-scoring";
 import styles from "./round.module.css";
+import {sum} from "ramda";
 import {useTournament} from "../../../hooks";
 
 export default function MatchRow({
@@ -105,7 +106,7 @@ export default function MatchRow({
             type: "SET_PLAYER_RATING"
         });
         // if the result hasn't been scored yet, increment the matchCount
-        if (match.result.reduce((a, b) => a + b) === 0) {
+        if (sum(match.result) === 0) {
             playersDispatch({
                 id: white.id,
                 matchCount: white.matchCount + 1,

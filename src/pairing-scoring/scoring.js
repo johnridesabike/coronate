@@ -48,8 +48,8 @@ function getSolkoffScore(scoreData, id) {
 }
 // USCF § 34E3.
 function getCumulativeScore(scoreData, id) {
+    // turn the regular score list into a "running" score list
     const scoreList = scoreData[id].resultsNoByes.reduce(
-        // turn the regular score list into a "running" score list
         (acc, score) => acc.concat([last(acc) + score]),
         [0]
     );

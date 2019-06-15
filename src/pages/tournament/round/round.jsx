@@ -4,6 +4,7 @@ import Icons from "../../../components/icons";
 import NotFound from "../../../components/404";
 import PropTypes from "prop-types";
 import RoundTable from "./round-table";
+import {sum} from "ramda";
 import {useTournament} from "../../../hooks";
 
 export default function Round({roundId}) {
@@ -20,7 +21,7 @@ export default function Round({roundId}) {
     }
     function unMatch(matchId) {
         const match = findById(matchId, matchList);
-        if (match.result.reduce((a, b) => a + b) !== 0) {
+        if (sum(match.result) !== 0) {
             // checks if the match has been scored yet & resets the players'
             // records
             match.playerIds.forEach(function (pId, color) {

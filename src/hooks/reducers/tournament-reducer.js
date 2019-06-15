@@ -3,6 +3,7 @@ import {
     append,
     assoc,
     concat,
+    curry,
     filter,
     findIndex,
     lensPath,
@@ -185,7 +186,7 @@ export default function tournamentReducer(state, action) {
         return assoc(
             "roundList",
             map(
-                map((match) => scoreByeMatch(match, action.value)),
+                map(curry(scoreByeMatch)(action.value)),
                 state.roundList
             ),
             state

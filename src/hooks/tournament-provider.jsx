@@ -42,16 +42,20 @@ export function TournamentProvider({children, tourneyId}) {
     useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
     useEffect(
         function initTourneyFromDb() {
+            let didCancel = false;
             (async function () {
                 const value = await tourneyStore.getItem(tourneyId);
                 console.log("loaded:", tourneyId);
                 if (!value) {
                     setIsDbError(true);
-                } else {
+                } else if(!didCancel) {
                     tourneyDispatch({state: value || {}, type: "SET_STATE"});
                     setIsTourneyLoaded(true);
                 }
             }());
+            return function unMount() {
+                didCancel = true;
+            };
         },
         [tourneyId]
     );
@@ -76,6 +80,7 @@ export function TournamentProvider({children, tourneyId}) {
                 setIsPlayersLoaded(true);
                 return;
             }
+            let didCancel = false;
             (async function () {
                 const values = await playerStore.getItems(allTheIds);
                 // This safeguards against trying to fetch dummy IDs or IDs from
@@ -87,12 +92,17 @@ export function TournamentProvider({children, tourneyId}) {
                     Object.keys(players)
                 );
                 console.log("unchanged players:", unChangedPlayers);
-                if (unChangedPlayers.length !== 0) {
+                if (unChangedPlayers.length !== 0 && !didCancel) {
                     console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
                 }
-                setIsPlayersLoaded(true);
+                if (!didCancel) {
+                    setIsPlayersLoaded(true);
+                }
             }());
+            return function unMount() {
+                didCancel = true;
+            };
         },
         [tourney.roundList, players, tourney.playerIds]
     );

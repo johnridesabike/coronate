@@ -51,6 +51,7 @@ function useAllItemsFromDb(store, type) {
     useLoadingCursor(isLoaded);
     useEffect(
         function loadItemsFromDb() {
+            let didCancel = false;
             (async function () {
                 const results = await store.getItems();
                 console.log("loaded items from", store._config.storeName);
@@ -60,9 +61,14 @@ function useAllItemsFromDb(store, type) {
                 // ideally update the data to a valid type instead of removing
                 // it completely.
                 const cleanResults =  filter(type.is, results);
-                dispatch({state: cleanResults, type: "LOAD_STATE"});
-                setIsLoaded(true);
+                if (!didCancel) {
+                    dispatch({state: cleanResults, type: "LOAD_STATE"});
+                    setIsLoaded(true);
+                }
             }());
+            return function unMount() {
+                didCancel = true;
+            };
         },
         [store, type]
     );
@@ -106,12 +112,20 @@ export function useOptionsDb() {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(
         function initOptionsFromDb() {
+            let didCancel = false;
             // This uses `iterate` to easily set key-value pairs.
             optionsStore.iterate(function (value, key) {
-                dispatch({option: key, type: "SET_OPTION", value: value});
+                if (!didCancel) {
+                    dispatch({option: key, type: "SET_OPTION", value: value});
+                }
             }).then(function () {
-                setIsLoaded(true);
+                if (!didCancel) {
+                    setIsLoaded(true);
+                }
             });
+            return function unMount() {
+                didCancel = true;
+            };
         },
         []
     );

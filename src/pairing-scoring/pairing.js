@@ -1,11 +1,11 @@
 import {
     add,
-    assoc,
     descend,
     filter,
     findLastIndex,
     last,
     map,
+    mergeRight,
     pipe,
     pluck,
     prop,
@@ -51,7 +51,7 @@ const differentDueColor = priority(4);
 // This is useful for dividing against a calculated priority, to inspect how
 // "compatible" two players may be.
 const maxPriority = pipe(
-    add(differentHalf(false)(1)),
+    add(differentHalf(true)(1)),
     add(differentDueColor(true)),
     add(sameScores(1)),
     add(avoidMeetingTwice(true))
@@ -118,7 +118,7 @@ const splitInHalf = (list) => splitAt(list.length / 2, list);
 // for each object sent to this, it determines whether or not it's in the
 // "upper half" of it's score group.
 // (USCF § 29C1.)
-function upperHalfReducer(acc, playerData, ignore, src) {
+function upperHalfMapper(playerData, ignore, src) {
     const [upperHalfIds, lowerHalfIds] = pipe(
         filter((p2) => p2.score === playerData.score),
         // this may be redundant if the list was already sorted.
@@ -130,13 +130,10 @@ function upperHalfReducer(acc, playerData, ignore, src) {
     const halfPos = (isUpperHalf)
         ? upperHalfIds.indexOf(playerData.id)
         : lowerHalfIds.indexOf(playerData.id);
-    return acc.concat([pipe(
-        assoc("isUpperHalf", isUpperHalf),
-        assoc("halfPos", halfPos)
-    )(playerData)]);
+    return mergeRight(playerData, {halfPos, isUpperHalf});
 }
 export function setUpperHalves(data) {
-    return data.reduce(upperHalfReducer, []);
+    return data.map(upperHalfMapper);
 }
 
 // This this returns a tuple of two objects: The modified array of player data

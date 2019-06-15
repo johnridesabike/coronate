@@ -11,7 +11,7 @@ import {assoc, curry} from "ramda";
 import {pairPlayers, setByePlayer} from "../../pairing-scoring";
 import t from "tcomb";
 
-export function scoreByeMatch(match, byeValue) {
+export function scoreByeMatch(byeValue, match) {
     if (match.playerIds[WHITE] === DUMMY_ID) {
         return assoc("result", [0, byeValue], match);
     } else if (match.playerIds[BLACK] === DUMMY_ID) {
@@ -21,20 +21,11 @@ export function scoreByeMatch(match, byeValue) {
 }
 
 export function autoPair({
-    // avoidList,
     pairData,
     byeValue,
     players,
-    // roundId,
     tourney
 }) {
-    // const pairData = pipe(
-    //     (rounds) => rounds2Matches(rounds, roundId),
-    //     matches2ScoreData,
-    //     createPairingData(players, avoidList),
-    //     sortDataForPairing,
-    //     setUpperHalves,
-    // )(tourney.roundList);
     const [
         pairDataNoByes,
         byePlayerData
@@ -59,11 +50,7 @@ export function autoPair({
             })
         )
     );
-    return newMatchList.reduce(
-        // Set match results for bye matches
-        (acc, match) => acc.concat([scoreByeMatch(match, byeValue)]),
-        []
-    );
+    return newMatchList.map(curry(scoreByeMatch)(byeValue));
 }
 
 export function manualPair(pair, byeValue) {
@@ -73,5 +60,5 @@ export function manualPair(pair, byeValue) {
         origRating: [pair[WHITE].rating, pair[BLACK].rating],
         playerIds: [pair[WHITE].id, pair[BLACK].id]
     });
-    return scoreByeMatch(match, byeValue);
+    return scoreByeMatch(byeValue, match);
 }
