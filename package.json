@@ -96,8 +96,7 @@
       "buildResources": "assets"
     },
     "extraFiles": [
-      "LICENSE",
-      "README.md"
+      "LICENSE"
     ]
   }
 }

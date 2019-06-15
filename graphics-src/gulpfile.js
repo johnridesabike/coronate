@@ -2,6 +2,7 @@
 const favicons = require("favicons").stream;
 const gulp = require("gulp");
 const log = require("fancy-log");
+const sharp = require("sharp");
 
 gulp.task("svg-to-web-icons", function () {
     return gulp
@@ -42,4 +43,11 @@ gulp.task("svg-to-web-icons", function () {
         }))
         .on("error", log)
         .pipe(gulp.dest("../public"));
+});
+
+gulp.task("build-electron-icon", function() {
+    return sharp("./icon-src.svg")
+        .resize({height: 1024, width: 1024, fit: "cover"})
+        .toFile("../assets/icon.png")
+        .catch((err) => log(err))
 });

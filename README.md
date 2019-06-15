@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Logo" src="graphics-src/icon-pretty.svg" height="128" width="128" />
+<img alt="Logo" src="graphics-src/icon-min.svg" height="128" width="128" />
 <h1>Chessahoochee</h1>
 </div>
 
