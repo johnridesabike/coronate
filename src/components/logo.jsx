@@ -3,7 +3,7 @@ import React from "react";
 const SvgComponent = (props) => (
     <svg height="1em" width="1em" viewBox="0 0 512 512" {...props}>
         <defs>
-            <g id="prefix__c">
+            <g id="prefix__d">
                 <path
                     d="M13.96-9.77l2.32-8.58-1.16-6.58q-.04 0-.11-.14-.17-.24-1-.65-.83-.4-1.92-1.39-1.54-1.3-2.4-2.1-.87-.81-1.57-1.76-2.14-2.96-2.39-7.14-.35-4.04 3.27-8.05 3.66-4.01 9.88-3.76 2.32.14 5.45 1.12 1.02.42 2.09.83 1.07.4 2.13.83.56.28.98.56-.17-.74-.17-1.48 0-2.74 1.95-4.67 1.95-1.94 4.69-1.97 2.74 0 4.68 1.95 1.93 1.95 1.93 4.66 0 .56-.14 1.47.49-.31.95-.52 1.62-.71 4.25-1.66 3.03-1.02 5.45-1.16 6.22-.28 9.84 3.76 3.56 4.01 3.31 8.06-.28 4.18-2.43 7.13-.7.95-1.58 1.78-.88.82-2.35 2.09-1.16.98-1.97 1.39-.81.4-.95.65-.04.07-.07.1-.04.04-.04.07l-1.12 6.61 2.32 8.69q-1.76 1.58-7.88 2.6-6.11 1.02-14.13 1.02-8.16 0-14.34-1.07-6.19-1.08-7.77-2.69zm23.31-49.61l-.04 4.57h-2.5v-4.6h-2.91q-1.2 0-1.2-1.16v-.04q0-1.16 1.2-1.16h2.91v-2.99q0-1.23 1.27-1.23 1.23 0 1.23 1.23v2.99h3.02q1.16 0 1.16 1.16v.04q0 1.16-1.16 1.16l-2.98.03z"
                     transform="scale(4.25)"
@@ -14,36 +14,41 @@ const SvgComponent = (props) => (
                     transform="scale(4.25)"
                 />
             </g>
-            <clipPath id="prefix__a">
+            <clipPath id="prefix__b">
                 <circle r={240} cy={272} cx={256} />
             </clipPath>
-            <g id="prefix__b" strokeWidth={0}>
-                <path transform="rotate(18)" d="M0 0h200v512H0z" />
-                <path transform="rotate(18)" d="M52 60h200v512H52z" />
-                <path transform="rotate(18)" d="M121.5-55h128V73h-128z" />
-            </g>
+            <clipPath id="prefix__a" transform="rotate(18)">
+                <path d="M240 16h200v512H240z" />
+                <path d="M291 80h200v512H291z" />
+                <path d="M361-37h128V91H361z" />
+            </clipPath>
+            <path
+                id="prefix__c"
+                clipPath="url(#prefix__a)"
+                d="M0 0h512v512H0z"
+            />
         </defs>
         <rect
             width="100%"
             height="100%"
             fill="#363959"
-            clipPath="url(#prefix__a)"
+            clipPath="url(#prefix__b)"
         />
         <g fill="#0d7758">
-            <g clipPath="url(#prefix__a)">
-                <use href="#prefix__b" x={224} y={130} />
+            <g clipPath="url(#prefix__b)">
+                <use href="#prefix__c" x={1.5} y={38} />
             </g>
             <path d="M355.172 119.608l121.736 39.555-39.555 121.735-121.735-39.554z" />
         </g>
-        <use href="#prefix__c" x={198} y={306} fill="#14b184" />
-        <g fill="#c00043" clipPath="url(#prefix__a)">
-            <use href="#prefix__b" x={30} y={192} />
+        <use href="#prefix__d" x={198} y={306} fill="#14b184" />
+        <g fill="#c00043" clipPath="url(#prefix__b)">
+            <use href="#prefix__c" x={-192.5} y={100} />
         </g>
-        <use href="#prefix__c" x={4} y={368} fill="#ff0059" />
-        <g fill="#07a2ff" clipPath="url(#prefix__a)">
-            <use href="#prefix__b" x={125.5} y={320.5} />
+        <use href="#prefix__d" x={4} y={368} fill="#ff0059" />
+        <g fill="#07a2ff" clipPath="url(#prefix__b)">
+            <use href="#prefix__c" x={-96} y={228} />
         </g>
-        <use href="#prefix__c" x={100} y={496} fill="#47baff" />
+        <use href="#prefix__d" x={100} y={496} fill="#47baff" />
     </svg>
 );
 
