@@ -1,4 +1,5 @@
 import {
+    addIndex,
     assoc,
     descend,
     dissoc,
@@ -9,6 +10,7 @@ import {
     pipe,
     pluck,
     prop,
+    reduce,
     sort,
     sortWith,
     splitAt,
@@ -139,7 +141,6 @@ const sortByScoreThenRating = sortWith([
 // After calling this, be sure to add the bye round after the non-bye'd
 // players are paired.
 export function setByePlayer(byeQueue, dummyId, data) {
-    t.dict(t.String, types.PairingData);
     const hasNotHadBye = (p) => !p.opponents.includes(dummyId);
     // if the list is even, just return it.
     if (Object.keys(data).length % 2 === 0) {
@@ -172,6 +173,20 @@ export function setByePlayer(byeQueue, dummyId, data) {
     return [dataWithoutBye, byeData];
 }
 
+
+function assignColorsForPair(pair) {
+    const [player1, player2] = pair;
+    // This is a quick-and-dirty heuristic to keep color balances
+    // mostly equal. Ideally, it would also examine due colors and how
+    // many times a player played each color last.
+    return (sum(player1.colorScores) < sum(player2.colorScores))
+        // player 1 has played as white more than player 2
+        ? [player2.id, player1.id]
+        // player 1 has played as black more than player 2
+        // (or they're equal).
+        : [player1.id, player2.id];
+}
+
 const netScoreDescend = (pair1, pair2) => (
     sum(pluck("score", pair2)) - sum(pluck("score", pair1))
 );
@@ -179,17 +194,15 @@ const netRatingDescend = (pair1, pair2) => (
     sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
 );
 const sortByNetScoreThenRating = sortWith([netScoreDescend, netRatingDescend]);
-
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.
 export function pairPlayers(pairingData) {
-    t.dict(t.String, types.PairingData);
     // Because `blossom` has to use numbers that correspond to array indices,
     // we'll use `playerIdArray` as our source for that.
     const playerIdArray = Object.keys(pairingData);
     // Turn the data into blossom-compatible input.
-    function idealReduce(accArr, player1, index, srcArr) {
+    function pairIdealReducer(accArr, player1, index, srcArr) {
         // slice out players who have already computed, plus the current one
         const playerMatches = srcArr.slice(index + 1).map(
             (player2) => [
@@ -200,56 +213,40 @@ export function pairPlayers(pairingData) {
         );
         return accArr.concat(playerMatches);
     }
-    const potentialMatches = Object.values(pairingData).reduce(idealReduce, []);
-    // Feed all of the potential matches to Edmonds-blossom and let the
-    // algorithm work its magic. This returns an array where each index is the
-    // ID of one player and each value is the ID of the matched player.
-    const blossomResults = blossom(potentialMatches);
-    // Translate those IDs into actual pairs of player Ids.
-    const reducedResults = blossomResults.reduce(
-        function blossom2Pairs(acc, p1Index, p2Index) {
-            // Filter out unmatched players. Blossom will automatically include
-            // their missing IDs in its results.
-            if (p1Index !== -1) {
-                // Translate the indices into ID strings
-                const p1Id = playerIdArray[p1Index];
-                const p2Id = playerIdArray[p2Index];
-                const p1 = pairingData[p1Id];
-                const p2 = pairingData[p2Id];
-
-                // TODO: in the future, we may store the ideal for debugging
-                // Because it rarely serves a purpose, we're not including it
-                // for simplification.
-                // const ideal = potentialMatches.filter(
-                //     (pair) => pair[0] === p1Id && pair[1] === p2Id
-                // )[0][2];
-
-                // Blossom returns a lot of redundant matches. Check that this
-                // matchup wasn't already added.
-                const matched = acc.map((pair) => pair[0]);
-                if (!matched.includes(p1) && !matched.includes(p2)) {
-                    return acc.concat([[p1, p2]]);
-                }
-            }
+    function blossom2Pairs(acc, p1Index, p2Index) {
+        // Filter out unmatched players. Blossom will automatically include
+        // their missing IDs in its results.
+        if (p1Index === -1) {
             return acc;
-        },
-        []
-    );
-    // Sort by net score and rating for board placement.
-    const sortedResults = sortByNetScoreThenRating(reducedResults);
-    const matches = sortedResults.map(
-        function assignColorsForPair(pair) {
-            const [player1, player2] = pair;
-            // This is a quick-and-dirty heuristic to keep color balances
-            // mostly equal. Ideally, it would also examine due colors and how
-            // many times a player played each color last.
-            return (sum(player1.colorScores) < sum(player2.colorScores))
-                // player 1 has played as white more than player 2
-                ? [player2.id, player1.id]
-                // player 1 has played as black more than player 2
-                // (or they're equal).
-                : [player1.id, player2.id];
         }
-    );
-    return matches;
+        // Translate the indices into ID strings
+        const p1 = pairingData[playerIdArray[p1Index]];
+        const p2 = pairingData[playerIdArray[p2Index]];
+        // TODO: in the future, we may store the ideal for debugging. Because it
+        // rarely serves a purpose, we're not including it now.
+        // const ideal = potentialMatches.filter(
+        //     (pair) => pair[0] === p1Id && pair[1] === p2Id
+        // )[0][2];
+        // Blossom returns a lot of redundant matches. Check that this matchup
+        // wasn't already added.
+        const matched = acc.map((pair) => pair[0]);
+        if (!matched.includes(p1) && !matched.includes(p2)) {
+            return acc.concat([[p1, p2]]);
+        }
+        return acc;
+    }
+    // This makes Ramda's `reduce` work more like `Array.prototype.reduce`.
+    const reduceWithIndices = addIndex(reduce);
+    return pipe(
+        Object.values,
+        reduceWithIndices(pairIdealReducer, []),
+        // Feed all of the potential matches to Edmonds-blossom and let the
+        // algorithm work its magic. This returns an array where each index is the
+        // ID of one player and each value is the ID of the matched player.
+        blossom,
+        // Translate those IDs into actual pairs of player Ids.
+        reduceWithIndices(blossom2Pairs, []),
+        sortByNetScoreThenRating,
+        map(assignColorsForPair)
+    )(pairingData);
 }

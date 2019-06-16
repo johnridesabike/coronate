@@ -1,33 +1,9 @@
 import Icons from "./icons";
 import PropTypes from "prop-types";
 import React from "react";
+import classNames from "classnames";
 import {omit} from "ramda";
 import styles from "./utility.module.css";
-// import {usePlayers} from "../state";
-
-export const Button = ({children, action}) => (
-    <button onClick={action}>
-        {children}
-    </button>
-);
-Button.propTypes = {
-    action: PropTypes.func.isRequired,
-    children: PropTypes.node.isRequired
-};
-
-export const BackButton = ({action}) => (
-    <Button action={action}>&lt; Back</Button>
-);
-BackButton.propTypes = {
-    action: PropTypes.func.isRequired
-};
-
-export const OpenButton = ({action}) => (
-    <Button action={action}>Open &gt;</Button>
-);
-OpenButton.propTypes = {
-    action: PropTypes.func.isRequired
-};
 
 export function Panel({children, style}) {
     return (
@@ -43,9 +19,8 @@ Panel.propTypes = {
 
 export function PanelContainer(props) {
     return (
-        <div {...props} className={styles.panels + " " + props.className}>
+        <div {...props} className={classNames(styles.panels, props.className)}>
             {props.children}
-            {/* {React.Children.map(props.children, (child) => child)} */}
         </div>
     );
 }
@@ -116,7 +91,7 @@ Notification.propTypes = {
 
 /**
  * This just creates empty space to balance the layout, e.g. if there's a button
- * on one side of a label that's offsetting it.
+ * on one side of a centered element that's offsetting it.
  */
 const PlaceholderButton = () => (
     <button
@@ -149,10 +124,10 @@ export function SortLabel({label, sortKey, data}) {
                 {label}
             </button>
             <button
-                className={
-                    (data.key === sortKey)
-                    ? "dont-hide button-ghost"
-                    : "button-ghost"}
+                className={classNames(
+                    "button-ghost",
+                    {"dont-hide": data.key === sortKey}
+                )}
                 onClick={toggleDirAndSetKey}
             >
                 {(data.isDescending)
