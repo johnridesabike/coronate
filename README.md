@@ -25,7 +25,7 @@ You'll need [Node.js](https://nodejs.org/) version 10. Chessahoochee probably ru
 
 #### 1: Grab the code
 
-For most people, the easiest method to to click the "Clone or Download" button on [this project's GitHub homepage](https://github.com/johnridesabike/chessahoochee).
+For most people, the easiest method is to click the "Clone or Download" button on [this project's GitHub homepage](https://github.com/johnridesabike/chessahoochee).
 
 If you have Git installed, you can also run:
 ```
