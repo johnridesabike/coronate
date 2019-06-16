@@ -100,18 +100,6 @@ export function calcPairIdeal(player1, player2) {
     ]);
 }
 
-// Sort the data so matchups default to order by score and rating.
-// TODO: I'm not sure if this should be necessary to use, but it seems to break
-// the algorithm if it's removed. In the future, it may become obsolete.
-// `setByePlayer` requires it to work, but `setByePlayer` could do its own
-// sorting IMO.
-function sortDataForPairing(data) {
-    return sortWith(
-        [descend(prop("score")), descend(prop("rating"))],
-        data
-    );
-}
-
 const splitInHalf = (list) => splitAt(list.length / 2, list);
 
 // for each object sent to this, it determines whether or not it's in the
@@ -140,6 +128,11 @@ export function setUpperHalves(data) {
     return Object.values(data).reduce(upperHalfReducer, {});
 }
 
+// Sort the data so matchups default to order by score and rating.
+const sortByScoreThenRating = sortWith([
+    descend(prop("score")),
+    descend(prop("rating"))
+]);
 // This this returns a tuple of two objects: The modified array of player data
 // without the player assigned a bye, and the player assigned a bye.
 // If no player is assigned a bye, the second object is `null`.
@@ -155,7 +148,7 @@ export function setByePlayer(byeQueue, dummyId, data) {
     const dataList = pipe(
         Object.values,
         filter(hasNotHadBye),
-        sortDataForPairing
+        sortByScoreThenRating
     )(data);
     const playersWithoutByes = dataList.map((p) => p.id);
     const nextByeSignup = t.list(t.String)(byeQueue).filter(
@@ -170,7 +163,10 @@ export function setByePlayer(byeQueue, dummyId, data) {
         : last(dataList);
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
-    const id = (dataForNextBye) ? dataForNextBye.id : dataList.length - 1;
+    const id = (dataForNextBye)
+        ? dataForNextBye.id
+        // TODO: test for this
+        : pipe(Object.values, sortByScoreThenRating, last)(data);
     const byeData = data[id];
     const dataWithoutBye = dissoc(id, data);
     return [dataWithoutBye, byeData];
@@ -182,6 +178,7 @@ const netScoreDescend = (pair1, pair2) => (
 const netRatingDescend = (pair1, pair2) => (
     sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
 );
+const sortByNetScoreThenRating = sortWith([netScoreDescend, netRatingDescend]);
 
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
@@ -239,10 +236,7 @@ export function pairPlayers(pairingData) {
         []
     );
     // Sort by net score and rating for board placement.
-    const sortedResults = sortWith(
-        [netScoreDescend, netRatingDescend],
-        reducedResults
-    );
+    const sortedResults = sortByNetScoreThenRating(reducedResults);
     const matches = sortedResults.map(
         function assignColorsForPair(pair) {
             const [player1, player2] = pair;
