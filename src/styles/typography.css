@@ -109,3 +109,7 @@ code {
     color: var(--white-100);
     background-color: var(--red-60);
 }
+
+.title {
+    font-family: "Fira Sans", var(--font-main), sans-serif;
+}

@@ -25,10 +25,6 @@
     padding: 0 16px;
 }
 
-.footer p {
-    text-align: right;
-}
-
 .footer a {
     color: var(--teal-50);
 }

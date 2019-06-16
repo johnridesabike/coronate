@@ -1,11 +1,15 @@
 import React, {useState} from "react";
-import {findById, findIndexById} from "../../../components/utility";
 import Icons from "../../../components/icons";
 import NotFound from "../../../components/404";
 import PropTypes from "prop-types";
 import RoundTable from "./round-table";
+import {findById} from "../../../components/utility";
 import {sum} from "ramda";
 import {useTournament} from "../../../hooks";
+
+export function findIndexById(id, list) {
+    return list.indexOf(findById(id, list));
+}
 
 export default function Round({roundId}) {
     const {

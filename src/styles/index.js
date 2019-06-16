@@ -1,3 +1,4 @@
+import "typeface-fira-sans";
 import "./index.css";
 import "photon-colors/photon-colors.css";
 /* https://design.firefox.com/photon/ */

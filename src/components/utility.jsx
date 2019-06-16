@@ -171,10 +171,7 @@ SortLabel.propTypes = {
 /*******************************************************************************
  * Non-JSX functions
  ******************************************************************************/
+// TODO: get rid of this.
 export function findById(id, list) {
     return list.filter((x) => x.id === id)[0];
-}
-
-export function findIndexById(id, list) {
-    return list.indexOf(findById(id, list));
 }

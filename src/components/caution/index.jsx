@@ -1,8 +1,13 @@
+import PropTypes from "prop-types";
 import React from "react";
+import classNames from "classnames";
 import styles from "./index.module.css";
 
-const Caution = () => (
-    <aside className={styles.caution + " body-20"}>
+const Caution = (props) => (
+    <aside
+        {...props}
+        className={classNames(styles.caution, "body-20", props.className)}
+    >
         <p className={styles.caution__text}>
             This is beta software. Want to help make it better? Check out the
             {" "}
@@ -17,5 +22,8 @@ const Caution = () => (
         </p>
     </aside>
 );
+Caution.propTypes = {
+    className: PropTypes.string
+};
 
 export default Caution;

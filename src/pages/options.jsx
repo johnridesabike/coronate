@@ -8,7 +8,17 @@ import {
 import HasSidebar from "../components/sidebar-default";
 import Icons from "../components/icons";
 import demoData from "../demo-data";
+import fromJSON from "tcomb/lib/fromJSON";
+import styles from "./options.module.css";
 import testData from "../test-data";
+import {types} from "../data-types";
+
+function invalidAlert() {
+    window.alert(
+        "That data is invalid! A more helpful error message could not be "
+        + "written yet, either."
+    );
+}
 
 export default function Options(props) {
     const [tournaments, tourneysDispatch] = useAllTournamentsDb();
@@ -28,23 +38,40 @@ export default function Options(props) {
         [exportData]
     );
     function loadData(data) {
-        tourneysDispatch({state: data.tournaments, type: "LOAD_STATE"});
-        optionsDispatch({state: data.options, type: "LOAD_STATE"});
-        playersDispatch({state: data.players, type: "LOAD_STATE"});
+        tourneysDispatch({
+            state: fromJSON(data.tournaments, types.TourneysDb),
+            type: "LOAD_STATE"
+        });
+        optionsDispatch({
+            state: fromJSON(data.options, types.OptionsDb),
+            type: "LOAD_STATE"
+        });
+        playersDispatch({
+            state: fromJSON(data.players, types.PlayersDb),
+            type: "LOAD_STATE"
+        });
         window.alert("Data loaded!");
     }
     function handleText(event) {
         event.preventDefault();
-        const importData = JSON.parse(text);
-        loadData(importData);
+        try {
+            const importData = JSON.parse(text);
+            loadData(importData);
+        } catch {
+            invalidAlert();
+        }
     }
     function handleFile(event) {
         event.preventDefault();
         const reader = new FileReader();
         reader.onload = function (ev) {
             const data = ev.target.result;
-            const importData = JSON.parse(data);
-            loadData(importData);
+            try {
+                const importData = JSON.parse(data);
+                loadData(importData);
+            } catch {
+                invalidAlert();
+            }
         };
         reader.readAsText(event.currentTarget.files[0]);
         event.currentTarget.value = ""; // so the filename won't linger onscreen
@@ -59,85 +86,81 @@ export default function Options(props) {
     }
     return (
         <HasSidebar>
-            <div className="content-area">
-                <h2>Game settings</h2>
+            <div className={styles.options + " content-area"}>
+                <h2>Bye settings</h2>
                 <form>
-                    <fieldset>
-                        <legend>Default bye value</legend>
-                        <label className="monospace body-30">
-                            1{" "}
-                            <input
-                                checked={options.byeValue === 1}
-                                type="radio"
-                                onChange={() => optionsDispatch({
-                                    option: "byeValue",
-                                    type: "SET_OPTION",
-                                    value: 1
-                                })}
-                            />
-                        </label>
-                        <label className="monospace body-30">
-                            ½{" "}
-                            <input
-                                checked={options.byeValue === 0.5}
-                                type="radio"
-                                onChange={() => optionsDispatch({
-                                    option: "byeValue",
-                                    type: "SET_OPTION",
-                                    value: 0.5
-                                })}
-                            />
-                        </label>
-                    </fieldset>
-                </form>
-                <h2>Data</h2>
-                <fieldset>
-                    <legend>Manage data</legend>
-                    <p>
-                        <a
-                            download="chessahoochee.json"
-                            href={
-                                "data:application/json,"
-                                + encodeURIComponent(JSON.stringify(exportData))
-                            }
-                        >
-                            <Icons.Download /> Export all data
-                        </a>
+                    <p className="caption-30">
+                        Select the default score for a bye round.
                     </p>
-                    <label htmlFor="file">Load data file:</label>
-                    <input
-                        id="file"
-                        name="file"
-                        type="file"
-                        onChange={handleFile}
-                    />
-                </fieldset>
-                <fieldset>
-                    <legend>Reset all changes</legend>
-                    <button onClick={reloadDemoData}>Reload demo data</button>
-                    {" "}
-                    <button onClick={loadTestData}>Load testing data</button>
-                </fieldset>
-                <form onSubmit={handleText}>
-                    <fieldset>
-                        <legend>
-                            Advanced: manually edit data
-                        </legend>
-                        <textarea
-                            className="json"
-                            cols={50}
-                            name="playerdata"
-                            rows={25}
-                            spellCheck={false}
-                            value={text}
-                            onChange={
-                                (event) => setText(event.currentTarget.value)
-                            }
+                    <label className="monospace body-30">
+                        1{" "}
+                        <input
+                            checked={options.byeValue === 1}
+                            type="radio"
+                            onChange={() => optionsDispatch({
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 1
+                            })}
                         />
-                        <p>
-                            <input type="submit" value="Load" />
-                        </p>
-                    </fieldset>
+                    </label>
+                    <label className="monospace body-30">
+                        ½{" "}
+                        <input
+                            checked={options.byeValue === 0.5}
+                            type="radio"
+                            onChange={() => optionsDispatch({
+                                option: "byeValue",
+                                type: "SET_OPTION",
+                                value: 0.5
+                            })}
+                        />
+                    </label>
+                </form>
+                <h2>Manage data</h2>
+                <p>
+                    <a
+                        download="chessahoochee.json"
+                        href={
+                            "data:application/json,"
+                            + encodeURIComponent(JSON.stringify(exportData))
+                        }
+                    >
+                        <Icons.Download /> Export all data
+                    </a>
+                </p>
+                <label htmlFor="file">Load data file:</label>
+                <input
+                    id="file"
+                    name="file"
+                    type="file"
+                    onChange={handleFile}
+                />
+                <h2>Danger zone</h2>
+                <p className="caption-30">
+                    I hope you know what you're doing...
+                </p>
+                <button onClick={reloadDemoData}>
+                    Reset demo data (this erases everything else)
+                </button>
+                {" "}
+                {process.env.NODE_ENV !== "production" &&
+                    <button onClick={loadTestData}>Load testing data</button>
+                }
+                <h3>Advanced: manually edit data</h3>
+                <form onSubmit={handleText}>
+                    <textarea
+                        className="json"
+                        cols={50}
+                        name="playerdata"
+                        rows={25}
+                        spellCheck={false}
+                        value={text}
+                        onChange={(event) => setText(event.currentTarget.value)}
+                    />
+                    <p>
+                        <input type="submit" value="Load" />
+                    </p>
                 </form>
             </div>
         </HasSidebar>

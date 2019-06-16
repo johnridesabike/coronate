@@ -16,7 +16,6 @@ import TournamentIndex, {
     Tournament,
     TournamentList
 } from "./pages/tournament";
-import Caution from "./components/caution";
 import Icons from "./components/icons";
 import NotFound from "./components/404";
 import Options from "./pages/options";
@@ -153,9 +152,9 @@ function App() {
                     </Router>
                 </main>
             </LocationProvider>
-            <footer className="footer">
+            {/* <footer className="footer">
                 <Caution />
-            </footer>
+            </footer> */}
         </div>
     );
 }

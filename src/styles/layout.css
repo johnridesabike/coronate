@@ -1,15 +1,14 @@
 .app {
     height: 100vh;
     display: grid;
-    grid-template-rows: 40px auto 32px;
+    grid-template-rows: 40px 1fr;
     grid-template-areas:
         "app-header"
-        "app-content"
-        "app-footer";
+        "app-content";
 }
 
 .app.isWindows.isElectron {
-    grid-template-rows: 32px auto 32px;
+    grid-template-rows: 32px 1fr;
 }
 
 .header {
@@ -116,6 +115,7 @@ div[role="group"] {
 }
 
 .footer {
+    display: none;
     grid-area: app-footer;
 }
 
