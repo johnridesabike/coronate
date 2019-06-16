@@ -3,7 +3,8 @@ import {useEffect, useState} from "react";
 import t from "tcomb";
 
 export function useSortedTable(origTable, defaultKey, defaultDescend = true) {
-    const [table, setTable] = useState(origTable);
+    const [sourceTable, setSourceTable] = useState(origTable);
+    const [table, setTable] = useState([]);
     const [key, setKey] = useState(defaultKey);
     const [isDescending, setIsDescending] = useState(defaultDescend);
     function toggleDirection() {
@@ -12,16 +13,16 @@ export function useSortedTable(origTable, defaultKey, defaultDescend = true) {
     useEffect(
         function updateSortOrder() {
             const direction = (isDescending) ? descend : ascend;
-            setTable(sort(direction(prop(key)), origTable));
+            setTable(sort(direction(prop(key)), sourceTable));
         },
-        [origTable, key, isDescending]
+        [sourceTable, key, isDescending]
     );
     return {
         isDescending,
         key,
         setIsDescending,
         setKey,
-        setTable,
+        setSourceTable,
         table,
         toggleDirection
     };

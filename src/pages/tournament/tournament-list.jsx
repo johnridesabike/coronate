@@ -1,5 +1,5 @@
 import {DateFormat, SortLabel} from "../../components/utility";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     useAllTournamentsDb,
     useDocumentTitle,
@@ -13,10 +13,18 @@ import VisuallyHidden from "@reach/visually-hidden";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
+    // const memoizedTable = useMemo(() => Object.values(tourneys), [tourneys]);
     const sorted = useSortedTable(Object.values(tourneys), "date", true);
     const [newTourneyName, setNewTourneyName] = useState("");
     const [isFormOpen, setIsFormOpen] = useState(false);
     useDocumentTitle("tournament list");
+    const {setSourceTable} = sorted;
+    useEffect(
+        function () {
+            setSourceTable(Object.values(tourneys));
+        },
+        [setSourceTable, tourneys]
+    );
 
     function updateNewName(event) {
         setNewTourneyName(event.target.value);
@@ -24,10 +32,7 @@ export default function TournamentList(props) {
 
     function makeTournament(event) {
         event.preventDefault();
-        dispatch({
-            name: newTourneyName,
-            type: "ADD_TOURNEY"
-        });
+        dispatch({name: newTourneyName, type: "ADD_TOURNEY"});
         setNewTourneyName("");
         setIsFormOpen(false);
     }
