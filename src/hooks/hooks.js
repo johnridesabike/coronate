@@ -1,31 +1,16 @@
 import {ascend, descend, prop, sort} from "ramda";
-import {useEffect, useState} from "react";
+import {useEffect, useReducer} from "react";
 import t from "tcomb";
 
-export function useSortedTable(origTable, defaultKey, defaultDescend = true) {
-    const [sourceTable, setSourceTable] = useState(origTable);
-    const [table, setTable] = useState([]);
-    const [key, setKey] = useState(defaultKey);
-    const [isDescending, setIsDescending] = useState(defaultDescend);
-    function toggleDirection() {
-        setIsDescending(!isDescending);
-    }
-    useEffect(
-        function updateSortOrder() {
-            const direction = (isDescending) ? descend : ascend;
-            setTable(sort(direction(prop(key)), sourceTable));
-        },
-        [sourceTable, key, isDescending]
-    );
-    return {
-        isDescending,
-        key,
-        setIsDescending,
-        setKey,
-        setSourceTable,
-        table,
-        toggleDirection
-    };
+function sortedTableReducer(oldState, newState) {
+    const {isDescending, key, table} = Object.assign({}, oldState, newState);
+    const sortDirection = (isDescending) ? descend : ascend;
+    const sortTable = sort(sortDirection(prop(key)));
+    return {isDescending, key, table: sortTable(table)};
+}
+
+export function useSortedTable(table, key, isDescending = true) {
+    return useReducer(sortedTableReducer, {isDescending, key, table});
 }
 
 export function useDocumentTitle(title) {
@@ -33,7 +18,7 @@ export function useDocumentTitle(title) {
         function () {
             const origTitle = document.title;
             document.title = "Chessahoochee: " + title;
-            return function () {
+            return function resetTitle() {
                 document.title = origTitle;
             };
         },

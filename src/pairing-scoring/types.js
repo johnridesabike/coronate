@@ -1,7 +1,5 @@
-/**
- * This file is a complement to `../data-types/`, except its types are specific
- * to the scoring and pairing functions.
- */
+// This file is a complement to `../data-types/`, except its types are specific
+// to the scoring and pairing functions.
 import t from "tcomb";
 import {types} from "../data-types";
 

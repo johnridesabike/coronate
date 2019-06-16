@@ -11,6 +11,7 @@ import {useDocumentTitle} from "../../hooks";
 
 export default function PlayerList({
     sorted,
+    sortDispatch,
     players,
     playersDispatch,
     optionsDispatch
@@ -40,6 +41,7 @@ export default function PlayerList({
                         <th>
                             <SortLabel
                                 data={sorted}
+                                dispatch={sortDispatch}
                                 label="Name"
                                 sortKey="firstName"
                             />
@@ -47,6 +49,7 @@ export default function PlayerList({
                         <th>
                             <SortLabel
                                 data={sorted}
+                                dispatch={sortDispatch}
                                 label="Rating"
                                 sortKey="rating"
                             />
@@ -54,6 +57,7 @@ export default function PlayerList({
                         <th>
                             <SortLabel
                                 data={sorted}
+                                dispatch={sortDispatch}
                                 label="Matches"
                                 sortKey="matchCount"
                             />
@@ -108,5 +112,6 @@ PlayerList.propTypes = {
     optionsDispatch: PropTypes.func.isRequired,
     players: PropTypes.object.isRequired,
     playersDispatch: PropTypes.func.isRequired,
+    sortDispatch: PropTypes.func.isRequired,
     sorted: PropTypes.object.isRequired
 };

@@ -7,20 +7,28 @@ import {Router} from "@reach/router";
 
 export default function Players(props) {
     const [players, playersDispatch] = useAllPlayersDb();
-    const sorted = useSortedTable(Object.values(players), "firstName", false);
-    const {setSourceTable} = sorted;
+    const [sorted, sortDispatch] = useSortedTable(
+        Object.values(players),
+        "firstName",
+        false
+    );
     useEffect(
         function () {
-            setSourceTable(Object.values(players));
+            sortDispatch({table: Object.values(players)});
         },
-        [players, setSourceTable]
+        [players, sortDispatch]
     );
     const [options, optionsDispatch] = useOptionsDb();
     const childProps = {options, optionsDispatch, players, playersDispatch};
     return (
         <HasSidebar>
             <Router basepath="players">
-                <PlayerList path="/" sorted={sorted} {...childProps} />
+                <PlayerList
+                    path="/"
+                    sorted={sorted}
+                    sortDispatch={sortDispatch}
+                    {...childProps}
+                />
                 <PlayerProfile path=":playerId" {...childProps} />
             </Router>
         </HasSidebar>

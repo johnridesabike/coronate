@@ -13,16 +13,19 @@ import VisuallyHidden from "@reach/visually-hidden";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
-    const sorted = useSortedTable(Object.values(tourneys), "date", true);
+    const [sorted, sortDispatch] = useSortedTable(
+        Object.values(tourneys),
+        "date",
+        true
+    );
     const [newTourneyName, setNewTourneyName] = useState("");
     const [isFormOpen, setIsFormOpen] = useState(false);
     useDocumentTitle("tournament list");
-    const {setSourceTable} = sorted;
     useEffect(
         function () {
-            setSourceTable(Object.values(tourneys));
+            sortDispatch({table: Object.values(tourneys)});
         },
-        [setSourceTable, tourneys]
+        [tourneys, sortDispatch]
     );
 
     function updateNewName(event) {
@@ -62,6 +65,7 @@ export default function TournamentList(props) {
                             <th>
                                 <SortLabel
                                     data={sorted}
+                                    dispatch={sortDispatch}
                                     label="Name"
                                     sortKey="name"
                                 />
@@ -69,6 +73,7 @@ export default function TournamentList(props) {
                             <th>
                                 <SortLabel
                                     data={sorted}
+                                    dispatch={sortDispatch}
                                     label="Date"
                                     sortKey="date"
                                 />

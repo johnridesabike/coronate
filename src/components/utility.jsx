@@ -89,10 +89,8 @@ Notification.propTypes = {
     warning: PropTypes.bool
 };
 
-/**
- * This just creates empty space to balance the layout, e.g. if there's a button
- * on one side of a centered element that's offsetting it.
- */
+// This just creates empty space to balance the layout, e.g. if there's a button
+// on one side of a centered element that's offsetting it.
 const PlaceholderButton = () => (
     <button
         className="button-ghost placeholder"
@@ -102,16 +100,16 @@ const PlaceholderButton = () => (
 );
 export {PlaceholderButton};
 
-export function SortLabel({label, sortKey, data}) {
+export function SortLabel({label, sortKey, data, dispatch}) {
     function toggleDirAndSetKey() {
-        data.setKey(sortKey);
-        data.toggleDirection();
+        dispatch({key: sortKey});
+        dispatch({isDescending: !data.isDescending});
     }
     function setKeyOrToggleDir() {
         if (data.key === sortKey) {
-            data.toggleDirection();
+            dispatch({isDescending: !data.isDescending});
         } else {
-            data.setKey(sortKey);
+            dispatch({key: sortKey});
         }
     }
     return (
@@ -139,6 +137,7 @@ export function SortLabel({label, sortKey, data}) {
 }
 SortLabel.propTypes = {
     data: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
     sortKey: PropTypes.string.isRequired
 };
