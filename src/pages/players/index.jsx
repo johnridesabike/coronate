@@ -7,8 +7,6 @@ import {Router} from "@reach/router";
 
 export default function Players(props) {
     const [players, playersDispatch] = useAllPlayersDb();
-    // Memoize'd because calling `Object.values()` directly inside the
-    // `useSortedTable` hook will trigger an infinite render loop.
     const sorted = useSortedTable(Object.values(players), "firstName", false);
     const {setSourceTable} = sorted;
     useEffect(

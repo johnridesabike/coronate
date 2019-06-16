@@ -13,7 +13,6 @@ import VisuallyHidden from "@reach/visually-hidden";
 
 export default function TournamentList(props) {
     const [tourneys, dispatch] = useAllTournamentsDb();
-    // const memoizedTable = useMemo(() => Object.values(tourneys), [tourneys]);
     const sorted = useSortedTable(Object.values(tourneys), "date", true);
     const [newTourneyName, setNewTourneyName] = useState("");
     const [isFormOpen, setIsFormOpen] = useState(false);
