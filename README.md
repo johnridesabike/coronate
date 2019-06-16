@@ -110,6 +110,6 @@ Linux builds have not been tested.
 
 ## 🎉 Acknowledgements 
 
-The three "kings" in the logo are derived from Mérida chess font, which was informally licensed as "freeware."
+The three "kings" in the logo are derived from the Mérida chess font, which was informally licensed as "freeware."
 
 Some human interface decisions (colors, buttons, etc.) are based on the [Photon Design System](https://design.firefox.com/photon/) for an elegant, OS-neutral, appearance.
