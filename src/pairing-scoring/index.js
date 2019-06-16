@@ -8,8 +8,7 @@ import {
     maxPriority,
     pairPlayers,
     setByePlayer,
-    setUpperHalves,
-    sortDataForPairing
+    setUpperHalves
 } from "./pairing";
 import {
     createBlankScoreData,
@@ -32,6 +31,5 @@ export {
     ratings,
     setByePlayer,
     setUpperHalves,
-    sortDataForPairing,
     tieBreakMethods
 };

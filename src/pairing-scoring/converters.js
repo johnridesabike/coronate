@@ -76,15 +76,15 @@ export function avoidPairReducer(acc, pair) {
 
 export function createPairingData(playerData, avoidPairs, scoreData) {
     const avoidDict = avoidPairs.reduce(avoidPairReducer, {});
-    const pairingData = Object.values(playerData).map(
-        function pairingDataReducer(data) {
+    const pairingData = Object.values(playerData).reduce(
+        function pairingDataReducer(acc, data) {
             // If there's no scoreData for a player, use empty values
             const playerStats = (scoreData[data.id])
                 ? scoreData[data.id]
                 : createBlankScoreData(data.id);
             // `isUpperHalf` and `halfPos` will have to be set by another
             // function later.
-            return {
+            const pairData = {
                 avoidIds: avoidDict[data.id] || [],
                 colorScores: playerStats.colorScores,
                 colors: playerStats.colors,
@@ -98,8 +98,10 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
                 // pairing will reuse it many times.
                 score: sum(playerStats.results)
             };
-        }
+            return assoc(data.id, pairData, acc);
+        },
+        {}
     );
     // TODO: remove this tcomb check for production
-    return t.list(scoreTypes.PairingData)(pairingData);
+    return t.dict(types.Id, scoreTypes.PairingData)(pairingData);
 }

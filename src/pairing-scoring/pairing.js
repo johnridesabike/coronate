@@ -1,8 +1,8 @@
 import {
-    add,
+    assoc,
     descend,
+    dissoc,
     filter,
-    findLastIndex,
     last,
     map,
     mergeRight,
@@ -19,7 +19,7 @@ import t from "tcomb";
 import types from "./types";
 
 const priority = (value) => (condition) => (condition) ? value : 0;
-const divisiblePriority = (value) => (divider) => t.Number(value / divider);
+const divisiblePriority = (dividend) => (divisor) => dividend / divisor;
 
 // These following consts probably need to be tweaked a lot.
 
@@ -50,12 +50,12 @@ const differentDueColor = priority(4);
 
 // This is useful for dividing against a calculated priority, to inspect how
 // "compatible" two players may be.
-const maxPriority = pipe(
-    add(differentHalf(true)(1)),
-    add(differentDueColor(true)),
-    add(sameScores(1)),
-    add(avoidMeetingTwice(true))
-)(0);
+const maxPriority = sum([
+    differentHalf(true)(1),
+    differentDueColor(true),
+    sameScores(1),
+    avoidMeetingTwice(true)
+]);
 export {maxPriority};
 
 // The pairing code is broken up into several functions which take each other's
@@ -67,13 +67,12 @@ export {maxPriority};
 //     rounds2Matches,
 //     matches2ScoreData,
 //     createPairingData,
-//     sortDataForPairing,
 //     setUpperHalves,
 //     setByePlayer,
 //     pairPlayers // <-- the function that actually pairs them!
 // )(roundList);
 // ```
-// (This may be outdated as the actual functions aren't quite stable yet.)
+// (This may be outdated as the actual functions aren't stable yet.)
 
 // Given two `PairingData` objects, this assigns a number for how much they
 // should be matched. The number gets fed to the `blossom` algorithm.
@@ -91,14 +90,14 @@ export function calcPairIdeal(player1, player2) {
         player1.isUpperHalf !== player2.isUpperHalf
         && player1.score === player2.score
     );
-    return t.Number(pipe(
-        add(differentDueColor(
-            (p1LastColor === undefined) || (p1LastColor !== p2LastColor)
-        )),
-        add(sameScores(scoreDiff)),
-        add(differentHalf(isDiffHalf)(halfDiff)),
-        add(avoidMeetingTwice(!metBefore && !mustAvoid))
-    )(0));
+    return sum([
+        differentDueColor(
+            p1LastColor === undefined || p1LastColor !== p2LastColor
+        ),
+        sameScores(scoreDiff),
+        differentHalf(isDiffHalf)(halfDiff),
+        avoidMeetingTwice(!metBefore && !mustAvoid)
+    ]);
 }
 
 // Sort the data so matchups default to order by score and rating.
@@ -106,7 +105,7 @@ export function calcPairIdeal(player1, player2) {
 // the algorithm if it's removed. In the future, it may become obsolete.
 // `setByePlayer` requires it to work, but `setByePlayer` could do its own
 // sorting IMO.
-export function sortDataForPairing(data) {
+function sortDataForPairing(data) {
     return sortWith(
         [descend(prop("score")), descend(prop("rating"))],
         data
@@ -118,7 +117,8 @@ const splitInHalf = (list) => splitAt(list.length / 2, list);
 // for each object sent to this, it determines whether or not it's in the
 // "upper half" of it's score group.
 // (USCF § 29C1.)
-function upperHalfMapper(playerData, ignore, src) {
+function upperHalfReducer(acc, playerData, ignore, src) {
+    types.PairingData(playerData);
     const [upperHalfIds, lowerHalfIds] = pipe(
         filter((p2) => p2.score === playerData.score),
         // this may be redundant if the list was already sorted.
@@ -130,10 +130,14 @@ function upperHalfMapper(playerData, ignore, src) {
     const halfPos = (isUpperHalf)
         ? upperHalfIds.indexOf(playerData.id)
         : lowerHalfIds.indexOf(playerData.id);
-    return mergeRight(playerData, {halfPos, isUpperHalf});
+    return assoc(
+        playerData.id,
+        mergeRight(playerData, {halfPos, isUpperHalf}),
+        acc
+    );
 }
 export function setUpperHalves(data) {
-    return data.map(upperHalfMapper);
+    return Object.values(data).reduce(upperHalfReducer, {});
 }
 
 // This this returns a tuple of two objects: The modified array of player data
@@ -142,29 +146,33 @@ export function setUpperHalves(data) {
 // After calling this, be sure to add the bye round after the non-bye'd
 // players are paired.
 export function setByePlayer(byeQueue, dummyId, data) {
-    const hasNotHadBye2 = (p) => !p.opponents.includes(t.String(dummyId));
+    t.dict(t.String, types.PairingData);
+    const hasNotHadBye = (p) => !p.opponents.includes(dummyId);
     // if the list is even, just return it.
-    if (data.length % 2 === 0) {
+    if (Object.keys(data).length % 2 === 0) {
         return [data, null];
     }
-    const playersWithoutByes = data.filter(hasNotHadBye2).map((p) => p.id);
+    const dataList = pipe(
+        Object.values,
+        filter(hasNotHadBye),
+        sortDataForPairing
+    )(data);
+    const playersWithoutByes = dataList.map((p) => p.id);
     const nextByeSignup = t.list(t.String)(byeQueue).filter(
         (id) => playersWithoutByes.includes(id)
     )[0];
-    const indexOfDueBye = (nextByeSignup)
+    const dataForNextBye = (nextByeSignup)
         // Assign the bye to the next person who signed up.
-        ? findLastIndex((p) => p.id === nextByeSignup, data)
+        ? data[nextByeSignup]
         // Assign a bye to the lowest-rated player in the lowest score group.
         // Because the list is sorted, the last player is the lowest.
         // (USCF § 29L2.)
-        : findLastIndex(hasNotHadBye2, data);
+        : last(dataList);
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
-    const index = (indexOfDueBye === -1)
-        ? data.length - 1
-        : indexOfDueBye;
-    const byeData = data[index];
-    const dataWithoutBye = data.filter((ignore, i) => i !== index);
+    const id = (dataForNextBye) ? dataForNextBye.id : dataList.length - 1;
+    const byeData = data[id];
+    const dataWithoutBye = dissoc(id, data);
     return [dataWithoutBye, byeData];
 }
 
@@ -175,17 +183,16 @@ const netRatingDescend = (pair1, pair2) => (
     sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
 );
 
-const PDataList = t.list(types.PairingData);
-
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.
 export function pairPlayers(pairingData) {
+    t.dict(t.String, types.PairingData);
     // Because `blossom` has to use numbers that correspond to array indices,
     // we'll use `playerIdArray` as our source for that.
-    const playerIdArray = PDataList(pairingData).map((p) => p.id);
+    const playerIdArray = Object.keys(pairingData);
     // Turn the data into blossom-compatible input.
-    function pairIdealReducer(accArr, player1, index, srcArr) {
+    function idealReduce(accArr, player1, index, srcArr) {
         // slice out players who have already computed, plus the current one
         const playerMatches = srcArr.slice(index + 1).map(
             (player2) => [
@@ -196,7 +203,7 @@ export function pairPlayers(pairingData) {
         );
         return accArr.concat(playerMatches);
     }
-    const potentialMatches = pairingData.reduce(pairIdealReducer, []);
+    const potentialMatches = Object.values(pairingData).reduce(idealReduce, []);
     // Feed all of the potential matches to Edmonds-blossom and let the
     // algorithm work its magic. This returns an array where each index is the
     // ID of one player and each value is the ID of the matched player.
@@ -210,8 +217,8 @@ export function pairPlayers(pairingData) {
                 // Translate the indices into ID strings
                 const p1Id = playerIdArray[p1Index];
                 const p2Id = playerIdArray[p2Index];
-                const p1 = pairingData.filter((p) => p.id === p1Id)[0];
-                const p2 = pairingData.filter((p) => p.id === p2Id)[0];
+                const p1 = pairingData[p1Id];
+                const p2 = pairingData[p2Id];
 
                 // TODO: in the future, we may store the ideal for debugging
                 // Because it rarely serves a purpose, we're not including it

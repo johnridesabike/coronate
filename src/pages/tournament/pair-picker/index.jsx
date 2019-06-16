@@ -11,8 +11,7 @@ import {
     createPairingData,
     matches2ScoreData,
     maxPriority,
-    setUpperHalves,
-    sortDataForPairing
+    setUpperHalves
 } from "../../../pairing-scoring";
 import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
@@ -21,7 +20,6 @@ import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
-import {findById} from "../../../components/utility";
 import numeral from "numeral";
 
 export default function PairPicker({roundId}) {
@@ -41,7 +39,7 @@ export default function PairPicker({roundId}) {
             const _scoreData = matches2ScoreData(matches);
             const _pairData = pipe(
                 curry(createPairingData)(activePlayers, options.avoidPairs),
-                sortDataForPairing,
+                // sortDataForPairing,
                 setUpperHalves
             )(_scoreData);
             return [_scoreData, _pairData];
@@ -74,8 +72,8 @@ export default function PairPicker({roundId}) {
         if (stagedPlayers.includes(null)) {
             return null;
         }
-        const player0stats = findById(stagedPlayers[0], pairData);
-        const player1stats = findById(stagedPlayers[1], pairData);
+        const player0stats = pairData[stagedPlayers[0]];
+        const player1stats = pairData[stagedPlayers[1]];
         if (!player0stats || !player1stats) {
             return null;
         }

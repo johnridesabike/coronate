@@ -75,7 +75,7 @@ export default function tournamentReducer(state, action) {
         t.interface({
             // avoidList: t.list(types.AvoidPair),
             byeValue: t.Number,
-            pairData: t.list(scoreTypes.PairingData),
+            pairData: t.dict(types.Id, scoreTypes.PairingData),
             players: t.dict(types.Id, types.Player),
             roundId: t.Number
         })(action);
@@ -115,6 +115,7 @@ export default function tournamentReducer(state, action) {
             result: t.tuple([t.Number, t.Number]),
             roundId: t.Number
         })(action);
+        // There's probably a better way to do this but... #worksforme
         return pipe(
             set(
                 lensPath([
