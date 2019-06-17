@@ -2,21 +2,23 @@ import {ascend, descend, prop, sort} from "ramda";
 import {useEffect, useReducer} from "react";
 import t from "tcomb";
 
-function createSorter(isDescending, key) {
-    const sortDirection = (isDescending) ? descend : ascend;
-    return sort(sortDirection(prop(key)));
-}
-
 function sortedTableReducer(oldState, newState) {
     const {isDescending, key, table} = Object.assign({}, oldState, newState);
-    const sortTable = createSorter(isDescending, key);
+    const sortDirection = (isDescending) ? descend : ascend;
+    const sortTable = sort(sortDirection(prop(key)));
     return {isDescending, key, table: sortTable(table)};
 }
 
 export function useSortedTable(table, key, isDescending = true) {
-    const sortTable = createSorter(isDescending, key);
-    const initialState = {isDescending, key, table: sortTable(table)};
-    return useReducer(sortedTableReducer, initialState);
+    const initialState = {isDescending, key, table};
+    const [state, dispatch] = useReducer(sortedTableReducer, initialState);
+    useEffect(
+        function callDispatchOnceToTriggerInitialSort() {
+            dispatch({});
+        },
+        []
+    );
+    return [state, dispatch];
 }
 
 export function useDocumentTitle(title) {
