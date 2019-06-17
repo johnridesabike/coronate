@@ -31,9 +31,11 @@ export function autoPair({
         byePlayerData
     ] = setByePlayer(tourney.byeQueue, DUMMY_ID, pairData);
     const pairs = pairPlayers(pairDataNoByes);
-    const pairsWithBye = (byePlayerData)
+    const pairsWithBye = (
+        byePlayerData
         ? pairs.concat([[byePlayerData.id, DUMMY_ID]])
-        : pairs;
+        : pairs
+    );
     const getPlayer = curry(getPlayerMaybe)(players);
     const newMatchList = pairsWithBye.map(
         (idsPair) => (

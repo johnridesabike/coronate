@@ -39,7 +39,7 @@ export function getPlayerMaybe(playerDict, id) {
         return dummyPlayer;
     }
     const player = t.dict(types.Id, types.Player)(playerDict)[id];
-    return (player) ? player : createMissingPlayer(id);
+    return player ? player : createMissingPlayer(id);
 }
 
 /*******************************************************************************
@@ -51,9 +51,11 @@ export function getPlayerMaybe(playerDict, id) {
 // index specified. For example: if you just want to see the scores through
 // round 2 and not include round 3.
 export function rounds2Matches(roundList, lastRound = null) {
-    const rounds = (lastRound === null)
+    const rounds = (
+        lastRound === null
         ? roundList
-        : roundList.slice(0, lastRound + 1);
+        : roundList.slice(0, lastRound + 1)
+    );
     return rounds.reduce((acc, round) => acc.concat(round), []);
 }
 
@@ -68,7 +70,7 @@ export function getUnmatched(roundList, players, roundId) {
     const playerList = t.list(types.Player)(Object.values(players));
     const unmatched = playerList.reduce(
         (acc, player) => (
-            (matchedIds.includes(player.id))
+            matchedIds.includes(player.id)
             ? acc
             : assoc(player.id, player, acc)
         ),

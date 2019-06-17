@@ -20,7 +20,7 @@ import blossom from "edmonds-blossom";
 import t from "tcomb";
 import types from "./types";
 
-const priority = (value) => (condition) => (condition) ? value : 0;
+const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (dividend) => (divisor) => dividend / divisor;
 
 // These following consts probably need to be tweaked a lot.
@@ -42,9 +42,11 @@ const sameScores = divisiblePriority(16);
 // applied to players being matched within the same score group. (USCF § 27A3)
 const halfPosition = divisiblePriority(8);
 const sameHalfPriority = () => 0;
-const differentHalf = (isDiffHalf) => (isDiffHalf)
+const differentHalf = (isDiffHalf) => (
+    isDiffHalf
     ? halfPosition
-    : sameHalfPriority;
+    : sameHalfPriority
+);
 
 // The weight given to match players with opposite due colors.
 // (USCF § 27A4 and § 27A5)
@@ -117,9 +119,11 @@ function upperHalfReducer(acc, playerData, ignore, src) {
         splitInHalf
     )(src);
     const isUpperHalf = upperHalfIds.includes(playerData.id);
-    const halfPos = (isUpperHalf)
+    const halfPos = (
+        isUpperHalf
         ? upperHalfIds.indexOf(playerData.id)
-        : lowerHalfIds.indexOf(playerData.id);
+        : lowerHalfIds.indexOf(playerData.id)
+    );
     return assoc(
         playerData.id,
         mergeRight(playerData, {halfPos, isUpperHalf}),
@@ -155,19 +159,23 @@ export function setByePlayer(byeQueue, dummyId, data) {
     const nextByeSignup = t.list(t.String)(byeQueue).filter(
         (id) => playersWithoutByes.includes(id)
     )[0];
-    const dataForNextBye = (nextByeSignup)
+    const dataForNextBye = (
+        nextByeSignup
         // Assign the bye to the next person who signed up.
         ? data[nextByeSignup]
         // Assign a bye to the lowest-rated player in the lowest score group.
         // Because the list is sorted, the last player is the lowest.
         // (USCF § 29L2.)
-        : last(dataList);
+        : last(dataList)
+    );
     // In the impossible situation that *everyone* has played a bye round
     // previously, then just pick the last player.
-    const id = (dataForNextBye)
+    const id = (
+        dataForNextBye
         ? dataForNextBye.id
         // TODO: test for this
-        : pipe(Object.values, sortByScoreThenRating, last)(data);
+        : pipe(Object.values, sortByScoreThenRating, last)(data)
+    );
     const byeData = data[id];
     const dataWithoutBye = dissoc(id, data);
     return [dataWithoutBye, byeData];
@@ -179,12 +187,14 @@ function assignColorsForPair(pair) {
     // This is a quick-and-dirty heuristic to keep color balances
     // mostly equal. Ideally, it would also examine due colors and how
     // many times a player played each color last.
-    return (sum(player1.colorScores) < sum(player2.colorScores))
+    return (
+        sum(player1.colorScores) < sum(player2.colorScores)
         // player 1 has played as white more than player 2
         ? [player2.id, player1.id]
         // player 1 has played as black more than player 2
         // (or they're equal).
-        : [player1.id, player2.id];
+        : [player1.id, player2.id]
+    );
 }
 
 const netScoreDescend = (pair1, pair2) => (

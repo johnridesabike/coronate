@@ -30,7 +30,7 @@ function calcNewRatings(origRatings, matchCounts, result) {
             origRatings[BLACK]
         )
     ];
-    return newRating.map((rating) => (rating < FLOOR) ? FLOOR : rating);
+    return newRating.map((rating) => rating < FLOOR ? FLOOR : rating);
 }
 
 export default Object.freeze({

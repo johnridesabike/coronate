@@ -22,16 +22,18 @@ import scoreTypes from "./types";
 import t from "tcomb";
 
 function color2Score(color) {
-    return (types.Color(color) === BLACK)
+    return (
+        types.Color(color) === BLACK
         ? scoreTypes.BLACKVALUE
-        : scoreTypes.WHITEVALUE;
+        : scoreTypes.WHITEVALUE
+    );
 }
 
 function match2ScoreDataReducer(acc, match) {
     const {playerIds, result, newRating, origRating} = match;
     const [p1Data, p2Data] = [WHITE, BLACK].map(function dataForColor(color) {
         const id = playerIds[color];
-        const oppColor = (color === WHITE) ? BLACK : WHITE;
+        const oppColor = color === WHITE ? BLACK : WHITE;
         const oppId = playerIds[oppColor];
         // Get existing score data to update, or create it fresh
         // The ratings will always begin with the `origRating` of the
@@ -41,7 +43,7 @@ function match2ScoreDataReducer(acc, match) {
             over(lensProp("results"), append(result[color])),
             over(
                 lensProp("resultsNoByes"),
-                (isDummyId(oppId)) ? defaultTo([]) : append(result[color])
+                isDummyId(oppId) ? defaultTo([]) : append(result[color])
             ),
             over(lensProp("colors"), append(color)),
             over(lensProp("colorScores"), append(color2Score(color))),
@@ -79,9 +81,11 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
     const pairingData = Object.values(playerData).reduce(
         function pairingDataReducer(acc, data) {
             // If there's no scoreData for a player, use empty values
-            const playerStats = (scoreData[data.id])
+            const playerStats = (
+                scoreData[data.id]
                 ? scoreData[data.id]
-                : createBlankScoreData(data.id);
+                : createBlankScoreData(data.id)
+            );
             // `isUpperHalf` and `halfPos` will have to be set by another
             // function later.
             const pairData = {

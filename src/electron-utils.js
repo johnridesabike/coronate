@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
-const electron = (window.require) ? window.require("electron") : false;
+const electron = window.require ? window.require("electron") : false;
 export {electron};
 
 // Returns the result of a function if Electron is enabled.
 export function ifElectron(fn) {
-    return (electron) ? fn() : null;
+    return electron ? fn() : null;
 }
 
 function toggleMaximize(win) {

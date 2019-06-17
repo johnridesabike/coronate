@@ -75,17 +75,21 @@ export function createStandingTree(standingList) {
         function assignStandingsToTree(acc, standing, i, orig) {
             const prevStanding = orig[i - 1];
             // Always make a new rank for the first player
-            const isNewRank = (i === 0)
+            const isNewRank = (
+                i === 0
                 ? true
                 // Make a new rank if the scores aren't equal
-                : !areScoresEqual(standing, prevStanding);
-            return (isNewRank)
+                : !areScoresEqual(standing, prevStanding)
+            );
+            return (
+                isNewRank
                 // If this player doesn't have the same score, create a new
                 // branch of the tree
                 ? append([standing], acc)
                 // If this player has the same score as the last, append it
                 // to the last branch
-                : over(lensIndex(acc.length - 1), append(standing), acc);
+                : over(lensIndex(acc.length - 1), append(standing), acc)
+            );
         },
         []
     );

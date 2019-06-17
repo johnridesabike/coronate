@@ -18,11 +18,7 @@ numeral.register("format", "fraction", {
                 return "";
             }
         }());
-        const stringedWhole = (
-            (whole === 0 && remainder)
-            ? ""
-            : String(whole)
-        );
+        const stringedWhole = whole === 0 && remainder ? "" : String(whole);
         return stringedWhole + fraction;
     },
     regexps: {
