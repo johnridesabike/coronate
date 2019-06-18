@@ -173,14 +173,12 @@ export function setByePlayer(byeQueue, dummyId, data) {
     const id = (
         dataForNextBye
         ? dataForNextBye.id
-        // TODO: test for this
-        : pipe(Object.values, sortByScoreThenRating, last)(data)
+        : pipe(Object.values, sortByScoreThenRating, last)(data).id
     );
     const byeData = data[id];
     const dataWithoutBye = dissoc(id, data);
     return [dataWithoutBye, byeData];
 }
-
 
 function assignColorsForPair(pair) {
     const [player1, player2] = pair;
@@ -204,6 +202,7 @@ const netRatingDescend = (pair1, pair2) => (
     sum(pluck("rating", pair2)) - sum(pluck("rating", pair1))
 );
 const sortByNetScoreThenRating = sortWith([netScoreDescend, netRatingDescend]);
+
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.

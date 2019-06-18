@@ -29,9 +29,25 @@ it("Players have 0 priority of pairing themselves.", function () {
     expect(calcPairIdeal(newb, newb)).toBe(0);
 });
 it("The lowest-ranking player is automatically picked for byes.", function () {
-    const pairData = loadPairData("Bye_Round_Tourney____");
-    const byedPlayer = setByePlayer([], DUMMY_ID, pairData)[1];
-    expect(byedPlayer).not.toBe(null);
+    const DataPreBye = loadPairData("Bye_Round_Tourney____");
+    const [pairData, byedPlayer] = setByePlayer([], DUMMY_ID, DataPreBye);
+    expect(Object.keys(pairData)).not.toContain("Newbie_McNewberson___");
+    expect(byedPlayer.id).toBe("Newbie_McNewberson___");
+
+});
+it("The bye signup queue works", function () {
+    const DataPreBye = loadPairData("Bye_Round_Tourney_2__");
+    const byeQueue = ["Newbie_McNewberson___", "Joel_Robinson________"];
+    // Newbie McNewberson already played the first bye round
+    const [pairData, byedPlayer] = setByePlayer(byeQueue, DUMMY_ID, DataPreBye);
+    expect(Object.keys(pairData)).not.toContain("Joel_Robinson________");
+    expect(byedPlayer.id).toBe("Joel_Robinson________");
+});
+it(`If all player have (impossibly) played a bye round, the lowest-rated 
+player is picked`, function () {
+    const DataPreBye = loadPairData("Bye_Tourney_3________");
+    const [pairData, byedPlayer] = setByePlayer([], DUMMY_ID, DataPreBye);
+    expect(Object.keys(pairData)).not.toContain("Newbie_McNewberson___");
     expect(byedPlayer.id).toBe("Newbie_McNewberson___");
 });
 it("Players are paired correctly in a simple scenario.", function () {
