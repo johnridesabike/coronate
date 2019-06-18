@@ -29,24 +29,24 @@ PanelContainer.propTypes = {
     className: PropTypes.string
 };
 
+const {format: dateFormat} = new Intl.DateTimeFormat(
+    "en-US",
+    {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }
+);
 export function DateFormat(props) {
-    const dateFormat = new Intl.DateTimeFormat(
-        "en-US",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
     const cleanProps = omit(["date"], props);
     return (
         <time dateTime={props.date.toISOString()} {...cleanProps}>
-            {dateFormat.format(props.date)}
+            {dateFormat(props.date)}
         </time>
     );
 }
 DateFormat.propTypes = {
-    date: PropTypes.instanceOf(Date)
+    date: PropTypes.instanceOf(Date).isRequired
 };
 
 export function Notification(props) {
@@ -65,7 +65,7 @@ export function Notification(props) {
     return (
         <div
             {...cleanProps}
-            className={"notification " + className + " " + props.className}
+            className={classNames("notification", className, props.className)}
         >
             <div
                 aria-label={props.tooltip}
@@ -100,10 +100,9 @@ const PlaceholderButton = () => (
 );
 export {PlaceholderButton};
 
-export function SortLabel({label, sortKey, data, dispatch}) {
+export function SortLabel({children, sortKey, data, dispatch}) {
     function toggleDirAndSetKey() {
-        dispatch({key: sortKey});
-        dispatch({isDescending: !data.isDescending});
+        dispatch({isDescending: !data.isDescending, key: sortKey});
     }
     function setKeyOrToggleDir() {
         if (data.key === sortKey) {
@@ -119,7 +118,7 @@ export function SortLabel({label, sortKey, data, dispatch}) {
                 className="button-micro dont-hide button-text-ghost title-20"
                 onClick={setKeyOrToggleDir}
             >
-                {label}
+                {children}
             </button>
             <button
                 className={classNames(
@@ -128,17 +127,17 @@ export function SortLabel({label, sortKey, data, dispatch}) {
                 )}
                 onClick={toggleDirAndSetKey}
             >
-                {(data.isDescending)
-                    ? <Icons.ChevronUp />
-                    : <Icons.ChevronDown />}
+                {data.isDescending
+                ? <Icons.ChevronUp />
+                : <Icons.ChevronDown />}
             </button>
         </span>
     );
 }
 SortLabel.propTypes = {
+    children: PropTypes.string.isRequired,
     data: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
     sortKey: PropTypes.string.isRequired
 };
 

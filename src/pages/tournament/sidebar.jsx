@@ -6,6 +6,7 @@ import {Link} from "@reach/router";
 import {Notification} from "../../components/utility";
 import PropTypes from "prop-types";
 import React from "react";
+import classNames from "classnames";
 import {getUnmatched} from "../../data-types";
 
 function isRoundComplete(tourney, players, roundId) {
@@ -159,20 +160,22 @@ export default function Sidebar(props) {
                         <li key={id}>
                             <Link to={`round/${id}`}>
                                 {Number(id) + 1}
-                                {(isComplete(Number(id)))
+                                {isComplete(Number(id))
                                 ? (
                                     <span
-                                        className={
-                                            "sidebar__hide-on-close "
-                                            + "caption-20"}
+                                        className={classNames(
+                                            "sidebar__hide-on-close",
+                                            "caption-20"
+                                        )}
                                     >
                                         &nbsp;Complete&nbsp;<Icons.Check />
                                     </span>
                                 ) : (
                                     <span
-                                        className={
-                                            "sidebar__hide-on-close "
-                                            + "caption-20"}
+                                        className={classNames(
+                                            "sidebar__hide-on-close",
+                                            "caption-20"
+                                        )}
                                     >
                                         &nbsp;Not complete&nbsp;<Icons.Alert />
                                     </span>
@@ -219,7 +222,7 @@ export default function Sidebar(props) {
             <ul>
                 <li>
                     <button
-                        className={(tooltipWarn ? "" : "button-primary")}
+                        className={classNames({"button-primary": tooltipWarn})}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
                     >

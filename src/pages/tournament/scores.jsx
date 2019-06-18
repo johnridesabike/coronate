@@ -13,6 +13,7 @@ import {isDummyObj, rounds2Matches} from "../../data-types";
 import Icons from "../../components/icons";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
+import classNames from "classnames";
 import dashify from "dashify";
 import numeral from "numeral";
 import style from "./index.module.css";
@@ -31,10 +32,7 @@ export function ScoreTable({compact, title}) {
     )(roundList);
     return (
         <table
-            className={
-                (compact)
-                ? style.compact + " " + style.table
-                : style.table
+            className={classNames(style.table, {[`${style.compact}`]: compact})
             }
         >
             <caption
@@ -67,7 +65,7 @@ export function ScoreTable({compact, title}) {
                                     {rank + 1}
                                 </th>
                             )}
-                            {(compact) // use <td> if it's compact.
+                            {compact // use <td> if it's compact.
                             ? (
                                 <td className={style.playerName}>
                                     {getPlayer(standing.id).firstName}&nbsp;
@@ -169,11 +167,10 @@ function SelectTieBreaks(props) {
                         <Icons.ArrowDown/> Move down
                     </button>
                     <button
-                        className={
-                            (selectedTb !== null)
-                            ? "button-micro button-primary"
-                            : "button-micro"
-                        }
+                        className={classNames(
+                            "button-micro",
+                            {"button-primary": selectedTb !== null}
+                        )}
                         disabled={selectedTb === null}
                         onClick={() => setSelectedTb(null)}
                     >
@@ -194,7 +191,9 @@ function SelectTieBreaks(props) {
                         {tieBreaks.map((id) => (
                             <tr
                                 key={id}
-                                className={selectedTb === id ? "selected" : ""}
+                                className={classNames(
+                                    {"selected": selectedTb === id}
+                                )}
                             >
                                 <td>
                                     {tieBreakMethods[id].name}
@@ -208,8 +207,8 @@ function SelectTieBreaks(props) {
                                         }
                                         onClick={() =>
                                             selectedTb === id
-                                                ? setSelectedTb(null)
-                                                : setSelectedTb(id)
+                                            ? setSelectedTb(null)
+                                            : setSelectedTb(id)
                                         }
                                     >
                                         {selectedTb === id ? "Done" : "Edit"}
@@ -239,8 +238,8 @@ function SelectTieBreaks(props) {
                                     <span
                                         className={
                                             tieBreaks.includes(id)
-                                                ? "disabled"
-                                                : "enabled"
+                                            ? "disabled"
+                                            : "enabled"
                                         }
                                     >
                                         {name}

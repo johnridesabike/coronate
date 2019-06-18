@@ -87,7 +87,7 @@ export default function MatchRow({
         const white = players[match.playerIds[WHITE]];
         const black = players[match.playerIds[BLACK]];
         const newRating = (
-            (event.currentTarget.value === "NOTSET")
+            event.currentTarget.value === "NOTSET"
             ? match.origRating
             : ratings.calcNewRatings(
                 match.origRating,
@@ -130,7 +130,7 @@ export default function MatchRow({
     return (
         <tr
             className={
-                (match.id === selectedMatch)
+                match.id === selectedMatch
                 ? "selected"
                 : "buttons-on-hover"
             }
@@ -180,7 +180,7 @@ export default function MatchRow({
             </td>
             {!compact &&
                 <td className={styles.controls + " data__input"}>
-                    {(selectedMatch !== match.id)
+                    {selectedMatch !== match.id
                     ? (
                         <button
                             className="button-ghost"

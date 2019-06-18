@@ -14,12 +14,16 @@ export default function Stage({
     const dispatch = tourneyDispatch;
     const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
-    const whiteName = (white)
+    const whiteName = (
+        white
         ? getPlayer(white).firstName + " " + getPlayer(white).lastName
-        : "";
-    const blackName = (black)
+        : ""
+    );
+    const blackName = (
+        black
         ? getPlayer(black).firstName + " " + getPlayer(black).lastName
-        : "";
+        : ""
+    );
 
     function unstage(color) {
         setStagedPlayers((prevState) => set(lensIndex(color), null, prevState));

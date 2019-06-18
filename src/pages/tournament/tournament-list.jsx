@@ -66,17 +66,19 @@ export default function TournamentList(props) {
                                 <SortLabel
                                     data={sorted}
                                     dispatch={sortDispatch}
-                                    label="Name"
                                     sortKey="name"
-                                />
+                                >
+                                    Name
+                                </SortLabel>
                             </th>
                             <th>
                                 <SortLabel
                                     data={sorted}
                                     dispatch={sortDispatch}
-                                    label="Date"
                                     sortKey="date"
-                                />
+                                >
+                                    Date
+                                </SortLabel>
                             </th>
                             <th><VisuallyHidden>Controls</VisuallyHidden></th>
                         </tr>

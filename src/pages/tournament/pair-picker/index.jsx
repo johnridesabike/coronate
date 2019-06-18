@@ -48,14 +48,18 @@ export default function PairPicker({roundId}) {
     );
     // Only calculate unmatched players for the latest round. Old rounds don't
     // get to add new players.
-    const unmatched = (roundId === roundList.length - 1)
+    const unmatched = (
+        roundId === roundList.length - 1
         ? getUnmatched(roundList, activePlayers, roundId)
-        : {};
+        : {}
+    );
     const unmatchedCount = Object.keys(unmatched).length;
     // make a new list so as not to affect auto-pairing
-    const unmatchedWithDummy = (unmatchedCount % 2 !== 0)
+    const unmatchedWithDummy = (
+        unmatchedCount % 2 !== 0
         ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
-        : unmatched;
+        : unmatched
+    );
     useEffect(
         function cleanPlayersThatWereRemoved() {
             const [p1, p2] = stagedPlayers;

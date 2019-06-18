@@ -7,6 +7,7 @@ import {
 } from "../hooks";
 import HasSidebar from "../components/sidebar-default";
 import Icons from "../components/icons";
+import classNames from "classnames";
 import demoData from "../demo-data";
 import fromJSON from "tcomb/lib/fromJSON";
 import styles from "./options.module.css";
@@ -86,7 +87,7 @@ export default function Options(props) {
     }
     return (
         <HasSidebar>
-            <div className={styles.options + " content-area"}>
+            <div className={classNames(styles.options, "content-area")}>
                 <h2>Bye settings</h2>
                 <form>
                     <p className="caption-30">

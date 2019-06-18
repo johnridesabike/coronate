@@ -42,25 +42,28 @@ export default function PlayerList({
                             <SortLabel
                                 data={sorted}
                                 dispatch={sortDispatch}
-                                label="Name"
                                 sortKey="firstName"
-                            />
+                            >
+                                Name
+                            </SortLabel>
                         </th>
                         <th>
                             <SortLabel
                                 data={sorted}
                                 dispatch={sortDispatch}
-                                label="Rating"
                                 sortKey="rating"
-                            />
+                            >
+                                Rating
+                            </SortLabel>
                         </th>
                         <th>
                             <SortLabel
                                 data={sorted}
                                 dispatch={sortDispatch}
-                                label="Matches"
                                 sortKey="matchCount"
-                            />
+                            >
+                                Matches
+                            </SortLabel>
                         </th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>

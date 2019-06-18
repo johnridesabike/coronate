@@ -2,6 +2,7 @@
 // Windows.
 import React, {useEffect, useState} from "react";
 import {electron, ifElectron} from "../electron-utils";
+import classNames from "classnames";
 import styles from "./windows-controls.module.css";
 
 // https://github.com/microsoft/vscode/tree/master/src/vs/workbench/browser/parts/titlebar/media
@@ -83,31 +84,33 @@ export default function Controls() {
     return (
         <div className={styles.container}>
             <button
-                className={styles.winButton + " button-ghost"}
+                className={classNames(styles.winButton, "button-ghost")}
                 onClick={() => win.minimize()}
             >
                 <Minimize />
             </button>
-            {(isMaximized)
+            {isMaximized
             ? (
                 <button
-                    className={styles.winButton + " button-ghost"}
+                    className={classNames(styles.winButton, "button-ghost")}
                     onClick={() => win.unmaximize()}
                 >
                     <Restore />
                 </button>
             ) : (
                 <button
-                    className={styles.winButton + " button-ghost"}
+                    className={classNames(styles.winButton, "button-ghost")}
                     onClick={() => win.maximize()}
                 >
                     <Maximize />
                 </button>
             )}
             <button
-                className={
-                    styles.winButton + " " + styles.close + " button-ghost"
-                }
+                className={classNames(
+                    styles.winButton,
+                    styles.close,
+                    "button-ghost"
+                )}
                 onClick={() => win.close()}
             >
                 <Close />

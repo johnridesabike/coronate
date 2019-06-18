@@ -5,6 +5,7 @@ import {Dialog} from "@reach/dialog";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import Selecting from "./selecting";
+import classNames from "classnames";
 import t from "tcomb";
 import {useTournament} from "../../../hooks";
 
@@ -92,11 +93,10 @@ export default function PlayerSelect(props) {
                         {byeQueue.map((pId) => (
                             <li
                                 key={pId}
-                                className={
-                                    (hasHadBye(matches, pId))
-                                    ? "disabled buttons-on-hover"
-                                    : "buttons-on-hover"
-                                }
+                                className={classNames(
+                                    "buttons-on-hover",
+                                    {"disabled": hasHadBye(matches, pId)}
+                                )}
                             >
                                 {activePlayers[pId].firstName}{" "}
                                 {activePlayers[pId].lastName}{" "}

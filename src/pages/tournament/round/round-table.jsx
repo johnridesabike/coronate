@@ -21,7 +21,7 @@ export default function RoundTable({
             {matchList.length > 0 &&
                 <>
                 <caption
-                    className={(compact) ? "title-30" : "title-40"}
+                    className={compact ? "title-30" : "title-40"}
                 >
                     Round {roundId + 1} matches
                 </caption>

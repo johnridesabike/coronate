@@ -10,12 +10,16 @@ export default function Header(props) {
     const [isEditingDate, setIsEditingDate] = useState(false);
     const dateInput = (function () {
         const year = tourney.date.getFullYear();
-        const month = (tourney.date.getMonth() < 9)
+        const month = (
+            tourney.date.getMonth() < 9
             ? "0" + (tourney.date.getMonth() + 1)
-            : tourney.date.getMonth() + 1;
-        const day = (tourney.date.getDate() < 10)
+            : tourney.date.getMonth() + 1
+        );
+        const day = (
+            tourney.date.getDate() < 10
             ? "0" + tourney.date.getDate()
-            : tourney.date.getDate();
+            : tourney.date.getDate()
+        );
         return year + "-" + month + "-" + day;
     }());
 
@@ -36,7 +40,7 @@ export default function Header(props) {
     // TODO: Audit accesibility of these edit controls. (Keyboard focus etc.)
     return (
         <div className={props.className}>
-            {(isEditingName)
+            {isEditingName
             ? (
                 <p className="display-20">
                     <PlaceholderButton />{" "}
@@ -70,7 +74,7 @@ export default function Header(props) {
                     </button>
                 </h1>
             )}
-            {(isEditingDate)
+            {isEditingDate
             ? (
                 <p className="caption-30">
                     <PlaceholderButton />{" "}

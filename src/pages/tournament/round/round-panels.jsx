@@ -11,9 +11,11 @@ export default function RoundPanels(props) {
     const roundId = Number(props.roundId); // Reach Router passes a string.
     const {tourney, activePlayers} = useTournament();
     // only use unmatched players if this is the last round.
-    const unmatched = (roundId === tourney.roundList.length - 1)
+    const unmatched = (
+        roundId === tourney.roundList.length - 1
         ? getUnmatched(tourney.roundList, activePlayers, roundId)
-        : {};
+        : {}
+    );
     const unmatchedCount = Object.keys(unmatched).length;
     const activePlayersCount = Object.keys(activePlayers).length;
     const [openTab, setOpenTab] = useState(0);
@@ -22,9 +24,9 @@ export default function RoundPanels(props) {
             if (openTab === 0) {
                 // If all of the players are unmatched then switch to the
                 // pair-picking tab
-                (unmatchedCount === activePlayersCount)
-                    ? setOpenTab(1)
-                    : setOpenTab(0);
+                unmatchedCount === activePlayersCount
+                ? setOpenTab(1)
+                : setOpenTab(0);
             }
             if (openTab === 1 && unmatchedCount === 0) {
                 setOpenTab(0);
