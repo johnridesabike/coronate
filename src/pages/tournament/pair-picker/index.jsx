@@ -7,10 +7,8 @@ import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useEffect, useMemo, useState} from "react";
 import {assoc, curry, pipe} from "ramda";
 import {
-    calcPairIdeal,
     createPairingData,
     matches2ScoreData,
-    maxPriority,
     setUpperHalves
 } from "../../../pairing-scoring";
 import {useOptionsDb, useTournament} from "../../../hooks";
@@ -20,7 +18,6 @@ import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
-import numeral from "numeral";
 
 export default function PairPicker({roundId}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
@@ -72,26 +69,13 @@ export default function PairPicker({roundId}) {
         },
         [unmatchedWithDummy, stagedPlayers]
     );
-    const matchIdeal = (function () {
-        if (stagedPlayers.includes(null)) {
-            return null;
-        }
-        const player0stats = pairData[stagedPlayers[0]];
-        const player1stats = pairData[stagedPlayers[1]];
-        if (!player0stats || !player1stats) {
-            return null;
-        }
-        const ideal = calcPairIdeal(player0stats, player1stats);
-        return numeral(ideal / maxPriority).format("%");
-    }());
     return (
-        <div className="content-area">
+        <div className="content-area" style={{width: "720px"}}>
             <div className="toolbar">
                 <button
                     className="button-primary"
                     disabled={unmatchedCount === 0}
                     onClick={() => tourneyDispatch({
-                        // avoidList: options.avoidPairs,
                         byeValue: options.byeValue,
                         pairData: pairData,
                         players: unmatched,
@@ -119,6 +103,7 @@ export default function PairPicker({roundId}) {
                         roundId={roundId}
                         setStagedPlayers={setStagedPlayers}
                         stagedPlayers={stagedPlayers}
+                        pairData={pairData}
                     />
                     <PanelContainer>
                         {stagedPlayers.map((id) =>
@@ -133,9 +118,6 @@ export default function PairPicker({roundId}) {
                             )
                         )}
                     </PanelContainer>
-                    {!stagedPlayers.includes(null) &&
-                        <span>Match ideal: {matchIdeal}</span>
-                    }
                 </Panel>
             </PanelContainer>
             <Dialog isOpen={isModalOpen}>

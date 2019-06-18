@@ -112,7 +112,7 @@ export function SortLabel({children, sortKey, data, dispatch}) {
         }
     }
     return (
-        <span className="buttons-on-hover">
+        <div className="buttons-on-hover">
             <PlaceholderButton />
             <button
                 className="button-micro dont-hide button-text-ghost title-20"
@@ -131,7 +131,7 @@ export function SortLabel({children, sortKey, data, dispatch}) {
                 ? <Icons.ChevronUp />
                 : <Icons.ChevronDown />}
             </button>
-        </span>
+        </div>
     );
 }
 SortLabel.propTypes = {

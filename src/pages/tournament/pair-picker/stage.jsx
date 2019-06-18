@@ -1,11 +1,17 @@
 import {BLACK, WHITE} from "../../../data-types";
 import React, {Fragment} from "react";
+import {
+    calcPairIdeal,
+    maxPriority
+} from "../../../pairing-scoring";
 import {lensIndex, set} from "ramda";
 import {useOptionsDb, useTournament} from "../../../hooks";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
+import numeral from "numeral";
 
 export default function Stage({
+    pairData,
     roundId,
     stagedPlayers,
     setStagedPlayers
@@ -38,6 +44,19 @@ export default function Stage({
         });
         setStagedPlayers([null, null]);
     }
+
+    const matchIdeal = (function () {
+        if (stagedPlayers.includes(null)) {
+            return null;
+        }
+        const player0stats = pairData[stagedPlayers[0]];
+        const player1stats = pairData[stagedPlayers[1]];
+        if (!player0stats || !player1stats) {
+            return null;
+        }
+        const ideal = calcPairIdeal(player0stats, player1stats);
+        return numeral(ideal / maxPriority).format("%");
+    }());
 
     return (
         <div>
@@ -73,6 +92,7 @@ export default function Stage({
                         </Fragment>
                     }
                 </p>
+                <p>Match ideal: {matchIdeal}</p>
             </div>
             <div className="toolbar">
                 <button
@@ -97,6 +117,7 @@ export default function Stage({
     );
 }
 Stage.propTypes = {
+    pairData: PropTypes.object.isRequired,
     roundId: PropTypes.number,
     setStagedPlayers: PropTypes.func,
     stagedPlayers: PropTypes.arrayOf(PropTypes.string)

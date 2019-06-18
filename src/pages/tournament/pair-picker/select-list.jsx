@@ -1,4 +1,5 @@
 import {BLACK, WHITE} from "../../../data-types";
+import React, {useEffect} from "react";
 import {assoc, lensIndex, set} from "ramda";
 import {
     calcPairIdeal,
@@ -7,10 +8,10 @@ import {
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
-import React from "react";
+import {SortLabel} from "../../../components/utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import numeral from "numeral";
-// import useSortedTable from "../../../hooks";
+import {useSortedTable} from "../../../hooks";
 
 export default function SelectList({
     pairData,
@@ -18,34 +19,45 @@ export default function SelectList({
     setStagedPlayers,
     unmatched
 }) {
-    function calcIdealOrNot(player) {
-        const selectedIds = stagedPlayers.filter((p) => p !== null);
-        if (selectedIds.length !== 1) {
-            return "-";
-        }
-        const selectedPlayer = pairData[selectedIds[0]];
-        return numeral(
-            calcPairIdeal(selectedPlayer, player) / maxPriority
-        ).format("%");
-    }
-
-    // const [sorted, sortedDispatch] = useSortedTable(Object.values(unmatched), "name");
-    const idealsObj = (function () {
-        return Object.values(pairData).reduce(
-            (acc, value) => assoc(value.id, calcIdealOrNot(value), acc),
-            {}
-        );
-    }());
+    const initialTable = Object.values(unmatched);
+    const [sorted, sortedDispatch] = useSortedTable(initialTable, "firstName");
+    const isOnePlayerSelected = (
+        new Set(stagedPlayers).size === 2
+        && stagedPlayers.includes(null)
+    );
+    useEffect(
+        function hydrateIdealToTable() {
+            function calcIdealOrNot(player) {
+                const selectedIds = stagedPlayers.filter((p) => p !== null);
+                if (selectedIds.length !== 1) {
+                    return 0;
+                }
+                const selectedPlayer = pairData[selectedIds[0]];
+                if (!player || !selectedPlayer) {
+                    return 0; // if it's a bye player
+                }
+                return calcPairIdeal(selectedPlayer, player) / maxPriority;
+            }
+            const table = Object.values(unmatched).map(
+                (data) => assoc(
+                    "ideal",
+                    calcIdealOrNot(pairData[data.id]),
+                    data
+                ),
+                []
+            );
+            sortedDispatch({table});
+        },
+        [unmatched, pairData, sortedDispatch, stagedPlayers]
+    );
     // only use unmatched players if this is the last round.
     function selectPlayer(id) {
+        const setWhite = set(lensIndex(WHITE), id);
+        const setBlack = set(lensIndex(BLACK), id);
         if (stagedPlayers[WHITE] === null) {
-            setStagedPlayers(
-                (prevState) => set(lensIndex(WHITE), id, prevState)
-            );
+            setStagedPlayers((prevState) => setWhite(prevState));
         } else if (stagedPlayers[BLACK] === null) {
-            setStagedPlayers(
-                (prevState) => set(lensIndex(BLACK), id, prevState)
-            );
+            setStagedPlayers((prevState) => setBlack(prevState));
         }
         // else... nothing happens
     }
@@ -60,15 +72,27 @@ export default function SelectList({
                         <VisuallyHidden>Controls</VisuallyHidden>
                     </th>
                     <th>
-                        Name
+                        <SortLabel
+                            sortKey="firstName"
+                            data={sorted}
+                            dispatch={sortedDispatch}
+                        >
+                            Name
+                        </SortLabel>
                     </th>
                     <th>
-                        Match ideal
+                        <SortLabel
+                            sortKey="ideal"
+                            data={sorted}
+                            dispatch={sortedDispatch}
+                        >
+                            Ideal
+                        </SortLabel>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                {Object.values(unmatched).map(({id, firstName, lastName}) =>
+                {sorted.table.map(({id, firstName, lastName, ideal}) =>
                     <tr key={id}>
                         <td>
                             <button
@@ -89,7 +113,9 @@ export default function SelectList({
                             {firstName} {lastName}
                         </td>
                         <td>
-                            {idealsObj[id]}
+                            {isOnePlayerSelected
+                            ? numeral(ideal).format("%")
+                            : "-"}
                         </td>
                     </tr>
                 )}
