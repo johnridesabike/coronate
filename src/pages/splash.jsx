@@ -4,6 +4,7 @@ import Icons from "../components/icons";
 import {Notification} from "../components/utility";
 import React from "react";
 import {loadDemoDB} from "../hooks/db";
+import logo from "../icon-min.svg";
 import styles from "./splash.module.css";
 
 const Splash = (props) => (
@@ -34,7 +35,7 @@ const Splash = (props) => (
             </aside>
             <div className={styles.title}>
                 <div className={styles.titleIcon}>
-                    <Icons.Logo />
+                    <img src={logo} alt="" height="64" width="64" />
                 </div>
                 <div className={styles.titleText}>
                     <h1 className="title">

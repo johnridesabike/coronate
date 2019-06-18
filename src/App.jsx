@@ -1,6 +1,6 @@
 import "./side-effects";
 import {
-    IfIsWinApp,
+    IfElectron,
     electron,
     ifElectron,
     macOSDoubleClick
@@ -11,7 +11,7 @@ import {
     Router,
     createHistory
 } from "@reach/router";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import TournamentIndex, {
     Tournament,
     TournamentList
@@ -25,16 +25,21 @@ import VisuallyHidden from "@reach/visually-hidden";
 import WindowsControls from "./components/windows-controls";
 import classNames from "classnames";
 import createHashSource from "hash-source";
+import logo from "./icon-min.svg";
 import {useDocumentTitle} from "./hooks";
 // These are just for deploying to GitHub pages.
 let source = createHashSource();
 let history = createHistory(source);
 
+function windowReducer(oldState, newState) {
+    return {...oldState, ...newState};
+}
+
 function App() {
     useDocumentTitle("a chess tournament app");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isFullScreen, setIsFullScreen] = useState(false);
-    const [isWindowBlur, setIsWindowBlur] = useState(false);
+    const initialWinState = {isBlur: false, isFullScreen: false};
+    const [winState, winDispatch] = useReducer(windowReducer, initialWinState);
     useEffect(
         function addEventListeners() {
             ifElectron(function () {
@@ -52,12 +57,18 @@ function App() {
                 }
                 unregisterListeners();
                 // Add the event listeners. These will inform styling.
-                win.on("enter-full-screen", () => setIsFullScreen(true));
-                win.on("leave-full-screen", () => setIsFullScreen(false));
-                win.on("blur", () => setIsWindowBlur(true));
-                win.on("focus", () => setIsWindowBlur(false));
-                setIsFullScreen(win.isFullScreen());
-                setIsWindowBlur(!win.isFocused());
+                win.on(
+                    "enter-full-screen",
+                    () => winDispatch({isFullScreen: true})
+                );
+                win.on(
+                    "leave-full-screen",
+                    () => winDispatch({isFullScreen: false})
+                );
+                win.on("blur", () => winDispatch({isBlur: true}));
+                win.on("focus", () => winDispatch({isBlur: false}));
+                winDispatch({isFullScreen: win.isFullScreen()});
+                winDispatch({isBlur: !win.isFocused()});
                 // I don't think this ever really fires, but can it hurt?
                 return unregisterListeners;
             });
@@ -70,7 +81,7 @@ function App() {
                 "app",
                 {"open-sidebar": isSidebarOpen},
                 {"closed-sidebar": !isSidebarOpen},
-                {"window-blur": isWindowBlur},
+                {"window-blur": winState.isBlur},
                 {"isWindows": navigator.appVersion.includes("Windows")},
                 {"isElectron": electron}
             )}
@@ -83,23 +94,24 @@ function App() {
                         {"traffic-light-padding": (
                             navigator.appVersion.includes("Mac")
                             && electron
-                            && !isFullScreen
+                            && !winState.isFullScreen
                         )}
                     )}
                     onDoubleClick={macOSDoubleClick}
                 >
                     <div>
-                        <IfIsWinApp>
+                        <IfElectron onlyWin>
                             <span
                                 style={{
                                     alignItems: "center",
                                     display: "inline-flex",
+                                    marginLeft: "4px",
                                     marginRight: "8px"}
                                 }
                             >
-                                <Icons.Logo/>
+                                <img src={logo} alt="" height="16" width="16" />
                             </span>
-                        </IfIsWinApp>
+                        </IfElectron>
                         <button
                             className="button-ghost"
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -108,7 +120,7 @@ function App() {
                             <VisuallyHidden>Toggle sidebar</VisuallyHidden>
                         </button>
                         <Location>
-                            {({location, navigate}) => (
+                            {({location, navigate}) =>
                                 <button
                                     className="button-ghost"
                                     disabled={location.pathname === "/"}
@@ -117,27 +129,29 @@ function App() {
                                     <Icons.Help />
                                     <VisuallyHidden>About</VisuallyHidden>
                                 </button>
-                            )}
+                            }
                         </Location>
                     </div>
-                    <div
-                        className={classNames(
-                            "body-20",
-                            "double-click-control",
-                            {"disabled": isWindowBlur}
-                        )}
-                        style={{
-                            left: "0",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            position: "absolute",
-                            right: "0",
-                            width: "100px"
-                        }}
-                    >
-                        Chessahoochee
-                    </div>
-                    <IfIsWinApp><WindowsControls /></IfIsWinApp>
+                    <IfElectron>
+                        <div
+                            className={classNames(
+                                "body-20",
+                                "double-click-control",
+                                {"disabled": winState.isBlur}
+                            )}
+                            style={{
+                                left: "0",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                position: "absolute",
+                                right: "0",
+                                width: "100px"
+                            }}
+                        >
+                            Chessahoochee
+                        </div>
+                    </IfElectron>
+                    <IfElectron onlyWin><WindowsControls /></IfElectron>
                 </header>
                 <main className="main">
                     <Router>

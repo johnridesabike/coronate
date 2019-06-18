@@ -18,7 +18,7 @@ import Info from "react-feather/dist/icons/info";
 import Javascript from "simple-icons/icons/javascript";
 import Layers from "react-feather/dist/icons/layers";
 import List from "react-feather/dist/icons/list";
-import Logo from "./logo";
+// import Logo from "./logo";
 import Plus from "react-feather/dist/icons/plus";
 import React from "react";
 import ReactIcon from "simple-icons/icons/react";
@@ -63,7 +63,7 @@ export default {
     Javascript: simpleIcon(Javascript),
     Layers,
     List,
-    Logo,
+    // Logo,
     Plus,
     React: simpleIcon(ReactIcon),
     Repeat,

@@ -60,12 +60,13 @@ const Restore = () => (
     </svg>
 );
 
+const win = ifElectron(() => electron.remote.getCurrentWindow());
+
 export default function Controls() {
     const [isMaximized, setIsMaximized] = useState(false);
     useEffect(
         function addEventListeners() {
             ifElectron(function () {
-                const win = electron.remote.getCurrentWindow();
                 // see comments in ../App.jsx about removing stale listeners.
                 function unregisterListeners() {
                     win.removeAllListeners("maximize");
@@ -77,10 +78,10 @@ export default function Controls() {
                 setIsMaximized(win.isMaximized());
                 return unregisterListeners;
             });
+            console.log("rendered");
         },
         []
     );
-    const win = electron.remote.getCurrentWindow();
     return (
         <div className={styles.container}>
             <button

@@ -45,10 +45,10 @@
     margin-right: 8px;
 }
 
-.titleIcon svg {
+/* .titleIcon svg {
     height: 64px;
     width: 64px;
-}
+} */
 
 .titleText {
     flex-grow: 1;

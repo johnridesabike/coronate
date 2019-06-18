@@ -7,6 +7,22 @@ export function ifElectron(fn) {
     return electron ? fn() : null;
 }
 
+// This is the JSX version of the previous function
+export function IfElectron({children, onlyWin = false, onlyMac = false}) {
+    const win = onlyWin ? navigator.appVersion.includes("Windows") : true;
+    const mac = onlyMac ? navigator.appVersion.includes("Mac") : true;
+    if ([electron, win, mac].includes(false)) {
+        return null;
+    } else {
+        return children;
+    }
+}
+IfElectron.propTypes = {
+    children: PropTypes.node.isRequired,
+    onlyMac: PropTypes.bool,
+    onlyWindows: PropTypes.bool
+};
+
 function toggleMaximize(win) {
     if (!win.isMaximized()) {
         win.maximize();
@@ -37,15 +53,4 @@ export function macOSDoubleClick(event) {
             toggleMaximize(win);
         }
     });
-};
-
-export function IfIsWinApp({children}) {
-    if (electron && navigator.appVersion.includes("Windows")) {
-        return children;
-    } else {
-        return null;
-    }
-};
-IfIsWinApp.propTypes = {
-    children: PropTypes.node.isRequired
 };
