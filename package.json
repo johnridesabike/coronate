@@ -90,8 +90,16 @@
       "category": "public.app-category.productivity"
     },
     "win": {
-      "target": "portable",
-      "compression": "store"
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "compression": "normal"
     },
     "directories": {
       "buildResources": "assets"
