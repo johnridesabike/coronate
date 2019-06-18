@@ -111,6 +111,7 @@ export default function PairPicker({roundId}) {
                         setStagedPlayers={setStagedPlayers}
                         stagedPlayers={stagedPlayers}
                         unmatched={unmatchedWithDummy}
+                        pairData={pairData}
                     />
                 </Panel>
                 <Panel style={{flexGrow: "1"}}>
