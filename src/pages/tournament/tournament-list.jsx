@@ -20,9 +20,7 @@ export default function TournamentList(props) {
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Tournament list"});
-            return function () {
-                winDispatch({action: "RESET_TITLE"});
-            };
+            return () => winDispatch({action: "RESET_TITLE"});
         },
         [winDispatch]
     );

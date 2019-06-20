@@ -7,6 +7,8 @@ import React from "react";
 import classNames from "classnames";
 import {isRoundComplete} from "../../data-types";
 
+const noDraggy = {onDragStart: (e) => e.preventDefault()};
+
 export default function Sidebar({className, navigate, tournament}) {
     const {
         tourney,
@@ -72,7 +74,7 @@ export default function Sidebar({className, navigate, tournament}) {
             <nav>
                 <ul>
                     <li>
-                        <Link to="..">
+                        <Link to=".." {...noDraggy}>
                             <Icons.X/>
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Close
@@ -83,7 +85,7 @@ export default function Sidebar({className, navigate, tournament}) {
                 <hr />
                 <ul>
                     <li>
-                        <Link to="setup">
+                        <Link to="setup" {...noDraggy}>
                             <Icons.Settings />
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Setup
@@ -91,7 +93,7 @@ export default function Sidebar({className, navigate, tournament}) {
                         </Link>
                     </li>
                     <li>
-                        <Link to=".">
+                        <Link to="." {...noDraggy}>
                             <Icons.Users />
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Players
@@ -99,7 +101,7 @@ export default function Sidebar({className, navigate, tournament}) {
                         </Link>
                     </li>
                     <li>
-                        <Link to="status">
+                        <Link to="status" {...noDraggy}>
                             <Icons.Activity />
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Status
@@ -107,7 +109,7 @@ export default function Sidebar({className, navigate, tournament}) {
                         </Link>
                     </li>
                     <li>
-                        <Link to="crosstable">
+                        <Link to="crosstable" {...noDraggy}>
                             <Icons.Layers />
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Crosstable
@@ -115,7 +117,7 @@ export default function Sidebar({className, navigate, tournament}) {
                         </Link>
                     </li>
                     <li>
-                        <Link to="scores">
+                        <Link to="scores" {...noDraggy}>
                             <Icons.List />
                             <span className="sidebar__hide-on-close">
                                 &nbsp;Score detail
@@ -128,7 +130,7 @@ export default function Sidebar({className, navigate, tournament}) {
                 <ul>
                     {Object.keys(roundList).map((id) =>
                         <li key={id}>
-                            <Link to={`round/${id}`}>
+                            <Link to={`round/${id}`} {...noDraggy}>
                                 {Number(id) + 1}
                                 {isComplete(Number(id))
                                 ? (

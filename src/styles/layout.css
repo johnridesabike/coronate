@@ -24,7 +24,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 4px 4px;
-    -webkit-user-select: none;
+    user-select: none;
     -webkit-app-region: drag;
 }
 
@@ -70,6 +70,7 @@
     border-color: var(--grey-30);
     border-right-style: solid;
     overflow: auto;
+    user-select: none;
 }
 
 .closed-sidebar .winBody {
@@ -124,7 +125,7 @@
     display: flex;
     align-items: center;
     font-size: 13px;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 .win__footer-block {

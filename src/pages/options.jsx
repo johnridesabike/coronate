@@ -16,7 +16,7 @@ import {types} from "../data-types";
 function invalidAlert() {
     window.alert(
         "That data is invalid! A more helpful error message could not be "
-        + "written yet, either."
+        + "written yet."
     );
 }
 
@@ -29,9 +29,7 @@ export default function Options(props) {
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Options"});
-            return function () {
-                winDispatch({action: "RESET_TITLE"});
-            };
+            return () => winDispatch({action: "RESET_TITLE"});
         },
         [winDispatch]
     );

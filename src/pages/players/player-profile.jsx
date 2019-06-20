@@ -21,9 +21,7 @@ function PlayerProfile({
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Profile for " + playerName});
-            return function () {
-                winDispatch({action: "RESET_TITLE"});
-            };
+            return () => winDispatch({action: "RESET_TITLE"});
         },
         [winDispatch, playerName]
     );
@@ -39,8 +37,14 @@ function PlayerProfile({
             pair: [playerId, selectedAvoider],
             type: "ADD_AVOID_PAIR"
         });
-        // const newUnavoided = unAvoided.filter((id) => id !== selectedAvoider);
-        // setSelectedAvoider(newUnavoided[0]);
+        // Reset the selected avoider to the first on the list, but check to
+        // make sure they weren't they weren't the first.
+        const newSelected = (
+            unAvoided[0] !== selectedAvoider
+            ? unAvoided[0]
+            : unAvoided[1]
+        );
+        setSelectedAvoider(newSelected);
     }
     function handleChange(event) {
         event.preventDefault();

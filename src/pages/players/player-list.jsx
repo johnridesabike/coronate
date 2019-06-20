@@ -21,9 +21,7 @@ export default function PlayerList({
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Players"});
-            return function () {
-                winDispatch({action: "RESET_TITLE"});
-            };
+            return () => winDispatch({action: "RESET_TITLE"});
         },
         [winDispatch]
     );

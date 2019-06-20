@@ -1,14 +1,16 @@
 import Icons from "./icons";
 import {Link} from "@reach/router";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 import React from "react";
 
-export function Sidebar() {
+const noDraggy = {onDragStart: (e) => e.preventDefault()};
+
+export default function Sidebar() {
     return (
         <nav>
             <ul>
                 <li>
-                    <Link to="/tourneys">
+                    <Link to="/tourneys" {...noDraggy}>
                         <Icons.Award />
                         <span className="sidebar__hide-on-close">
                             &nbsp;Tournaments
@@ -16,7 +18,7 @@ export function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link  to="/players">
+                    <Link to="/players" {...noDraggy}>
                         <Icons.Users />
                         <span className="sidebar__hide-on-close">
                             &nbsp;Players
@@ -24,7 +26,7 @@ export function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/options">
+                    <Link to="/options" {...noDraggy}>
                         <Icons.Settings />
                         <span className="sidebar__hide-on-close">
                             &nbsp;Options
@@ -32,7 +34,7 @@ export function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/">
+                    <Link to="/" {...noDraggy}>
                         <Icons.Help />
                         <span className="sidebar__hide-on-close">
                             &nbsp;Info
@@ -43,17 +45,3 @@ export function Sidebar() {
         </nav>
     );
 }
-
-export default function HasSidebar({children}) {
-    return (
-        <div className="has-sidebar">
-            <Sidebar />
-            <div className="has-sidebar__content">
-                {children}
-            </div>
-        </div>
-    );
-}
-HasSidebar.propTypes = {
-    children: PropTypes.node.isRequired
-};

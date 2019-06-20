@@ -79,7 +79,7 @@ export default function Setup({tournament}) {
                     </button>
                 </p>
             ) : (
-                <h1 className="buttons-on-hover" style={{textAlign: "left"}}>
+                <h1 style={{textAlign: "left"}}>
                     <span className="inputPlaceholder">
                         {tourney.name}
                     </span>{" "}
@@ -109,7 +109,7 @@ export default function Setup({tournament}) {
                 </p>
             )
             : (
-                <p className="caption-30 buttons-on-hover">
+                <p className="caption-30">
                     <DateFormat date={tourney.date} />{" "}
                     <button
                         className="button-ghost"

@@ -7,7 +7,7 @@ import {
 import React, {createContext, useContext, useEffect, useReducer} from "react";
 import Icons from "./icons";
 import PropTypes from "prop-types";
-import {Sidebar} from "./sidebar-default";
+import Sidebar from "./sidebar-default";
 import VisuallyHidden from "@reach/visually-hidden";
 import WindowsControls from "./windows-controls";
 import classNames from "classnames";

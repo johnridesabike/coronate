@@ -1,8 +1,4 @@
-import React, {
-    useEffect,
-    useReducer,
-    useState
-} from "react";
+import React, {useEffect, useReducer} from "react";
 import {curry, filter, symmetricDifference} from "ramda";
 import {
     getPlayerMaybe,
@@ -20,7 +16,7 @@ import {useWindowContext} from "../../../components/window";
 
 function getAllPlayerIdsFromMatches(matchList) {
     const allPlayers = matchList.reduce(
-        (acc, match) => acc.concat(match.playerIds),
+        (acc, {playerIds}) => acc.concat(playerIds),
         []
     );
     return Array.from(new Set(allPlayers));
@@ -29,34 +25,39 @@ function getAllPlayerIdsFromMatches(matchList) {
 function calcNumOfRounds(playerCount) {
     const roundCount = Math.ceil(Math.log2(playerCount));
     // If there aren't any players then `roundCount` === `-Infinity`.
-    return (Number.isFinite(roundCount)) ? roundCount : 0;
+    return Number.isFinite(roundCount) ? roundCount : 0;
 }
 
 const emptyTourney = {
     name: "",
+    playerIds: [],
     roundList: []
 };
+const loadReducer = (oldState, newState) => ({...oldState, ...newState});
+// Usually I would be more comfortable with `dbError: false` instead of the
+// opposite, `noDbError: true`, since the latter leads to awkward logical
+// statements like "if there is not no db error." However, `noDbError` is
+// consistent with the rest of this state's properties in that `true` means
+// something is good, and `false` means something isn't. It allows shortcuts
+// like calling `.includes(false)` on the values.
+const initLoading = {noDbError: true, players: false, tourney: false};
 
-// eslint-disable-next-line complexity
 export default function TournamentData({children, tourneyId}) {
     const [tourney, tourneyDispatch] = useReducer(tourneyReducer, emptyTourney);
+    const {name, playerIds, roundList} = tourney;
     const [players, playersDispatch] = useReducer(playersReducer, {});
-    const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
-    const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
-    const [isDbError, setIsDbError] = useState(false);
-    useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
+    const [isLoading, loadingDispatch] = useReducer(loadReducer, initLoading);
+    useLoadingCursor(isLoading.players && isLoading.tourney);
     const {winDispatch} = useWindowContext();
     useEffect(
         function setDocumentTitle() {
-            if (!tourney.name) {
+            if (!name) {
                 return;
             }
-            winDispatch({title: tourney.name});
-            return function () {
-                winDispatch({action: "RESET_TITLE"});
-            };
+            winDispatch({title: name});
+            return () => winDispatch({action: "RESET_TITLE"});
         },
-        [tourney.name, winDispatch]
+        [name, winDispatch]
     );
     useEffect(
         function initTourneyFromDb() {
@@ -65,29 +66,27 @@ export default function TournamentData({children, tourneyId}) {
                 const value = await tourneyStore.getItem(tourneyId);
                 console.log("loaded:", tourneyId);
                 if (!value) {
-                    setIsDbError(true);
+                    loadingDispatch({noDbError: false});
                 } else if(!didCancel) {
                     tourneyDispatch({state: value || {}, type: "SET_STATE"});
-                    setIsTourneyLoaded(true);
+                    loadingDispatch({tourney: true});
                 }
             }());
-            return function unMount() {
-                didCancel = true;
-            };
+            return () => didCancel = true;
         },
         [tourneyId]
     );
     useEffect(
         function hydrateTourneyPlayersFromDb() {
-            if (!tourney.roundList || !tourney.playerIds) {
-                return; // the tournament hasn't been loaded yet
-            }
+            // if (!roundList || !playerIds) {
+            //     return; // the tournament hasn't been loaded yet
+            // }
             // Include players who have played matches but left the tournament,
             // as well as players who are registered but havne't played yet.
             const allTheIds = getAllPlayerIdsFromMatches(
-                rounds2Matches(tourney.roundList)
+                rounds2Matches(roundList)
             ).concat(
-                tourney.playerIds
+                playerIds
             );
             // If there are no ids, update the player state and exit early.
             if (allTheIds.length === 0) {
@@ -95,7 +94,7 @@ export default function TournamentData({children, tourneyId}) {
                 if (Object.keys(players).length !== 0) {
                     playersDispatch({state: {}, type: "LOAD_STATE"});
                 }
-                setIsPlayersLoaded(true);
+                loadingDispatch({players: true});
                 return;
             }
             let didCancel = false;
@@ -115,19 +114,17 @@ export default function TournamentData({children, tourneyId}) {
                     playersDispatch({state: values, type: "LOAD_STATE"});
                 }
                 if (!didCancel) {
-                    setIsPlayersLoaded(true);
+                    loadingDispatch({players: true});
                 }
             }());
-            return function unMount() {
-                didCancel = true;
-            };
+            return () => didCancel = true;
         },
-        [tourney.roundList, players, tourney.playerIds]
+        [roundList, players, playerIds]
     );
     useEffect(
         function saveTourneyToDb() {
             if (
-                !isTourneyLoaded
+                !isLoading.tourney
                 // The tourney length is 0 when it wasn't found in the DB
                 || Object.keys(tourney).length === 0
                 // I don't know why, but this happens sometimes with a bad URL
@@ -139,11 +136,11 @@ export default function TournamentData({children, tourneyId}) {
                 console.log("error saving tourney:", tourneyId, error);
             });
         },
-        [tourneyId, tourney, isTourneyLoaded]
+        [tourneyId, tourney, isLoading.tourney]
     );
     useEffect(
         function savePlayersToDb() {
-            if (!isPlayersLoaded) {
+            if (!isLoading.players) {
                 return;
             }
             (async function () {
@@ -151,30 +148,24 @@ export default function TournamentData({children, tourneyId}) {
                 console.log("saved player changes to DB:", Object.keys(values));
             }());
         },
-        [players, isPlayersLoaded]
+        [players, isLoading.players]
     );
     const getPlayer = curry(getPlayerMaybe)(players);
     // `players` includes players in past matches who may have left
     // `activePlayers` is only players to be matched in future matches.
-    const activePlayers = filter(
-        (p) => tourney.playerIds.includes(p.id),
-        players
-    );
+    // Use Ramda's `filter` because it can filter objects.
+    const activePlayers = filter(({id}) => playerIds.includes(id), players);
     const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
-    const isItOver = tourney.roundList.length >= roundCount;
+    const isItOver = roundList.length >= roundCount;
     const isNewRoundReady = (
-        tourney.roundList.length === 0
+        roundList.length === 0
         ? true
-        : isRoundComplete(
-            tourney.roundList,
-            activePlayers,
-            tourney.roundList.length - 1
-        )
+        : isRoundComplete(roundList, activePlayers, roundList.length - 1)
     );
-    if (isDbError) {
+    if (!isLoading.noDbError) {
         return <div>Error: tournament not found.</div>;
     }
-    if (!isTourneyLoaded || !isPlayersLoaded) {
+    if (Object.values(isLoading).includes(false)) {
         return <div>Loading...</div>;
     }
     return children({
