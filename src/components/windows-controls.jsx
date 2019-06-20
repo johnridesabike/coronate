@@ -1,7 +1,9 @@
 // This handles the window controls for when the Electron app is running on
 // Windows.
-import React, {useEffect, useState} from "react";
 import {electron, ifElectron} from "../electron-utils";
+import Icons from "./icons";
+import PropTypes from "prop-types";
+import React from "react";
 import classNames from "classnames";
 import styles from "./windows-controls.module.css";
 
@@ -62,26 +64,37 @@ const Restore = () => (
 
 const win = ifElectron(() => electron.remote.getCurrentWindow());
 
-export default function Controls() {
-    const [isMaximized, setIsMaximized] = useState(false);
-    useEffect(
-        function addEventListeners() {
-            ifElectron(function () {
-                // see comments in ../App.jsx about removing stale listeners.
-                function unregisterListeners() {
-                    win.removeAllListeners("maximize");
-                    win.removeAllListeners("unmaximize");
-                }
-                unregisterListeners();
-                win.on("maximize", () => setIsMaximized(true));
-                win.on("unmaximize", () => setIsMaximized(false));
-                setIsMaximized(win.isMaximized());
-                return unregisterListeners;
-            });
-            console.log("rendered");
-        },
-        []
-    );
+export default function Controls({state}) {
+    const middleButton = (function (){
+        if (state.isFullScreen) {
+            return (
+                <button
+                    className={classNames(styles.winButton, "button-ghost")}
+                    onClick={() => win.setFullScreen(false)}
+                >
+                    <Icons.Unfullscreen />
+                </button>
+            );
+        } else if (state.isMaximized) {
+            return (
+                <button
+                    className={classNames(styles.winButton, "button-ghost")}
+                    onClick={() => win.unmaximize()}
+                >
+                    <Restore />
+                </button>
+            );
+        } else {
+            return (
+                <button
+                    className={classNames(styles.winButton, "button-ghost")}
+                    onClick={() => win.maximize()}
+                >
+                    <Maximize />
+                </button>
+            );
+        }
+    }());
     return (
         <div className={styles.container}>
             <button
@@ -90,22 +103,7 @@ export default function Controls() {
             >
                 <Minimize />
             </button>
-            {isMaximized
-            ? (
-                <button
-                    className={classNames(styles.winButton, "button-ghost")}
-                    onClick={() => win.unmaximize()}
-                >
-                    <Restore />
-                </button>
-            ) : (
-                <button
-                    className={classNames(styles.winButton, "button-ghost")}
-                    onClick={() => win.maximize()}
-                >
-                    <Maximize />
-                </button>
-            )}
+            {middleButton}
             <button
                 className={classNames(
                     styles.winButton,
@@ -120,5 +118,5 @@ export default function Controls() {
     );
 }
 Controls.propTypes = {
-    // isFullScreen: PropTypes.bool.isRequired
+    state: PropTypes.object.isRequired
 };
