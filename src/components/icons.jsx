@@ -26,7 +26,6 @@ import Repeat from "react-feather/dist/icons/repeat";
 import Settings from "react-feather/dist/icons/settings";
 import Sidebar from "react-feather/dist/icons/sidebar";
 import Trash from "react-feather/dist/icons/trash-2";
-import Unfullscreen from "react-feather/dist/icons/minimize-2";
 import UserMinus from "react-feather/dist/icons/user-minus";
 import UserPlus from "react-feather/dist/icons/user-plus";
 import Users from "react-feather/dist/icons/users";
@@ -71,7 +70,6 @@ export default {
     Settings,
     Sidebar,
     Trash,
-    Unfullscreen,
     UserMinus,
     UserPlus,
     Users,

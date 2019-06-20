@@ -28,7 +28,6 @@ const initialWinState = {
     isBlur: false,
     isDialogOpen: false,
     isFullScreen: false,
-    isMaximized: false,
     isSidebarOpen: true,
     title: ""
 };
@@ -96,7 +95,7 @@ const WindowTitleBar = ({state, dispatch}) => (
         >
             {[state.title, GLOBAL_TITLE].filter(isNotBlank).join(" - ")}
         </div>
-        <IfElectron onlyWin><WindowsControls state={state} /></IfElectron>
+        <IfElectron onlyWin><WindowsControls /></IfElectron>
     </header>
 );
 WindowTitleBar.propTypes = {
@@ -126,12 +125,8 @@ export function Window(props) {
                     win.removeAllListeners("leave-full-screen");
                     win.removeAllListeners("blur");
                     win.removeAllListeners("focus");
-                    win.removeAllListeners("maximize");
-                    win.removeAllListeners("unmaximize");
                 }
                 unregisterListeners();
-                win.on("maximize", () => dispatch({isMaximized: true}));
-                win.on("unmaximize", () => dispatch({isMaximized: false}));
                 // Add the event listeners. These will inform styling.
                 win.on(
                     "enter-full-screen",
@@ -144,7 +139,6 @@ export function Window(props) {
                 win.on("focus", () => dispatch({isBlur: false}));
                 dispatch({isFullScreen: win.isFullScreen()});
                 dispatch({isBlur: !win.isFocused()});
-                dispatch({isMaximized: win.isMaximized()});
                 // I don't think this ever really fires, but can it hurt?
                 return unregisterListeners;
             });
