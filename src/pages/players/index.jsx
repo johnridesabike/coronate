@@ -1,9 +1,9 @@
 import React, {useEffect} from "react";
 import {useAllPlayersDb, useOptionsDb, useSortedTable} from "../../hooks";
-import HasSidebar from "../../components/sidebar-default";
 import PlayerList from "./player-list";
 import PlayerProfile from "./player-profile";
 import {Router} from "@reach/router";
+import {WindowBody} from "../../components/window";
 
 export default function Players(props) {
     const [players, playersDispatch] = useAllPlayersDb();
@@ -21,7 +21,7 @@ export default function Players(props) {
     const [options, optionsDispatch] = useOptionsDb();
     const childProps = {options, optionsDispatch, players, playersDispatch};
     return (
-        <HasSidebar>
+        <WindowBody>
             <Router basepath="players">
                 <PlayerList
                     path="/"
@@ -31,7 +31,7 @@ export default function Players(props) {
                 />
                 <PlayerProfile path=":playerId" {...childProps} />
             </Router>
-        </HasSidebar>
+        </WindowBody>
     );
 }
 Players.propTypes = {};

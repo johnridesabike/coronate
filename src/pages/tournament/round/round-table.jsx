@@ -5,15 +5,15 @@ import VisuallyHidden from "@reach/visually-hidden";
 import {matches2ScoreData} from "../../../pairing-scoring";
 import {rounds2Matches} from "../../../data-types";
 import style from "./round.module.css";
-import {useTournament} from "../../../hooks";
 
 export default function RoundTable({
     compact,
     roundId,
     selectedMatch,
-    setSelectedMatch
+    setSelectedMatch,
+    tournament
 }) {
-    const {tourney} = useTournament();
+    const {tourney} = tournament;
     const matchList = tourney.roundList[roundId];
     const scoreData = matches2ScoreData(rounds2Matches(tourney.roundList));
     return (
@@ -65,6 +65,7 @@ export default function RoundTable({
                         selectedMatch={selectedMatch}
                         setSelectedMatch={setSelectedMatch}
                         scoreData={scoreData}
+                        tournament={tournament}
                     />
                 ))}
             </tbody>
@@ -73,7 +74,8 @@ export default function RoundTable({
 }
 RoundTable.propTypes = {
     compact: PropTypes.bool,
-    roundId: PropTypes.number,
+    roundId: PropTypes.number.isRequired,
     selectedMatch: PropTypes.string,
-    setSelectedMatch: PropTypes.func
+    setSelectedMatch: PropTypes.func,
+    tournament: PropTypes.object.isRequired
 };

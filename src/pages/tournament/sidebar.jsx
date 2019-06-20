@@ -1,68 +1,30 @@
 import {curry, last} from "ramda";
-import {useDocumentTitle, useTournament} from "../../hooks";
 import {DUMMY_ID} from "../../data-types";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
-import {Notification} from "../../components/utility";
 import PropTypes from "prop-types";
 import React from "react";
 import classNames from "classnames";
-import {getUnmatched} from "../../data-types";
+import {isRoundComplete} from "../../data-types";
 
-function isRoundComplete(tourney, players, roundId) {
-    if (roundId < tourney.roundList.length - 1) {
-        // If it's not the last round, it's complete.
-        return true;
-    }
-    const unmatched = getUnmatched(tourney.roundList, players, roundId);
-    const results = tourney.roundList[roundId].map(
-        (match) => match.result[0] + match.result[1]
-    );
-    return Object.keys(unmatched).length === 0 && !results.includes(0);
-}
-
-function calcNumOfRounds(playerCount) {
-    const roundCount = Math.ceil(Math.log2(playerCount));
-    // If there aren't any players then `roundCount` === `-Infinity`.
-    return (Number.isFinite(roundCount)) ? roundCount : 0;
-}
-
-export default function Sidebar(props) {
+export default function Sidebar({className, navigate, tournament}) {
     const {
         tourney,
+        isItOver,
+        isNewRoundReady,
         getPlayer,
         activePlayers,
         playersDispatch,
         tourneyDispatch
-    } = useTournament();
-    useDocumentTitle(tourney.name);
+    } = tournament;
     const {roundList} = tourney;
-    const isComplete = curry(isRoundComplete)(tourney, activePlayers);
-
-    const isNewRoundReady = (function () {
-        if (roundList.length === 0) {
-            return true;
-        }
-        return isComplete(roundList.length - 1);
-    }());
-    const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
-    const isItOver = roundList.length >= roundCount;
-    const [tooltipText, tooltipWarn] = (function () {
-        if (!isNewRoundReady) {
-            return [
-                "Round in progress.",
-                true
-            ];
-        } else if (isItOver) {
-            return ["All rounds have completed.", true];
-        } else {
-            return ["Ready to begin a new round.", false];
-        }
-    }());
+    const isComplete = curry(isRoundComplete)(roundList, activePlayers);
 
     function newRound() {
-        const confirmText = "All rounds have completed. Are you sure you want "
-            + "to begin a new one?";
+        const confirmText = (
+            "All rounds have completed. Are you sure you want to begin a new "
+            + "one?"
+        );
         if (isItOver) {
             if (!window.confirm(confirmText)) {
                 return;
@@ -73,7 +35,7 @@ export default function Sidebar(props) {
 
     async function delLastRound() {
         if (window.confirm("Are you sure you want to delete the last round?")) {
-            await props.navigate(".");
+            await navigate(".");
             // If a match has been scored, then reset it.
             // Should this logic be somewhere else?
             last(roundList).forEach(function (match) {
@@ -106,7 +68,7 @@ export default function Sidebar(props) {
     }
 
     return (
-        <div className={props.className}>
+        <div className={classNames(className)}>
             <nav>
                 <ul>
                     <li>
@@ -120,6 +82,14 @@ export default function Sidebar(props) {
                 </ul>
                 <hr />
                 <ul>
+                    <li>
+                        <Link to="setup">
+                            <Icons.Settings />
+                            <span className="sidebar__hide-on-close">
+                                &nbsp;Setup
+                            </span>
+                        </Link>
+                    </li>
                     <li>
                         <Link to=".">
                             <Icons.Users />
@@ -156,7 +126,7 @@ export default function Sidebar(props) {
                 <hr />
                 <h5 className="sidebar__hide-on-close">Rounds</h5>
                 <ul>
-                    {Object.keys(roundList).map((id) => (
+                    {Object.keys(roundList).map((id) =>
                         <li key={id}>
                             <Link to={`round/${id}`}>
                                 {Number(id) + 1}
@@ -182,47 +152,14 @@ export default function Sidebar(props) {
                                 )}
                             </Link>
                         </li>
-                    ))}
+                    )}
                 </ul>
             </nav>
             <hr />
             <ul>
-                <li className="caption-30">
-                    <label
-                        className="sidebar__hide-on-close"
-                        htmlFor="round-progress"
-                    >
-                        Completion:
-                    </label>
-                    <meter
-                        id="round-progress"
-                        max={roundCount}
-                        // optimum={roundCount}
-                        // low={roundCount - 1}
-                        style={{width: "100%"}}
-                        title={roundList.length + "/" + roundCount}
-                        value={roundList.length}
-                    >
-                        {roundList.length}/{roundCount}
-                    </meter>
-                </li>
-                <li>
-                    <Notification
-                        className="caption-20"
-                        success={!tooltipWarn}
-                        tooltip={tooltipText}
-                    >
-                        <span className="sidebar__hide-on-close">
-                            {tooltipText}
-                        </span>
-                    </Notification>
-                </li>
-            </ul>
-            <hr />
-            <ul>
                 <li>
                     <button
-                        className={classNames({"button-primary": tooltipWarn})}
+                        // className={classNames({"button-primary": tooltipWarn})}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
                     >
@@ -244,21 +181,11 @@ export default function Sidebar(props) {
                     </button>
                 </li>
             </ul>
-            <hr />
-            <ul>
-                <li>
-                    <Link to="options">
-                        <Icons.Settings />
-                        <span className="sidebar__hide-on-close">
-                            &nbsp;Options
-                        </span>
-                    </Link>
-                </li>
-            </ul>
         </div>
     );
 }
 Sidebar.propTypes = {
     className: PropTypes.string,
-    navigate: PropTypes.func.isRequired
+    navigate: PropTypes.func.isRequired,
+    tournament: PropTypes.object.isRequired
 };

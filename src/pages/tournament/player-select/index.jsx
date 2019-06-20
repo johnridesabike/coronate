@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import Selecting from "./selecting";
 import classNames from "classnames";
 import t from "tcomb";
-import {useTournament} from "../../../hooks";
+// import {useTournament} from "../../../hooks";
 
 function hasHadBye(matchList, playerId) {
     return t.list(types.Match)(matchList).filter(
@@ -52,8 +52,8 @@ PlayerList.propTypes = {
     players: PropTypes.object.isRequired
 };
 
-export default function PlayerSelect(props) {
-    const {tourney, tourneyDispatch, activePlayers} = useTournament();
+export default function PlayerSelect({tournament}) {
+    const {tourney, tourneyDispatch, activePlayers} = tournament;
     const {playerIds, roundList, byeQueue} = tourney;
     const dispatch = tourneyDispatch;
     const [isSelecting, setIsSelecting] = useState(playerIds.length === 0);
@@ -124,10 +124,15 @@ export default function PlayerSelect(props) {
                     >
                         Done
                     </button>
-                    <Selecting />
+                    <Selecting
+                        tourney={tourney}
+                        tourneyDispatch={tourneyDispatch}
+                    />
                 </Dialog>
             </PanelContainer>
         </div>
     );
 }
-PlayerSelect.propTypes = {};
+PlayerSelect.propTypes = {
+    tournament: PropTypes.object.isRequired
+};

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Dialog} from "@reach/dialog";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import {SortLabel} from "../../components/utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import styles from "./index.module.css";
-import {useDocumentTitle} from "../../hooks";
+import {useWindowContext} from "../../components/window";
 
 export default function PlayerList({
     sorted,
@@ -17,7 +17,16 @@ export default function PlayerList({
     optionsDispatch
 }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
-    useDocumentTitle("Players");
+    const {winDispatch} = useWindowContext();
+    useEffect(
+        function setDocumentTitle() {
+            winDispatch({title: "Players"});
+            return function () {
+                winDispatch({action: "RESET_TITLE"});
+            };
+        },
+        [winDispatch]
+    );
     const delPlayer = function (event, id) {
         event.preventDefault();
         const message = "Are you sure you want to delete "
@@ -69,29 +78,29 @@ export default function PlayerList({
                     </tr>
                 </thead>
                 <tbody className="content">
-                    {sorted.table.map((player) =>
-                        <tr key={player.id}  className="buttons-on-hover">
+                    {sorted.table.map((p) =>
+                        <tr key={p.id}  className="buttons-on-hover">
                             <td className="table__player">
-                                <Link to={player.id}>
-                                    {player.firstName} {player.lastName}
+                                <Link to={p.id}>
+                                    {p.firstName} {p.lastName}
                                 </Link>
                             </td>
                             <td className="table__number">
-                                {player.rating}
+                                {p.rating}
                             </td>
                             <td className="table__number">
-                                {player.matchCount}
+                                {p.matchCount}
                             </td>
                             <td>
                                 <button
                                     className="danger button-ghost"
                                     onClick={
-                                        (event) => delPlayer(event, player.id)
+                                        (event) => delPlayer(event, p.id)
                                     }
                                 >
                                     <Icons.Trash />
                                     <VisuallyHidden>
-                                    Delete {player.firstName} {player.lastName}
+                                        Delete {p.firstName} {p.lastName}
                                     </VisuallyHidden>
                                 </button>
                             </td>

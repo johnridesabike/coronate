@@ -1,11 +1,10 @@
 import React, {useEffect, useMemo, useState} from "react";
+import {WindowBody, useWindowContext} from "../components/window";
 import {
     useAllPlayersDb,
     useAllTournamentsDb,
-    useDocumentTitle,
     useOptionsDb
 } from "../hooks";
-import HasSidebar from "../components/sidebar-default";
 import Icons from "../components/icons";
 import classNames from "classnames";
 import demoData from "../demo-data";
@@ -26,7 +25,16 @@ export default function Options(props) {
     const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");
     const [options, optionsDispatch] = useOptionsDb();
-    useDocumentTitle("Options");
+    const {winDispatch} = useWindowContext();
+    useEffect(
+        function setDocumentTitle() {
+            winDispatch({title: "Options"});
+            return function () {
+                winDispatch({action: "RESET_TITLE"});
+            };
+        },
+        [winDispatch]
+    );
     // memoize this so the `useEffect` hook syncs with the correct states
     const exportData = useMemo(
         () => ({options, players, tournaments}),
@@ -86,7 +94,7 @@ export default function Options(props) {
         loadData(testData);
     }
     return (
-        <HasSidebar>
+        <WindowBody>
             <div className={classNames(styles.options, "content-area")}>
                 <h2>Bye settings</h2>
                 <form>
@@ -164,6 +172,6 @@ export default function Options(props) {
                     </p>
                 </form>
             </div>
-        </HasSidebar>
+        </WindowBody>
     );
 }

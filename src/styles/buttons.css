@@ -80,7 +80,7 @@ input[type="submit"]:focus,
 }
 
 .button-ghost,
-.closed-sidebar .has-sidebar__sidebar button {
+.closed-sidebar .win__sidebar button {
     font-size: 16px;
     color: var(--grey-90-a80);
     background-color: transparent;

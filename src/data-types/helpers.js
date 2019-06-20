@@ -62,12 +62,12 @@ export function rounds2Matches(roundList, lastRound = null) {
 // This creates a filtered version of `players` with only the players that are
 // not matched for the specified round.
 export function getUnmatched(roundList, players, roundId) {
-    const matchList = types.RoundList(roundList)[t.Number(roundId)] || [];
+    const matchList = roundList[roundId] || [];
     const matchedIds = matchList.reduce(
-        (acc, match) => acc.concat(match.playerIds),
+        (acc, {playerIds}) => acc.concat(playerIds),
         []
     );
-    const playerList = t.list(types.Player)(Object.values(players));
+    const playerList = Object.values(players);
     const unmatched = playerList.reduce(
         (acc, player) => (
             matchedIds.includes(player.id)
@@ -77,4 +77,14 @@ export function getUnmatched(roundList, players, roundId) {
         {}
     );
     return unmatched;
+}
+
+export function isRoundComplete(roundList, players, roundId) {
+    if (roundId < roundList.length - 1) {
+        // If it's not the last round, it's complete.
+        return true;
+    }
+    const unmatched = getUnmatched(roundList, players, roundId);
+    const results = roundList[roundId].map(({result}) => result[0] + result[1]);
+    return Object.keys(unmatched).length === 0 && !results.includes(0);
 }

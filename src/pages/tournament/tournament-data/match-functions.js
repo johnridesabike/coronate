@@ -6,9 +6,9 @@ import {
     createMatch,
     getPlayerMaybe,
     types
-} from "../../data-types";
+} from "../../../data-types";
 import {assoc, curry} from "ramda";
-import {pairPlayers, setByePlayer} from "../../pairing-scoring";
+import {pairPlayers, setByePlayer} from "../../../pairing-scoring";
 import t from "tcomb";
 
 export function scoreByeMatch(byeValue, match) {

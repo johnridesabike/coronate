@@ -7,7 +7,7 @@ import {
     over,
     set
 } from "ramda";
-import {createPlayer, types} from "../../data-types";
+import {createPlayer, types} from "../../../data-types";
 import nanoid from "nanoid";
 import t from "tcomb";
 

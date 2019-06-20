@@ -11,23 +11,24 @@ import {
     matches2ScoreData,
     setUpperHalves
 } from "../../../pairing-scoring";
-import {useOptionsDb, useTournament} from "../../../hooks";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";
 import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
+import {useOptionsDb} from "../../../hooks";
 
-export default function PairPicker({roundId}) {
+export default function PairPicker({roundId, tournament}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const [options] = useOptionsDb();
     const {
         tourney,
         activePlayers,
+        players,
         getPlayer,
         tourneyDispatch
-    } = useTournament();
+    } = tournament;
     const {roundList} = tourney;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [scoreData, pairData] = useMemo(
@@ -104,6 +105,8 @@ export default function PairPicker({roundId}) {
                         setStagedPlayers={setStagedPlayers}
                         stagedPlayers={stagedPlayers}
                         pairData={pairData}
+                        tourneyDispatch={tourneyDispatch}
+                        getPlayer={getPlayer}
                     />
                     <PanelContainer>
                         {stagedPlayers.map((id) =>
@@ -111,8 +114,9 @@ export default function PairPicker({roundId}) {
                                 <Panel key={id}>
                                     <PlayerInfo
                                         playerId={id}
-                                        roundId={roundId}
                                         scoreData={scoreData}
+                                        players={players}
+                                        getPlayer={getPlayer}
                                     />
                                 </Panel>
                             )
@@ -127,12 +131,15 @@ export default function PairPicker({roundId}) {
                 >
                     Done
                 </button>
-                <Selecting />
+                <Selecting
+                    tourney={tourney}
+                    tourneyDispatch={tourneyDispatch}
+                />
             </Dialog>
         </div>
     );
 }
 PairPicker.propTypes = {
-    roundId: PropTypes.number,
-    tourneyId: PropTypes.number
+    roundId: PropTypes.number.isRequired,
+    tournament: PropTypes.object.isRequired
 };

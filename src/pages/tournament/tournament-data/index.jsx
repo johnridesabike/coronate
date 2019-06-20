@@ -1,45 +1,63 @@
 import React, {
-    createContext,
-    useContext,
     useEffect,
     useReducer,
     useState
 } from "react";
 import {curry, filter, symmetricDifference} from "ramda";
 import {
-    // getAllPlayerIdsFromMatches,
     getPlayerMaybe,
-    rounds2Matches,
-    types
-} from "../data-types";
-import {playerStore, tourneyStore} from "./db";
-import {playersReducer, tournamentReducer} from "./reducers";
+    isRoundComplete,
+    rounds2Matches
+    // types
+} from "../../../data-types";
+import {playerStore, tourneyStore} from "../../../hooks/db";
 import PropTypes from "prop-types";
-import t from "tcomb";
-import {useLoadingCursor} from "./hooks";
+import playersReducer from "./players-reducer";
+// import t from "tcomb";
+import tourneyReducer from "./tournament-reducer";
+import {useLoadingCursor} from "../../../hooks";
+import {useWindowContext} from "../../../components/window";
 
 function getAllPlayerIdsFromMatches(matchList) {
-    const allPlayers = t.list(types.Match)(matchList).reduce(
+    const allPlayers = matchList.reduce(
         (acc, match) => acc.concat(match.playerIds),
         []
     );
     return Array.from(new Set(allPlayers));
 }
 
-const TournamentContext = createContext(null);
-
-export function useTournament() {
-    const state = useContext(TournamentContext);
-    return state;
+function calcNumOfRounds(playerCount) {
+    const roundCount = Math.ceil(Math.log2(playerCount));
+    // If there aren't any players then `roundCount` === `-Infinity`.
+    return (Number.isFinite(roundCount)) ? roundCount : 0;
 }
 
-export function TournamentProvider({children, tourneyId}) {
-    const [tourney, tourneyDispatch] = useReducer(tournamentReducer, {});
+const emptyTourney = {
+    name: "",
+    roundList: []
+};
+
+// eslint-disable-next-line complexity
+export default function TournamentData({children, tourneyId}) {
+    const [tourney, tourneyDispatch] = useReducer(tourneyReducer, emptyTourney);
     const [players, playersDispatch] = useReducer(playersReducer, {});
     const [isTourneyLoaded, setIsTourneyLoaded] = useState(false);
     const [isPlayersLoaded, setIsPlayersLoaded] = useState(false);
     const [isDbError, setIsDbError] = useState(false);
     useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
+    const {winDispatch} = useWindowContext();
+    useEffect(
+        function setDocumentTitle() {
+            if (!tourney.name) {
+                return;
+            }
+            winDispatch({title: tourney.name});
+            return function () {
+                winDispatch({action: "RESET_TITLE"});
+            };
+        },
+        [tourney.name, winDispatch]
+    );
     useEffect(
         function initTourneyFromDb() {
             let didCancel = false;
@@ -130,7 +148,7 @@ export function TournamentProvider({children, tourneyId}) {
             }
             (async function () {
                 const values = await playerStore.setItems(players);
-                console.log("saved player changes to DB:", values);
+                console.log("saved player changes to DB:", Object.keys(values));
             }());
         },
         [players, isPlayersLoaded]
@@ -142,28 +160,36 @@ export function TournamentProvider({children, tourneyId}) {
         (p) => tourney.playerIds.includes(p.id),
         players
     );
+    const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
+    const isItOver = tourney.roundList.length >= roundCount;
+    const isNewRoundReady = (
+        tourney.roundList.length === 0
+        ? true
+        : isRoundComplete(
+            tourney.roundList,
+            activePlayers,
+            tourney.roundList.length - 1
+        )
+    );
     if (isDbError) {
         return <div>Error: tournament not found.</div>;
     }
     if (!isTourneyLoaded || !isPlayersLoaded) {
         return <div>Loading...</div>;
     }
-    return (
-        <TournamentContext.Provider
-            value={{
-                activePlayers,
-                getPlayer,
-                players,
-                playersDispatch,
-                tourney,
-                tourneyDispatch
-            }}
-        >
-            {children}
-        </TournamentContext.Provider>
-    );
+    return children({
+        activePlayers,
+        getPlayer,
+        isItOver,
+        isNewRoundReady,
+        players,
+        playersDispatch,
+        roundCount,
+        tourney,
+        tourneyDispatch
+    });
 }
-TournamentProvider.propTypes = {
-    children: PropTypes.node.isRequired,
+TournamentData.propTypes = {
+    children: PropTypes.func.isRequired,
     tourneyId: PropTypes.string.isRequired
 };

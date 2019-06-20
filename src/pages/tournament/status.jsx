@@ -1,22 +1,25 @@
 import {Panel, PanelContainer} from "../../components/utility";
+import PropTypes from "prop-types";
 import React from "react";
 import RoundTable from "./round/round-table";
 import {ScoreTable} from "./scores";
-import {useTournament} from "../../hooks";
 
-export default function Status() {
-    const {tourney} = useTournament();
+export default function Status({tournament}) {
+    const {tourney, getPlayer} = tournament;
     const lastRound = (function () {
         if (tourney.roundList.length === 0) {
             return <p>No rounds played yet.</p>;
         }
         const lastRoundId = tourney.roundList.length - 1;
         if (tourney.roundList[lastRoundId].length === 0) {
-            return <p>Matched players will be shown here.</p>;
+            return (
+                <p>Matched players in the current round will be shown here.</p>
+            );
         }
         return (
             <RoundTable
                 roundId={lastRoundId}
+                tournament={tournament}
                 compact
             />
         );
@@ -31,9 +34,17 @@ export default function Status() {
                     {lastRound}
                 </Panel>
                 <Panel>
-                    <ScoreTable title="Rankings" compact />
+                    <ScoreTable
+                        getPlayer={getPlayer}
+                        title="Rankings"
+                        tourney={tourney}
+                        compact
+                    />
                 </Panel>
             </PanelContainer>
         </>
     );
 }
+Status.propTypes = {
+    tournament: PropTypes.object.isRequired
+};

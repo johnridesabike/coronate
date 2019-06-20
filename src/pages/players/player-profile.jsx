@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
@@ -6,7 +6,7 @@ import {avoidPairReducer} from "../../pairing-scoring";
 import numeral from "numeral";
 import {ratings} from "../../pairing-scoring";
 import styles from "./index.module.css";
-import {useDocumentTitle} from "../../hooks";
+import {useWindowContext} from "../../components/window";
 
 function PlayerProfile({
     playerId,
@@ -17,7 +17,16 @@ function PlayerProfile({
 }) {
     const player = players[playerId];
     const playerName = (player) ? player.firstName + " " + player.lastName : "";
-    useDocumentTitle("profile for " + playerName);
+    const {winDispatch} = useWindowContext();
+    useEffect(
+        function setDocumentTitle() {
+            winDispatch({title: "Profile for " + playerName});
+            return function () {
+                winDispatch({action: "RESET_TITLE"});
+            };
+        },
+        [winDispatch, playerName]
+    );
     const avoidObj = options.avoidPairs.reduce(avoidPairReducer, {});
     const singAvoidList = (avoidObj[playerId]) ? avoidObj[playerId] : [];
     const unAvoided = Object.keys(players).filter(

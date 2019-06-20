@@ -10,7 +10,6 @@
 }
 
 .caution__text {
-    margin: 4px 0;
     padding: 4px;
     background-color: var(--ink-90);
     color: var(--grey-10);

@@ -4,23 +4,17 @@ import {
 } from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
-import {findById} from "../../../components/utility";
-// import {matches2ScoreData} from "../../../pairing-scoring";
 import numeral from "numeral";
 import {sum} from "ramda";
-import {useTournament} from "../../../hooks";
 
-export default function PlayerMatchInfo({matchId, color, roundId, scoreData}) {
-    const {tourney, getPlayer} = useTournament();
-    const matchList = tourney.roundList[roundId];
-    const match = findById(matchId, matchList);
+export default function PlayerMatchInfo({color, scoreData, match, getPlayer}) {
     const playerId = match.playerIds[color];
     const player = getPlayer(playerId);
     const {
         colorScores,
         opponentResults,
         results
-    } = scoreData[match.playerIds[color]];
+    } = scoreData[playerId];
     const colorBalance = sum(colorScores);
     const hasBye = Object.keys(opponentResults).includes(DUMMY_ID);
     const prettyBalance = (function () {
@@ -75,8 +69,8 @@ export default function PlayerMatchInfo({matchId, color, roundId, scoreData}) {
     );
 }
 PlayerMatchInfo.propTypes = {
-    color: PropTypes.number,
-    matchId: PropTypes.string,
-    roundId: PropTypes.number,
-    scoreData: PropTypes.object
+    color: PropTypes.number.isRequired,
+    getPlayer: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
+    scoreData: PropTypes.object.isRequired
 };

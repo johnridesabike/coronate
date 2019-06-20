@@ -24,18 +24,18 @@ export function useSortedTable(table, key, isDescending = true) {
     return [state, dispatch];
 }
 
-export function useDocumentTitle(title) {
-    useEffect(
-        function () {
-            const origTitle = document.title;
-            document.title = "Chessahoochee: " + title;
-            return function resetTitle() {
-                document.title = origTitle;
-            };
-        },
-        [title]
-    );
-}
+// export function useDocumentTitle(title) {
+//     useEffect(
+//         function () {
+//             const origTitle = document.title;
+//             document.title = "Chessahoochee: " + title;
+//             return function resetTitle() {
+//                 document.title = origTitle;
+//             };
+//         },
+//         [title]
+//     );
+// }
 
 export function useLoadingCursor(isLoaded) {
     useEffect(

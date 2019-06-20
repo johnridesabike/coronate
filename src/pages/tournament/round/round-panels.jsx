@@ -5,11 +5,11 @@ import PairPicker from "../pair-picker";
 import PropTypes from "prop-types";
 import Round from "./round";
 import {getUnmatched} from "../../../data-types";
-import {useTournament} from "../../../hooks";
+// import {useTournament} from "../../../hooks";
 
 export default function RoundPanels(props) {
     const roundId = Number(props.roundId); // Reach Router passes a string.
-    const {tourney, activePlayers} = useTournament();
+    const {tourney, activePlayers} = props.tournament;
     // only use unmatched players if this is the last round.
     const unmatched = (
         roundId === tourney.roundList.length - 1
@@ -46,16 +46,19 @@ export default function RoundPanels(props) {
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Round roundId={roundId}/>
+                    <Round roundId={roundId} tournament={props.tournament}/>
                 </TabPanel>
                 <TabPanel>
-                    <PairPicker roundId={roundId} />
+                    <PairPicker
+                        roundId={roundId}
+                        tournament={props.tournament}
+                    />
                 </TabPanel>
             </TabPanels>
         </Tabs>
     );
 }
 RoundPanels.propTypes = {
-    path: PropTypes.string,
-    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tournament: PropTypes.object.isRequired
 };

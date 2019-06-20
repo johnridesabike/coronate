@@ -4,22 +4,24 @@ import {ByeTourney} from "../../../../test-data/components";
 import PairPicker from "../index";
 import PropTypes from "prop-types";
 import React from "react";
-import {TournamentProvider} from "../../../../hooks";
+import TournamentData from "../../tournament-data";
 
 const {click} = fireEvent;
 
 afterEach(cleanup);
 
 const BattleForGothamCity = ({children}) => (
-    <TournamentProvider tourneyId="tvAdS4YbSOznrBgrg0ITA">
+    <TournamentData tourneyId="tvAdS4YbSOznrBgrg0ITA">
         {children}
-    </TournamentProvider>
+    </TournamentData>
 );
-BattleForGothamCity.propTypes = {children: PropTypes.node.isRequired};
+BattleForGothamCity.propTypes = {children: PropTypes.func.isRequired};
 
 it("Selecting and unselecting players works", function () {
     const {queryByText, getByText, getByLabelText} = render(
-        <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
+        <BattleForGothamCity>
+            {(t) => <PairPicker roundId={1} tournament={t}/>}
+        </BattleForGothamCity>
     );
     click(getByText(/add bruce wayne/i));
     expect(getByText(/white: bruce wayne/i)).toBeInTheDocument();
@@ -32,7 +34,9 @@ it("Selecting and unselecting players works", function () {
 });
 it("Swapping colors works", function () {
     const {getByText} = render(
-        <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
+        <BattleForGothamCity>
+            {(t) => <PairPicker roundId={1} tournament={t}/>}
+        </BattleForGothamCity>
     );
     click(getByText(/add bruce wayne/i));
     click(getByText(/add dick grayson/i));
@@ -43,7 +47,9 @@ it("Swapping colors works", function () {
 });
 it("Removed players are removed from selection", function () {
     const {getByText, queryByText, getByLabelText} = render(
-        <BattleForGothamCity><PairPicker roundId={1}/></BattleForGothamCity>
+        <BattleForGothamCity>
+            {(t) => <PairPicker roundId={1} tournament={t}/>}
+        </BattleForGothamCity>
     );
     click(getByText(/add bruce wayne/i));
     expect(getByText(/white: bruce wayne/i)).toBeInTheDocument();
@@ -54,14 +60,18 @@ it("Removed players are removed from selection", function () {
 });
 it("Selecting bye players works", function () {
     const {getByText} = render(
-        <ByeTourney><PairPicker roundId={0}/></ByeTourney>
+        <ByeTourney>
+            {(t) => <PairPicker roundId={0} tournament={t}/>}
+        </ByeTourney>
     );
     click(getByText(/add bye player/i));
     expect(getByText(/white: bye player/i)).toBeInTheDocument();
 });
 it("Selected bye players are removed when not needed anymore", function () {
     const {getByText, getByLabelText, queryByText} = render(
-        <ByeTourney><PairPicker roundId={0}/></ByeTourney>
+        <ByeTourney>
+            {(t) => <PairPicker roundId={0} tournament={t}/>}
+        </ByeTourney>
     );
     click(getByText(/add bye player/i));
     // Remove a player to make it even

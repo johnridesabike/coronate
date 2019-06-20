@@ -1,10 +1,10 @@
-import {useAllPlayersDb, useTournament} from "../../../hooks";
 import NewPlayer from "../../../components/new-player";
+import PropTypes from "prop-types";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
+import {useAllPlayersDb} from "../../../hooks";
 
-export default function Selecting(props) {
-    const {tourney, tourneyDispatch} = useTournament();
+export default function Selecting({tourney, tourneyDispatch}) {
     const [players, allPlayersDispatch] = useAllPlayersDb();
 
     function togglePlayer(event) {
@@ -80,4 +80,7 @@ export default function Selecting(props) {
         </div>
     );
 }
-Selecting.propTypes = {};
+Selecting.propTypes = {
+    tourney: PropTypes.object.isRequired,
+    tourneyDispatch: PropTypes.func.isRequired
+};

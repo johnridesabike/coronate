@@ -3,20 +3,22 @@ import {cleanup, render} from "@testing-library/react";
 import PropTypes from "prop-types";
 import React from "react";
 import Scores from "../scores";
-import {TournamentProvider} from "../../../hooks";
+import TournamentData from "../tournament-data";
 import dashify from "dashify";
 
 afterEach(cleanup);
 
 const WaneManorOpen = ({children}) => (
-    <TournamentProvider tourneyId="CaouTNel9k70jUJ0h6SYM">
+    <TournamentData tourneyId="CaouTNel9k70jUJ0h6SYM">
         {children}
-    </TournamentProvider>
+    </TournamentData>
 );
-WaneManorOpen.propTypes = {children: PropTypes.node.isRequired};
+WaneManorOpen.propTypes = {children: PropTypes.func.isRequired};
 
 it("The tie break scores calculate correctly", function () {
-    const {getByTestId} = render(<WaneManorOpen><Scores /></WaneManorOpen>);
+    const {getByTestId} = render(
+        <WaneManorOpen>{(t) => <Scores tournament={t}/>}</WaneManorOpen>
+    );
     const batman = (score) => getByTestId(dashify("Bruce Wayne " + score));
     expect(batman("Median")).toHaveTextContent("4");
     expect(batman("Solkoff")).toHaveTextContent("7½");
@@ -25,7 +27,9 @@ it("The tie break scores calculate correctly", function () {
 });
 
 it("The players are ranked correctly", function () {
-    const {getByTestId} = render(<WaneManorOpen><Scores /></WaneManorOpen>);
+    const {getByTestId} = render(
+        <WaneManorOpen>{(t) => <Scores tournament={t}/>}</WaneManorOpen>
+    );
     expect(getByTestId("0")).toHaveTextContent("Bruce Wayne");
     expect(getByTestId("1")).toHaveTextContent("Selina Kyle");
     expect(getByTestId("2")).toHaveTextContent("Dick Grayson");
@@ -38,7 +42,9 @@ it("The players are ranked correctly", function () {
 });
 
 it("Half-scores are rendered correctly", function () {
-    const {getByTestId} = render(<WaneManorOpen><Scores /></WaneManorOpen>);
+    const {getByTestId} = render(
+        <WaneManorOpen>{(t) => <Scores tournament={t}/>}</WaneManorOpen>
+    );
     expect(getByTestId("barbara-gordon-score")).toHaveTextContent("2½");
     expect(getByTestId("kate-kane-score")).toHaveTextContent("½");
 });

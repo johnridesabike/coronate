@@ -3,14 +3,13 @@ import {
     createBlankScoreData
 } from "../../../pairing-scoring";
 // this component should eventually replace player-match-info.jsx
-import {useOptionsDb, useTournament} from "../../../hooks";
 import {DUMMY_ID} from "../../../data-types";
 import PropTypes from "prop-types";
 import React from "react";
 import {sum} from "ramda";
+import {useOptionsDb} from "../../../hooks";
 
-export default function PlayerInfo({playerId, scoreData}) {
-    const {getPlayer, players} = useTournament();
+export default function PlayerInfo({playerId, players, getPlayer, scoreData}) {
     const [options] = useOptionsDb();
     const avoidDict = options.avoidPairs.reduce(avoidPairReducer, {});
     const playerData = scoreData[playerId] || createBlankScoreData(playerId);
@@ -71,6 +70,8 @@ export default function PlayerInfo({playerId, scoreData}) {
     );
 }
 PlayerInfo.propTypes = {
-    playerId: PropTypes.string,
-    scoreData: PropTypes.object
+    getPlayer: PropTypes.func.isRequired,
+    playerId: PropTypes.string.isRequired,
+    players: PropTypes.object.isRequired,
+    scoreData: PropTypes.object.isRequired
 };

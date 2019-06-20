@@ -1,17 +1,21 @@
 .app {
     height: 100vh;
     display: grid;
-    grid-template-rows: 40px 1fr;
+    grid-template-rows: 38px 1fr;
     grid-template-areas:
         "app-header"
         "app-content";
 }
 
-.app.isWindows.isElectron {
+.app.isElectron.isWindows {
     grid-template-rows: 32px 1fr;
 }
 
-.header {
+.app.isElectron.isMacOS {
+    grid-template-rows: 38px 1fr;
+}
+
+.app__header {
     grid-area: app-header;
     background-color: var(--grey-30);
     border-bottom: 1px var(--grey-40) solid;
@@ -24,49 +28,42 @@
     -webkit-app-region: drag;
 }
 
-.header.traffic-light-padding {
+.app__header.traffic-light-padding {
     padding-left: 72px;
 }
 
-.header a,
-.header button {
+.app__header a,
+.app__header button {
     -webkit-app-region: no-drag;
 }
 
-.header button:focus {
+.app__header button:focus {
     box-shadow: none;
     outline: none;
 }
 
-.main {
+.app__main {
     grid-area: app-content;
     overflow: auto;
 }
 
-.has-sidebar {
-    display: grid;
-    grid-template-columns: 180px auto;
-    grid-template-areas: "sidebar content-with-sidebar";
-    width: 100%;
+.winBody {
     height: 100%;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "win-sidebar win-content";
 }
 
-.closed-sidebar .has-sidebar {
-    grid-template-columns: 48px auto;
-    grid-template-areas: "sidebar content-with-sidebar";
+.winBody-hasFooter {
+    grid-template-rows: 1fr 24px;
+    grid-template-areas:
+        "win-sidebar win-content"
+        "win-statusbar win-statusbar";
 }
 
-.closed-sidebar .sidebar__hide-on-close {
-    display: none;
-}
-
-.has-sidebar__content {
-    grid-area: content-with-sidebar;
-    overflow: auto;
-}
-
-.has-sidebar__sidebar {
-    grid-area: sidebar;
+.win__sidebar {
+    grid-area: win-sidebar;
     background-color: var(--grey-20);
     padding: 8px;
     border-width: 1px;
@@ -75,30 +72,39 @@
     overflow: auto;
 }
 
-.closed-sidebar .has-sidebar__sidebar {
+.closed-sidebar .winBody {
+    grid-template-columns: 48px auto;
+}
+
+.closed-sidebar .sidebar__hide-on-close {
+    display: none;
+}
+
+.closed-sidebar .win__sidebar {
     text-align: center;
 }
 
-.has-sidebar__sidebar ul {
+.win__sidebar ul {
     list-style-type: none;
     padding: 0;
 }
 
-.has-sidebar__sidebar li {
+.win__sidebar li {
     margin: 4px 0;
 }
 
-.has-sidebar__sidebar a {
+.win__sidebar a {
     display: block;
     padding-top: 4px;
     padding-bottom: 4px;
 }
 
-.window-blur .has-sidebar__sidebar a {
-    opacity: 0.4;
+.win__content {
+    grid-area: win-content;
+    overflow: auto;
 }
 
-.has-sidebar__sidebar a[aria-current] {
+.win__sidebar a[aria-current] {
     padding-left: 8px;
     margin-left: -8px;
     margin-right: -8px;
@@ -106,17 +112,45 @@
     color: var(--grey-90);
 }
 
-.closed-sidebar .has-sidebar__sidebar a[aria-current] {
+.closed-sidebar .win__sidebar a[aria-current] {
     padding-left: 0;
+}
+
+.win__footer {
+    grid-area: win-statusbar;
+    background-color: var(--grey-30);
+    border-top: 1px var(--grey-40) solid;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    -webkit-user-select: none;
+}
+
+.win__footer-block {
+    margin: 0 8px;
+}
+
+.win__footer-divider {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    margin: 0 8px;
+}
+
+.window-blur .app__header,
+.window-blur .win__footer {
+    background-color: var(--grey-20);
+    border-color: var(--grey-30);
+}
+
+.window-blur .win__sidebar a,
+.window-blur .win__footer-block {
+    opacity: 0.4;
 }
 
 div[role="group"] {
     height: 100%;
-}
-
-.footer {
-    display: none;
-    grid-area: app-footer;
 }
 
 .passthrough,

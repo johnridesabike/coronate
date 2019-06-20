@@ -1,4 +1,4 @@
-.tournament {
+/* .tournament {
     width: 100%;
     height: 100%;
     display: grid;
@@ -14,10 +14,10 @@
     grid-template-areas:
         "sidebar header"
         "sidebar content-with-sidebar";
-}
+} */
 
 .header {
-    grid-area: header;
+    /* grid-area: header; */
     text-align: center;
     background-color: var(--grey-20);
     border-width: 1px;

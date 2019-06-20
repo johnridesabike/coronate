@@ -11,7 +11,6 @@ import VisuallyHidden from "@reach/visually-hidden";
 import {ratings} from "../../../pairing-scoring";
 import styles from "./round.module.css";
 import {sum} from "ramda";
-import {useTournament} from "../../../hooks";
 
 export default function MatchRow({
     compact,
@@ -20,7 +19,8 @@ export default function MatchRow({
     roundId,
     selectedMatch,
     setSelectedMatch,
-    scoreData
+    scoreData,
+    tournament
 }) {
     const {
         tourney,
@@ -28,7 +28,7 @@ export default function MatchRow({
         players,
         getPlayer,
         playersDispatch
-    } = useTournament();
+    } = tournament;
     const dispatch = tourneyDispatch;
     const [openModal, setOpenModal] = useState(false);
     const resultCode = (function () {
@@ -224,17 +224,17 @@ export default function MatchRow({
                         <PanelContainer>
                             <Panel>
                                 <PlayerMatchInfo
-                                    color={0}
-                                    matchId={match.id}
-                                    roundId={roundId}
+                                    color={WHITE}
+                                    match={match}
+                                    getPlayer={getPlayer}
                                     scoreData={scoreData}
                                 />
                             </Panel>
                             <Panel>
                                 <PlayerMatchInfo
-                                    color={1}
-                                    matchId={match.id}
-                                    roundId={roundId}
+                                    color={BLACK}
+                                    match={match}
+                                    getPlayer={getPlayer}
                                     scoreData={scoreData}
                                 />
                             </Panel>
@@ -247,10 +247,11 @@ export default function MatchRow({
 }
 MatchRow.propTypes = {
     compact: PropTypes.bool,
-    match: PropTypes.object,
-    pos: PropTypes.number,
-    roundId: PropTypes.number,
+    match: PropTypes.object.isRequired,
+    pos: PropTypes.number.isRequired,
+    roundId: PropTypes.number.isRequired,
     scoreData: PropTypes.object,
     selectedMatch: PropTypes.string,
-    setSelectedMatch: PropTypes.func
+    setSelectedMatch: PropTypes.func,
+    tournament: PropTypes.object.isRequired
 };

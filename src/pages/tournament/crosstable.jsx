@@ -9,10 +9,9 @@ import {last} from "ramda";
 import numeral from "numeral";
 import {rounds2Matches} from "../../data-types";
 import style from "./index.module.css";
-import {useTournament} from "../../hooks";
 
-export default function Crosstable(props) {
-    const {tourney, getPlayer} = useTournament();
+export default function Crosstable({tournament}) {
+    const {tourney, getPlayer} = tournament;
     const {tieBreaks, roundList} = tourney;
     const scoreData = matches2ScoreData(rounds2Matches(roundList));
     const standings = createStandingList(tieBreaks, scoreData);
@@ -93,5 +92,5 @@ export default function Crosstable(props) {
     );
 }
 Crosstable.propTypes = {
-    tourneyId: PropTypes.string
+    tournament: PropTypes.object.isRequired
 };

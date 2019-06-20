@@ -19,9 +19,9 @@ import {
     set
 } from "ramda";
 import {autoPair, manualPair, scoreByeMatch} from "./match-functions";
-import scoreTypes from "../../pairing-scoring/types";
+import scoreTypes from "../../../pairing-scoring/types";
 import t from "tcomb";
-import {types} from "../../data-types";
+import {types} from "../../../data-types";
 
 // eslint-disable-next-line complexity
 export default function tournamentReducer(state, action) {

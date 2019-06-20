@@ -5,19 +5,18 @@ import PropTypes from "prop-types";
 import RoundTable from "./round-table";
 import {findById} from "../../../components/utility";
 import {sum} from "ramda";
-import {useTournament} from "../../../hooks";
 
 export function findIndexById(id, list) {
     return list.indexOf(findById(id, list));
 }
 
-export default function Round({roundId}) {
+export default function Round({roundId, tournament}) {
     const {
         tourney,
         players,
         tourneyDispatch,
         playersDispatch
-    } = useTournament();
+    } = tournament;
     const matchList = tourney.roundList[roundId];
     const [selectedMatch, setSelectedMatch] = useState(null);
     if (!matchList) {
@@ -101,11 +100,12 @@ export default function Round({roundId}) {
                 roundId={roundId}
                 selectedMatch={selectedMatch}
                 setSelectedMatch={setSelectedMatch}
+                tournament={tournament}
             />
         </div>
     );
 }
 Round.propTypes = {
-    roundId: PropTypes.number,
-    tourneyId: PropTypes.number
+    roundId: PropTypes.number.isRequired,
+    tournament: PropTypes.object.isRequired
 };

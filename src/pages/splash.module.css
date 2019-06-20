@@ -23,6 +23,8 @@
     background-color: var(--ink-80);
     color: var(--grey-20);
     padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .footer a {

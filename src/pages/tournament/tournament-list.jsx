@@ -1,12 +1,8 @@
 import {DateFormat, SortLabel} from "../../components/utility";
 import React, {useEffect, useState} from "react";
-import {
-    useAllTournamentsDb,
-    useDocumentTitle,
-    useSortedTable
-} from "../../hooks";
+import {WindowBody, useWindowContext} from "../../components/window";
+import {useAllTournamentsDb, useSortedTable} from "../../hooks";
 import {Dialog} from "@reach/dialog";
-import HasSidebar from "../../components/sidebar-default";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
@@ -20,7 +16,16 @@ export default function TournamentList(props) {
     );
     const [newTourneyName, setNewTourneyName] = useState("");
     const [isFormOpen, setIsFormOpen] = useState(false);
-    useDocumentTitle("tournament list");
+    const {winDispatch} = useWindowContext();
+    useEffect(
+        function setDocumentTitle() {
+            winDispatch({title: "Tournament list"});
+            return function () {
+                winDispatch({action: "RESET_TITLE"});
+            };
+        },
+        [winDispatch]
+    );
     useEffect(
         function () {
             sortDispatch({table: Object.values(tourneys)});
@@ -47,7 +52,7 @@ export default function TournamentList(props) {
     }
 
     return (
-        <HasSidebar>
+        <WindowBody>
             <div className="content-area">
                 <div className="toolbar toolbar__left">
                     <button
@@ -141,6 +146,6 @@ export default function TournamentList(props) {
                     </form>
                 </Dialog>
             </div>
-        </HasSidebar>
+        </WindowBody>
     );
 }

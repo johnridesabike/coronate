@@ -8,4 +8,4 @@ window.getComputedStyle = jest.fn().mockImplementation(
 window.confirm = jest.fn(() => true);
 
 jest.mock("./hooks/db");
-jest.mock("./hooks/tournament-provider");
+jest.mock("./pages/tournament/tournament-data");

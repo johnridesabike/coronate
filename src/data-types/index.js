@@ -5,6 +5,7 @@ import {
     getUnmatched,
     isDummyId,
     isDummyObj,
+    isRoundComplete,
     rounds2Matches
 } from "./helpers";
 import types from "./types";
@@ -20,6 +21,7 @@ export {
     getUnmatched,
     isDummyId,
     isDummyObj,
+    isRoundComplete,
     rounds2Matches,
     types
 };

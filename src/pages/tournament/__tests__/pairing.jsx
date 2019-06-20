@@ -9,7 +9,9 @@ afterEach(cleanup);
 
 it("Auto-matching with bye players works", function () {
     const {getByText, getByTestId} = render(
-        <ByeTourney><RoundPanels roundId={0} /></ByeTourney>,
+        <ByeTourney>
+            {(t) => <RoundPanels roundId={0} tournament={t}/>}
+        </ByeTourney>,
     );
     click(getByText(/auto-pair unmatched players/i));
     expect(getByTestId("match-3-black")).toHaveTextContent("Bye Player");

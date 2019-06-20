@@ -5,19 +5,19 @@ import {
     maxPriority
 } from "../../../pairing-scoring";
 import {lensIndex, set} from "ramda";
-import {useOptionsDb, useTournament} from "../../../hooks";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import numeral from "numeral";
+import {useOptionsDb} from "../../../hooks";
 
 export default function Stage({
+    getPlayer,
     pairData,
     roundId,
     stagedPlayers,
-    setStagedPlayers
+    setStagedPlayers,
+    tourneyDispatch
 }) {
-    const {tourneyDispatch, getPlayer} = useTournament();
-    const dispatch = tourneyDispatch;
     const [options] = useOptionsDb();
     const [white, black] = stagedPlayers;
     const whiteName = (
@@ -36,7 +36,7 @@ export default function Stage({
     }
 
     function match() {
-        dispatch({
+        tourneyDispatch({
             byeValue: options.byeValue,
             pair: [getPlayer(white), getPlayer(black)],
             roundId,
@@ -117,8 +117,10 @@ export default function Stage({
     );
 }
 Stage.propTypes = {
+    getPlayer: PropTypes.func.isRequired,
     pairData: PropTypes.object.isRequired,
-    roundId: PropTypes.number,
-    setStagedPlayers: PropTypes.func,
-    stagedPlayers: PropTypes.arrayOf(PropTypes.string)
+    roundId: PropTypes.number.isRequired,
+    setStagedPlayers: PropTypes.func.isRequired,
+    stagedPlayers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    tourneyDispatch: PropTypes.func.isRequired
 };

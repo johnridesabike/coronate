@@ -1,11 +1,20 @@
 import PropTypes from "prop-types";
 import React from "react";
-import {TournamentProvider} from "../hooks";
+import TournamentData from "../pages/tournament/tournament-data";
+import {Window} from "../components/window";
 
 const ByeTourney = ({children}) => (
-    <TournamentProvider tourneyId="Bye_Round_Tourney____">
+    <TournamentData tourneyId="Bye_Round_Tourney____">
         {children}
-    </TournamentProvider>
+    </TournamentData>
 );
-ByeTourney.propTypes = {children: PropTypes.node.isRequired};
+ByeTourney.propTypes = {children: PropTypes.func.isRequired};
 export {ByeTourney};
+
+const AllTheProviders = ({children}) => (
+    <Window>
+        {children}
+    </Window>
+);
+AllTheProviders.propTypes = {children: PropTypes.node.isRequired};
+export {AllTheProviders};

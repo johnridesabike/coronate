@@ -17,10 +17,9 @@ import classNames from "classnames";
 import dashify from "dashify";
 import numeral from "numeral";
 import style from "./index.module.css";
-import {useTournament} from "../../hooks";
+// import {useTournament} from "../../hooks";
 
-export function ScoreTable({compact, title}) {
-    const {tourney, getPlayer} = useTournament();
+export function ScoreTable({compact, title, tourney, getPlayer}) {
     const {tieBreaks, roundList} = tourney;
     const tieBreakNames = getTieBreakNames(tieBreaks);
     const standingTree = pipe(
@@ -113,28 +112,28 @@ export function ScoreTable({compact, title}) {
 }
 ScoreTable.propTypes = {
     compact: PropTypes.bool,
-    title: PropTypes.string.isRequired
+    getPlayer: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    tourney: PropTypes.object.isRequired
 };
 
-function SelectTieBreaks(props) {
-    const {tourney, tourneyDispatch} = useTournament();
-    const dispatch = tourneyDispatch;
+function SelectTieBreaks({tourney, tourneyDispatch}) {
     const {tieBreaks} = tourney;
     const [selectedTb, setSelectedTb] = useState(null);
 
     function toggleTb(id = null) {
         const defaultId = defaultTo(selectedTb);
         if (tieBreaks.includes(defaultId(id))) {
-            dispatch({id: defaultId(id), type: "DEL_TIEBREAK"});
+            tourneyDispatch({id: defaultId(id), type: "DEL_TIEBREAK"});
             setSelectedTb(null);
         } else {
-            dispatch({id: defaultId(id), type: "ADD_TIEBREAK"});
+            tourneyDispatch({id: defaultId(id), type: "ADD_TIEBREAK"});
         }
     }
 
     function moveTb(direction) {
         const index = tieBreaks.indexOf(selectedTb);
-        dispatch({
+        tourneyDispatch({
             newIndex: index + direction,
             oldIndex: index,
             type: "MOVE_TIEBREAK"
@@ -263,26 +262,37 @@ function SelectTieBreaks(props) {
         </PanelContainer>
     );
 }
-SelectTieBreaks.propTypes = {};
-
-const Scores = (props) => (
-    <Tabs>
-        <TabList>
-            <Tab><Icons.List /> Scores</Tab>
-            <Tab><Icons.Settings /> Edit tiebreak rules</Tab>
-        </TabList>
-        <TabPanels>
-            <TabPanel>
-                <ScoreTable title="Score detail" />
-            </TabPanel>
-            <TabPanel>
-                <SelectTieBreaks />
-            </TabPanel>
-        </TabPanels>
-    </Tabs>
-);
-Scores.propTypes = {
-    path: PropTypes.string
+SelectTieBreaks.propTypes = {
+    tourney: PropTypes.object.isRequired,
+    tourneyDispatch: PropTypes.func.isRequired
 };
 
-export default Scores;
+export default function Scores({tournament}) {
+    const {getPlayer, tourney, tourneyDispatch} = tournament;
+    return (
+        <Tabs>
+            <TabList>
+                <Tab><Icons.List /> Scores</Tab>
+                <Tab><Icons.Settings /> Edit tiebreak rules</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>
+                    <ScoreTable
+                        title="Score detail"
+                        tourney={tourney}
+                        getPlayer={getPlayer}
+                    />
+                </TabPanel>
+                <TabPanel>
+                    <SelectTieBreaks
+                        tourney={tourney}
+                        tourneyDispatch={tourneyDispatch}
+                    />
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    );
+}
+Scores.propTypes = {
+    tournament: PropTypes.object.isRequired
+};

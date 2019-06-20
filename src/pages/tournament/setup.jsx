@@ -1,13 +1,31 @@
-import {DateFormat, PlaceholderButton} from "../../components/utility";
 import React, {useState} from "react";
+import {DateFormat} from "../../components/utility";
 import Icons from "../../components/icons";
+import {Link} from "@reach/router";
 import PropTypes from "prop-types";
-import {useTournament} from "../../hooks";
 
-export default function Header(props) {
-    const {tourney, tourneyDispatch} = useTournament();
+export default function Setup({tournament}) {
+    const {tourney, tourneyDispatch} = tournament;
     const [isEditingName, setIsEditingName] = useState(false);
     const [isEditingDate, setIsEditingDate] = useState(false);
+
+    function changeToOne() {
+        tourneyDispatch({
+            type: "UPDATE_BYE_SCORES",
+            value: 1
+        });
+        window.alert("Bye value updated to 1.");
+    }
+
+    function changeToOneHalf() {
+        tourneyDispatch({
+            type: "UPDATE_BYE_SCORES",
+            value: 0.5
+        });
+        window.alert("Bye value updated to ½.");
+    }
+
+    // lol, why are dates so complicated?!?
     const dateInput = (function () {
         const year = tourney.date.getFullYear();
         const month = (
@@ -37,15 +55,15 @@ export default function Header(props) {
             type: "SET_DATE"
         });
     }
-    // TODO: Audit accesibility of these edit controls. (Keyboard focus etc.)
+
     return (
-        <div className={props.className}>
+        <div className="content-area">
             {isEditingName
             ? (
-                <p className="display-20">
-                    <PlaceholderButton />{" "}
+                <p className="display-20" style={{textAlign: "left"}}>
                     <input
                         className="display-20"
+                        style={{textAlign: "left"}}
                         type="text"
                         value={tourney.name}
                         onChange={(event) => tourneyDispatch({
@@ -61,8 +79,7 @@ export default function Header(props) {
                     </button>
                 </p>
             ) : (
-                <h1 className="buttons-on-hover">
-                    <PlaceholderButton />{" "}
+                <h1 className="buttons-on-hover" style={{textAlign: "left"}}>
                     <span className="inputPlaceholder">
                         {tourney.name}
                     </span>{" "}
@@ -77,7 +94,6 @@ export default function Header(props) {
             {isEditingDate
             ? (
                 <p className="caption-30">
-                    <PlaceholderButton />{" "}
                     <input
                         className="caption-30"
                         type="date"
@@ -94,7 +110,6 @@ export default function Header(props) {
             )
             : (
                 <p className="caption-30 buttons-on-hover">
-                    <PlaceholderButton />{" "}
                     <DateFormat date={tourney.date} />{" "}
                     <button
                         className="button-ghost"
@@ -104,10 +119,18 @@ export default function Header(props) {
                     </button>
                 </p>
             )}
-
+            <h2>Change bye scores</h2>
+            <button onClick={changeToOne}>Change to 1</button>{" "}
+            <button onClick={changeToOneHalf}>Change to ½</button>
+            <p className="caption-30">
+                This will update all bye matches which have been previously
+                scored in this tournament. To change the default bye value in
+                future matches, go to the{" "}
+                <Link to="/options">app options</Link>.
+            </p>
         </div>
     );
 }
-Header.propTypes = {
-    className: PropTypes.string
+Setup.propTypes = {
+    tournament: PropTypes.object.isRequired
 };

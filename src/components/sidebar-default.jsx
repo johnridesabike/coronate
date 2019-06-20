@@ -3,9 +3,9 @@ import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import React from "react";
 
-function Sidebar() {
+export function Sidebar() {
     return (
-        <nav className="has-sidebar__sidebar">
+        <nav>
             <ul>
                 <li>
                     <Link to="/tourneys">
