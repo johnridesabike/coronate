@@ -28,6 +28,7 @@ const initialWinState = {
     isBlur: false,
     isDialogOpen: false,
     isFullScreen: false,
+    isMaximized: false,
     isSidebarOpen: true,
     title: ""
 };
@@ -95,7 +96,7 @@ const WindowTitleBar = ({state, dispatch}) => (
         >
             {[state.title, GLOBAL_TITLE].filter(isNotBlank).join(" - ")}
         </div>
-        <IfElectron onlyWin><WindowsControls /></IfElectron>
+        <IfElectron onlyWin><WindowsControls state={state}/></IfElectron>
     </header>
 );
 WindowTitleBar.propTypes = {
@@ -125,9 +126,10 @@ export function Window(props) {
                     win.removeAllListeners("leave-full-screen");
                     win.removeAllListeners("blur");
                     win.removeAllListeners("focus");
+                    win.removeAllListeners("maximize");
+                    win.removeAllListeners("unmaximize");
                 }
                 unregisterListeners();
-                // Add the event listeners. These will inform styling.
                 win.on(
                     "enter-full-screen",
                     () => dispatch({isFullScreen: true}));
@@ -135,10 +137,15 @@ export function Window(props) {
                     "leave-full-screen",
                     () => dispatch({isFullScreen: false})
                 );
+                win.on("maximize", () => dispatch({isMaximized: true}));
+                win.on("unmaximize", () => dispatch({isMaximized: false}));
                 win.on("blur", () => dispatch({isBlur: true}));
                 win.on("focus", () => dispatch({isBlur: false}));
-                dispatch({isFullScreen: win.isFullScreen()});
-                dispatch({isBlur: !win.isFocused()});
+                dispatch({
+                    isBlur: !win.isFocused(),
+                    isFullScreen: win.isFullScreen(),
+                    isMaximized: win.isMaximized()
+                });
                 // I don't think this ever really fires, but can it hurt?
                 return unregisterListeners;
             });
