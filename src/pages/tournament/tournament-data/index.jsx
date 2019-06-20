@@ -55,7 +55,7 @@ export default function TournamentData({children, tourneyId}) {
                 return;
             }
             winDispatch({title: name});
-            return () => winDispatch({action: "RESET_TITLE"});
+            return () => winDispatch({title: ""});
         },
         [name, winDispatch]
     );

@@ -21,7 +21,7 @@ function PlayerProfile({
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Profile for " + playerName});
-            return () => winDispatch({action: "RESET_TITLE"});
+            return () => winDispatch({title: ""});
         },
         [winDispatch, playerName]
     );

@@ -21,7 +21,7 @@ export default function PlayerList({
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Players"});
-            return () => winDispatch({action: "RESET_TITLE"});
+            return () => winDispatch({title: ""});
         },
         [winDispatch]
     );
@@ -106,7 +106,7 @@ export default function PlayerList({
                     )}
                 </tbody>
             </table>
-            <Dialog isOpen={isFormOpen}>
+            <Dialog isOpen={isFormOpen} onDismiss={() => setIsFormOpen(false)}>
                 <button
                     className="button-micro"
                     onClick={() => setIsFormOpen(false)}

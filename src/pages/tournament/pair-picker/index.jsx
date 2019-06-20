@@ -124,7 +124,10 @@ export default function PairPicker({roundId, tournament}) {
                     </PanelContainer>
                 </Panel>
             </PanelContainer>
-            <Dialog isOpen={isModalOpen}>
+            <Dialog
+                isOpen={isModalOpen}
+                onDismiss={() => setIsModalOpen(false)}
+            >
                 <button
                     className="button-micro"
                     onClick={() => setIsModalOpen(false)}

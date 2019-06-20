@@ -117,7 +117,10 @@ export default function PlayerSelect({tournament}) {
                         ))}
                     </ol>
                 </Panel>
-                <Dialog isOpen={isSelecting}>
+                <Dialog
+                    isOpen={isSelecting}
+                    onDismiss={() => setIsSelecting(false)}
+                >
                     <button
                         className="button-micro button-primary"
                         onClick={() => setIsSelecting(false)}

@@ -12,6 +12,7 @@
 }
 
 .app.isElectron.isMacOS {
+    /* This is the same as the default... for now */
     grid-template-rows: 38px 1fr;
 }
 

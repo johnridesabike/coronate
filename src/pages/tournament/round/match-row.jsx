@@ -212,7 +212,10 @@ export default function MatchRow({
                             {whiteName} versus {blackName}
                         </Hidden>
                     </button>
-                    <Dialog isOpen={openModal}>
+                    <Dialog
+                        isOpen={openModal}
+                        onDismiss={() => setOpenModal(false)}
+                    >
                         <button
                             className="button-micro button-primary"
                             onClick={() => setOpenModal(false)}

@@ -20,7 +20,7 @@ export default function TournamentList(props) {
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Tournament list"});
-            return () => winDispatch({action: "RESET_TITLE"});
+            return () => winDispatch({title: ""});
         },
         [winDispatch]
     );
@@ -115,7 +115,10 @@ export default function TournamentList(props) {
                 </table>
                 : <p>No tournaments added yet.</p>
                 }
-                <Dialog isOpen={isFormOpen}>
+                <Dialog
+                    isOpen={isFormOpen}
+                    onDismiss={() => setIsFormOpen(false)}
+                >
                     <button
                         className="button-micro"
                         onClick={() => setIsFormOpen(false)}

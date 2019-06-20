@@ -29,7 +29,7 @@ export default function Options(props) {
     useEffect(
         function setDocumentTitle() {
             winDispatch({title: "Options"});
-            return () => winDispatch({action: "RESET_TITLE"});
+            return () => winDispatch({title: ""});
         },
         [winDispatch]
     );
