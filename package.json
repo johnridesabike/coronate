@@ -24,7 +24,7 @@
     "sourcemaps": "source-map-explorer './build/static/js/*'",
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "start:electron-win": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage"
   },

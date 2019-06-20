@@ -5,6 +5,8 @@ import {
     macOSDoubleClick
 } from "../electron-utils";
 import React, {createContext, useContext, useEffect, useReducer} from "react";
+import About from "./about-dialog";
+import {Dialog} from "@reach/dialog";
 import Icons from "./icons";
 import PropTypes from "prop-types";
 import Sidebar from "./sidebar-default";
@@ -19,38 +21,31 @@ export function useWindowContext() {
     return useContext(WindowContext);
 }
 
-const DEFAULT_TITLE = "Chessahoochee";
+const GLOBAL_TITLE = "Chessahoochee";
 
 const initialWinState = {
     action: "",
     isBlur: false,
+    isDialogOpen: false,
     isFullScreen: false,
     isSidebarOpen: true,
-    title: DEFAULT_TITLE
+    title: ""
 };
 
 function windowReducer(oldState, newState) {
-    const state = {...oldState, ...newState};
-    switch (state.action) {
-    case "":
-        return state;
-    case "RESET_TITLE":
-        return {...state, action: "", title: DEFAULT_TITLE};
-    default:
-        throw new Error("Unrecognized action: " + state.action);
-    }
+    return {...oldState, ...newState};
 }
+
+const isMac = navigator.appVersion.includes("Mac");
+// const isWin = navigator.appVersion.includes("Windows");
+const isNotBlank = (s) => s !== "";
 
 const WindowTitleBar = ({state, dispatch}) => (
     <header
         className={classNames(
             "app__header",
             "double-click-control",
-            {"traffic-light-padding": (
-                electron
-                && navigator.appVersion.includes("Mac")
-                && !state.isFullScreen
-            )}
+            {"traffic-light-padding": electron && isMac && !state.isFullScreen}
         )}
         onDoubleClick={macOSDoubleClick}
     >
@@ -74,6 +69,13 @@ const WindowTitleBar = ({state, dispatch}) => (
                 <Icons.Sidebar/>
                 <VisuallyHidden>Toggle sidebar</VisuallyHidden>
             </button>
+            <button
+                className="button-ghost"
+                onClick={() => dispatch({isDialogOpen: true})}
+            >
+                <Icons.Help />
+                <VisuallyHidden>About Chessahoochee</VisuallyHidden>
+            </button>
         </div>
         <div
             className={classNames(
@@ -91,7 +93,7 @@ const WindowTitleBar = ({state, dispatch}) => (
                 width: "50%"
             }}
         >
-            {state.title}
+            {[state.title, GLOBAL_TITLE].filter(isNotBlank).join(" - ")}
         </div>
         <IfElectron onlyWin><WindowsControls /></IfElectron>
     </header>
@@ -162,6 +164,19 @@ export function Window(props) {
             >
                 {props.children}
             </WindowContext.Provider>
+            <Dialog
+                isOpen={state.isDialogOpen}
+                onDismiss={() => dispatch({isDialogOpen: false})}
+                style={{backgroundColor: "var(--grey-20)"}}
+            >
+                <button
+                    className="button-micro"
+                    onClick={() => dispatch({isDialogOpen: false})}
+                >
+                    Close
+                </button>
+                <About/>
+            </Dialog>
         </div>
     );
 }
