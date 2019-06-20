@@ -1,7 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
 import classNames from "classnames";
+import {ifElectronOpen} from "../../electron-utils";
 import styles from "./index.module.css";
+
+const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
 
 const Caution = (props) => (
     <aside
@@ -15,7 +18,9 @@ const Caution = (props) => (
             &nbsp;
             <a
                 className={styles.caution__link}
-                href="https://github.com/johnridesabike/chessahoochee"
+                href={GITHUB_URL}
+                onClick={(e) => ifElectronOpen(e, GITHUB_URL)}
+
             >
                 Git repository
             </a>.

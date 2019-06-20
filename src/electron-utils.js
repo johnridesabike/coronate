@@ -23,6 +23,13 @@ IfElectron.propTypes = {
     onlyWindows: PropTypes.bool
 };
 
+export function ifElectronOpen(event, url) {
+    return ifElectron(function () {
+        event.preventDefault();
+        electron.shell.openExternal(url);
+    });
+}
+
 function toggleMaximize(win) {
     if (!win.isMaximized()) {
         win.maximize();

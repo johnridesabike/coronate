@@ -162,6 +162,7 @@ export default function Sidebar({className, navigate, tournament}) {
                         // className={classNames({"button-primary": tooltipWarn})}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
+                        style={{width: "100%"}}
                     >
                         <Icons.Plus/>
                         <span className="sidebar__hide-on-close">
@@ -169,10 +170,12 @@ export default function Sidebar({className, navigate, tournament}) {
                         </span>
                     </button>
                 </li>
-                <li>
+                <li style={{textAlign: "center"}}>
                     <button
                         disabled={roundList.length === 0}
                         onClick={delLastRound}
+                        className="button-micro"
+                        style={{marginTop: "8px"}}
                     >
                         <Icons.Trash />
                         <span className="sidebar__hide-on-close">

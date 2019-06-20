@@ -54,6 +54,7 @@ function Footer({tournament}) {
                 tooltip={tooltipText}
                 style={{
                     backgroundColor: "transparent",
+                    color: "initial",
                     display: "inline-flex",
                     margin: "0",
                     minHeight: "initial"

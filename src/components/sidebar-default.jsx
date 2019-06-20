@@ -31,6 +31,14 @@ export function Sidebar() {
                         </span>
                     </Link>
                 </li>
+                <li>
+                    <Link to="/">
+                        <Icons.Help />
+                        <span className="sidebar__hide-on-close">
+                            &nbsp;Info
+                        </span>
+                    </Link>
+                </li>
             </ul>
         </nav>
     );

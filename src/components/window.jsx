@@ -6,7 +6,6 @@ import {
 } from "../electron-utils";
 import React, {createContext, useContext, useEffect, useReducer} from "react";
 import Icons from "./icons";
-import {Location} from "@reach/router";
 import PropTypes from "prop-types";
 import {Sidebar} from "./sidebar-default";
 import VisuallyHidden from "@reach/visually-hidden";
@@ -75,18 +74,6 @@ const WindowTitleBar = ({state, dispatch}) => (
                 <Icons.Sidebar/>
                 <VisuallyHidden>Toggle sidebar</VisuallyHidden>
             </button>
-            <Location>
-                {({location, navigate}) =>
-                    <button
-                        className="button-ghost"
-                        disabled={location.pathname === "/"}
-                        onClick={() => navigate("/")}
-                    >
-                        <Icons.Help />
-                        <VisuallyHidden>About</VisuallyHidden>
-                    </button>
-                }
-            </Location>
         </div>
         <div
             className={classNames(

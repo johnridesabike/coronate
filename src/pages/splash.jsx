@@ -3,9 +3,16 @@ import Icons from "../components/icons";
 import {Notification} from "../components/utility";
 import React from "react";
 import {WindowBody} from "../components/window";
+import {ifElectronOpen} from "../electron-utils";
 import {loadDemoDB} from "../hooks/db";
 import logo from "../icon-min.svg";
 import styles from "./splash.module.css";
+
+const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
+const LICENSE_URL = (
+    "https://github.com/johnridesabike/chessahoochee/blob/master/LICENSE"
+);
+const ISSUES_URL = "https://github.com/johnridesabike/chessahoochee/issues/new";
 
 const Splash = (props) => (
     <WindowBody footer={<Caution />} footerProps={{style: {border: "none"}}}>
@@ -54,15 +61,15 @@ const Splash = (props) => (
                     <p>
                         Chessahoochee is free software.<br/>
                         <a
-                            // eslint-disable-next-line max-len
-                            href="https://github.com/johnridesabike/chessahoochee"
+                            href={GITHUB_URL}
+                            onClick={(e) => ifElectronOpen(e, GITHUB_URL)}
                         >
                             Source code is available
                         </a>
                         {" "}under the{" "}
                         <a
-                            // eslint-disable-next-line max-len
-                            href="https://github.com/johnridesabike/chessahoochee/blob/master/LICENSE"
+                            href={LICENSE_URL}
+                            onClick={(e) => ifElectronOpen(e, LICENSE_URL)}
                         >
                             AGPL v3.0 license
                         </a>.
@@ -71,15 +78,23 @@ const Splash = (props) => (
                 <div style={{textAlign: "right"}}>
                     <p>
                         <a
-                            // eslint-disable-next-line max-len
-                            href="https://github.com/johnridesabike/chessahoochee/issues/new"
+                            href={ISSUES_URL}
+                            onClick={(e) => ifElectronOpen(e, ISSUES_URL)}
                         >
-                            Suggetions and bug reports are welcome.
+                            Suggestions and bug reports are welcome.
                         </a>
                     </p>
                     <p>
                         Built with JavaScript and{" "}
-                        <a href="https://reactjs.org/">React</a>.{" "}
+                        <a
+                            href="https://reactjs.org/"
+                            onClick={(e) => ifElectronOpen(
+                                e,
+                                "https://reactjs.org/"
+                            )}
+                        >
+                            React
+                        </a>.{" "}
                         <span style={{fontSize: "16px"}}>
                             <Icons.Javascript /> <Icons.React />
                         </span>
