@@ -4,35 +4,27 @@ import Icons from "../../../components/icons";
 import PairPicker from "../pair-picker";
 import PropTypes from "prop-types";
 import Round from "./round";
-import {getUnmatched} from "../../../data-types";
-// import {useTournament} from "../../../hooks";
 
-export default function RoundPanels(props) {
-    const roundId = Number(props.roundId); // Reach Router passes a string.
-    const {tourney, activePlayers} = props.tournament;
-    // only use unmatched players if this is the last round.
-    const unmatched = (
-        roundId === tourney.roundList.length - 1
-        ? getUnmatched(tourney.roundList, activePlayers, roundId)
-        : {}
-    );
-    const unmatchedCount = Object.keys(unmatched).length;
-    const activePlayersCount = Object.keys(activePlayers).length;
-    const [openTab, setOpenTab] = useState(0);
+export default function RoundPanels({
+    activePlayersCount,
+    unmatched,
+    unmatchedCount,
+    unmatchedWithDummy,
+    roundId,
+    tournament
+}) {
+    const initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
+    const [openTab, setOpenTab] = useState(initialTab);
     useEffect(
         function autoSwitchTab() {
-            if (openTab === 0) {
-                // If all of the players are unmatched then switch to the
-                // pair-picking tab
-                unmatchedCount === activePlayersCount
-                ? setOpenTab(1)
-                : setOpenTab(0);
+            if (unmatchedCount === activePlayersCount) {
+                setOpenTab(1);
             }
-            if (openTab === 1 && unmatchedCount === 0) {
+            if (unmatchedCount === 0) {
                 setOpenTab(0);
             }
         },
-        [unmatchedCount, activePlayersCount, openTab]
+        [unmatchedCount, activePlayersCount]
     );
     return (
         <Tabs index={openTab} onChange={setOpenTab}>
@@ -41,24 +33,33 @@ export default function RoundPanels(props) {
                     <Icons.List/> Matches
                 </Tab>
                 <Tab disabled={unmatchedCount === 0}>
-                    <Icons.Users/> Unmatched players
+                    <Icons.Users/> Unmatched players ({unmatchedCount})
                 </Tab>
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Round roundId={roundId} tournament={props.tournament}/>
+                    <Round roundId={roundId} tournament={tournament}/>
                 </TabPanel>
                 <TabPanel>
-                    <PairPicker
-                        roundId={roundId}
-                        tournament={props.tournament}
-                    />
+                    {unmatchedCount !== 0 &&
+                        <PairPicker
+                            roundId={roundId}
+                            tournament={tournament}
+                            unmatched={unmatched}
+                            unmatchedWithDummy={unmatchedWithDummy}
+                            unmatchedCount={unmatchedCount}
+                        />
+                    }
                 </TabPanel>
             </TabPanels>
         </Tabs>
     );
 }
 RoundPanels.propTypes = {
-    roundId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    tournament: PropTypes.object.isRequired
+    activePlayersCount: PropTypes.number.isRequired,
+    roundId: PropTypes.number.isRequired,
+    tournament: PropTypes.object.isRequired,
+    unmatched: PropTypes.object.isRequired,
+    unmatchedCount: PropTypes.number.isRequired,
+    unmatchedWithDummy: PropTypes.object.isRequired
 };

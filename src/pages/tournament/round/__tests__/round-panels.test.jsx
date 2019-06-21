@@ -3,26 +3,26 @@ import {cleanup, fireEvent, render} from "@testing-library/react";
 // import PlayerInfoBox from "../../players/player-profile";
 import PropTypes from "prop-types";
 import React from "react";
-import RoundPanels from "../round-panels";
+import Round from "../index";
 import TournamentData from "../../tournament-data";
 
 const {click} = fireEvent;
 afterEach(cleanup);
 
-const BattleForGothamCity = ({children}) => (
+const BattleForGothamCityRound = ({children}) => (
     <TournamentData tourneyId="tvAdS4YbSOznrBgrg0ITA">
         {children}
     </TournamentData>
 );
-BattleForGothamCity.propTypes = {children: PropTypes.func.isRequired};
+BattleForGothamCityRound.propTypes = {children: PropTypes.func.isRequired};
 
 it("Tabs auto-change correctly", function () {
     const {getByText} = render(
-        <BattleForGothamCity>
-            {(t) => <RoundPanels roundId={1} tournament={t}/>}
-        </BattleForGothamCity>,
+        <BattleForGothamCityRound>
+            {(t) => <Round tournament={t} roundId={"1"}/>}
+        </BattleForGothamCityRound>,
     );
-    const selectTab = getByText(/^unmatched players$/i);
+    const selectTab = getByText(/^unmatched players \([0-9]+\)$/i);
     const matchesTab = getByText(/^matches$/i);
     // When no players are matched, it defaults to the pair-picker tab
     expect(selectTab).toHaveAttribute("aria-selected", "true");

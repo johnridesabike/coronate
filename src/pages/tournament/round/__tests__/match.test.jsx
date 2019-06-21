@@ -2,7 +2,7 @@ import "jest-dom/extend-expect";
 import {cleanup, fireEvent, render} from "@testing-library/react";
 import PropTypes from "prop-types";
 import React from "react";
-import RoundPanels from "../round-panels";
+import Round from "../index";
 import TournamentData from "../../tournament-data";
 
 const {change, click} = fireEvent;
@@ -18,7 +18,7 @@ BattleForGothamCity.propTypes = {children: PropTypes.func.isRequired};
 it("Ratings are updated correctly after a match", function () {
     const {getByDisplayValue, getByText, getByTestId} = render(
         <BattleForGothamCity>
-            {(t) => <RoundPanels roundId={1} tournament={t}/>}
+            {(t) => <Round tournament={t} roundId={"1"}/>}
         </BattleForGothamCity>,
     );
     click(getByText(/add bruce wayne/i));

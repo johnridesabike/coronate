@@ -1,6 +1,7 @@
 import Icons from "./icons";
 import PropTypes from "prop-types";
 import React from "react";
+import VisuallyHidden from "@reach/visually-hidden";
 import classNames from "classnames";
 import {omit} from "ramda";
 import styles from "./utility.module.css";
@@ -101,9 +102,6 @@ const PlaceholderButton = () => (
 export {PlaceholderButton};
 
 export function SortLabel({children, sortKey, data, dispatch}) {
-    function toggleDirAndSetKey() {
-        dispatch({isDescending: !data.isDescending, key: sortKey});
-    }
     function setKeyOrToggleDir() {
         if (data.key === sortKey) {
             dispatch({isDescending: !data.isDescending});
@@ -111,27 +109,28 @@ export function SortLabel({children, sortKey, data, dispatch}) {
             dispatch({key: sortKey});
         }
     }
+    const chevronStyle = data.key === sortKey ? {opacity: 1} : {opacity: 0};
     return (
-        <div className="buttons-on-hover">
-            <PlaceholderButton />
-            <button
-                className="button-micro dont-hide button-text-ghost title-20"
-                onClick={setKeyOrToggleDir}
-            >
-                {children}
-            </button>
-            <button
-                className={classNames(
-                    "button-ghost",
-                    {"dont-hide": data.key === sortKey}
-                )}
-                onClick={toggleDirAndSetKey}
-            >
-                {data.isDescending
-                ? <Icons.ChevronUp />
-                : <Icons.ChevronDown />}
-            </button>
-        </div>
+        <button
+            className="button-micro dont-hide button-text-ghost title-20"
+            style={{width: "100%"}}
+            onClick={setKeyOrToggleDir}
+        >
+            <Icons.ChevronUp style={{opacity: 0}} aria-hidden/>
+            {children}{" "}
+            {data.isDescending
+            ? (
+                <span style={chevronStyle}>
+                    <Icons.ChevronUp />
+                    <VisuallyHidden>Sort ascending.</VisuallyHidden>
+                </span>
+            ) : (
+                <span style={chevronStyle}>
+                    <Icons.ChevronDown />
+                    <VisuallyHidden>Sort descending.</VisuallyHidden>
+                </span>
+            )}
+        </button>
     );
 }
 SortLabel.propTypes = {

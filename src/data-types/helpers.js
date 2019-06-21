@@ -1,7 +1,7 @@
 import {DUMMY_ID} from "./constants";
 import {assoc} from "ramda";
 import {createPlayer} from "./factories";
-import t from "tcomb";
+// import t from "tcomb";
 import types from "./types";
 
 /*******************************************************************************
@@ -38,7 +38,7 @@ export function getPlayerMaybe(playerDict, id) {
     if (id === DUMMY_ID) {
         return dummyPlayer;
     }
-    const player = t.dict(types.Id, types.Player)(playerDict)[id];
+    const player = playerDict[id];
     return player ? player : createMissingPlayer(id);
 }
 

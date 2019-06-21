@@ -1,25 +1,27 @@
-import {
-    DUMMY_ID,
-    getUnmatched,
-    rounds2Matches
-} from "../../../data-types";
 import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useEffect, useMemo, useState} from "react";
-import {assoc, curry, pipe} from "ramda";
 import {
     createPairingData,
     matches2ScoreData,
     setUpperHalves
 } from "../../../pairing-scoring";
+import {curry, pipe} from "ramda";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";
 import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
+import {rounds2Matches} from "../../../data-types";
 import {useOptionsDb} from "../../../hooks";
 
-export default function PairPicker({roundId, tournament}) {
+export default function PairPicker({
+    roundId,
+    tournament,
+    unmatched,
+    unmatchedCount,
+    unmatchedWithDummy
+}) {
     const [stagedPlayers, setStagedPlayers] = useState([null, null]);
     const [options] = useOptionsDb();
     const {
@@ -43,20 +45,6 @@ export default function PairPicker({roundId, tournament}) {
             return [_scoreData, _pairData];
         },
         [roundList, activePlayers, roundId, options.avoidPairs]
-    );
-    // Only calculate unmatched players for the latest round. Old rounds don't
-    // get to add new players.
-    const unmatched = (
-        roundId === roundList.length - 1
-        ? getUnmatched(roundList, activePlayers, roundId)
-        : {}
-    );
-    const unmatchedCount = Object.keys(unmatched).length;
-    // make a new list so as not to affect auto-pairing
-    const unmatchedWithDummy = (
-        unmatchedCount % 2 !== 0
-        ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
-        : unmatched
     );
     useEffect(
         function cleanPlayersThatWereRemoved() {
@@ -144,5 +132,8 @@ export default function PairPicker({roundId, tournament}) {
 }
 PairPicker.propTypes = {
     roundId: PropTypes.number.isRequired,
-    tournament: PropTypes.object.isRequired
+    tournament: PropTypes.object.isRequired,
+    unmatched: PropTypes.object.isRequired,
+    unmatchedCount: PropTypes.number.isRequired,
+    unmatchedWithDummy: PropTypes.object.isRequired
 };

@@ -1,6 +1,6 @@
+import React, {useMemo} from "react";
 import MatchRow from "./match-row";
 import PropTypes from "prop-types";
-import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
 import {matches2ScoreData} from "../../../pairing-scoring";
 import {rounds2Matches} from "../../../data-types";
@@ -15,7 +15,11 @@ export default function RoundTable({
 }) {
     const {tourney} = tournament;
     const matchList = tourney.roundList[roundId];
-    const scoreData = matches2ScoreData(rounds2Matches(tourney.roundList));
+    // matches2ScoreData is relatively expensive
+    const scoreData = useMemo(
+        () => matches2ScoreData(rounds2Matches(tourney.roundList)),
+        [tourney.roundList]
+    );
     return (
         <table className={style.table}>
             {matchList.length > 0 &&

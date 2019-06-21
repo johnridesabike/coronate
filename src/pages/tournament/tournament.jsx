@@ -34,7 +34,7 @@ function Footer({tournament}) {
                 className="win__footer-block"
                 style={{display: "inline-block"}}
             >
-                Rounds completed:{" "}
+                Rounds:{" "}
                 {roundList.length} <small>out of</small> {roundCount}
             </label>
             {/* <meter

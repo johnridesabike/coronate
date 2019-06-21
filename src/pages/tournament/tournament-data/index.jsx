@@ -46,8 +46,8 @@ export default function TournamentData({children, tourneyId}) {
     const [tourney, tourneyDispatch] = useReducer(tourneyReducer, emptyTourney);
     const {name, playerIds, roundList} = tourney;
     const [players, playersDispatch] = useReducer(playersReducer, {});
-    const [isLoading, loadingDispatch] = useReducer(loadReducer, initLoading);
-    useLoadingCursor(isLoading.players && isLoading.tourney);
+    const [isLoaded, loadedDispatch] = useReducer(loadReducer, initLoading);
+    useLoadingCursor(isLoaded.players && isLoaded.tourney);
     const {winDispatch} = useWindowContext();
     useEffect(
         function setDocumentTitle() {
@@ -66,10 +66,10 @@ export default function TournamentData({children, tourneyId}) {
                 const value = await tourneyStore.getItem(tourneyId);
                 console.log("loaded:", tourneyId);
                 if (!value) {
-                    loadingDispatch({noDbError: false});
+                    loadedDispatch({noDbError: false});
                 } else if(!didCancel) {
                     tourneyDispatch({state: value || {}, type: "SET_STATE"});
-                    loadingDispatch({tourney: true});
+                    loadedDispatch({tourney: true});
                 }
             }());
             return () => didCancel = true;
@@ -78,9 +78,12 @@ export default function TournamentData({children, tourneyId}) {
     );
     useEffect(
         function hydrateTourneyPlayersFromDb() {
-            // if (!roundList || !playerIds) {
-            //     return; // the tournament hasn't been loaded yet
-            // }
+            // Don't run this without loading the tourney first. Otherwise, it
+            // will interpret the placeholder `roundList` data as meaning there
+            // are no active players and load an empty object.
+            if (!isLoaded.tourney) {
+                return;
+            }
             // Include players who have played matches but left the tournament,
             // as well as players who are registered but havne't played yet.
             const allTheIds = getAllPlayerIdsFromMatches(
@@ -94,7 +97,7 @@ export default function TournamentData({children, tourneyId}) {
                 if (Object.keys(players).length !== 0) {
                     playersDispatch({state: {}, type: "LOAD_STATE"});
                 }
-                loadingDispatch({players: true});
+                loadedDispatch({players: true});
                 return;
             }
             let didCancel = false;
@@ -108,23 +111,26 @@ export default function TournamentData({children, tourneyId}) {
                     Object.keys(values),
                     Object.keys(players)
                 );
-                console.log("unchanged players:", unChangedPlayers);
+                console.log(
+                    "unchanged players:",
+                    Object.keys(unChangedPlayers).length
+                );
                 if (unChangedPlayers.length !== 0 && !didCancel) {
                     console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
                 }
                 if (!didCancel) {
-                    loadingDispatch({players: true});
+                    loadedDispatch({players: true});
                 }
             }());
             return () => didCancel = true;
         },
-        [roundList, players, playerIds]
+        [roundList, players, playerIds, isLoaded.tourney]
     );
     useEffect(
         function saveTourneyToDb() {
             if (
-                !isLoading.tourney
+                !isLoaded.tourney
                 // The tourney length is 0 when it wasn't found in the DB
                 || Object.keys(tourney).length === 0
                 // I don't know why, but this happens sometimes with a bad URL
@@ -136,19 +142,22 @@ export default function TournamentData({children, tourneyId}) {
                 console.log("error saving tourney:", tourneyId, error);
             });
         },
-        [tourneyId, tourney, isLoading.tourney]
+        [tourneyId, tourney, isLoaded.tourney]
     );
     useEffect(
         function savePlayersToDb() {
-            if (!isLoading.players) {
+            if (!isLoaded.players) {
                 return;
             }
             (async function () {
                 const values = await playerStore.setItems(players);
-                console.log("saved player changes to DB:", Object.keys(values));
+                console.log(
+                    "saved player changes to DB:",
+                    Object.keys(values).length
+                );
             }());
         },
-        [players, isLoading.players]
+        [players, isLoaded.players]
     );
     const getPlayer = curry(getPlayerMaybe)(players);
     // `players` includes players in past matches who may have left
@@ -162,10 +171,10 @@ export default function TournamentData({children, tourneyId}) {
         ? true
         : isRoundComplete(roundList, activePlayers, roundList.length - 1)
     );
-    if (!isLoading.noDbError) {
+    if (!isLoaded.noDbError) {
         return <div>Error: tournament not found.</div>;
     }
-    if (Object.values(isLoading).includes(false)) {
+    if (Object.values(isLoaded).includes(false)) {
         return <div>Loading...</div>;
     }
     return children({

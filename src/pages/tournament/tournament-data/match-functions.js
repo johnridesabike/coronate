@@ -7,7 +7,7 @@ import {
     getPlayerMaybe,
     types
 } from "../../../data-types";
-import {assoc, curry} from "ramda";
+import {assoc, curry, filter} from "ramda";
 import {pairPlayers, setByePlayer} from "../../../pairing-scoring";
 import t from "tcomb";
 
@@ -26,10 +26,14 @@ export function autoPair({
     players,
     tourney
 }) {
+    // the pairData includes any players who were already matched. We need to
+    // only include the specified players. Ramda's `filter` can filter objects.
+    const playerIds = Object.keys(players);
+    const filteredData = filter(({id}) => playerIds.includes(id), pairData);
     const [
         pairDataNoByes,
         byePlayerData
-    ] = setByePlayer(tourney.byeQueue, DUMMY_ID, pairData);
+    ] = setByePlayer(tourney.byeQueue, DUMMY_ID, filteredData);
     const pairs = pairPlayers(pairDataNoByes);
     const pairsWithBye = (
         byePlayerData

@@ -29,7 +29,6 @@ export default function MatchRow({
         getPlayer,
         playersDispatch
     } = tournament;
-    const dispatch = tourneyDispatch;
     const [openModal, setOpenModal] = useState(false);
     const resultCode = (function () {
         if (match.result[0] > match.result[1]) {
@@ -84,6 +83,10 @@ export default function MatchRow({
                 throw new Error();
             }
         }());
+        if (result === resultCode) {
+            // if it hasn't changed, then do nothing
+            return;
+        }
         const white = players[match.playerIds[WHITE]];
         const black = players[match.playerIds[BLACK]];
         const newRating = (
@@ -118,7 +121,7 @@ export default function MatchRow({
                 type: "SET_PLAYER_MATCHCOUNT"
             });
         }
-        dispatch({
+        tourneyDispatch({
             matchId: match.id,
             newRating,
             result,

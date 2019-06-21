@@ -193,7 +193,6 @@ export default function tournamentReducer(state, action) {
             state
         );
     case "SET_STATE":
-        console.log("setting state:", action.state);
         return action.state;
     default:
         throw new Error("Unexpected action type " + action.type);
