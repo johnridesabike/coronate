@@ -11,7 +11,8 @@ export default function RoundPanels({
     unmatchedCount,
     unmatchedWithDummy,
     roundId,
-    tournament
+    tournament,
+    scoreData
 }) {
     const initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
     const [openTab, setOpenTab] = useState(initialTab);
@@ -38,7 +39,11 @@ export default function RoundPanels({
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Round roundId={roundId} tournament={tournament}/>
+                    <Round
+                        roundId={roundId}
+                        tournament={tournament}
+                        scoreData={scoreData}
+                    />
                 </TabPanel>
                 <TabPanel>
                     {unmatchedCount !== 0 &&
@@ -48,6 +53,7 @@ export default function RoundPanels({
                             unmatched={unmatched}
                             unmatchedWithDummy={unmatchedWithDummy}
                             unmatchedCount={unmatchedCount}
+                            scoreData={scoreData}
                         />
                     }
                 </TabPanel>
@@ -58,6 +64,7 @@ export default function RoundPanels({
 RoundPanels.propTypes = {
     activePlayersCount: PropTypes.number.isRequired,
     roundId: PropTypes.number.isRequired,
+    scoreData: PropTypes.object.isRequired,
     tournament: PropTypes.object.isRequired,
     unmatched: PropTypes.object.isRequired,
     unmatchedCount: PropTypes.number.isRequired,

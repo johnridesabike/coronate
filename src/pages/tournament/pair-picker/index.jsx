@@ -2,7 +2,7 @@ import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useEffect, useMemo, useState} from "react";
 import {
     createPairingData,
-    matches2ScoreData,
+    // matches2ScoreData,
     setUpperHalves
 } from "../../../pairing-scoring";
 import {curry, pipe} from "ramda";
@@ -12,12 +12,13 @@ import PropTypes from "prop-types";
 import SelectList  from "./select-list";
 import Selecting from "../player-select/selecting";
 import Stage from "./stage";
-import {rounds2Matches} from "../../../data-types";
+// import {rounds2Matches} from "../../../data-types";
 import {useOptionsDb} from "../../../hooks";
 
 export default function PairPicker({
     roundId,
     tournament,
+    scoreData,
     unmatched,
     unmatchedCount,
     unmatchedWithDummy
@@ -31,20 +32,17 @@ export default function PairPicker({
         getPlayer,
         tourneyDispatch
     } = tournament;
-    const {roundList} = tourney;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [scoreData, pairData] = useMemo(
+    // `createPairingData` is relatively expensive
+    const pairData = useMemo(
         function memoizedGetStats() {
-            const matches = rounds2Matches(roundList, roundId);
-            const _scoreData = matches2ScoreData(matches);
-            const _pairData = pipe(
+            return pipe(
                 curry(createPairingData)(activePlayers, options.avoidPairs),
                 // sortDataForPairing,
                 setUpperHalves
-            )(_scoreData);
-            return [_scoreData, _pairData];
+            )(scoreData);
         },
-        [roundList, activePlayers, roundId, options.avoidPairs]
+        [activePlayers, options.avoidPairs, scoreData]
     );
     useEffect(
         function cleanPlayersThatWereRemoved() {
@@ -132,6 +130,7 @@ export default function PairPicker({
 }
 PairPicker.propTypes = {
     roundId: PropTypes.number.isRequired,
+    scoreData: PropTypes.object.isRequired,
     tournament: PropTypes.object.isRequired,
     unmatched: PropTypes.object.isRequired,
     unmatchedCount: PropTypes.number.isRequired,

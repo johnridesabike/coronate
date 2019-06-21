@@ -16,16 +16,16 @@ import {WindowBody} from "../../components/window";
 function Footer({tournament}) {
     const {roundCount, tourney, isItOver, isNewRoundReady} = tournament;
     const {roundList} = tourney;
-    const [tooltipText, tooltipWarn] = (function () {
+    const [tooltipText, isTooltipWarn] = (function () {
         if (!isNewRoundReady) {
             return [
                 "Round in progress.",
-                true
+                false
             ];
         } else if (isItOver) {
-            return ["All rounds have completed.", true];
+            return ["All rounds have completed.", false];
         } else {
-            return ["Ready to begin a new round.", false];
+            return ["Ready to begin a new round.", true];
         }
     }());
     return (
@@ -50,7 +50,7 @@ function Footer({tournament}) {
             </meter> */}
             <hr className="win__footer-divider" />
             <Notification
-                success={!tooltipWarn}
+                success={isTooltipWarn}
                 tooltip={tooltipText}
                 style={{
                     backgroundColor: "transparent",

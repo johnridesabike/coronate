@@ -19,7 +19,7 @@ import {
 } from "ramda";
 import {createBlankScoreData} from "./factories";
 import scoreTypes from "./types";
-import t from "tcomb";
+// import t from "tcomb";
 
 function color2Score(color) {
     return (
@@ -62,9 +62,7 @@ function match2ScoreDataReducer(acc, match) {
 }
 
 export function matches2ScoreData(matchList) {
-    const data = matchList.reduce(match2ScoreDataReducer, {});
-    // TODO: remove this tcomb check for production
-    return t.dict(types.Id, scoreTypes.ScoreData)(data);
+    return matchList.reduce(match2ScoreDataReducer, {});
 }
 
 // Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
@@ -73,7 +71,7 @@ export function avoidPairReducer(acc, pair) {
     return pipe(
         over(lensProp(pair[0]), append(pair[1])),
         over(lensProp(pair[1]), append(pair[0]))
-    )(t.dict(types.Id, t.list(types.Id))(acc));
+    )(acc);
 }
 
 export function createPairingData(playerData, avoidPairs, scoreData) {
@@ -106,6 +104,5 @@ export function createPairingData(playerData, avoidPairs, scoreData) {
         },
         {}
     );
-    // TODO: remove this tcomb check for production
-    return t.dict(types.Id, scoreTypes.PairingData)(pairingData);
+    return pairingData;
 }

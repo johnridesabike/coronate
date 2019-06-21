@@ -10,7 +10,7 @@ export function findIndexById(id, list) {
     return list.indexOf(findById(id, list));
 }
 
-export default function Round({roundId, tournament}) {
+export default function Round({roundId, tournament, scoreData}) {
     const {
         tourney,
         players,
@@ -101,11 +101,13 @@ export default function Round({roundId, tournament}) {
                 selectedMatch={selectedMatch}
                 setSelectedMatch={setSelectedMatch}
                 tournament={tournament}
+                scoreData={scoreData}
             />
         </div>
     );
 }
 Round.propTypes = {
     roundId: PropTypes.number.isRequired,
+    scoreData: PropTypes.object.isRequired,
     tournament: PropTypes.object.isRequired
 };

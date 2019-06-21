@@ -118,8 +118,6 @@ export default function TournamentData({children, tourneyId}) {
                 if (unChangedPlayers.length !== 0 && !didCancel) {
                     console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
-                }
-                if (!didCancel) {
                     loadedDispatch({players: true});
                 }
             }());

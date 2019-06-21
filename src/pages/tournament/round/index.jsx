@@ -1,8 +1,10 @@
 import {DUMMY_ID, getUnmatched} from "../../../data-types";
+import React, {useMemo} from "react";
 import PropTypes from "prop-types";
-import React from "react";
 import RoundPanels from "./round-panels";
 import {assoc} from "ramda";
+import {matches2ScoreData} from "../../../pairing-scoring";
+import {rounds2Matches} from "../../../data-types";
 
 // This is a passthrough component that generates match data and passes it to
 // children via render props. I extracted this logic to its own component so it
@@ -12,6 +14,11 @@ export function GenRoundData(props) {
     const roundId = Number(props.roundId); // Reach Router passes a string.
     const {tourney, activePlayers, getPlayer} = props.tournament;
     const {roundList} = tourney;
+    // matches2ScoreData is relatively expensive
+    const scoreData = useMemo(
+        () => matches2ScoreData(rounds2Matches(roundList)),
+        [roundList]
+    );
     // Only calculate unmatched players for the latest round. Old rounds don't
     // get to add new players.
     // Should this be memoized?
@@ -33,6 +40,7 @@ export function GenRoundData(props) {
         ...props,
         activePlayersCount,
         roundId,
+        scoreData,
         unmatched,
         unmatchedCount,
         unmatchedWithDummy

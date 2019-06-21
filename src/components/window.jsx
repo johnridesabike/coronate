@@ -38,8 +38,7 @@ function windowReducer(oldState, newState) {
 }
 
 const isMac = navigator.appVersion.includes("Mac");
-// const isWin = navigator.appVersion.includes("Windows");
-const isNotBlank = (s) => s !== "";
+const isWin = navigator.appVersion.includes("Windows");
 
 const WindowTitleBar = ({state, dispatch}) => (
     <header
@@ -94,7 +93,11 @@ const WindowTitleBar = ({state, dispatch}) => (
                 width: "50%"
             }}
         >
-            {[state.title, GLOBAL_TITLE].filter(isNotBlank).join(" - ")}
+            {state.title}
+            <span className="caption-30">
+                {state.title && " - "}
+                {GLOBAL_TITLE}
+            </span>
         </div>
         <IfElectron onlyWin><WindowsControls state={state}/></IfElectron>
     </header>
@@ -160,8 +163,8 @@ export function Window(props) {
                 {"open-sidebar": state.isSidebarOpen},
                 {"closed-sidebar": !state.isSidebarOpen},
                 {"window-blur": state.isBlur},
-                {"isWindows": navigator.appVersion.includes("Windows")},
-                {"isMacOS": navigator.appVersion.includes("Mac")},
+                {"isWindows": isWin},
+                {"isMacOS": isMac},
                 {"isElectron": electron}
             )}
         >
