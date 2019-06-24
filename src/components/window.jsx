@@ -21,7 +21,7 @@ export function useWindowContext() {
     return useContext(WindowContext);
 }
 
-const GLOBAL_TITLE = "Chessahoochee";
+const GLOBAL_TITLE = "Coronate";
 
 const initialWinState = {
     action: "",
@@ -39,6 +39,10 @@ function windowReducer(oldState, newState) {
 
 const isMac = navigator.appVersion.includes("Mac");
 const isWin = navigator.appVersion.includes("Windows");
+const toolbarClasses = classNames(
+    {"macos-button-toolbar": isMac && electron},
+    {"button-ghost": !electron}
+);
 
 const WindowTitleBar = ({state, dispatch}) => (
     <header
@@ -63,18 +67,18 @@ const WindowTitleBar = ({state, dispatch}) => (
                 </span>
             </IfElectron>
             <button
-                className="button-ghost"
+                className={toolbarClasses}
                 onClick={() => dispatch({isSidebarOpen: !state.isSidebarOpen})}
             >
                 <Icons.Sidebar/>
                 <VisuallyHidden>Toggle sidebar</VisuallyHidden>
             </button>
             <button
-                className="button-ghost"
+                className={toolbarClasses}
                 onClick={() => dispatch({isDialogOpen: true})}
             >
                 <Icons.Help />
-                <VisuallyHidden>About Chessahoochee</VisuallyHidden>
+                <VisuallyHidden>About Coronate</VisuallyHidden>
             </button>
         </div>
         <div
@@ -94,10 +98,8 @@ const WindowTitleBar = ({state, dispatch}) => (
             }}
         >
             {state.title}
-            <span className="caption-30">
-                {state.title && " - "}
-                {GLOBAL_TITLE}
-            </span>
+            {state.title && " - "}
+            {GLOBAL_TITLE}
         </div>
         <IfElectron onlyWin><WindowsControls state={state}/></IfElectron>
     </header>

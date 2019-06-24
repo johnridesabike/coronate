@@ -1,4 +1,4 @@
-This module is written for use within Chessahoochee, but with the assumption that other Swiss chess tournament apps may be interested in using its functions.
+This module is written for use within Coronate, but with the assumption that other Swiss chess tournament apps may be interested in using its functions.
 
 Once it becomes stable, I may be interested in separating it into its own module with a more permissive license like ISC.
 

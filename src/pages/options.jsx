@@ -127,7 +127,7 @@ export default function Options(props) {
                 <h2>Manage data</h2>
                 <p>
                     <a
-                        download="chessahoochee.json"
+                        download="coronate.json"
                         href={
                             "data:application/json,"
                             + encodeURIComponent(JSON.stringify(exportData))

@@ -84,7 +84,7 @@
   ],
   "build": {
     "appId": "bike.johnridesa.chessahoochee",
-    "productName": "Chessahoochee",
+    "productName": "Coronate",
     "copyright": "Copyright © 2019 ${author}",
     "mac": {
       "category": "public.app-category.productivity"

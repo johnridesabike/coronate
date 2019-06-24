@@ -1,13 +1,13 @@
 <div align="center">
 <img alt="Logo" src="graphics-src/icon-min.svg" height="128" width="128" />
-<h1>Chessahoochee</h1>
+<h1>Coronate</h1>
 </div>
 
-<p align="center">Chessahoochee is a web app for managing Swiss-style chess tournaments.</p>
+<p align="center">Coronate is a web app for managing Swiss-style chess tournaments.</p>
 
 ## 🧐 About
 
-Chessahoochee was originally built to help the chess players at Chattahoochee Valley Libraries (which is where its goofy name comes from). It's a free alternative to pricey professional tournament software. Anyone, even a tournament newbie with a locked-down public-access computer, can use it to run their tournament.
+Coronate is a free alternative to pricey professional tournament software. Anyone, even a tournament newbie with a locked-down public-access computer, can use it to run their tournament.
 
 <p align="center"><a href="https://johnridesa.bike/chessahoochee/">👉 Click here for a live demo ♟</a></p>
 
@@ -15,11 +15,11 @@ Chessahoochee was originally built to help the chess players at Chattahoochee Va
 
 ## 🏁 Getting Started
 
-These are the basic steps you'll need to follow to get a development copy of Chessahoochee running on your machine:
+These are the basic steps you'll need to follow to get a development copy of Coronate running on your machine:
 
 ### Prerequisites
 
-You'll need [Node.js](https://nodejs.org/) version 10. Chessahoochee probably runs on other versions too, but it's not tested on them.
+You'll need [Node.js](https://nodejs.org/) version 10. Coronate probably runs on other versions too, but it's not tested on them.
 
 ### Installing
 
@@ -52,7 +52,7 @@ npm test
 
 ## 🎈 Usage
 
-Chessahoochee works completely in your local browser. You can run your live demo of it with the command:
+Coronate works completely in your local browser. You can run your live demo of it with the command:
 ```
 npm start
 ```

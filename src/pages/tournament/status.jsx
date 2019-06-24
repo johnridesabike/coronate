@@ -1,8 +1,9 @@
-import {Panel, PanelContainer} from "../../components/utility";
-import PropTypes from "prop-types";
 import React from "react";
+import {Panel, PanelContainer} from "../../components/utility";
+// import PropTypes from "prop-types";
 import RoundTable from "./round/round-table";
 import {ScoreTable} from "./scores";
+import {TournamentType} from "./tournament-data";
 
 export default function Status({tournament}) {
     const {tourney, getPlayer} = tournament;
@@ -46,5 +47,5 @@ export default function Status({tournament}) {
     );
 }
 Status.propTypes = {
-    tournament: PropTypes.object.isRequired
+    tournament: TournamentType
 };

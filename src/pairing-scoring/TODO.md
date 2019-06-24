@@ -72,6 +72,6 @@ Non-USCF rules are not currently being considered, simply because I don't use th
 
 ## Contributing
 
-If you would like to Chessahoochee for a tournament but you require a feature that is not on this list, [please open an issue here](https://github.com/johnridesabike/chessahoochee/issues). [Pull requests are also welcome.](https://github.com/johnridesabike/chessahoochee/pulls)
+If you would like to Coronate for a tournament but you require a feature that is not on this list, [please open an issue here](https://github.com/johnridesabike/chessahoochee/issues). [Pull requests are also welcome.](https://github.com/johnridesabike/chessahoochee/pulls)
 
 Source-code files should have comments with relevant section numbers next to functions that implement one of these rules.

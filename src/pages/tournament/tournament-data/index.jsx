@@ -191,3 +191,16 @@ TournamentData.propTypes = {
     children: PropTypes.func.isRequired,
     tourneyId: PropTypes.string.isRequired
 };
+
+const TournamentType = PropTypes.shape({
+    activePlayers: PropTypes.object,
+    getPlayer: PropTypes.func,
+    isItOver: PropTypes.bool,
+    isNewRoundReady: PropTypes.bool,
+    players: PropTypes.object,
+    playersDispatch: PropTypes.func,
+    roundCount: PropTypes.number,
+    tourney: PropTypes.object,
+    tourneyDispatch: PropTypes.func
+});
+export {TournamentType};

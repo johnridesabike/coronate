@@ -46,7 +46,7 @@ const Splash = (props) => (
                 </div>
                 <div className={styles.titleText}>
                     <h1 className="title">
-                        Chessahoochee
+                        Coronate
                     </h1>
                     <p className={styles.subtitle + " caption-30"}>
                         a chess tournament app
@@ -59,7 +59,7 @@ const Splash = (props) => (
                         Copyright &copy; 2019 John Jackson.
                     </p>
                     <p>
-                        Chessahoochee is free software.<br/>
+                        Coronate is free software.<br/>
                         <a
                             href={GITHUB_URL}
                             onClick={(e) => ifElectronOpen(e, GITHUB_URL)}

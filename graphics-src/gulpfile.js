@@ -11,8 +11,8 @@ gulp.task("svg-to-web-icons", function () {
         .src("./icon-src.svg")
         .pipe(favicons({
             appDescription: "A free, easy-to-use Swiss chess tournament manager.",                     // Your application's description. `string`
-            appName: "Chessahoochee: a chess tournament manager",                            // Your application's name. `string`
-            appShortName: "Chessahoochee",                       // Your application's short_name. `string`. Optional. If not set, appName will be used
+            appName: "Coronate: chess tournament manager",                            // Your application's name. `string`
+            appShortName: "Coronate",                       // Your application's short_name. `string`. Optional. If not set, appName will be used
             appleStatusBarStyle: "default", // Style for Apple status bar: "black-translucent", "default", "black". `string`
             background: photon.INK_70,                       // Background colour for flattened icons. `string`
             developerName: "John Jackson",                      // Your (or your developer's) name. `string`
