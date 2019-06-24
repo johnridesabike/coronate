@@ -8,7 +8,7 @@ const noDraggy = {onDragStart: (e) => e.preventDefault()};
 export default function Sidebar() {
     return (
         <nav>
-            <ul>
+            <ul style={{margin: "0"}}>
                 <li>
                     <Link to="/tourneys" {...noDraggy}>
                         <Icons.Award />

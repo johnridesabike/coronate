@@ -131,18 +131,18 @@ input[type="text"][disabled]:hover,
 }
 
 .macos-button-toolbar {
-    color: var(--grey-90);
+    color: var(--grey-80);
     background-color: var(--grey-20);
     border-color:
         var(--grey-90-a20)
         var(--grey-90-a20)
         var(--grey-90-a30)
-        var(--grey-90-a30);
+        var(--grey-90-a20);
     border-style: solid;
     border-width: 1px;
     border-radius: 6px;
     font-size: 16px;
-    height: 28px;
+    height: 26px;
     min-width: 40px;
     margin: 0 4px;
 }

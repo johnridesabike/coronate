@@ -23,6 +23,13 @@ export function useWindowContext() {
 
 const GLOBAL_TITLE = "Coronate";
 
+function formatTitle(title) {
+    if (!title) {
+        return GLOBAL_TITLE;
+    }
+    return title + " - " + GLOBAL_TITLE;
+}
+
 const initialWinState = {
     action: "",
     isBlur: false,
@@ -97,9 +104,7 @@ const WindowTitleBar = ({state, dispatch}) => (
                 width: "50%"
             }}
         >
-            {state.title}
-            {state.title && " - "}
-            {GLOBAL_TITLE}
+            {formatTitle(state.title)}
         </div>
         <IfElectron onlyWin><WindowsControls state={state}/></IfElectron>
     </header>
@@ -113,7 +118,7 @@ export function Window(props) {
     const [state, dispatch] = useReducer(windowReducer, initialWinState);
     useEffect(
         function setDocumentTitle() {
-            document.title = state.title;
+            document.title = formatTitle(state.title);
         },
         [state.title]
     );

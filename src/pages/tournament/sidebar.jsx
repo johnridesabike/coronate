@@ -72,12 +72,12 @@ export default function Sidebar({className, navigate, tournament}) {
     return (
         <div className={classNames(className)}>
             <nav>
-                <ul>
+                <ul style={{marginTop: "0"}}>
                     <li>
                         <Link to=".." {...noDraggy}>
-                            <Icons.X/>
+                            <Icons.ChevronLeft/>
                             <span className="sidebar__hide-on-close">
-                                &nbsp;Close
+                                &nbsp;Back
                             </span>
                         </Link>
                     </li>
@@ -126,8 +126,10 @@ export default function Sidebar({className, navigate, tournament}) {
                     </li>
                 </ul>
                 <hr />
-                <h5 className="sidebar__hide-on-close">Rounds</h5>
-                <ul>
+                <h5 className="sidebar__hide-on-close sidebar__header">
+                    Rounds
+                </h5>
+                <ul className="center-on-close">
                     {Object.keys(roundList).map((id) =>
                         <li key={id}>
                             <Link to={`round/${id}`} {...noDraggy}>
@@ -161,7 +163,7 @@ export default function Sidebar({className, navigate, tournament}) {
             <ul>
                 <li>
                     <button
-                        // className={classNames({"button-primary": tooltipWarn})}
+                        className={"sidebar-button"}
                         disabled={!isNewRoundReady}
                         onClick={newRound}
                         style={{width: "100%"}}
@@ -176,7 +178,7 @@ export default function Sidebar({className, navigate, tournament}) {
                     <button
                         disabled={roundList.length === 0}
                         onClick={delLastRound}
-                        className="button-micro"
+                        className="button-micro sidebar-button"
                         style={{marginTop: "8px"}}
                     >
                         <Icons.Trash />

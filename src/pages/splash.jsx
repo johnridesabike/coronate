@@ -42,7 +42,7 @@ const Splash = (props) => (
             </aside>
             <div className={styles.title}>
                 <div className={styles.titleIcon}>
-                    <img src={logo} alt="" height="64" width="64" />
+                    <img src={logo} alt="" height="96" width="96" />
                 </div>
                 <div className={styles.titleText}>
                     <h1 className="title">
