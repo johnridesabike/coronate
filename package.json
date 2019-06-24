@@ -63,7 +63,7 @@
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-ramda": "^2.5.1",
-    "eslint-plugin-react": "^7.14.0",
+    "eslint-plugin-react": "^7.14.1",
     "gh-pages": "^2.0.1",
     "jest-dom": "^3.5.0",
     "react-scripts": "3.0.1",
