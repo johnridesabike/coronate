@@ -6,10 +6,10 @@ import styles from "./index.module.css";
 
 const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
 
-const Caution = (props) => (
+const Caution = ({className, ...rest}) => (
     <aside
-        {...props}
-        className={classNames(styles.caution, "body-20", props.className)}
+        {...rest}
+        className={classNames(styles.caution, "body-20", className)}
     >
         <p className={styles.caution__text}>
             This is beta software. Want to help make it better? Check out the

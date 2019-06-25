@@ -14,7 +14,7 @@ const LICENSE_URL = (
 );
 const ISSUES_URL = "https://github.com/johnridesabike/chessahoochee/issues/new";
 
-const Splash = (props) => (
+const Splash = () => (
     <WindowBody footer={<Caution />} footerProps={{style: {border: "none"}}}>
         <div className={styles.splash}>
             <aside className={styles.hint}>

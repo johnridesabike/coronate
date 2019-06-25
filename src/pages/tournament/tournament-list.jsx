@@ -7,7 +7,7 @@ import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import VisuallyHidden from "@reach/visually-hidden";
 
-export default function TournamentList(props) {
+export default function TournamentList() {
     const [tourneys, dispatch] = useAllTournamentsDb();
     const [sorted, sortDispatch] = useSortedTable(
         Object.values(tourneys),

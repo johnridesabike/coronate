@@ -7,9 +7,9 @@ import Scores from "./scores";
 import Tournament from "./tournament";
 import TournamentList from "./tournament-list";
 
-const TournamentIndex = (props) => (
+const TournamentIndex = ({children}) => (
     <div className="passthrough">
-        {props.children}
+        {children}
     </div>
 );
 TournamentIndex.propTypes = {

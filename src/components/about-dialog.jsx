@@ -7,7 +7,7 @@ const LICENSE_URL = (
     "https://github.com/johnridesabike/chessahoochee/blob/master/LICENSE"
 );
 
-const About = (props) => (
+const About = () => (
     <article
         style={{
             display: "flex",

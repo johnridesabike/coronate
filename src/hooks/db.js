@@ -2,7 +2,7 @@ import "localforage-getitems";
 import {difference, filter} from "ramda";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
-import defaultOptions from "./default-options.json";
+import defaultOptions from "./default-options";
 import demoData from "../demo-data";
 import localForage from "localforage";
 import {extendPrototype as removeItemsPrototype} from "localforage-removeitems";
@@ -54,7 +54,7 @@ function useAllItemsFromDb(store, type) {
             let didCancel = false;
             (async function () {
                 const results = await store.getItems();
-                console.log("loaded items from", store.config().storeName);
+                // console.log("loaded items from", store.config().storeName);
                 // TODO: This will silently delete invalid entries from the DB.
                 // Because invalid entries are typically just older data that
                 // was created with a different tcomb interface, this should
@@ -79,12 +79,12 @@ function useAllItemsFromDb(store, type) {
             }
             (async function () {
                 await store.setItems(items);
-                console.log("saved items to", store.config().storeName);
+                // console.log("saved items to", store.config().storeName);
                 const keys = await store.keys();
                 const deleted = difference(keys, Object.keys(items));
                 if (deleted.length > 0 ) {
                     await store.removeItems(deleted);
-                    console.log("Deleted " + deleted.length + " items.");
+                    // console.log("Deleted " + deleted.length + " items.");
                 }
             }());
         },

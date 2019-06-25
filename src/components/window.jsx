@@ -114,7 +114,7 @@ WindowTitleBar.propTypes = {
     state: PropTypes.object
 };
 
-export function Window(props) {
+export function Window({children, className, ...rest}) {
     const [state, dispatch] = useReducer(windowReducer, initialWinState);
     useEffect(
         function setDocumentTitle() {
@@ -164,9 +164,9 @@ export function Window(props) {
     );
     return (
         <div
-            {...props}
+            {...rest}
             className={classNames(
-                props.className,
+                className,
                 {"open-sidebar": state.isSidebarOpen},
                 {"closed-sidebar": !state.isSidebarOpen},
                 {"window-blur": state.isBlur},
@@ -179,7 +179,7 @@ export function Window(props) {
             <WindowContext.Provider
                 value={{winDispatch: dispatch, winState: state}}
             >
-                {props.children}
+                {children}
             </WindowContext.Provider>
             <Dialog
                 isOpen={state.isDialogOpen}

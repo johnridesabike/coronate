@@ -35,7 +35,8 @@ export default function optionsReducer(state, action) {
             option: t.String,
             value: t.union([
                 t.Number,
-                t.list(types.AvoidPair)
+                t.list(types.AvoidPair),
+                Date
             ])
         })(action);
         return assoc(

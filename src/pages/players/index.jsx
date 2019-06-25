@@ -5,7 +5,7 @@ import PlayerProfile from "./player-profile";
 import {Router} from "@reach/router";
 import {WindowBody} from "../../components/window";
 
-export default function Players(props) {
+export default function Players() {
     const [players, playersDispatch] = useAllPlayersDb();
     const [sorted, sortDispatch] = useSortedTable(
         Object.values(players),

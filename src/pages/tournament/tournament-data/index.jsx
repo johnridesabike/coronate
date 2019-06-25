@@ -64,7 +64,7 @@ export default function TournamentData({children, tourneyId}) {
             let didCancel = false;
             (async function () {
                 const value = await tourneyStore.getItem(tourneyId);
-                console.log("loaded:", tourneyId);
+                // console.log("loaded:", tourneyId);
                 if (!value) {
                     loadedDispatch({noDbError: false});
                 } else if(!didCancel) {
@@ -111,12 +111,12 @@ export default function TournamentData({children, tourneyId}) {
                     Object.keys(values),
                     Object.keys(players)
                 );
-                console.log(
-                    "unchanged players:",
-                    Object.keys(unChangedPlayers).length
-                );
+                // console.log(
+                //     "unchanged players:",
+                //     Object.keys(unChangedPlayers).length
+                // );
                 if (unChangedPlayers.length !== 0 && !didCancel) {
-                    console.log("hydrated player data");
+                    // console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
                     loadedDispatch({players: true});
                 }
@@ -137,7 +137,7 @@ export default function TournamentData({children, tourneyId}) {
                 return;
             }
             tourneyStore.setItem(tourneyId, tourney).catch(function (error) {
-                console.log("error saving tourney:", tourneyId, error);
+                console.error("error saving tourney:", tourneyId, error);
             });
         },
         [tourneyId, tourney, isLoaded.tourney]
@@ -147,13 +147,14 @@ export default function TournamentData({children, tourneyId}) {
             if (!isLoaded.players) {
                 return;
             }
-            (async function () {
-                const values = await playerStore.setItems(players);
-                console.log(
-                    "saved player changes to DB:",
-                    Object.keys(values).length
-                );
-            }());
+            playerStore.setItems(players);
+            // (async function () {
+            //     const values = await playerStore.setItems(players);
+            //     console.log(
+            //         "saved player changes to DB:",
+            //         Object.keys(values).length
+            //     );
+            // }());
         },
         [players, isLoaded.players]
     );
