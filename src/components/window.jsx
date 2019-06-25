@@ -48,7 +48,7 @@ const isMac = navigator.appVersion.includes("Mac");
 const isWin = navigator.appVersion.includes("Windows");
 const toolbarClasses = classNames(
     {"macos-button-toolbar": isMac && electron},
-    {"button-ghost": !electron}
+    {"button-ghost": !(isMac && electron)}
 );
 
 const WindowTitleBar = ({state, dispatch}) => (
