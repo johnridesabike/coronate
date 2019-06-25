@@ -57,7 +57,8 @@ const Tournament = t.interface(
 const OptionsDb = t.interface(
     {
         avoidPairs: t.list(AvoidPair),
-        byeValue: t.refinement(t.Number, (num) => num === 1 || num === 0.5)
+        byeValue: t.refinement(t.Number, (num) => num === 1 || num === 0.5),
+        lastBackup: Date
     },
     "Options"
 );

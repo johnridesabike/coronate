@@ -1,17 +1,19 @@
 import React, {useEffect, useMemo, useState} from "react";
+import PropTypes from "prop-types";
+import fromJSON from "tcomb/lib/fromJSON";
+import classNames from "classnames";
 import {WindowBody, useWindowContext} from "../components/window";
+import Icons from "../components/icons";
+import {DateFormat} from "../components/utility";
+import demoData from "../demo-data";
+import testData from "../test-data";
+import {types} from "../data-types";
+import styles from "./options.module.css";
 import {
     useAllPlayersDb,
     useAllTournamentsDb,
     useOptionsDb
 } from "../hooks";
-import Icons from "../components/icons";
-import classNames from "classnames";
-import demoData from "../demo-data";
-import fromJSON from "tcomb/lib/fromJSON";
-import styles from "./options.module.css";
-import testData from "../test-data";
-import {types} from "../data-types";
 
 function invalidAlert() {
     window.alert(
@@ -20,7 +22,17 @@ function invalidAlert() {
     );
 }
 
-export default function Options(props) {
+function LastBackupDate({date}) {
+    if (date.getTime() === 0) {
+        return "never";
+    }
+    return <DateFormat date={date} showTime/>;
+}
+LastBackupDate.propTypes = {
+    date: PropTypes.instanceOf(Date).isRequired
+};
+
+export default function Options() {
     const [tournaments, tourneysDispatch] = useAllTournamentsDb();
     const [players, playersDispatch] = useAllPlayersDb();
     const [text, setText] = useState("");
@@ -125,6 +137,9 @@ export default function Options(props) {
                     </label>
                 </form>
                 <h2>Manage data</h2>
+                <p className="caption-20">
+                    Last export: <LastBackupDate date={options.lastBackup}/>
+                </p>
                 <p>
                     <a
                         download="coronate.json"
@@ -132,6 +147,11 @@ export default function Options(props) {
                             "data:application/json,"
                             + encodeURIComponent(JSON.stringify(exportData))
                         }
+                        onClick={() => optionsDispatch({
+                            type: "SET_OPTION",
+                            option: "lastBackup",
+                            value: new Date()
+                        })}
                     >
                         <Icons.Download /> Export all data
                     </a>

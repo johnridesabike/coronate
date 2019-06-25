@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
 import classNames from "classnames";
-import {omit} from "ramda";
 import styles from "./utility.module.css";
 
 export function Panel({children, style}) {
@@ -18,10 +17,10 @@ Panel.propTypes = {
     style: PropTypes.object
 };
 
-export function PanelContainer(props) {
+export function PanelContainer({children, className, ...rest}) {
     return (
-        <div {...props} className={classNames(styles.panels, props.className)}>
-            {props.children}
+        <div {...rest} className={classNames(styles.panels, className)}>
+            {children}
         </div>
     );
 }
@@ -38,45 +37,64 @@ const {format: dateFormat} = new Intl.DateTimeFormat(
         year: "numeric"
     }
 );
-export function DateFormat(props) {
-    const cleanProps = omit(["date"], props);
+const {format: timeFormat} = new Intl.DateTimeFormat(
+    "en-US",
+    {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    }
+);
+
+export function DateFormat({date, showTime, ...rest}) {
+    const format = showTime ? timeFormat : dateFormat;
     return (
-        <time dateTime={props.date.toISOString()} {...cleanProps}>
-            {dateFormat(props.date)}
+        <time dateTime={date.toISOString()} {...rest}>
+            {format(date)}
         </time>
     );
 }
 DateFormat.propTypes = {
-    date: PropTypes.instanceOf(Date).isRequired
+    date: PropTypes.instanceOf(Date).isRequired,
+    showTime: PropTypes.bool
 };
 
-export function Notification(props) {
-    const [icon, className] = (function () {
-        if (props.success) {
+export function Notification({
+    children,
+    success,
+    warning,
+    error,
+    className,
+    tooltip,
+    ...rest
+}) {
+    const [icon, notifClassName] = (function () {
+        if (success) {
             return [<Icons.Check />, "notification__success"];
-        } else if (props.warning) {
+        } else if (warning) {
             return [<Icons.Alert />, "notification__warning"];
-        } else if (props.error) {
+        } else if (error) {
             return [<Icons.X />, "notification__error"];
         } else {
             return [<Icons.Info />, "notification__generic"];
         }
     }());
-    const cleanProps = omit(["warning", "error", "success", "tooltip"], props);
     return (
         <div
-            {...cleanProps}
-            className={classNames("notification", className, props.className)}
+            {...rest}
+            className={classNames("notification", notifClassName, className)}
         >
             <div
-                aria-label={props.tooltip}
+                aria-label={tooltip}
                 className="notification__icon"
-                title={props.tooltip}
+                title={tooltip}
             >
                 {icon}
             </div>
             <div className="notification__text">
-                {props.children}
+                {children}
             </div>
         </div>
     );
