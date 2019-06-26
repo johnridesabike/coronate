@@ -53,27 +53,26 @@ const Tournament = t.interface(
     "Tournament"
 );
 
-// Database stuff:
-const OptionsDb = t.interface(
-    {
-        avoidPairs: t.list(AvoidPair),
-        byeValue: t.refinement(t.Number, (num) => num === 1 || num === 0.5),
-        lastBackup: Date
-    },
-    "Options"
-);
-const TourneysDb = t.dict(Id, Tournament, "TournamentsDB");
-const PlayersDb = t.dict(Id, Player, "PlayersDB");
+const db = Object.freeze({
+    Options: t.interface(
+        {
+            avoidPairs: t.list(AvoidPair),
+            byeValue: t.refinement(t.Number, (num) => num === 1 || num === 0.5),
+            lastBackup: Date
+        },
+        "Options"
+    ),
+    Tourneys: t.dict(Id, Tournament, "TournamentsDB"),
+    Players: t.dict(Id, Player, "PlayersDB")
+});
 
 export default Object.freeze({
     AvoidPair,
     Color,
     Id,
     Match,
-    OptionsDb,
     Player,
-    PlayersDb,
     RoundList,
     Tournament,
-    TourneysDb
+    db
 });

@@ -116,16 +116,16 @@
         "matchCount": 35,
         "rating": 1400,
         "type": "person",
-        "firstName": "Frank",
-        "lastName": "TV's"
+        "firstName": "TV's",
+        "lastName": "Frank"
     },
     "TVs_Son_of_TVs_Frank_": {
         "id": "TVs_Son_of_TVs_Frank_",
         "matchCount": 65,
         "rating": 1100,
         "type": "person",
-        "firstName": "Max",
-        "lastName": "TV's"
+        "firstName": "TV's",
+        "lastName": "Max"
     },
     "Tom_Servo____________": {
         "id": "Tom_Servo____________",

@@ -58,15 +58,15 @@ export default function Options() {
     );
     function loadData(data) {
         tourneysDispatch({
-            state: fromJSON(data.tournaments, types.TourneysDb),
+            state: fromJSON(data.tournaments, types.db.Tourneys),
             type: "LOAD_STATE"
         });
         optionsDispatch({
-            state: fromJSON(data.options, types.OptionsDb),
+            state: fromJSON(data.options, types.db.Options),
             type: "LOAD_STATE"
         });
         playersDispatch({
-            state: fromJSON(data.players, types.PlayersDb),
+            state: fromJSON(data.players, types.db.Players),
             type: "LOAD_STATE"
         });
         window.alert("Data loaded!");
