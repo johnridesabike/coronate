@@ -4,7 +4,7 @@ import classNames from "classnames";
 import {ifElectronOpen} from "../../electron-utils";
 import styles from "./index.module.css";
 
-const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
+const GITHUB_URL = "https://github.com/johnridesabike/coronate";
 
 const Caution = ({className, ...rest}) => (
     <aside

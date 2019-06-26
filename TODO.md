@@ -2,7 +2,7 @@ I tend to insert `TODO` comments throughout my code as reminders for low-priorit
 
 ### General API
 
-[See the pairing & scoring TODO document.](https://github.com/johnridesabike/chessahoochee/tree/master/src/pairing-scoring/TODO.md)
+[See the pairing & scoring TODO document.](https://github.com/johnridesabike/coronate/tree/master/src/pairing-scoring/TODO.md)
 
 ### User interface to-dos
 

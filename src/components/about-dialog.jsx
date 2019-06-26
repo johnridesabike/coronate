@@ -2,9 +2,9 @@ import React from "react";
 import {ifElectronOpen} from "../electron-utils";
 import logo from "../icon-min.svg";
 
-const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
+const GITHUB_URL = "https://github.com/johnridesabike/coronate";
 const LICENSE_URL = (
-    "https://github.com/johnridesabike/chessahoochee/blob/master/LICENSE"
+    "https://github.com/johnridesabike/coronate/blob/master/LICENSE"
 );
 
 const About = () => (

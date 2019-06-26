@@ -1,5 +1,5 @@
 {
-  "name": "chessahoochee",
+  "name": "coronate",
   "version": "0.1.0",
   "description": "A chess tournament manager",
   "author": "John Jackson",
@@ -9,7 +9,7 @@
   "main": "public/electron.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnridesabike/chessahoochee.git"
+    "url": "https://github.com/johnridesabike/coronate.git"
   },
   "scripts": {
     "build": "react-scripts build",
@@ -83,7 +83,7 @@
     "not op_mini all"
   ],
   "build": {
-    "appId": "bike.johnridesa.chessahoochee",
+    "appId": "bike.johnridesa.coronate",
     "productName": "Coronate",
     "copyright": "Copyright © 2019 ${author}",
     "mac": {

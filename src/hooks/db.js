@@ -15,7 +15,7 @@ import {useLoadingCursor} from "./hooks";
  ******************************************************************************/
 setItemsPrototype(localForage);
 removeItemsPrototype(localForage);
-const DATABASE_NAME = "Chessahoochee";
+const DATABASE_NAME = "Coronate";
 const optionsStore = localForage.createInstance({
     name: DATABASE_NAME,
     storeName: "Options"

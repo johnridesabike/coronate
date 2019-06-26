@@ -8,11 +8,11 @@ import {loadDemoDB} from "../hooks/db";
 import logo from "../icon-min.svg";
 import styles from "./splash.module.css";
 
-const GITHUB_URL = "https://github.com/johnridesabike/chessahoochee";
+const GITHUB_URL = "https://github.com/johnridesabike/coronate";
 const LICENSE_URL = (
-    "https://github.com/johnridesabike/chessahoochee/blob/master/LICENSE"
+    "https://github.com/johnridesabike/coronate/blob/master/LICENSE"
 );
-const ISSUES_URL = "https://github.com/johnridesabike/chessahoochee/issues/new";
+const ISSUES_URL = "https://github.com/johnridesabike/coronate/issues/new";
 
 const Splash = () => (
     <WindowBody footer={<Caution />} footerProps={{style: {border: "none"}}}>

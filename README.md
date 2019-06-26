@@ -9,9 +9,9 @@
 
 Coronate is a free alternative to pricey professional tournament software. Anyone, even a tournament newbie with a locked-down public-access computer, can use it to run their tournament.
 
-<p align="center"><a href="https://johnridesa.bike/chessahoochee/">👉 Click here for a live demo ♟</a></p>
+<p align="center"><a href="https://johnridesa.bike/coronate/">👉 Click here for a live demo ♟</a></p>
 
-[Read more about how to use the app here](https://johnridesa.bike/software/chessahoochee/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
+[Read more about how to use the app here](https://johnridesa.bike/software/coronate/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
 
 ## 🏁 Getting Started
 
@@ -25,11 +25,11 @@ You'll need [Node.js](https://nodejs.org/) version 10. Coronate probably runs on
 
 #### 1: Grab the code
 
-For most people, the easiest method is to click the "Clone or Download" button on [this project's GitHub homepage](https://github.com/johnridesabike/chessahoochee).
+For most people, the easiest method is to click the "Clone or Download" button on [this project's GitHub homepage](https://github.com/johnridesabike/coronate).
 
 If you have Git installed, you can also run:
 ```
-git clone https://github.com/johnridesabike/chessahoochee.git
+git clone https://github.com/johnridesabike/coronate.git
 ```
 
 If you want to make your own changes, then it's recommended to fork the repository on GitHub and clone your forked version.
