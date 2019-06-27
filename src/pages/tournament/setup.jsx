@@ -1,20 +1,57 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
+import {Link} from "@reach/router";
+import VisuallyHidden from "@reach/visually-hidden";
+import PropTypes from "prop-types";
 import {DateFormat} from "../../components/utility";
 import Icons from "../../components/icons";
-import {Link} from "@reach/router";
-import PropTypes from "prop-types";
+
+// Why are dates so complicated?!?
+// Note to future self & other maintainers: getDate() begins at 1, and
+// getMonth() begins at 0. An HTML date input requires that the month begins at
+// 1 and the JS Date() object requires that the month begins at 0.
+function makeDateInput(date) {
+    const year = date.getFullYear();
+    const rawMonth = date.getMonth();
+    const rawDate = date.getDate();
+    // The date input requires a 2-digit month and day.
+    const month = (
+        rawMonth < 9
+        ? "0" + String(rawMonth + 1)
+        : rawMonth + 1
+    );
+    const day = (
+        rawDate < 10
+        ? "0" + rawDate
+        : rawDate
+    );
+    return year + "-" + month + "-" + day;
+}
 
 export default function Setup({tournament}) {
     const {tourney, tourneyDispatch} = tournament;
     const [isEditingName, setIsEditingName] = useState(false);
     const [isEditingDate, setIsEditingDate] = useState(false);
+    const nameInput = useRef(null);
+    const dateInput = useRef(null);
+
+    useEffect(
+        function handleFocus() {
+            if (isEditingName) {
+                nameInput.current.focus();
+            }
+            if (isEditingDate) {
+                dateInput.current.focus();
+            }
+        },
+        [isEditingName, isEditingDate]
+    );
 
     function changeToOne() {
         tourneyDispatch({
             type: "UPDATE_BYE_SCORES",
             value: 1
         });
-        window.alert("Bye value updated to 1.");
+        window.alert("Bye scores updated to 1.");
     }
 
     function changeToOneHalf() {
@@ -22,24 +59,8 @@ export default function Setup({tournament}) {
             type: "UPDATE_BYE_SCORES",
             value: 0.5
         });
-        window.alert("Bye value updated to ½.");
+        window.alert("Bye scores updated to ½.");
     }
-
-    // lol, why are dates so complicated?!?
-    const dateInput = (function () {
-        const year = tourney.date.getFullYear();
-        const month = (
-            tourney.date.getMonth() < 9
-            ? "0" + (tourney.date.getMonth() + 1)
-            : tourney.date.getMonth() + 1
-        );
-        const day = (
-            tourney.date.getDate() < 10
-            ? "0" + tourney.date.getDate()
-            : tourney.date.getDate()
-        );
-        return year + "-" + month + "-" + day;
-    }());
 
     function updateDate(event) {
         const [
@@ -60,10 +81,15 @@ export default function Setup({tournament}) {
         <div className="content-area">
             {isEditingName
             ? (
-                <p className="display-20" style={{textAlign: "left"}}>
+                <form
+                    className="display-20"
+                    style={{textAlign: "left"}}
+                    onSubmit={() => setIsEditingName(false)}
+                >
                     <input
                         className="display-20"
                         style={{textAlign: "left"}}
+                        ref={nameInput}
                         type="text"
                         value={tourney.name}
                         onChange={(event) => tourneyDispatch({
@@ -77,7 +103,7 @@ export default function Setup({tournament}) {
                     >
                         <Icons.Check />
                     </button>
-                </p>
+                </form>
             ) : (
                 <h1 style={{textAlign: "left"}}>
                     <span className="inputPlaceholder">
@@ -88,16 +114,23 @@ export default function Setup({tournament}) {
                         onClick={() => setIsEditingName(true)}
                     >
                         <Icons.Edit />
+                        <VisuallyHidden>
+                            Edit name
+                        </VisuallyHidden>
                     </button>
                 </h1>
             )}
             {isEditingDate
             ? (
-                <p className="caption-30">
+                <form
+                    className="caption-30"
+                    onSubmit={() => setIsEditingDate(false)}
+                >
                     <input
                         className="caption-30"
                         type="date"
-                        value={dateInput}
+                        ref={dateInput}
+                        value={makeDateInput(tourney.date)}
                         onChange={updateDate}
                     />{" "}
                     <button
@@ -106,7 +139,7 @@ export default function Setup({tournament}) {
                     >
                         <Icons.Check />
                     </button>
-                </p>
+                </form>
             )
             : (
                 <p className="caption-30">
@@ -116,13 +149,20 @@ export default function Setup({tournament}) {
                         onClick={() => setIsEditingDate(true)}
                     >
                         <Icons.Edit />
+                        <VisuallyHidden>
+                            Edit date
+                        </VisuallyHidden>
                     </button>
                 </p>
             )}
             <h2>Change bye scores</h2>
-            <button onClick={changeToOne}>Change to 1</button>{" "}
-            <button onClick={changeToOneHalf}>Change to ½</button>
-            <p className="caption-30">
+            <button aria-describedby="score-desc" onClick={changeToOne}>
+                Change byes to 1
+            </button>{" "}
+            <button aria-describedby="score-desc" onClick={changeToOneHalf}>
+                Change byes to ½
+            </button>
+            <p className="caption-30" id="score-desc">
                 This will update all bye matches which have been previously
                 scored in this tournament. To change the default bye value in
                 future matches, go to the{" "}
