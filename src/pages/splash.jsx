@@ -36,7 +36,7 @@ const Splash = () => (
                     </li>
                 </ol>
                 <Notification warning>
-                    If you experience any glitches or crashes,<br />
+                    If you experience glitches or crashes,<br />
                     clear your browser cache and try again.
                 </Notification>
             </aside>
@@ -45,11 +45,11 @@ const Splash = () => (
                     <img src={logo} alt="" height="96" width="96" />
                 </div>
                 <div className={styles.titleText}>
-                    <h1 className="title">
+                    <h1 className="title" style={{fontSize: "40px"}}>
                         Coronate
                     </h1>
                     <p className={styles.subtitle + " caption-30"}>
-                        a chess tournament app
+                        Tournament manager
                     </p>
                 </div>
             </div>

@@ -5,16 +5,17 @@ import VisuallyHidden from "@reach/visually-hidden";
 import classNames from "classnames";
 import styles from "./utility.module.css";
 
-export function Panel({children, style}) {
+export function Panel({children, ...rest}) {
     return (
-        <div className={styles.panel} style={{...style}}>
+        <div className={styles.panel} {...rest}>
             {children}
         </div>
     );
 }
 Panel.propTypes = {
     children: PropTypes.node.isRequired,
-    style: PropTypes.object
+    style: PropTypes.object,
+    blarg: PropTypes.bool
 };
 
 export function PanelContainer({children, className, ...rest}) {
@@ -48,18 +49,22 @@ const {format: timeFormat} = new Intl.DateTimeFormat(
     }
 );
 
-export function DateFormat({date, showTime, ...rest}) {
-    const format = showTime ? timeFormat : dateFormat;
-    return (
+function withDateFormatFunc(formatFunc) {
+    const _DateFormat = ({date, ...rest}) => (
         <time dateTime={date.toISOString()} {...rest}>
-            {format(date)}
+            {formatFunc(date)}
         </time>
     );
+    _DateFormat.propTypes = {
+        date: PropTypes.instanceOf(Date).isRequired
+    };
+    return _DateFormat;
 }
-DateFormat.propTypes = {
-    date: PropTypes.instanceOf(Date).isRequired,
-    showTime: PropTypes.bool
-};
+
+const DateFormat = withDateFormatFunc(dateFormat);
+export {DateFormat};
+const DateTimeFormat = withDateFormatFunc(timeFormat);
+export {DateTimeFormat};
 
 export function Notification({
     children,
@@ -119,7 +124,7 @@ const PlaceholderButton = () => (
 );
 export {PlaceholderButton};
 
-export function SortLabel({children, sortKey, data, dispatch}) {
+export function SortButton({children, sortKey, data, dispatch}) {
     function setKeyOrToggleDir() {
         if (data.key === sortKey) {
             dispatch({isDescending: !data.isDescending});
@@ -151,17 +156,9 @@ export function SortLabel({children, sortKey, data, dispatch}) {
         </button>
     );
 }
-SortLabel.propTypes = {
+SortButton.propTypes = {
     children: PropTypes.string.isRequired,
     data: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     sortKey: PropTypes.string.isRequired
 };
-
-/*******************************************************************************
- * Non-JSX functions
- ******************************************************************************/
-// TODO: get rid of this.
-export function findById(id, list) {
-    return list.filter((x) => x.id === id)[0];
-}

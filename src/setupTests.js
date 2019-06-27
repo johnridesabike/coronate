@@ -6,6 +6,7 @@ window.getComputedStyle = jest.fn().mockImplementation(
 );
 // Our tester will click "yes" to everything.
 window.confirm = jest.fn(() => true);
+window.alert = jest.fn(() => true);
 
 jest.mock("./hooks/db");
 jest.mock("./pages/tournament/tournament-data");

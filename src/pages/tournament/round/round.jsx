@@ -3,12 +3,9 @@ import Icons from "../../../components/icons";
 import NotFound from "../../../components/404";
 import PropTypes from "prop-types";
 import RoundTable from "./round-table";
-import {findById} from "../../../components/utility";
 import {sum} from "ramda";
 
-export function findIndexById(id, list) {
-    return list.indexOf(findById(id, list));
-}
+const findById = (id, list) => list.filter((x) => x.id === id)[0];
 
 export default function Round({roundId, tournament, scoreData}) {
     const {
@@ -56,7 +53,7 @@ export default function Round({roundId, tournament, scoreData}) {
     }
 
     function moveMatch(matchId, direction) {
-        const oldIndex = findIndexById(matchId, matchList);
+        const oldIndex = matchList.indexOf(findById(matchId, matchList));
         const newIndex = (oldIndex + direction >= 0) ? oldIndex + direction : 0;
         tourneyDispatch({newIndex, oldIndex, roundId, type: "MOVE_MATCH"});
     }

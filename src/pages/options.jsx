@@ -2,9 +2,10 @@ import React, {useEffect, useMemo, useState} from "react";
 import PropTypes from "prop-types";
 import fromJSON from "tcomb/lib/fromJSON";
 import classNames from "classnames";
+import numeral from "numeral";
 import {WindowBody, useWindowContext} from "../components/window";
 import Icons from "../components/icons";
-import {DateFormat} from "../components/utility";
+import {DateTimeFormat} from "../components/utility";
 import demoData from "../demo-data";
 import testData from "../test-data";
 import {types} from "../data-types";
@@ -14,6 +15,15 @@ import {
     useAllTournamentsDb,
     useOptionsDb
 } from "../hooks";
+
+function getDateForFile() {
+    const date = new Date();
+    return [
+        date.getFullYear(),
+        numeral(date.getMonth() + 1).format("00"),
+        numeral(date.getDay() + 1).format("00")
+    ].join("-");
+}
 
 function invalidAlert() {
     window.alert(
@@ -26,7 +36,7 @@ function LastBackupDate({date}) {
     if (date.getTime() === 0) {
         return "never";
     }
-    return <DateFormat date={date} showTime/>;
+    return <DateTimeFormat date={date}/>;
 }
 LastBackupDate.propTypes = {
     date: PropTypes.instanceOf(Date).isRequired
@@ -142,7 +152,7 @@ export default function Options() {
                 </p>
                 <p>
                     <a
-                        download="coronate.json"
+                        download={"coronate-" + getDateForFile() + ".json"}
                         href={
                             "data:application/json,"
                             + encodeURIComponent(JSON.stringify(exportData))

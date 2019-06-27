@@ -4,7 +4,7 @@ import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import NewPlayer from "../../components/new-player";
 import PropTypes from "prop-types";
-import {SortLabel} from "../../components/utility";
+import {SortButton} from "../../components/utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import styles from "./index.module.css";
 import {useWindowContext} from "../../components/window";
@@ -46,31 +46,31 @@ export default function PlayerList({
                 <thead>
                     <tr>
                         <th>
-                            <SortLabel
+                            <SortButton
                                 data={sorted}
                                 dispatch={sortDispatch}
                                 sortKey="firstName"
                             >
                                 Name
-                            </SortLabel>
+                            </SortButton>
                         </th>
                         <th>
-                            <SortLabel
+                            <SortButton
                                 data={sorted}
                                 dispatch={sortDispatch}
                                 sortKey="rating"
                             >
                                 Rating
-                            </SortLabel>
+                            </SortButton>
                         </th>
                         <th>
-                            <SortLabel
+                            <SortButton
                                 data={sorted}
                                 dispatch={sortDispatch}
                                 sortKey="matchCount"
                             >
                                 Matches
-                            </SortLabel>
+                            </SortButton>
                         </th>
                         <th><VisuallyHidden>Controls</VisuallyHidden></th>
                     </tr>

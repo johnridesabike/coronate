@@ -8,7 +8,7 @@ import {
 import Hidden from "@reach/visually-hidden";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
-import {SortLabel} from "../../../components/utility";
+import {SortButton} from "../../../components/utility";
 import VisuallyHidden from "@reach/visually-hidden";
 import numeral from "numeral";
 import {useSortedTable} from "../../../hooks";
@@ -72,22 +72,22 @@ export default function SelectList({
                         <VisuallyHidden>Controls</VisuallyHidden>
                     </th>
                     <th>
-                        <SortLabel
+                        <SortButton
                             sortKey="firstName"
                             data={sorted}
                             dispatch={sortedDispatch}
                         >
                             Name
-                        </SortLabel>
+                        </SortButton>
                     </th>
                     <th>
-                        <SortLabel
+                        <SortButton
                             sortKey="ideal"
                             data={sorted}
                             dispatch={sortedDispatch}
                         >
                             Ideal
-                        </SortLabel>
+                        </SortButton>
                     </th>
                 </tr>
             </thead>

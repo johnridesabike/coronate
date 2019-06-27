@@ -19,7 +19,7 @@ const About = () => (
             <img src={logo} height="196" width="196" alt=""/>
         </div>
         <div style={{flex: "0 0 48%"}}>
-            <h1 className="title">Coronate</h1>
+            <h1 className="title" style={{textAlign: "left"}}>Coronate</h1>
             <p>Copyright &copy; 2019 John&nbsp;Jackson</p>
             <p>Coronate is free software.</p>
             <p>

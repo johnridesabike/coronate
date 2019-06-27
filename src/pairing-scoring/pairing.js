@@ -6,7 +6,6 @@ import {
     filter,
     last,
     map,
-    mergeRight,
     pipe,
     pluck,
     prop,
@@ -126,11 +125,12 @@ function upperHalfReducer(acc, playerData, ignore, src) {
     );
     return assoc(
         playerData.id,
-        mergeRight(playerData, {halfPos, isUpperHalf}),
+        {...playerData, ...{halfPos, isUpperHalf}},
         acc
     );
 }
 export function setUpperHalves(data) {
+    // using reduce instead of map because we're not creating an array.
     return Object.values(data).reduce(upperHalfReducer, {});
 }
 
@@ -145,7 +145,7 @@ const sortByScoreThenRating = sortWith([
 // After calling this, be sure to add the bye round after the non-bye'd
 // players are paired.
 export function setByePlayer(byeQueue, dummyId, data) {
-    const hasNotHadBye = (p) => !p.opponents.includes(dummyId);
+    const hasNotHadBye = (p) => !p.opponents.includes(t.String(dummyId));
     // if the list is even, just return it.
     if (Object.keys(data).length % 2 === 0) {
         return [data, null];
@@ -156,9 +156,8 @@ export function setByePlayer(byeQueue, dummyId, data) {
         sortByScoreThenRating
     )(data);
     const playersWithoutByes = dataList.map((p) => p.id);
-    const nextByeSignup = t.list(t.String)(byeQueue).filter(
-        (id) => playersWithoutByes.includes(id)
-    )[0];
+    const hasntHadBye = (id) => playersWithoutByes.includes(id);
+    const nextByeSignup = t.list(t.String)(byeQueue).filter(hasntHadBye)[0];
     const dataForNextBye = (
         nextByeSignup
         // Assign the bye to the next person who signed up.
@@ -207,7 +206,7 @@ const sortByNetScoreThenRating = sortWith([netScoreDescend, netRatingDescend]);
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.
 export function pairPlayers(pairingData) {
-    // Because `blossom` has to use numbers that correspond to array indices,
+    // Because `blossom()` has to use numbers that correspond to array indices,
     // we'll use `playerIdArray` as our source for that.
     const playerIdArray = Object.keys(pairingData);
     // Turn the data into blossom-compatible input.

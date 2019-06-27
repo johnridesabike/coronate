@@ -1,4 +1,4 @@
-import {DateFormat, SortLabel} from "../../components/utility";
+import {DateFormat, SortButton} from "../../components/utility";
 import React, {useEffect, useState} from "react";
 import {WindowBody, useWindowContext} from "../../components/window";
 import {useAllTournamentsDb, useSortedTable} from "../../hooks";
@@ -66,22 +66,22 @@ export default function TournamentList() {
                     <thead>
                         <tr>
                             <th>
-                                <SortLabel
+                                <SortButton
                                     data={sorted}
                                     dispatch={sortDispatch}
                                     sortKey="name"
                                 >
                                     Name
-                                </SortLabel>
+                                </SortButton>
                             </th>
                             <th>
-                                <SortLabel
+                                <SortButton
                                     data={sorted}
                                     dispatch={sortDispatch}
                                     sortKey="date"
                                 >
                                     Date
-                                </SortLabel>
+                                </SortButton>
                             </th>
                             <th><VisuallyHidden>Controls</VisuallyHidden></th>
                         </tr>

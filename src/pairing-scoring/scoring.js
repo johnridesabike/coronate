@@ -1,6 +1,6 @@
 // This implements the tiebreak methods specified in USCF § 34E.
 // This is incomplete; many more tiebreak methods need to be added. These are
-// simply the most commonly used.
+// the most commonly used.
 import {
     ascend,
     init,
@@ -10,91 +10,79 @@ import {
     sum,
     tail
 } from "ramda";
-import t from "tcomb";
+// import t from "tcomb";
 import types from "./types";
 
-function getOpponentScores(scoreData, id) {
-    const opponentIds = Object.keys(scoreData[id].opponentResults);
-    return opponentIds.filter(
-        (oppId) => !scoreData[oppId].isDummy
-    ).map(
-        (oppId) => getPlayerScore(scoreData, oppId)
-    );
-}
+const isNotDummy = (scoreData) => (oppId) => !scoreData[oppId].isDummy;
 
-/*******************************************************************************
- * The main scoring methods
- ******************************************************************************/
 function getPlayerScore(scoreData, id) {
     return sum(scoreData[id].results);
 }
 export {getPlayerScore};
 
+// Don't mind me, just a helper function
+function getOpponentScores(scoreData, id) {
+    const opponentIds = Object.keys(scoreData[id].opponentResults);
+    const getScore = (oppId) => getPlayerScore(scoreData, oppId);
+    return opponentIds.filter(isNotDummy(scoreData)).map(getScore);
+}
 
 // USCF § 34E1.
 function getMedianScore(scoreData, id) {
     const scores = getOpponentScores(scoreData, id);
-    return pipe(
-        sort(ascend),
-        init,
-        tail,
-        sum
-    )(scores);
+    return pipe(sort(ascend), init, tail, sum)(scores);
 }
 
 // USCF § 34E2.
 function getSolkoffScore(scoreData, id) {
     return sum(getOpponentScores(scoreData, id));
 }
+
+// turn the regular score list into a "running" score list
+const runningReducer = (acc, score) => acc.concat([last(acc) + score]);
+
 // USCF § 34E3.
 function getCumulativeScore(scoreData, id) {
-    // turn the regular score list into a "running" score list
-    const scoreList = scoreData[id].resultsNoByes.reduce(
-        (acc, score) => acc.concat([last(acc) + score]),
-        [0]
-    );
+    const scoreList = scoreData[id].resultsNoByes.reduce(runningReducer, [0]);
     return sum(scoreList);
 }
 
 // USCF § 34E4.
 function getCumulativeOfOpponentScore(scoreData, id) {
-    const opponentIds = Object.keys(scoreData[id].opponentResults);
-    const scoreList = opponentIds.filter(
-        (oppId) => !scoreData[oppId].isDummy
-    ).map(
-        (oppId) => getCumulativeScore(scoreData, oppId)
-    );
+    const oppIds = Object.keys(scoreData[id].opponentResults);
+    const getCumScore = (oppId) => getCumulativeScore(scoreData, oppId);
+    const scoreList = oppIds.filter(isNotDummy(scoreData)).map(getCumScore);
     return sum(scoreList);
 }
 
+// USCF § 34E6
 function getColorBalanceScore(scoreData, id) {
     return sum(scoreData[id].colorScores);
 };
 
-const {ScoreCalculator} = types;
 const tieBreakMethods = {
     0: {
-        func: ScoreCalculator.of(getMedianScore),
+        func: types.ScoreCalculator.of(getMedianScore),
         id: 0,
         name: "Median"
     },
     1: {
-        func: ScoreCalculator.of(getSolkoffScore),
+        func: types.ScoreCalculator.of(getSolkoffScore),
         id: 1,
         name: "Solkoff"
     },
     2: {
-        func: ScoreCalculator.of(getCumulativeScore),
+        func: types.ScoreCalculator.of(getCumulativeScore),
         id: 2,
         name: "Cumulative score"
     },
     3: {
-        func: ScoreCalculator.of(getCumulativeOfOpponentScore),
+        func: types.ScoreCalculator.of(getCumulativeOfOpponentScore),
         id: 3,
         name: "Cumulative of opposition"
     },
     4: {
-        func: ScoreCalculator.of(getColorBalanceScore),
+        func: types.ScoreCalculator.of(getColorBalanceScore),
         id: 4,
         name: "Most black"
     }
@@ -102,8 +90,7 @@ const tieBreakMethods = {
 Object.freeze(tieBreakMethods);
 export {tieBreakMethods};
 
+const getNameFromIndex = (index) => tieBreakMethods[index].name;
 // Returns the names of the tiebreak methods selected for your tournament.
-const getTieBreakNames = (idList) => (
-    t.list(t.Number)(idList).map((i) => tieBreakMethods[i].name)
-);
+const getTieBreakNames = (idList) => idList.map(getNameFromIndex);
 export {getTieBreakNames};
