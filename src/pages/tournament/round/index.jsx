@@ -1,10 +1,8 @@
-import {DUMMY_ID, getUnmatched} from "../../../data-types";
 import React, {useMemo} from "react";
 import PropTypes from "prop-types";
 import RoundPanels from "./round-panels";
-import {assoc} from "ramda";
 import {matches2ScoreData} from "../../../pairing-scoring";
-import {rounds2Matches} from "../../../data-types";
+import {DUMMY_ID, getUnmatched, rounds2Matches} from "../../../data-types";
 
 // This is a higher-order component that generates round data and passes it to
 // children. I extracted this logic to its own component so it could be easily
@@ -31,11 +29,10 @@ export function withRoundData(WrappedComponent) {
         );
         const unmatchedCount = Object.keys(unmatched).length;
         // make a new list so as not to affect auto-pairing
-        const unmatchedWithDummy = (
-            unmatchedCount % 2 !== 0
-            ? assoc(DUMMY_ID, getPlayer(DUMMY_ID), unmatched)
-            : unmatched
-        );
+        const unmatchedWithDummy = {...unmatched};
+        if (unmatchedCount % 2 !== 0) {
+            unmatchedWithDummy[DUMMY_ID] = getPlayer(DUMMY_ID);
+        }
         const activePlayersCount = Object.keys(activePlayers).length;
         const data = {
             activePlayersCount,

@@ -4,7 +4,6 @@ import {
     calcPairIdeal,
     maxPriority
 } from "../../../pairing-scoring";
-import {lensIndex, set} from "ramda";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import numeral from "numeral";
@@ -32,7 +31,11 @@ export default function Stage({
     );
 
     function unstage(color) {
-        setStagedPlayers((prevState) => set(lensIndex(color), null, prevState));
+        setStagedPlayers(function (prevState) {
+            const copy = prevState.slice();
+            copy[color] = null;
+            return copy;
+        });
     }
 
     function match() {

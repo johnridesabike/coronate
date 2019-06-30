@@ -18,7 +18,6 @@
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],
         "jsx-quotes": ["warn", "prefer-double"],
-        "camelcase": "warn",
         "indent": ["warn", 4, {"ignoredNodes": ["ConditionalExpression"]}],
         "comma-dangle": ["warn", "never"],
         "array-bracket-spacing": ["warn", "never"],

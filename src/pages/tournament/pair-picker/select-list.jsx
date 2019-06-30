@@ -1,17 +1,21 @@
-import {BLACK, WHITE} from "../../../data-types";
 import React, {useEffect} from "react";
-import {assoc, lensIndex, set} from "ramda";
-import {
-    calcPairIdeal,
-    maxPriority
-} from "../../../pairing-scoring";
-import Hidden from "@reach/visually-hidden";
-import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
-import {SortButton} from "../../../components/utility";
-import VisuallyHidden from "@reach/visually-hidden";
 import numeral from "numeral";
+import VisuallyHidden from "@reach/visually-hidden";
+import Hidden from "@reach/visually-hidden";
+import {BLACK, WHITE} from "../../../data-types";
+import {calcPairIdeal, maxPriority} from "../../../pairing-scoring";
+import Icons from "../../../components/icons";
+import {SortButton} from "../../../components/utility";
 import {useSortedTable} from "../../../hooks";
+
+function setIndex(index, value) {
+    return function (arr) {
+        const copy = arr.slice();
+        copy[index] = value;
+        return copy;
+    };
+}
 
 export default function SelectList({
     pairData,
@@ -39,10 +43,8 @@ export default function SelectList({
                 return calcPairIdeal(selectedPlayer, player) / maxPriority;
             }
             const table = Object.values(unmatched).map(
-                (data) => assoc(
-                    "ideal",
-                    calcIdealOrNot(pairData[data.id]),
-                    data
+                (data) => (
+                    {...data, ...{ideal: calcIdealOrNot(pairData[data.id])}}
                 ),
                 []
             );
@@ -52,8 +54,8 @@ export default function SelectList({
     );
     // only use unmatched players if this is the last round.
     function selectPlayer(id) {
-        const setWhite = set(lensIndex(WHITE), id);
-        const setBlack = set(lensIndex(BLACK), id);
+        const setWhite = setIndex(WHITE, id);
+        const setBlack = setIndex(BLACK, id);
         if (stagedPlayers[WHITE] === null) {
             setStagedPlayers((prevState) => setWhite(prevState));
         } else if (stagedPlayers[BLACK] === null) {

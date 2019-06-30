@@ -1,15 +1,21 @@
-import React, {useState} from "react";
+import React, {useReducer} from "react";
 import PropTypes from "prop-types";
-import {assoc} from "ramda";
+
+function basicReducer(state, action) {
+    return {...state, ...action};
+}
+const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
 
 export default function NewPlayer({dispatch}) {
-    const newPlayerDefault = {firstName: "", lastName: "", rating: 1200};
-    const [newPlayerData, setNewPlayerdata] = useState(newPlayerDefault);
+    const [newPlayerData, newPlayerDispatch] = useReducer(
+        basicReducer,
+        newPlayerDefault
+    );
 
-    const handleSubmit = function (event) {
+    function handleSubmit(event) {
         event.preventDefault();
         const {firstName, lastName, rating} = newPlayerData;
-        setNewPlayerdata(newPlayerDefault);
+        newPlayerDispatch(newPlayerDefault);
         dispatch({
             firstName,
             lastName,
@@ -18,10 +24,22 @@ export default function NewPlayer({dispatch}) {
         });
     };
 
-    const updateField = function (event) {
+    function updateField(event) {
         event.preventDefault();
         const {name, value} = event.currentTarget;
-        setNewPlayerdata((prevState) => assoc(name, value, prevState));
+        const update = (function () {
+            switch (name) {
+            case "firstName":
+                return {firstName: value};
+            case "lastName":
+                return {lastName: value};
+            case "rating":
+                return {rating: value};
+            default:
+                return {};
+            }
+        }());
+        newPlayerDispatch(update);
     };
 
     return (

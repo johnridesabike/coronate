@@ -1,4 +1,4 @@
-import {curry, filter} from "ramda";
+import {curry} from "ramda";
 import PropTypes from "prop-types";
 import demoData from "../../../../demo-data";
 import {getPlayerMaybe} from "../../../../data-types";
@@ -17,10 +17,12 @@ export default function TournamentData({children, tourneyId}) {
         tourney,
         tourneyDispatch
     ] = useReducer(tournamentReducer, tournaments[tourneyId]);
-    const activePlayers = filter(
-        (p) => tourney.playerIds.includes(p.id),
-        playerData
-    );
+    const activePlayers = {};
+    Object.values(playerData).forEach(function (player) {
+        if (tourney.playerIds.includes(player.id)) {
+            activePlayers[player.id] = player;
+        }
+    });
     const [
         players,
         playersDispatch

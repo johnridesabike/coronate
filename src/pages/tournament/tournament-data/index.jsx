@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer} from "react";
-import {curry, filter, symmetricDifference} from "ramda";
+import {curry, symmetricDifference} from "ramda";
 import {
     getPlayerMaybe,
     isRoundComplete,
@@ -161,8 +161,12 @@ export default function TournamentData({children, tourneyId}) {
     const getPlayer = curry(getPlayerMaybe)(players);
     // `players` includes players in past matches who may have left
     // `activePlayers` is only players to be matched in future matches.
-    // Use Ramda's `filter` because it can filter objects.
-    const activePlayers = filter(({id}) => playerIds.includes(id), players);
+    const activePlayers = {};
+    Object.values(players).forEach(function (player) {
+        if (tourney.playerIds.includes(player.id)) {
+            activePlayers[player.id] = player;
+        }
+    });
     const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
     const isItOver = roundList.length >= roundCount;
     const isNewRoundReady = (
