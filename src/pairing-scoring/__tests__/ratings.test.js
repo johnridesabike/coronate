@@ -1,6 +1,6 @@
 import {curry} from "ramda";
 import data from "../../test-data";
-import ratings from "../ratings";
+import * as ratings from "../Ratings.bs";
 const newb = data.players["Newbie_McNewberson___"];
 const master = data.players["Grandy_McMaster______"];
 

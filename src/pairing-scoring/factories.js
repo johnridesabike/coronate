@@ -1,6 +1,6 @@
 import t from "tcomb";
 import {descend, sortWith} from "ramda";
-import {getPlayerScore, tieBreakMethods} from "./scoring";
+import {getPlayerScore, tieBreakMethods} from "./Scoring.bs";
 import types from "./types";
 
 // This is useful for cases where the regular factory functions return empty

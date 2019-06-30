@@ -15,8 +15,8 @@ import {
     createStandingList,
     createStandingTree
 } from "./factories";
-import {getTieBreakNames, tieBreakMethods} from "./scoring";
-import ratings from "./ratings";
+import {getTieBreakNames, tieBreakMethods} from "./Scoring.bs";
+import * as ratings from "./Ratings.bs";
 export {
     avoidPairReducer,
     calcPairIdeal,

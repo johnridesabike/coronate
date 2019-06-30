@@ -24,3 +24,7 @@ yarn-error.log*
 
 /.vscode/launch.json
 /dist
+
+# reasonml
+.merlin
+/lib

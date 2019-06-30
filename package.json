@@ -25,8 +25,10 @@
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "test": "react-scripts test",
-    "test:coverage": "npm run test -- --coverage"
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(bs-platform)/).+\\.js$'",
+    "test:coverage": "npm run test -- --coverage",
+    "re:build": "bsb -make-world -clean-world",
+    "re:watch": "bsb -make-world -clean-world -w"
   },
   "dependencies": {
     "@reach/dialog": "^0.2.9",
@@ -51,12 +53,14 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-feather": "^1.1.6",
+    "reason-react": "^0.7.0",
     "simple-icons": "^1.9.28",
     "tcomb": "^3.2.29",
     "typeface-fira-sans": "0.0.54"
   },
   "devDependencies": {
     "@testing-library/react": "^8.0.4",
+    "bs-platform": "^5.0.4",
     "concurrently": "^4.1.1",
     "electron": "^5.0.5",
     "electron-builder": "^20.44.4",
