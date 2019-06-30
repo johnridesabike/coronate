@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer} from "react";
-import {curry, symmetricDifference} from "ramda";
+import {curry} from "ramda";
 import {
     getPlayerMaybe,
     isRoundComplete,
@@ -107,15 +107,18 @@ export default function TournamentData({children, tourneyId}) {
                 // deleted players. If we updated without this condition, then
                 // this `useEffect` would trigger an infinite loop and a memory
                 // leak.
-                const unChangedPlayers = symmetricDifference(
-                    Object.keys(values),
-                    Object.keys(players)
+                const newIds = Object.keys(values);
+                const oldIds = Object.keys(players);
+                const changedPlayers = newIds.filter(
+                    (x) => !oldIds.includes(x)
+                ).concat(
+                    oldIds.filter((x) => !newIds.includes(x))
                 );
-                // console.log(
-                //     "unchanged players:",
-                //     Object.keys(unChangedPlayers).length
-                // );
-                if (unChangedPlayers.length !== 0 && !didCancel) {
+                console.log(
+                    "changed players:",
+                    changedPlayers.length
+                );
+                if (changedPlayers.length !== 0 && !didCancel) {
                     // console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
                     loadedDispatch({players: true});

@@ -1,5 +1,4 @@
 import "localforage-getitems";
-import {difference, filter} from "ramda";
 import {genericDbReducer, optionsReducer} from "./reducers";
 import {useEffect, useReducer, useState} from "react";
 import defaultOptions from "./default-options";
@@ -60,7 +59,12 @@ function useAllItemsFromDb(store, type) {
                 // was created with a different tcomb interface, this should
                 // ideally update the data to a valid type instead of removing
                 // it completely.
-                const cleanResults =  filter(type.is, results);
+                const cleanResults = results;
+                Object.entries(cleanResults).forEach(function ([key, value]) {
+                    if (!type.is(value)) {
+                        delete cleanResults[key];
+                    }
+                });
                 if (!didCancel) {
                     dispatch({state: cleanResults, type: "LOAD_STATE"});
                     setIsLoaded(true);
@@ -81,7 +85,8 @@ function useAllItemsFromDb(store, type) {
                 await store.setItems(items);
                 // console.log("saved items to", store.config().storeName);
                 const keys = await store.keys();
-                const deleted = difference(keys, Object.keys(items));
+                const stateKeys = Object.keys(items);
+                const deleted = keys.filter((x) => !stateKeys.includes(x));
                 if (deleted.length > 0 ) {
                     await store.removeItems(deleted);
                     // console.log("Deleted " + deleted.length + " items.");

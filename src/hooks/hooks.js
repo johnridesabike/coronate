@@ -1,4 +1,4 @@
-import {ascend, descend, pipe, prop, sort} from "ramda";
+import {ascend, descend, pipe, sort} from "ramda";
 import {useEffect, useReducer} from "react";
 // import t from "tcomb";
 
@@ -7,7 +7,7 @@ const toLowerCaseIfPossible = (x) => x.toLowerCase ? x.toLowerCase() : x;
 function sortedTableReducer(oldState, newState) {
     const {isDescending, key, table} = {...oldState, ...newState};
     const direction = isDescending ? descend : ascend;
-    const caseInsensitiveProp = pipe(prop(key), toLowerCaseIfPossible);
+    const caseInsensitiveProp = pipe((x) => x[key], toLowerCaseIfPossible);
     const sortFunc = sort(direction(caseInsensitiveProp));
     return {isDescending, key, table: sortFunc(table)};
 }

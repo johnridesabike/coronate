@@ -46,8 +46,6 @@
         "react/jsx-first-prop-new-line": ["warn", "multiline"],
         "fp/no-this": "error",
         "fp/no-class": "error",
-        "fp/no-delete": "error",
-        "fp/no-mutating-methods": "warn",
         "ramda/prefer-ramda-boolean": "off"
     }
 }
