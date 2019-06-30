@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer} from "react";
-import {curry, filter, symmetricDifference} from "ramda";
+import {curry} from "ramda";
 import {
     getPlayerMaybe,
     isRoundComplete,
@@ -107,15 +107,18 @@ export default function TournamentData({children, tourneyId}) {
                 // deleted players. If we updated without this condition, then
                 // this `useEffect` would trigger an infinite loop and a memory
                 // leak.
-                const unChangedPlayers = symmetricDifference(
-                    Object.keys(values),
-                    Object.keys(players)
+                const newIds = Object.keys(values);
+                const oldIds = Object.keys(players);
+                const changedPlayers = newIds.filter(
+                    (x) => !oldIds.includes(x)
+                ).concat(
+                    oldIds.filter((x) => !newIds.includes(x))
                 );
-                // console.log(
-                //     "unchanged players:",
-                //     Object.keys(unChangedPlayers).length
-                // );
-                if (unChangedPlayers.length !== 0 && !didCancel) {
+                console.log(
+                    "changed players:",
+                    changedPlayers.length
+                );
+                if (changedPlayers.length !== 0 && !didCancel) {
                     // console.log("hydrated player data");
                     playersDispatch({state: values, type: "LOAD_STATE"});
                     loadedDispatch({players: true});
@@ -161,8 +164,12 @@ export default function TournamentData({children, tourneyId}) {
     const getPlayer = curry(getPlayerMaybe)(players);
     // `players` includes players in past matches who may have left
     // `activePlayers` is only players to be matched in future matches.
-    // Use Ramda's `filter` because it can filter objects.
-    const activePlayers = filter(({id}) => playerIds.includes(id), players);
+    const activePlayers = {};
+    Object.values(players).forEach(function (player) {
+        if (tourney.playerIds.includes(player.id)) {
+            activePlayers[player.id] = player;
+        }
+    });
     const roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
     const isItOver = roundList.length >= roundCount;
     const isNewRoundReady = (

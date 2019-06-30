@@ -1,15 +1,7 @@
 // This implements the tiebreak methods specified in USCF § 34E.
 // This is incomplete; many more tiebreak methods need to be added. These are
 // the most commonly used.
-import {
-    ascend,
-    init,
-    last,
-    pipe,
-    sort,
-    sum,
-    tail
-} from "ramda";
+import {ascend, last, sort, sum} from "ramda";
 // import t from "tcomb";
 import types from "./types";
 
@@ -30,7 +22,7 @@ function getOpponentScores(scoreData, id) {
 // USCF § 34E1.
 function getMedianScore(scoreData, id) {
     const scores = getOpponentScores(scoreData, id);
-    return pipe(sort(ascend), init, tail, sum)(scores);
+    return sum(sort(ascend, scores).slice(1, -1));
 }
 
 // USCF § 34E2.

@@ -8,7 +8,7 @@ import {
     matches2ScoreData,
     tieBreakMethods
 } from "../../pairing-scoring";
-import {defaultTo, filter, pipe} from "ramda";
+import {pipe} from "ramda";
 import {isDummyObj, rounds2Matches} from "../../data-types";
 import Icons from "../../components/icons";
 import PropTypes from "prop-types";
@@ -26,7 +26,7 @@ export function ScoreTable({compact, title, tourney, getPlayer}) {
         rounds2Matches,
         matches2ScoreData,
         (data) => createStandingList(tieBreaks, data),
-        filter((obj) => !isDummyObj(obj)),
+        (list) => list.filter((obj) => !isDummyObj(obj)),
         createStandingTree
     )(roundList);
     return (
@@ -122,7 +122,7 @@ function SelectTieBreaks({tourney, tourneyDispatch}) {
     const [selectedTb, setSelectedTb] = useState(null);
 
     function toggleTb(id = null) {
-        const defaultId = defaultTo(selectedTb);
+        const defaultId = (x) => x === null ? selectedTb : x;
         if (tieBreaks.includes(defaultId(id))) {
             tourneyDispatch({id: defaultId(id), type: "DEL_TIEBREAK"});
             setSelectedTb(null);

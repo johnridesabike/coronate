@@ -1,35 +1,28 @@
-import {append, assoc, filter, lensProp, over} from "ramda";
 import t from "tcomb";
 import {types} from "../../data-types";
 
 // eslint-disable-next-line complexity
 export default function optionsReducer(state, action) {
+    const nextState = {};
     switch (action.type) {
     case "ADD_AVOID_PAIR":
         t.interface({pair: types.AvoidPair})(action);
-        return over(
-            lensProp("avoidPairs"),
-            append(action.pair),
-            state
-        );
+        nextState.avoidPairs = state.avoidPairs.concat([action.pair]);
+        break;
     case "DEL_AVOID_PAIR":
         t.interface({pair: types.AvoidPair})(action);
-        return over(
-            lensProp("avoidPairs"),
-            filter((pair) => !(
-                pair.includes(action.pair[0]) && pair.includes(action.pair[1])
-            )),
-            state
+        nextState.avoidPairs = state.avoidPairs.filter(
+            (x) => !(x.includes(action.pair[0]) && x.includes(action.pair[1]))
         );
+        break;
     case "DEL_AVOID_SINGLE":
         t.interface({id: types.Id})(action);
         // call this when you delete a player ID
         // TODO: make the avoidPairs list smartly auto-clean itself
-        return over(
-            lensProp("avoidPairs"),
-            filter((pair) => !pair.includes(action.id)),
-            state
+        nextState.avoidPairs = state.avoidPairs.filter(
+            (x) => !x.includes(action.id)
         );
+        break;
     case "SET_OPTION":
         t.interface({
             option: t.String,
@@ -39,15 +32,13 @@ export default function optionsReducer(state, action) {
                 Date
             ])
         })(action);
-        return assoc(
-            action.option,
-            action.value,
-            state
-        );
+        nextState[action.option] = action.value;
+        break;
     case "LOAD_STATE":
         return action.state;
     default:
         throw new Error("Unexpected action type.");
     }
+    return {...state, ...nextState};
 }
 

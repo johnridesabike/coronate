@@ -1,5 +1,4 @@
 import {DUMMY_ID} from "./constants";
-import {assoc} from "ramda";
 import {createPlayer} from "./factories";
 // import t from "tcomb";
 import types from "./types";
@@ -63,19 +62,17 @@ export function rounds2Matches(roundList, lastRound = null) {
 // not matched for the specified round.
 export function getUnmatched(roundList, players, roundId) {
     const matchList = roundList[roundId] || [];
+    // flatten all of the ids from the matches to one list.
     const matchedIds = matchList.reduce(
         (acc, {playerIds}) => acc.concat(playerIds),
         []
     );
-    const playerList = Object.values(players);
-    const unmatched = playerList.reduce(
-        (acc, player) => (
-            matchedIds.includes(player.id)
-            ? acc
-            : assoc(player.id, player, acc)
-        ),
-        {}
-    );
+    let unmatched = {};
+    Object.values(players).forEach(function (player) {
+        if (!matchedIds.includes(player.id)) {
+            unmatched[player.id] = player;
+        }
+    });
     return unmatched;
 }
 

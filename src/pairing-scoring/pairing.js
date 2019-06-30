@@ -1,15 +1,8 @@
 import {
-    addIndex,
-    assoc,
     descend,
-    dissoc,
-    filter,
     last,
-    map,
     pipe,
     pluck,
-    prop,
-    reduce,
     sort,
     sortWith,
     splitAt,
@@ -19,10 +12,15 @@ import blossom from "edmonds-blossom";
 import t from "tcomb";
 import types from "./types";
 
+// The Ramda versions of these are bloated.
+const filter = (func) => (list) => list.filter(func);
+const map = (func) => (list) => list.map(func);
+const reduce = (func, initialVal) => (list) => list.reduce(func, initialVal);
+
 const priority = (value) => (condition) => condition ? value : 0;
 const divisiblePriority = (dividend) => (divisor) => dividend / divisor;
 
-// These following consts probably need to be tweaked a lot.
+// The following values probably need to be tweaked a lot.
 
 // The weight given to avoid players meeting twice. This same weight is given to
 // avoid matching players on each other's "avoid" list.
@@ -104,41 +102,38 @@ export function calcPairIdeal(player1, player2) {
 }
 
 const splitInHalf = (list) => splitAt(list.length / 2, list);
+const descendingScore = descend((x) => x.score);
+const descendingRating = descend((x) => x.rating);
 
 // for each object sent to this, it determines whether or not it's in the
 // "upper half" of it's score group.
-// (USCF § 29C1.)
-function upperHalfReducer(acc, playerData, ignore, src) {
-    types.PairingData(playerData);
-    const [upperHalfIds, lowerHalfIds] = pipe(
-        filter((p2) => p2.score === playerData.score),
-        // this may be redundant if the list was already sorted.
-        sort(descend(prop("rating"))),
-        map((p) => p.id),
-        splitInHalf
-    )(src);
-    const isUpperHalf = upperHalfIds.includes(playerData.id);
-    const halfPos = (
-        isUpperHalf
-        ? upperHalfIds.indexOf(playerData.id)
-        : lowerHalfIds.indexOf(playerData.id)
-    );
-    return assoc(
-        playerData.id,
-        {...playerData, ...{halfPos, isUpperHalf}},
-        acc
-    );
-}
+// USCF § 29C1
 export function setUpperHalves(data) {
     // using reduce instead of map because we're not creating an array.
-    return Object.values(data).reduce(upperHalfReducer, {});
+    const nextData = {};
+    const dataList = Object.values(data);
+    dataList.forEach(function (playerData) {
+        types.PairingData(playerData);
+        const [upperHalfIds, lowerHalfIds] = pipe(
+            filter((p2) => p2.score === playerData.score),
+            // this may be redundant if the list was already sorted.
+            sort(descendingRating),
+            map((p) => p.id),
+            splitInHalf
+        )(dataList);
+        const isUpperHalf = upperHalfIds.includes(playerData.id);
+        const halfPos = (
+            isUpperHalf
+            ? upperHalfIds.indexOf(playerData.id)
+            : lowerHalfIds.indexOf(playerData.id)
+        );
+        nextData[playerData.id] = {...playerData, ...{halfPos, isUpperHalf}};
+    });
+    return nextData;
 }
 
 // Sort the data so matchups default to order by score and rating.
-const sortByScoreThenRating = sortWith([
-    descend(prop("score")),
-    descend(prop("rating"))
-]);
+const sortByScoreThenRating = sortWith([descendingScore, descendingRating]);
 // This this returns a tuple of two objects: The modified array of player data
 // without the player assigned a bye, and the player assigned a bye.
 // If no player is assigned a bye, the second object is `null`.
@@ -175,7 +170,8 @@ export function setByePlayer(byeQueue, dummyId, data) {
         : pipe(Object.values, sortByScoreThenRating, last)(data).id
     );
     const byeData = data[id];
-    const dataWithoutBye = dissoc(id, data);
+    const dataWithoutBye = {...data};
+    delete dataWithoutBye[id];
     return [dataWithoutBye, byeData];
 }
 
@@ -243,17 +239,15 @@ export function pairPlayers(pairingData) {
         }
         return acc;
     }
-    // This makes Ramda's `reduce` work more like `Array.prototype.reduce`.
-    const reduceWithIndices = addIndex(reduce);
     return pipe(
         Object.values,
-        reduceWithIndices(pairIdealReducer, []),
+        reduce(pairIdealReducer, []),
         // Feed all of the potential matches to Edmonds-blossom and let the
         // algorithm work its magic. This returns an array where each index is the
         // ID of one player and each value is the ID of the matched player.
         blossom,
         // Translate those IDs into actual pairs of player Ids.
-        reduceWithIndices(blossom2Pairs, []),
+        reduce(blossom2Pairs, []),
         sortByNetScoreThenRating,
         map(assignColorsForPair)
     )(pairingData);

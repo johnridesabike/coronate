@@ -1,17 +1,6 @@
-import {
-    append,
-    descend,
-    lensIndex,
-    over,
-    path,
-    prop,
-    sortWith
-} from "ramda";
-import {
-    getPlayerScore,
-    tieBreakMethods
-} from "./scoring";
 import t from "tcomb";
+import {descend, sortWith} from "ramda";
+import {getPlayerScore, tieBreakMethods} from "./scoring";
 import types from "./types";
 
 // This is useful for cases where the regular factory functions return empty
@@ -34,23 +23,22 @@ export {createBlankScoreData};
 // which lists the score associated with each method. The order of these
 // coresponds to the order of the method names in the second list.
 export function createStandingList(methods, scoreData) {
-    const selectedTieBreaks = methods.map((i) => tieBreakMethods[i]);
+    const selectedTieBreakFuncs = methods.map((i) => tieBreakMethods[i].func);
     // Get a flat list of all of the players and their scores.
     const standings = Object.keys(scoreData).map(
         (id) => types.Standing({
             id,
             score: getPlayerScore(scoreData, id),
-            tieBreaks: selectedTieBreaks.map(({func}) => func(scoreData, id))
+            tieBreaks: selectedTieBreakFuncs.map((func) => func(scoreData, id))
         })
     );
     // create a list of functions to pass to `sortWith`. This will sort by
     // scores and then by each tiebreak value.
-    const sortFuncList = Object.keys(selectedTieBreaks).reduce(
-        (acc, key) => acc.concat([descend(path(["tieBreaks", key]))]),
-        [descend(prop("score"))]
+    const sortTieBreakFuncList = Object.keys(selectedTieBreakFuncs).map(
+        (key) => descend((x) => x.tieBreaks[key])
     );
-    const standingsSorted = sortWith(sortFuncList, standings);
-    return standingsSorted;
+    const sortFuncList = [descend((x) => x.score)].concat(sortTieBreakFuncList);
+    return sortWith(sortFuncList, standings);
 }
 
 function areScoresEqual(standing1, standing2) {
@@ -81,15 +69,16 @@ export function createStandingTree(standingList) {
                 // Make a new rank if the scores aren't equal
                 : !areScoresEqual(standing, prevStanding)
             );
-            return (
-                isNewRank
-                // If this player doesn't have the same score, create a new
-                // branch of the tree
-                ? append([standing], acc)
-                // If this player has the same score as the last, append it
-                // to the last branch
-                : over(lensIndex(acc.length - 1), append(standing), acc)
-            );
+            // If this player doesn't have the same score, create a new
+            // branch of the tree
+            if (isNewRank) {
+                return acc.concat([[standing]]);
+            }
+            // If this player has the same score as the last, append it
+            // to the last branch
+            const lastIndex = acc.length - 1;
+            acc[lastIndex] = acc[lastIndex].concat([standing]);
+            return acc;
         },
         []
     );

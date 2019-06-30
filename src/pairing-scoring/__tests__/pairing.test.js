@@ -6,12 +6,17 @@ import {
     setUpperHalves
 } from "../pairing";
 import {createPairingData, matches2ScoreData} from "../converters";
-import {curry, filter, pipe} from "ramda";
+import {curry, pipe} from "ramda";
 import data from "../../test-data";
 
 function loadPairData(tourneyId) {
     const {playerIds, roundList} = data.tournaments[tourneyId];
-    const players = filter((p) => playerIds.includes(p.id), data.players);
+    const players = {};
+    Object.values(data.players).forEach(function (player) {
+        if (playerIds.includes(player.id)) {
+            players[player.id] = player;
+        }
+    });
     return pipe(
         rounds2Matches,
         matches2ScoreData,

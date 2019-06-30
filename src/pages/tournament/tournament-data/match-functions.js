@@ -1,4 +1,5 @@
 // TODO: this file needs to be replaced with something more organized.
+import t from "tcomb";
 import {
     BLACK,
     DUMMY_ID,
@@ -7,15 +8,14 @@ import {
     getPlayerMaybe,
     types
 } from "../../../data-types";
-import {assoc, curry, filter} from "ramda";
+import {curry} from "ramda";
 import {pairPlayers, setByePlayer} from "../../../pairing-scoring";
-import t from "tcomb";
 
 export function scoreByeMatch(byeValue, match) {
     if (match.playerIds[WHITE] === DUMMY_ID) {
-        return assoc("result", [0, byeValue], match);
+        return {...match, ...{result: [0, byeValue]}};
     } else if (match.playerIds[BLACK] === DUMMY_ID) {
-        return assoc("result", [byeValue, 0], match);
+        return {...match, ...{result: [byeValue, 0]}};
     }
     return match;
 }
@@ -29,7 +29,12 @@ export function autoPair({
     // the pairData includes any players who were already matched. We need to
     // only include the specified players. Ramda's `filter` can filter objects.
     const playerIds = Object.keys(players);
-    const filteredData = filter(({id}) => playerIds.includes(id), pairData);
+    const filteredData = {};
+    Object.values(pairData).forEach(function (datum) {
+        if (playerIds.includes(datum.id)) {
+            filteredData[datum.id] = datum;
+        }
+    });
     const [
         pairDataNoByes,
         byePlayerData

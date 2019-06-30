@@ -18,7 +18,6 @@
         "no-trailing-spaces": "warn",
         "quotes": ["warn", "double"],
         "jsx-quotes": ["warn", "prefer-double"],
-        "camelcase": "warn",
         "indent": ["warn", 4, {"ignoredNodes": ["ConditionalExpression"]}],
         "comma-dangle": ["warn", "never"],
         "array-bracket-spacing": ["warn", "never"],
@@ -47,8 +46,6 @@
         "react/jsx-first-prop-new-line": ["warn", "multiline"],
         "fp/no-this": "error",
         "fp/no-class": "error",
-        "fp/no-delete": "error",
-        "fp/no-mutating-methods": "warn",
         "ramda/prefer-ramda-boolean": "off"
     }
 }
