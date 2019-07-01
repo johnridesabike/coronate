@@ -11,7 +11,9 @@ type scoreData = {
 };
 
 [@bs.module "ramda"] external ascend : ('b => 'a) => 'a => 'a => int = "ascend";
+[@bs.module "ramda"] external descend : ('b => 'a) => 'a => 'a => int = "descend";
 [@bs.module "ramda"] external sort : (('a, 'a) => int) => Js.Array.t('a) => Js.Array.t('a) = "sort";
+[@bs.module "ramda"] external sortWith : array('a => 'a => int) => array('b) => array('b) = "sortWith";
 
 let add = a => b => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
@@ -131,3 +133,96 @@ let tieBreakMethods = [|
 
 let getNamefromIndex = index => tieBreakMethods[index]->nameGet;
 let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
+
+// This is useful for cases where the regular factory functions return empty
+// results because a player hasn't been added yet.
+let createBlankScoreData = id => scoreData(
+    ~colorScores=[||],
+    ~colors=[||],
+    ~id=id,
+    ~isDummy=false,
+    ~opponentResults=Js.Dict.empty(),
+    ~ratings=[||],
+    ~results=[||],
+    ~resultsNoByes=[||]
+);
+
+[@bs.deriving abstract]
+type standing = {
+    id: string,
+    score: float,
+    tieBreaks: array(float)
+};
+
+// Sort the standings by score, see USCF tie-break rules from § 34.
+// Returns the list of the standings. Each standing has a `tieBreaks` property
+// which lists the score associated with each method. The order of these
+// coresponds to the order of the method names in the second list.
+let createStandingList = methods => scoreData => {
+    let selectedTieBreakFuncs = methods
+        |> Js.Array.map(i => tieBreakMethods[i]->funcGet);
+    let standings = Js.Dict.keys(scoreData)
+        |> Js.Array.map(id => standing(
+            ~id=id,
+            ~score=getPlayerScore(scoreData, id),
+            ~tieBreaks=selectedTieBreakFuncs
+                |> Js.Array.map(func => func(scoreData, id))
+        ));
+    // create a list of functions to pass to `sortWith`. This will sort by
+    // scores and then by each tiebreak value.
+    let sortTieBreakFuncList = selectedTieBreakFuncs
+        |> Js.Array.mapi(_ => index => descend(x => x->tieBreaksGet[index]));
+    let sortFuncList = sortTieBreakFuncList
+        -> Js.Array.concat([|descend(x => x->scoreGet)|]);
+    sortWith(sortFuncList, standings);
+};
+
+let areScoresEqual = standing1 => standing2 => {
+    let equalScores = standing1->scoreGet !== standing2->scoreGet;
+    switch equalScores {
+    | true => false
+    | false => !(
+        standing1->tieBreaksGet
+            |>Js.Array.reducei(
+                acc => value => i => Js.Array.concat(
+                    acc,
+                    [|value !== standing2->tieBreaksGet[i]|]
+                ),
+                [||]
+            )
+            |> Js.Array.includes(true)
+    )
+    }
+};
+
+// Groups the standings by score, see USCF tie-break rules from § 34.
+// example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
+// first, Pete is 2nd, Bob is 3rd.
+let createStandingTree = standingList => {
+    standingList |> Js.Array.reducei(
+        acc => standing => i => {
+            let isNewRank = {
+                switch (i == 0) {
+                // Always make a new rank for the first player
+                | true => true
+                // Make a new rank if the scores aren't equal
+                | false => !areScoresEqual(standing, standingList[i - 1])
+                }
+            };
+            switch isNewRank {
+            // If this player doesn't have the same score, create a new
+            // branch of the tree
+            | true => acc |> Js.Array.concat([|[|standing|]|])
+            // If this player has the same score as the last, append it
+            // to the last branch
+            | false => {
+                let lastIndex = Js.Array.length(acc) - 1;
+                acc[lastIndex] = acc[lastIndex]
+                    |> Js.Array.concat([|standing|]);
+                acc;
+            }
+            }
+        },
+        [||]
+    );
+};

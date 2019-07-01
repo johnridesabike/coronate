@@ -2,7 +2,7 @@
 // data that can be used by the scoring functions in rest of this module.
 import {sum} from "ramda";
 import {BLACK, WHITE, isDummyId} from "../data-types";
-import {createBlankScoreData} from "./factories";
+import {createBlankScoreData} from "./Scoring.bs";
 import scoreTypes from "./types";
 // import t from "tcomb";
 

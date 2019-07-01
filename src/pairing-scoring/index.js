@@ -14,7 +14,7 @@ import {
     createBlankScoreData,
     createStandingList,
     createStandingTree
-} from "./factories";
+} from "./Scoring.bs";
 import {getTieBreakNames, tieBreakMethods} from "./Scoring.bs";
 import * as ratings from "./Ratings.bs";
 export {
