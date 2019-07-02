@@ -8,7 +8,7 @@ import Icons from "../../../components/icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
-import {ratings} from "../../../pairing-scoring";
+import {calcNewRatings} from "../../../pairing-scoring";
 import styles from "./round.module.css";
 import {sum} from "ramda";
 
@@ -92,7 +92,7 @@ export default function MatchRow({
         const newRating = (
             event.currentTarget.value === "NOTSET"
             ? match.origRating
-            : ratings.calcNewRatings(
+            : calcNewRatings(
                 match.origRating,
                 [white.matchCount, black.matchCount],
                 result

@@ -13,10 +13,13 @@ import {
 import {
     createBlankScoreData,
     createStandingList,
-    createStandingTree
+    createStandingTree,
+    Ratings
 } from "./Scoring.bs";
 import {getTieBreakNames, tieBreakMethods} from "./Scoring.bs";
-import * as ratings from "./Ratings.bs";
+const getKFactor = Ratings[0];
+const calcNewRatings = Ratings[3];
+// import * as ratings from "./Ratings.bs";
 export {
     avoidPairReducer,
     calcPairIdeal,
@@ -28,7 +31,8 @@ export {
     matches2ScoreData,
     maxPriority,
     pairPlayers,
-    ratings,
+    calcNewRatings,
+    getKFactor,
     setByePlayer,
     setUpperHalves,
     tieBreakMethods

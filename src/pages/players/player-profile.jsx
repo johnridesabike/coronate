@@ -4,7 +4,7 @@ import {Link} from "@reach/router";
 import PropTypes from "prop-types";
 import {avoidPairReducer} from "../../pairing-scoring";
 import numeral from "numeral";
-import {ratings} from "../../pairing-scoring";
+import {getKFactor} from "../../pairing-scoring";
 import styles from "./index.module.css";
 import {useWindowContext} from "../../components/window";
 
@@ -111,7 +111,7 @@ function PlayerProfile({
                         disabled
                         value={
                             numeral(
-                                ratings.getKFactor(player.matchCount)
+                                getKFactor(player.matchCount)
                             ).format("00")
                         }
                         readOnly

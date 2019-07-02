@@ -1,19 +1,20 @@
 import {curry} from "ramda";
 import data from "../../test-data";
-import * as ratings from "../Ratings.bs";
+import {getKFactor, calcNewRatings} from "../";
+
 const newb = data.players["Newbie_McNewberson___"];
 const master = data.players["Grandy_McMaster______"];
 
 it("K Factor is calculated correctly", function () {
-    const newbKFactor = ratings.getKFactor(newb.matchCount);
-    const masterKFactor = ratings.getKFactor(master.matchCount);
+    const newbKFactor = getKFactor(newb.matchCount);
+    const masterKFactor = getKFactor(master.matchCount);
     expect(Math.ceil(newbKFactor)).toBe(800);
     expect(Math.ceil(masterKFactor)).toBe(8);
 });
 it("Ratings are calculated correctly", function () {
     const origRatings = [newb.rating, master.rating];
     const matchCounts = [newb.matchCount, master.matchCount];
-    const calcRatings = curry(ratings.calcNewRatings)(origRatings, matchCounts);
+    const calcRatings = curry(calcNewRatings)(origRatings, matchCounts);
     const newbWon = calcRatings([1, 0]);
     expect(newbWon).toEqual([1600, 2592]);
     // not really a good example for this next one because they don't change:
@@ -24,7 +25,7 @@ it("Ratings are calculated correctly", function () {
 });
 it("Ratings never go below 100", function () {
     // The white player begins with a rating of 100 and loses.
-    const newRatings = ratings.calcNewRatings([100, 100], [69, 69], [0, 1]);
+    const newRatings = calcNewRatings([100, 100], [69, 69], [0, 1]);
     expect(newRatings[0]).toBe(100);
 });
 

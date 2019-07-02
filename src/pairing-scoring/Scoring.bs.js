@@ -3,7 +3,9 @@
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as Ramda from "ramda";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
+import * as EloRank from "elo-rank";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Caml_int32 from "bs-platform/lib/es6/caml_int32.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 
@@ -187,6 +189,39 @@ function createStandingTree(standingList) {
               }), /* array */[]);
 }
 
+function getKFactor(matchCount) {
+  var match = matchCount > 0;
+  var ne = match ? matchCount : 1;
+  return Caml_int32.div(800, ne);
+}
+
+function keepAboveFloor(rating) {
+  var match = rating > 100;
+  if (match) {
+    return rating;
+  } else {
+    return 100;
+  }
+}
+
+function calcNewRatings(origRatings, matchCounts, result) {
+  var whiteElo = new EloRank.default(getKFactor(matchCounts[/* white */0]));
+  var blackElo = new EloRank.default(getKFactor(matchCounts[/* black */1]));
+  var scoreExpected_000 = /* white */whiteElo.getExpected(origRatings[/* white */0], origRatings[/* black */1]);
+  var scoreExpected_001 = /* black */blackElo.getExpected(origRatings[/* black */1], origRatings[/* white */0]);
+  return /* record */[
+          /* white */keepAboveFloor(whiteElo.updateRating(scoreExpected_000, result[/* white */0], origRatings[/* white */0])),
+          /* black */keepAboveFloor(blackElo.updateRating(scoreExpected_001, result[/* black */1], origRatings[/* black */1]))
+        ];
+}
+
+var Ratings = /* module */[
+  /* getKFactor */getKFactor,
+  /* floor */100,
+  /* keepAboveFloor */keepAboveFloor,
+  /* calcNewRatings */calcNewRatings
+];
+
 export {
   isNotDummy ,
   getPlayerScore ,
@@ -204,6 +239,7 @@ export {
   createStandingList ,
   areScoresEqual ,
   createStandingTree ,
+  Ratings ,
   
 }
 /* ramda Not a pure module */
