@@ -1,7 +1,7 @@
 import t from "tcomb";
 import {move} from "ramda";
 import {autoPair, manualPair, scoreByeMatch} from "./match-functions";
-import scoreTypes from "../../../pairing-scoring/types";
+// import scoreTypes from "../../../pairing-scoring/types";
 import {types} from "../../../data-types";
 
 // eslint-disable-next-line complexity
@@ -47,12 +47,12 @@ export default function tournamentReducer(state, action) {
         nextState.name = action.name;
         break;
     case "AUTO_PAIR":
-        t.interface({
-            byeValue: t.Number,
-            pairData: t.dict(types.Id, scoreTypes.PairingData),
-            players: t.dict(types.Id, types.Player),
-            roundId: t.Number
-        })(action);
+        // t.interface({
+        //     byeValue: t.Number,
+        //     pairData: t.dict(types.Id, scoreTypes.PairingData),
+        //     players: t.dict(types.Id, types.Player),
+        //     roundId: t.Number
+        // })(action);
         nextState.roundList = state.roundList.slice();
         nextState.roundList[action.roundId] = (
             nextState.roundList[action.roundId].concat(

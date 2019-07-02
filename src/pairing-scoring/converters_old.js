@@ -54,6 +54,7 @@ export function matches2ScoreData(matchList) {
             scoreData[id] = scoreTypes.ScoreData({...oldData, ...newData});
         });
     });
+    debugger;
     return scoreData;
 }
 

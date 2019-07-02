@@ -2,14 +2,14 @@ import {
     avoidPairReducer,
     createPairingData,
     matches2ScoreData
-} from "./converters";
+} from "./Converters.bs";
 import {
     calcPairIdeal,
     maxPriority,
     pairPlayers,
     setByePlayer,
     setUpperHalves
-} from "./pairing";
+} from "./Pairing.bs";
 import {
     createBlankScoreData,
     createStandingList,

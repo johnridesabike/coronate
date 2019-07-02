@@ -54,7 +54,7 @@
     "react-dom": "^16.8.6",
     "react-feather": "^1.1.6",
     "reason-react": "^0.7.0",
-    "simple-icons": "^1.9.28",
+    "simple-icons": "^1.10.0",
     "tcomb": "^3.2.29",
     "typeface-fira-sans": "0.0.54"
   },
@@ -62,7 +62,7 @@
     "@testing-library/react": "^8.0.4",
     "bs-platform": "^5.0.4",
     "concurrently": "^4.1.1",
-    "electron": "^5.0.5",
+    "electron": "^5.0.6",
     "electron-builder": "^20.44.4",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-fp": "^2.3.0",

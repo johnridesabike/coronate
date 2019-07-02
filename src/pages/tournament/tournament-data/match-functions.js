@@ -31,18 +31,19 @@ export function autoPair({
     const playerIds = Object.keys(players);
     const filteredData = {};
     Object.values(pairData).forEach(function (datum) {
-        if (playerIds.includes(datum.id)) {
-            filteredData[datum.id] = datum;
+        if (playerIds.includes(datum[/*id*/0])) {
+            filteredData[datum[/*id*/0]] = datum;
         }
     });
     const [
         pairDataNoByes,
         byePlayerData
     ] = setByePlayer(tourney.byeQueue, DUMMY_ID, filteredData);
+    debugger;
     const pairs = pairPlayers(pairDataNoByes);
     const pairsWithBye = (
         byePlayerData
-        ? pairs.concat([[byePlayerData.id, DUMMY_ID]])
+        ? pairs.concat([[byePlayerData[/*id*/0], DUMMY_ID]])
         : pairs
     );
     const getPlayer = curry(getPlayerMaybe)(players);

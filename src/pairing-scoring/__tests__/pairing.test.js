@@ -4,8 +4,8 @@ import {
     pairPlayers,
     setByePlayer,
     setUpperHalves
-} from "../pairing";
-import {createPairingData, matches2ScoreData} from "../converters";
+} from "../Pairing.bs";
+import {createPairingData, matches2ScoreData} from "../Converters.bs";
 import {curry, pipe} from "ramda";
 import data from "../../test-data";
 
@@ -34,10 +34,10 @@ it("Players have 0 priority of pairing themselves.", function () {
     expect(calcPairIdeal(newb, newb)).toBe(0);
 });
 it("The lowest-ranking player is automatically picked for byes.", function () {
-    const DataPreBye = loadPairData("Bye_Round_Tourney____");
-    const [pairData, byedPlayer] = setByePlayer([], DUMMY_ID, DataPreBye);
+    const dataPreBye = loadPairData("Bye_Round_Tourney____");
+    const [pairData, byedPlayer] = setByePlayer([], DUMMY_ID, dataPreBye);
     expect(Object.keys(pairData)).not.toContain("Newbie_McNewberson___");
-    expect(byedPlayer.id).toBe("Newbie_McNewberson___");
+    expect(byedPlayer[/*id*/0]).toBe("Newbie_McNewberson___");
 
 });
 it("The bye signup queue works", function () {
@@ -46,57 +46,58 @@ it("The bye signup queue works", function () {
     // Newbie McNewberson already played the first bye round
     const [pairData, byedPlayer] = setByePlayer(byeQueue, DUMMY_ID, DataPreBye);
     expect(Object.keys(pairData)).not.toContain("Joel_Robinson________");
-    expect(byedPlayer.id).toBe("Joel_Robinson________");
+    expect(byedPlayer[/*id*/0]).toBe("Joel_Robinson________");
 });
 it(`If all player have (impossibly) played a bye round, the lowest-rated 
 player is picked`, function () {
     const DataPreBye = loadPairData("Bye_Tourney_3________");
     const [pairData, byedPlayer] = setByePlayer([], DUMMY_ID, DataPreBye);
     expect(Object.keys(pairData)).not.toContain("Newbie_McNewberson___");
-    expect(byedPlayer.id).toBe("Newbie_McNewberson___");
+    expect(byedPlayer[/*id*/0]).toBe("Newbie_McNewberson___");
 });
 it("Players are paired correctly in a simple scenario.", function () {
     const pairData = loadPairData("Simple_Pairing_______");
-    expect(pairData["Grandy_McMaster______"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: true,
-        score: 1
-    });
-    expect(pairData["Dr_Clayton_Forrester_"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: true,
-        score: 1
-    });
-    expect(pairData["Gypsy________________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: false,
-        score: 1
-    });
-    expect(pairData["Newbie_McNewberson___"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: false,
-        score: 1
-    });
-    expect(pairData["Joel_Robinson________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: true,
-        score: 0
-    });
-    expect(pairData["Tom_Servo____________"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: true,
-        score: 0
-    });
-    expect(pairData["Crow_T_Robot_________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: false,
-        score: 0
-    });
-    expect(pairData["TVs_Frank____________"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: false,
-        score: 0
-    });
+    // This data is obsolete in the transition to ReasonML:
+    // expect(pairData["Grandy_McMaster______"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: true,
+    //     score: 1
+    // });
+    // expect(pairData["Dr_Clayton_Forrester_"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: true,
+    //     score: 1
+    // });
+    // expect(pairData["Gypsy________________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: false,
+    //     score: 1
+    // });
+    // expect(pairData["Newbie_McNewberson___"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: false,
+    //     score: 1
+    // });
+    // expect(pairData["Joel_Robinson________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: true,
+    //     score: 0
+    // });
+    // expect(pairData["Tom_Servo____________"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: true,
+    //     score: 0
+    // });
+    // expect(pairData["Crow_T_Robot_________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: false,
+    //     score: 0
+    // });
+    // expect(pairData["TVs_Frank____________"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: false,
+    //     score: 0
+    // });
     const matches = pairPlayers(pairData);
     expect(matches).toEqual([
         ["Grandy_McMaster______", "Gypsy________________"],
@@ -107,46 +108,47 @@ it("Players are paired correctly in a simple scenario.", function () {
 });
 it("Players are paired correctly after a draw.", function () {
     const pairData = loadPairData("Pairing_With_Draws___");
-    expect(pairData["Grandy_McMaster______"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: true,
-        score: 1
-    });
-    expect(pairData["Dr_Clayton_Forrester_"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: false,
-        score: 1
-    });
-    expect(pairData["Gypsy________________"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: false,
-        score: 1
-    });
-    expect(pairData["Tom_Servo____________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: true,
-        score: 0.5
-    });
-    expect(pairData["Newbie_McNewberson___"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: false,
-        score: 0.5
-    });
-    expect(pairData["Joel_Robinson________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: true,
-        score: 0
-    });
-    expect(pairData["Crow_T_Robot_________"]).toMatchObject({
-        halfPos: 0,
-        isUpperHalf: false,
-        score: 0
-    });
-    expect(pairData["TVs_Frank____________"]).toMatchObject({
-        halfPos: 1,
-        isUpperHalf: false,
-        score: 0
-    });
+    // This data is obsolete in the transition to ReasonML:
+    // expect(pairData["Grandy_McMaster______"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: true,
+    //     score: 1
+    // });
+    // expect(pairData["Dr_Clayton_Forrester_"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: false,
+    //     score: 1
+    // });
+    // expect(pairData["Gypsy________________"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: false,
+    //     score: 1
+    // });
+    // expect(pairData["Tom_Servo____________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: true,
+    //     score: 0.5
+    // });
+    // expect(pairData["Newbie_McNewberson___"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: false,
+    //     score: 0.5
+    // });
+    // expect(pairData["Joel_Robinson________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: true,
+    //     score: 0
+    // });
+    // expect(pairData["Crow_T_Robot_________"]).toMatchObject({
+    //     halfPos: 0,
+    //     isUpperHalf: false,
+    //     score: 0
+    // });
+    // expect(pairData["TVs_Frank____________"]).toMatchObject({
+    //     halfPos: 1,
+    //     isUpperHalf: false,
+    //     score: 0
+    // });
     const matches = pairPlayers(pairData);
     expect(matches).toEqual([
         ["Grandy_McMaster______", "Gypsy________________"],
