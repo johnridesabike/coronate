@@ -2,8 +2,6 @@ import MatchRow from "./match-row";
 import PropTypes from "prop-types";
 import React from "react";
 import VisuallyHidden from "@reach/visually-hidden";
-// import {matches2ScoreData} from "../../../pairing-scoring";
-// import {rounds2Matches} from "../../../data-types";
 import style from "./round.module.css";
 
 export default function RoundTable({

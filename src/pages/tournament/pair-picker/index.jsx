@@ -1,10 +1,7 @@
 import {Panel, PanelContainer} from "../../../components/utility";
 import React, {useEffect, useMemo, useState} from "react";
-import {
-    createPairingData,
-    // matches2ScoreData,
-    setUpperHalves
-} from "../../../pairing-scoring";
+import {createPairingData} from "../../../Converters.bs";
+import {setUpperHalves} from "../../../Pairing.bs";
 import {curry, pipe} from "ramda";
 import {Dialog} from "@reach/dialog";
 import PlayerInfo from "./player-info";

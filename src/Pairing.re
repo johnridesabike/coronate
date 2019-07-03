@@ -60,18 +60,15 @@ let calcPairIdeal = (player1, player2) => {
   player1.id == player2.id
     ? 0.0
     : {
-      let metBefore =
-        player1.opponents |> Js.Array.includes(player2.id);
-      let mustAvoid =
-        player1.avoidIds |> Js.Array.includes(player2.id);
+      let metBefore = player1.opponents |> Js.Array.includes(player2.id);
+      let mustAvoid = player1.avoidIds |> Js.Array.includes(player2.id);
       let isDiffDueColor = {
         switch (player1.colors |> Js.Array.length) {
         | 0 => true
         | _ =>
           switch (player2.colors |> Js.Array.length) {
           | 0 => true
-          | _ =>
-            player1.colors->Utils.last !== player2.colors->Utils.last
+          | _ => player1.colors->Utils.last !== player2.colors->Utils.last
           }
         };
       };
@@ -102,9 +99,8 @@ let setUpperHalves = data => {
   dataList
   |> Js.Array.forEach(playerData => {
        let (upperHalfIds, lowerHalfIds) =
-         dataList
-         |> Js.Array.filter(p2 => p2.score == playerData.score)
-         |> Utils.sort(descendingRating)
+         (dataList |> Js.Array.filter(p2 => p2.score == playerData.score))
+         ->Belt.SortArray.stableSortBy(descendingRating)
          |> Js.Array.map(p => p.id)
          |> Utils.splitInHalf;
        let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);
@@ -183,13 +179,11 @@ let assignColorsForPair = pair => {
     : (player1.id, player2.id);
 };
 
-let netScore = ((player1, player2)) =>
-  player1.score +. player2.score;
+let netScore = ((player1, player2)) => player1.score +. player2.score;
 let netRating = ((player1, player2)) =>
   float_of_int(player1.rating) +. float_of_int(player2.rating);
 
-let netScoreDescend = (pair1, pair2) =>
-  netScore(pair2) -. netScore(pair1);
+let netScoreDescend = (pair1, pair2) => netScore(pair2) -. netScore(pair1);
 let netRatingDescend = (pair1, pair2) =>
   netRating(pair2) -. netRating(pair1);
 let sortByNetScoreThenRating =

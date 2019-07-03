@@ -8,7 +8,7 @@ import Icons from "../../../components/icons";
 import PlayerMatchInfo from "./player-match-info";
 import PropTypes from "prop-types";
 import VisuallyHidden from "@reach/visually-hidden";
-import {calcNewRatings} from "../../../pairing-scoring";
+import {calcNewRatings} from "../../../Scoring.bs";
 import styles from "./round.module.css";
 import {sum} from "ramda";
 

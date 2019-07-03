@@ -1,7 +1,6 @@
 import t from "tcomb";
 import {move} from "ramda";
 import {autoPair, manualPair, scoreByeMatch} from "./match-functions";
-// import scoreTypes from "../../../pairing-scoring/types";
 import {types} from "../../../data-types";
 
 // eslint-disable-next-line complexity

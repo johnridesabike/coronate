@@ -1,13 +1,13 @@
 import {Panel, PanelContainer} from "../../components/utility";
 import React, {useState} from "react";
 import {Tab, TabList, TabPanel, TabPanels, Tabs} from "@reach/tabs";
+import {matches2ScoreData} from "../../Converters.bs";
 import {
     createStandingList,
     createStandingTree,
     getTieBreakNames,
-    matches2ScoreData,
     tieBreakMethods
-} from "../../pairing-scoring";
+} from "../../Scoring.bs";
 import {pipe} from "ramda";
 import {isDummyObj, rounds2Matches} from "../../data-types";
 import Icons from "../../components/icons";

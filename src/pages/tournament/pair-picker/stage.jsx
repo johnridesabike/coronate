@@ -1,9 +1,6 @@
 import {BLACK, WHITE} from "../../../data-types";
 import React, {Fragment} from "react";
-import {
-    calcPairIdeal,
-    maxPriority
-} from "../../../pairing-scoring";
+import {calcPairIdeal, maxPriority} from "../../../Pairing.bs";
 import Icons from "../../../components/icons";
 import PropTypes from "prop-types";
 import numeral from "numeral";

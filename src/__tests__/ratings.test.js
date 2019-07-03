@@ -1,6 +1,6 @@
 import {curry} from "ramda";
-import data from "../../test-data";
-import {getKFactor, calcNewRatings} from "../";
+import data from "../test-data";
+import {getKFactor, calcNewRatings} from "../Scoring.bs";
 
 const newb = data.players["Newbie_McNewberson___"];
 const master = data.players["Grandy_McMaster______"];

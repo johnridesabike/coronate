@@ -3,6 +3,7 @@
 import * as Ramda from "ramda";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as EdmondsBlossom from "edmonds-blossom";
 
@@ -106,9 +107,9 @@ function setUpperHalves(data) {
   var nextData = { };
   var dataList = Js_dict.values(data);
   dataList.forEach((function (playerData) {
-          var match = Utils$Coronate.splitInHalf(Ramda.sort(descendingRating, dataList.filter((function (p2) {
+          var match = Utils$Coronate.splitInHalf(Belt_SortArray.stableSortBy(dataList.filter((function (p2) {
                             return p2[/* score */8] === playerData[/* score */8];
-                          }))).map((function (p) {
+                          })), descendingRating).map((function (p) {
                       return p[/* id */0];
                     })));
           var upperHalfIds = match[0];

@@ -1,4 +1,4 @@
-import {DUMMY_ID, rounds2Matches} from "../../data-types";
+import {DUMMY_ID, rounds2Matches} from "../data-types";
 import {
     calcPairIdeal,
     pairPlayers,
@@ -7,7 +7,7 @@ import {
 } from "../Pairing.bs";
 import {createPairingData, matches2ScoreData} from "../Converters.bs";
 import {curry, pipe} from "ramda";
-import data from "../../test-data";
+import data from "../test-data";
 
 function loadPairData(tourneyId) {
     const {playerIds, roundList} = data.tournaments[tourneyId];

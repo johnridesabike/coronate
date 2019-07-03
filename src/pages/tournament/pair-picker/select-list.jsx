@@ -4,7 +4,7 @@ import numeral from "numeral";
 import VisuallyHidden from "@reach/visually-hidden";
 import Hidden from "@reach/visually-hidden";
 import {BLACK, WHITE} from "../../../data-types";
-import {calcPairIdeal, maxPriority} from "../../../pairing-scoring";
+import {calcPairIdeal, maxPriority} from "../../../Pairing.bs";
 import Icons from "../../../components/icons";
 import {SortButton} from "../../../components/utility";
 import {useSortedTable} from "../../../hooks";

@@ -7,6 +7,7 @@ import * as EloRank from "elo-rank";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_int32 from "bs-platform/lib/es6/caml_int32.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 
 function isNotDummy(scoreDict, oppId) {
@@ -41,11 +42,11 @@ function getOpponentScores(scoreDict, id) {
 }
 
 function getMedianScore(scoreDict, id) {
-  return Utils$Coronate.arraySumFloat(Ramda.sort((function (param, param$1) {
+  return Utils$Coronate.arraySumFloat(Belt_SortArray.stableSortBy(getOpponentScores(scoreDict, id), (function (param, param$1) {
                       return Ramda.ascend((function (x) {
                                     return x;
                                   }), param, param$1);
-                    }), getOpponentScores(scoreDict, id)).slice(1, -1));
+                    })).slice(1, -1));
 }
 
 function getSolkoffScore(scoreDict, id) {
@@ -215,12 +216,7 @@ function calcNewRatings(origRatings, matchCounts, result) {
         ];
 }
 
-var Ratings = /* module */[
-  /* getKFactor */getKFactor,
-  /* floor */100,
-  /* keepAboveFloor */keepAboveFloor,
-  /* calcNewRatings */calcNewRatings
-];
+var floor = 100;
 
 export {
   isNotDummy ,
@@ -239,7 +235,10 @@ export {
   createStandingList ,
   areScoresEqual ,
   createStandingTree ,
-  Ratings ,
+  getKFactor ,
+  floor ,
+  keepAboveFloor ,
+  calcNewRatings ,
   
 }
 /* ramda Not a pure module */

@@ -1,7 +1,5 @@
-import {
-    createStandingList,
-    matches2ScoreData
-} from "../../pairing-scoring";
+import {matches2ScoreData} from "../../Converters.bs";
+import {createStandingList} from "../../Scoring.bs";
 import Icons from "../../components/icons";
 import PropTypes from "prop-types";
 import React from "react";

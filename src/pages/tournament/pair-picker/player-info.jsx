@@ -1,7 +1,5 @@
-import {
-    avoidPairReducer,
-    createBlankScoreData
-} from "../../../pairing-scoring";
+import {avoidPairReducer} from "../../../Converters.bs";
+import {createBlankScoreData} from "../../../Scoring.bs";
 // this component should eventually replace player-match-info.jsx
 import {DUMMY_ID} from "../../../data-types";
 import PropTypes from "prop-types";

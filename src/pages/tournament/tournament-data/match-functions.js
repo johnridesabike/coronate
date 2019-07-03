@@ -9,7 +9,7 @@ import {
     types
 } from "../../../data-types";
 import {curry} from "ramda";
-import {pairPlayers, setByePlayer} from "../../../pairing-scoring";
+import {pairPlayers, setByePlayer} from "../../../Pairing.bs";
 
 export function scoreByeMatch(byeValue, match) {
     if (match.playerIds[WHITE] === DUMMY_ID) {

@@ -1,7 +1,7 @@
 import React, {useMemo} from "react";
 import PropTypes from "prop-types";
 import RoundPanels from "./round-panels";
-import {matches2ScoreData} from "../../../pairing-scoring";
+import {matches2ScoreData} from "../../../Converters.bs";
 import {DUMMY_ID, getUnmatched, rounds2Matches} from "../../../data-types";
 
 // This is a higher-order component that generates round data and passes it to
