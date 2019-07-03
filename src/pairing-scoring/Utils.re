@@ -1,14 +1,14 @@
 [@bs.module "ramda"] external ascend: ('b => 'a, 'b, 'b) => int = "ascend";
 [@bs.module "ramda"] external descend: ('b => 'a, 'b, 'b) => int = "descend";
 [@bs.module "ramda"]
-external sort: (('a, 'a) => int, Js.Array.t('a)) => Js.Array.t('a) = "sort";
+external sort: (('a, 'a) => int, array('a)) => array('a) = "sort";
 [@bs.module "ramda"]
 external sortWith:
-  (array(('a, 'a) => int), Js.Array.t('a)) => Js.Array.t('a) =
+  (array(('a, 'a) => int), array('a)) => array('a) =
   "sortWith";
 [@bs.module "ramda"]
 external sortWithF:
-  (array(('a, 'a) => float), Js.Array.t('a)) => Js.Array.t('a) =
+  (array(('a, 'a) => float), array('a)) => array('a) =
   "sortWith";
 [@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";

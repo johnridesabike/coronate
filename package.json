@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^8.0.4",
-    "bs-platform": "^5.0.4",
+    "bs-platform": "^6.0.3",
     "concurrently": "^4.1.1",
     "electron": "^5.0.6",
     "electron-builder": "^20.44.4",
