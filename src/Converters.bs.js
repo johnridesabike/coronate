@@ -57,14 +57,14 @@ function matches2ScoreData(matchList) {
           };
   };
   matchList.forEach((function (match_) {
-          var playerIds = match_.playerIds;
-          var result = match_.result;
-          var newRating = match_.newRating;
-          var origRating = match_.origRating;
-          var newDataWhite = makeScoreData(playerIds[/* white */0], origRating[/* white */0], newRating[/* white */0], result[/* white */0], playerIds[/* black */1], 0);
-          scoreDict[playerIds[/* white */0]] = newDataWhite;
-          var newDataBlack = makeScoreData(playerIds[/* black */1], origRating[/* black */1], newRating[/* black */1], result[/* black */1], playerIds[/* white */0], 1);
-          scoreDict[playerIds[/* black */1]] = newDataBlack;
+          var playerIds = match_[/* playerIds */3];
+          var result = match_[/* result */4];
+          var newRating = match_[/* newRating */1];
+          var origRating = match_[/* origRating */2];
+          var newDataWhite = makeScoreData(playerIds[/* whiteId */0], origRating[/* whiteRating */0], newRating[/* whiteRating */0], result[/* whiteScore */0], playerIds[/* blackId */1], 0);
+          scoreDict[playerIds[/* whiteId */0]] = newDataWhite;
+          var newDataBlack = makeScoreData(playerIds[/* blackId */1], origRating[/* blackRating */1], newRating[/* blackRating */1], result[/* blackScore */1], playerIds[/* whiteId */0], 1);
+          scoreDict[playerIds[/* blackId */1]] = newDataBlack;
           return /* () */0;
         }));
   return scoreDict;

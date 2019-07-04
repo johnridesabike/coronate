@@ -205,14 +205,16 @@ function keepAboveFloor(rating) {
   }
 }
 
-function calcNewRatings(origRatings, matchCounts, result) {
-  var whiteElo = new EloRank.default(getKFactor(matchCounts[/* white */0]));
-  var blackElo = new EloRank.default(getKFactor(matchCounts[/* black */1]));
-  var scoreExpected_000 = /* white */whiteElo.getExpected(origRatings[/* white */0], origRatings[/* black */1]);
-  var scoreExpected_001 = /* black */blackElo.getExpected(origRatings[/* black */1], origRatings[/* white */0]);
-  return /* record */[
-          /* white */keepAboveFloor(whiteElo.updateRating(scoreExpected_000, result[/* white */0], origRatings[/* white */0])),
-          /* black */keepAboveFloor(blackElo.updateRating(scoreExpected_001, result[/* black */1], origRatings[/* black */1]))
+function calcNewRatings(param, param$1, param$2) {
+  var blackRating = param[1];
+  var whiteRating = param[0];
+  var whiteElo = new EloRank.default(getKFactor(param$1[0]));
+  var blackElo = new EloRank.default(getKFactor(param$1[1]));
+  var whiteScoreExpected = whiteElo.getExpected(whiteRating, blackRating);
+  var blackScoreExpected = blackElo.getExpected(blackRating, whiteRating);
+  return /* tuple */[
+          keepAboveFloor(whiteElo.updateRating(whiteScoreExpected, param$2[0], whiteRating)),
+          keepAboveFloor(blackElo.updateRating(blackScoreExpected, param$2[1], blackRating))
         ];
 }
 

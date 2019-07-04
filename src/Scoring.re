@@ -1,19 +1,5 @@
 open Utils;
 
-type matchStat = {
-  white: int,
-  black: int,
-};
-
-type matchStatFloat = {
-  white: float,
-  black: float,
-};
-
-type matchStatString = {
-  white: string,
-  black: string,
-};
 [@bs.deriving abstract]
 type scoreData = {
   colorScores: array(float),
@@ -238,28 +224,25 @@ let floor = 100;
 let keepAboveFloor = rating => rating > floor ? rating : floor;
 
 let calcNewRatings =
-    (origRatings: matchStat, matchCounts: matchStat, result: matchStatFloat) => {
-  let whiteElo = getKFactor(matchCounts.white)->createEloRank;
-  let blackElo = getKFactor(matchCounts.black)->createEloRank;
-  let scoreExpected: matchStat = {
-    white: whiteElo##getExpected(origRatings.white, origRatings.black),
-    black: blackElo##getExpected(origRatings.black, origRatings.white),
-  };
-  let result: matchStat = {
-    white:
+    ((whiteRating, blackRating), (whiteMatchCount, blackMatchCount), (whiteResult, blackResult)) => {
+  let whiteElo = getKFactor(whiteMatchCount)->createEloRank;
+  let blackElo = getKFactor(blackMatchCount)->createEloRank;
+  let (whiteScoreExpected, blackScoreExpected) = (
+    whiteElo##getExpected(whiteRating, blackRating),
+    blackElo##getExpected(blackRating, whiteRating),
+  );
+  (
       whiteElo##updateRating(
-        scoreExpected.white,
-        result.white,
-        origRatings.white,
+        whiteScoreExpected,
+        whiteResult,
+        whiteRating,
       )
       ->keepAboveFloor,
-    black:
       blackElo##updateRating(
-        scoreExpected.black,
-        result.black,
-        origRatings.black,
+        blackScoreExpected,
+        blackResult,
+        blackRating,
       )
       ->keepAboveFloor,
-  };
-  result;
+  );
 };

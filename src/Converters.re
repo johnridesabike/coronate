@@ -1,11 +1,4 @@
-[@bs.deriving abstract]
-type match = {
-  playerIds: Scoring.matchStatString,
-  result: Scoring.matchStatFloat,
-  newRating: Scoring.matchStat,
-  origRating: Scoring.matchStat,
-};
-
+open Data;
 let blackValue = 1.0;
 let whiteValue = (-1.0);
 
@@ -67,31 +60,31 @@ let matches2ScoreData = matchList => {
     );
   };
   matchList
-  |> Js.Array.forEach(match => {
-       let playerIds = match->playerIdsGet;
-       let result = match->resultGet;
-       let newRating = match->newRatingGet;
-       let origRating = match->origRatingGet;
+  |> Js.Array.forEach((match: Data.match) => {
+       let playerIds = match.playerIds;
+       let result = match.result;
+       let newRating = match.newRating;
+       let origRating = match.origRating;
        let newDataWhite =
          makeScoreData(
-           ~playerId=playerIds.white,
-           ~origRating=origRating.white,
-           ~newRating=newRating.white,
-           ~result=result.white,
-           ~oppId=playerIds.black,
+           ~playerId=playerIds.whiteId,
+           ~origRating=origRating.whiteRating,
+           ~newRating=newRating.whiteRating,
+           ~result=result.whiteScore,
+           ~oppId=playerIds.blackId,
            ~color=white,
          );
-       scoreDict->Js.Dict.set(playerIds.white, newDataWhite);
+       scoreDict->Js.Dict.set(playerIds.whiteId, newDataWhite);
        let newDataBlack =
          makeScoreData(
-           ~playerId=playerIds.black,
-           ~origRating=origRating.black,
-           ~newRating=newRating.black,
-           ~result=result.black,
-           ~oppId=playerIds.white,
+           ~playerId=playerIds.blackId,
+           ~origRating=origRating.blackRating,
+           ~newRating=newRating.blackRating,
+           ~result=result.blackScore,
+           ~oppId=playerIds.whiteId,
            ~color=black,
          );
-       scoreDict->Js.Dict.set(playerIds.black, newDataBlack);
+       scoreDict->Js.Dict.set(playerIds.blackId, newDataBlack);
      });
   scoreDict;
 };
@@ -145,7 +138,7 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
        };
        // `isUpperHalf` and `halfPos` will have to be set by another
        // function later.
-       let newData = Pairing.{
+       let newData: Pairing.pairingData = {
            avoidIds: newAvoidIds,
            colorScores: playerStats->Scoring.colorScoresGet,
            colors: playerStats->Scoring.colorsGet,
