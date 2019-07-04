@@ -1,0 +1,66 @@
+.spash__splash {
+    display: flex;
+    flex-flow: column;
+    align-content: center;
+    height: 100%;
+    justify-content: space-between;
+    background-color: var(--grey-10);
+}
+
+.spash__hint {
+    margin: 0 auto;
+
+    /* This reduces the offset of the main title: */
+    height: 64px;
+    overflow: visible;
+}
+
+.spash__hint li {
+    margin: 8px 0;
+}
+
+.spash__footer {
+    background-color: var(--ink-80);
+    color: var(--grey-20);
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.spash__footer a {
+    color: var(--teal-50);
+}
+
+.spash__footer a:hover {
+    color: var(--teal-60);
+}
+
+.spash__title {
+    color: var(--grey-90);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.spash__titleIcon {
+    flex-shrink: 1;
+    margin-right: 8px;
+}
+
+/* .titleIcon svg {
+    height: 64px;
+    width: 64px;
+} */
+
+.spash__titleText {
+    flex-grow: 1;
+}
+
+/* h1 {
+    margin-bottom: 4px;
+} */
+
+.spash__subtitle {
+    text-align: right;
+    margin: 0;
+}

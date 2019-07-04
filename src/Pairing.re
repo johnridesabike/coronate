@@ -13,8 +13,8 @@ type pairingData = {
 [@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
 [@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
 
-[@bs.module "edmonds-blossom"]
-external blossom: array((int, int, float)) => array(int) = "default";
+[@bs.module]
+external blossom: array((int, int, float)) => array(int) = "edmonds-blossom";
 
 let priority = (value, condition) => condition ? value : 0.0;
 let divisiblePriority = (dividend, divisor) => dividend /. divisor;

@@ -86,15 +86,15 @@ function createPairingData(playerData, avoidPairs, scoreDict) {
   var avoidDict = avoidPairs.reduce(avoidPairReducer, { });
   var pairData = { };
   Js_dict.values(playerData).forEach((function (data) {
-          var match = Js_dict.get(scoreDict, data.id);
-          var playerStats = match !== undefined ? Caml_option.valFromOption(match) : Scoring$Coronate.createBlankScoreData(data.id);
-          var match$1 = Js_dict.get(avoidDict, data.id);
+          var match = Js_dict.get(scoreDict, data[/* id */1]);
+          var playerStats = match !== undefined ? Caml_option.valFromOption(match) : Scoring$Coronate.createBlankScoreData(data[/* id */1]);
+          var match$1 = Js_dict.get(avoidDict, data[/* id */1]);
           var newAvoidIds = match$1 !== undefined ? match$1 : /* array */[];
-          var newData_000 = /* id */data.id;
+          var newData_000 = /* id */data[/* id */1];
           var newData_002 = /* colorScores */playerStats.colorScores;
           var newData_003 = /* colors */playerStats.colors;
           var newData_006 = /* opponents */Object.keys(playerStats.opponentResults);
-          var newData_007 = /* rating */data.rating;
+          var newData_007 = /* rating */data[/* rating */4];
           var newData_008 = /* score */Utils$Coronate.arraySumFloat(playerStats.results);
           var newData = /* record */[
             newData_000,
@@ -107,7 +107,7 @@ function createPairingData(playerData, avoidPairs, scoreDict) {
             newData_007,
             newData_008
           ];
-          pairData[data.id] = newData;
+          pairData[data[/* id */1]] = newData;
           return /* () */0;
         }));
   return pairData;

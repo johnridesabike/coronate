@@ -112,26 +112,20 @@ let avoidPairReducer = (acc, pair) => {
   acc;
 };
 
-[@bs.deriving abstract]
-type player = {
-  id: string,
-  rating: int,
-};
-
 let createPairingData = (playerData, avoidPairs, scoreDict) => {
   let avoidDict =
     avoidPairs |> Js.Array.reduce(avoidPairReducer, Js.Dict.empty());
   let pairData = Js.Dict.empty();
   Js.Dict.values(playerData)
-  |> Js.Array.forEach(data => {
+  |> Js.Array.forEach((data: Data.player) => {
        let playerStats = {
-         switch (scoreDict->Js.Dict.get(data->idGet)) {
-         | None => Scoring.createBlankScoreData(data->idGet)
+         switch (scoreDict->Js.Dict.get(data.id)) {
+         | None => Scoring.createBlankScoreData(data.id)
          | Some(x) => x
          };
        };
        let newAvoidIds = {
-         switch (avoidDict->Js.Dict.get(data->idGet)) {
+         switch (avoidDict->Js.Dict.get(data.id)) {
          | None => [||]
          | Some(x) => x
          };
@@ -143,13 +137,13 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
            colorScores: playerStats->Scoring.colorScoresGet,
            colors: playerStats->Scoring.colorsGet,
            halfPos: 0,
-           id: data->idGet,
+           id: data.id,
            isUpperHalf: false,
            opponents: playerStats->Scoring.opponentResultsGet->Js.Dict.keys,
-           rating: data->ratingGet,
+           rating: data.rating,
            score: playerStats->Scoring.resultsGet->Utils.arraySumFloat,
         };
-       pairData->Js.Dict.set(data->idGet, newData);
+       pairData->Js.Dict.set(data.id, newData);
      });
   pairData;
 };

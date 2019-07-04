@@ -1,9 +1,8 @@
 {
     "extends": [
         "react-app",
-        "plugin:jsx-a11y/recommended",
-        "plugin:ramda/recommended"
+        "plugin:jsx-a11y/recommended"
     ],
-    "plugins": ["jsx-a11y", "ramda", "fp", "react"],
+    "plugins": ["jsx-a11y", "fp", "react"],
     "rules": {}
 }

@@ -18,3 +18,7 @@ let addFloat = (a, b) => a +. b;
 let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
 let last = arr => arr[Js.Array.length(arr) - 1];
 let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
+
+[@bs.module] [@react.component]
+external visuallyHidden: (~children: React.element) => React.element =
+  "@reach/visually-hidden";

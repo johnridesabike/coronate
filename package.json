@@ -28,7 +28,8 @@
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(bs-platform)/).+\\.js$'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
-    "re:watch": "bsb -make-world -clean-world -w"
+    "re:watch": "bsb -make-world -clean-world -w",
+    "re:test": "jest /lib/js/__tests__ --watch"
   },
   "dependencies": {
     "@reach/dialog": "^0.2.9",
@@ -50,6 +51,7 @@
     "photon-colors": "^3.3.2",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
+    "re-classnames": "^4.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-feather": "^1.1.6",
@@ -59,8 +61,11 @@
     "typeface-fira-sans": "0.0.54"
   },
   "devDependencies": {
+    "@glennsl/bs-jest": "^0.4.8",
     "@testing-library/react": "^8.0.4",
+    "bs-dom-testing-library": "^0.4.1",
     "bs-platform": "^6.0.3",
+    "bs-react-testing-library": "^0.5.0",
     "concurrently": "^4.1.1",
     "electron": "^5.0.6",
     "electron-builder": "^20.44.4",

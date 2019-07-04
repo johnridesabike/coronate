@@ -211,8 +211,8 @@ type eloRank = {
   [@bs.meth] "updateRating": (int, float, int) => int,
 };
 
-[@bs.new] [@bs.module "elo-rank"]
-external createEloRank: int => eloRank = "default";
+[@bs.new][@bs.module]
+external createEloRank: int => eloRank = "elo-rank";
 
 let getKFactor = matchCount => {
   let ne = matchCount > 0 ? matchCount : 1;
