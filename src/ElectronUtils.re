@@ -11,6 +11,18 @@ external toggleMaximize: ReactEvent.synthetic('a) => unit = "toggleMaximize";
 external macOSDoubleClick: ReactEvent.synthetic('a) => unit =
   "macOSDoubleClick";
 
+type electronWindow = {
+  .
+  [@bs.meth] "setFullScreen": (bool) => unit,
+  [@bs.meth] "unmaximize": (unit) => unit,
+  [@bs.meth] "maximize": (unit) => unit,
+  [@bs.meth] "minimize": (unit) => unit,
+  [@bs.meth] "close": (unit) => unit
+};
+
+[@bs.val] [@bs.module "./electron-utils.js"]
+external currentWindow: electronWindow = "currentWindow";
+
 [@bs.scope "navigator"] [@bs.val] external appVersion: string = "appVersion";
 
 let isElectron =

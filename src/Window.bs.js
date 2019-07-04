@@ -5,6 +5,7 @@ import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as ReactFeather from "react-feather";
+import * as Icons$Coronate from "./Icons.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
 
@@ -107,6 +108,52 @@ var toolbarClasses = Cn.make(/* :: */[
       ]
     ]);
 
+function Window$WindowsControls(Props) {
+  var state = Props.state;
+  var middleButton = state[/* isFullScreen */2] ? React.createElement("button", {
+          className: "windosControls__winButton button-ghost",
+          onClick: (function (param) {
+              return ElectronUtils$Coronate.currentWindow.setFullScreen(false);
+            })
+        }, React.createElement(ReactFeather.Minimize2, { })) : (
+      state[/* isMaximized */3] ? React.createElement("button", {
+              className: "windosControls__winButton button-ghost",
+              onClick: (function (param) {
+                  return ElectronUtils$Coronate.currentWindow.unmaximize();
+                })
+            }, React.createElement(Icons$Coronate.Restore[/* make */0], { })) : React.createElement("button", {
+              className: "windosControls__winButton button-ghost",
+              onClick: (function (param) {
+                  return ElectronUtils$Coronate.currentWindow.maximize();
+                })
+            }, React.createElement(Icons$Coronate.Maximize[/* make */0], { }))
+    );
+  return React.createElement("div", {
+              className: "windowsControls__container"
+            }, React.createElement("button", {
+                  className: "windowsControls__winButton button-ghost",
+                  onClick: (function (param) {
+                      return ElectronUtils$Coronate.currentWindow.minimize();
+                    })
+                }, React.createElement(Icons$Coronate.Minimize[/* make */0], { })), middleButton, React.createElement("button", {
+                  className: Cn.make(/* :: */[
+                        "windowsControls__winButton",
+                        /* :: */[
+                          "windowsControls__close",
+                          /* :: */[
+                            "button-ghost",
+                            /* [] */0
+                          ]
+                        ]
+                      ]),
+                  onClick: (function (param) {
+                      return ElectronUtils$Coronate.currentWindow.close();
+                    })
+                }, React.createElement(Icons$Coronate.Close[/* make */0], { })));
+}
+
+var WindowsControls = /* module */[/* make */Window$WindowsControls];
+
 function Window$WindowTitleBar(Props) {
   var state = Props.state;
   var dispatch = Props.dispatch;
@@ -166,7 +213,12 @@ function Window$WindowTitleBar(Props) {
                     textAlign: "center",
                     width: "50%"
                   }
-                }, formatTitle(state[/* title */5])));
+                }, formatTitle(state[/* title */5])), React.createElement(ElectronUtils$Coronate.IfElectron[/* make */0], {
+                  children: React.createElement(Window$WindowsControls, {
+                        state: state
+                      }),
+                  onlyWin: true
+                }));
 }
 
 var WindowTitleBar = /* module */[/* make */Window$WindowTitleBar];
@@ -189,6 +241,7 @@ export {
   initialWinState ,
   windowReducer ,
   toolbarClasses ,
+  WindowsControls ,
   WindowTitleBar ,
   
 }

@@ -81,9 +81,53 @@ let toolbarClasses =
     "button-ghost"->Cn.ifTrue(!(isMac && isElectron)),
   ]);
 
+module WindowsControls = {
+  [@react.component]
+  let make = (~state) => {
+    let middleButton =
+      if (state.isFullScreen) {
+        <button
+          className="windosControls__winButton button-ghost"
+          onClick={_ => currentWindow##setFullScreen(false)}>
+          <Icons.unfullscreen />
+        </button>;
+      } else if (state.isMaximized) {
+        <button
+          className="windosControls__winButton button-ghost"
+          onClick={_ => currentWindow##unmaximize()}>
+          <Icons.Restore />
+        </button>;
+      } else {
+        <button
+          className="windosControls__winButton button-ghost"
+          onClick={_ => currentWindow##maximize()}>
+          <Icons.Maximize />
+        </button>;
+      };
+
+    <div className="windowsControls__container">
+      <button
+        className="windowsControls__winButton button-ghost"
+        onClick={_ => currentWindow##minimize()}>
+        <Icons.Minimize />
+      </button>
+      middleButton
+      <button
+        className={Cn.make([
+          "windowsControls__winButton",
+          "windowsControls__close",
+          "button-ghost",
+        ])}
+        onClick={_ => currentWindow##close()}>
+        <Icons.Close />
+      </button>
+    </div>;
+  };
+};
+
 module WindowTitleBar = {
   [@react.component]
-  let make = (~state, ~dispatch) => {
+  let make = (~state, ~dispatch) =>
     <header
       className={Cn.make([
         "app__header",
@@ -92,59 +136,56 @@ module WindowTitleBar = {
         ->Cn.ifTrue(isElectron && isMac && !state.isFullScreen),
       ])}
       onDoubleClick=macOSDoubleClick>
-
-        <div>
-          <IfElectron onlyWin=true>
-            <span
-              style={ReactDOMRe.Style.make(
-                ~alignItems="center",
-                ~display="inline-flex",
-                ~marginLeft="4px",
-                ~marginRight="8px",
-                (),
-              )}
-              // <img src={logo} alt="" height="16" width="16" />
-            />
-          </IfElectron>
-          <button
-            className=toolbarClasses
-            onClick={_ => dispatch(SetSidebar(!state.isSidebarOpen))}>
-            <Icons.sidebar />
-            <Utils.visuallyHidden>
-              {React.string("Toggle sidebar")}
-            </Utils.visuallyHidden>
-          </button>
-          <button
-            className=toolbarClasses
-            onClick={_ => dispatch(SetDialog(true))}>
-            <Icons.help />
-            <Utils.visuallyHidden>
-              {React.string("About Coronate")}
-            </Utils.visuallyHidden>
-          </button>
-        </div>
-        <div
-          className={Cn.make([
-            "body-20",
-            "double-click-control",
-            "disabled"->Cn.ifTrue(state.isBlur),
-          ])}
-          style={ReactDOMRe.Style.make(
-            ~left="0",
-            ~marginLeft="auto",
-            ~marginRight="auto",
-            ~position="absolute",
-            ~right="0",
-            ~textAlign="center",
-            ~width="50%",
-            (),
-          )}>
-          {React.string(formatTitle(state.title))}
-        </div>
-      </header>;
-      // <IfElectron onlyWin><WindowsControls state={state}/></IfElectron>
-  };
-};
+      <div>
+        <IfElectron onlyWin=true>
+          <span
+            style={ReactDOMRe.Style.make(
+              ~alignItems="center",
+              ~display="inline-flex",
+              ~marginLeft="4px",
+              ~marginRight="8px",
+              (),
+            )}
+            // <img src={logo} alt="" height="16" width="16" />
+          />
+        </IfElectron>
+        <button
+          className=toolbarClasses
+          onClick={_ => dispatch(SetSidebar(!state.isSidebarOpen))}>
+          <Icons.sidebar />
+          <Utils.visuallyHidden>
+            {React.string("Toggle sidebar")}
+          </Utils.visuallyHidden>
+        </button>
+        <button
+          className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
+          <Icons.help />
+          <Utils.visuallyHidden>
+            {React.string("About Coronate")}
+          </Utils.visuallyHidden>
+        </button>
+      </div>
+      <div
+        className={Cn.make([
+          "body-20",
+          "double-click-control",
+          "disabled"->Cn.ifTrue(state.isBlur),
+        ])}
+        style={ReactDOMRe.Style.make(
+          ~left="0",
+          ~marginLeft="auto",
+          ~marginRight="auto",
+          ~position="absolute",
+          ~right="0",
+          ~textAlign="center",
+          ~width="50%",
+          (),
+        )}>
+        {React.string(formatTitle(state.title))}
+      </div>
+      <IfElectron onlyWin=true> <WindowsControls state /> </IfElectron>
+    </header>;
+} /*                     className={classNames("win__footer", footerProps.className)*/;
 
 // export function Window({children, className, ...rest}) {
 //     const [state, dispatch] = useReducer(windowReducer, initialWinState);
@@ -242,5 +283,3 @@ module WindowTitleBar = {
 //             {footer && (
 //                 <footer
 //                     {...footerProps}
-//                     className={classNames("win__footer", footerProps.className)}
-//                 >

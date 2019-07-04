@@ -22,6 +22,8 @@ function macOSDoubleClick(prim) {
   return /* () */0;
 }
 
+var currentWindow = ElectronUtilsJs.currentWindow;
+
 var match = ElectronUtilsJs.ifElectron((function (param) {
         return true;
       }));
@@ -58,10 +60,11 @@ export {
   ifElectronOpen ,
   toggleMaximize ,
   macOSDoubleClick ,
+  currentWindow ,
   isElectron ,
   isMac ,
   isWin ,
   IfElectron ,
   
 }
-/* match Not a pure module */
+/* currentWindow Not a pure module */

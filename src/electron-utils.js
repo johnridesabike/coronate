@@ -23,6 +23,9 @@ IfElectron.propTypes = {
     onlyWindows: PropTypes.bool
 };
 
+const currentWindow = ifElectron(() => electron.remote.getCurrentWindow());
+export {currentWindow};
+
 export function ifElectronOpen(event, url) {
     return ifElectron(function () {
         event.preventDefault();
