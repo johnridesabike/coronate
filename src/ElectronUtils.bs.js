@@ -30,9 +30,9 @@ var match = ElectronUtilsJs.ifElectron((function (param) {
 
 var isElectron = match !== undefined ? Caml_option.valFromOption(match) : false;
 
-var isMac = navigator.appVersion.includes("Windows");
+var isWin = navigator.appVersion.includes("Windows");
 
-var isWin = navigator.appVersion.includes("Mac");
+var isMac = navigator.appVersion.includes("Mac");
 
 function ElectronUtils$IfElectron(Props) {
   var children = Props.children;
@@ -40,12 +40,12 @@ function ElectronUtils$IfElectron(Props) {
   var onlyWin = match !== undefined ? match : false;
   var match$1 = Props.onlyMac;
   var onlyMac = match$1 !== undefined ? match$1 : false;
-  var win = onlyWin ? isWin : true;
-  var mac = onlyMac ? isMac : true;
+  var isWin$1 = onlyWin ? isWin : true;
+  var isMac$1 = onlyMac ? isMac : true;
   if (/* array */[
         isElectron,
-        win,
-        mac
+        isWin$1,
+        isMac$1
       ].includes(false)) {
     return null;
   } else {
@@ -62,8 +62,8 @@ export {
   macOSDoubleClick ,
   currentWindow ,
   isElectron ,
-  isMac ,
   isWin ,
+  isMac ,
   IfElectron ,
   
 }

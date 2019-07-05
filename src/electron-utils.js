@@ -41,6 +41,8 @@ function toggleMaximize(win) {
     }
 }
 
+export {toggleMaximize};
+
 // https://github.com/electron/electron/issues/16385#issuecomment-453955377
 export function macOSDoubleClick(event) {
     ifElectron(function () {

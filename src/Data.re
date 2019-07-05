@@ -78,6 +78,11 @@ type db_options = {
 type db_tourneys = Js.Dict.t(tournament);
 type db_players = Js.Dict.t(player);
 
+type db =
+  | Tourneys(db_tourneys)
+  | Players(db_players)
+  | Options(db_options);
+
 /*
  Helpers
  */

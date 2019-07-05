@@ -75,16 +75,16 @@ module SimpleIcon = {
     />;
 };
 
-module JavaScript = {
-  [@bs.module "simple-icons"] external javascript: simpleIcon = "javascript";
+module Reason = {
+  [@bs.module "simple-icons/icons/reason"] external icon: simpleIcon = "default";
   [@react.component]
-  let make = () => <SimpleIcon icon=javascript />;
+  let make = () => <SimpleIcon icon />;
 };
 
 module ReactIcon = {
-  [@bs.module "simple-icons"] external reactIcon: simpleIcon = "react";
+  [@bs.module "simple-icons/icons/react"] external icon: simpleIcon = "default";
   [@react.component]
-  let make = () => <SimpleIcon icon=reactIcon />;
+  let make = () => <SimpleIcon icon />;
 };
 
 // https://github.com/microsoft/vscode/tree/master/src/vs/workbench/browser/parts/titlebar/media

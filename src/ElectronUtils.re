@@ -36,16 +36,16 @@ let isElectron =
   | Some(x) => x
   };
 
-let isMac = appVersion |> Js.String.includes("Windows");
-let isWin = appVersion |> Js.String.includes("Mac");
+let isWin = appVersion |> Js.String.includes("Windows");
+let isMac = appVersion |> Js.String.includes("Mac");
 
 // This is the JSX version of the previous function
 module IfElectron = {
   [@react.component]
   let make = (~children, ~onlyWin=false, ~onlyMac=false, ()) => {
-    let win = onlyWin ? isWin : true;
-    let mac = onlyMac ? isMac : true;
-    if ([|isElectron, win, mac|] |> Js.Array.includes(false)) {
+    let isWin = onlyWin ? isWin : true;
+    let isMac = onlyMac ? isMac : true;
+    if ([|isElectron, isWin, isMac|] |> Js.Array.includes(false)) {
       ReasonReact.null;
     } else {
       children;

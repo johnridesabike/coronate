@@ -50,9 +50,9 @@ let initialWinState = {
 };
 
 module WindowContext = {
-  let initialState = (initialWinState, (_:action) => ());
+  let initialState = (initialWinState, (_: action) => ());
   let windowContext = React.createContext(initialState);
-  
+
   module Provider = {
     let makeProps = (~value, ~children, ()) => {
       "value": value,
@@ -130,7 +130,7 @@ module WindowsControls = {
 
 module WindowTitleBar = {
   [@react.component]
-  let make = (~state, ~dispatch) =>
+  let make = (~state, ~dispatch) => {
     <header
       className={Cn.make([
         "app__header",
@@ -148,24 +148,24 @@ module WindowTitleBar = {
               ~marginLeft="4px",
               ~marginRight="8px",
               (),
-            )}
-            // <img src={logo} alt="" height="16" width="16" />
-          />
+            )}>
+            <img src=Utils.WebpackAssets.logo alt="" height="16" width="16" />
+          </span>
         </IfElectron>
         <button
           className=toolbarClasses
           onClick={_ => dispatch(SetSidebar(!state.isSidebarOpen))}>
           <Icons.sidebar />
-          <Utils.visuallyHidden>
+          <Utils.ExternalComponents.VisuallyHidden>
             {React.string("Toggle sidebar")}
-          </Utils.visuallyHidden>
+          </Utils.ExternalComponents.VisuallyHidden>
         </button>
         <button
           className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
           <Icons.help />
-          <Utils.visuallyHidden>
+          <Utils.ExternalComponents.VisuallyHidden>
             {React.string("About Coronate")}
-          </Utils.visuallyHidden>
+          </Utils.ExternalComponents.VisuallyHidden>
         </button>
       </div>
       <div
@@ -188,61 +188,69 @@ module WindowTitleBar = {
       </div>
       <IfElectron onlyWin=true> <WindowsControls state /> </IfElectron>
     </header>;
+  };
 };
 
 module Window = {
   [@bs.deriving abstract]
   type domdoc = {mutable title: string};
   [@bs.val] external document: domdoc = "document";
+  [@react.component]
   let make = (~children, ~className) => {
     let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
+    let title = state.title;
     React.useEffect1(
       () => {
-        document->titleSet(formatTitle(state.title));
+        document->titleSet(formatTitle(title));
         None;
       },
-      [|state.title|],
+      [|title|],
     );
-    React.useEffect0(() => {
-      let func =
-        ifElectron(() => {
-          // This will ensure that stale event listeners aren't persisted.
-          // That typically won't be relevant to production builds, but
-          // in a dev environment, where the page reloads frequently,
-          // stale listeners will accumulate. Note that this can cause
-          // side effects if other listeners are added elsewhere.
-          let unregisterListeners = () => {
-            currentWindow##removeAllListeners("enter-full-screen");
-            currentWindow##removeAllListeners("leave-full-screen");
-            currentWindow##removeAllListeners("blur");
-            currentWindow##removeAllListeners("focus");
-            currentWindow##removeAllListeners("maximize");
-            currentWindow##removeAllListeners("unmaximize");
-          };
-          unregisterListeners();
-          currentWindow##on("enter-full-screen", () =>
-            dispatch(SetFullScreen(true))
-          );
-          currentWindow##on("leave-full-screen", () =>
-            dispatch(SetFullScreen(false))
-          );
-          currentWindow##on("maximize", () => dispatch(SetMaximized(true)));
-          currentWindow##on("unmaximize", () =>
-            dispatch(SetMaximized(false))
-          );
-          currentWindow##on("blur", () => dispatch(SetBlur(true)));
-          currentWindow##on("focus", () => dispatch(SetBlur(false)));
-          dispatch(SetBlur(currentWindow##isFocused()));
-          dispatch(SetFullScreen(!currentWindow##isFocused()));
-          dispatch(SetMaximized(currentWindow##isMaximized()));
-          // I don't think this ever really fires, but can it hurt?
-          unregisterListeners;
-        });
-      switch (func) {
-      | None => None
-      | Some(func) => func
-      };
-    });
+    React.useEffect1(
+      () => {
+        let func =
+          ifElectron(() => {
+            // This will ensure that stale event listeners aren't persisted.
+            // That typically won't be relevant to production builds, but
+            // in a dev environment, where the page reloads frequently,
+            // stale listeners will accumulate. Note that this can cause
+            // side effects if other listeners are added elsewhere.
+            let unregisterListeners = () => {
+              currentWindow##removeAllListeners("enter-full-screen");
+              currentWindow##removeAllListeners("leave-full-screen");
+              currentWindow##removeAllListeners("blur");
+              currentWindow##removeAllListeners("focus");
+              currentWindow##removeAllListeners("maximize");
+              currentWindow##removeAllListeners("unmaximize");
+            };
+            unregisterListeners();
+            currentWindow##on("enter-full-screen", () =>
+              dispatch(SetFullScreen(true))
+            );
+            currentWindow##on("leave-full-screen", () =>
+              dispatch(SetFullScreen(false))
+            );
+            currentWindow##on("maximize", () =>
+              dispatch(SetMaximized(true))
+            );
+            currentWindow##on("unmaximize", () =>
+              dispatch(SetMaximized(false))
+            );
+            currentWindow##on("blur", () => dispatch(SetBlur(true)));
+            currentWindow##on("focus", () => dispatch(SetBlur(false)));
+            dispatch(SetBlur(currentWindow##isFocused()));
+            dispatch(SetFullScreen(!currentWindow##isFocused()));
+            dispatch(SetMaximized(currentWindow##isMaximized()));
+            // I don't think this ever really fires, but can it hurt?
+            unregisterListeners;
+          });
+        switch (func) {
+        | None => None
+        | Some(func) => func === Js.null ? None : func
+        };
+      },
+      [|dispatch|],
+    );
     <div
       className={Cn.make([
         className,
@@ -257,40 +265,85 @@ module Window = {
       <WindowContext.Provider value=(state, dispatch)>
         children
       </WindowContext.Provider>
-      <Utils.dialog
+      <Utils.ExternalComponents.Dialog
         isOpen={state.isDialogOpen}
         onDismiss={() => dispatch(SetDialog(false))}
-        style=ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())
-        >
+        style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}>
         <button
-          className="button-micro"
-          onClick={(_) => dispatch(SetDialog(false))}
-          >
+          className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
           {React.string("Close")}
         </button>
-        <DialogAbout />
-      </Utils.dialog>
+        <Snippets.About />
+      </Utils.ExternalComponents.Dialog>
     </div>;
   };
 };
 
-// export function WindowBody({children, footer, sidebar, footerProps = {}}) {
-//     return (
-//         <div className={classNames("winBody", {"winBody-hasFooter": footer})}>
-//             <div className="win__sidebar">
-//                 {sidebar || <Sidebar />}
-//             </div>
-//             <div className="win__content">
-//                 {children}
-//             </div>
-//             {footer && (
-//                 <footer
-//                     {...footerProps}
-//                     className={classNames("win__footer", footerProps.className)}
-//                 >
-//                     {footer}
-//                 </footer>
-//             )}
-//         </div>
-//     );
-// }
+let noDraggy = e => ReactEvent.Mouse.preventDefault(e);
+
+module DefaultSidebar = {
+  [@react.component]
+  let make = () => {
+    <nav>
+      <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
+        <li>
+          <a href="#/tourneys" onDragStart=noDraggy>
+            <Icons.award />
+            <span className="sidebar__hide-on-close">
+              {React.string(Utils.Entities.nbsp ++ "Tournaments")}
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="#/players" onDragStart=noDraggy>
+            <Icons.users />
+            <span className="sidebar__hide-on-close">
+              {React.string(Utils.Entities.nbsp ++ "Players")}
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="#/options" onDragStart=noDraggy>
+            <Icons.settings />
+            <span className="sidebar__hide-on-close">
+              {React.string(Utils.Entities.nbsp ++ "Options")}
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="#/" onDragStart=noDraggy>
+            <Icons.help />
+            <span className="sidebar__hide-on-close">
+              {React.string(Utils.Entities.nbsp ++ "Info")}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>;
+  };
+};
+
+let sidebarCallback = () => <DefaultSidebar />;
+
+module WindowBody = {
+  [@react.component]
+  let make = (~children, ~footerFunc=?, ~sidebarFunc=sidebarCallback) => {
+    /*footerProps = {}*/
+    <div
+      className={Cn.make([
+        "winBody",
+        "winBody-hasFooter"->Cn.ifSome(footerFunc),
+      ])}>
+      <div className="win__sidebar"> {sidebarFunc()} </div>
+      <div className="win__content"> children </div>
+      {switch (footerFunc) {
+       | Some(footer) =>
+         <footer
+           className={Cn.make(["win__footer" /* , footerProps.className */])}>
+           {footer()}
+         </footer>
+       | None => ReasonReact.null
+       }}
+    </div>;
+  };
+};

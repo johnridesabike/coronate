@@ -10,3 +10,7 @@ import "./typography.css";
 import "./tables.css";
 import "./tabs.css";
 import "./toolbar.css";
+import "./WindowsControls.css";
+import "./Splash.css";
+import "./Caution.css";
+import "@reach/dialog/styles.css";

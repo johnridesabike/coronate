@@ -1,4 +1,4 @@
-.spash__splash {
+.splash__splash {
     display: flex;
     flex-flow: column;
     align-content: center;
@@ -7,7 +7,7 @@
     background-color: var(--grey-10);
 }
 
-.spash__hint {
+.splash__hint {
     margin: 0 auto;
 
     /* This reduces the offset of the main title: */
@@ -15,11 +15,11 @@
     overflow: visible;
 }
 
-.spash__hint li {
+.splash__hint li {
     margin: 8px 0;
 }
 
-.spash__footer {
+.splash__footer {
     background-color: var(--ink-80);
     color: var(--grey-20);
     padding: 0 16px;
@@ -27,22 +27,22 @@
     justify-content: space-between;
 }
 
-.spash__footer a {
+.splash__footer a {
     color: var(--teal-50);
 }
 
-.spash__footer a:hover {
+.splash__footer a:hover {
     color: var(--teal-60);
 }
 
-.spash__title {
+.splash__title {
     color: var(--grey-90);
     margin: 0 auto;
     display: flex;
     align-items: center;
 }
 
-.spash__titleIcon {
+.splash__titleIcon {
     flex-shrink: 1;
     margin-right: 8px;
 }
@@ -52,7 +52,7 @@
     width: 64px;
 } */
 
-.spash__titleText {
+.splash__titleText {
     flex-grow: 1;
 }
 
@@ -60,7 +60,7 @@
     margin-bottom: 4px;
 } */
 
-.spash__subtitle {
+.splash__subtitle {
     text-align: right;
     margin: 0;
 }

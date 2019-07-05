@@ -8,7 +8,8 @@ import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Icons$Coronate from "./Icons.bs.js";
-import * as DialogAbout$Coronate from "./DialogAbout.bs.js";
+import * as Utils$Coronate from "./Utils.bs.js";
+import * as Snippets$Coronate from "./Snippets.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
 
@@ -205,21 +206,26 @@ function Window$WindowTitleBar(Props) {
                               marginLeft: "4px",
                               alignItems: "center"
                             }
-                          }),
+                          }, React.createElement("img", {
+                                alt: "",
+                                height: "16",
+                                src: Utils$Coronate.WebpackAssets[/* logo */0],
+                                width: "16"
+                              })),
                       onlyWin: true
                     }), React.createElement("button", {
                       className: toolbarClasses,
                       onClick: (function (param) {
                           return Curry._1(dispatch, /* SetSidebar */Block.__(4, [!state[/* isSidebarOpen */4]]));
                         })
-                    }, React.createElement(ReactFeather.Sidebar, { }), React.createElement(VisuallyHidden, {
+                    }, React.createElement(ReactFeather.Sidebar, { }), React.createElement(VisuallyHidden.default, {
                           children: "Toggle sidebar"
                         })), React.createElement("button", {
                       className: toolbarClasses,
                       onClick: (function (param) {
                           return Curry._1(dispatch, /* SetDialog */Block.__(1, [true]));
                         })
-                    }, React.createElement(ReactFeather.HelpCircle, { }), React.createElement(VisuallyHidden, {
+                    }, React.createElement(ReactFeather.HelpCircle, { }), React.createElement(VisuallyHidden.default, {
                           children: "About Coronate"
                         }))), React.createElement("div", {
                   className: Cn.make(/* :: */[
@@ -251,14 +257,17 @@ function Window$WindowTitleBar(Props) {
 
 var WindowTitleBar = /* module */[/* make */Window$WindowTitleBar];
 
-function make$1(children, className) {
+function Window$Window(Props) {
+  var children = Props.children;
+  var className = Props.className;
   var match = React.useReducer(windowReducer, initialWinState);
   var dispatch = match[1];
   var state = match[0];
+  var title = state[/* title */5];
   React.useEffect((function () {
-          document.title = formatTitle(state[/* title */5]);
+          document.title = formatTitle(title);
           return undefined;
-        }), /* array */[state[/* title */5]]);
+        }), /* array */[title]);
   React.useEffect((function () {
           var func = ElectronUtils$Coronate.ifElectron((function (param) {
                   var unregisterListeners = function (param) {
@@ -294,10 +303,16 @@ function make$1(children, className) {
                   return unregisterListeners;
                 }));
           if (func !== undefined) {
-            return Caml_option.valFromOption(func);
+            var func$1 = Caml_option.valFromOption(func);
+            var match = func$1 === null;
+            if (match) {
+              return undefined;
+            } else {
+              return func$1;
+            }
           }
           
-        }), ([]));
+        }), /* array */[dispatch]);
   return React.createElement("div", {
               className: Cn.make(/* :: */[
                     className,
@@ -327,7 +342,7 @@ function make$1(children, className) {
                 }), React.createElement(make, makeProps(/* tuple */[
                       state,
                       dispatch
-                    ], children, /* () */0)), React.createElement(Dialog, {
+                    ], children, /* () */0)), React.createElement(Dialog.Dialog, {
                   isOpen: state[/* isDialogOpen */1],
                   onDismiss: (function (param) {
                       return Curry._1(dispatch, /* SetDialog */Block.__(1, [false]));
@@ -341,10 +356,76 @@ function make$1(children, className) {
                       onClick: (function (param) {
                           return Curry._1(dispatch, /* SetDialog */Block.__(1, [false]));
                         })
-                    }, "Close"), React.createElement(DialogAbout$Coronate.make, { })));
+                    }, "Close"), React.createElement(Snippets$Coronate.About[/* make */0], { })));
 }
 
-var $$Window = /* module */[/* make */make$1];
+var $$Window = /* module */[/* make */Window$Window];
+
+function noDraggy(e) {
+  e.preventDefault();
+  return /* () */0;
+}
+
+function Window$DefaultSidebar(Props) {
+  return React.createElement("nav", undefined, React.createElement("ul", {
+                  style: {
+                    margin: "0"
+                  }
+                }, React.createElement("li", undefined, React.createElement("a", {
+                          href: "#/tourneys",
+                          onDragStart: noDraggy
+                        }, React.createElement(ReactFeather.Award, { }), React.createElement("span", {
+                              className: "sidebar__hide-on-close"
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Tournaments"))), React.createElement("li", undefined, React.createElement("a", {
+                          href: "#/players",
+                          onDragStart: noDraggy
+                        }, React.createElement(ReactFeather.Users, { }), React.createElement("span", {
+                              className: "sidebar__hide-on-close"
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Players"))), React.createElement("li", undefined, React.createElement("a", {
+                          href: "#/options",
+                          onDragStart: noDraggy
+                        }, React.createElement(ReactFeather.Settings, { }), React.createElement("span", {
+                              className: "sidebar__hide-on-close"
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Options"))), React.createElement("li", undefined, React.createElement("a", {
+                          href: "#/",
+                          onDragStart: noDraggy
+                        }, React.createElement(ReactFeather.HelpCircle, { }), React.createElement("span", {
+                              className: "sidebar__hide-on-close"
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Info")))));
+}
+
+var DefaultSidebar = /* module */[/* make */Window$DefaultSidebar];
+
+function sidebarCallback(param) {
+  return React.createElement(Window$DefaultSidebar, { });
+}
+
+function Window$WindowBody(Props) {
+  var children = Props.children;
+  var footerFunc = Props.footerFunc;
+  var match = Props.sidebarFunc;
+  var sidebarFunc = match !== undefined ? match : sidebarCallback;
+  return React.createElement("div", {
+              className: Cn.make(/* :: */[
+                    "winBody",
+                    /* :: */[
+                      Cn.ifSome("winBody-hasFooter", footerFunc),
+                      /* [] */0
+                    ]
+                  ])
+            }, React.createElement("div", {
+                  className: "win__sidebar"
+                }, Curry._1(sidebarFunc, /* () */0)), React.createElement("div", {
+                  className: "win__content"
+                }, children), footerFunc !== undefined ? React.createElement("footer", {
+                    className: Cn.make(/* :: */[
+                          "win__footer",
+                          /* [] */0
+                        ])
+                  }, Curry._1(footerFunc, /* () */0)) : null);
+}
+
+var WindowBody = /* module */[/* make */Window$WindowBody];
 
 export {
   global_title ,
@@ -356,6 +437,10 @@ export {
   WindowsControls ,
   WindowTitleBar ,
   $$Window ,
+  noDraggy ,
+  DefaultSidebar ,
+  sidebarCallback ,
+  WindowBody ,
   
 }
 /* windowContext Not a pure module */

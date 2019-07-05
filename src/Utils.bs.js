@@ -27,6 +27,28 @@ function splitInHalf(arr) {
   return Ramda.splitAt(arr.length / 2 | 0, arr);
 }
 
+var VisuallyHidden = /* module */[];
+
+var Dialog = /* module */[];
+
+var ExternalComponents = /* module */[
+  /* VisuallyHidden */VisuallyHidden,
+  /* Dialog */Dialog
+];
+
+var logo = ( require("./icon-min.svg") );
+
+var WebpackAssets = /* module */[/* logo */logo];
+
+var Entities = /* module */[
+  /* nbsp */"\xa0",
+  /* copy */"\xa9"
+];
+
+function hashPath(hashString) {
+  return hashString.split("/");
+}
+
 export {
   add ,
   arraySum ,
@@ -34,6 +56,10 @@ export {
   arraySumFloat ,
   last ,
   splitInHalf ,
+  ExternalComponents ,
+  WebpackAssets ,
+  Entities ,
+  hashPath ,
   
 }
-/* ramda Not a pure module */
+/* logo Not a pure module */
