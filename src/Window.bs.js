@@ -4,12 +4,44 @@ import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Icons$Coronate from "./Icons.bs.js";
+import * as DialogAbout$Coronate from "./DialogAbout.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
 
-var windowContext = React.createContext(/* () */0);
+var global_title = "Coronate";
+
+function formatTitle(title) {
+  var match = title.length === 0;
+  if (match) {
+    return global_title;
+  } else {
+    return title + " - Coronate";
+  }
+}
+
+var initialWinState = /* record */[
+  /* isBlur */false,
+  /* isDialogOpen */false,
+  /* isFullScreen */false,
+  /* isMaximized */false,
+  /* isSidebarOpen */true,
+  /* title */""
+];
+
+function initialState_001(param) {
+  return /* () */0;
+}
+
+var initialState = /* tuple */[
+  initialWinState,
+  initialState_001
+];
+
+var windowContext = React.createContext(initialState);
 
 function makeProps(value, children, param) {
   return {
@@ -29,16 +61,12 @@ function useWindowContext(param) {
   return React.useContext(windowContext);
 }
 
-var global_title = "Coronate";
-
-function formatTitle(title) {
-  var match = title.length === 0;
-  if (match) {
-    return global_title;
-  } else {
-    return title + " - Coronate";
-  }
-}
+var WindowContext = /* module */[
+  /* initialState */initialState,
+  /* windowContext */windowContext,
+  /* Provider */Provider,
+  /* useWindowContext */useWindowContext
+];
 
 function windowReducer(state, action) {
   switch (action.tag | 0) {
@@ -223,26 +251,111 @@ function Window$WindowTitleBar(Props) {
 
 var WindowTitleBar = /* module */[/* make */Window$WindowTitleBar];
 
-var initialWinState = /* record */[
-  /* isBlur */false,
-  /* isDialogOpen */false,
-  /* isFullScreen */false,
-  /* isMaximized */false,
-  /* isSidebarOpen */true,
-  /* title */""
-];
+function make$1(children, className) {
+  var match = React.useReducer(windowReducer, initialWinState);
+  var dispatch = match[1];
+  var state = match[0];
+  React.useEffect((function () {
+          document.title = formatTitle(state[/* title */5]);
+          return undefined;
+        }), /* array */[state[/* title */5]]);
+  React.useEffect((function () {
+          var func = ElectronUtils$Coronate.ifElectron((function (param) {
+                  var unregisterListeners = function (param) {
+                    ElectronUtils$Coronate.currentWindow.removeAllListeners("enter-full-screen");
+                    ElectronUtils$Coronate.currentWindow.removeAllListeners("leave-full-screen");
+                    ElectronUtils$Coronate.currentWindow.removeAllListeners("blur");
+                    ElectronUtils$Coronate.currentWindow.removeAllListeners("focus");
+                    ElectronUtils$Coronate.currentWindow.removeAllListeners("maximize");
+                    return ElectronUtils$Coronate.currentWindow.removeAllListeners("unmaximize");
+                  };
+                  unregisterListeners(/* () */0);
+                  ElectronUtils$Coronate.currentWindow.on("enter-full-screen", (function (param) {
+                          return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [true]));
+                        }));
+                  ElectronUtils$Coronate.currentWindow.on("leave-full-screen", (function (param) {
+                          return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [false]));
+                        }));
+                  ElectronUtils$Coronate.currentWindow.on("maximize", (function (param) {
+                          return Curry._1(dispatch, /* SetMaximized */Block.__(3, [true]));
+                        }));
+                  ElectronUtils$Coronate.currentWindow.on("unmaximize", (function (param) {
+                          return Curry._1(dispatch, /* SetMaximized */Block.__(3, [false]));
+                        }));
+                  ElectronUtils$Coronate.currentWindow.on("blur", (function (param) {
+                          return Curry._1(dispatch, /* SetBlur */Block.__(0, [true]));
+                        }));
+                  ElectronUtils$Coronate.currentWindow.on("focus", (function (param) {
+                          return Curry._1(dispatch, /* SetBlur */Block.__(0, [false]));
+                        }));
+                  Curry._1(dispatch, /* SetBlur */Block.__(0, [ElectronUtils$Coronate.currentWindow.isFocused()]));
+                  Curry._1(dispatch, /* SetFullScreen */Block.__(2, [!ElectronUtils$Coronate.currentWindow.isFocused()]));
+                  Curry._1(dispatch, /* SetMaximized */Block.__(3, [ElectronUtils$Coronate.currentWindow.isMaximized()]));
+                  return unregisterListeners;
+                }));
+          if (func !== undefined) {
+            return Caml_option.valFromOption(func);
+          }
+          
+        }), ([]));
+  return React.createElement("div", {
+              className: Cn.make(/* :: */[
+                    className,
+                    /* :: */[
+                      Cn.ifTrue("open-sidebar", state[/* isSidebarOpen */4]),
+                      /* :: */[
+                        Cn.ifTrue("closed-sidebar", !state[/* isSidebarOpen */4]),
+                        /* :: */[
+                          Cn.ifTrue("window-blur", state[/* isBlur */0]),
+                          /* :: */[
+                            Cn.ifTrue("isWindows", ElectronUtils$Coronate.isWin),
+                            /* :: */[
+                              Cn.ifTrue("isMacOS", ElectronUtils$Coronate.isMac),
+                              /* :: */[
+                                Cn.ifTrue("isElectron", ElectronUtils$Coronate.isElectron),
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ])
+            }, React.createElement(Window$WindowTitleBar, {
+                  state: state,
+                  dispatch: dispatch
+                }), React.createElement(make, makeProps(/* tuple */[
+                      state,
+                      dispatch
+                    ], children, /* () */0)), React.createElement(Dialog, {
+                  isOpen: state[/* isDialogOpen */1],
+                  onDismiss: (function (param) {
+                      return Curry._1(dispatch, /* SetDialog */Block.__(1, [false]));
+                    }),
+                  children: null,
+                  style: {
+                    backgroundColor: "var(--grey-20)"
+                  }
+                }, React.createElement("button", {
+                      className: "button-micro",
+                      onClick: (function (param) {
+                          return Curry._1(dispatch, /* SetDialog */Block.__(1, [false]));
+                        })
+                    }, "Close"), React.createElement(DialogAbout$Coronate.make, { })));
+}
+
+var $$Window = /* module */[/* make */make$1];
 
 export {
-  windowContext ,
-  Provider ,
-  useWindowContext ,
   global_title ,
   formatTitle ,
   initialWinState ,
+  WindowContext ,
   windowReducer ,
   toolbarClasses ,
   WindowsControls ,
   WindowTitleBar ,
+  $$Window ,
   
 }
 /* windowContext Not a pure module */

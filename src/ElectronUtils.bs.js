@@ -7,8 +7,8 @@ function ifElectron(prim) {
   return ElectronUtilsJs.ifElectron(prim);
 }
 
-function ifElectronOpen(prim) {
-  ElectronUtilsJs.ifElectronOpen(prim);
+function ifElectronOpen(prim, prim$1) {
+  ElectronUtilsJs.ifElectronOpen(prim, prim$1);
   return /* () */0;
 }
 

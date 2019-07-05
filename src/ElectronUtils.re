@@ -2,7 +2,7 @@
 external ifElectron: 'a => option('b) = "ifElectron";
 
 [@bs.val] [@bs.module "./electron-utils.js"]
-external ifElectronOpen: ReactEvent.synthetic('a) => unit = "ifElectronOpen";
+external ifElectronOpen: (ReactEvent.synthetic('a), string) => unit = "ifElectronOpen";
 
 [@bs.val] [@bs.module "./electron-utils.js"]
 external toggleMaximize: ReactEvent.synthetic('a) => unit = "toggleMaximize";
@@ -13,11 +13,16 @@ external macOSDoubleClick: ReactEvent.synthetic('a) => unit =
 
 type electronWindow = {
   .
-  [@bs.meth] "setFullScreen": (bool) => unit,
-  [@bs.meth] "unmaximize": (unit) => unit,
-  [@bs.meth] "maximize": (unit) => unit,
-  [@bs.meth] "minimize": (unit) => unit,
-  [@bs.meth] "close": (unit) => unit
+  [@bs.meth] "setFullScreen": bool => unit,
+  [@bs.meth] "unmaximize": unit => unit,
+  [@bs.meth] "maximize": unit => unit,
+  [@bs.meth] "minimize": unit => unit,
+  [@bs.meth] "close": unit => unit,
+  [@bs.meth] "isFocused": unit => bool,
+  [@bs.meth] "isFocused": unit => bool,
+  [@bs.meth] "isMaximized": unit => bool,
+  [@bs.meth] "removeAllListeners": string => unit,
+  [@bs.meth] "on": (string, unit => unit) => unit,
 };
 
 [@bs.val] [@bs.module "./electron-utils.js"]

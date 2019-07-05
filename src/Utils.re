@@ -22,3 +22,14 @@ let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
 [@bs.module] [@react.component]
 external visuallyHidden: (~children: React.element) => React.element =
   "@reach/visually-hidden";
+
+[@bs.module] [@react.component]
+external dialog:
+  (
+    ~isOpen: bool,
+    ~onDismiss: unit => unit,
+    ~children: React.element,
+    ~style: ReactDOMRe.Style.t=?
+  ) =>
+  React.element =
+  "@reach/dialog";

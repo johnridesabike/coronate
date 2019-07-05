@@ -16,21 +16,6 @@
 // import logo from "../icon-min.svg";
 open ElectronUtils;
 
-let windowContext = React.createContext();
-
-module Provider = {
-  let makeProps = (~value, ~children, ()) => {
-    "value": value,
-    "children": children,
-  };
-
-  let make = React.Context.provider(windowContext);
-};
-
-let useWindowContext = () => {
-  React.useContext(windowContext);
-};
-
 let global_title = "Coronate";
 
 let formatTitle = title => {
@@ -62,6 +47,24 @@ let initialWinState = {
   isMaximized: false,
   isSidebarOpen: true,
   title: "",
+};
+
+module WindowContext = {
+  let initialState = (initialWinState, (_:action) => ());
+  let windowContext = React.createContext(initialState);
+  
+  module Provider = {
+    let makeProps = (~value, ~children, ()) => {
+      "value": value,
+      "children": children,
+    };
+
+    let make = React.Context.provider(windowContext);
+  };
+
+  let useWindowContext = () => {
+    React.useContext(windowContext);
+  };
 };
 
 let windowReducer = (state, action) => {
@@ -185,91 +188,91 @@ module WindowTitleBar = {
       </div>
       <IfElectron onlyWin=true> <WindowsControls state /> </IfElectron>
     </header>;
-} /*                     className={classNames("win__footer", footerProps.className)*/;
+};
 
-// export function Window({children, className, ...rest}) {
-//     const [state, dispatch] = useReducer(windowReducer, initialWinState);
-//     useEffect(
-//         function setDocumentTitle() {
-//             document.title = formatTitle(state.title);
-//         },
-//         [state.title]
-//     );
-//     useEffect(
-//         function addEventListeners() {
-//             ifElectron(function () {
-//                 const win = electron.remote.getCurrentWindow();
-//                 // This will ensure that stale event listeners aren't persisted.
-//                 // That typically won't be relevant to production builds, but
-//                 // in a dev environment, where the page reloads frequently,
-//                 // stale listeners will accumulate. Note that this can cause
-//                 // side effects if other listeners are added elsewhere.
-//                 function unregisterListeners() {
-//                     win.removeAllListeners("enter-full-screen");
-//                     win.removeAllListeners("leave-full-screen");
-//                     win.removeAllListeners("blur");
-//                     win.removeAllListeners("focus");
-//                     win.removeAllListeners("maximize");
-//                     win.removeAllListeners("unmaximize");
-//                 }
-//                 unregisterListeners();
-//                 win.on(
-//                     "enter-full-screen",
-//                     () => dispatch({isFullScreen: true}));
-//                 win.on(
-//                     "leave-full-screen",
-//                     () => dispatch({isFullScreen: false})
-//                 );
-//                 win.on("maximize", () => dispatch({isMaximized: true}));
-//                 win.on("unmaximize", () => dispatch({isMaximized: false}));
-//                 win.on("blur", () => dispatch({isBlur: true}));
-//                 win.on("focus", () => dispatch({isBlur: false}));
-//                 dispatch({
-//                     isBlur: !win.isFocused(),
-//                     isFullScreen: win.isFullScreen(),
-//                     isMaximized: win.isMaximized()
-//                 });
-//                 // I don't think this ever really fires, but can it hurt?
-//                 return unregisterListeners;
-//             });
-//         },
-//         []
-//     );
-//     return (
-//         <div
-//             {...rest}
-//             className={classNames(
-//                 className,
-//                 {"open-sidebar": state.isSidebarOpen},
-//                 {"closed-sidebar": !state.isSidebarOpen},
-//                 {"window-blur": state.isBlur},
-//                 {"isWindows": isWin},
-//                 {"isMacOS": isMac},
-//                 {"isElectron": electron}
-//             )}
-//         >
-//             <WindowTitleBar state={state} dispatch={dispatch} />
-//             <WindowContext.Provider
-//                 value={{winDispatch: dispatch, winState: state}}
-//             >
-//                 {children}
-//             </WindowContext.Provider>
-//             <Dialog
-//                 isOpen={state.isDialogOpen}
-//                 onDismiss={() => dispatch({isDialogOpen: false})}
-//                 style={{backgroundColor: "var(--grey-20)"}}
-//             >
-//                 <button
-//                     className="button-micro"
-//                     onClick={() => dispatch({isDialogOpen: false})}
-//                 >
-//                     Close
-//                 </button>
-//                 <About/>
-//             </Dialog>
-//         </div>
-//     );
-// }
+module Window = {
+  [@bs.deriving abstract]
+  type domdoc = {mutable title: string};
+  [@bs.val] external document: domdoc = "document";
+  let make = (~children, ~className) => {
+    let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
+    React.useEffect1(
+      () => {
+        document->titleSet(formatTitle(state.title));
+        None;
+      },
+      [|state.title|],
+    );
+    React.useEffect0(() => {
+      let func =
+        ifElectron(() => {
+          // This will ensure that stale event listeners aren't persisted.
+          // That typically won't be relevant to production builds, but
+          // in a dev environment, where the page reloads frequently,
+          // stale listeners will accumulate. Note that this can cause
+          // side effects if other listeners are added elsewhere.
+          let unregisterListeners = () => {
+            currentWindow##removeAllListeners("enter-full-screen");
+            currentWindow##removeAllListeners("leave-full-screen");
+            currentWindow##removeAllListeners("blur");
+            currentWindow##removeAllListeners("focus");
+            currentWindow##removeAllListeners("maximize");
+            currentWindow##removeAllListeners("unmaximize");
+          };
+          unregisterListeners();
+          currentWindow##on("enter-full-screen", () =>
+            dispatch(SetFullScreen(true))
+          );
+          currentWindow##on("leave-full-screen", () =>
+            dispatch(SetFullScreen(false))
+          );
+          currentWindow##on("maximize", () => dispatch(SetMaximized(true)));
+          currentWindow##on("unmaximize", () =>
+            dispatch(SetMaximized(false))
+          );
+          currentWindow##on("blur", () => dispatch(SetBlur(true)));
+          currentWindow##on("focus", () => dispatch(SetBlur(false)));
+          dispatch(SetBlur(currentWindow##isFocused()));
+          dispatch(SetFullScreen(!currentWindow##isFocused()));
+          dispatch(SetMaximized(currentWindow##isMaximized()));
+          // I don't think this ever really fires, but can it hurt?
+          unregisterListeners;
+        });
+      switch (func) {
+      | None => None
+      | Some(func) => func
+      };
+    });
+    <div
+      className={Cn.make([
+        className,
+        "open-sidebar"->Cn.ifTrue(state.isSidebarOpen),
+        "closed-sidebar"->Cn.ifTrue(!state.isSidebarOpen),
+        "window-blur"->Cn.ifTrue(state.isBlur),
+        "isWindows"->Cn.ifTrue(isWin),
+        "isMacOS"->Cn.ifTrue(isMac),
+        "isElectron"->Cn.ifTrue(isElectron),
+      ])}>
+      <WindowTitleBar state dispatch />
+      <WindowContext.Provider value=(state, dispatch)>
+        children
+      </WindowContext.Provider>
+      <Utils.dialog
+        isOpen={state.isDialogOpen}
+        onDismiss={() => dispatch(SetDialog(false))}
+        style=ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())
+        >
+        <button
+          className="button-micro"
+          onClick={(_) => dispatch(SetDialog(false))}
+          >
+          {React.string("Close")}
+        </button>
+        <DialogAbout />
+      </Utils.dialog>
+    </div>;
+  };
+};
 
 // export function WindowBody({children, footer, sidebar, footerProps = {}}) {
 //     return (
@@ -283,3 +286,11 @@ module WindowTitleBar = {
 //             {footer && (
 //                 <footer
 //                     {...footerProps}
+//                     className={classNames("win__footer", footerProps.className)}
+//                 >
+//                     {footer}
+//                 </footer>
+//             )}
+//         </div>
+//     );
+// }
