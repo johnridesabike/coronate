@@ -2,250 +2,246 @@
 
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 
-var options_000 = /* avoidPairs : array */[
-  /* tuple */[
-    "BarbaraGordon_cL6SpI2",
-    "JamesGordon_1ts9xICT3"
+var options = {
+  avoidPairs: /* array */[
+    /* tuple */[
+      "BarbaraGordon_cL6SpI2",
+      "JamesGordon_1ts9xICT3"
+    ],
+    /* tuple */[
+      "Joker_v0z2416fpAZ9o2c",
+      "HarleyQuinn_-10-02VPH"
+    ],
+    /* tuple */[
+      "HelenaWayne_fE6O0DJcE",
+      "BruceWayne_lv_ZsUHTU9"
+    ]
   ],
-  /* tuple */[
-    "Joker_v0z2416fpAZ9o2c",
-    "HarleyQuinn_-10-02VPH"
-  ],
-  /* tuple */[
-    "HelenaWayne_fE6O0DJcE",
-    "BruceWayne_lv_ZsUHTU9"
-  ]
-];
-
-var options_002 = /* lastBackup */new Date("1970-01-01T00:00:00.000Z");
-
-var options = /* record */[
-  options_000,
-  /* byeValue */1.0,
-  options_002
-];
+  byeValue: 1.0,
+  lastBackup: new Date("1970-01-01T00:00:00.000Z")
+};
 
 var players = Js_dict.fromArray(/* array */[
       /* tuple */[
         "BruceWayne_lv_ZsUHTU9",
-        /* record */[
-          /* firstName */"Bruce",
-          /* id */"BruceWayne_lv_ZsUHTU9",
-          /* lastName */"Wayne",
-          /* matchCount */9,
-          /* rating */1998,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Bruce",
+          id: "BruceWayne_lv_ZsUHTU9",
+          lastName: "Wayne",
+          matchCount: 9,
+          rating: 1998,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "DickGrayson_1C2rCokHH",
-        /* record */[
-          /* firstName */"Dick",
-          /* id */"DickGrayson_1C2rCokHH",
-          /* lastName */"Grayson",
-          /* matchCount */9,
-          /* rating */1909,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Dick",
+          id: "DickGrayson_1C2rCokHH",
+          lastName: "Grayson",
+          matchCount: 9,
+          rating: 1909,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "AlfredPennyworth_y4dW",
-        /* record */[
-          /* firstName */"Alfred",
-          /* id */"AlfredPennyworth_y4dW",
-          /* lastName */"Pennyworth",
-          /* matchCount */9,
-          /* rating */1999,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Alfred",
+          id: "AlfredPennyworth_y4dW",
+          lastName: "Pennyworth",
+          matchCount: 9,
+          rating: 1999,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "BarbaraGordon_cL6SpI2",
-        /* record */[
-          /* firstName */"Barbara",
-          /* id */"BarbaraGordon_cL6SpI2",
-          /* lastName */"Gordon",
-          /* matchCount */7,
-          /* rating */1345,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Barbara",
+          id: "BarbaraGordon_cL6SpI2",
+          lastName: "Gordon",
+          matchCount: 7,
+          rating: 1345,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "KateKane_klFW6gDfUOTX",
-        /* record */[
-          /* firstName */"Kate",
-          /* id */"KateKane_klFW6gDfUOTX",
-          /* lastName */"Kane",
-          /* matchCount */9,
-          /* rating */1539,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Kate",
+          id: "KateKane_klFW6gDfUOTX",
+          lastName: "Kane",
+          matchCount: 9,
+          rating: 1539,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "SelinaKyle_rJBH-45Xoy",
-        /* record */[
-          /* firstName */"Selina",
-          /* id */"SelinaKyle_rJBH-45Xoy",
-          /* lastName */"Kyle",
-          /* matchCount */9,
-          /* rating */1495,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Selina",
+          id: "SelinaKyle_rJBH-45Xoy",
+          lastName: "Kyle",
+          matchCount: 9,
+          rating: 1495,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "JasonTodd_fc9CeOa-Luw",
-        /* record */[
-          /* firstName */"Jason",
-          /* id */"JasonTodd_fc9CeOa-Luw",
-          /* lastName */"Todd",
-          /* matchCount */7,
-          /* rating */1101,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Jason",
+          id: "JasonTodd_fc9CeOa-Luw",
+          lastName: "Todd",
+          matchCount: 7,
+          rating: 1101,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "JamesGordon_1ts9xICT3",
-        /* record */[
-          /* firstName */"James",
-          /* id */"JamesGordon_1ts9xICT3",
-          /* lastName */"Gordon",
-          /* matchCount */7,
-          /* rating */1167,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "James",
+          id: "JamesGordon_1ts9xICT3",
+          lastName: "Gordon",
+          matchCount: 7,
+          rating: 1167,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "HelenaWayne_fE6O0DJcE",
-        /* record */[
-          /* firstName */"Helena",
-          /* id */"HelenaWayne_fE6O0DJcE",
-          /* lastName */"Wayne",
-          /* matchCount */7,
-          /* rating */1087,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Helena",
+          id: "HelenaWayne_fE6O0DJcE",
+          lastName: "Wayne",
+          matchCount: 7,
+          rating: 1087,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "Joker_v0z2416fpAZ9o2c",
-        /* record */[
-          /* firstName */"Joker",
-          /* id */"Joker_v0z2416fpAZ9o2c",
-          /* lastName */"",
-          /* matchCount */1,
-          /* rating */1538,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Joker",
+          id: "Joker_v0z2416fpAZ9o2c",
+          lastName: "",
+          matchCount: 1,
+          rating: 1538,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "HarleyQuinn_-10-02VPH",
-        /* record */[
-          /* firstName */"Harley",
-          /* id */"HarleyQuinn_-10-02VPH",
-          /* lastName */"Quinn",
-          /* matchCount */1,
-          /* rating */1648,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Harley",
+          id: "HarleyQuinn_-10-02VPH",
+          lastName: "Quinn",
+          matchCount: 1,
+          rating: 1648,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "VictorFries_cWaQoW014",
-        /* record */[
-          /* firstName */"Victor",
-          /* id */"VictorFries_cWaQoW014",
-          /* lastName */"Fries",
-          /* matchCount */1,
-          /* rating */862,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Victor",
+          id: "VictorFries_cWaQoW014",
+          lastName: "Fries",
+          matchCount: 1,
+          rating: 862,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "OswaldCobblepot_lfCro",
-        /* record */[
-          /* firstName */"Oswald",
-          /* id */"OswaldCobblepot_lfCro",
-          /* lastName */"Cobblepot",
-          /* matchCount */1,
-          /* rating */1812,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Oswald",
+          id: "OswaldCobblepot_lfCro",
+          lastName: "Cobblepot",
+          matchCount: 1,
+          rating: 1812,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "RasAlGhul_k9n8k852bHr",
-        /* record */[
-          /* firstName */"Ra's",
-          /* id */"RasAlGhul_k9n8k852bHr",
-          /* lastName */"al Ghul",
-          /* matchCount */1,
-          /* rating */1404,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Ra's",
+          id: "RasAlGhul_k9n8k852bHr",
+          lastName: "al Ghul",
+          matchCount: 1,
+          rating: 1404,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "PamelaIsley_vH5vD8uPB",
-        /* record */[
-          /* firstName */"Pamela",
-          /* id */"PamelaIsley_vH5vD8uPB",
-          /* lastName */"Isley",
-          /* matchCount */1,
-          /* rating */965,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Pamela",
+          id: "PamelaIsley_vH5vD8uPB",
+          lastName: "Isley",
+          matchCount: 1,
+          rating: 965,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "EdwardNigma_j80JfWOZq",
-        /* record */[
-          /* firstName */"Edward",
-          /* id */"EdwardNigma_j80JfWOZq",
-          /* lastName */"Nigma",
-          /* matchCount */1,
-          /* rating */948,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Edward",
+          id: "EdwardNigma_j80JfWOZq",
+          lastName: "Nigma",
+          matchCount: 1,
+          rating: 948,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "JonathanCrane_R4Q8tVW",
-        /* record */[
-          /* firstName */"Jonathan",
-          /* id */"JonathanCrane_R4Q8tVW",
-          /* lastName */"Crane",
-          /* matchCount */1,
-          /* rating */899,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Jonathan",
+          id: "JonathanCrane_R4Q8tVW",
+          lastName: "Crane",
+          matchCount: 1,
+          rating: 899,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "HarveyDent_0eYIiP_Ij5",
-        /* record */[
-          /* firstName */"Harvey",
-          /* id */"HarveyDent_0eYIiP_Ij5",
-          /* lastName */"Dent",
-          /* matchCount */1,
-          /* rating */1649,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Harvey",
+          id: "HarveyDent_0eYIiP_Ij5",
+          lastName: "Dent",
+          matchCount: 1,
+          rating: 1649,
+          type_: "person"
+        }
       ],
       /* tuple */[
         "HugoStrange_az43f9mtS",
-        /* record */[
-          /* firstName */"Hugo",
-          /* id */"HugoStrange_az43f9mtS",
-          /* lastName */"Strange",
-          /* matchCount */0,
-          /* rating */800,
-          /* type_ */"person"
-        ]
+        {
+          firstName: "Hugo",
+          id: "HugoStrange_az43f9mtS",
+          lastName: "Strange",
+          matchCount: 0,
+          rating: 800,
+          type_: "person"
+        }
       ]
     ]);
 
 var tournaments = Js_dict.fromArray(/* array */[
       /* tuple */[
         "CaouTNel9k70jUJ0h6SYM",
-        /* record */[
-          /* byeQueue : array */[],
-          /* date */new Date("2019-05-22T12:14:47.670Z"),
-          /* id */"CaouTNel9k70jUJ0h6SYM",
-          /* name */"Wayne Manor Open",
-          /* playerIds : array */[
+        {
+          byeQueue: /* array */[],
+          date: new Date("2019-05-22T12:14:47.670Z"),
+          id: "CaouTNel9k70jUJ0h6SYM",
+          name: "Wayne Manor Open",
+          playerIds: /* array */[
             "BruceWayne_lv_ZsUHTU9",
             "DickGrayson_1C2rCokHH",
             "AlfredPennyworth_y4dW",
@@ -256,412 +252,412 @@ var tournaments = Js_dict.fromArray(/* array */[
             "JamesGordon_1ts9xICT3",
             "HelenaWayne_fE6O0DJcE"
           ],
-          /* roundList : array */[
+          roundList: /* array */[
             /* array */[
-              /* record */[
-                /* id */"FUASEeyES6ez_ROoT6qmU",
-                /* newRating : record */[
-                  /* whiteRating */1236,
-                  /* blackRating */2109
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1238,
-                  /* blackRating */2108
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JasonTodd_fc9CeOa-Luw",
-                  /* blackId */"DickGrayson_1C2rCokHH"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"gqPyD66QMPF-pup41xsB2",
-                /* newRating : record */[
-                  /* whiteRating */1049,
-                  /* blackRating */2260
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1049,
-                  /* blackRating */2260
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JamesGordon_1ts9xICT3",
-                  /* blackId */"AlfredPennyworth_y4dW"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"KpS1lQSzsQWQ3VVWJyA2P",
-                /* newRating : record */[
-                  /* whiteRating */1553,
-                  /* blackRating */1722
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1527,
-                  /* blackRating */1755
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"KateKane_klFW6gDfUOTX",
-                  /* blackId */"BarbaraGordon_cL6SpI2"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.5,
-                  /* blackScore */0.5
-                ]
-              ],
-              /* record */[
-                /* id */"OgFuy-wq8mz378EWat46u",
-                /* newRating : record */[
-                  /* whiteRating */1278,
-                  /* blackRating */1887
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1284,
-                  /* blackRating */1881
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"SelinaKyle_rJBH-45Xoy",
-                  /* blackId */"BruceWayne_lv_ZsUHTU9"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"f8Ps3GUmd0ZRsBBY8rZOp",
-                /* newRating : record */[
-                  /* whiteRating */831,
-                  /* blackRating */0
-                ],
-                /* origRating : record */[
-                  /* whiteRating */831,
-                  /* blackRating */0
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HelenaWayne_fE6O0DJcE",
-                  /* blackId */"________DUMMY________"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ]
+              {
+                id: "FUASEeyES6ez_ROoT6qmU",
+                newRating: {
+                  whiteRating: 1236,
+                  blackRating: 2109
+                },
+                origRating: {
+                  whiteRating: 1238,
+                  blackRating: 2108
+                },
+                playerIds: {
+                  whiteId: "JasonTodd_fc9CeOa-Luw",
+                  blackId: "DickGrayson_1C2rCokHH"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "gqPyD66QMPF-pup41xsB2",
+                newRating: {
+                  whiteRating: 1049,
+                  blackRating: 2260
+                },
+                origRating: {
+                  whiteRating: 1049,
+                  blackRating: 2260
+                },
+                playerIds: {
+                  whiteId: "JamesGordon_1ts9xICT3",
+                  blackId: "AlfredPennyworth_y4dW"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "KpS1lQSzsQWQ3VVWJyA2P",
+                newRating: {
+                  whiteRating: 1553,
+                  blackRating: 1722
+                },
+                origRating: {
+                  whiteRating: 1527,
+                  blackRating: 1755
+                },
+                playerIds: {
+                  whiteId: "KateKane_klFW6gDfUOTX",
+                  blackId: "BarbaraGordon_cL6SpI2"
+                },
+                result: {
+                  whiteScore: 0.5,
+                  blackScore: 0.5
+                }
+              },
+              {
+                id: "OgFuy-wq8mz378EWat46u",
+                newRating: {
+                  whiteRating: 1278,
+                  blackRating: 1887
+                },
+                origRating: {
+                  whiteRating: 1284,
+                  blackRating: 1881
+                },
+                playerIds: {
+                  whiteId: "SelinaKyle_rJBH-45Xoy",
+                  blackId: "BruceWayne_lv_ZsUHTU9"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "f8Ps3GUmd0ZRsBBY8rZOp",
+                newRating: {
+                  whiteRating: 831,
+                  blackRating: 0
+                },
+                origRating: {
+                  whiteRating: 831,
+                  blackRating: 0
+                },
+                playerIds: {
+                  whiteId: "HelenaWayne_fE6O0DJcE",
+                  blackId: "________DUMMY________"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              }
             ],
             /* array */[
-              /* record */[
-                /* id */"6seKrw7ehbhL766g6L2PF",
-                /* newRating : record */[
-                  /* whiteRating */2122,
-                  /* blackRating */1672
-                ],
-                /* origRating : record */[
-                  /* whiteRating */2109,
-                  /* blackRating */1685
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"DickGrayson_1C2rCokHH",
-                  /* blackId */"KateKane_klFW6gDfUOTX"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"TCSjz48ZXqjamtYUFNg0B",
-                /* newRating : record */[
-                  /* whiteRating */1887,
-                  /* blackRating */830
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1887,
-                  /* blackRating */831
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"BruceWayne_lv_ZsUHTU9",
-                  /* blackId */"HelenaWayne_fE6O0DJcE"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"zF64DEsN8sHydpDDsg37E",
-                /* newRating : record */[
-                  /* whiteRating */2101,
-                  /* blackRating */1437
-                ],
-                /* origRating : record */[
-                  /* whiteRating */2260,
-                  /* blackRating */1278
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"AlfredPennyworth_y4dW",
-                  /* blackId */"SelinaKyle_rJBH-45Xoy"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"qVGt1EJq9y0MmvFtumM0A",
-                /* newRating : record */[
-                  /* whiteRating */1574,
-                  /* blackRating */1207
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1545,
-                  /* blackRating */1236
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"BarbaraGordon_cL6SpI2",
-                  /* blackId */"JasonTodd_fc9CeOa-Luw"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"UhfHaRWr_-BtVo22xAuJu",
-                /* newRating : record */[
-                  /* whiteRating */1049,
-                  /* blackRating */0
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1049,
-                  /* blackRating */0
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JamesGordon_1ts9xICT3",
-                  /* blackId */"________DUMMY________"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ]
+              {
+                id: "6seKrw7ehbhL766g6L2PF",
+                newRating: {
+                  whiteRating: 2122,
+                  blackRating: 1672
+                },
+                origRating: {
+                  whiteRating: 2109,
+                  blackRating: 1685
+                },
+                playerIds: {
+                  whiteId: "DickGrayson_1C2rCokHH",
+                  blackId: "KateKane_klFW6gDfUOTX"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "TCSjz48ZXqjamtYUFNg0B",
+                newRating: {
+                  whiteRating: 1887,
+                  blackRating: 830
+                },
+                origRating: {
+                  whiteRating: 1887,
+                  blackRating: 831
+                },
+                playerIds: {
+                  whiteId: "BruceWayne_lv_ZsUHTU9",
+                  blackId: "HelenaWayne_fE6O0DJcE"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "zF64DEsN8sHydpDDsg37E",
+                newRating: {
+                  whiteRating: 2101,
+                  blackRating: 1437
+                },
+                origRating: {
+                  whiteRating: 2260,
+                  blackRating: 1278
+                },
+                playerIds: {
+                  whiteId: "AlfredPennyworth_y4dW",
+                  blackId: "SelinaKyle_rJBH-45Xoy"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "qVGt1EJq9y0MmvFtumM0A",
+                newRating: {
+                  whiteRating: 1574,
+                  blackRating: 1207
+                },
+                origRating: {
+                  whiteRating: 1545,
+                  blackRating: 1236
+                },
+                playerIds: {
+                  whiteId: "BarbaraGordon_cL6SpI2",
+                  blackId: "JasonTodd_fc9CeOa-Luw"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "UhfHaRWr_-BtVo22xAuJu",
+                newRating: {
+                  whiteRating: 1049,
+                  blackRating: 0
+                },
+                origRating: {
+                  whiteRating: 1049,
+                  blackRating: 0
+                },
+                playerIds: {
+                  whiteId: "JamesGordon_1ts9xICT3",
+                  blackId: "________DUMMY________"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              }
             ],
             /* array */[
-              /* record */[
-                /* id */"odrOOnZJUe0YAwkfUDqUb",
-                /* newRating : record */[
-                  /* whiteRating */1998,
-                  /* blackRating */1990
-                ],
-                /* origRating : record */[
-                  /* whiteRating */2101,
-                  /* blackRating */1887
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"AlfredPennyworth_y4dW",
-                  /* blackId */"BruceWayne_lv_ZsUHTU9"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"qzCMqUwNIDAcFSAuA5yCm",
-                /* newRating : record */[
-                  /* whiteRating */990,
-                  /* blackRating */2008
-                ],
-                /* origRating : record */[
-                  /* whiteRating */830,
-                  /* blackRating */2122
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HelenaWayne_fE6O0DJcE",
-                  /* blackId */"DickGrayson_1C2rCokHH"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"6QgVqdtcJPjfVp3UZ8S9g",
-                /* newRating : record */[
-                  /* whiteRating */1529,
-                  /* blackRating */1464
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1437,
-                  /* blackRating */1574
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"SelinaKyle_rJBH-45Xoy",
-                  /* blackId */"BarbaraGordon_cL6SpI2"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"as45gODKMLC5-3_UsTyx5",
-                /* newRating : record */[
-                  /* whiteRating */1542,
-                  /* blackRating */1244
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1672,
-                  /* blackRating */1049
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"KateKane_klFW6gDfUOTX",
-                  /* blackId */"JamesGordon_1ts9xICT3"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"Pc0CWecSfeGNfvBPjyEIj",
-                /* newRating : record */[
-                  /* whiteRating */1207,
-                  /* blackRating */0
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1207,
-                  /* blackRating */0
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JasonTodd_fc9CeOa-Luw",
-                  /* blackId */"________DUMMY________"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ]
+              {
+                id: "odrOOnZJUe0YAwkfUDqUb",
+                newRating: {
+                  whiteRating: 1998,
+                  blackRating: 1990
+                },
+                origRating: {
+                  whiteRating: 2101,
+                  blackRating: 1887
+                },
+                playerIds: {
+                  whiteId: "AlfredPennyworth_y4dW",
+                  blackId: "BruceWayne_lv_ZsUHTU9"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "qzCMqUwNIDAcFSAuA5yCm",
+                newRating: {
+                  whiteRating: 990,
+                  blackRating: 2008
+                },
+                origRating: {
+                  whiteRating: 830,
+                  blackRating: 2122
+                },
+                playerIds: {
+                  whiteId: "HelenaWayne_fE6O0DJcE",
+                  blackId: "DickGrayson_1C2rCokHH"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "6QgVqdtcJPjfVp3UZ8S9g",
+                newRating: {
+                  whiteRating: 1529,
+                  blackRating: 1464
+                },
+                origRating: {
+                  whiteRating: 1437,
+                  blackRating: 1574
+                },
+                playerIds: {
+                  whiteId: "SelinaKyle_rJBH-45Xoy",
+                  blackId: "BarbaraGordon_cL6SpI2"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "as45gODKMLC5-3_UsTyx5",
+                newRating: {
+                  whiteRating: 1542,
+                  blackRating: 1244
+                },
+                origRating: {
+                  whiteRating: 1672,
+                  blackRating: 1049
+                },
+                playerIds: {
+                  whiteId: "KateKane_klFW6gDfUOTX",
+                  blackId: "JamesGordon_1ts9xICT3"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "Pc0CWecSfeGNfvBPjyEIj",
+                newRating: {
+                  whiteRating: 1207,
+                  blackRating: 0
+                },
+                origRating: {
+                  whiteRating: 1207,
+                  blackRating: 0
+                },
+                playerIds: {
+                  whiteId: "JasonTodd_fc9CeOa-Luw",
+                  blackId: "________DUMMY________"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              }
             ],
             /* array */[
-              /* record */[
-                /* id */"xj0y_Iqkb-g3MDGgmYx2-",
-                /* newRating : record */[
-                  /* whiteRating */1998,
-                  /* blackRating */1534
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1990,
-                  /* blackRating */1542
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"BruceWayne_lv_ZsUHTU9",
-                  /* blackId */"KateKane_klFW6gDfUOTX"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"HWYWtsyaqUkHRExM6kQrt",
-                /* newRating : record */[
-                  /* whiteRating */2009,
-                  /* blackRating */1243
-                ],
-                /* origRating : record */[
-                  /* whiteRating */2008,
-                  /* blackRating */1244
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"DickGrayson_1C2rCokHH",
-                  /* blackId */"JamesGordon_1ts9xICT3"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"uAzHZVMC71liQZ-6fWWeD",
-                /* newRating : record */[
-                  /* whiteRating */983,
-                  /* blackRating */1534
-                ],
-                /* origRating : record */[
-                  /* whiteRating */990,
-                  /* blackRating */1529
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HelenaWayne_fE6O0DJcE",
-                  /* blackId */"SelinaKyle_rJBH-45Xoy"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"_tCBn9YNIyto-vXpxm7WI",
-                /* newRating : record */[
-                  /* whiteRating */1205,
-                  /* blackRating */1999
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1207,
-                  /* blackRating */1998
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JasonTodd_fc9CeOa-Luw",
-                  /* blackId */"AlfredPennyworth_y4dW"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"L7yatE2oVKlV7LOY6-d7Y",
-                /* newRating : record */[
-                  /* whiteRating */1464,
-                  /* blackRating */0
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1464,
-                  /* blackRating */0
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"BarbaraGordon_cL6SpI2",
-                  /* blackId */"________DUMMY________"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ]
+              {
+                id: "xj0y_Iqkb-g3MDGgmYx2-",
+                newRating: {
+                  whiteRating: 1998,
+                  blackRating: 1534
+                },
+                origRating: {
+                  whiteRating: 1990,
+                  blackRating: 1542
+                },
+                playerIds: {
+                  whiteId: "BruceWayne_lv_ZsUHTU9",
+                  blackId: "KateKane_klFW6gDfUOTX"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "HWYWtsyaqUkHRExM6kQrt",
+                newRating: {
+                  whiteRating: 2009,
+                  blackRating: 1243
+                },
+                origRating: {
+                  whiteRating: 2008,
+                  blackRating: 1244
+                },
+                playerIds: {
+                  whiteId: "DickGrayson_1C2rCokHH",
+                  blackId: "JamesGordon_1ts9xICT3"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "uAzHZVMC71liQZ-6fWWeD",
+                newRating: {
+                  whiteRating: 983,
+                  blackRating: 1534
+                },
+                origRating: {
+                  whiteRating: 990,
+                  blackRating: 1529
+                },
+                playerIds: {
+                  whiteId: "HelenaWayne_fE6O0DJcE",
+                  blackId: "SelinaKyle_rJBH-45Xoy"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "_tCBn9YNIyto-vXpxm7WI",
+                newRating: {
+                  whiteRating: 1205,
+                  blackRating: 1999
+                },
+                origRating: {
+                  whiteRating: 1207,
+                  blackRating: 1998
+                },
+                playerIds: {
+                  whiteId: "JasonTodd_fc9CeOa-Luw",
+                  blackId: "AlfredPennyworth_y4dW"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "L7yatE2oVKlV7LOY6-d7Y",
+                newRating: {
+                  whiteRating: 1464,
+                  blackRating: 0
+                },
+                origRating: {
+                  whiteRating: 1464,
+                  blackRating: 0
+                },
+                playerIds: {
+                  whiteId: "BarbaraGordon_cL6SpI2",
+                  blackId: "________DUMMY________"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              }
             ]
           ],
-          /* tieBreaks : array */[
+          tieBreaks: /* array */[
             0,
             1,
             2,
             3
           ]
-        ]
+        }
       ],
       /* tuple */[
         "tvAdS4YbSOznrBgrg0ITA",
-        /* record */[
-          /* byeQueue : array */[],
-          /* date */new Date("2019-05-29T12:15:20.593Z"),
-          /* id */"tvAdS4YbSOznrBgrg0ITA",
-          /* name */"The Battle for Gotham City",
-          /* playerIds : array */[
+        {
+          byeQueue: /* array */[],
+          date: new Date("2019-05-29T12:15:20.593Z"),
+          id: "tvAdS4YbSOznrBgrg0ITA",
+          name: "The Battle for Gotham City",
+          playerIds: /* array */[
             "BruceWayne_lv_ZsUHTU9",
             "DickGrayson_1C2rCokHH",
             "AlfredPennyworth_y4dW",
@@ -681,186 +677,186 @@ var tournaments = Js_dict.fromArray(/* array */[
             "JonathanCrane_R4Q8tVW",
             "HarveyDent_0eYIiP_Ij5"
           ],
-          /* roundList : array */[/* array */[
-              /* record */[
-                /* id */"5f8GYcR8V44NYvTN1cZle",
-                /* newRating : record */[
-                  /* whiteRating */948,
-                  /* blackRating */1998
-                ],
-                /* origRating : record */[
-                  /* whiteRating */950,
-                  /* blackRating */1998
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"EdwardNigma_j80JfWOZq",
-                  /* blackId */"BruceWayne_lv_ZsUHTU9"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"GPTct4sL368SryTLFUu8E",
-                /* newRating : record */[
-                  /* whiteRating */899,
-                  /* blackRating */1999
-                ],
-                /* origRating : record */[
-                  /* whiteRating */900,
-                  /* blackRating */1999
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"JonathanCrane_R4Q8tVW",
-                  /* blackId */"AlfredPennyworth_y4dW"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"AxtoztZ6O19nyrLfZ4YaU",
-                /* newRating : record */[
-                  /* whiteRating */1649,
-                  /* blackRating */1909
-                ],
-                /* origRating : record */[
-                  /* whiteRating */850,
-                  /* blackRating */2009
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HarveyDent_0eYIiP_Ij5",
-                  /* blackId */"DickGrayson_1C2rCokHH"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"bUM_tWQsAtPe1gqRzlXd1",
-                /* newRating : record */[
-                  /* whiteRating */1404,
-                  /* blackRating */1495
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1050,
-                  /* blackRating */1534
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"RasAlGhul_k9n8k852bHr",
-                  /* blackId */"SelinaKyle_rJBH-45Xoy"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.5,
-                  /* blackScore */0.5
-                ]
-              ],
-              /* record */[
-                /* id */"bAOVlP-M5xaPk1qofNReb",
-                /* newRating : record */[
-                  /* whiteRating */1812,
-                  /* blackRating */1345
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1100,
-                  /* blackRating */1464
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"OswaldCobblepot_lfCro",
-                  /* blackId */"BarbaraGordon_cL6SpI2"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"4omlgiGSaE1BmrHdABSym",
-                /* newRating : record */[
-                  /* whiteRating */965,
-                  /* blackRating */1539
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1000,
-                  /* blackRating */1534
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"PamelaIsley_vH5vD8uPB",
-                  /* blackId */"KateKane_klFW6gDfUOTX"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"ysdEVYS2AyuKyOAwLLpTF",
-                /* newRating : record */[
-                  /* whiteRating */1648,
-                  /* blackRating */1167
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1200,
-                  /* blackRating */1242
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HarleyQuinn_-10-02VPH",
-                  /* blackId */"JamesGordon_1ts9xICT3"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ],
-              /* record */[
-                /* id */"YoJ9WGokAYrmJjfxCCf87",
-                /* newRating : record */[
-                  /* whiteRating */862,
-                  /* blackRating */1538
-                ],
-                /* origRating : record */[
-                  /* whiteRating */1150,
-                  /* blackRating */1250
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"VictorFries_cWaQoW014",
-                  /* blackId */"Joker_v0z2416fpAZ9o2c"
-                ],
-                /* result : record */[
-                  /* whiteScore */0.0,
-                  /* blackScore */1.0
-                ]
-              ],
-              /* record */[
-                /* id */"Az7SBl3cs7rbwKPBI0IsU",
-                /* newRating : record */[
-                  /* whiteRating */1087,
-                  /* blackRating */1101
-                ],
-                /* origRating : record */[
-                  /* whiteRating */983,
-                  /* blackRating */1205
-                ],
-                /* playerIds : record */[
-                  /* whiteId */"HelenaWayne_fE6O0DJcE",
-                  /* blackId */"JasonTodd_fc9CeOa-Luw"
-                ],
-                /* result : record */[
-                  /* whiteScore */1.0,
-                  /* blackScore */0.0
-                ]
-              ]
+          roundList: /* array */[/* array */[
+              {
+                id: "5f8GYcR8V44NYvTN1cZle",
+                newRating: {
+                  whiteRating: 948,
+                  blackRating: 1998
+                },
+                origRating: {
+                  whiteRating: 950,
+                  blackRating: 1998
+                },
+                playerIds: {
+                  whiteId: "EdwardNigma_j80JfWOZq",
+                  blackId: "BruceWayne_lv_ZsUHTU9"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "GPTct4sL368SryTLFUu8E",
+                newRating: {
+                  whiteRating: 899,
+                  blackRating: 1999
+                },
+                origRating: {
+                  whiteRating: 900,
+                  blackRating: 1999
+                },
+                playerIds: {
+                  whiteId: "JonathanCrane_R4Q8tVW",
+                  blackId: "AlfredPennyworth_y4dW"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "AxtoztZ6O19nyrLfZ4YaU",
+                newRating: {
+                  whiteRating: 1649,
+                  blackRating: 1909
+                },
+                origRating: {
+                  whiteRating: 850,
+                  blackRating: 2009
+                },
+                playerIds: {
+                  whiteId: "HarveyDent_0eYIiP_Ij5",
+                  blackId: "DickGrayson_1C2rCokHH"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "bUM_tWQsAtPe1gqRzlXd1",
+                newRating: {
+                  whiteRating: 1404,
+                  blackRating: 1495
+                },
+                origRating: {
+                  whiteRating: 1050,
+                  blackRating: 1534
+                },
+                playerIds: {
+                  whiteId: "RasAlGhul_k9n8k852bHr",
+                  blackId: "SelinaKyle_rJBH-45Xoy"
+                },
+                result: {
+                  whiteScore: 0.5,
+                  blackScore: 0.5
+                }
+              },
+              {
+                id: "bAOVlP-M5xaPk1qofNReb",
+                newRating: {
+                  whiteRating: 1812,
+                  blackRating: 1345
+                },
+                origRating: {
+                  whiteRating: 1100,
+                  blackRating: 1464
+                },
+                playerIds: {
+                  whiteId: "OswaldCobblepot_lfCro",
+                  blackId: "BarbaraGordon_cL6SpI2"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "4omlgiGSaE1BmrHdABSym",
+                newRating: {
+                  whiteRating: 965,
+                  blackRating: 1539
+                },
+                origRating: {
+                  whiteRating: 1000,
+                  blackRating: 1534
+                },
+                playerIds: {
+                  whiteId: "PamelaIsley_vH5vD8uPB",
+                  blackId: "KateKane_klFW6gDfUOTX"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "ysdEVYS2AyuKyOAwLLpTF",
+                newRating: {
+                  whiteRating: 1648,
+                  blackRating: 1167
+                },
+                origRating: {
+                  whiteRating: 1200,
+                  blackRating: 1242
+                },
+                playerIds: {
+                  whiteId: "HarleyQuinn_-10-02VPH",
+                  blackId: "JamesGordon_1ts9xICT3"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              },
+              {
+                id: "YoJ9WGokAYrmJjfxCCf87",
+                newRating: {
+                  whiteRating: 862,
+                  blackRating: 1538
+                },
+                origRating: {
+                  whiteRating: 1150,
+                  blackRating: 1250
+                },
+                playerIds: {
+                  whiteId: "VictorFries_cWaQoW014",
+                  blackId: "Joker_v0z2416fpAZ9o2c"
+                },
+                result: {
+                  whiteScore: 0.0,
+                  blackScore: 1.0
+                }
+              },
+              {
+                id: "Az7SBl3cs7rbwKPBI0IsU",
+                newRating: {
+                  whiteRating: 1087,
+                  blackRating: 1101
+                },
+                origRating: {
+                  whiteRating: 983,
+                  blackRating: 1205
+                },
+                playerIds: {
+                  whiteId: "HelenaWayne_fE6O0DJcE",
+                  blackId: "JasonTodd_fc9CeOa-Luw"
+                },
+                result: {
+                  whiteScore: 1.0,
+                  blackScore: 0.0
+                }
+              }
             ]],
-          /* tieBreaks : array */[
+          tieBreaks: /* array */[
             0,
             1,
             2,
             3
           ]
-        ]
+        }
       ]
     ]);
 

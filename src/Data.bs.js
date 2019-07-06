@@ -3,17 +3,7 @@
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
-
-function colorToJs(param) {
-  return param + 0 | 0;
-}
-
-function colorFromJs(param) {
-  if (param <= 1 && 0 <= param) {
-    return param - 0 | 0;
-  }
-  
-}
+import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 
 var dummy_id = "________DUMMY________";
 
@@ -21,94 +11,28 @@ function isNanoId(str) {
   return (/^[A-Za-z0-9_-]{21}$/).test(str);
 }
 
-function playerToJs(param) {
-  return {
-          firstName: param[/* firstName */0],
-          id: param[/* id */1],
-          lastName: param[/* lastName */2],
-          matchCount: param[/* matchCount */3],
-          rating: param[/* rating */4],
-          type_: param[/* type_ */5]
-        };
-}
-
-function playerFromJs(param) {
-  return /* record */[
-          /* firstName */param.firstName,
-          /* id */param.id,
-          /* lastName */param.lastName,
-          /* matchCount */param.matchCount,
-          /* rating */param.rating,
-          /* type_ */param.type_
-        ];
-}
-
-function matchToJs(param) {
-  return {
-          id: param[/* id */0],
-          newRating: param[/* newRating */1],
-          origRating: param[/* origRating */2],
-          playerIds: param[/* playerIds */3],
-          result: param[/* result */4]
-        };
-}
-
-function matchFromJs(param) {
-  return /* record */[
-          /* id */param.id,
-          /* newRating */param.newRating,
-          /* origRating */param.origRating,
-          /* playerIds */param.playerIds,
-          /* result */param.result
-        ];
-}
-
-function tournamentToJs(param) {
-  return {
-          byeQueue: param[/* byeQueue */0],
-          date: param[/* date */1],
-          id: param[/* id */2],
-          name: param[/* name */3],
-          playerIds: param[/* playerIds */4],
-          roundList: param[/* roundList */5],
-          tieBreaks: param[/* tieBreaks */6]
-        };
-}
-
-function tournamentFromJs(param) {
-  return /* record */[
-          /* byeQueue */param.byeQueue,
-          /* date */param.date,
-          /* id */param.id,
-          /* name */param.name,
-          /* playerIds */param.playerIds,
-          /* roundList */param.roundList,
-          /* tieBreaks */param.tieBreaks
-        ];
-}
-
 function isDummyId(playerId) {
   return playerId === dummy_id;
 }
 
-var dummyPlayer = /* record */[
-  /* firstName */"Bye",
-  /* id */dummy_id,
-  /* lastName */"Player",
-  /* matchCount */0,
-  /* rating */0,
-  /* type_ */"dummy"
-];
+var dummyPlayer = {
+  firstName: "Bye",
+  id: dummy_id,
+  lastName: "Player",
+  matchCount: 0,
+  rating: 0,
+  type_: "dummy"
+};
 
 function makeMissingPlayer(id) {
-  return /* record */[
-          /* firstName */"Anonymous",
-          /* id */id,
-          /* lastName */"Player",
-          /* matchCount */0,
-          /* rating */0,
-          /* type_ */"missing"
-        ];
+  return {
+          firstName: "Anonymous",
+          id: id,
+          lastName: "Player",
+          matchCount: 0,
+          rating: 0,
+          type_: "missing"
+        };
 }
 
 function getPlayerMaybe(playerDict, id) {
@@ -118,12 +42,25 @@ function getPlayerMaybe(playerDict, id) {
   } else {
     var match$1 = Js_dict.get(playerDict, id);
     if (match$1 !== undefined) {
-      return match$1;
+      return Caml_option.valFromOption(match$1);
     } else {
       return makeMissingPlayer(id);
     }
   }
 }
+
+var Player = /* module */[
+  /* isDummyId */isDummyId,
+  /* dummyPlayer */dummyPlayer,
+  /* makeMissingPlayer */makeMissingPlayer,
+  /* getPlayerMaybe */getPlayerMaybe
+];
+
+var Match = /* module */[];
+
+var Tournament = /* module */[];
+
+var Db = /* module */[];
 
 function rounds2Matches(roundList, lastRound, param) {
   var rounds = lastRound !== undefined ? (function (param) {
@@ -141,16 +78,16 @@ function getUnmatched(roundList, players, roundId) {
   var matchList = match !== undefined ? match : /* array */[];
   var matchedIds = matchList.reduce((function (acc, match_) {
           return acc.concat(/* array */[
-                      match_[/* playerIds */3][/* whiteId */0],
-                      match_[/* playerIds */3][/* blackId */1]
+                      match_.playerIds.whiteId,
+                      match_.playerIds.blackId
                     ]);
         }), /* array */[]);
   var unmatched = { };
   Js_dict.values(players).forEach((function (player) {
-          if (matchedIds.includes(player[/* id */2])) {
+          if (matchedIds.includes(player.id)) {
             return 0;
           } else {
-            unmatched[player[/* id */2]] = player;
+            unmatched[player.id] = player;
             return /* () */0;
           }
         }));
@@ -164,7 +101,7 @@ function isRoundComplete(roundList, players, roundId) {
   } else {
     var unmatched = getUnmatched(roundList, players, roundId);
     var results = Caml_array.caml_array_get(roundList, roundId).map((function (match_) {
-            return match_[/* result */4][/* whiteScore */0] + match_[/* result */4][/* blackScore */1];
+            return match_.result.whiteScore + match_.result.blackScore;
           }));
     if (Object.keys(unmatched).length === 0) {
       return !results.includes(0.0);
@@ -174,10 +111,6 @@ function isRoundComplete(roundList, players, roundId) {
   }
 }
 
-var white = 0;
-
-var black = 1;
-
 var win = 1.0;
 
 var loss = 0.0;
@@ -185,25 +118,15 @@ var loss = 0.0;
 var draw = 0.5;
 
 export {
-  colorToJs ,
-  colorFromJs ,
-  white ,
-  black ,
   win ,
   loss ,
   draw ,
   dummy_id ,
   isNanoId ,
-  playerToJs ,
-  playerFromJs ,
-  matchToJs ,
-  matchFromJs ,
-  tournamentToJs ,
-  tournamentFromJs ,
-  isDummyId ,
-  dummyPlayer ,
-  makeMissingPlayer ,
-  getPlayerMaybe ,
+  Player ,
+  Match ,
+  Tournament ,
+  Db ,
   rounds2Matches ,
   getUnmatched ,
   isRoundComplete ,

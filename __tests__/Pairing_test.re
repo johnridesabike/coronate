@@ -1,20 +1,21 @@
 open Jest;
 open Expect;
 open Converters;
+open Data;
 
 let loadPairData = tourneyId => {
   let tournament = TestData.tournaments->Js.Dict.unsafeGet(tourneyId);
-  let playerIds = tournament.playerIds;
-  let roundList = tournament.roundList;
+  let playerIds = tournament->Tournament.playerIdsGet;
+  let roundList = tournament->Tournament.roundListGet;
   let players = Js.Dict.empty();
   Js.Dict.values(TestData.players)
-  |> Js.Array.forEach((player: Data.player) =>
-       if (playerIds |> Js.Array.includes(player.id)) {
-         players->Js.Dict.set(player.id, player);
+  |> Js.Array.forEach((player) =>
+       if (playerIds |> Js.Array.includes(player->Player.idGet)) {
+         players->Js.Dict.set(player->Player.idGet, player);
        }
      );
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
-  |> createPairingData(players, TestData.options.avoidPairs)
+  |> createPairingData(players, TestData.options->Db.avoidPairsGet)
   |> Pairing.setUpperHalves;
 };
 

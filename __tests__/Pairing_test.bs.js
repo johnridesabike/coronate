@@ -10,18 +10,18 @@ import * as Caml_builtin_exceptions from "bs-platform/lib/es6/caml_builtin_excep
 
 function loadPairData(tourneyId) {
   var tournament = TestData$Coronate.tournaments[tourneyId];
-  var playerIds = tournament[/* playerIds */4];
-  var roundList = tournament[/* roundList */5];
+  var playerIds = tournament.playerIds;
+  var roundList = tournament.roundList;
   var players = { };
   Js_dict.values(TestData$Coronate.players).forEach((function (player) {
-          if (playerIds.includes(player[/* id */1])) {
-            players[player[/* id */1]] = player;
+          if (playerIds.includes(player.id)) {
+            players[player.id] = player;
             return /* () */0;
           } else {
             return 0;
           }
         }));
-  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(players, TestData$Coronate.options[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
+  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(players, TestData$Coronate.options.avoidPairs, Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
 }
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {
@@ -47,7 +47,7 @@ Jest.describe("The lowest-ranking player is automatically picked for byes.", (fu
                               Caml_builtin_exceptions.assert_failure,
                               /* tuple */[
                                 "Pairing_test.re",
-                                42,
+                                43,
                                 14
                               ]
                             ];
@@ -70,7 +70,7 @@ Jest.test("The bye signup queue works", (function (param) {
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  55,
+                  56,
                   12
                 ]
               ];
@@ -88,7 +88,7 @@ Jest.test("If all player have (impossibly) played a bye round, the lowest-rated 
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  66,
+                  67,
                   14
                 ]
               ];

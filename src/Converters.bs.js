@@ -57,14 +57,14 @@ function matches2ScoreData(matchList) {
           };
   };
   matchList.forEach((function (match_) {
-          var playerIds = match_[/* playerIds */3];
-          var result = match_[/* result */4];
-          var newRating = match_[/* newRating */1];
-          var origRating = match_[/* origRating */2];
-          var newDataWhite = makeScoreData(playerIds[/* whiteId */0], origRating[/* whiteRating */0], newRating[/* whiteRating */0], result[/* whiteScore */0], playerIds[/* blackId */1], 0);
-          scoreDict[playerIds[/* whiteId */0]] = newDataWhite;
-          var newDataBlack = makeScoreData(playerIds[/* blackId */1], origRating[/* blackRating */1], newRating[/* blackRating */1], result[/* blackScore */1], playerIds[/* whiteId */0], 1);
-          scoreDict[playerIds[/* blackId */1]] = newDataBlack;
+          var playerIds = match_.playerIds;
+          var result = match_.result;
+          var newRating = match_.newRating;
+          var origRating = match_.origRating;
+          var newDataWhite = makeScoreData(playerIds.whiteId, origRating.whiteRating, newRating.whiteRating, result.whiteScore, playerIds.blackId, 0);
+          scoreDict[playerIds.whiteId] = newDataWhite;
+          var newDataBlack = makeScoreData(playerIds.blackId, origRating.blackRating, newRating.blackRating, result.blackScore, playerIds.whiteId, 1);
+          scoreDict[playerIds.blackId] = newDataBlack;
           return /* () */0;
         }));
   return scoreDict;
@@ -86,15 +86,15 @@ function createPairingData(playerData, avoidPairs, scoreDict) {
   var avoidDict = avoidPairs.reduce(avoidPairReducer, { });
   var pairData = { };
   Js_dict.values(playerData).forEach((function (data) {
-          var match = Js_dict.get(scoreDict, data[/* id */1]);
-          var playerStats = match !== undefined ? Caml_option.valFromOption(match) : Scoring$Coronate.createBlankScoreData(data[/* id */1]);
-          var match$1 = Js_dict.get(avoidDict, data[/* id */1]);
+          var match = Js_dict.get(scoreDict, data.id);
+          var playerStats = match !== undefined ? Caml_option.valFromOption(match) : Scoring$Coronate.createBlankScoreData(data.id);
+          var match$1 = Js_dict.get(avoidDict, data.id);
           var newAvoidIds = match$1 !== undefined ? match$1 : /* array */[];
-          var newData_000 = /* id */data[/* id */1];
+          var newData_000 = /* id */data.id;
           var newData_002 = /* colorScores */playerStats.colorScores;
           var newData_003 = /* colors */playerStats.colors;
           var newData_006 = /* opponents */Object.keys(playerStats.opponentResults);
-          var newData_007 = /* rating */data[/* rating */4];
+          var newData_007 = /* rating */data.rating;
           var newData_008 = /* score */Utils$Coronate.arraySumFloat(playerStats.results);
           var newData = /* record */[
             newData_000,
@@ -107,7 +107,7 @@ function createPairingData(playerData, avoidPairs, scoreDict) {
             newData_007,
             newData_008
           ];
-          pairData[data[/* id */1]] = newData;
+          pairData[data.id] = newData;
           return /* () */0;
         }));
   return pairData;

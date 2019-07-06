@@ -11,6 +11,7 @@ external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
   "sortWith";
 [@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
+[@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
 
 let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);

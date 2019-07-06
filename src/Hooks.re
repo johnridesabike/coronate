@@ -14,42 +14,61 @@ module Db = {
     "name": string,
     "storeName": string,
   };
-  type localForageInstance = {
+  type localForageOptions = {
     .
-    [@bs.meth] "setItems": Data.db => Js.Promise.t(unit),
+    [@bs.meth] "setItems": Data.Db.options => Js.Promise.t(unit),
     [@bs.meth] "getItem": string => Js.Promise.t(Js.Json.t),
   };
-  type localForageType = {
+  type localForagePlayers = {
     .
-    [@bs.meth] "createInstance": instanceConfig => localForageInstance,
+    [@bs.meth] "setItems": Data.Db.players => Js.Promise.t(unit),
+    [@bs.meth] "getItem": string => Js.Promise.t(Js.Json.t),
   };
+  type localForageTournaments = {
+    .
+    [@bs.meth] "setItems": Data.Db.tournaments => Js.Promise.t(unit),
+    [@bs.meth] "getItem": string => Js.Promise.t(Js.Json.t),
+  };
+  type localForage = {.};
 
-  [@bs.module "localforage"] external localForage: localForageType = "default";
+  [@bs.module "localforage"] external localForage: localForage = "default";
+  [@bs.module "localforage"]
+  external makeOptionsDb: instanceConfig => localForageOptions =
+    "createInstance";
+  [@bs.module "localforage"]
+  external makePlayersDb: instanceConfig => localForagePlayers =
+    "createInstance";
+  [@bs.module "localforage"]
+  external makeTournamentsDb: instanceConfig => localForageTournaments =
+    "createInstance";
+  /*
+   These only need to be done once to extend the JS localforage module:
+   */
   [%bs.raw {|require("localforage-getitems")|}];
   [@bs.module "localforage-removeitems"]
-  external removeItemsPrototype: localForageType => unit = "extendPrototype";
+  external removeItemsPrototype: localForage => unit = "extendPrototype";
   [@bs.module "localforage-setitems"]
-  external setItemsPrototype: localForageType => unit = "extendPrototype";
+  external setItemsPrototype: localForage => unit = "extendPrototype";
+  setItemsPrototype(localForage);
+  removeItemsPrototype(localForage);
 
   /*******************************************************************************
    * Initialize the databases
    ******************************************************************************/
-  setItemsPrototype(localForage);
-  removeItemsPrototype(localForage);
 
   let database_name = "Coronate";
   let optionsStore =
-    localForage##createInstance({
+    makeOptionsDb({
       "name": database_name,
       "storeName": "Options",
     });
   let playerStore =
-    localForage##createInstance({
+    makePlayersDb({
       "name": database_name,
       "storeName": "Players",
     });
   let tourneyStore =
-    localForage##createInstance({
+    makeTournamentsDb({
       "name": database_name,
       "storeName": "Tournaments",
     });
@@ -57,22 +76,22 @@ module Db = {
   [@bs.deriving abstract]
   type bodyStyleType = {mutable cursor: string};
   [@bs.val] external bodyStyle: bodyStyleType = "document.body.style";
-  [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
-  let loadDemoDB = (_): unit => {
+  type testType = {. byeValue: float};
+  let loadDemoDB = _: unit => {
     bodyStyle->cursorSet("wait");
     let _ = Js.Promise.all3((
-      optionsStore##setItems(Data.Options(DemoData.options)),
-      playerStore##setItems(Data.Players(DemoData.players)),
-      tourneyStore##setItems(Data.Tourneys(DemoData.tournaments)),
+      optionsStore##setItems(DemoData.options),
+      playerStore##setItems(DemoData.players),
+      tourneyStore##setItems(DemoData.tournaments),
     ))
     |> Js.Promise.then_(value => {
-         alert("Demo data loaded!");
+         Utils.alert("Demo data loaded!");
          bodyStyle->cursorSet("auto");
          Js.Promise.resolve(value);
        });
     ();
   };
-};
+} /*             if (!isLoaded) */;
 
 // export async function loadDemoDB() {
 //     document.body.style.cursor = "wait";
@@ -180,4 +199,3 @@ module Db = {
 //     );
 //     useEffect(
 //         function writeChangesToDb() {
-//             if (!isLoaded) {

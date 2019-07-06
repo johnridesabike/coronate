@@ -1,4 +1,3 @@
-open Data;
 let blackValue = 1.0;
 let whiteValue = (-1.0);
 
@@ -14,6 +13,7 @@ let dummyId = "________DUMMY________";
 let isDummyId = playerId => playerId == dummyId;
 
 let matches2ScoreData = matchList => {
+  open Data.Match;
   let scoreDict = Js.Dict.empty();
   // This is awkward.
   let makeScoreData =
@@ -60,31 +60,31 @@ let matches2ScoreData = matchList => {
     );
   };
   matchList
-  |> Js.Array.forEach((match: Data.match) => {
-       let playerIds = match.playerIds;
-       let result = match.result;
-       let newRating = match.newRating;
-       let origRating = match.origRating;
+  |> Js.Array.forEach((match) => {
+       let playerIds = match->playerIdsGet;
+       let result = match->resultGet;
+       let newRating = match->newRatingGet;
+       let origRating = match->origRatingGet;
        let newDataWhite =
          makeScoreData(
-           ~playerId=playerIds.whiteId,
-           ~origRating=origRating.whiteRating,
-           ~newRating=newRating.whiteRating,
-           ~result=result.whiteScore,
-           ~oppId=playerIds.blackId,
+           ~playerId=playerIds->whiteIdGet,
+           ~origRating=origRating->whiteRatingGet,
+           ~newRating=newRating->whiteRatingGet,
+           ~result=result->whiteScoreGet,
+           ~oppId=playerIds->blackIdGet,
            ~color=white,
          );
-       scoreDict->Js.Dict.set(playerIds.whiteId, newDataWhite);
+       scoreDict->Js.Dict.set(playerIds->whiteIdGet, newDataWhite);
        let newDataBlack =
          makeScoreData(
-           ~playerId=playerIds.blackId,
-           ~origRating=origRating.blackRating,
-           ~newRating=newRating.blackRating,
-           ~result=result.blackScore,
-           ~oppId=playerIds.whiteId,
+           ~playerId=playerIds->blackIdGet,
+           ~origRating=origRating->blackRatingGet,
+           ~newRating=newRating->blackRatingGet,
+           ~result=result->blackScoreGet,
+           ~oppId=playerIds->whiteIdGet,
            ~color=black,
          );
-       scoreDict->Js.Dict.set(playerIds.blackId, newDataBlack);
+       scoreDict->Js.Dict.set(playerIds->blackIdGet, newDataBlack);
      });
   scoreDict;
 };
@@ -113,19 +113,20 @@ let avoidPairReducer = (acc, pair) => {
 };
 
 let createPairingData = (playerData, avoidPairs, scoreDict) => {
+  open Data.Player;
   let avoidDict =
     avoidPairs |> Js.Array.reduce(avoidPairReducer, Js.Dict.empty());
   let pairData = Js.Dict.empty();
   Js.Dict.values(playerData)
-  |> Js.Array.forEach((data: Data.player) => {
+  |> Js.Array.forEach((data) => {
        let playerStats = {
-         switch (scoreDict->Js.Dict.get(data.id)) {
-         | None => Scoring.createBlankScoreData(data.id)
+         switch (scoreDict->Js.Dict.get(data->idGet)) {
+         | None => Scoring.createBlankScoreData(data->idGet)
          | Some(x) => x
          };
        };
        let newAvoidIds = {
-         switch (avoidDict->Js.Dict.get(data.id)) {
+         switch (avoidDict->Js.Dict.get(data->idGet)) {
          | None => [||]
          | Some(x) => x
          };
@@ -137,13 +138,13 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
            colorScores: playerStats->Scoring.colorScoresGet,
            colors: playerStats->Scoring.colorsGet,
            halfPos: 0,
-           id: data.id,
+           id: data->idGet,
            isUpperHalf: false,
            opponents: playerStats->Scoring.opponentResultsGet->Js.Dict.keys,
-           rating: data.rating,
+           rating: data->ratingGet,
            score: playerStats->Scoring.resultsGet->Utils.arraySumFloat,
         };
-       pairData->Js.Dict.set(data.id, newData);
+       pairData->Js.Dict.set(data->idGet, newData);
      });
   pairData;
 };
