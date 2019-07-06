@@ -15,7 +15,7 @@ let loadPairData = tourneyId => {
        }
      );
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
-  |> createPairingData(players, TestData.options->Db.avoidPairsGet)
+  |> createPairingData(players, TestData.options->Data.avoidPairsGet)
   |> Pairing.setUpperHalves;
 };
 

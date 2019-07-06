@@ -107,18 +107,12 @@ module Tournament = {
     tieBreaks: array(int),
   };
 };
-
-module Db = {
   [@bs.deriving abstract]
-  type options = {
+  type db_options = {
     avoidPairs: array(avoidPair),
     byeValue: float,
     lastBackup: Js.Date.t,
   };
-
-  type tournaments = Js.Dict.t(Tournament.t);
-  type players = Js.Dict.t(Player.t);
-};
 
 /*******************************************************************************
  * Round functions

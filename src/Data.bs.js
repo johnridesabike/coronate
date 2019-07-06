@@ -60,8 +60,6 @@ var Match = /* module */[];
 
 var Tournament = /* module */[];
 
-var Db = /* module */[];
-
 function rounds2Matches(roundList, lastRound, param) {
   var rounds = lastRound !== undefined ? (function (param) {
             return (function (param$1) {
@@ -126,7 +124,6 @@ export {
   Player ,
   Match ,
   Tournament ,
-  Db ,
   rounds2Matches ,
   getUnmatched ,
   isRoundComplete ,
