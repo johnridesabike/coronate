@@ -265,7 +265,7 @@ function Window$Window(Props) {
   var state = match[0];
   var title = state[/* title */5];
   React.useEffect((function () {
-          document.title = formatTitle(title);
+          ((document.title = formatTitle(title)));
           return undefined;
         }), /* array */[title]);
   React.useEffect((function () {

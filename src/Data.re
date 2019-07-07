@@ -107,6 +107,7 @@ module Tournament = {
     tieBreaks: array(int),
   };
 };
+
 [@bs.deriving abstract]
 type db_options = {
   avoidPairs: array(avoidPair),

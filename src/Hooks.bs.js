@@ -2,14 +2,102 @@
 
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
+import * as Ramda from "ramda";
 import * as React from "react";
 import * as Localforage from "localforage";
 import * as Data$Coronate from "./Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
+import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
 import * as LocalforageSetitems from "localforage-setitems";
 import * as LocalforageRemoveitems from "localforage-removeitems";
+
+function sortedTableReducer(state, action) {
+  var newState;
+  if (typeof action === "number") {
+    newState = state;
+  } else {
+    switch (action.tag | 0) {
+      case 0 : 
+          newState = /* record */[
+            /* isDescending */action[0],
+            /* key */state[/* key */1],
+            /* table */state[/* table */2]
+          ];
+          break;
+      case 1 : 
+          newState = /* record */[
+            /* isDescending */state[/* isDescending */0],
+            /* key */action[0],
+            /* table */state[/* table */2]
+          ];
+          break;
+      case 2 : 
+          newState = /* record */[
+            /* isDescending */state[/* isDescending */0],
+            /* key */state[/* key */1],
+            /* table */action[0]
+          ];
+          break;
+      
+    }
+  }
+  var match = newState[/* isDescending */0];
+  var direction = match ? (function (prim, prim$1, prim$2) {
+        return Ramda.descend(prim, prim$1, prim$2);
+      }) : (function (prim, prim$1, prim$2) {
+        return Ramda.ascend(prim, prim$1, prim$2);
+      });
+  var match$1 = newState[/* key */1];
+  var sortFunc;
+  if (match$1.tag) {
+    sortFunc = Curry._1(direction, match$1[0]);
+  } else {
+    var func = match$1[0];
+    sortFunc = Curry._1(direction, (function (str) {
+            return Curry._1(func, str).toLowerCase();
+          }));
+  }
+  var table = Belt_SortArray.stableSortBy(newState[/* table */2], sortFunc);
+  return /* record */[
+          /* isDescending */newState[/* isDescending */0],
+          /* key */newState[/* key */1],
+          /* table */table
+        ];
+}
+
+function useSortedTable(table, key, isDescending) {
+  var initialState = /* record */[
+    /* isDescending */isDescending,
+    /* key */key,
+    /* table */table
+  ];
+  var match = React.useReducer(sortedTableReducer, initialState);
+  var dispatch = match[1];
+  React.useEffect((function () {
+          Curry._1(dispatch, /* SortWithoutUpdating */0);
+          return undefined;
+        }), ([]));
+  return /* tuple */[
+          match[0],
+          dispatch
+        ];
+}
+
+function useLoadingCursor(isLoaded) {
+  React.useEffect((function () {
+          if (isLoaded) {
+            ((document.body.style.cursor = "auto"));
+          } else {
+            ((document.body.style.cursor = "wait"));
+          }
+          return (function (param) {
+                    return (document.body.style.cursor = "auto");
+                  });
+        }), /* array */[isLoaded]);
+  return /* () */0;
+}
 
 ((require("localforage-getitems")));
 
@@ -35,15 +123,22 @@ var tourneyStore = Localforage.createInstance({
     });
 
 function loadDemoDB(param) {
-  document.body.style.cursor = "wait";
+  ((document.body.style = "wait"));
   Promise.all(/* tuple */[
-          optionsStore.setItems(DemoData$Coronate.options),
-          playerStore.setItems(DemoData$Coronate.players),
-          tourneyStore.setItems(DemoData$Coronate.tournaments)
-        ]).then((function (value) {
-          window.alert("Demo data loaded!");
-          document.body.style.cursor = "auto";
-          return Promise.resolve(value);
+            optionsStore.setItems(DemoData$Coronate.options),
+            playerStore.setItems(DemoData$Coronate.players),
+            tourneyStore.setItems(DemoData$Coronate.tournaments)
+          ]).then((function (value) {
+            window.alert("Demo data loaded!");
+            ((document.body.style = "auto"));
+            return Promise.resolve(value);
+          })).catch((function (param) {
+          ((document.body.style = "auto"));
+          return Promise.resolve(/* tuple */[
+                      /* () */0,
+                      /* () */0,
+                      /* () */0
+                    ]);
         }));
   return /* () */0;
 }
@@ -69,6 +164,7 @@ function useAllItemsFromDb(store, reducer) {
         }));
   var setIsLoaded = match$1[1];
   var isLoaded = match$1[0];
+  useLoadingCursor(isLoaded);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
           store.getItems().then((function (results) {
@@ -191,18 +287,46 @@ function optionsReducer(state, action) {
 }
 
 function useOptionsDb(param) {
-  React.useReducer(optionsReducer, Data$Coronate.defaultOptions);
-  React.useState((function () {
+  var match = React.useReducer(optionsReducer, Data$Coronate.defaultOptions);
+  var dispatch = match[1];
+  var options = match[0];
+  var match$1 = React.useState((function () {
           return false;
         }));
+  var setIsLoaded = match$1[1];
+  var isLoaded = match$1[0];
   React.useEffect((function () {
           var didCancel = /* record */[/* contents */false];
+          optionsStore.getItems().then((function (values) {
+                  if (!didCancel[0]) {
+                    Curry._1(dispatch, /* SetAvoidPairs */Block.__(3, [values.avoidPairs]));
+                    Curry._1(dispatch, /* SetByeValue */Block.__(4, [values.byeValue]));
+                    Curry._1(dispatch, /* SetLastBackup */Block.__(5, [values.lastBackup]));
+                    Curry._1(setIsLoaded, (function (param) {
+                            return true;
+                          }));
+                  }
+                  return Promise.resolve(/* () */0);
+                }));
           return (function (param) {
                     didCancel[0] = true;
                     return /* () */0;
                   });
         }), ([]));
-  return /* () */0;
+  React.useEffect((function () {
+          if (isLoaded) {
+            optionsStore.setItems(options);
+            return undefined;
+          }
+          
+        }), /* tuple */[
+        options,
+        isLoaded
+      ]);
+  return /* tuple */[
+          options,
+          dispatch
+        ];
 }
 
 var Db = /* module */[
@@ -223,6 +347,9 @@ var $$Map = 0;
 
 export {
   $$Map ,
+  sortedTableReducer ,
+  useSortedTable ,
+  useLoadingCursor ,
   Db ,
   
 }

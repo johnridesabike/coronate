@@ -1,14 +1,68 @@
-// import "localforage-getitems";
-// import {genericDbReducer, optionsReducer} from "./reducers";
-// import {useEffect, useReducer, useState} from "react";
-// import defaultOptions from "./default-options";
-// import demoData from "../demo-data";
-// import localForage from "localforage";
-// import {extendPrototype as removeItemsPrototype} from "localforage-removeitems";
-// import {extendPrototype as setItemsPrototype} from "localforage-setitems";
-// import {types} from "../data-types";
-// import {useLoadingCursor} from "./hooks";
 module Map = Belt.Map.String;
+
+type keyFunc('a) =
+  | KeyString('a => string)
+  | KeyInt('a => int)
+  | KeyFloat('a => float)
+  | KeyDate('a => Js.Date.t);
+
+type tableState('a) = {
+  isDescending: bool,
+  key: keyFunc('a),
+  table: Js.Array.t('a),
+};
+
+type actionTable('a) =
+  | SetIsDescending(bool)
+  | SetKey(keyFunc('a))
+  | SetTable(Js.Array.t('a))
+  | SortWithoutUpdating;
+
+let sortedTableReducer = (state, action) => {
+  let newState =
+    switch (action) {
+    | SetTable(table) => {...state, table}
+    | SetIsDescending(isDescending) => {...state, isDescending}
+    | SetKey(key) => {...state, key}
+    | SortWithoutUpdating => state
+    };
+  let direction = newState.isDescending ? Utils.descend : Utils.ascend;
+  let sortFunc =
+    switch (newState.key) {
+    | KeyString(func) =>
+      (str => str |> func |> Js.String.toLowerCase) |> direction
+    | KeyInt(func) => func |> direction
+    | KeyFloat(func) => func |> direction
+    | KeyDate(func) => func |> direction
+    };
+  let table = newState.table->Belt.SortArray.stableSortBy(sortFunc);
+  {...newState, table};
+};
+
+let useSortedTable = (~table, ~key, ~isDescending) => {
+  let initialState = {table, key, isDescending};
+  let (state, dispatch) = React.useReducer(sortedTableReducer, initialState);
+  React.useEffect0(() => {
+    dispatch(SortWithoutUpdating);
+    None;
+  });
+  (state, dispatch);
+};
+
+let useLoadingCursor = isLoaded => {
+  React.useEffect1(
+    () => {
+      let _ =
+        isLoaded
+          ? [%bs.raw "document.body.style.cursor = \"auto\""]
+          : [%bs.raw "document.body.style.cursor = \"wait\""];
+      let reset = () => [%bs.raw "document.body.style.cursor = \"auto\""];
+      Some(reset);
+    },
+    [|isLoaded|],
+  );
+};
+
 module Db = {
   open Data;
   type actionOption =
@@ -34,9 +88,7 @@ module Db = {
   type localForageOptions = {
     .
     [@bs.meth] "setItems": db_options => Js.Promise.t(unit),
-    [@bs.meth] "getItem": string => Js.Promise.t(db_options),
-    [@bs.meth]
-    "iterate": ((db_options, actionOption) => unit) => Js.Promise.t(unit),
+    [@bs.meth] "getItems": unit => Js.Promise.t(db_options),
   };
   type localForage = {.};
 
@@ -73,12 +125,9 @@ module Db = {
   let tourneyStore =
     makeTournamentsDb({"name": database_name, "storeName": "Tournaments"});
 
-  [@bs.deriving abstract]
-  type bodyStyleType = {mutable cursor: string};
-  [@bs.val] external bodyStyle: bodyStyleType = "document.body.style";
   type testType = {. byeValue: float};
   let loadDemoDB = _: unit => {
-    bodyStyle->cursorSet("wait");
+    let _: unit = [%bs.raw "document.body.style = \"wait\""];
     let _ =
       Js.Promise.all3((
         optionsStore##setItems(DemoData.options),
@@ -87,8 +136,12 @@ module Db = {
       ))
       |> Js.Promise.then_(value => {
            Utils.alert("Demo data loaded!");
-           bodyStyle->cursorSet("auto");
+           let _: unit = [%bs.raw "document.body.style = \"auto\""];
            Js.Promise.resolve(value);
+         })
+      |> Js.Promise.catch(_ => {
+           let _: unit = [%bs.raw "document.body.style = \"auto\""];
+           Js.Promise.resolve(((), (), ()));
          });
     ();
   };
@@ -111,7 +164,7 @@ module Db = {
       (store: loFoInstance('a), reducer: genericReducer('a)) => {
     let (items, dispatch) = React.useReducer(reducer, Belt.Map.String.empty);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
-    // useLoadingCursor(isLoaded);
+    useLoadingCursor(isLoaded);
     React.useEffect3(
       () => {
         let didCancel = ref(false);
@@ -209,13 +262,34 @@ module Db = {
     );
   };
   let useOptionsDb = () => {
-    let (options, dispatch) = React.useReducer(optionsReducer, defaultOptions);
+    let (options, dispatch) =
+      React.useReducer(optionsReducer, defaultOptions);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
-    React.useEffect0(
-      () => {
-        let didCancel = ref(false);
-        Some(() => didCancel := true);
-      }
+    React.useEffect0(() => {
+      let didCancel = ref(false);
+      let _ =
+        optionsStore##getItems()
+        |> Js.Promise.then_(values => {
+             if (! didCancel^) {
+               dispatch(SetAvoidPairs(values->avoidPairsGet));
+               dispatch(SetByeValue(values->byeValueGet));
+               dispatch(SetLastBackup(values->lastBackupGet));
+               setIsLoaded(_ => true);
+             };
+             Js.Promise.resolve();
+           });
+      Some(() => didCancel := true);
+    });
+    React.useEffect2(
+      () =>
+        switch (isLoaded) {
+        | false => None
+        | true =>
+          let _ = optionsStore##setItems(options);
+          None;
+        },
+      (options, isLoaded),
     );
-  }
+    (options, dispatch);
+  };
 };

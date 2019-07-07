@@ -192,16 +192,13 @@ module WindowTitleBar = {
 };
 
 module Window = {
-  [@bs.deriving abstract]
-  type domdoc = {mutable title: string};
-  [@bs.val] external document: domdoc = "document";
   [@react.component]
   let make = (~children, ~className) => {
     let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
     let title = state.title;
     React.useEffect1(
       () => {
-        document->titleSet(formatTitle(title));
+        let _: unit = [%bs.raw "document.title = formatTitle(title)"];
         None;
       },
       [|title|],
