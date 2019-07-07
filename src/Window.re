@@ -1,19 +1,3 @@
-// import {
-//     IfElectron,
-//     electron,
-//     ifElectron,
-//     macOSDoubleClick
-// } from "../electron-utils";
-// import React, {createContext, useContext, useEffect, useReducer} from "react";
-// import About from "./about-dialog";
-// import {Dialog} from "@reach/dialog";
-// import Icons from "./icons";
-// import PropTypes from "prop-types";
-// import Sidebar from "./sidebar-default";
-// import VisuallyHidden from "@reach/visually-hidden";
-// import WindowsControls from "./windows-controls";
-// import classNames from "classnames";
-// import logo from "../icon-min.svg";
 open ElectronUtils;
 
 let global_title = "Coronate";
