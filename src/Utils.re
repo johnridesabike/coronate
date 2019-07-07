@@ -53,3 +53,48 @@ let hashPath = hashString => hashString |> Js.String.split("/");
 
 let dictToMap = dict => dict |> Js.Dict.entries |> Belt.Map.String.fromArray;
 let mapToDict = map => map |> Belt.Map.String.toArray |> Js.Dict.fromArray;
+
+type dtFormat = {. [@bs.meth] "format": Js.Date.t => string};
+
+let dateFormat: dtFormat = [%raw {|
+  new Intl.DateTimeFormat(
+      "en-US",
+      {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+      }
+  )
+|}];
+
+let timeFormat: dtFormat = [%raw {|
+  new Intl.DateTimeFormat(
+      "en-US",
+      {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+      }
+  )
+|}];
+
+module DateOrTimeFormat = {
+  [@react.component]
+  let make = (~dtFormatObj, ~date) =>
+    <time dateTime={date |> Js.Date.toISOString}>
+      {dtFormatObj##format(date) |> React.string}
+    </time>
+};
+
+
+module DateFormat = {
+  [@react.component]
+  let make = (~date) => <DateOrTimeFormat dtFormatObj=dateFormat date />
+}
+
+module DateTimeFormat = {
+  [@react.component]
+  let make = (~date) => <DateOrTimeFormat dtFormatObj=timeFormat date />
+}
