@@ -8,22 +8,35 @@
 // import {extendPrototype as setItemsPrototype} from "localforage-setitems";
 // import {types} from "../data-types";
 // import {useLoadingCursor} from "./hooks";
+module Map = Belt.Map.String;
 module Db = {
   open Data;
+  type actionOption =
+    | AddAvoidPair(Data.avoidPair)
+    | DelAvoidPair(Data.avoidPair)
+    | DelAvoidSingle(string)
+    | SetAvoidPairs(array(avoidPair))
+    | SetByeValue(float)
+    | SetLastBackup(Js.Date.t);
   type instanceConfig = {
     .
     "name": string,
     "storeName": string,
   };
-  type localForageInstance('a) = {
+  type loFoInstance('a) = {
     .
-    [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
     [@bs.meth] "getItem": string => Js.Promise.t('a),
+    [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
+    [@bs.meth] "getItems": unit => Js.Promise.t(Js.Dict.t('a)),
+    [@bs.meth] "deleteItems": array(string) => Js.Promise.t(unit),
+    [@bs.meth] "keys": unit => Js.Promise.t(Js.Array.t(string)),
   };
   type localForageOptions = {
     .
     [@bs.meth] "setItems": db_options => Js.Promise.t(unit),
     [@bs.meth] "getItem": string => Js.Promise.t(db_options),
+    [@bs.meth]
+    "iterate": ((db_options, actionOption) => unit) => Js.Promise.t(unit),
   };
   type localForage = {.};
 
@@ -32,11 +45,10 @@ module Db = {
   external makeOptionsDb: instanceConfig => localForageOptions =
     "createInstance";
   [@bs.module "localforage"]
-  external makePlayersDb: instanceConfig => localForageInstance(Player.t) =
+  external makePlayersDb: instanceConfig => loFoInstance(Player.t) =
     "createInstance";
   [@bs.module "localforage"]
-  external makeTournamentsDb:
-    instanceConfig => localForageInstance(Tournament.t) =
+  external makeTournamentsDb: instanceConfig => loFoInstance(Tournament.t) =
     "createInstance";
   /*
    These only need to be done once to extend the JS localforage module:
@@ -83,15 +95,21 @@ module Db = {
   /*******************************************************************************
    * Generic database hooks
    ******************************************************************************/
-  type actionTourney = | AddTourney(Tournament.t);
-  let allTournamentsReducer = (state, action) => {
-    switch action {
-    | AddTourney(tourney) => state->Belt.Map.String.set(tourney->Tournament.idGet, tourney)
-    }
+  type actionDb('a) =
+    | AddItem(string, 'a)
+    | DelItem(string)
+    | SetState(Map.t('a));
+  type genericReducer('a) = (Map.t('a), actionDb('a)) => Map.t('a);
+  let genericDbReducer = (state, action) => {
+    switch (action) {
+    | AddItem(id, item) => state->Map.set(id, item)
+    | DelItem(id) => state->Map.remove(id)
+    | SetState(state) => state
+    };
   };
-  let testreducer = (a, b) => b;
-  let useAllItemsFromDb = store => {
-    let (items, dispatch) = React.useReducer(testreducer, Belt.Map.String.empty);
+  let useAllItemsFromDb =
+      (store: loFoInstance('a), reducer: genericReducer('a)) => {
+    let (items, dispatch) = React.useReducer(reducer, Belt.Map.String.empty);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
     // useLoadingCursor(isLoaded);
     React.useEffect3(
@@ -101,8 +119,7 @@ module Db = {
           store##getItems()
           |> Js.Promise.then_(results => {
                if (! didCancel^) {
-                 dispatch(results);
-                 // dispatch({state: cleanResults, type: "LOAD_STATE"});
+                 dispatch(SetState(results |> Utils.dictToMap));
                  setIsLoaded(_ => true);
                };
                Js.Promise.resolve(results);
@@ -111,25 +128,94 @@ module Db = {
       },
       (store, dispatch, setIsLoaded),
     );
-    // useEffect(
-    //     function saveChangesToDb() {
-    //         if (!isLoaded) {
-    //             return;
-    //         }
-    //         (async function () {
-    //             await store.setItems(items);
-    //             // console.log("saved items to", store.config().storeName);
-    //             const keys = await store.keys();
-    //             const stateKeys = Object.keys(items);
-    //             const deleted = keys.filter((x) => !stateKeys.includes(x));
-    //             if (deleted.length > 0 ) {
-    //                 await store.removeItems(deleted);
-    //                 // console.log("Deleted " + deleted.length + " items.");
-    //             }
-    //         }());
-    //     },
-    //     [store, items, isLoaded]
-    // );
-    // return [items, dispatch];
+    React.useEffect3(
+      () =>
+        switch (isLoaded) {
+        | false => None
+        | true =>
+          let _ =
+            store##setItems(items |> Utils.mapToDict)
+            |> Js.Promise.then_(() => {
+                 let _ =
+                   store##keys()
+                   |> Js.Promise.then_(keys => {
+                        let stateKeys = items->Map.keysToArray;
+                        let deleted =
+                          keys
+                          |> Js.Array.filter(x =>
+                               !(stateKeys |> Js.Array.includes(x))
+                             );
+                        if (deleted |> Js.Array.length > 0) {
+                          let _ = store##deleteItems(deleted);
+                          ();
+                        };
+                        Js.Promise.resolve();
+                      });
+                 Js.Promise.resolve();
+               });
+          None;
+        },
+      (store, items, isLoaded),
+    );
+    (items, dispatch);
   };
+  let useAllPlayers = () => useAllItemsFromDb(playerStore, genericDbReducer);
+  let useAllTournaments = () =>
+    useAllItemsFromDb(tourneyStore, genericDbReducer);
+  let optionsReducer = (state, action) => {
+    let avoidPairs = state->avoidPairsGet;
+    let byeValue = state->byeValueGet;
+    let lastBackup = state->lastBackupGet;
+    Js.Array.(
+      switch (action) {
+      | AddAvoidPair(pair) =>
+        db_options(
+          ~avoidPairs=state |> avoidPairsGet |> concat([|pair|]),
+          ~byeValue,
+          ~lastBackup,
+        )
+      | DelAvoidPair((user1, user2)) =>
+        db_options(
+          ~avoidPairs=
+            state
+            |> avoidPairsGet
+            |> filter(((p1, p2)) =>
+                 !(
+                   [|p1, p2|]
+                   |> includes(user1)
+                   && [|p1, p2|]
+                   |> includes(user2)
+                 )
+               ),
+          ~byeValue,
+          ~lastBackup,
+        )
+      | DelAvoidSingle(id) =>
+        db_options(
+          ~avoidPairs=
+            state
+            |> avoidPairsGet
+            |> filter(((p1, p2)) => !([|p1, p2|] |> includes(id))),
+          ~byeValue,
+          ~lastBackup,
+        )
+      | SetAvoidPairs(avoidPairs) =>
+        db_options(~avoidPairs, ~byeValue, ~lastBackup)
+      | SetByeValue(value) =>
+        db_options(~avoidPairs, ~byeValue=value, ~lastBackup)
+      | SetLastBackup(date) =>
+        db_options(~avoidPairs, ~byeValue, ~lastBackup=date)
+      }
+    );
+  };
+  let useOptionsDb = () => {
+    let (options, dispatch) = React.useReducer(optionsReducer, defaultOptions);
+    let (isLoaded, setIsLoaded) = React.useState(() => false);
+    React.useEffect0(
+      () => {
+        let didCancel = ref(false);
+        Some(() => didCancel := true);
+      }
+    );
+  }
 };

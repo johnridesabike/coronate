@@ -60,6 +60,12 @@ var Match = /* module */[];
 
 var Tournament = /* module */[];
 
+var defaultOptions = {
+  avoidPairs: /* array */[],
+  byeValue: 1.0,
+  lastBackup: new Date(0.0)
+};
+
 function rounds2Matches(roundList, lastRound, param) {
   var rounds = lastRound !== undefined ? (function (param) {
             return (function (param$1) {
@@ -124,9 +130,10 @@ export {
   Player ,
   Match ,
   Tournament ,
+  defaultOptions ,
   rounds2Matches ,
   getUnmatched ,
   isRoundComplete ,
   
 }
-/* No side effect */
+/* defaultOptions Not a pure module */

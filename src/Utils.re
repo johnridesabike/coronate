@@ -12,7 +12,7 @@ external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
 [@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
-[@bs.module "nanoid"] external nanoid : unit => string = "default";
+[@bs.module "nanoid"] external nanoid: unit => string = "default";
 
 let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
@@ -49,4 +49,7 @@ module Entities = {
   let copy = "\xA9";
 };
 
-let hashPath = hashString => hashString|>Js.String.split("/");
+let hashPath = hashString => hashString |> Js.String.split("/");
+
+let dictToMap = dict => dict |> Js.Dict.entries |> Belt.Map.String.fromArray;
+let mapToDict = map => map |> Belt.Map.String.toArray |> Js.Dict.fromArray;

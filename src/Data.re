@@ -107,12 +107,19 @@ module Tournament = {
     tieBreaks: array(int),
   };
 };
-  [@bs.deriving abstract]
-  type db_options = {
-    avoidPairs: array(avoidPair),
-    byeValue: float,
-    lastBackup: Js.Date.t,
-  };
+[@bs.deriving abstract]
+type db_options = {
+  avoidPairs: array(avoidPair),
+  byeValue: float,
+  lastBackup: Js.Date.t,
+};
+
+let defaultOptions =
+  db_options(
+    ~byeValue=1.0,
+    ~avoidPairs=[||],
+    ~lastBackup=Js.Date.fromFloat(0.0),
+  );
 
 /*******************************************************************************
  * Round functions
