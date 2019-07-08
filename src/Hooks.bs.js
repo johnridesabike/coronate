@@ -6,11 +6,13 @@ import * as Ramda from "ramda";
 import * as React from "react";
 import * as Localforage from "localforage";
 import * as Data$Coronate from "./Data.bs.js";
+import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
 import * as LocalforageSetitems from "localforage-setitems";
+import * as VisuallyHidden from "@reach/visually-hidden";
 import * as LocalforageRemoveitems from "localforage-removeitems";
 
 function sortedTableReducer(state, action) {
@@ -78,12 +80,54 @@ function useSortedTable(table, key, isDescending) {
   React.useEffect((function () {
           Curry._1(dispatch, /* SortWithoutUpdating */0);
           return undefined;
-        }), ([]));
+        }), /* array */[dispatch]);
   return /* tuple */[
           match[0],
           dispatch
         ];
 }
+
+function Hooks$SortButton(Props) {
+  var children = Props.children;
+  var sortKey = Props.sortKey;
+  var data = Props.data;
+  var dispatch = Props.dispatch;
+  var match = data[/* key */1] === sortKey;
+  var chevronStyle = match ? ({
+        opacity: "1"
+      }) : ({
+        opacity: "0"
+      });
+  var match$1 = data[/* isDescending */0];
+  return React.createElement("button", {
+              className: "button-micro dont-hide button-text-ghost title-20",
+              style: {
+                width: "100%"
+              },
+              onClick: (function (param) {
+                  var match = data[/* key */1] === sortKey;
+                  if (match) {
+                    return Curry._1(dispatch, /* SetIsDescending */Block.__(0, [!data[/* isDescending */0]]));
+                  } else {
+                    return Curry._1(dispatch, /* SetKey */Block.__(1, [sortKey]));
+                  }
+                })
+            }, React.createElement(ReactFeather.ChevronUp, {
+                  style: {
+                    opacity: "0"
+                  }
+                }), children, match$1 ? React.createElement("span", {
+                    style: chevronStyle
+                  }, React.createElement(ReactFeather.ChevronUp, { }), React.createElement(VisuallyHidden.default, {
+                        children: "Sort ascending."
+                      })) : React.createElement("span", {
+                    style: chevronStyle
+                  }, React.createElement(ReactFeather.ChevronDown, { }), React.createElement(VisuallyHidden.default, {
+                        children: "Sort descending."
+                      })));
+}
+
+var SortButton = /* module */[/* make */Hooks$SortButton];
 
 function useLoadingCursor(isLoaded) {
   React.useEffect((function () {
@@ -194,7 +238,7 @@ function useAllItemsFromDb(store, reducer) {
                                     return !stateKeys.includes(x);
                                   }));
                             if (deleted.length > 0) {
-                              store.deleteItems(deleted);
+                              store.removeItems(deleted);
                             }
                             return Promise.resolve(/* () */0);
                           }));
@@ -229,7 +273,7 @@ function optionsReducer(state, action) {
   switch (action.tag | 0) {
     case 0 : 
         return {
-                avoidPairs: state.avoidPairs.concat(/* array */[action[0]]),
+                avoidPairs: avoidPairs.concat(/* array */[action[0]]),
                 byeValue: byeValue,
                 lastBackup: lastBackup
               };
@@ -238,7 +282,7 @@ function optionsReducer(state, action) {
         var user2 = match[1];
         var user1 = match[0];
         return {
-                avoidPairs: state.avoidPairs.filter((function (param) {
+                avoidPairs: avoidPairs.filter((function (param) {
                         var p2 = param[1];
                         var p1 = param[0];
                         return !(/* array */[
@@ -255,7 +299,7 @@ function optionsReducer(state, action) {
     case 2 : 
         var id = action[0];
         return {
-                avoidPairs: state.avoidPairs.filter((function (param) {
+                avoidPairs: avoidPairs.filter((function (param) {
                         return !/* array */[
                                   param[0],
                                   param[1]
@@ -312,7 +356,10 @@ function useOptionsDb(param) {
                     didCancel[0] = true;
                     return /* () */0;
                   });
-        }), ([]));
+        }), /* tuple */[
+        setIsLoaded,
+        dispatch
+      ]);
   React.useEffect((function () {
           if (isLoaded) {
             optionsStore.setItems(options);
@@ -349,6 +396,7 @@ export {
   $$Map ,
   sortedTableReducer ,
   useSortedTable ,
+  SortButton ,
   useLoadingCursor ,
   Db ,
   

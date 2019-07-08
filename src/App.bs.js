@@ -5,6 +5,7 @@ import * as Pages$Coronate from "./Pages.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
+import * as PageTournamentList$Coronate from "./PageTournamentList.bs.js";
 
 ((require("./side-effects")));
 
@@ -13,37 +14,32 @@ function App(Props) {
   var match = Utils$Coronate.hashPath(url[/* hash */1]);
   var tmp;
   var exit = 0;
-  var len = match.length;
-  if (len >= 3) {
-    exit = 1;
-  } else {
-    switch (len) {
-      case 0 : 
-          exit = 1;
-          break;
-      case 1 : 
-          var match$1 = match[0];
-          if (match$1 === "") {
-            tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
-          } else {
-            exit = 1;
-          }
-          break;
-      case 2 : 
-          var match$2 = match[0];
-          if (match$2 === "") {
-            var match$3 = match[1];
-            if (match$3 === "") {
-              tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
-            } else {
+  if (match && match[0] === "") {
+    var match$1 = match[1];
+    if (match$1) {
+      switch (match$1[0]) {
+        case "" : 
+            if (match$1[1]) {
               exit = 1;
+            } else {
+              tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
             }
-          } else {
-            exit = 1;
-          }
-          break;
-      
+            break;
+        case "tourneys" : 
+            if (match$1[1]) {
+              exit = 1;
+            } else {
+              tmp = React.createElement(PageTournamentList$Coronate.make, { });
+            }
+            break;
+        default:
+          exit = 1;
+      }
+    } else {
+      tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
     }
+  } else {
+    exit = 1;
   }
   if (exit === 1) {
     tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });

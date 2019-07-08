@@ -42,11 +42,67 @@ let sortedTableReducer = (state, action) => {
 let useSortedTable = (~table, ~key, ~isDescending) => {
   let initialState = {table, key, isDescending};
   let (state, dispatch) = React.useReducer(sortedTableReducer, initialState);
-  React.useEffect0(() => {
-    dispatch(SortWithoutUpdating);
-    None;
-  });
+  React.useEffect1(
+    () => {
+      dispatch(SortWithoutUpdating);
+      None;
+    },
+    [|dispatch|],
+  );
   (state, dispatch);
+};
+
+module SortButton = {
+  [@react.component]
+  let make =
+      (
+        ~children,
+        ~sortKey: keyFunc('a),
+        ~data: tableState('a),
+        ~dispatch: actionTable('a) => unit,
+      ) => {
+    /*
+       These === comparisons *only* work if the `sortKey` values are definined
+       outside a React component. If you try to define them inline, e.g.
+       `<... sortKey=KeyString(nameGet)...>` then the comparisons will always
+       return false. This is due to how Bucklescript compiles and how JS
+       comparisons work. IDK if there's a more idiomatic ReasonML way to do this
+       and ensure correct comparisons.
+     */
+    let setKeyOrToggleDir = () => {
+      data.key === sortKey
+        ? dispatch(SetIsDescending(!data.isDescending))
+        : dispatch(SetKey(sortKey));
+    };
+    let chevronStyle =
+      ReactDOMRe.Style.(
+        data.key === sortKey
+          ? make(~opacity="1", ()) : make(~opacity="0", ())
+      );
+    <button
+      className="button-micro dont-hide button-text-ghost title-20"
+      style={ReactDOMRe.Style.make(~width="100%", ())}
+      onClick={_ => setKeyOrToggleDir()}>
+      <Icons.chevronUp
+        style={ReactDOMRe.Style.make(~opacity="0", ())}
+        /*ariaHidden=true*/
+      />
+      children
+      {data.isDescending
+         ? <span style=chevronStyle>
+             <Icons.chevronUp />
+             <Utils.VisuallyHidden>
+               {React.string("Sort ascending.")}
+             </Utils.VisuallyHidden>
+           </span>
+         : <span style=chevronStyle>
+             <Icons.chevronDown />
+             <Utils.VisuallyHidden>
+               {React.string("Sort descending.")}
+             </Utils.VisuallyHidden>
+           </span>}
+    </button>;
+  };
 };
 
 let useLoadingCursor = isLoaded => {
@@ -82,7 +138,7 @@ module Db = {
     [@bs.meth] "getItem": string => Js.Promise.t('a),
     [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
     [@bs.meth] "getItems": unit => Js.Promise.t(Js.Dict.t('a)),
-    [@bs.meth] "deleteItems": array(string) => Js.Promise.t(unit),
+    [@bs.meth] "removeItems": array(string) => Js.Promise.t(unit),
     [@bs.meth] "keys": unit => Js.Promise.t(Js.Array.t(string)),
   };
   type localForageOptions = {
@@ -129,20 +185,22 @@ module Db = {
   let loadDemoDB = _: unit => {
     let _: unit = [%bs.raw "document.body.style = \"wait\""];
     let _ =
-      Js.Promise.all3((
-        optionsStore##setItems(DemoData.options),
-        playerStore##setItems(DemoData.players),
-        tourneyStore##setItems(DemoData.tournaments),
-      ))
-      |> Js.Promise.then_(value => {
-           Utils.alert("Demo data loaded!");
-           let _: unit = [%bs.raw "document.body.style = \"auto\""];
-           Js.Promise.resolve(value);
-         })
-      |> Js.Promise.catch(_ => {
-           let _: unit = [%bs.raw "document.body.style = \"auto\""];
-           Js.Promise.resolve(((), (), ()));
-         });
+      Js.Promise.(
+        all3((
+          optionsStore##setItems(DemoData.options),
+          playerStore##setItems(DemoData.players),
+          tourneyStore##setItems(DemoData.tournaments),
+        ))
+        |> then_(value => {
+             Utils.alert("Demo data loaded!");
+             let _: unit = [%bs.raw "document.body.style = \"auto\""];
+             resolve(value);
+           })
+        |> catch(_ => {
+             let _: unit = [%bs.raw "document.body.style = \"auto\""];
+             resolve(((), (), ()));
+           })
+      );
     ();
   };
   /*******************************************************************************
@@ -162,21 +220,23 @@ module Db = {
   };
   let useAllItemsFromDb =
       (store: loFoInstance('a), reducer: genericReducer('a)) => {
-    let (items, dispatch) = React.useReducer(reducer, Belt.Map.String.empty);
+    let (items, dispatch) = React.useReducer(reducer, Map.empty);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
     useLoadingCursor(isLoaded);
     React.useEffect3(
       () => {
         let didCancel = ref(false);
         let _ =
-          store##getItems()
-          |> Js.Promise.then_(results => {
-               if (! didCancel^) {
-                 dispatch(SetState(results |> Utils.dictToMap));
-                 setIsLoaded(_ => true);
-               };
-               Js.Promise.resolve(results);
-             });
+          Js.Promise.(
+            store##getItems()
+            |> then_(results => {
+                 if (! didCancel^) {
+                   dispatch(SetState(results |> Utils.dictToMap));
+                   setIsLoaded(_ => true);
+                 };
+                 resolve(results);
+               })
+          );
         Some(() => didCancel := false);
       },
       (store, dispatch, setIsLoaded),
@@ -187,25 +247,26 @@ module Db = {
         | false => None
         | true =>
           let _ =
-            store##setItems(items |> Utils.mapToDict)
-            |> Js.Promise.then_(() => {
-                 let _ =
-                   store##keys()
-                   |> Js.Promise.then_(keys => {
-                        let stateKeys = items->Map.keysToArray;
-                        let deleted =
-                          keys
-                          |> Js.Array.filter(x =>
-                               !(stateKeys |> Js.Array.includes(x))
-                             );
-                        if (deleted |> Js.Array.length > 0) {
-                          let _ = store##deleteItems(deleted);
-                          ();
-                        };
-                        Js.Promise.resolve();
-                      });
-                 Js.Promise.resolve();
-               });
+            Js.Promise.(
+              store##setItems(items |> Utils.mapToDict)
+              |> then_(() => {
+                   let _ =
+                     store##keys()
+                     |> then_(keys => {
+                          let stateKeys = items->Map.keysToArray;
+                          let deleted =
+                            Js.Array.(
+                              keys |> filter(x => !(stateKeys |> includes(x)))
+                            );
+                          if (deleted |> Js.Array.length > 0) {
+                            let _ = store##removeItems(deleted);
+                            ();
+                          };
+                          resolve();
+                        });
+                   resolve();
+                 })
+            );
           None;
         },
       (store, items, isLoaded),
@@ -223,15 +284,14 @@ module Db = {
       switch (action) {
       | AddAvoidPair(pair) =>
         db_options(
-          ~avoidPairs=state |> avoidPairsGet |> concat([|pair|]),
+          ~avoidPairs=avoidPairs |> concat([|pair|]),
           ~byeValue,
           ~lastBackup,
         )
       | DelAvoidPair((user1, user2)) =>
         db_options(
           ~avoidPairs=
-            state
-            |> avoidPairsGet
+            avoidPairs
             |> filter(((p1, p2)) =>
                  !(
                    [|p1, p2|]
@@ -246,14 +306,13 @@ module Db = {
       | DelAvoidSingle(id) =>
         db_options(
           ~avoidPairs=
-            state
-            |> avoidPairsGet
+            avoidPairs
             |> filter(((p1, p2)) => !([|p1, p2|] |> includes(id))),
           ~byeValue,
           ~lastBackup,
         )
-      | SetAvoidPairs(avoidPairs) =>
-        db_options(~avoidPairs, ~byeValue, ~lastBackup)
+      | SetAvoidPairs(pairs) =>
+        db_options(~avoidPairs=pairs, ~byeValue, ~lastBackup)
       | SetByeValue(value) =>
         db_options(~avoidPairs, ~byeValue=value, ~lastBackup)
       | SetLastBackup(date) =>
@@ -265,21 +324,26 @@ module Db = {
     let (options, dispatch) =
       React.useReducer(optionsReducer, defaultOptions);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
-    React.useEffect0(() => {
-      let didCancel = ref(false);
-      let _ =
-        optionsStore##getItems()
-        |> Js.Promise.then_(values => {
-             if (! didCancel^) {
-               dispatch(SetAvoidPairs(values->avoidPairsGet));
-               dispatch(SetByeValue(values->byeValueGet));
-               dispatch(SetLastBackup(values->lastBackupGet));
-               setIsLoaded(_ => true);
-             };
-             Js.Promise.resolve();
-           });
-      Some(() => didCancel := true);
-    });
+    React.useEffect2(
+      () => {
+        let didCancel = ref(false);
+        let _ =
+          Js.Promise.(
+            optionsStore##getItems()
+            |> then_(values => {
+                 if (! didCancel^) {
+                   dispatch(SetAvoidPairs(values->avoidPairsGet));
+                   dispatch(SetByeValue(values->byeValueGet));
+                   dispatch(SetLastBackup(values->lastBackupGet));
+                   setIsLoaded(_ => true);
+                 };
+                 resolve();
+               })
+          );
+        Some(() => didCancel := true);
+      },
+      (setIsLoaded, dispatch),
+    );
     React.useEffect2(
       () =>
         switch (isLoaded) {

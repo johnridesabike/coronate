@@ -12,6 +12,7 @@ external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
 [@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
+[@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 
 let add = (a, b) => a + b;
@@ -21,23 +22,21 @@ let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
 let last = arr => arr[Js.Array.length(arr) - 1];
 let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
 
-module ExternalComponents = {
-  module VisuallyHidden = {
-    [@bs.module "@reach/visually-hidden"] [@react.component]
-    external make: (~children: React.element) => React.element = "default";
-  };
-  module Dialog = {
-    [@bs.module "@reach/dialog"] [@react.component]
-    external make:
-      (
-        ~isOpen: bool,
-        ~onDismiss: unit => unit,
-        ~children: React.element,
-        ~style: ReactDOMRe.Style.t=?
-      ) =>
-      React.element =
-      "Dialog";
-  };
+module VisuallyHidden = {
+  [@bs.module "@reach/visually-hidden"] [@react.component]
+  external make: (~children: React.element) => React.element = "default";
+};
+module Dialog = {
+  [@bs.module "@reach/dialog"] [@react.component]
+  external make:
+    (
+      ~isOpen: bool,
+      ~onDismiss: unit => unit,
+      ~children: React.element,
+      ~style: ReactDOMRe.Style.t=?
+    ) =>
+    React.element =
+    "Dialog";
 };
 
 module WebpackAssets = {
@@ -49,14 +48,15 @@ module Entities = {
   let copy = "\xA9";
 };
 
-let hashPath = hashString => hashString |> Js.String.split("/");
+let hashPath = hashString => hashString |> Js.String.split("/") |> Belt.List.fromArray;
 
 let dictToMap = dict => dict |> Js.Dict.entries |> Belt.Map.String.fromArray;
 let mapToDict = map => map |> Belt.Map.String.toArray |> Js.Dict.fromArray;
 
 type dtFormat = {. [@bs.meth] "format": Js.Date.t => string};
 
-let dateFormat: dtFormat = [%raw {|
+let dateFormat: dtFormat = [%raw
+  {|
   new Intl.DateTimeFormat(
       "en-US",
       {
@@ -65,9 +65,11 @@ let dateFormat: dtFormat = [%raw {|
           year: "numeric"
       }
   )
-|}];
+|}
+];
 
-let timeFormat: dtFormat = [%raw {|
+let timeFormat: dtFormat = [%raw
+  {|
   new Intl.DateTimeFormat(
       "en-US",
       {
@@ -78,23 +80,33 @@ let timeFormat: dtFormat = [%raw {|
           minute: "2-digit"
       }
   )
-|}];
+|}
+];
 
 module DateOrTimeFormat = {
   [@react.component]
   let make = (~dtFormatObj, ~date) =>
     <time dateTime={date |> Js.Date.toISOString}>
       {dtFormatObj##format(date) |> React.string}
-    </time>
+    </time>;
 };
-
 
 module DateFormat = {
   [@react.component]
-  let make = (~date) => <DateOrTimeFormat dtFormatObj=dateFormat date />
-}
+  let make = (~date) => <DateOrTimeFormat dtFormatObj=dateFormat date />;
+};
 
 module DateTimeFormat = {
   [@react.component]
-  let make = (~date) => <DateOrTimeFormat dtFormatObj=timeFormat date />
-}
+  let make = (~date) => <DateOrTimeFormat dtFormatObj=timeFormat date />;
+};
+
+/* module PlaceHolderButton = {
+     [@react.component]
+     let make = () =>
+       <button
+         className="button-ghost placeholder"
+         ariaHidden=true
+         disabled=true
+       />;
+   }; */

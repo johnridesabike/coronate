@@ -21,7 +21,7 @@ external chevronLeft: unit => React.element = "ChevronLeft";
 [@bs.module "react-feather"] [@react.component]
 external chevronRight: unit => React.element = "ChevronRight";
 [@bs.module "react-feather"] [@react.component]
-external chevronUp: unit => React.element = "ChevronUp";
+external chevronUp: (~style: ReactDOMRe.Style.t=?) => React.element = "ChevronUp";
 [@bs.module "react-feather"] [@react.component]
 external circle: unit => React.element = "Circle";
 [@bs.module "react-feather"] [@react.component]
@@ -76,13 +76,15 @@ module SimpleIcon = {
 };
 
 module Reason = {
-  [@bs.module "simple-icons/icons/reason"] external icon: simpleIcon = "default";
+  [@bs.module "simple-icons/icons/reason"]
+  external icon: simpleIcon = "default";
   [@react.component]
   let make = () => <SimpleIcon icon />;
 };
 
 module ReactIcon = {
-  [@bs.module "simple-icons/icons/react"] external icon: simpleIcon = "default";
+  [@bs.module "simple-icons/icons/react"]
+  external icon: simpleIcon = "default";
   [@react.component]
   let make = () => <SimpleIcon icon />;
 };

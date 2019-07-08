@@ -140,16 +140,16 @@ module WindowTitleBar = {
           className=toolbarClasses
           onClick={_ => dispatch(SetSidebar(!state.isSidebarOpen))}>
           <Icons.sidebar />
-          <Utils.ExternalComponents.VisuallyHidden>
+          <Utils.VisuallyHidden>
             {React.string("Toggle sidebar")}
-          </Utils.ExternalComponents.VisuallyHidden>
+          </Utils.VisuallyHidden>
         </button>
         <button
           className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
           <Icons.help />
-          <Utils.ExternalComponents.VisuallyHidden>
+          <Utils.VisuallyHidden>
             {React.string("About Coronate")}
-          </Utils.ExternalComponents.VisuallyHidden>
+          </Utils.VisuallyHidden>
         </button>
       </div>
       <div
@@ -246,7 +246,7 @@ module Window = {
       <WindowContext.Provider value=(state, dispatch)>
         children
       </WindowContext.Provider>
-      <Utils.ExternalComponents.Dialog
+      <Utils.Dialog
         isOpen={state.isDialogOpen}
         onDismiss={() => dispatch(SetDialog(false))}
         style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}>
@@ -255,7 +255,7 @@ module Window = {
           {React.string("Close")}
         </button>
         <Snippets.About />
-      </Utils.ExternalComponents.Dialog>
+      </Utils.Dialog>
     </div>;
   };
 };

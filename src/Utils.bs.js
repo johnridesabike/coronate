@@ -3,6 +3,7 @@
 import * as Ramda from "ramda";
 import * as React from "react";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
+import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
@@ -34,11 +35,6 @@ var VisuallyHidden = /* module */[];
 
 var Dialog = /* module */[];
 
-var ExternalComponents = /* module */[
-  /* VisuallyHidden */VisuallyHidden,
-  /* Dialog */Dialog
-];
-
 var logo = ( require("./icon-min.svg") );
 
 var WebpackAssets = /* module */[/* logo */logo];
@@ -49,7 +45,7 @@ var Entities = /* module */[
 ];
 
 function hashPath(hashString) {
-  return hashString.split("/");
+  return Belt_List.fromArray(hashString.split("/"));
 }
 
 function dictToMap(dict) {
@@ -121,7 +117,8 @@ export {
   arraySumFloat ,
   last ,
   splitInHalf ,
-  ExternalComponents ,
+  VisuallyHidden ,
+  Dialog ,
   WebpackAssets ,
   Entities ,
   hashPath ,

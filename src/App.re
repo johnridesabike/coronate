@@ -1,25 +1,4 @@
 [%bs.raw {|require("./side-effects")|}];
-// import "./side-effects";
-// import {
-//     LocationProvider,
-//     Router,
-//     createHistory
-// } from "@reach/router";
-// import TournamentIndex, {
-//     Tournament,
-//     TournamentList
-// } from "./pages/tournament";
-// import NotFound from "./components/404";
-// import Options from "./pages/options";
-// import Players from "./pages/players";
-// import React from "react";
-// import Splash from "./pages/splash";
-// import {Window} from "./components/window";
-// import createHashSource from "hash-source";
-
-// These are needed for deploying to GitHub pages.
-// const source = createHashSource();
-// const history = createHistory(source);
 
 [@react.component]
 let make = () => {
@@ -28,8 +7,9 @@ let make = () => {
   <Window.Window className="app">
     <main className="app__main">
       {switch (url.hash |> Utils.hashPath) {
-       | [|""|] => <Pages.Splash />
-       | [|"", ""|] => <Pages.Splash />
+       | [""] => <Pages.Splash />
+       | ["", ""] => <Pages.Splash />
+       | ["", "tourneys"] => <PageTournamentList />
        | _ => <Pages.NotFound />
        }}
     </main>
