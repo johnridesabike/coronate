@@ -4,11 +4,17 @@ import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Numeral from "numeral";
+import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as ReactFeather from "react-feather";
 import * as Hooks$Coronate from "./Hooks.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
 import * as TestData$Coronate from "./TestData.bs.js";
+
+function s(prim) {
+  return prim;
+}
 
 function getDateForFile(param) {
   var date = new Date();
@@ -32,7 +38,7 @@ function PageOptions$LastBackupDate(Props) {
                 date: date
               });
   } else {
-    return null;
+    return "Never";
   }
 }
 
@@ -40,14 +46,18 @@ var LastBackupDate = /* module */[/* make */PageOptions$LastBackupDate];
 
 function PageOptions(Props) {
   var match = Hooks$Coronate.Db[/* useAllTournaments */8](/* () */0);
+  var tourneysDispatch = match[1];
   var tournaments = match[0];
   var match$1 = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
+  var playersDispatch = match$1[1];
   var players = match$1[0];
   var match$2 = React.useState((function () {
           return "";
         }));
   var setText = match$2[1];
+  var text = match$2[0];
   var match$3 = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var optionsDispatch = match$3[1];
   var options = match$3[0];
   var match$4 = Window$Coronate.useWindowContext(/* () */0);
   var windowDispatch = match$4[1];
@@ -68,29 +78,135 @@ function PageOptions(Props) {
         tournaments,
         players
       ]);
+  var match$5 = JSON.stringify(exportData);
+  var exportDataURI = match$5 !== undefined ? "data:application/json," + encodeURIComponent(match$5) : "";
   React.useEffect((function () {
-          var match = JSON.stringify(exportData);
-          if (match !== undefined) {
-            Curry._1(setText, (function (param) {
-                    return match;
-                  }));
-            return undefined;
-          }
-          
+          var json = (JSON.stringify(exportData, null, 4));
+          Curry._1(setText, (function (param) {
+                  return json;
+                }));
+          return undefined;
         }), /* tuple */[
         exportData,
         setText
       ]);
+  var loadData = function (tourneys, players, options) {
+    Curry._1(tourneysDispatch, /* SetState */Block.__(2, [tourneys]));
+    Curry._1(optionsDispatch, /* SetState */Block.__(5, [options]));
+    Curry._1(playersDispatch, /* SetState */Block.__(2, [players]));
+    window.alert("Data loaded.");
+    return /* () */0;
+  };
+  var handleText = function ($$event) {
+    $$event.preventDefault();
+    try {
+      JSON.parse(text);
+      return /* () */0;
+    }
+    catch (exn){
+      window.alert("That data is invalid! A more helpful error message could not be written yet.");
+      return /* () */0;
+    }
+  };
+  var handleFile = function ($$event) {
+    $$event.preventDefault();
+    var reader = new FileReader();
+    var onload = function (ev) {
+      var data = ev.target.result;
+      try {
+        JSON.parse(data);
+        return /* () */0;
+      }
+      catch (exn){
+        window.alert("That data is invalid! A more helpful error message could not be written yet.");
+        return /* () */0;
+      }
+    };
+    reader.onload = onload;
+    reader.readAsText(Caml_array.caml_array_get($$event.currentTarget.files, 0));
+    $$event.currentTarget.value = "";
+    return /* () */0;
+  };
+  var reloadDemoData = function ($$event) {
+    $$event.preventDefault();
+    return loadData(Utils$Coronate.dictToMap(DemoData$Coronate.tournaments), Utils$Coronate.dictToMap(DemoData$Coronate.players), DemoData$Coronate.options);
+  };
+  var loadTestData = function ($$event) {
+    $$event.preventDefault();
+    return loadData(Utils$Coronate.dictToMap(TestData$Coronate.tournaments), Utils$Coronate.dictToMap(TestData$Coronate.players), TestData$Coronate.options);
+  };
+  var handleTextChange = function ($$event) {
+    var newText = $$event.currentTarget.value;
+    return Curry._1(setText, (function (param) {
+                  return newText;
+                }));
+  };
+  var match$6 = process.env.NODE_ENV !== "production";
   return React.createElement(Window$Coronate.WindowBody[/* make */0], {
               children: React.createElement("div", {
                     className: "content-area"
-                  })
+                  }, React.createElement("h2", undefined, "Bye  settings"), React.createElement("form", undefined, React.createElement("p", {
+                            className: "caption-30"
+                          }, "Select the default score for a bye round."), React.createElement("label", {
+                            className: "monospace body-30"
+                          }, "1 ", React.createElement("input", {
+                                checked: options.byeValue === 1.0,
+                                type: "radio",
+                                onChange: (function (param) {
+                                    return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [1.0]));
+                                  })
+                              })), React.createElement("label", {
+                            className: "monospace body-30"
+                          }, "½ ", React.createElement("input", {
+                                checked: options.byeValue === 0.5,
+                                type: "radio",
+                                onChange: (function (param) {
+                                    return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [0.5]));
+                                  })
+                              }))), React.createElement("h2", undefined, "Manage data"), React.createElement("p", {
+                        className: "caption-20"
+                      }, "Last export: ", React.createElement(PageOptions$LastBackupDate, {
+                            date: options.lastBackup
+                          })), React.createElement("p", undefined, React.createElement("a", {
+                            download: "coronate-" + (getDateForFile(/* () */0) + ".json"),
+                            href: exportDataURI,
+                            onClick: (function (param) {
+                                return Curry._1(optionsDispatch, /* SetLastBackup */Block.__(6, [new Date()]));
+                              })
+                          }, React.createElement(ReactFeather.Download, { }), " Export all data")), React.createElement("label", {
+                        htmlFor: "file"
+                      }, "Load data file:"), React.createElement("input", {
+                        id: "file",
+                        name: "file",
+                        type: "file",
+                        onChange: handleFile
+                      }), React.createElement("h2", undefined, "Danger zone"), React.createElement("p", {
+                        className: "caption-30"
+                      }, "I hope you know what you're doing..."), React.createElement("button", {
+                        onClick: reloadDemoData
+                      }, "Reset demo data (this erases everything else)"), " ", match$6 ? React.createElement("button", {
+                          onClick: loadTestData
+                        }, "Load testing data") : null, React.createElement("h3", undefined, "Advanced: manually edit data"), React.createElement("form", {
+                        onSubmit: handleText
+                      }, React.createElement("textarea", {
+                            className: "json",
+                            spellCheck: false,
+                            cols: 50,
+                            name: "playerdata",
+                            rows: 25,
+                            value: text,
+                            onChange: handleTextChange
+                          }), React.createElement("p", undefined, React.createElement("input", {
+                                type: "submit",
+                                value: "Load"
+                              }))))
             });
 }
 
 var make = PageOptions;
 
 export {
+  s ,
   getDateForFile ,
   invalidAlert ,
   LastBackupDate ,

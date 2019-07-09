@@ -127,6 +127,7 @@ module Db = {
     | DelAvoidSingle(string)
     | SetAvoidPairs(array(avoidPair))
     | SetByeValue(float)
+    | SetState(db_options)
     | SetLastBackup(Js.Date.t);
   type instanceConfig = {
     .
@@ -317,6 +318,7 @@ module Db = {
         db_options(~avoidPairs, ~byeValue=value, ~lastBackup)
       | SetLastBackup(date) =>
         db_options(~avoidPairs, ~byeValue, ~lastBackup=date)
+      | SetState(state) => state
       }
     );
   };

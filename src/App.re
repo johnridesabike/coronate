@@ -10,7 +10,9 @@ let make = () => {
        | [""] => <Pages.Splash />
        | ["", ""] => <Pages.Splash />
        | ["", "tourneys"] => <PageTournamentList />
-       | ["", "players", ..._] => <PagePlayers />
+       | ["", "players"] => <PagePlayers />
+       | ["", "players", ...id] => <PagePlayers id/>
+       | ["", "options"] => <PageOptions />
        | _ => <Window.WindowBody> <Pages.NotFound /> </Window.WindowBody>
        }}
     </main>

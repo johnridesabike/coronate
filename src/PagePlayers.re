@@ -381,7 +381,7 @@ module Profile = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~id=?) => {
   let (players, playersDispatch) = Hooks.Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -397,12 +397,11 @@ let make = () => {
     (players, sortDispatch),
   );
   let (options, optionsDispatch) = Hooks.Db.useOptions();
-  let url = ReasonReact.Router.useUrl();
   <Window.WindowBody>
-    {switch (url.hash |> Utils.hashPath) {
-     | ["", "players"] =>
+    {switch (id) {
+     | None =>
        <List sorted sortDispatch players playersDispatch optionsDispatch />
-     | ["", "players", id] =>
+     | Some([id]) =>
        switch (players->Belt.Map.String.get(id)) {
        | None => <div> {s("Loading...")} </div>
        | Some(player) =>

@@ -14,10 +14,8 @@ import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Hooks$Coronate from "./Hooks.bs.js";
 import * as Pages$Coronate from "./Pages.bs.js";
-import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as Scoring$Coronate from "./Scoring.bs.js";
-import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as Converters$Coronate from "./Converters.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
@@ -426,6 +424,7 @@ function PagePlayers$Profile(Props) {
 var Profile = /* module */[/* make */PagePlayers$Profile];
 
 function PagePlayers(Props) {
+  var id = Props.id;
   var match = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
   var playersDispatch = match[1];
   var players = match[0];
@@ -440,44 +439,33 @@ function PagePlayers(Props) {
       ]);
   var match$2 = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
   var optionsDispatch = match$2[1];
-  var url = ReasonReactRouter.useUrl(undefined, /* () */0);
-  var match$3 = Utils$Coronate.hashPath(url[/* hash */1]);
   var tmp;
-  var exit = 0;
-  if (match$3 && match$3[0] === "") {
-    var match$4 = match$3[1];
-    if (match$4 && match$4[0] === "players") {
-      var match$5 = match$4[1];
-      if (match$5) {
-        if (match$5[1]) {
-          exit = 1;
-        } else {
-          var match$6 = Belt_MapString.get(players, match$5[0]);
-          tmp = match$6 !== undefined ? React.createElement(PagePlayers$Profile, {
-                  player: Caml_option.valFromOption(match$6),
-                  players: players,
-                  playersDispatch: playersDispatch,
-                  options: match$2[0],
-                  optionsDispatch: optionsDispatch
-                }) : React.createElement("div", undefined, "Loading...");
-        }
+  if (id !== undefined) {
+    var match$3 = id;
+    if (match$3) {
+      if (match$3[1]) {
+        tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });
       } else {
-        tmp = React.createElement(PagePlayers$List, {
-              sorted: match$1[0],
-              sortDispatch: sortDispatch,
-              players: players,
-              playersDispatch: playersDispatch,
-              optionsDispatch: optionsDispatch
-            });
+        var match$4 = Belt_MapString.get(players, match$3[0]);
+        tmp = match$4 !== undefined ? React.createElement(PagePlayers$Profile, {
+                player: Caml_option.valFromOption(match$4),
+                players: players,
+                playersDispatch: playersDispatch,
+                options: match$2[0],
+                optionsDispatch: optionsDispatch
+              }) : React.createElement("div", undefined, "Loading...");
       }
     } else {
-      exit = 1;
+      tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });
     }
   } else {
-    exit = 1;
-  }
-  if (exit === 1) {
-    tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });
+    tmp = React.createElement(PagePlayers$List, {
+          sorted: match$1[0],
+          sortDispatch: sortDispatch,
+          players: players,
+          playersDispatch: playersDispatch,
+          optionsDispatch: optionsDispatch
+        });
   }
   return React.createElement(Window$Coronate.WindowBody[/* make */0], {
               children: tmp

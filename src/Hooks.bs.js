@@ -321,6 +321,8 @@ function optionsReducer(state, action) {
                 lastBackup: lastBackup
               };
     case 5 : 
+        return action[0];
+    case 6 : 
         return {
                 avoidPairs: avoidPairs,
                 byeValue: byeValue,
@@ -345,7 +347,7 @@ function useOptions(param) {
                   if (!didCancel[0]) {
                     Curry._1(dispatch, /* SetAvoidPairs */Block.__(3, [values.avoidPairs]));
                     Curry._1(dispatch, /* SetByeValue */Block.__(4, [values.byeValue]));
-                    Curry._1(dispatch, /* SetLastBackup */Block.__(5, [values.lastBackup]));
+                    Curry._1(dispatch, /* SetLastBackup */Block.__(6, [values.lastBackup]));
                     Curry._1(setIsLoaded, (function (param) {
                             return true;
                           }));
