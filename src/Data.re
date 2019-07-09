@@ -21,7 +21,7 @@ module Player = {
     lastName: string,
     matchCount: int,
     rating: int,
-    type_: string // used for CSS styling etc
+    type_: string // used for CSS styling etc. Default "person".
   };
   // These are useful for passing to `filter()` methods.
   let isDummyId = playerId => playerId == dummy_id;
@@ -61,6 +61,11 @@ module Player = {
         | Some(player) => player
         };
       };
+  };
+  let getPlayerMaybeMap = (playerMap, id) => {
+    id === dummy_id
+      ? dummyPlayer
+      : playerMap->Belt.Map.String.getWithDefault(id, makeMissingPlayer(id));
   };
 };
 

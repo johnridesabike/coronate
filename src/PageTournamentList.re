@@ -15,7 +15,7 @@ let make = () => {
     );
   let (newTourneyName, setNewTourneyName) = React.useState(() => "");
   let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
-  let (_, windowDispatch) = Window.WindowContext.useWindowContext();
+  let (_, windowDispatch) = Window.useWindowContext();
   React.useEffect1(
     () => {
       windowDispatch(Window.SetTitle("Tournament list"));
@@ -48,7 +48,7 @@ let make = () => {
         ~roundList=[||],
         ~tieBreaks=[|0, 1, 2|],
       );
-    dispatch(Hooks.Db.AddItem(newId, newTourney));
+    dispatch(Hooks.Db.SetItem(newId, newTourney));
     setNewTourneyName(_ => "");
     setIsDialogOpen(_ => false);
     ();

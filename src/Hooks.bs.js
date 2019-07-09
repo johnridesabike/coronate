@@ -190,9 +190,9 @@ function loadDemoDB(param) {
 function genericDbReducer(state, action) {
   switch (action.tag | 0) {
     case 0 : 
-        return Belt_MapString.set(state, action[0], action[1]);
-    case 1 : 
         return Belt_MapString.remove(state, action[0]);
+    case 1 : 
+        return Belt_MapString.set(state, action[0], action[1]);
     case 2 : 
         return action[0];
     
@@ -330,7 +330,7 @@ function optionsReducer(state, action) {
   }
 }
 
-function useOptionsDb(param) {
+function useOptions(param) {
   var match = React.useReducer(optionsReducer, Data$Coronate.defaultOptions);
   var dispatch = match[1];
   var options = match[0];
@@ -387,7 +387,7 @@ var Db = /* module */[
   /* useAllPlayers */useAllPlayers,
   /* useAllTournaments */useAllTournaments,
   /* optionsReducer */optionsReducer,
-  /* useOptionsDb */useOptionsDb
+  /* useOptions */useOptions
 ];
 
 var $$Map = 0;

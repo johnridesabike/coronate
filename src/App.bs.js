@@ -5,6 +5,7 @@ import * as Pages$Coronate from "./Pages.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
+import * as PagePlayers$Coronate from "./PagePlayers.bs.js";
 import * as PageTournamentList$Coronate from "./PageTournamentList.bs.js";
 
 ((require("./side-effects")));
@@ -25,6 +26,9 @@ function App(Props) {
               tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
             }
             break;
+        case "players" : 
+            tmp = React.createElement(PagePlayers$Coronate.make, { });
+            break;
         case "tourneys" : 
             if (match$1[1]) {
               exit = 1;
@@ -42,7 +46,9 @@ function App(Props) {
     exit = 1;
   }
   if (exit === 1) {
-    tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });
+    tmp = React.createElement(Window$Coronate.WindowBody[/* make */0], {
+          children: React.createElement(Pages$Coronate.NotFound[/* make */0], { })
+        });
   }
   return React.createElement(Window$Coronate.$$Window[/* make */0], {
               children: React.createElement("main", {

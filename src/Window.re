@@ -45,11 +45,11 @@ module WindowContext = {
 
     let make = React.Context.provider(windowContext);
   };
+};
 
   let useWindowContext = () => {
-    React.useContext(windowContext);
+    React.useContext(WindowContext.windowContext);
   };
-};
 
 let windowReducer = (state, action) => {
   switch (action) {

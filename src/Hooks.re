@@ -207,13 +207,13 @@ module Db = {
    * Generic database hooks
    ******************************************************************************/
   type actionDb('a) =
-    | AddItem(string, 'a)
     | DelItem(string)
+    | SetItem(string, 'a)
     | SetState(Map.t('a));
   type genericReducer('a) = (Map.t('a), actionDb('a)) => Map.t('a);
   let genericDbReducer = (state, action) => {
     switch (action) {
-    | AddItem(id, item) => state->Map.set(id, item)
+    | SetItem(id, item) => state->Map.set(id, item)
     | DelItem(id) => state->Map.remove(id)
     | SetState(state) => state
     };
@@ -320,7 +320,7 @@ module Db = {
       }
     );
   };
-  let useOptionsDb = () => {
+  let useOptions = () => {
     let (options, dispatch) =
       React.useReducer(optionsReducer, defaultOptions);
     let (isLoaded, setIsLoaded) = React.useState(() => false);

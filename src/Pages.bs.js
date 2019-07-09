@@ -106,11 +106,9 @@ function Pages$Splash(Props) {
 var Splash = /* module */[/* make */Pages$Splash];
 
 function Pages$NotFound(Props) {
-  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
-              children: React.createElement("p", {
-                    className: "content-area"
-                  }, "Page not found.")
-            });
+  return React.createElement("p", {
+              className: "content-area"
+            }, "Page not found.");
 }
 
 var NotFound = /* module */[/* make */Pages$NotFound];

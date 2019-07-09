@@ -10,11 +10,12 @@ let make = () => {
        | [""] => <Pages.Splash />
        | ["", ""] => <Pages.Splash />
        | ["", "tourneys"] => <PageTournamentList />
-       | _ => <Pages.NotFound />
+       | ["", "players", ..._] => <PagePlayers />
+       | _ => <Window.WindowBody> <Pages.NotFound /> </Window.WindowBody>
        }}
     </main>
   </Window.Window>;
-};
+} /* export default App*/;
 
 // function App() {
 //     return (
@@ -36,5 +37,3 @@ let make = () => {
 //         </LocationProvider>
 //     );
 // }
-
-// export default App;

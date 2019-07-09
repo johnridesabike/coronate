@@ -4,6 +4,7 @@ import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
 var dummy_id = "________DUMMY________";
 
@@ -49,11 +50,21 @@ function getPlayerMaybe(playerDict, id) {
   }
 }
 
+function getPlayerMaybeMap(playerMap, id) {
+  var match = id === dummy_id;
+  if (match) {
+    return dummyPlayer;
+  } else {
+    return Belt_MapString.getWithDefault(playerMap, id, makeMissingPlayer(id));
+  }
+}
+
 var Player = /* module */[
   /* isDummyId */isDummyId,
   /* dummyPlayer */dummyPlayer,
   /* makeMissingPlayer */makeMissingPlayer,
-  /* getPlayerMaybe */getPlayerMaybe
+  /* getPlayerMaybe */getPlayerMaybe,
+  /* getPlayerMaybeMap */getPlayerMaybeMap
 ];
 
 var Match = /* module */[];

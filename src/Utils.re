@@ -15,6 +15,12 @@ external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 
+type numeral = {
+  .
+  [@bs.meth] "format": string => string
+};
+[@bs.module "numeral"] external numeral : float => numeral = "default";
+
 let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
 let addFloat = (a, b) => a +. b;

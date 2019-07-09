@@ -58,16 +58,15 @@ var Provider = /* module */[
   /* make */make
 ];
 
-function useWindowContext(param) {
-  return React.useContext(windowContext);
-}
-
 var WindowContext = /* module */[
   /* initialState */initialState,
   /* windowContext */windowContext,
-  /* Provider */Provider,
-  /* useWindowContext */useWindowContext
+  /* Provider */Provider
 ];
+
+function useWindowContext(param) {
+  return React.useContext(windowContext);
+}
 
 function windowReducer(state, action) {
   switch (action.tag | 0) {
@@ -432,6 +431,7 @@ export {
   formatTitle ,
   initialWinState ,
   WindowContext ,
+  useWindowContext ,
   windowReducer ,
   toolbarClasses ,
   WindowsControls ,

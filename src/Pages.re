@@ -128,7 +128,5 @@ module Splash = {
 module NotFound = {
   [@react.component]
   let make = () =>
-    <Window.WindowBody>
       <p className="content-area"> {React.string("Page not found.")} </p>
-    </Window.WindowBody>;
 };

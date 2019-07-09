@@ -40,7 +40,7 @@ function PageTournamentList(Props) {
           return false;
         }));
   var setIsDialogOpen = match$3[1];
-  var match$4 = Window$Coronate.WindowContext[/* useWindowContext */3](/* () */0);
+  var match$4 = Window$Coronate.useWindowContext(/* () */0);
   var windowDispatch = match$4[1];
   React.useEffect((function () {
           Curry._1(windowDispatch, /* SetTitle */Block.__(5, ["Tournament list"]));
@@ -75,7 +75,7 @@ function PageTournamentList(Props) {
         2
       ]
     };
-    Curry._1(dispatch, /* AddItem */Block.__(0, [
+    Curry._1(dispatch, /* SetItem */Block.__(1, [
             newId,
             newTourney
           ]));
@@ -130,7 +130,7 @@ function PageTournamentList(Props) {
                                                             var name = t.name;
                                                             var message = "Are you sure you want to delete “" + (String(name) + "”?");
                                                             if (window.confirm(message)) {
-                                                              Curry._1(dispatch, /* DelItem */Block.__(1, [id]));
+                                                              Curry._1(dispatch, /* DelItem */Block.__(0, [id]));
                                                             }
                                                             return /* () */0;
                                                           })
