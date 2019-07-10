@@ -211,7 +211,7 @@ function useAllItemsFromDb(store, reducer) {
   useLoadingCursor(isLoaded);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
-          store.getItems().then((function (results) {
+          store.getItems(null).then((function (results) {
                   if (!didCancel[0]) {
                     Curry._1(dispatch, /* SetState */Block.__(2, [Utils$Coronate.dictToMap(results)]));
                     Curry._1(setIsLoaded, (function (param) {

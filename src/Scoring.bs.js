@@ -6,14 +6,13 @@ import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as EloRank from "elo-rank";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_int32 from "bs-platform/lib/es6/caml_int32.js";
-import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 
 function isNotDummy(scoreDict, oppId) {
   var match = Js_dict.get(scoreDict, oppId);
   if (match !== undefined) {
-    return !Caml_option.valFromOption(match).isDummy;
+    return !match[/* isDummy */3];
   } else {
     return true;
   }
@@ -22,7 +21,7 @@ function isNotDummy(scoreDict, oppId) {
 function getPlayerScore(scoreDict, id) {
   var match = Js_dict.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(Caml_option.valFromOption(match).results);
+    return Utils$Coronate.arraySumFloat(match[/* results */6]);
   } else {
     return 0.0;
   }
@@ -31,7 +30,7 @@ function getPlayerScore(scoreDict, id) {
 function getOpponentScores(scoreDict, id) {
   var match = Js_dict.get(scoreDict, id);
   if (match !== undefined) {
-    return Object.keys(Caml_option.valFromOption(match).opponentResults).filter((function (param) {
+    return Object.keys(match[/* opponentResults */4]).filter((function (param) {
                     return isNotDummy(scoreDict, param);
                   })).map((function (param) {
                   return getPlayerScore(scoreDict, param);
@@ -60,7 +59,7 @@ function runningReducer(acc, score) {
 function getCumulativeScore(scoreDict, id) {
   var match = Js_dict.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(Caml_option.valFromOption(match).resultsNoByes.reduce(runningReducer, /* array */[0.0]));
+    return Utils$Coronate.arraySumFloat(match[/* resultsNoByes */7].reduce(runningReducer, /* array */[0.0]));
   } else {
     return 0.0;
   }
@@ -69,7 +68,7 @@ function getCumulativeScore(scoreDict, id) {
 function getCumulativeOfOpponentScore(scoreDict, id) {
   var match = Js_dict.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(Object.keys(Caml_option.valFromOption(match).opponentResults).filter((function (param) {
+    return Utils$Coronate.arraySumFloat(Object.keys(match[/* opponentResults */4]).filter((function (param) {
                         return isNotDummy(scoreDict, param);
                       })).map((function (param) {
                       return getCumulativeScore(scoreDict, param);
@@ -82,7 +81,7 @@ function getCumulativeOfOpponentScore(scoreDict, id) {
 function getColorBalanceScore(scoreDict, id) {
   var match = Js_dict.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(Caml_option.valFromOption(match).colorScores);
+    return Utils$Coronate.arraySumFloat(match[/* colorScores */0]);
   } else {
     return 0.0;
   }
@@ -125,16 +124,16 @@ function getTieBreakNames(idList) {
 }
 
 function createBlankScoreData(id) {
-  return {
-          colorScores: /* array */[],
-          colors: /* array */[],
-          id: id,
-          isDummy: false,
-          opponentResults: { },
-          ratings: /* array */[],
-          results: /* array */[],
-          resultsNoByes: /* array */[]
-        };
+  return /* record */[
+          /* colorScores : array */[],
+          /* colors : array */[],
+          /* id */id,
+          /* isDummy */false,
+          /* opponentResults */{ },
+          /* ratings : array */[],
+          /* results : array */[],
+          /* resultsNoByes : array */[]
+        ];
 }
 
 function createStandingList(methods, scoreData) {

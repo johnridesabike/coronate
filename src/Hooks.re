@@ -136,9 +136,10 @@ module Db = {
   };
   type loFoInstance('a) = {
     .
-    [@bs.meth] "getItem": string => Js.Promise.t('a),
+    [@bs.meth] "getItem": string => Js.Promise.t(Js.Nullable.t('a)),
+    [@bs.meth] "getItems": Js.Nullable.t(array(string)) => Js.Promise.t(Js.Dict.t('a)),
     [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
-    [@bs.meth] "getItems": unit => Js.Promise.t(Js.Dict.t('a)),
+    [@bs.meth] "setItem": (string, 'a) => Js.Promise.t(unit),
     [@bs.meth] "removeItems": array(string) => Js.Promise.t(unit),
     [@bs.meth] "keys": unit => Js.Promise.t(Js.Array.t(string)),
   };
@@ -229,7 +230,7 @@ module Db = {
         let didCancel = ref(false);
         let _ =
           Js.Promise.(
-            store##getItems()
+            store##getItems(Js.Nullable.null)
             |> then_(results => {
                  if (! didCancel^) {
                    dispatch(SetState(results |> Utils.dictToMap));

@@ -28,7 +28,7 @@ let matches2ScoreData = matchList => {
     // The ratings will always begin with the `origRating` of the
     // first match they were in.
     let newRatings = {
-      switch (oldData->Scoring.ratingsGet |> Js.Array.length) {
+      switch (oldData.ratings |> Js.Array.length) {
       | 0 => [|origRating, newRating|]
       | _ => [|newRating|]
       };
@@ -36,7 +36,7 @@ let matches2ScoreData = matchList => {
     let newResultsNoByes = {
       isDummyId(oppId) ? [||] : [|result|];
     };
-    let newOpponentResults = oldData->Scoring.opponentResultsGet;
+    let newOpponentResults = oldData.opponentResults;
     let oppResult = {
       switch (newOpponentResults->Js.Dict.get(oppId)) {
       | None => result
@@ -44,23 +44,21 @@ let matches2ScoreData = matchList => {
       };
     };
     newOpponentResults->Js.Dict.set(oppId, oppResult);
-    Scoring.scoreData(
-      ~results=oldData->Scoring.resultsGet|>Js.Array.concat([|result|]),
-      ~resultsNoByes=
-        oldData->Scoring.resultsNoByesGet|>Js.Array.concat(newResultsNoByes),
-      ~colors=oldData->Scoring.colorsGet|>Js.Array.concat([|color|]),
-      ~colorScores=
-        oldData
-        ->Scoring.colorScoresGet
-        |>Js.Array.concat([|colorToScore(color)|]),
-      ~opponentResults=newOpponentResults,
-      ~ratings=oldData->Scoring.ratingsGet|>Js.Array.concat(newRatings),
-      ~isDummy=isDummyId(playerId),
-      ~id=playerId,
+    Js.Array.(
+      Scoring.{
+        results: oldData.results |> concat([|result|]),
+        resultsNoByes: oldData.resultsNoByes |> concat(newResultsNoByes),
+        colors: oldData.colors |> concat([|color|]),
+        colorScores: oldData.colorScores |> concat([|colorToScore(color)|]),
+        opponentResults: newOpponentResults,
+        ratings: oldData.ratings |> concat(newRatings),
+        isDummy: isDummyId(playerId),
+        id: playerId,
+      }
     );
   };
   matchList
-  |> Js.Array.forEach((match) => {
+  |> Js.Array.forEach(match => {
        let playerIds = match->playerIdsGet;
        let result = match->resultGet;
        let newRating = match->newRatingGet;
@@ -118,7 +116,7 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
     avoidPairs |> Js.Array.reduce(avoidPairReducer, Js.Dict.empty());
   let pairData = Js.Dict.empty();
   Js.Dict.values(playerData)
-  |> Js.Array.forEach((data) => {
+  |> Js.Array.forEach(data => {
        let playerStats = {
          switch (scoreDict->Js.Dict.get(data->idGet)) {
          | None => Scoring.createBlankScoreData(data->idGet)
@@ -134,16 +132,16 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
        // `isUpperHalf` and `halfPos` will have to be set by another
        // function later.
        let newData: Pairing.pairingData = {
-           avoidIds: newAvoidIds,
-           colorScores: playerStats->Scoring.colorScoresGet,
-           colors: playerStats->Scoring.colorsGet,
-           halfPos: 0,
-           id: data->idGet,
-           isUpperHalf: false,
-           opponents: playerStats->Scoring.opponentResultsGet->Js.Dict.keys,
-           rating: data->ratingGet,
-           score: playerStats->Scoring.resultsGet->Utils.arraySumFloat,
-        };
+         avoidIds: newAvoidIds,
+         colorScores: playerStats.colorScores,
+         colors: playerStats.colors,
+         halfPos: 0,
+         id: data->idGet,
+         isUpperHalf: false,
+         opponents: playerStats.opponentResults->Js.Dict.keys,
+         rating: data->ratingGet,
+         score: playerStats.results->Utils.arraySumFloat,
+       };
        pairData->Js.Dict.set(data->idGet, newData);
      });
   pairData;

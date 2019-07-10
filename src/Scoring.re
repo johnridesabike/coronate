@@ -1,6 +1,5 @@
 open Utils;
 
-[@bs.deriving abstract]
 type scoreData = {
   colorScores: array(float),
   colors: array(int),
@@ -15,14 +14,14 @@ type scoreData = {
 let isNotDummy = (scoreDict, oppId) => {
   switch (Js.Dict.get(scoreDict, oppId)) {
   | None => true
-  | Some(opponent) => !opponent->isDummyGet
+  | Some(opponent) => !opponent.isDummy
   };
 };
 
 let getPlayerScore = (scoreDict, id) => {
   switch (Js.Dict.get(scoreDict, id)) {
   | None => 0.0
-  | Some(player) => arraySumFloat(player->resultsGet)
+  | Some(player) => arraySumFloat(player.results)
   };
 };
 
@@ -30,7 +29,7 @@ let getOpponentScores = (scoreDict, id) => {
   switch (Js.Dict.get(scoreDict, id)) {
   | None => [||]
   | Some(player) =>
-    Js.Dict.keys(player->opponentResultsGet)
+    Js.Dict.keys(player.opponentResults)
     |> Js.Array.filter(isNotDummy(scoreDict))
     |> Js.Array.map(getPlayerScore(scoreDict))
   };
@@ -56,7 +55,7 @@ let getCumulativeScore = (scoreDict, id) => {
   switch (Js.Dict.get(scoreDict, id)) {
   | None => 0.0
   | Some(person) =>
-    person->resultsNoByesGet
+    person.resultsNoByes
     |> Js.Array.reduce(runningReducer, [|0.0|])
     |> arraySumFloat
   };
@@ -67,7 +66,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
   switch (Js.Dict.get(scoreDict, id)) {
   | None => 0.0
   | Some(person) =>
-    Js.Dict.keys(person->opponentResultsGet)
+    Js.Dict.keys(person.opponentResults)
     |> Js.Array.filter(isNotDummy(scoreDict))
     |> Js.Array.map(getCumulativeScore(scoreDict))
     |> arraySumFloat
@@ -78,7 +77,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 let getColorBalanceScore = (scoreDict, id) => {
   switch (Js.Dict.get(scoreDict, id)) {
   | None => 0.0
-  | Some(person) => arraySumFloat(person->colorScoresGet)
+  | Some(person) => arraySumFloat(person.colorScores)
   };
 };
 
@@ -107,16 +106,16 @@ let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
 // This is useful for cases where the regular factory functions return empty
 // results because a player hasn't been added yet.
 let createBlankScoreData = id =>
-  scoreData(
-    ~colorScores=[||],
-    ~colors=[||],
-    ~id,
-    ~isDummy=false,
-    ~opponentResults=Js.Dict.empty(),
-    ~ratings=[||],
-    ~results=[||],
-    ~resultsNoByes=[||],
-  );
+  {
+    colorScores:[||],
+    colors:[||],
+    id,
+    isDummy:false,
+    opponentResults:Js.Dict.empty(),
+    ratings:[||],
+    results:[||],
+    resultsNoByes:[||],
+  };
 
 [@bs.deriving abstract]
 type standing = {
