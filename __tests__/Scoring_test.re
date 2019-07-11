@@ -8,13 +8,13 @@ let master = TestData.players->Js.Dict.unsafeGet("Grandy_McMaster______");
 
 test("K Factor is calculated correctly", () => {
   // let newbKFactor = getKFactor(newb.matchCount);
-  let masterKFactor = getKFactor(master->matchCountGet);
+  let masterKFactor = getKFactor(master.matchCount);
   // expect(newbKFactor)|>toBe(800);
   expect(masterKFactor) |> toBe(8);
 });
 test("Ratings are calculated correctly", () => {
-  let origRatings = (newb->ratingGet, master->ratingGet);
-  let matchCounts = (newb->matchCountGet, master->matchCountGet);
+  let origRatings = (newb.rating, master.rating);
+  let matchCounts = (newb.matchCount, master.matchCount);
   let calcRatingsForPair = calcNewRatings(origRatings, matchCounts);
   let newbWon = calcRatingsForPair((1.0, 0.0));
   // not really a good example for this next one because they don't change:

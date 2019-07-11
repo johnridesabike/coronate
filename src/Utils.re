@@ -11,15 +11,14 @@ external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
   "sortWith";
 [@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
+[@bs.module "ramda"]
+external move: (int, int, array('a)) => array('a) = "move";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 
-type numeral = {
-  .
-  [@bs.meth] "format": string => string
-};
-[@bs.module "numeral"] external numeral : float => numeral = "default";
+type numeral = {. [@bs.meth] "format": string => string};
+[@bs.module "numeral"] external numeral: float => numeral = "default";
 
 let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
@@ -54,7 +53,8 @@ module Entities = {
   let copy = "\xA9";
 };
 
-let hashPath = hashString => hashString |> Js.String.split("/") |> Belt.List.fromArray;
+let hashPath = hashString =>
+  hashString |> Js.String.split("/") |> Belt.List.fromArray;
 
 let dictToMap = dict => dict |> Js.Dict.entries |> Belt.Map.String.fromArray;
 let mapToDict = map => map |> Belt.Map.String.toArray |> Js.Dict.fromArray;
@@ -116,3 +116,36 @@ module DateTimeFormat = {
          disabled=true
        />;
    }; */
+
+type notification =
+  | Success
+  | Warning
+  | Error
+  | Generic;
+
+module Notification = {
+  [@react.component]
+  let make =
+      (
+        ~children,
+        ~kind=Generic,
+        ~tooltip,
+        ~className="",
+        ~style=ReactDOMRe.Style.make(),
+      ) => {
+    let (icon, notifClassName) =
+      switch (kind) {
+      | Success => (<Icons.check />, "notification__success")
+      | Warning => (<Icons.alert />, "notification__warning")
+      | Error => (<Icons.x />, "notification__error")
+      | Generic => (<Icons.info />, "notification__generic")
+      };
+    <div
+      className={Cn.make(["notification", notifClassName, className])} style>
+      <div ariaLabel=tooltip className="notifcation__icon" title=tooltip>
+        icon
+      </div>
+      <div className="notification__text"> children </div>
+    </div>;
+  };
+};

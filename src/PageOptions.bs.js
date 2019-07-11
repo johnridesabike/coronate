@@ -150,7 +150,7 @@ function PageOptions(Props) {
                           }, "Select the default score for a bye round."), React.createElement("label", {
                             className: "monospace body-30"
                           }, "1 ", React.createElement("input", {
-                                checked: options.byeValue === 1.0,
+                                checked: options[/* byeValue */1] === 1.0,
                                 type: "radio",
                                 onChange: (function (param) {
                                     return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [1.0]));
@@ -158,7 +158,7 @@ function PageOptions(Props) {
                               })), React.createElement("label", {
                             className: "monospace body-30"
                           }, "½ ", React.createElement("input", {
-                                checked: options.byeValue === 0.5,
+                                checked: options[/* byeValue */1] === 0.5,
                                 type: "radio",
                                 onChange: (function (param) {
                                     return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [0.5]));
@@ -166,7 +166,7 @@ function PageOptions(Props) {
                               }))), React.createElement("h2", undefined, "Manage data"), React.createElement("p", {
                         className: "caption-20"
                       }, "Last export: ", React.createElement(PageOptions$LastBackupDate, {
-                            date: options.lastBackup
+                            date: options[/* lastBackup */2]
                           })), React.createElement("p", undefined, React.createElement("a", {
                             download: "coronate-" + (getDateForFile(/* () */0) + ".json"),
                             href: exportDataURI,

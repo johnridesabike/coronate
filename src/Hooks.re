@@ -137,7 +137,9 @@ module Db = {
   type loFoInstance('a) = {
     .
     [@bs.meth] "getItem": string => Js.Promise.t(Js.Nullable.t('a)),
-    [@bs.meth] "getItems": Js.Nullable.t(array(string)) => Js.Promise.t(Js.Dict.t('a)),
+    [@bs.meth]
+    "getItems":
+      Js.Nullable.t(array(string)) => Js.Promise.t(Js.Dict.t('a)),
     [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
     [@bs.meth] "setItem": (string, 'a) => Js.Promise.t(unit),
     [@bs.meth] "removeItems": array(string) => Js.Promise.t(unit),
@@ -145,8 +147,8 @@ module Db = {
   };
   type localForageOptions = {
     .
-    [@bs.meth] "setItems": db_options => Js.Promise.t(unit),
-    [@bs.meth] "getItems": unit => Js.Promise.t(db_options),
+    [@bs.meth] "setItems": Data.db_options_js => Js.Promise.t(unit),
+    [@bs.meth] "getItems": unit => Js.Promise.t(Data.db_options_js),
   };
   type localForage = {.};
 
@@ -189,7 +191,7 @@ module Db = {
     let _ =
       Js.Promise.(
         all3((
-          optionsStore##setItems(DemoData.options),
+          optionsStore##setItems(DemoData.options|>Data.db_optionsToJs),
           playerStore##setItems(DemoData.players),
           tourneyStore##setItems(DemoData.tournaments),
         ))
@@ -279,21 +281,16 @@ module Db = {
   let useAllTournaments = () =>
     useAllItemsFromDb(tourneyStore, genericDbReducer);
   let optionsReducer = (state, action) => {
-    let avoidPairs = state->avoidPairsGet;
-    let byeValue = state->byeValueGet;
-    let lastBackup = state->lastBackupGet;
     Js.Array.(
       switch (action) {
-      | AddAvoidPair(pair) =>
-        db_options(
-          ~avoidPairs=avoidPairs |> concat([|pair|]),
-          ~byeValue,
-          ~lastBackup,
-        )
-      | DelAvoidPair((user1, user2)) =>
-        db_options(
-          ~avoidPairs=
-            avoidPairs
+      | AddAvoidPair(pair) => {
+          ...state,
+          avoidPairs: state.avoidPairs |> concat([|pair|]),
+        }
+      | DelAvoidPair((user1, user2)) => {
+          ...state,
+          avoidPairs:
+            state.avoidPairs
             |> filter(((p1, p2)) =>
                  !(
                    [|p1, p2|]
@@ -302,23 +299,16 @@ module Db = {
                    |> includes(user2)
                  )
                ),
-          ~byeValue,
-          ~lastBackup,
-        )
-      | DelAvoidSingle(id) =>
-        db_options(
-          ~avoidPairs=
-            avoidPairs
+        }
+      | DelAvoidSingle(id) => {
+          ...state,
+          avoidPairs:
+            state.avoidPairs
             |> filter(((p1, p2)) => !([|p1, p2|] |> includes(id))),
-          ~byeValue,
-          ~lastBackup,
-        )
-      | SetAvoidPairs(pairs) =>
-        db_options(~avoidPairs=pairs, ~byeValue, ~lastBackup)
-      | SetByeValue(value) =>
-        db_options(~avoidPairs, ~byeValue=value, ~lastBackup)
-      | SetLastBackup(date) =>
-        db_options(~avoidPairs, ~byeValue, ~lastBackup=date)
+        }
+      | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
+      | SetByeValue(byeValue) => {...state, byeValue}
+      | SetLastBackup(lastBackup) => {...state, lastBackup}
       | SetState(state) => state
       }
     );
@@ -333,11 +323,12 @@ module Db = {
         let _ =
           Js.Promise.(
             optionsStore##getItems()
-            |> then_(values => {
+            |> then_(valuesJs => {
+                let values = Data.db_optionsFromJs(valuesJs);
                  if (! didCancel^) {
-                   dispatch(SetAvoidPairs(values->avoidPairsGet));
-                   dispatch(SetByeValue(values->byeValueGet));
-                   dispatch(SetLastBackup(values->lastBackupGet));
+                   dispatch(SetAvoidPairs(values.avoidPairs));
+                   dispatch(SetByeValue(values.byeValue));
+                   dispatch(SetLastBackup(values.lastBackup));
                    setIsLoaded(_ => true);
                  };
                  resolve();
@@ -352,7 +343,7 @@ module Db = {
         switch (isLoaded) {
         | false => None
         | true =>
-          let _ = optionsStore##setItems(options);
+          let _ = optionsStore##setItems(options|>Data.db_optionsToJs);
           None;
         },
       (options, isLoaded),

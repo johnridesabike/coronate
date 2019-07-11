@@ -16,12 +16,12 @@ function s(prim) {
   return prim;
 }
 
-var dateSort = /* KeyDate */Block.__(3, [(function (prim) {
-        return prim.date;
+var dateSort = /* KeyDate */Block.__(3, [(function (x) {
+        return x[/* date */1];
       })]);
 
-var nameSort = /* KeyString */Block.__(0, [(function (prim) {
-        return prim.name;
+var nameSort = /* KeyString */Block.__(0, [(function (x) {
+        return x[/* name */3];
       })]);
 
 function PageTournamentList(Props) {
@@ -62,19 +62,24 @@ function PageTournamentList(Props) {
   var makeTournament = function ($$event) {
     $$event.preventDefault();
     var newId = Nanoid.default();
-    var newTourney = {
-      byeQueue: /* array */[],
-      date: new Date(),
-      id: newId,
-      name: newTourneyName,
-      playerIds: /* array */[],
-      roundList: /* array */[],
-      tieBreaks: /* array */[
-        0,
-        1,
-        2
-      ]
-    };
+    var newTourney_000 = /* byeQueue : array */[];
+    var newTourney_001 = /* date */new Date();
+    var newTourney_004 = /* playerIds : array */[];
+    var newTourney_005 = /* roundList : array */[];
+    var newTourney_006 = /* tieBreaks : array */[
+      0,
+      1,
+      2
+    ];
+    var newTourney = /* record */[
+      newTourney_000,
+      newTourney_001,
+      /* id */newId,
+      /* name */newTourneyName,
+      newTourney_004,
+      newTourney_005,
+      newTourney_006
+    ];
     Curry._1(dispatch, /* SetItem */Block.__(1, [
             newId,
             newTourney
@@ -115,19 +120,19 @@ function PageTournamentList(Props) {
                               className: "content"
                             }, sorted[/* table */2].map((function (t) {
                                     return React.createElement("tr", {
-                                                key: t.id,
+                                                key: t[/* id */2],
                                                 className: "buttons-on-hover"
                                               }, React.createElement("td", undefined, React.createElement("a", {
-                                                        href: "#/" + t.id
-                                                      }, t.name)), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */0], {
-                                                        date: t.date
+                                                        href: "#/tourneys/" + t[/* id */2]
+                                                      }, t[/* name */3])), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */0], {
+                                                        date: t[/* date */1]
                                                       })), React.createElement("td", undefined, React.createElement("button", {
-                                                        "aria-label": "Delete " + t.name,
+                                                        "aria-label": "Delete " + t[/* name */3],
                                                         className: "danger button-ghost",
-                                                        title: "Delete " + t.name,
+                                                        title: "Delete " + t[/* name */3],
                                                         onClick: (function (param) {
-                                                            var id = t.id;
-                                                            var name = t.name;
+                                                            var id = t[/* id */2];
+                                                            var name = t[/* name */3];
                                                             var message = "Are you sure you want to delete “" + (String(name) + "”?");
                                                             if (window.confirm(message)) {
                                                               Curry._1(dispatch, /* DelItem */Block.__(0, [id]));

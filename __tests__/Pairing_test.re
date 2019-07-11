@@ -5,17 +5,17 @@ open Data;
 
 let loadPairData = tourneyId => {
   let tournament = TestData.tournaments->Js.Dict.unsafeGet(tourneyId);
-  let playerIds = tournament->Tournament.playerIdsGet;
-  let roundList = tournament->Tournament.roundListGet;
+  let playerIds = tournament.playerIds;
+  let roundList = tournament.roundList;
   let players = Js.Dict.empty();
   Js.Dict.values(TestData.players)
-  |> Js.Array.forEach((player) =>
-       if (playerIds |> Js.Array.includes(player->Player.idGet)) {
-         players->Js.Dict.set(player->Player.idGet, player);
+  |> Js.Array.forEach((player:Data.Player.t) =>
+       if (playerIds |> Js.Array.includes(player.id)) {
+         players->Js.Dict.set(player.id, player);
        }
      );
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
-  |> createPairingData(players, TestData.options->Data.avoidPairsGet)
+  |> createPairingData(players, TestData.options.avoidPairs)
   |> Pairing.setUpperHalves;
 };
 

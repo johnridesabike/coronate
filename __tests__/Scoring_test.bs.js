@@ -9,19 +9,19 @@ var newb = TestData$Coronate.players["Newbie_McNewberson___"];
 var master = TestData$Coronate.players["Grandy_McMaster______"];
 
 Jest.test("K Factor is calculated correctly", (function (param) {
-        var masterKFactor = Scoring$Coronate.getKFactor(master.matchCount);
+        var masterKFactor = Scoring$Coronate.getKFactor(master[/* matchCount */3]);
         return Jest.Expect[/* toBe */2](8, Jest.Expect[/* expect */0](masterKFactor));
       }));
 
 Jest.test("Ratings are calculated correctly", (function (param) {
-        var origRatings_000 = newb.rating;
-        var origRatings_001 = master.rating;
+        var origRatings_000 = newb[/* rating */4];
+        var origRatings_001 = master[/* rating */4];
         var origRatings = /* tuple */[
           origRatings_000,
           origRatings_001
         ];
-        var matchCounts_000 = newb.matchCount;
-        var matchCounts_001 = master.matchCount;
+        var matchCounts_000 = newb[/* matchCount */3];
+        var matchCounts_001 = master[/* matchCount */3];
         var matchCounts = /* tuple */[
           matchCounts_000,
           matchCounts_001

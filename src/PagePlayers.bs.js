@@ -7,7 +7,6 @@ import * as Nanoid from "nanoid";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
-import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Dialog from "@reach/dialog";
 import * as Data$Coronate from "./Data.bs.js";
 import * as ReactFeather from "react-feather";
@@ -23,16 +22,16 @@ function s(prim) {
   return prim;
 }
 
-var sortName = /* KeyString */Block.__(0, [(function (prim) {
-        return prim.firstName;
+var sortName = /* KeyString */Block.__(0, [(function (x) {
+        return x[/* firstName */0];
       })]);
 
-var sortRating = /* KeyInt */Block.__(1, [(function (prim) {
-        return prim.rating;
+var sortRating = /* KeyInt */Block.__(1, [(function (x) {
+        return x[/* rating */4];
       })]);
 
-var sortMatchCount = /* KeyInt */Block.__(1, [(function (prim) {
-        return prim.matchCount;
+var sortMatchCount = /* KeyInt */Block.__(1, [(function (x) {
+        return x[/* matchCount */3];
       })]);
 
 function defaultFirstName(param) {
@@ -72,14 +71,14 @@ function PagePlayers$NewPlayerForm(Props) {
     var id = Nanoid.default();
     return Curry._1(dispatch, /* SetItem */Block.__(1, [
                   id,
-                  {
-                    firstName: firstName,
-                    id: id,
-                    lastName: lastName,
-                    matchCount: 0,
-                    rating: rating,
-                    type_: "person"
-                  }
+                  /* record */[
+                    /* firstName */firstName,
+                    /* id */id,
+                    /* lastName */lastName,
+                    /* matchCount */0,
+                    /* rating */rating,
+                    /* type_ */"person"
+                  ]
                 ]));
   };
   var updateField = function ($$event) {
@@ -188,33 +187,33 @@ function PagePlayers$List(Props) {
                       className: "content"
                     }, sorted[/* table */2].map((function (p) {
                             return React.createElement("tr", {
-                                        key: p.id,
+                                        key: p[/* id */1],
                                         className: "buttons-on-hover"
                                       }, React.createElement("td", {
                                             className: "table__player"
                                           }, React.createElement("a", {
-                                                href: "#/players/" + p.id
+                                                href: "#/players/" + p[/* id */1]
                                               }, /* array */[
-                                                  p.firstName,
-                                                  p.lastName
+                                                  p[/* firstName */0],
+                                                  p[/* lastName */2]
                                                 ].join(" "))), React.createElement("td", {
                                             className: "table__number"
-                                          }, String(p.rating)), React.createElement("td", {
+                                          }, String(p[/* rating */4])), React.createElement("td", {
                                             className: "table__number"
-                                          }, String(p.matchCount)), React.createElement("td", undefined, React.createElement("button", {
+                                          }, String(p[/* matchCount */3])), React.createElement("td", undefined, React.createElement("button", {
                                                 className: "danger button-ghost",
                                                 onClick: (function ($$event) {
                                                     var $$event$1 = $$event;
-                                                    var id = p.id;
+                                                    var id = p[/* id */1];
                                                     $$event$1.preventDefault();
                                                     var playerOpt = Belt_MapString.get(players, id);
                                                     if (playerOpt !== undefined) {
-                                                      var player = Caml_option.valFromOption(playerOpt);
+                                                      var player = playerOpt;
                                                       var message = /* array */[
                                                           "Are you sure you want to delete ",
-                                                          player.firstName,
+                                                          player[/* firstName */0],
                                                           " ",
-                                                          player.lastName,
+                                                          player[/* lastName */2],
                                                           "?"
                                                         ].join("");
                                                       if (window.confirm(message)) {
@@ -230,8 +229,8 @@ function PagePlayers$List(Props) {
                                               }, React.createElement(ReactFeather.Trash2, { }), React.createElement(VisuallyHidden.default, {
                                                     children: /* array */[
                                                         "Delete",
-                                                        p.firstName,
-                                                        p.lastName
+                                                        p[/* firstName */0],
+                                                        p[/* lastName */2]
                                                       ].join(" ")
                                                   }))));
                           })))), React.createElement(Dialog.Dialog, {
@@ -262,10 +261,10 @@ function PagePlayers$Profile(Props) {
   var playersDispatch = Props.playersDispatch;
   var options = Props.options;
   var optionsDispatch = Props.optionsDispatch;
-  var playerId = player.id;
+  var playerId = player[/* id */1];
   var playerName = /* array */[
-      player.firstName,
-      player.lastName
+      player[/* firstName */0],
+      player[/* lastName */2]
     ].join(" ");
   var match = Window$Coronate.useWindowContext(/* () */0);
   var windowDispatch = match[1];
@@ -278,7 +277,7 @@ function PagePlayers$Profile(Props) {
         windowDispatch,
         playerName
       ]);
-  var avoidObj = options.avoidPairs.reduce(Converters$Coronate.avoidPairReducer, { });
+  var avoidObj = options[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
   var match$1 = Js_dict.get(avoidObj, playerId);
   var singAvoidList = match$1 !== undefined ? match$1 : /* array */[];
   var unavoided = Belt_MapString.keysToArray(players).filter((function (id) {
@@ -314,14 +313,14 @@ function PagePlayers$Profile(Props) {
     var rating = Caml_format.caml_int_of_string(target.rating.value);
     return Curry._1(playersDispatch, /* SetItem */Block.__(1, [
                   playerId,
-                  {
-                    firstName: firstName,
-                    id: playerId,
-                    lastName: lastName,
-                    matchCount: matchCount,
-                    rating: rating,
-                    type_: player.type_
-                  }
+                  /* record */[
+                    /* firstName */firstName,
+                    /* id */playerId,
+                    /* lastName */lastName,
+                    /* matchCount */matchCount,
+                    /* rating */rating,
+                    /* type_ */player[/* type_ */5]
+                  ]
                 ]));
   };
   var handleAvoidChange = function ($$event) {
@@ -347,25 +346,25 @@ function PagePlayers$Profile(Props) {
                 }, React.createElement("p", undefined, React.createElement("label", {
                           htmlFor: "firstName"
                         }, "First name"), React.createElement("input", {
-                          defaultValue: player.firstName,
+                          defaultValue: player[/* firstName */0],
                           name: "firstName",
                           type: "text"
                         })), React.createElement("p", undefined, React.createElement("label", {
                           htmlFor: "lastName"
                         }, "Last name"), React.createElement("input", {
-                          defaultValue: player.lastName,
+                          defaultValue: player[/* lastName */2],
                           name: "lastName",
                           type: "text"
                         })), React.createElement("p", undefined, React.createElement("label", {
                           htmlFor: "matchCount"
                         }, "Matches played"), React.createElement("input", {
-                          defaultValue: String(player.matchCount),
+                          defaultValue: String(player[/* matchCount */3]),
                           name: "matchCount",
                           type: "number"
                         })), React.createElement("p", undefined, React.createElement("label", {
                           htmlFor: "rating"
                         }, "Rating"), React.createElement("input", {
-                          defaultValue: String(player.rating),
+                          defaultValue: String(player[/* rating */4]),
                           name: "rating",
                           type: "number"
                         })), React.createElement("p", undefined, React.createElement("label", {
@@ -375,22 +374,22 @@ function PagePlayers$Profile(Props) {
                           name: "kfactor",
                           readOnly: true,
                           type: "number",
-                          value: String(Scoring$Coronate.getKFactor(player.matchCount))
+                          value: String(Scoring$Coronate.getKFactor(player[/* matchCount */3]))
                         }))), React.createElement("h3", undefined, "Players to avoid"), React.createElement("ul", undefined, singAvoidList.map((function (pId) {
                         return React.createElement("li", {
                                     key: pId
-                                  }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).firstName, " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).lastName, React.createElement("button", {
+                                  }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2], React.createElement("button", {
                                         "aria-label": /* array */[
                                             "Remove",
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).firstName,
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).lastName,
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2],
                                             "from avoid list."
                                           ].join(" "),
                                         className: "danger button-ghost",
                                         title: /* array */[
                                             "Remove",
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).firstName,
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).lastName,
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2],
                                             "from avoid list."
                                           ].join(" "),
                                         onClick: (function (param) {
@@ -413,7 +412,7 @@ function PagePlayers$Profile(Props) {
                             return React.createElement("option", {
                                         key: pId,
                                         value: pId
-                                      }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).firstName, " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId).lastName);
+                                      }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2]);
                           }))), " ", React.createElement("input", {
                       className: "button-micro",
                       type: "submit",
@@ -448,7 +447,7 @@ function PagePlayers(Props) {
       } else {
         var match$4 = Belt_MapString.get(players, match$3[0]);
         tmp = match$4 !== undefined ? React.createElement(PagePlayers$Profile, {
-                player: Caml_option.valFromOption(match$4),
+                player: match$4,
                 players: players,
                 playersDispatch: playersDispatch,
                 options: match$2[0],

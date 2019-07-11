@@ -3,7 +3,6 @@
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
-import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
 var dummy_id = "________DUMMY________";
@@ -16,24 +15,24 @@ function isDummyId(playerId) {
   return playerId === dummy_id;
 }
 
-var dummyPlayer = {
-  firstName: "Bye",
-  id: dummy_id,
-  lastName: "Player",
-  matchCount: 0,
-  rating: 0,
-  type_: "dummy"
-};
+var dummyPlayer = /* record */[
+  /* firstName */"Bye",
+  /* id */dummy_id,
+  /* lastName */"Player",
+  /* matchCount */0,
+  /* rating */0,
+  /* type_ */"dummy"
+];
 
 function makeMissingPlayer(id) {
-  return {
-          firstName: "Anonymous",
-          id: id,
-          lastName: "Player",
-          matchCount: 0,
-          rating: 0,
-          type_: "missing"
-        };
+  return /* record */[
+          /* firstName */"Anonymous",
+          /* id */id,
+          /* lastName */"Player",
+          /* matchCount */0,
+          /* rating */0,
+          /* type_ */"missing"
+        ];
 }
 
 function getPlayerMaybe(playerDict, id) {
@@ -43,7 +42,7 @@ function getPlayerMaybe(playerDict, id) {
   } else {
     var match$1 = Js_dict.get(playerDict, id);
     if (match$1 !== undefined) {
-      return Caml_option.valFromOption(match$1);
+      return match$1;
     } else {
       return makeMissingPlayer(id);
     }
@@ -71,11 +70,31 @@ var Match = /* module */[];
 
 var Tournament = /* module */[];
 
-var defaultOptions = {
-  avoidPairs: /* array */[],
-  byeValue: 1.0,
-  lastBackup: new Date(0.0)
-};
+function db_optionsToJs(param) {
+  return {
+          avoidPairs: param[/* avoidPairs */0],
+          byeValue: param[/* byeValue */1],
+          lastBackup: param[/* lastBackup */2]
+        };
+}
+
+function db_optionsFromJs(param) {
+  return /* record */[
+          /* avoidPairs */param.avoidPairs,
+          /* byeValue */param.byeValue,
+          /* lastBackup */param.lastBackup
+        ];
+}
+
+var defaultOptions_000 = /* avoidPairs : array */[];
+
+var defaultOptions_002 = /* lastBackup */new Date(0.0);
+
+var defaultOptions = /* record */[
+  defaultOptions_000,
+  /* byeValue */1.0,
+  defaultOptions_002
+];
 
 function rounds2Matches(roundList, lastRound, param) {
   var rounds = lastRound !== undefined ? (function (param) {
@@ -93,16 +112,16 @@ function getUnmatched(roundList, players, roundId) {
   var matchList = match !== undefined ? match : /* array */[];
   var matchedIds = matchList.reduce((function (acc, match_) {
           return acc.concat(/* array */[
-                      match_.playerIds.whiteId,
-                      match_.playerIds.blackId
+                      match_[/* whiteId */1],
+                      match_[/* blackId */2]
                     ]);
         }), /* array */[]);
   var unmatched = { };
-  Js_dict.values(players).forEach((function (player) {
-          if (matchedIds.includes(player.id)) {
+  Belt_MapString.valuesToArray(players).forEach((function (player) {
+          if (matchedIds.includes(player[/* id */1])) {
             return 0;
           } else {
-            unmatched[player.id] = player;
+            unmatched[player[/* id */1]] = player;
             return /* () */0;
           }
         }));
@@ -116,7 +135,7 @@ function isRoundComplete(roundList, players, roundId) {
   } else {
     var unmatched = getUnmatched(roundList, players, roundId);
     var results = Caml_array.caml_array_get(roundList, roundId).map((function (match_) {
-            return match_.result.whiteScore + match_.result.blackScore;
+            return match_[/* whiteScore */7] + match_[/* blackScore */8];
           }));
     if (Object.keys(unmatched).length === 0) {
       return !results.includes(0.0);
@@ -141,6 +160,8 @@ export {
   Player ,
   Match ,
   Tournament ,
+  db_optionsToJs ,
+  db_optionsFromJs ,
   defaultOptions ,
   rounds2Matches ,
   getUnmatched ,

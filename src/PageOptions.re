@@ -134,7 +134,7 @@ let make = () => {
         <label className="monospace body-30">
           {s("1 ")}
           <input
-            checked={options->Data.byeValueGet === 1.0}
+            checked={options.byeValue === 1.0}
             type_="radio"
             onChange={_ => optionsDispatch(Hooks.Db.SetByeValue(1.0))}
           />
@@ -142,7 +142,7 @@ let make = () => {
         <label className="monospace body-30">
           {s({j|½ |j})}
           <input
-            checked={options->Data.byeValueGet === 0.5}
+            checked={options.byeValue === 0.5}
             type_="radio"
             onChange={_ => optionsDispatch(Hooks.Db.SetByeValue(0.5))}
           />
@@ -151,7 +151,7 @@ let make = () => {
       <h2> {s("Manage data")} </h2>
       <p className="caption-20">
         {s("Last export: ")}
-        <LastBackupDate date={options->Data.lastBackupGet} />
+        <LastBackupDate date={options.lastBackup} />
       </p>
       <p>
         <a

@@ -5,18 +5,15 @@ open Data;
 
 let getAllPlayerIdsFromMatches = matchList => {
   open Match;
-  let whiteGet = x => x->playerIdsGet->whiteIdGet;
-  let blackGet = x => x->playerIdsGet->blackIdGet;
   let allPlayers =
     Js.Array.(
       matchList
       |> reduce(
-           (acc, match) =>
-             acc |> concat([|match->whiteGet, match->blackGet|]),
+           (acc, match) => acc |> concat([|match.whiteId, match.blackId|]),
            [||],
          )
     );
-  /* Note: Not a set. Does it need to be? */
+  /* TODO: Not a set. Does it need to be? */
   allPlayers;
 };
 
@@ -25,50 +22,41 @@ let calcNumOfRounds = playerCount => {
   roundCount->isFinite ? roundCount->int_of_float : 0;
 };
 
-type action =
-  | SetState(Tournament.t);
-
-let tempReducer = (_, action: action) => {
-  switch (action) {
-  | SetState(tourney) => tourney
-  };
+open Tournament;
+let emptyTourney = {
+  name: "",
+  playerIds: [||],
+  roundList: [||],
+  date: Js.Date.fromFloat(0.0),
+  id: Utils.nanoid(),
+  tieBreaks: [|1|],
+  byeQueue: [||],
 };
 
-let tempReducer2 = (_, action) => action;
-
-open Tournament;
-let emptyTourney =
-  t(
-    ~name="",
-    ~playerIds=[||],
-    ~roundList=[||],
-    ~date=Js.Date.fromFloat(0.0),
-    ~id=Utils.nanoid(),
-    ~tieBreaks=[|1|],
-    ~byeQueue=[||],
-  );
-
 type childrenProps = {
-  activePlayers: Js.Dict.t(Player.t),
+  activePlayers: Belt.Map.String.t(Player.t),
   getPlayer: string => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
-  players: Js.Dict.t(Player.t),
-  playersDispatch: Js.Dict.t(Player.t) => unit,
+  players: Belt.Map.String.t(Player.t),
+  playersDispatch: TournamentDataReducers.actionPlayer => unit,
   roundCount: int,
   tourney: Tournament.t,
-  tourneyDispatch: action => unit,
+  tourneyDispatch: TournamentDataReducers.actionTournament => unit,
 };
 
 [@react.component]
 let make = (~children, ~tourneyId) => {
   let (tourney, tourneyDispatch) =
-    React.useReducer(tempReducer, emptyTourney);
-  let name = tourney->nameGet;
-  let playerIds = tourney->playerIdsGet;
-  let roundList = tourney->roundListGet;
+    React.useReducer(TournamentDataReducers.tournamentReducer, emptyTourney);
+  let name = tourney.name;
+  let playerIds = tourney.playerIds;
+  let roundList = tourney.roundList;
   let (players, playersDispatch) =
-    React.useReducer(tempReducer2, Js.Dict.empty());
+    React.useReducer(
+      TournamentDataReducers.playersReducer,
+      Belt.Map.String.empty,
+    );
   let (isTourneyLoaded, setIsTourneyLoaded) = React.useState(() => false);
   let (isPlayersLoaded, setIsPlayersLoaded) = React.useState(() => false);
   let (isDbError, setIsDbError) = React.useState(() => false);
@@ -98,11 +86,11 @@ let make = (~children, ~tourneyId) => {
                  switch (value->Js.Nullable.toOption) {
                  | None => setIsDbError(_ => true)
                  | Some(value) =>
-                   tourneyDispatch(SetState(value));
+                   tourneyDispatch(SetTournament(value));
                    setIsTourneyLoaded(_ => true);
                  };
                };
-               resolve(value);
+               resolve();
              })
         );
       Some(() => didCancel := true);
@@ -129,8 +117,8 @@ let make = (~children, ~tourneyId) => {
         switch (allTheIds |> Js.Array.length) {
         | 0 =>
           /* This check prevents an infinite loop & memory leak. */
-          if (players |> Js.Dict.keys |> Js.Array.length !== 0) {
-            playersDispatch(players);
+          if (players |> Belt.Map.String.keysToArray |> Js.Array.length !== 0) {
+            playersDispatch(SetPlayers(players));
           };
           setIsPlayersLoaded(_ => true);
         | _ =>
@@ -143,7 +131,7 @@ let make = (~children, ~tourneyId) => {
                       this `useEffect` would trigger an infinite loop and a memory
                       leak. */
                    let newIds = values |> Js.Dict.keys;
-                   let oldIds = players |> Js.Dict.keys;
+                   let oldIds = players |> Belt.Map.String.keysToArray;
                    let changedPlayers =
                      Js.Array.(
                        newIds
@@ -155,7 +143,7 @@ let make = (~children, ~tourneyId) => {
                    Js.log("changed players:");
                    Js.log(changedPlayers |> Js.Array.length);
                    if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                     playersDispatch(values);
+                     playersDispatch(SetPlayers(values->Utils.dictToMap));
                      setIsPlayersLoaded(_ => true);
                    };
                    resolve(values);
@@ -174,7 +162,7 @@ let make = (~children, ~tourneyId) => {
   React.useEffect3(
     () => {
       /* If the tournament wasn't loaded then the id won't match. */
-      if (isTourneyLoaded && tourneyId === tourney->idGet) {
+      if (isTourneyLoaded && tourneyId === tourney.id) {
         let _ = Hooks.Db.tourneyStore##setItem(tourneyId, tourney);
         ();
       };
@@ -188,37 +176,38 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       if (isPlayersLoaded) {
-        let _ = Hooks.Db.playerStore##setItems(players);
+        let _ = Hooks.Db.playerStore##setItems(players->Utils.mapToDict);
         ();
       };
       None;
     },
     (isPlayersLoaded, players),
   );
-  let getPlayer = Player.getPlayerMaybe(players);
+  let getPlayer = Player.getPlayerMaybeMap(players);
   /* `players` includes players in past matches who may have left
      `activePlayers` is only players to be matched in future matches. */
-  let activePlayers = Js.Dict.empty();
-  let _ =
-    Js.Dict.(
-      Js.Array.(
-        players
-        |> values
-        |> forEach(player =>
-             if (tourney->playerIdsGet |> includes(player->Player.idGet)) {
-               activePlayers->set(player->Player.idGet, player);
-             }
-           )
+  let activePlayers =
+    Belt.Map.String.(
+      players->reduce(empty, (acc, key, player) =>
+        if (tourney.playerIds |> Js.Array.includes(key)) {
+          acc->set(key, player);
+        } else {
+          acc;
+        }
       )
     );
+
   let roundCount =
-    Js.(activePlayers |> Dict.keys |> Array.length |> calcNumOfRounds);
+    activePlayers
+    |> Belt.Map.String.keysToArray
+    |> Js.Array.length
+    |> calcNumOfRounds;
   let isItOver = roundList |> Js.Array.length >= roundCount;
   let isNewRoundReady =
     Js.Array.(
       roundList |> length === 0
         ? true
-        : isRoundComplete(roundList, activePlayers, roundList |> length)
+        : isRoundComplete(roundList, activePlayers, (roundList |> length) - 1)
     );
   if (isDbError) {
     <div> {React.string("Error: tournament not found.")} </div>;

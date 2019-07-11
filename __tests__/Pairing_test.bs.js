@@ -10,18 +10,18 @@ import * as Caml_builtin_exceptions from "bs-platform/lib/es6/caml_builtin_excep
 
 function loadPairData(tourneyId) {
   var tournament = TestData$Coronate.tournaments[tourneyId];
-  var playerIds = tournament.playerIds;
-  var roundList = tournament.roundList;
+  var playerIds = tournament[/* playerIds */4];
+  var roundList = tournament[/* roundList */5];
   var players = { };
   Js_dict.values(TestData$Coronate.players).forEach((function (player) {
-          if (playerIds.includes(player.id)) {
-            players[player.id] = player;
+          if (playerIds.includes(player[/* id */1])) {
+            players[player[/* id */1]] = player;
             return /* () */0;
           } else {
             return 0;
           }
         }));
-  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(players, TestData$Coronate.options.avoidPairs, Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
+  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(players, TestData$Coronate.options[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
 }
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {

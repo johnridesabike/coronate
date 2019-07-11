@@ -7,6 +7,7 @@ import * as Window$Coronate from "./Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as PageOptions$Coronate from "./PageOptions.bs.js";
 import * as PagePlayers$Coronate from "./PagePlayers.bs.js";
+import * as PageTournament$Coronate from "./Tournament_modules/PageTournament.bs.js";
 import * as PageTournamentList$Coronate from "./PageTournamentList.bs.js";
 
 ((require("./side-effects")));
@@ -41,8 +42,20 @@ function App(Props) {
                   }) : React.createElement(PagePlayers$Coronate.make, { });
             break;
         case "tourneys" : 
-            if (match$1[1]) {
-              exit = 1;
+            var match$2 = match$1[1];
+            if (match$2) {
+              var hashPath = match$2[1];
+              var tourneyId = match$2[0];
+              tmp = hashPath ? React.createElement(PageTournament$Coronate.make, {
+                      tourneyId: tourneyId,
+                      hashPath: hashPath
+                    }) : React.createElement(PageTournament$Coronate.make, {
+                      tourneyId: tourneyId,
+                      hashPath: /* :: */[
+                        "",
+                        /* [] */0
+                      ]
+                    });
             } else {
               tmp = React.createElement(PageTournamentList$Coronate.make, { });
             }

@@ -1,8 +1,8 @@
 open Data.Tournament;
 let s = React.string;
 /* These can't be definined inline or the comparisons don't work. */
-let dateSort = Hooks.KeyDate(dateGet);
-let nameSort = Hooks.KeyString(nameGet);
+let dateSort = Hooks.KeyDate(x => x.date);
+let nameSort = Hooks.KeyString(x => x.name);
 
 [@react.component]
 let make = () => {
@@ -38,16 +38,15 @@ let make = () => {
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
     let newId = Utils.nanoid();
-    let newTourney =
-      t(
-        ~byeQueue=[||],
-        ~date=Js.Date.make(),
-        ~id=newId,
-        ~name=newTourneyName,
-        ~playerIds=[||],
-        ~roundList=[||],
-        ~tieBreaks=[|0, 1, 2|],
-      );
+    let newTourney = {
+      byeQueue: [||],
+      date: Js.Date.make(),
+      id: newId,
+      name: newTourneyName,
+      playerIds: [||],
+      roundList: [||],
+      tieBreaks: [|0, 1, 2|],
+    };
     dispatch(Hooks.Db.SetItem(newId, newTourney));
     setNewTourneyName(_ => "");
     setIsDialogOpen(_ => false);
@@ -96,19 +95,15 @@ let make = () => {
              <tbody className="content">
                {sorted.table
                 |> Js.Array.map(t =>
-                     <tr key={t->idGet} className="buttons-on-hover">
-                       <td>
-                         <a href={"#/" ++ t->idGet}> {t->nameGet->s} </a>
-                       </td>
-                       <td> <Utils.DateFormat date={t->dateGet} /> </td>
+                     <tr key={t.id} className="buttons-on-hover">
+                       <td> <a href={"#/tourneys/" ++ t.id}> t.name->s </a> </td>
+                       <td> <Utils.DateFormat date={t.date} /> </td>
                        <td>
                          <button
-                           ariaLabel={"Delete " ++ t->nameGet}
+                           ariaLabel={"Delete " ++ t.name}
                            className="danger button-ghost"
-                           title={"Delete " ++ t->nameGet}
-                           onClick={_ =>
-                             deleteTournament(t->idGet, t->nameGet)
-                           }>
+                           title={"Delete " ++ t.name}
+                           onClick={_ => deleteTournament(t.id, t.name)}>
                            <Icons.trash />
                          </button>
                        </td>

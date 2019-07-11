@@ -14,7 +14,6 @@ let isNanoId = str => str |> Js.Re.test_([%re "/^[A-Za-z0-9_-]{21}$/"]);
 type avoidPair = (id, id);
 
 module Player = {
-  [@bs.deriving abstract]
   type t = {
     firstName: string,
     id,
@@ -27,27 +26,24 @@ module Player = {
   let isDummyId = playerId => playerId == dummy_id;
 
   // This is the dummy profile that `getPlayerMaybe()` returns for bye rounds.
-  let dummyPlayer =
-    t(
-      ~id=dummy_id,
-      ~firstName="Bye",
-      ~lastName="Player",
-      ~type_="dummy",
-      ~matchCount=0,
-      ~rating=0,
-    );
+  let dummyPlayer = {
+      id:  dummy_id,
+      firstName:  "Bye",
+      lastName:  "Player",
+      type_:  "dummy",
+      matchCount:  0,
+      rating:  0,
+  };
 
   // If `getPlayerMaybe()` can't find a profile (e.g. if it was deleted) then it
   // outputs this instead. The ID will be the same as missing player's ID.
-  let makeMissingPlayer = id =>
-    t(
-      ~id,
-      ~firstName="Anonymous",
-      ~lastName="Player",
-      ~type_="missing",
-      ~matchCount=0,
-      ~rating=0,
-    );
+  let makeMissingPlayer = id =>{id,
+      firstName:  "Anonymous",
+      lastName:  "Player",
+      type_:  "missing",
+      matchCount:  0,
+      rating:  0,
+  };
 
   // This function should always be used in components that *might* not be able to
   // display current player information. This includes bye rounds with "dummy"
@@ -70,38 +66,22 @@ module Player = {
 };
 
 module Match = {
-  [@bs.deriving abstract]
-  type ratings = {
-    whiteRating: int,
-    blackRating: int,
-  };
-
-  [@bs.deriving abstract]
-  type results = {
-    whiteScore: float,
-    blackScore: float,
-  };
-
-  [@bs.deriving abstract]
-  type ids = {
-    whiteId: id,
-    blackId: id,
-  };
-
-  [@bs.deriving abstract]
   type t = {
     id,
-    newRating: ratings,
-    origRating: ratings,
-    playerIds: ids,
-    result: results,
+    whiteId: id,
+    blackId: id,
+    whiteNewRating: int,
+    blackNewRating: int,
+    whiteOrigRating: int,
+    blackOrigRating: int,
+    whiteScore: float,
+    blackScore: float
   };
 };
 
 module Tournament = {
   type roundList = array(array(Match.t));
 
-  [@bs.deriving abstract]
   type t = {
     byeQueue: array(id),
     date: Js.Date.t,
@@ -113,19 +93,26 @@ module Tournament = {
   };
 };
 
-[@bs.deriving abstract]
+[@bs.deriving jsConverter]
 type db_options = {
   avoidPairs: array(avoidPair),
   byeValue: float,
   lastBackup: Js.Date.t,
 };
 
-let defaultOptions =
-  db_options(
-    ~byeValue=1.0,
-    ~avoidPairs=[||],
-    ~lastBackup=Js.Date.fromFloat(0.0),
-  );
+/* This is what the jsConverter outputs. */
+type db_options_js = {
+  .
+  "avoidPairs": array(avoidPair),
+  "byeValue": float,
+  "lastBackup": Js.Date.t
+};
+
+let defaultOptions = {
+    byeValue:  1.0,
+    avoidPairs:  [||],
+    lastBackup:  Js.Date.fromFloat(0.0),
+};
 
 /*******************************************************************************
  * Round functions
@@ -148,7 +135,7 @@ let rounds2Matches = (~roundList: Tournament.roundList, ~lastRound=?, ()) => {
 
 // This creates a filtered version of `players` with only the players that are
 // not matched for the specified round.
-let getUnmatched = (roundList, players, roundId) => {
+let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
   let matchList = {
     switch (roundList->Belt.Array.get(roundId)) {
     | None => [||]
@@ -159,25 +146,25 @@ let getUnmatched = (roundList, players, roundId) => {
   let matchedIds =
     matchList
     |> Js.Array.reduce(
-         (acc, match) =>
+         (acc, match:Match.t) =>
            acc
            |> Js.Array.concat([|
-                match->Match.playerIdsGet->Match.whiteIdGet,
-                match->Match.playerIdsGet->Match.blackIdGet,
+                match.whiteId,
+                match.blackId,
               |]),
          [||],
        );
   let unmatched = Js.Dict.empty();
-  Js.Dict.values(players)
-  |> Js.Array.forEach(player =>
-       if (!(matchedIds |> Js.Array.includes(player->Player.idGet))) {
-         unmatched->Js.Dict.set(player->Player.idGet, player);
+  Belt.Map.String.valuesToArray(players)
+  |> Js.Array.forEach((player:Player.t )=>
+       if (!(matchedIds |> Js.Array.includes(player.id))) {
+         unmatched->Js.Dict.set(player.id, player);
        }
      );
   unmatched;
 };
 
-let isRoundComplete = (roundList, players, roundId) => {
+let isRoundComplete = (roundList: Tournament.roundList, players, roundId) => {
   roundId < Js.Array.length(roundList) - 1
     // If it's not the last round, it's complete.
     ? true
@@ -185,9 +172,9 @@ let isRoundComplete = (roundList, players, roundId) => {
       let unmatched = getUnmatched(roundList, players, roundId);
       let results =
         roundList[roundId]
-        |> Js.Array.map(match =>
-             match->Match.resultGet->Match.whiteScoreGet
-             +. match->Match.resultGet->Match.blackScoreGet
+        |> Js.Array.map((match:Match.t) =>
+             match.whiteScore
+             +. match.blackScore
            );
       Js.Dict.keys(unmatched)
       |> Js.Array.length == 0

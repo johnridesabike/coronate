@@ -169,7 +169,7 @@ var tourneyStore = Localforage.createInstance({
 function loadDemoDB(param) {
   ((document.body.style = "wait"));
   Promise.all(/* tuple */[
-            optionsStore.setItems(DemoData$Coronate.options),
+            optionsStore.setItems(Data$Coronate.db_optionsToJs(DemoData$Coronate.options)),
             playerStore.setItems(DemoData$Coronate.players),
             tourneyStore.setItems(DemoData$Coronate.tournaments)
           ]).then((function (value) {
@@ -267,22 +267,19 @@ function useAllTournaments(param) {
 }
 
 function optionsReducer(state, action) {
-  var avoidPairs = state.avoidPairs;
-  var byeValue = state.byeValue;
-  var lastBackup = state.lastBackup;
   switch (action.tag | 0) {
     case 0 : 
-        return {
-                avoidPairs: avoidPairs.concat(/* array */[action[0]]),
-                byeValue: byeValue,
-                lastBackup: lastBackup
-              };
+        return /* record */[
+                /* avoidPairs */state[/* avoidPairs */0].concat(/* array */[action[0]]),
+                /* byeValue */state[/* byeValue */1],
+                /* lastBackup */state[/* lastBackup */2]
+              ];
     case 1 : 
         var match = action[0];
         var user2 = match[1];
         var user1 = match[0];
-        return {
-                avoidPairs: avoidPairs.filter((function (param) {
+        return /* record */[
+                /* avoidPairs */state[/* avoidPairs */0].filter((function (param) {
                         var p2 = param[1];
                         var p1 = param[0];
                         return !(/* array */[
@@ -293,41 +290,41 @@ function optionsReducer(state, action) {
                                     p2
                                   ].includes(user2));
                       })),
-                byeValue: byeValue,
-                lastBackup: lastBackup
-              };
+                /* byeValue */state[/* byeValue */1],
+                /* lastBackup */state[/* lastBackup */2]
+              ];
     case 2 : 
         var id = action[0];
-        return {
-                avoidPairs: avoidPairs.filter((function (param) {
+        return /* record */[
+                /* avoidPairs */state[/* avoidPairs */0].filter((function (param) {
                         return !/* array */[
                                   param[0],
                                   param[1]
                                 ].includes(id);
                       })),
-                byeValue: byeValue,
-                lastBackup: lastBackup
-              };
+                /* byeValue */state[/* byeValue */1],
+                /* lastBackup */state[/* lastBackup */2]
+              ];
     case 3 : 
-        return {
-                avoidPairs: action[0],
-                byeValue: byeValue,
-                lastBackup: lastBackup
-              };
+        return /* record */[
+                /* avoidPairs */action[0],
+                /* byeValue */state[/* byeValue */1],
+                /* lastBackup */state[/* lastBackup */2]
+              ];
     case 4 : 
-        return {
-                avoidPairs: avoidPairs,
-                byeValue: action[0],
-                lastBackup: lastBackup
-              };
+        return /* record */[
+                /* avoidPairs */state[/* avoidPairs */0],
+                /* byeValue */action[0],
+                /* lastBackup */state[/* lastBackup */2]
+              ];
     case 5 : 
         return action[0];
     case 6 : 
-        return {
-                avoidPairs: avoidPairs,
-                byeValue: byeValue,
-                lastBackup: action[0]
-              };
+        return /* record */[
+                /* avoidPairs */state[/* avoidPairs */0],
+                /* byeValue */state[/* byeValue */1],
+                /* lastBackup */action[0]
+              ];
     
   }
 }
@@ -343,11 +340,12 @@ function useOptions(param) {
   var isLoaded = match$1[0];
   React.useEffect((function () {
           var didCancel = /* record */[/* contents */false];
-          optionsStore.getItems().then((function (values) {
+          optionsStore.getItems().then((function (valuesJs) {
+                  var values = Data$Coronate.db_optionsFromJs(valuesJs);
                   if (!didCancel[0]) {
-                    Curry._1(dispatch, /* SetAvoidPairs */Block.__(3, [values.avoidPairs]));
-                    Curry._1(dispatch, /* SetByeValue */Block.__(4, [values.byeValue]));
-                    Curry._1(dispatch, /* SetLastBackup */Block.__(6, [values.lastBackup]));
+                    Curry._1(dispatch, /* SetAvoidPairs */Block.__(3, [values[/* avoidPairs */0]]));
+                    Curry._1(dispatch, /* SetByeValue */Block.__(4, [values[/* byeValue */1]]));
+                    Curry._1(dispatch, /* SetLastBackup */Block.__(6, [values[/* lastBackup */2]]));
                     Curry._1(setIsLoaded, (function (param) {
                             return true;
                           }));
@@ -364,7 +362,7 @@ function useOptions(param) {
       ]);
   React.useEffect((function () {
           if (isLoaded) {
-            optionsStore.setItems(options);
+            optionsStore.setItems(Data$Coronate.db_optionsToJs(options));
             return undefined;
           }
           

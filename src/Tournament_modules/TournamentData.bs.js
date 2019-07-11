@@ -4,16 +4,18 @@ import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Nanoid from "nanoid";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Data$Coronate from "../Data.bs.js";
+import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Hooks$Coronate from "../Hooks.bs.js";
+import * as Utils$Coronate from "../Utils.bs.js";
 import * as Window$Coronate from "../Window.bs.js";
+import * as TournamentDataReducers$Coronate from "./TournamentDataReducers.bs.js";
 
 function getAllPlayerIdsFromMatches(matchList) {
   return matchList.reduce((function (acc, match_) {
                 return acc.concat(/* array */[
-                            match_.playerIds.whiteId,
-                            match_.playerIds.blackId
+                            match_[/* whiteId */1],
+                            match_[/* blackId */2]
                           ]);
               }), /* array */[]);
 }
@@ -28,34 +30,38 @@ function calcNumOfRounds(playerCount) {
   }
 }
 
-function tempReducer(param, action) {
-  return action[0];
-}
+var emptyTourney_000 = /* byeQueue : array */[];
 
-function tempReducer2(param, action) {
-  return action;
-}
+var emptyTourney_001 = /* date */new Date(0.0);
 
-var emptyTourney = {
-  byeQueue: /* array */[],
-  date: new Date(0.0),
-  id: Nanoid.default(),
-  name: "",
-  playerIds: /* array */[],
-  roundList: /* array */[],
-  tieBreaks: /* array */[1]
-};
+var emptyTourney_002 = /* id */Nanoid.default();
+
+var emptyTourney_004 = /* playerIds : array */[];
+
+var emptyTourney_005 = /* roundList : array */[];
+
+var emptyTourney_006 = /* tieBreaks : array */[1];
+
+var emptyTourney = /* record */[
+  emptyTourney_000,
+  emptyTourney_001,
+  emptyTourney_002,
+  /* name */"",
+  emptyTourney_004,
+  emptyTourney_005,
+  emptyTourney_006
+];
 
 function TournamentData(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
-  var match = React.useReducer(tempReducer, emptyTourney);
+  var match = React.useReducer(TournamentDataReducers$Coronate.tournamentReducer, emptyTourney);
   var tourneyDispatch = match[1];
   var tourney = match[0];
-  var name = tourney.name;
-  var playerIds = tourney.playerIds;
-  var roundList = tourney.roundList;
-  var match$1 = React.useReducer(tempReducer2, { });
+  var name = tourney[/* name */3];
+  var playerIds = tourney[/* playerIds */4];
+  var roundList = tourney[/* roundList */5];
+  var match$1 = React.useReducer(TournamentDataReducers$Coronate.playersReducer, Belt_MapString.empty);
   var playersDispatch = match$1[1];
   var players = match$1[0];
   var match$2 = React.useState((function () {
@@ -93,13 +99,13 @@ function TournamentData(Props) {
                               return true;
                             }));
                     } else {
-                      Curry._1(tourneyDispatch, /* SetState */[value]);
+                      Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [value]));
                       Curry._1(setIsTourneyLoaded, (function (param) {
                               return true;
                             }));
                     }
                   }
-                  return Promise.resolve(value);
+                  return Promise.resolve(/* () */0);
                 }));
           return (function (param) {
                     didCancel[0] = true;
@@ -119,7 +125,7 @@ function TournamentData(Props) {
             if (match !== 0) {
               Hooks$Coronate.Db[/* playerStore */2].getItems(allTheIds).then((function (values) {
                       var newIds = Object.keys(values);
-                      var oldIds = Object.keys(players);
+                      var oldIds = Belt_MapString.keysToArray(players);
                       var changedPlayers = newIds.filter((function (x) {
                                 return !oldIds.includes(x);
                               })).concat(oldIds.filter((function (x) {
@@ -128,7 +134,7 @@ function TournamentData(Props) {
                       console.log("changed players:");
                       console.log(changedPlayers.length);
                       if (changedPlayers.length !== 0 && !didCancel[0]) {
-                        Curry._1(playersDispatch, values);
+                        Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Utils$Coronate.dictToMap(values)]));
                         Curry._1(setIsPlayersLoaded, (function (param) {
                                 return true;
                               }));
@@ -136,8 +142,8 @@ function TournamentData(Props) {
                       return Promise.resolve(values);
                     }));
             } else {
-              if (Object.keys(players).length !== 0) {
-                Curry._1(playersDispatch, players);
+              if (Belt_MapString.keysToArray(players).length !== 0) {
+                Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [players]));
               }
               Curry._1(setIsPlayersLoaded, (function (param) {
                       return true;
@@ -155,7 +161,7 @@ function TournamentData(Props) {
         isTourneyLoaded
       ]);
   React.useEffect((function (param) {
-          if (isTourneyLoaded && tourneyId === tourney.id) {
+          if (isTourneyLoaded && tourneyId === tourney[/* id */2]) {
             Hooks$Coronate.Db[/* tourneyStore */3].setItem(tourneyId, tourney);
           }
           return undefined;
@@ -166,30 +172,28 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function () {
           if (isPlayersLoaded) {
-            Hooks$Coronate.Db[/* playerStore */2].setItems(players);
+            Hooks$Coronate.Db[/* playerStore */2].setItems(Utils$Coronate.mapToDict(players));
           }
           return undefined;
         }), /* tuple */[
         isPlayersLoaded,
         players
       ]);
-  var partial_arg = Data$Coronate.Player[/* getPlayerMaybe */3];
+  var partial_arg = Data$Coronate.Player[/* getPlayerMaybeMap */4];
   var getPlayer = function (param) {
     return partial_arg(players, param);
   };
-  var activePlayers = { };
-  Js_dict.values(players).forEach((function (player) {
-          if (tourney.playerIds.includes(player.id)) {
-            activePlayers[player.id] = player;
-            return /* () */0;
+  var activePlayers = Belt_MapString.reduce(players, Belt_MapString.empty, (function (acc, key, player) {
+          if (tourney[/* playerIds */4].includes(key)) {
+            return Belt_MapString.set(acc, key, player);
           } else {
-            return 0;
+            return acc;
           }
         }));
-  var roundCount = calcNumOfRounds(Object.keys(activePlayers).length);
+  var roundCount = calcNumOfRounds(Belt_MapString.keysToArray(activePlayers).length);
   var isItOver = roundList.length >= roundCount;
   var match$6 = roundList.length === 0;
-  var isNewRoundReady = match$6 ? true : Data$Coronate.isRoundComplete(roundList, activePlayers, roundList.length);
+  var isNewRoundReady = match$6 ? true : Data$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
   if (match$4[0]) {
     return React.createElement("div", undefined, "Error: tournament not found.");
   } else if (!isTourneyLoaded || !isPlayersLoaded) {
@@ -214,8 +218,6 @@ var make = TournamentData;
 export {
   getAllPlayerIdsFromMatches ,
   calcNumOfRounds ,
-  tempReducer ,
-  tempReducer2 ,
   emptyTourney ,
   make ,
   

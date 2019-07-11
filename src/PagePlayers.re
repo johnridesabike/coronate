@@ -1,8 +1,8 @@
 open Data.Player;
 let s = React.string;
-let sortName = Hooks.KeyString(firstNameGet);
-let sortRating = Hooks.KeyInt(ratingGet);
-let sortMatchCount = Hooks.KeyInt(matchCountGet);
+let sortName = Hooks.KeyString(x => x.firstName);
+let sortRating = Hooks.KeyInt(x => x.rating);
+let sortMatchCount = Hooks.KeyInt(x => x.matchCount);
 
 let defaultFirstName = _ => "";
 let defaultLastName = _ => "";
@@ -23,14 +23,7 @@ module NewPlayerForm = {
       dispatch(
         Hooks.Db.SetItem(
           id,
-          t(
-            ~firstName,
-            ~lastName,
-            ~rating,
-            ~id,
-            ~type_="person",
-            ~matchCount=0,
-          ),
+          {firstName, lastName, rating, id, type_: "person", matchCount: 0},
         ),
       );
     };
@@ -108,9 +101,9 @@ module List = {
         let message =
           [|
             "Are you sure you want to delete ",
-            player->firstNameGet,
+            player.firstName,
             " ",
-            player->lastNameGet,
+            player.lastName,
             "?",
           |]
           |> Js.Array.joinWith("");
@@ -157,27 +150,27 @@ module List = {
         <tbody className="content">
           {sorted.table
            |> Js.Array.map(p =>
-                <tr key={p->idGet} className="buttons-on-hover">
+                <tr key={p.id} className="buttons-on-hover">
                   <td className="table__player">
-                    <a href={"#/players/" ++ p->idGet}>
-                      {[|p->firstNameGet, p->lastNameGet|]
+                    <a href={"#/players/" ++ p.id}>
+                      {[|p.firstName, p.lastName|]
                        |> Js.Array.joinWith(" ")
                        |> s}
                     </a>
                   </td>
                   <td className="table__number">
-                    {p->ratingGet->string_of_int->s}
+                    {p.rating->string_of_int->s}
                   </td>
                   <td className="table__number">
-                    {p->matchCountGet->string_of_int->s}
+                    {p.matchCount->string_of_int->s}
                   </td>
                   <td>
                     <button
                       className="danger button-ghost"
-                      onClick={event => delPlayer(event, p->idGet)}>
+                      onClick={event => delPlayer(event, p.id)}>
                       <Icons.trash />
                       <Utils.VisuallyHidden>
-                        {[|"Delete", p->firstNameGet, p->lastNameGet|]
+                        {[|"Delete", p.firstName, p.lastName|]
                          |> Js.Array.joinWith(" ")
                          |> s}
                       </Utils.VisuallyHidden>
@@ -202,10 +195,17 @@ module List = {
 
 module Profile = {
   [@react.component]
-  let make = (~player, ~players, ~playersDispatch, ~options, ~optionsDispatch) => {
-    let playerId = player->idGet;
+  let make =
+      (
+        ~player,
+        ~players,
+        ~playersDispatch,
+        ~options: Data.db_options,
+        ~optionsDispatch,
+      ) => {
+    let playerId = player.id;
     let playerName =
-      [|player->firstNameGet, player->lastNameGet|] |> Js.Array.joinWith(" ");
+      [|player.firstName, player.lastName|] |> Js.Array.joinWith(" ");
     let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect2(
       () => {
@@ -215,7 +215,7 @@ module Profile = {
       (windowDispatch, playerName),
     );
     let avoidObj =
-      options->Data.avoidPairsGet
+      options.avoidPairs
       |> Js.Array.reduce(Converters.avoidPairReducer, Js.Dict.empty());
     let singAvoidList =
       switch (avoidObj->Js.Dict.get(playerId)) {
@@ -249,14 +249,14 @@ module Profile = {
       playersDispatch(
         Hooks.Db.SetItem(
           playerId,
-          t(
-            ~firstName,
-            ~lastName,
-            ~matchCount,
-            ~rating,
-            ~id=playerId,
-            ~type_=player->type_Get,
-          ),
+          {
+            firstName,
+            lastName,
+            matchCount,
+            rating,
+            id: playerId,
+            type_: player.type_,
+          },
         ),
       );
     };
@@ -275,23 +275,19 @@ module Profile = {
         <p>
           <label htmlFor="firstName"> {s("First name")} </label>
           <input
-            defaultValue={player->firstNameGet}
+            defaultValue={player.firstName}
             name="firstName"
             type_="text"
           />
         </p>
         <p>
           <label htmlFor="lastName"> {s("Last name")} </label>
-          <input
-            defaultValue={player->lastNameGet}
-            name="lastName"
-            type_="text"
-          />
+          <input defaultValue={player.lastName} name="lastName" type_="text" />
         </p>
         <p>
           <label htmlFor="matchCount"> {s("Matches played")} </label>
           <input
-            defaultValue={player->matchCountGet->string_of_int}
+            defaultValue={player.matchCount->string_of_int}
             name="matchCount"
             type_="number"
           />
@@ -299,7 +295,7 @@ module Profile = {
         <p>
           <label htmlFor="rating"> {s("Rating")} </label>
           <input
-            defaultValue={player->ratingGet->string_of_int}
+            defaultValue={player.rating->string_of_int}
             name="rating"
             type_="number"
           />
@@ -310,7 +306,7 @@ module Profile = {
             name="kfactor"
             type_="number"
             disabled=true
-            value={player->matchCountGet->Scoring.getKFactor->string_of_int}
+            value={player.matchCount->Scoring.getKFactor->string_of_int}
             readOnly=true
           />
         </p>
@@ -320,15 +316,15 @@ module Profile = {
         {singAvoidList
          |> Js.Array.map(pId =>
               <li key=pId>
-                {players->getPlayerMaybeMap(pId)->firstNameGet->s}
+                {s(players->getPlayerMaybeMap(pId).firstName)}
                 {s(" ")}
-                {players->getPlayerMaybeMap(pId)->lastNameGet->s}
+                {s(players->getPlayerMaybeMap(pId).lastName)}
                 <button
                   ariaLabel={
                     [|
                       "Remove",
-                      players->getPlayerMaybeMap(pId)->firstNameGet,
-                      players->getPlayerMaybeMap(pId)->lastNameGet,
+                      players->getPlayerMaybeMap(pId).firstName,
+                      players->getPlayerMaybeMap(pId).lastName,
                       "from avoid list.",
                     |]
                     |> Js.Array.joinWith(" ")
@@ -336,8 +332,8 @@ module Profile = {
                   title={
                     [|
                       "Remove",
-                      players->getPlayerMaybeMap(pId)->firstNameGet,
-                      players->getPlayerMaybeMap(pId)->lastNameGet,
+                      players->getPlayerMaybeMap(pId).firstName,
+                      players->getPlayerMaybeMap(pId).lastName,
                       "from avoid list.",
                     |]
                     |> Js.Array.joinWith(" ")
@@ -366,9 +362,9 @@ module Profile = {
           {unavoided
            |> Js.Array.map(pId =>
                 <option key=pId value=pId>
-                  {players->getPlayerMaybeMap(pId)->firstNameGet->s}
+                  {s(players->getPlayerMaybeMap(pId).firstName)}
                   {s(" ")}
-                  {players->getPlayerMaybeMap(pId)->lastNameGet->s}
+                  {s(players->getPlayerMaybeMap(pId).lastName)}
                 </option>
               )
            |> ReasonReact.array}

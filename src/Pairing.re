@@ -1,4 +1,4 @@
-type pairingData = {
+type t = {
   id: string,
   avoidIds: array(string),
   colorScores: array(float),
