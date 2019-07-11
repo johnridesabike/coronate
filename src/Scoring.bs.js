@@ -88,35 +88,35 @@ function getColorBalanceScore(scoreDict, id) {
 }
 
 var tieBreakMethods = /* array */[
-  {
-    func: getMedianScore,
-    id: 0,
-    name: "Median"
-  },
-  {
-    func: getSolkoffScore,
-    id: 1,
-    name: "Solkoff"
-  },
-  {
-    func: getCumulativeScore,
-    id: 2,
-    name: "Cumulative score"
-  },
-  {
-    func: getCumulativeOfOpponentScore,
-    id: 3,
-    name: "Cumulative of opposition"
-  },
-  {
-    func: getColorBalanceScore,
-    id: 4,
-    name: "Most black"
-  }
+  /* record */[
+    /* func */getMedianScore,
+    /* id */0,
+    /* name */"Median"
+  ],
+  /* record */[
+    /* func */getSolkoffScore,
+    /* id */1,
+    /* name */"Solkoff"
+  ],
+  /* record */[
+    /* func */getCumulativeScore,
+    /* id */2,
+    /* name */"Cumulative score"
+  ],
+  /* record */[
+    /* func */getCumulativeOfOpponentScore,
+    /* id */3,
+    /* name */"Cumulative of opposition"
+  ],
+  /* record */[
+    /* func */getColorBalanceScore,
+    /* id */4,
+    /* name */"Most black"
+  ]
 ];
 
 function getNamefromIndex(index) {
-  return Caml_array.caml_array_get(tieBreakMethods, index).name;
+  return Caml_array.caml_array_get(tieBreakMethods, index)[/* name */2];
 }
 
 function getTieBreakNames(idList) {
@@ -138,39 +138,39 @@ function createBlankScoreData(id) {
 
 function createStandingList(methods, scoreData) {
   var selectedTieBreakFuncs = methods.map((function (i) {
-          return Caml_array.caml_array_get(tieBreakMethods, i).func;
+          return Caml_array.caml_array_get(tieBreakMethods, i)[/* func */0];
         }));
   var standings = Object.keys(scoreData).map((function (id) {
-          return {
-                  id: id,
-                  score: getPlayerScore(scoreData, id),
-                  tieBreaks: selectedTieBreakFuncs.map((function (func) {
+          return /* record */[
+                  /* id */id,
+                  /* score */getPlayerScore(scoreData, id),
+                  /* tieBreaks */selectedTieBreakFuncs.map((function (func) {
                           return Curry._2(func, scoreData, id);
                         }))
-                };
+                ];
         }));
   var sortTieBreakFuncList = selectedTieBreakFuncs.map((function (param, index) {
           return (function (param, param$1) {
               return Ramda.descend((function (x) {
-                            return Caml_array.caml_array_get(x.tieBreaks, index);
+                            return Caml_array.caml_array_get(x[/* tieBreaks */2], index);
                           }), param, param$1);
             });
         }));
   var sortFuncList = /* array */[(function (param, param$1) {
           return Ramda.descend((function (x) {
-                        return x.score;
+                        return x[/* score */1];
                       }), param, param$1);
         })].concat(sortTieBreakFuncList);
   return Ramda.sortWith(sortFuncList, standings);
 }
 
 function areScoresEqual(standing1, standing2) {
-  var equalScores = standing1.score !== standing2.score;
+  var equalScores = standing1[/* score */1] !== standing2[/* score */1];
   if (equalScores) {
     return false;
   } else {
-    return !standing1.tieBreaks.reduce((function (acc, value, i) {
-                    return /* array */[value !== Caml_array.caml_array_get(standing2.tieBreaks, i)].concat(acc);
+    return !standing1[/* tieBreaks */2].reduce((function (acc, value, i) {
+                    return /* array */[value !== Caml_array.caml_array_get(standing2[/* tieBreaks */2], i)].concat(acc);
                   }), /* array */[]).includes(true);
   }
 }

@@ -7,7 +7,7 @@ import * as Window$Coronate from "./Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as PageOptions$Coronate from "./PageOptions.bs.js";
 import * as PagePlayers$Coronate from "./PagePlayers.bs.js";
-import * as PageTournament$Coronate from "./Tournament_modules/PageTournament.bs.js";
+import * as PageTournament$Coronate from "./PageTournament/PageTournament.bs.js";
 import * as PageTournamentList$Coronate from "./PageTournamentList.bs.js";
 
 ((require("./side-effects")));

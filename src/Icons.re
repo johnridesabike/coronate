@@ -55,7 +55,7 @@ external userPlus: unit => React.element = "UserPlus";
 [@bs.module "react-feather"] [@react.component]
 external users: unit => React.element = "Users";
 [@bs.module "react-feather"] [@react.component]
-external x: unit => React.element = "X";
+external x: (~className:string=?) => React.element = "X";
 
 [@bs.deriving abstract]
 type simpleIcon = {

@@ -37,5 +37,8 @@
         "bs-react-testing-library"
     ],
     "ppx-flags": [],
-    "refmt": 3
+    "refmt": 3,
+    "ignored-dirs": [
+        "node_modules"
+    ]
 }

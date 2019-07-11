@@ -38,7 +38,7 @@ let getOpponentScores = (scoreDict, id) => {
 // USCF § 34E1
 let getMedianScore = (scoreDict, id) =>
   getOpponentScores(scoreDict, id)
-  -> Belt.SortArray.stableSortBy(ascend(x => x))
+  ->Belt.SortArray.stableSortBy(ascend(x => x))
   |> Js.Array.slice(~start=1, ~end_=-1)
   |> arraySumFloat;
 
@@ -81,7 +81,6 @@ let getColorBalanceScore = (scoreDict, id) => {
   };
 };
 
-[@bs.deriving abstract]
 type tieBreakData = {
   func: (Js.Dict.t(scoreData), string) => float,
   id: int,
@@ -89,35 +88,33 @@ type tieBreakData = {
 };
 
 let tieBreakMethods = [|
-  tieBreakData(~func=getMedianScore, ~id=0, ~name="Median"),
-  tieBreakData(~func=getSolkoffScore, ~id=1, ~name="Solkoff"),
-  tieBreakData(~func=getCumulativeScore, ~id=2, ~name="Cumulative score"),
-  tieBreakData(
-    ~func=getCumulativeOfOpponentScore,
-    ~id=3,
-    ~name="Cumulative of opposition",
-  ),
-  tieBreakData(~func=getColorBalanceScore, ~id=4, ~name="Most black"),
+  {func:getMedianScore, id:0, name:"Median"},
+  {func:getSolkoffScore, id:1, name:"Solkoff"},
+  {func:getCumulativeScore, id:2, name:"Cumulative score"},
+  {
+    func:getCumulativeOfOpponentScore,
+    id:3,
+    name:"Cumulative of opposition",
+  },
+  {func:getColorBalanceScore, id:4, name:"Most black"},
 |];
 
-let getNamefromIndex = index => tieBreakMethods[index]->nameGet;
+let getNamefromIndex = index => tieBreakMethods[index].name;
 let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
 
 // This is useful for cases where the regular factory functions return empty
 // results because a player hasn't been added yet.
-let createBlankScoreData = id =>
-  {
-    colorScores:[||],
-    colors:[||],
-    id,
-    isDummy:false,
-    opponentResults:Js.Dict.empty(),
-    ratings:[||],
-    results:[||],
-    resultsNoByes:[||],
-  };
+let createBlankScoreData = id => {
+  colorScores: [||],
+  colors: [||],
+  id,
+  isDummy: false,
+  opponentResults: Js.Dict.empty(),
+  ratings: [||],
+  results: [||],
+  resultsNoByes: [||],
+};
 
-[@bs.deriving abstract]
 type standing = {
   id: string,
   score: float,
@@ -130,39 +127,39 @@ type standing = {
 // coresponds to the order of the method names in the second list.
 let createStandingList = (methods, scoreData) => {
   let selectedTieBreakFuncs =
-    methods |> Js.Array.map(i => tieBreakMethods[i]->funcGet);
+    methods |> Js.Array.map(i => tieBreakMethods[i].func);
   let standings =
     Js.Dict.keys(scoreData)
     |> Js.Array.map(id =>
-         standing(
-           ~id,
-           ~score=getPlayerScore(scoreData, id),
-           ~tieBreaks=
+         {
+           id,
+           score: getPlayerScore(scoreData, id),
+           tieBreaks:
              selectedTieBreakFuncs
              |> Js.Array.map(func => func(scoreData, id)),
-         )
+         }
        );
   // create a list of functions to pass to `sortWith`. This will sort by
   // scores and then by each tiebreak value.
   let sortTieBreakFuncList =
     selectedTieBreakFuncs
-    |> Js.Array.mapi((_, index) => descend(x => x->tieBreaksGet[index]));
+    |> Js.Array.mapi((_, index) => descend(x => x.tieBreaks[index]));
   let sortFuncList =
-    sortTieBreakFuncList->Js.Array.concat([|descend(x => x->scoreGet)|]);
+    sortTieBreakFuncList->Js.Array.concat([|descend(x => x.score)|]);
   sortWith(sortFuncList, standings);
 };
 
 let areScoresEqual = (standing1, standing2) => {
-  let equalScores = standing1->scoreGet !== standing2->scoreGet;
+  let equalScores = standing1.score !== standing2.score;
   equalScores
     ? false
     : !(
-        standing1->tieBreaksGet
+        standing1.tieBreaks
         |> Js.Array.reducei(
              (acc, value, i) =>
                Js.Array.concat(
                  acc,
-                 [|value !== standing2->tieBreaksGet[i]|],
+                 [|value !== standing2.tieBreaks[i]|],
                ),
              [||],
            )
@@ -210,8 +207,7 @@ type eloRank = {
   [@bs.meth] "updateRating": (int, float, int) => int,
 };
 
-[@bs.new][@bs.module]
-external createEloRank: int => eloRank = "elo-rank";
+[@bs.new] [@bs.module] external createEloRank: int => eloRank = "elo-rank";
 
 let getKFactor = matchCount => {
   let ne = matchCount > 0 ? matchCount : 1;
@@ -223,7 +219,11 @@ let floor = 100;
 let keepAboveFloor = rating => rating > floor ? rating : floor;
 
 let calcNewRatings =
-    ((whiteRating, blackRating), (whiteMatchCount, blackMatchCount), (whiteResult, blackResult)) => {
+    (
+      (whiteRating, blackRating),
+      (whiteMatchCount, blackMatchCount),
+      (whiteResult, blackResult),
+    ) => {
   let whiteElo = getKFactor(whiteMatchCount)->createEloRank;
   let blackElo = getKFactor(blackMatchCount)->createEloRank;
   let (whiteScoreExpected, blackScoreExpected) = (
@@ -231,17 +231,9 @@ let calcNewRatings =
     blackElo##getExpected(blackRating, whiteRating),
   );
   (
-      whiteElo##updateRating(
-        whiteScoreExpected,
-        whiteResult,
-        whiteRating,
-      )
-      ->keepAboveFloor,
-      blackElo##updateRating(
-        blackScoreExpected,
-        blackResult,
-        blackRating,
-      )
-      ->keepAboveFloor,
+    whiteElo##updateRating(whiteScoreExpected, whiteResult, whiteRating)
+    ->keepAboveFloor,
+    blackElo##updateRating(blackScoreExpected, blackResult, blackRating)
+    ->keepAboveFloor,
   );
 };

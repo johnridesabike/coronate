@@ -33,7 +33,7 @@ let emptyTourney = {
   byeQueue: [||],
 };
 
-type childrenProps = {
+type t = {
   activePlayers: Belt.Map.String.t(Player.t),
   getPlayer: string => Player.t,
   isItOver: bool,

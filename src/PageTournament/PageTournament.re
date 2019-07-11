@@ -241,7 +241,9 @@ let make = (~tourneyId, ~hashPath) => {
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>
          {switch (hashPath) {
-          | [""] => <div> {React.string("lol")} </div>
+          | [""] => <PageTournamentPlayers tournament/>
+          | ["scores"] => <PageTournamentScores tournament/>
+          | ["crosstable"] => <PageTournamentCrossTable tournament/>
           | _ => <Pages.NotFound />
           }}
        </Window.WindowBody>}

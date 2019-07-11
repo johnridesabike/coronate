@@ -44,6 +44,29 @@ module Dialog = {
     "Dialog";
 };
 
+module ReachTabs = {
+  module Tabs = {
+    [@bs.module "@reach/tabs"] [@react.component]
+    external make: (~children: React.element) => React.element = "Tabs";
+  };
+  module TabList = {
+    [@bs.module "@reach/tabs"] [@react.component]
+    external make: (~children: React.element) => React.element = "TabList";
+  };
+  module Tab = {
+    [@bs.module "@reach/tabs"] [@react.component]
+    external make: (~children: React.element) => React.element = "Tab";
+  };
+  module TabPanels = {
+    [@bs.module "@reach/tabs"] [@react.component]
+    external make: (~children: React.element) => React.element = "TabPanels";
+  };
+  module TabPanel = {
+    [@bs.module "@reach/tabs"] [@react.component]
+    external make: (~children: React.element) => React.element = "TabPanel";
+  };
+};
+
 module WebpackAssets = {
   let logo: string = [%bs.raw {| require("./icon-min.svg") |}];
 };
@@ -147,5 +170,19 @@ module Notification = {
       </div>
       <div className="notification__text"> children </div>
     </div>;
+  };
+};
+
+module Panel = {
+  [@react.component]
+  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make(())) => {
+    <div className={Cn.make(["utility__panel", className])} style> children </div>;
+  };
+};
+
+module PanelContainer = {
+  [@react.component]
+  let make = (~children, ~className="") => {
+    <div className={Cn.make(["utility__panels", className])}> children </div>;
   };
 };

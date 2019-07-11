@@ -15,4 +15,6 @@ import "./Splash.css";
 import "./Caution.css";
 import "./Players.css";
 import "./Options.css";
+import "./Scores.css";
+import "./Utility.css";
 import "@reach/dialog/styles.css";

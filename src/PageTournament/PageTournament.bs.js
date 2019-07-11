@@ -11,6 +11,9 @@ import * as Utils$Coronate from "../Utils.bs.js";
 import * as Window$Coronate from "../Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as TournamentData$Coronate from "./TournamentData.bs.js";
+import * as PageTournamentScores$Coronate from "./PageTournamentScores.bs.js";
+import * as PageTournamentPlayers$Coronate from "./PageTournamentPlayers.bs.js";
+import * as PageTournamentCrossTable$Coronate from "./PageTournamentCrossTable.bs.js";
 
 function PageTournament$Footer(Props) {
   var tournament = Props.tournament;
@@ -235,8 +238,38 @@ function PageTournament(Props) {
               children: (function (tournament) {
                   var tmp;
                   var exit = 0;
-                  if (hashPath && hashPath[0] === "" && !hashPath[1]) {
-                    tmp = React.createElement("div", undefined, "lol");
+                  if (hashPath) {
+                    switch (hashPath[0]) {
+                      case "" : 
+                          if (hashPath[1]) {
+                            exit = 1;
+                          } else {
+                            tmp = React.createElement(PageTournamentPlayers$Coronate.make, {
+                                  tournament: tournament
+                                });
+                          }
+                          break;
+                      case "crosstable" : 
+                          if (hashPath[1]) {
+                            exit = 1;
+                          } else {
+                            tmp = React.createElement(PageTournamentCrossTable$Coronate.make, {
+                                  tournament: tournament
+                                });
+                          }
+                          break;
+                      case "scores" : 
+                          if (hashPath[1]) {
+                            exit = 1;
+                          } else {
+                            tmp = React.createElement(PageTournamentScores$Coronate.make, {
+                                  tournament: tournament
+                                });
+                          }
+                          break;
+                      default:
+                        exit = 1;
+                    }
                   } else {
                     exit = 1;
                   }

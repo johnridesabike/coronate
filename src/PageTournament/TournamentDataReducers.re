@@ -74,8 +74,8 @@ type actionTournament =
   | AddTieBreak(int)
   | DelTieBreak(int)
   | MoveTieBreak(int, int)
-  | SetPlayers(array(Data.id))
-  | SetByQueue(array(Data.id))
+  | SetTourneyPlayers(array(Data.id))
+  | SetByeQueue(array(Data.id))
   | SetName(string)
   | AutoPair(
       float,
@@ -115,8 +115,8 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
       ...state,
       tieBreaks: state.tieBreaks |> Utils.move(oldIndex, newIndex),
     }
-  | SetPlayers(playerIds) => {...state, playerIds}
-  | SetByQueue(byeQueue) => {...state, byeQueue}
+  | SetTourneyPlayers(playerIds) => {...state, playerIds}
+  | SetByeQueue(byeQueue) => {...state, byeQueue}
   | SetName(name) => {...state, name}
   | AutoPair(byeValue, roundId, pairData, playerDict, tourney) =>
     /* I don't actually know if this copy is necessary */

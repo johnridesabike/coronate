@@ -1,0 +1,14 @@
+.utility__panels {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media screen and (min-width: 600px) {
+    .utility__panels {
+        flex-wrap: nowrap;
+    }
+}
+
+.utility__panel:not(:last-child) {
+    margin-right: 16px;
+}

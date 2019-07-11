@@ -38,6 +38,24 @@ var VisuallyHidden = /* module */[];
 
 var Dialog = /* module */[];
 
+var Tabs = /* module */[];
+
+var TabList = /* module */[];
+
+var Tab = /* module */[];
+
+var TabPanels = /* module */[];
+
+var TabPanel = /* module */[];
+
+var ReachTabs = /* module */[
+  /* Tabs */Tabs,
+  /* TabList */TabList,
+  /* Tab */Tab,
+  /* TabPanels */TabPanels,
+  /* TabPanel */TabPanel
+];
+
 var logo = ( require("./icon-min.svg") );
 
 var WebpackAssets = /* module */[/* logo */logo];
@@ -173,6 +191,43 @@ function Utils$Notification(Props) {
 
 var $$Notification = /* module */[/* make */Utils$Notification];
 
+function Utils$Panel(Props) {
+  var children = Props.children;
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
+  var match$1 = Props.style;
+  var style = match$1 !== undefined ? Caml_option.valFromOption(match$1) : { };
+  return React.createElement("div", {
+              className: Cn.make(/* :: */[
+                    "utility__panel",
+                    /* :: */[
+                      className,
+                      /* [] */0
+                    ]
+                  ]),
+              style: style
+            }, children);
+}
+
+var Panel = /* module */[/* make */Utils$Panel];
+
+function Utils$PanelContainer(Props) {
+  var children = Props.children;
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
+  return React.createElement("div", {
+              className: Cn.make(/* :: */[
+                    "utility__panels",
+                    /* :: */[
+                      className,
+                      /* [] */0
+                    ]
+                  ])
+            }, children);
+}
+
+var PanelContainer = /* module */[/* make */Utils$PanelContainer];
+
 export {
   add ,
   arraySum ,
@@ -182,6 +237,7 @@ export {
   splitInHalf ,
   VisuallyHidden ,
   Dialog ,
+  ReachTabs ,
   WebpackAssets ,
   Entities ,
   hashPath ,
@@ -193,6 +249,8 @@ export {
   DateFormat ,
   DateTimeFormat ,
   $$Notification ,
+  Panel ,
+  PanelContainer ,
   
 }
 /* logo Not a pure module */
