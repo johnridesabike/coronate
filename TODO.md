@@ -1,6 +1,6 @@
 ## General API
 
-[See the pairing & scoring TODO document.](https://github.com/johnridesabike/coronate/tree/master/src/pairing-scoring/TODO.md)
+[See the pairing & scoring TODO document.](https://github.com/johnridesabike/coronate/tree/master/src/TODO_Pairing_Scoring.md)
 
 ## User interface to-dos
 
@@ -19,4 +19,4 @@
 
 - [ ] There is only ever one dummy player per round.
 - [ ] Removing a round resets all of the matches within the round.
-- ... lots of more stuff to reach ~100% coverage, but those are important.
+- ... lots of more stuff to reach ~100% coverage.

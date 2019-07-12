@@ -17,6 +17,9 @@ external move: (int, int, array('a)) => array('a) = "move";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 
+[@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
+[@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
+
 type numeral = {. [@bs.meth] "format": string => string};
 [@bs.module "numeral"] external numeral: float => numeral = "default";
 
@@ -47,7 +50,10 @@ module Dialog = {
 module ReachTabs = {
   module Tabs = {
     [@bs.module "@reach/tabs"] [@react.component]
-    external make: (~children: React.element) => React.element = "Tabs";
+    external make:
+      (~index: int=?, ~onChange: int => unit=?, ~children: React.element) =>
+      React.element =
+      "Tabs";
   };
   module TabList = {
     [@bs.module "@reach/tabs"] [@react.component]
@@ -55,7 +61,9 @@ module ReachTabs = {
   };
   module Tab = {
     [@bs.module "@reach/tabs"] [@react.component]
-    external make: (~children: React.element) => React.element = "Tab";
+    external make:
+      (~disabled: bool=?, ~children: React.element) => React.element =
+      "Tab";
   };
   module TabPanels = {
     [@bs.module "@reach/tabs"] [@react.component]
@@ -175,14 +183,16 @@ module Notification = {
 
 module Panel = {
   [@react.component]
-  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make(())) => {
-    <div className={Cn.make(["utility__panel", className])} style> children </div>;
+  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) => {
+    <div className={Cn.make(["utility__panel", className])} style>
+      children
+    </div>;
   };
 };
 
 module PanelContainer = {
   [@react.component]
-  let make = (~children, ~className="") => {
-    <div className={Cn.make(["utility__panels", className])}> children </div>;
+  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make(())) => {
+    <div style className={Cn.make(["utility__panels", className])}> children </div>;
   };
 };

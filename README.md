@@ -13,6 +13,10 @@ Coronate is a free alternative to pricey professional tournament software. Anyon
 
 [Read more about how to use the app here](https://johnridesa.bike/software/coronate/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
 
+## ⚠️ The master branch is unstable ⚠️
+
+I recently rewrote the JavaScript code into [ReasonML](https://reasonml.github.io). Although Reason is inherently safer, the new code hasn't been tested as much as the previous JS code. There are most likely some bugs lurking. Use at your own peril.
+
 ## 🏁 Getting Started
 
 These are the basic steps you'll need to follow to get a development copy of Coronate running on your machine:
@@ -96,11 +100,10 @@ Linux builds have not been tested.
 ## ⛏️ Built Using
 
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime
-- [React](https://reactjs.org/) - interface
+- [ReasonML](https://reasonml.github.io) - most of the code
+- [ReasonReact](https://reasonml.github.io/reason-react/) - interface
 - [Electron](https://electronjs.org/) - standalone executables
-- [Ramda](https://ramdajs.com/) - utility functions
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
-- [tcomb](https://github.com/gcanti/tcomb) - type safety
 - [Feather](https://feathericons.com/) - icons
 - [Simple Icons](http://simpleicons.org/) - more icons
 

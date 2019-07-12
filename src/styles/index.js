@@ -17,4 +17,5 @@ import "./Players.css";
 import "./Options.css";
 import "./Scores.css";
 import "./Utility.css";
+import "./Round.css";
 import "@reach/dialog/styles.css";

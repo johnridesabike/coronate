@@ -7,10 +7,6 @@ import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
 var dummy_id = "________DUMMY________";
 
-function isNanoId(str) {
-  return (/^[A-Za-z0-9_-]{21}$/).test(str);
-}
-
 function isDummyId(playerId) {
   return playerId === dummy_id;
 }
@@ -156,7 +152,6 @@ export {
   loss ,
   draw ,
   dummy_id ,
-  isNanoId ,
   Player ,
   Match ,
   Tournament ,

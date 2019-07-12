@@ -47,9 +47,9 @@ module WindowContext = {
   };
 };
 
-  let useWindowContext = () => {
-    React.useContext(WindowContext.windowContext);
-  };
+let useWindowContext = () => {
+  React.useContext(WindowContext.windowContext);
+};
 
 let windowReducer = (state, action) => {
   switch (action) {
@@ -182,7 +182,12 @@ module Window = {
     let title = state.title;
     React.useEffect1(
       () => {
-        let _: unit = [%bs.raw "document.title = formatTitle(title)"];
+        let _ =
+          Webapi.Dom.(
+            document
+            ->Document.unsafeAsHtmlDocument
+            ->HtmlDocument.setTitle(formatTitle(title))
+          );
         None;
       },
       [|title|],

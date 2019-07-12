@@ -5,6 +5,7 @@ module ScoreTable = {
         ~isCompact=false,
         ~tourney: Data.Tournament.t,
         ~getPlayer: string => Data.Player.t,
+        ~title
       ) => {
     let tieBreaks = tourney.tieBreaks;
     let roundList = tourney.roundList;
@@ -27,7 +28,7 @@ module ScoreTable = {
           "title-30"->Cn.ifTrue(isCompact),
           "title-40"->Cn.ifTrue(!isCompact),
         ])}>
-        {"Score detail" |> React.string}
+        {title |> React.string}
       </caption>
       <thead>
         <tr className="scores__topHeader">
@@ -300,7 +301,7 @@ let make = (~tournament: TournamentData.t) => {
         </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel> <ScoreTable tourney getPlayer /> </TabPanel>
+        <TabPanel> <ScoreTable tourney getPlayer title="Score detail"/> </TabPanel>
         <TabPanel> <SelectTieBreaks tourney tourneyDispatch /> </TabPanel>
       </TabPanels>
     </Tabs>

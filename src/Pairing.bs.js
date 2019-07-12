@@ -3,6 +3,7 @@
 import * as Ramda from "ramda";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as EdmondsBlossom from "edmonds-blossom";
@@ -78,7 +79,7 @@ function calcPairIdeal(player1, player2) {
       isDiffDueColor = true;
     }
     var scoreDiff = Math.abs(player1[/* score */8] - player2[/* score */8]) + 1.0;
-    var halfDiff = Math.abs(player1[/* halfPos */4] - player2[/* halfPos */4] | 0) + 1 | 0;
+    var halfDiff = Pervasives.abs(player1[/* halfPos */4] - player2[/* halfPos */4] | 0) + 1 | 0;
     var isDiffHalf = player1[/* isUpperHalf */5] !== player2[/* isUpperHalf */5] && player1[/* score */8] === player2[/* score */8];
     return Utils$Coronate.arraySumFloat(/* array */[
                 isDiffDueColor ? 4.0 : 0.0,

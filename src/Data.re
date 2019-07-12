@@ -8,9 +8,9 @@ let draw = 0.5;
 // This ID conforms to the NanoID regex.
 let dummy_id = "________DUMMY________";
 type id = string;
-
+/*
 let isNanoId = str => str |> Js.Re.test_([%re "/^[A-Za-z0-9_-]{21}$/"]);
-
+*/
 type avoidPair = (id, id);
 
 module Player = {

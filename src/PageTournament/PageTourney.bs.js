@@ -4,16 +4,19 @@ import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
 import * as Data$Coronate from "../Data.bs.js";
 import * as ReactFeather from "react-feather";
 import * as Pages$Coronate from "../Pages.bs.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as Window$Coronate from "../Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
+import * as PageRound$Coronate from "./PageRound.bs.js";
 import * as TournamentData$Coronate from "./TournamentData.bs.js";
 import * as PageTourneySetup$Coronate from "./PageTourneySetup.bs.js";
 import * as PageTourneyScores$Coronate from "./PageTourneyScores.bs.js";
 import * as PageTourneyPlayers$Coronate from "./PageTourneyPlayers.bs.js";
+import * as PageTournamentStatus$Coronate from "./PageTournamentStatus.bs.js";
 import * as PageTourneyCrossTable$Coronate from "./PageTourneyCrossTable.bs.js";
 
 function PageTourney$Footer(Props) {
@@ -21,14 +24,14 @@ function PageTourney$Footer(Props) {
   var roundList = tournament[/* tourney */7][/* roundList */5];
   var match = tournament[/* isNewRoundReady */3] ? (
       tournament[/* isItOver */2] ? /* tuple */[
-          "All rounds have completed.",
+          Utils$Coronate.Entities[/* nbsp */0] + " All rounds have completed.",
           /* Warning */1
         ] : /* tuple */[
-          "Ready to begin a new round.",
+          Utils$Coronate.Entities[/* nbsp */0] + " Ready to begin a new round.",
           /* Success */0
         ]
     ) : /* tuple */[
-      "Round in progress.",
+      Utils$Coronate.Entities[/* nbsp */0] + "Round in progress.",
       /* Generic */3
     ];
   var tooltipText = match[0];
@@ -88,7 +91,7 @@ function PageTourney$Sidebar(Props) {
   var delLastRound = function ($$event) {
     $$event.preventDefault();
     if (window.confirm("Are you sure you want to delete the last round?")) {
-      ReasonReactRouter.push("#/tourneys" + tourney[/* id */2]);
+      ReasonReactRouter.push("#/tourneys/" + tourney[/* id */2]);
       Utils$Coronate.last(roundList).forEach((function (match_) {
               var whiteScore = match_[/* whiteScore */7];
               var blackScore = match_[/* blackScore */8];
@@ -259,6 +262,17 @@ function PageTourney(Props) {
                                 });
                           }
                           break;
+                      case "round" : 
+                          var match = hashPath[1];
+                          if (match && !match[1]) {
+                            tmp = React.createElement(PageRound$Coronate.make, {
+                                  roundId: Caml_format.caml_int_of_string(match[0]),
+                                  tournament: tournament
+                                });
+                          } else {
+                            exit = 1;
+                          }
+                          break;
                       case "scores" : 
                           if (hashPath[1]) {
                             exit = 1;
@@ -273,6 +287,15 @@ function PageTourney(Props) {
                             exit = 1;
                           } else {
                             tmp = React.createElement(PageTourneySetup$Coronate.make, {
+                                  tournament: tournament
+                                });
+                          }
+                          break;
+                      case "status" : 
+                          if (hashPath[1]) {
+                            exit = 1;
+                          } else {
+                            tmp = React.createElement(PageTournamentStatus$Coronate.make, {
                                   tournament: tournament
                                 });
                           }

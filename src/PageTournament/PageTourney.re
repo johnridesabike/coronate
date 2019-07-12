@@ -6,11 +6,11 @@ module Footer = {
     let roundList = tourney.roundList;
     let (tooltipText, tooltipKind) =
       if (!isNewRoundReady) {
-        ("Round in progress.", Utils.Generic);
+        (Utils.Entities.nbsp ++ "Round in progress.", Utils.Generic);
       } else if (isItOver) {
-        ("All rounds have completed.", Utils.Warning);
+        (Utils.Entities.nbsp ++ " All rounds have completed.", Utils.Warning);
       } else {
-        ("Ready to begin a new round.", Utils.Success);
+        (Utils.Entities.nbsp ++ " Ready to begin a new round.", Utils.Success);
       };
     ReactDOMRe.(
       <>
@@ -78,7 +78,7 @@ module Sidebar = {
     let delLastRound = event => {
       event->ReactEvent.Mouse.preventDefault;
       if (Utils.confirm("Are you sure you want to delete the last round?")) {
-        ReasonReactRouter.push("#/tourneys" ++ tourney.id);
+        ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */
         roundList
@@ -241,10 +241,13 @@ let make = (~tourneyId, ~hashPath) => {
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>
          {switch (hashPath) {
-          | [""] => <PageTourneyPlayers tournament/>
-          | ["scores"] => <PageTourneyScores tournament/>
-          | ["crosstable"] => <PageTourneyCrossTable tournament/>
-          | ["setup"] => <PageTourneySetup tournament/>
+          | [""] => <PageTourneyPlayers tournament />
+          | ["scores"] => <PageTourneyScores tournament />
+          | ["crosstable"] => <PageTourneyCrossTable tournament />
+          | ["setup"] => <PageTourneySetup tournament />
+          | ["status"] => <PageTournamentStatus tournament />
+          | ["round", roundId] =>
+            <PageRound tournament roundId={roundId |> int_of_string} />
           | _ => <Pages.NotFound />
           }}
        </Window.WindowBody>}

@@ -110,7 +110,7 @@ let createPairingData = (playerData, avoidPairs, scoreDict) => {
   let avoidDict =
     avoidPairs |> Js.Array.reduce(avoidPairReducer, Js.Dict.empty());
   let pairData = Js.Dict.empty();
-  Js.Dict.values(playerData)
+  Belt.Map.String.valuesToArray(playerData)
   |> Js.Array.forEach(data => {
        let playerStats = {
          switch (scoreDict->Js.Dict.get(data.id)) {

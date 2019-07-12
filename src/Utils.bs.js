@@ -215,6 +215,8 @@ function Utils$PanelContainer(Props) {
   var children = Props.children;
   var match = Props.className;
   var className = match !== undefined ? match : "";
+  var match$1 = Props.style;
+  var style = match$1 !== undefined ? Caml_option.valFromOption(match$1) : { };
   return React.createElement("div", {
               className: Cn.make(/* :: */[
                     "utility__panels",
@@ -222,7 +224,8 @@ function Utils$PanelContainer(Props) {
                       className,
                       /* [] */0
                     ]
-                  ])
+                  ]),
+              style: style
             }, children);
 }
 

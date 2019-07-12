@@ -19,6 +19,7 @@ function PageTourneyScores$ScoreTable(Props) {
   var isCompact = match !== undefined ? match : false;
   var tourney = Props.tourney;
   var getPlayer = Props.getPlayer;
+  var title = Props.title;
   var tieBreaks = tourney[/* tieBreaks */6];
   var roundList = tourney[/* roundList */5];
   var tieBreakNames = Scoring$Coronate.getTieBreakNames(tieBreaks);
@@ -41,7 +42,7 @@ function PageTourneyScores$ScoreTable(Props) {
                           /* [] */0
                         ]
                       ])
-                }, "Score detail"), React.createElement("thead", undefined, React.createElement("tr", {
+                }, title), React.createElement("thead", undefined, React.createElement("tr", {
                       className: "scores__topHeader"
                     }, React.createElement("th", {
                           className: "title-10",
@@ -261,7 +262,8 @@ function PageTourneyScores(Props) {
                 }, React.createElement(Tabs.TabPanel, {
                       children: React.createElement(PageTourneyScores$ScoreTable, {
                             tourney: tourney,
-                            getPlayer: getPlayer
+                            getPlayer: getPlayer,
+                            title: "Score detail"
                           })
                     }), React.createElement(Tabs.TabPanel, {
                       children: React.createElement(PageTourneyScores$SelectTieBreaks, {

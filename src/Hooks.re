@@ -191,7 +191,7 @@ module Db = {
     let _ =
       Js.Promise.(
         all3((
-          optionsStore##setItems(DemoData.options|>Data.db_optionsToJs),
+          optionsStore##setItems(DemoData.options |> Data.db_optionsToJs),
           playerStore##setItems(DemoData.players),
           tourneyStore##setItems(DemoData.tournaments),
         ))
@@ -324,7 +324,7 @@ module Db = {
           Js.Promise.(
             optionsStore##getItems()
             |> then_(valuesJs => {
-                let values = Data.db_optionsFromJs(valuesJs);
+                 let values = Data.db_optionsFromJs(valuesJs);
                  if (! didCancel^) {
                    dispatch(SetAvoidPairs(values.avoidPairs));
                    dispatch(SetByeValue(values.byeValue));
@@ -343,7 +343,7 @@ module Db = {
         switch (isLoaded) {
         | false => None
         | true =>
-          let _ = optionsStore##setItems(options|>Data.db_optionsToJs);
+          let _ = optionsStore##setItems(options |> Data.db_optionsToJs);
           None;
         },
       (options, isLoaded),

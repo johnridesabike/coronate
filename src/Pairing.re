@@ -9,10 +9,6 @@ type t = {
   rating: int,
   score: float,
 };
-
-[@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
-[@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
-
 [@bs.module]
 external blossom: array((int, int, float)) => array(int) = "edmonds-blossom";
 
@@ -72,7 +68,7 @@ let calcPairIdeal = (player1, player2) => {
           }
         };
       };
-      let scoreDiff = absf(player1.score -. player2.score) +. 1.0;
+      let scoreDiff = Utils.absf(player1.score -. player2.score) +. 1.0;
       let halfDiff =
         float_of_int(abs(player1.halfPos - player2.halfPos) + 1);
       let isDiffHalf =
