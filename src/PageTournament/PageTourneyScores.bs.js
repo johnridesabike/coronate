@@ -14,7 +14,7 @@ import * as Scoring$Coronate from "../Scoring.bs.js";
 import * as Converters$Coronate from "../Converters.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
-function PageTournamentScores$ScoreTable(Props) {
+function PageTourneyScores$ScoreTable(Props) {
   var match = Props.isCompact;
   var isCompact = match !== undefined ? match : false;
   var tourney = Props.tourney;
@@ -85,9 +85,9 @@ function PageTournamentScores$ScoreTable(Props) {
                       }))));
 }
 
-var ScoreTable = /* module */[/* make */PageTournamentScores$ScoreTable];
+var ScoreTable = /* module */[/* make */PageTourneyScores$ScoreTable];
 
-function PageTournamentScores$SelectTieBreaks(Props) {
+function PageTourneyScores$SelectTieBreaks(Props) {
   var tourney = Props.tourney;
   var tourneyDispatch = Props.tourneyDispatch;
   var tieBreaks = tourney[/* tieBreaks */6];
@@ -241,9 +241,9 @@ function PageTournamentScores$SelectTieBreaks(Props) {
                               }))))));
 }
 
-var SelectTieBreaks = /* module */[/* make */PageTournamentScores$SelectTieBreaks];
+var SelectTieBreaks = /* module */[/* make */PageTourneyScores$SelectTieBreaks];
 
-function PageTournamentScores(Props) {
+function PageTourneyScores(Props) {
   var tournament = Props.tournament;
   var getPlayer = tournament[/* getPlayer */1];
   var tourney = tournament[/* tourney */7];
@@ -259,19 +259,19 @@ function PageTournamentScores(Props) {
                     }, React.createElement(ReactFeather.Settings, { }), " Edit tiebreak rules")), React.createElement(Tabs.TabPanels, {
                   children: null
                 }, React.createElement(Tabs.TabPanel, {
-                      children: React.createElement(PageTournamentScores$ScoreTable, {
+                      children: React.createElement(PageTourneyScores$ScoreTable, {
                             tourney: tourney,
                             getPlayer: getPlayer
                           })
                     }), React.createElement(Tabs.TabPanel, {
-                      children: React.createElement(PageTournamentScores$SelectTieBreaks, {
+                      children: React.createElement(PageTourneyScores$SelectTieBreaks, {
                             tourney: tourney,
                             tourneyDispatch: tourneyDispatch
                           })
                     })));
 }
 
-var make = PageTournamentScores;
+var make = PageTourneyScores;
 
 export {
   ScoreTable ,

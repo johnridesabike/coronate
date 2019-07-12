@@ -13,7 +13,7 @@ import * as Utils$Coronate from "../Utils.bs.js";
 import * as PagePlayers$Coronate from "../PagePlayers.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
-function PageTournamentPlayers$Selecting(Props) {
+function PageTourneyPlayers$Selecting(Props) {
   var tourney = Props.tourney;
   var tourneyDispatch = Props.tourneyDispatch;
   var match = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
@@ -63,7 +63,7 @@ function PageTournamentPlayers$Selecting(Props) {
                 }));
 }
 
-var Selecting = /* module */[/* make */PageTournamentPlayers$Selecting];
+var Selecting = /* module */[/* make */PageTourneyPlayers$Selecting];
 
 function hasHadBye(matchList, playerId) {
   return matchList.filter((function (match_) {
@@ -79,7 +79,7 @@ function hasHadBye(matchList, playerId) {
                 }), /* array */[]).includes(Data$Coronate.dummy_id);
 }
 
-function PageTournamentPlayers$PlayerList(Props) {
+function PageTourneyPlayers$PlayerList(Props) {
   var players = Props.players;
   var tourneyDispatch = Props.tourneyDispatch;
   var byeQueue = Props.byeQueue;
@@ -103,9 +103,9 @@ function PageTournamentPlayers$PlayerList(Props) {
                   })));
 }
 
-var PlayerList = /* module */[/* make */PageTournamentPlayers$PlayerList];
+var PlayerList = /* module */[/* make */PageTourneyPlayers$PlayerList];
 
-function PageTournamentPlayers(Props) {
+function PageTourneyPlayers(Props) {
   var tournament = Props.tournament;
   var tourney = tournament[/* tourney */7];
   var tourneyDispatch = tournament[/* tourneyDispatch */8];
@@ -136,7 +136,7 @@ function PageTournamentPlayers(Props) {
                                         colSpan: 2
                                       }, "Name"), React.createElement("th", undefined, "Options"))), React.createElement("tbody", {
                                 className: "content"
-                              }, React.createElement(PageTournamentPlayers$PlayerList, {
+                              }, React.createElement(PageTourneyPlayers$PlayerList, {
                                     players: activePlayers,
                                     tourneyDispatch: tourneyDispatch,
                                     byeQueue: byeQueue
@@ -179,13 +179,13 @@ function PageTournamentPlayers(Props) {
                                             return false;
                                           }));
                             })
-                        }, "Done"), React.createElement(PageTournamentPlayers$Selecting, {
+                        }, "Done"), React.createElement(PageTourneyPlayers$Selecting, {
                           tourney: tourney,
                           tourneyDispatch: tourneyDispatch
                         }))));
 }
 
-var make = PageTournamentPlayers;
+var make = PageTourneyPlayers;
 
 export {
   Selecting ,

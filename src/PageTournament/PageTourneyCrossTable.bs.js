@@ -11,7 +11,7 @@ import * as Utils$Coronate from "../Utils.bs.js";
 import * as Scoring$Coronate from "../Scoring.bs.js";
 import * as Converters$Coronate from "../Converters.bs.js";
 
-function PageTournamentCrossTable(Props) {
+function PageTourneyCrossTable(Props) {
   var tournament = Props.tournament;
   var tourney = tournament[/* tourney */7];
   var getPlayer = tournament[/* getPlayer */1];
@@ -77,7 +77,7 @@ function PageTournamentCrossTable(Props) {
                       }))));
 }
 
-var make = PageTournamentCrossTable;
+var make = PageTourneyCrossTable;
 
 export {
   make ,

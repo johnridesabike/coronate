@@ -11,11 +11,12 @@ import * as Utils$Coronate from "../Utils.bs.js";
 import * as Window$Coronate from "../Window.bs.js";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as TournamentData$Coronate from "./TournamentData.bs.js";
-import * as PageTournamentScores$Coronate from "./PageTournamentScores.bs.js";
-import * as PageTournamentPlayers$Coronate from "./PageTournamentPlayers.bs.js";
-import * as PageTournamentCrossTable$Coronate from "./PageTournamentCrossTable.bs.js";
+import * as PageTourneySetup$Coronate from "./PageTourneySetup.bs.js";
+import * as PageTourneyScores$Coronate from "./PageTourneyScores.bs.js";
+import * as PageTourneyPlayers$Coronate from "./PageTourneyPlayers.bs.js";
+import * as PageTourneyCrossTable$Coronate from "./PageTourneyCrossTable.bs.js";
 
-function PageTournament$Footer(Props) {
+function PageTourney$Footer(Props) {
   var tournament = Props.tournament;
   var roundList = tournament[/* tourney */7][/* roundList */5];
   var match = tournament[/* isNewRoundReady */3] ? (
@@ -53,10 +54,10 @@ function PageTournament$Footer(Props) {
                 }));
 }
 
-var Footer = /* module */[/* make */PageTournament$Footer];
+var Footer = /* module */[/* make */PageTourney$Footer];
 
 function footerFunc(tournament, param) {
-  return React.createElement(PageTournament$Footer, {
+  return React.createElement(PageTourney$Footer, {
               tournament: tournament
             });
 }
@@ -66,7 +67,7 @@ function noDraggy(e) {
   return /* () */0;
 }
 
-function PageTournament$Sidebar(Props) {
+function PageTourney$Sidebar(Props) {
   var tournament = Props.tournament;
   var tourneyDispatch = tournament[/* tourneyDispatch */8];
   var tourney = tournament[/* tourney */7];
@@ -223,15 +224,15 @@ function PageTournament$Sidebar(Props) {
                             }, "Remove last round")))));
 }
 
-var Sidebar = /* module */[/* make */PageTournament$Sidebar];
+var Sidebar = /* module */[/* make */PageTourney$Sidebar];
 
 function sidebarFunc(tournament, param) {
-  return React.createElement(PageTournament$Sidebar, {
+  return React.createElement(PageTourney$Sidebar, {
               tournament: tournament
             });
 }
 
-function PageTournament(Props) {
+function PageTourney(Props) {
   var tourneyId = Props.tourneyId;
   var hashPath = Props.hashPath;
   return React.createElement(TournamentData$Coronate.make, {
@@ -244,7 +245,7 @@ function PageTournament(Props) {
                           if (hashPath[1]) {
                             exit = 1;
                           } else {
-                            tmp = React.createElement(PageTournamentPlayers$Coronate.make, {
+                            tmp = React.createElement(PageTourneyPlayers$Coronate.make, {
                                   tournament: tournament
                                 });
                           }
@@ -253,7 +254,7 @@ function PageTournament(Props) {
                           if (hashPath[1]) {
                             exit = 1;
                           } else {
-                            tmp = React.createElement(PageTournamentCrossTable$Coronate.make, {
+                            tmp = React.createElement(PageTourneyCrossTable$Coronate.make, {
                                   tournament: tournament
                                 });
                           }
@@ -262,7 +263,16 @@ function PageTournament(Props) {
                           if (hashPath[1]) {
                             exit = 1;
                           } else {
-                            tmp = React.createElement(PageTournamentScores$Coronate.make, {
+                            tmp = React.createElement(PageTourneyScores$Coronate.make, {
+                                  tournament: tournament
+                                });
+                          }
+                          break;
+                      case "setup" : 
+                          if (hashPath[1]) {
+                            exit = 1;
+                          } else {
+                            tmp = React.createElement(PageTourneySetup$Coronate.make, {
                                   tournament: tournament
                                 });
                           }
@@ -290,7 +300,7 @@ function PageTournament(Props) {
             });
 }
 
-var make = PageTournament;
+var make = PageTourney;
 
 export {
   Footer ,

@@ -33,15 +33,12 @@
   },
   "dependencies": {
     "@reach/dialog": "^0.2.9",
-    "@reach/router": "^1.2.1",
     "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
-    "classnames": "^2.2.6",
-    "dashify": "^2.0.0",
+    "bs-webapi": "^0.15.2",
     "edmonds-blossom": "^1.0.0",
     "electron-is-dev": "^1.1.0",
     "elo-rank": "^1.0.3",
-    "hash-source": "^1.0.4",
     "localforage": "^1.7.3",
     "localforage-getitems": "^1.4.2",
     "localforage-removeitems": "^1.4.0",
@@ -49,7 +46,6 @@
     "nanoid": "^2.0.3",
     "numeral": "^2.0.6",
     "photon-colors": "^3.3.2",
-    "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "re-classnames": "^4.0.0",
     "react": "^16.8.6",
@@ -57,7 +53,6 @@
     "react-feather": "^2.0.3",
     "reason-react": "^0.7.0",
     "simple-icons": "^1.10.0",
-    "tcomb": "^3.2.29",
     "typeface-fira-sans": "0.0.54"
   },
   "devDependencies": {

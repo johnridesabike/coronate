@@ -10,8 +10,8 @@ let make = () => {
        | [""] => <Pages.Splash />
        | ["", ""] => <Pages.Splash />
        | ["", "tourneys"] => <PageTournamentList />
-       | ["", "tourneys", tourneyId] => <PageTournament tourneyId hashPath=[""]/>
-       | ["", "tourneys", tourneyId, ...hashPath] => <PageTournament tourneyId hashPath/>
+       | ["", "tourneys", tourneyId] => <PageTourney tourneyId hashPath=[""]/>
+       | ["", "tourneys", tourneyId, ...hashPath] => <PageTourney tourneyId hashPath/>
        | ["", "players"] => <PagePlayers />
        | ["", "players", ...id] => <PagePlayers id/>
        | ["", "options"] => <PageOptions />
