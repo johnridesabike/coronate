@@ -1,0 +1,45 @@
+{
+    "name": "coronate",
+    "reason": {
+        "react-jsx": 3
+    },
+    "bsc-flags": [
+        "-bs-super-errors"
+    ],
+    "sources": [
+        {
+            "dir": "src",
+            "subdirs": true
+        },
+        {
+          "dir": "__tests__",
+          "type": "dev"
+        }
+    ],
+    "package-specs": [
+        {
+            "module": "es6",
+            "in-source": true
+        },
+        {
+            "module": "commonjs",
+            "in-source": false
+        }
+    ],
+    "suffix": ".bs.js",
+    "namespace": true,
+    "bs-dependencies": [
+        "reason-react",
+        "re-classnames",
+        "bs-webapi"
+    ],
+    "bs-dev-dependencies": [
+        "@glennsl/bs-jest",
+        "bs-react-testing-library"
+    ],
+    "ppx-flags": [],
+    "refmt": 3,
+    "ignored-dirs": [
+        "node_modules"
+    ]
+}

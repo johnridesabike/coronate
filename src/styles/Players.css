@@ -1,0 +1,12 @@
+.players__table {
+    margin: auto;
+}
+
+.players__playerInfo {
+    width: 650px;
+    margin: auto;
+}
+
+.players__controls {
+    background-color: whitesmoke;
+}

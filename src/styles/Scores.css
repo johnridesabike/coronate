@@ -1,0 +1,47 @@
+.scores__table {
+    border-collapse: collapse;
+    width: min-content;
+}
+
+.scores__topHeader {
+    vertical-align: bottom;
+}
+
+.scores__row td {
+    border-width: 1px;
+    border-color: var(--grey-40);
+    border-style: solid;
+}
+
+.scores__row th {
+    border-bottom-style: solid;
+    border-width: 1px;
+    border-color: var(--grey-40);
+    background-color: var(--white-100);
+}
+
+.scores__row:nth-child(even) {
+    background-color: var(--white-100);
+}
+
+.scores__row:nth-child(odd) {
+    background-color: var(--grey-20);
+}
+
+.scores__compact .row:nth-child(odd) {
+    background-color: var(--white-100);
+}
+
+.scores__playerName {
+    text-align: left;
+    color: var(--grey-90);
+}
+
+.scores__rank {
+    text-align: center;
+    color: var(--grey-90);
+}
+
+.scores__table :global(.table__number) {
+    padding: 4px;
+}

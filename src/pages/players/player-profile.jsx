@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import Icons from "../../components/icons";
 import {Link} from "@reach/router";
 import PropTypes from "prop-types";
-import {avoidPairReducer} from "../../pairing-scoring";
+import {avoidPairReducer} from "../../Converters.bs";
 import numeral from "numeral";
-import {ratings} from "../../pairing-scoring";
+import {getKFactor} from "../../Scoring.bs";
 import styles from "./index.module.css";
 import {useWindowContext} from "../../components/window";
 
@@ -111,7 +111,7 @@ function PlayerProfile({
                         disabled
                         value={
                             numeral(
-                                ratings.getKFactor(player.matchCount)
+                                getKFactor(player.matchCount)
                             ).format("00")
                         }
                         readOnly
