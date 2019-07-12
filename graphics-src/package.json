@@ -5,21 +5,20 @@
   "main": "index.js",
   "scripts": {
     "minify-logo": "svgo icon-src.svg -o icon-min.svg",
-    "jsxify-logo": "svgr < icon-src.svg > ../src/components/logo.jsx --icon",
+    "jsxify-logo": "react-from-svg . ../src",
     "build:web-icons": "gulp svg-to-web-icons",
     "build:electron-icons": "gulp build-electron-icons"
   },
   "author": "",
   "license": "GPL-3.0-or-later",
-  "devDependencies": {
-    "@svgr/cli": "^4.3.0",
+  "devDependencies": {},
+  "dependencies": {
     "fancy-log": "^1.3.3",
     "favicons": "^5.4.1",
     "gulp": "^4.0.2",
+    "photon-colors": "^3.3.2",
+    "react-from-svg": "^0.2.0",
     "sharp": "^0.22.1",
     "svgo": "^1.2.2"
-  },
-  "dependencies": {
-    "photon-colors": "^3.3.2"
   }
 }
