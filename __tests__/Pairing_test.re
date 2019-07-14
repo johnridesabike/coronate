@@ -4,18 +4,21 @@ open Converters;
 open Data;
 
 let loadPairData = tourneyId => {
-  let tournament = TestData.tournaments->Js.Dict.unsafeGet(tourneyId);
+  let tournament = TestData.tournaments->Belt.Map.String.getExn(tourneyId);
   let playerIds = tournament.playerIds;
   let roundList = tournament.roundList;
   let players = Js.Dict.empty();
-  Js.Dict.values(TestData.players)
-  |> Js.Array.forEach((player:Data.Player.t) =>
+  Belt.Map.String.valuesToArray(TestData.players)
+  |> Js.Array.forEach((player: Data.Player.t) =>
        if (playerIds |> Js.Array.includes(player.id)) {
          players->Js.Dict.set(player.id, player);
        }
      );
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
-  |> createPairingData(players->Utils.dictToMap, TestData.options.avoidPairs)
+  |> createPairingData(
+       players |> Js.Dict.entries |> Belt.Map.String.fromArray,
+       TestData.options.avoidPairs,
+     )
   |> Pairing.setUpperHalves;
 };
 

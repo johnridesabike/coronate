@@ -10,7 +10,10 @@ module Footer = {
       } else if (isItOver) {
         (Utils.Entities.nbsp ++ " All rounds have completed.", Utils.Warning);
       } else {
-        (Utils.Entities.nbsp ++ " Ready to begin a new round.", Utils.Success);
+        (
+          Utils.Entities.nbsp ++ " Ready to begin a new round.",
+          Utils.Success,
+        );
       };
     ReactDOMRe.(
       <>
@@ -210,7 +213,7 @@ module Sidebar = {
             style={ReactDOMRe.Style.make(~width="100%", ())}>
             <Icons.plus />
             <span className="sidebar__hide-on-close">
-              {"New round" |> React.string}
+              {" New round" |> React.string}
             </span>
           </button>
         </li>
@@ -222,7 +225,7 @@ module Sidebar = {
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>
             <Icons.trash />
             <span className="sidebar__hide-on-close">
-              {"Remove last round" |> React.string}
+              {" Remove last round" |> React.string}
             </span>
           </button>
         </li>

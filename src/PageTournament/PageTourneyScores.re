@@ -5,7 +5,7 @@ module ScoreTable = {
         ~isCompact=false,
         ~tourney: Data.Tournament.t,
         ~getPlayer: string => Data.Player.t,
-        ~title
+        ~title,
       ) => {
     let tieBreaks = tourney.tieBreaks;
     let roundList = tourney.roundList;
@@ -86,7 +86,9 @@ module ScoreTable = {
                            + " score",
                          )}*/
 
-                         {Utils.numeral(standing.score)##format("1/2")
+                         {Externals.Numeral.(
+                            standing.score->numeral->format("1/2")
+                          )
                           |> React.string}
                        </td>
                      {isCompact
@@ -102,7 +104,9 @@ module ScoreTable = {
                                      + tieBreakNames[j],
                                    )}*/
 
-                                   {Utils.numeral(score)##format("1/2")
+                                   {Externals.Numeral.(
+                                      score->numeral->format("1/2")
+                                    )
                                     |> React.string}
                                  </td>
                              )
@@ -291,7 +295,7 @@ let make = (~tournament: TournamentData.t) => {
   let getPlayer = tournament.getPlayer;
   let tourney = tournament.tourney;
   let tourneyDispatch = tournament.tourneyDispatch;
-  Utils.ReachTabs.(
+  Utils.Tabs.(
     <Tabs>
       <TabList>
         <Tab> <Icons.list /> {" Scores" |> React.string} </Tab>
@@ -301,7 +305,9 @@ let make = (~tournament: TournamentData.t) => {
         </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel> <ScoreTable tourney getPlayer title="Score detail"/> </TabPanel>
+        <TabPanel>
+          <ScoreTable tourney getPlayer title="Score detail" />
+        </TabPanel>
         <TabPanel> <SelectTieBreaks tourney tourneyDispatch /> </TabPanel>
       </TabPanels>
     </Tabs>

@@ -16,7 +16,7 @@ import * as VisuallyHidden from "@reach/visually-hidden";
 function PageTourneyPlayers$Selecting(Props) {
   var tourney = Props.tourney;
   var tourneyDispatch = Props.tourneyDispatch;
-  var match = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
+  var match = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
   var players = match[0];
   var togglePlayer = function ($$event) {
     var id = $$event.target.value;

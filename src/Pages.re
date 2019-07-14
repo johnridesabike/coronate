@@ -28,29 +28,27 @@ module Splash = {
   let make = () => {
     <Window.WindowBody footerFunc={() => <CautionFooter />}>
       <div className="splash__splash">
-        <aside
-          className="splash__hint">
+        <aside className="splash__hint">
           <ol>
-              <li>
-                  <button
-                      className="button-primary"
-                      onClick={(_) => Hooks.Db.loadDemoDB()}
-                  >
-                      {React.string("Click here to load the demo data")}
-                  </button>
-                  {React.string("(optional)")}
-              </li>
-              <li>
-                  <Icons.arrowLeft />{React.string(" Select a menu item.")}
-              </li>
-              <li>
-                  {React.string("Start creating your tournaments!")}
-              </li>
+            <li>
+              <button
+                className="button-primary"
+                onClick={_ => Hooks.Db.loadDemoDB()}>
+                {React.string("Click here to load the demo data")}
+              </button>
+              {React.string("(optional)")}
+            </li>
+            <li>
+              <Icons.arrowLeft />
+              {React.string(" Select a menu item.")}
+            </li>
+            <li> {React.string("Start creating your tournaments!")} </li>
           </ol>
-          // <Notification warning>
-          //     If you experience glitches or crashes,<br />
-          //     clear your browser cache and try again.
-          // </Notification>
+          <Utils.Notification kind=Utils.Warning>
+            {"If you experience glitches or crashes," |> React.string}
+            <br />
+            {"clear your browser cache and try again." |> React.string}
+          </Utils.Notification>
         </aside>
         <div className="splash__title">
           <div className="splash__titleIcon">
@@ -128,5 +126,5 @@ module Splash = {
 module NotFound = {
   [@react.component]
   let make = () =>
-      <p className="content-area"> {React.string("Page not found.")} </p>
+    <p className="content-area"> {React.string("Page not found.")} </p>;
 };

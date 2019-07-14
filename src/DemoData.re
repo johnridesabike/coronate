@@ -10,7 +10,7 @@ let options = {
 };
 
 let players =
-  Js.Dict.fromArray([|
+  Belt.Map.String.fromArray([|
     (
       "BruceWayne_lv_ZsUHTU9",
       Player.{
@@ -223,7 +223,7 @@ let players =
   |]);
 
 let tournaments =
-  Js.Dict.fromArray([|
+  Belt.Map.String.fromArray([|
     (
       "CaouTNel9k70jUJ0h6SYM",
       Tournament.{

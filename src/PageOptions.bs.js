@@ -3,8 +3,13 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
+import * as Js_json from "bs-platform/lib/es6/js_json.js";
 import * as Numeral from "numeral";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Belt_Option from "bs-platform/lib/es6/belt_Option.js";
+import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Data$Coronate from "./Data.bs.js";
 import * as ReactFeather from "react-feather";
 import * as Hooks$Coronate from "./Hooks.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
@@ -26,8 +31,59 @@ function getDateForFile(param) {
 }
 
 function invalidAlert(param) {
-  window.alert("That data is invalid! A more helpful error message could not be written yet.");
-  return /* () */0;
+  return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+}
+
+function decodeWith(json, func) {
+  return Belt_Option.mapWithDefault(Belt_Option.mapWithDefault(json, undefined, Js_json.decodeObject), undefined, (function (dict) {
+                return Caml_option.some(Hooks$Coronate.Db[/* jsDictToReMap */7](dict, func));
+              }));
+}
+
+function decodePlayer(json) {
+  return Data$Coronate.Player[/* tFromJs */1](json);
+}
+
+function decodeTourney(json) {
+  return Data$Coronate.Tournament[/* tFromJsonDeep */4](json);
+}
+
+function decodeOptions(json) {
+  var match = Js_json.decodeObject(json);
+  if (match !== undefined) {
+    var dict = Caml_option.valFromOption(match);
+    var match$1 = Belt_Option.mapWithDefault(Js_dict.get(dict, "byeValue"), undefined, Js_json.decodeNumber);
+    var match$2 = Belt_Option.mapWithDefault(Js_dict.get(dict, "avoidPairs"), undefined, Js_json.decodeArray);
+    var match$3 = Belt_Option.mapWithDefault(Js_dict.get(dict, "lastBackup"), undefined, Js_json.decodeString);
+    if (match$1 !== undefined && match$2 !== undefined && match$3 !== undefined) {
+      return Data$Coronate.db_optionsFromJs({
+                  byeValue: match$1,
+                  avoidPairs: match$2,
+                  lastBackup: new Date(match$3)
+                });
+    } else {
+      return undefined;
+    }
+  }
+  
+}
+
+function jsonToData(json) {
+  var match = Js_json.decodeObject(json);
+  if (match !== undefined) {
+    var dict = Caml_option.valFromOption(match);
+    return /* tuple */[
+            Belt_Option.mapWithDefault(Js_dict.get(dict, "options"), undefined, decodeOptions),
+            decodeWith(Js_dict.get(dict, "players"), decodePlayer),
+            decodeWith(Js_dict.get(dict, "tournaments"), decodeTourney)
+          ];
+  } else {
+    return /* tuple */[
+            undefined,
+            undefined,
+            undefined
+          ];
+  }
 }
 
 function PageOptions$LastBackupDate(Props) {
@@ -45,10 +101,10 @@ function PageOptions$LastBackupDate(Props) {
 var LastBackupDate = /* module */[/* make */PageOptions$LastBackupDate];
 
 function PageOptions(Props) {
-  var match = Hooks$Coronate.Db[/* useAllTournaments */8](/* () */0);
+  var match = Hooks$Coronate.Db[/* useAllTournaments */13](/* () */0);
   var tourneysDispatch = match[1];
   var tournaments = match[0];
-  var match$1 = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
+  var match$1 = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
   var playersDispatch = match$1[1];
   var players = match$1[0];
   var match$2 = React.useState((function () {
@@ -56,7 +112,7 @@ function PageOptions(Props) {
         }));
   var setText = match$2[1];
   var text = match$2[0];
-  var match$3 = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var match$3 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
   var optionsDispatch = match$3[1];
   var options = match$3[0];
   var match$4 = Window$Coronate.useWindowContext(/* () */0);
@@ -69,9 +125,9 @@ function PageOptions(Props) {
         }), /* array */[windowDispatch]);
   var exportData = React.useMemo((function () {
           return {
-                  options: options,
-                  players: Utils$Coronate.mapToDict(players),
-                  tournaments: Utils$Coronate.mapToDict(tournaments)
+                  options: Data$Coronate.db_optionsToJs(options),
+                  players: Hooks$Coronate.Db[/* reMapToJsDict */8](players, Data$Coronate.Player[/* tToJs */0]),
+                  tournaments: Hooks$Coronate.Db[/* reMapToJsDict */8](tournaments, Data$Coronate.Tournament[/* tToJsDeep */2])
                 };
         }), /* tuple */[
         options,
@@ -94,33 +150,74 @@ function PageOptions(Props) {
     Curry._1(tourneysDispatch, /* SetState */Block.__(2, [tourneys]));
     Curry._1(optionsDispatch, /* SetState */Block.__(5, [options]));
     Curry._1(playersDispatch, /* SetState */Block.__(2, [players]));
-    window.alert("Data loaded.");
-    return /* () */0;
+    return Utils$Coronate.alert("Data loaded.");
   };
   var handleText = function ($$event) {
     $$event.preventDefault();
+    var exit = 0;
+    var rawJson;
     try {
-      JSON.parse(text);
-      return /* () */0;
+      rawJson = JSON.parse(text);
+      exit = 1;
     }
     catch (exn){
-      window.alert("That data is invalid! A more helpful error message could not be written yet.");
-      return /* () */0;
+      return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
     }
+    if (exit === 1) {
+      var match = jsonToData(rawJson);
+      var match$1 = match[0];
+      if (match$1 !== undefined) {
+        var match$2 = match[1];
+        if (match$2 !== undefined) {
+          var match$3 = match[2];
+          if (match$3 !== undefined) {
+            return loadData(Caml_option.valFromOption(match$3), Caml_option.valFromOption(match$2), match$1);
+          } else {
+            return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+          }
+        } else {
+          return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+        }
+      } else {
+        return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+      }
+    }
+    
   };
   var handleFile = function ($$event) {
     $$event.preventDefault();
     var reader = new FileReader();
     var onload = function (ev) {
       var data = ev.target.result;
+      var exit = 0;
+      var rawJson;
       try {
-        JSON.parse(data);
-        return /* () */0;
+        rawJson = JSON.parse(data);
+        exit = 1;
       }
       catch (exn){
-        window.alert("That data is invalid! A more helpful error message could not be written yet.");
-        return /* () */0;
+        return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
       }
+      if (exit === 1) {
+        var match = jsonToData(rawJson);
+        var match$1 = match[0];
+        if (match$1 !== undefined) {
+          var match$2 = match[1];
+          if (match$2 !== undefined) {
+            var match$3 = match[2];
+            if (match$3 !== undefined) {
+              return loadData(Caml_option.valFromOption(match$3), Caml_option.valFromOption(match$2), match$1);
+            } else {
+              return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+            }
+          } else {
+            return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+          }
+        } else {
+          return Utils$Coronate.alert("That data is invalid! A more helpful error message could not be written yet.");
+        }
+      }
+      
     };
     reader.onload = onload;
     reader.readAsText(Caml_array.caml_array_get($$event.currentTarget.files, 0));
@@ -129,11 +226,11 @@ function PageOptions(Props) {
   };
   var reloadDemoData = function ($$event) {
     $$event.preventDefault();
-    return loadData(Utils$Coronate.dictToMap(DemoData$Coronate.tournaments), Utils$Coronate.dictToMap(DemoData$Coronate.players), DemoData$Coronate.options);
+    return loadData(DemoData$Coronate.tournaments, DemoData$Coronate.players, DemoData$Coronate.options);
   };
   var loadTestData = function ($$event) {
     $$event.preventDefault();
-    return loadData(Utils$Coronate.dictToMap(TestData$Coronate.tournaments), Utils$Coronate.dictToMap(TestData$Coronate.players), TestData$Coronate.options);
+    return loadData(TestData$Coronate.tournaments, TestData$Coronate.players, TestData$Coronate.options);
   };
   var handleTextChange = function ($$event) {
     var newText = $$event.currentTarget.value;
@@ -209,6 +306,11 @@ export {
   s ,
   getDateForFile ,
   invalidAlert ,
+  decodeWith ,
+  decodePlayer ,
+  decodeTourney ,
+  decodeOptions ,
+  jsonToData ,
   LastBackupDate ,
   make ,
   

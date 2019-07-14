@@ -58,13 +58,11 @@ function PageTourneySetup(Props) {
         }), /* array */[editing]);
   var changeToOne = function (param) {
     Curry._1(tourneyDispatch, /* UpdateByeScores */Block.__(13, [1.0]));
-    window.alert("Bye scores updated to 1.");
-    return /* () */0;
+    return Utils$Coronate.alert("Bye scores updated to 1.");
   };
   var changeToOneHalf = function (param) {
     Curry._1(tourneyDispatch, /* UpdateByeScores */Block.__(13, [0.5]));
-    window.alert("Bye scores updated to ½.");
-    return /* () */0;
+    return Utils$Coronate.alert("Bye scores updated to ½.");
   };
   var updateDate = function ($$event) {
     var match = $$event.currentTarget.value.split("-");

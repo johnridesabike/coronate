@@ -3,8 +3,8 @@ open Expect;
 open Scoring;
 open Data.Player;
 
-let newb = TestData.players->Js.Dict.unsafeGet("Newbie_McNewberson___");
-let master = TestData.players->Js.Dict.unsafeGet("Grandy_McMaster______");
+let newb = TestData.players->Belt.Map.String.getExn("Newbie_McNewberson___");
+let master = TestData.players->Belt.Map.String.getExn("Grandy_McMaster______");
 
 test("K Factor is calculated correctly", () => {
   // let newbKFactor = getKFactor(newb.matchCount);

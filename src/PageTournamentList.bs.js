@@ -3,7 +3,6 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Nanoid from "nanoid";
 import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
@@ -25,7 +24,7 @@ var nameSort = /* KeyString */Block.__(0, [(function (x) {
       })]);
 
 function PageTournamentList(Props) {
-  var match = Hooks$Coronate.Db[/* useAllTournaments */8](/* () */0);
+  var match = Hooks$Coronate.Db[/* useAllTournaments */13](/* () */0);
   var dispatch = match[1];
   var tourneys = match[0];
   var match$1 = Hooks$Coronate.useSortedTable(Belt_MapString.valuesToArray(tourneys), dateSort, true);
@@ -61,7 +60,7 @@ function PageTournamentList(Props) {
   };
   var makeTournament = function ($$event) {
     $$event.preventDefault();
-    var newId = Nanoid.default();
+    var newId = Utils$Coronate.nanoid(/* () */0);
     var newTourney_000 = /* byeQueue : array */[];
     var newTourney_001 = /* date */new Date();
     var newTourney_004 = /* playerIds : array */[];
@@ -134,7 +133,7 @@ function PageTournamentList(Props) {
                                                             var id = t[/* id */2];
                                                             var name = t[/* name */3];
                                                             var message = "Are you sure you want to delete “" + (String(name) + "”?");
-                                                            if (window.confirm(message)) {
+                                                            if (Utils$Coronate.confirm(message)) {
                                                               Curry._1(dispatch, /* DelItem */Block.__(0, [id]));
                                                             }
                                                             return /* () */0;

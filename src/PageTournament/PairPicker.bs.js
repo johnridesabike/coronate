@@ -189,7 +189,7 @@ function PairPicker$Stage(Props) {
   var stagedPlayers = Props.stagedPlayers;
   var setStagedPlayers = Props.setStagedPlayers;
   var tourneyDispatch = Props.tourneyDispatch;
-  var match = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var match = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
   var options = match[0];
   var stagedPlayersOption_000 = Caml_option.nullable_to_opt(stagedPlayers[0]);
   var stagedPlayersOption_001 = Caml_option.nullable_to_opt(stagedPlayers[1]);
@@ -313,7 +313,7 @@ function PairPicker$PlayerInfo(Props) {
   var players = Props.players;
   var getPlayer = Props.getPlayer;
   var scoreData = Props.scoreData;
-  var match = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var match = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
   var avoidDict = match[0][/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
   var match$1 = Js_dict.get(scoreData, playerId);
   var playerData = match$1 !== undefined ? match$1 : Scoring$Coronate.createBlankScoreData(playerId);
@@ -325,7 +325,7 @@ function PairPicker$PlayerInfo(Props) {
   var hasBye = Object.keys(opponentResults).includes(Data$Coronate.dummy_id);
   var match$2 = Js_dict.get(avoidDict, playerId);
   var avoidList = match$2 !== undefined ? match$2 : /* array */[];
-  var prettyBalance = colorBalance < 0.0 ? "White +" + Math.abs(colorBalance).toString() : (
+  var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
     );
   return React.createElement("dl", {
@@ -378,7 +378,7 @@ function PairPicker(Props) {
   var p2 = stagedPlayers[1];
   var p1 = stagedPlayers[0];
   var setStagedPlayers = match[1];
-  var match$1 = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var match$1 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
   var options = match$1[0];
   var tourney = tournament[/* tourney */7];
   var activePlayers = tournament[/* activePlayers */0];

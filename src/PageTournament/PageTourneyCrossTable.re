@@ -18,7 +18,7 @@ let make = (~tournament: TournamentData.t) => {
         switch (scoreData.opponentResults->Js.Dict.get(player2Id)) {
         | None => React.null
         | Some(result) =>
-          Utils.numeral(result)##format("1/2") |> React.string
+          Externals.Numeral.(result->numeral->format("1/2")) |> React.string
         }
       };
     };
@@ -29,7 +29,8 @@ let make = (~tournament: TournamentData.t) => {
     let lastRating =
       Utils.last(scoreData->Js.Dict.unsafeGet(playerId).ratings)
       |> float_of_int;
-    let change = Utils.numeral(lastRating -. firstRating)##format("+0");
+    let change =
+      Externals.Numeral.((lastRating -. firstRating)->numeral->format("+0"));
     <>
       <td className="table__number">
         {lastRating |> Js.Float.toString |> React.string}
@@ -39,25 +40,25 @@ let make = (~tournament: TournamentData.t) => {
   };
 
   <table className="scores__table">
-      <caption> {"Crosstable" |> React.string} </caption>
-      <thead>
-        <tr>
-          <th> {"#" |> React.string} </th>
-          <th> {"Name" |> React.string} </th>
-          /* Display a rank as a shorthand for each player. */
-          {standings
-           |> Js.Array.mapi((_, rank) =>
-                <th key={rank |> string_of_int}>
-                  {rank + 1 |> string_of_int |> React.string}
-                </th>
-              )
-           |> React.array}
-          <th> {"Score" |> React.string} </th>
-          <th colSpan=2> {"Rating" |> React.string} </th>
-        </tr>
-      </thead>
-      <tbody>
-        /* Output a row for each player */
+    <caption> {"Crosstable" |> React.string} </caption>
+    <thead>
+      <tr>
+        <th> {"#" |> React.string} </th>
+        <th> {"Name" |> React.string} </th>
+        /* Display a rank as a shorthand for each player. */
+        {standings
+         |> Js.Array.mapi((_, rank) =>
+              <th key={rank |> string_of_int}>
+                {rank + 1 |> string_of_int |> React.string}
+              </th>
+            )
+         |> React.array}
+        <th> {"Score" |> React.string} </th>
+        <th colSpan=2> {"Rating" |> React.string} </th>
+      </tr>
+    </thead>
+    <tbody>
+
         {standings
          |> Js.Array.mapi((standing: Scoring.standing, index) =>
               <tr key={index |> string_of_int} className="scores__row">
@@ -81,7 +82,7 @@ let make = (~tournament: TournamentData.t) => {
                  |> React.array}
                 /* Output their score and rating change */
                 <td className="table__number">
-                  {Utils.numeral(standing.score)##format("1/2")
+                  {Externals.Numeral.(standing.score->numeral->format("1/2"))
                    |> React.string}
                 </td>
                 {getRatingChangeTds(standing.id)}
@@ -89,5 +90,6 @@ let make = (~tournament: TournamentData.t) => {
             )
          |> React.array}
       </tbody>
-    </table>;
+      /* Output a row for each player */
+  </table>;
 };

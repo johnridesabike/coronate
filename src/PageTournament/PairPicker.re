@@ -139,7 +139,8 @@ module SelectList = {
                     <td>
                       {(
                          isOnePlayerSelected
-                           ? Utils.numeral(ideal)##format("%") : "-"
+                           ? Externals.Numeral.(ideal->numeral->format("%"))
+                           : "-"
                        )
                        |> React.string}
                     </td>
@@ -221,7 +222,9 @@ module Stage = {
         switch (Js.Dict.(pairData->get(p1), pairData->get(p2))) {
         | (Some(p1Data), Some(p2Data)) =>
           let ideal = Pairing.calcPairIdeal(p1Data, p2Data);
-          Utils.numeral(ideal /. Pairing.maxPriority)##format("%");
+          Externals.Numeral.(
+            (ideal /. Pairing.maxPriority)->numeral->format("%")
+          );
         | _ => ""
         }
       | _ => ""

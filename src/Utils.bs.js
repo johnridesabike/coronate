@@ -3,12 +3,52 @@
 import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Ramda from "ramda";
 import * as React from "react";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
+import * as Nanoid from "nanoid";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as ReactFeather from "react-feather";
-import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
+
+function splitAt(prim, prim$1) {
+  return Ramda.splitAt(prim, prim$1);
+}
+
+function descend(prim, prim$1, prim$2) {
+  return Ramda.descend(prim, prim$1, prim$2);
+}
+
+function ascend(prim, prim$1, prim$2) {
+  return Ramda.ascend(prim, prim$1, prim$2);
+}
+
+function alert(prim) {
+  window.alert(prim);
+  return /* () */0;
+}
+
+function nanoid(prim) {
+  return Nanoid.default();
+}
+
+function absf(prim) {
+  return Math.abs(prim);
+}
+
+function sortWith(prim, prim$1) {
+  return Ramda.sortWith(prim, prim$1);
+}
+
+function sortWithF(prim, prim$1) {
+  return Ramda.sortWith(prim, prim$1);
+}
+
+function confirm(prim) {
+  return window.confirm(prim);
+}
+
+function move(prim, prim$1, prim$2) {
+  return Ramda.move(prim, prim$1, prim$2);
+}
 
 function add(a, b) {
   return a + b | 0;
@@ -34,28 +74,6 @@ function splitInHalf(arr) {
   return Ramda.splitAt(arr.length / 2 | 0, arr);
 }
 
-var VisuallyHidden = /* module */[];
-
-var Dialog = /* module */[];
-
-var Tabs = /* module */[];
-
-var TabList = /* module */[];
-
-var Tab = /* module */[];
-
-var TabPanels = /* module */[];
-
-var TabPanel = /* module */[];
-
-var ReachTabs = /* module */[
-  /* Tabs */Tabs,
-  /* TabList */TabList,
-  /* Tab */Tab,
-  /* TabPanels */TabPanels,
-  /* TabPanel */TabPanel
-];
-
 var logo = ( require("./icon-min.svg") );
 
 var WebpackAssets = /* module */[/* logo */logo];
@@ -67,14 +85,6 @@ var Entities = /* module */[
 
 function hashPath(hashString) {
   return Belt_List.fromArray(hashString.split("/"));
-}
-
-function dictToMap(dict) {
-  return Belt_MapString.fromArray(Js_dict.entries(dict));
-}
-
-function mapToDict(map) {
-  return Js_dict.fromArray(Belt_MapString.toArray(map));
 }
 
 var dateFormat = (
@@ -135,33 +145,34 @@ function Utils$Notification(Props) {
   var children = Props.children;
   var match = Props.kind;
   var kind = match !== undefined ? match : /* Generic */3;
-  var tooltip = Props.tooltip;
-  var match$1 = Props.className;
-  var className = match$1 !== undefined ? match$1 : "";
-  var match$2 = Props.style;
-  var style = match$2 !== undefined ? Caml_option.valFromOption(match$2) : { };
-  var match$3;
+  var match$1 = Props.tooltip;
+  var tooltip = match$1 !== undefined ? match$1 : "";
+  var match$2 = Props.className;
+  var className = match$2 !== undefined ? match$2 : "";
+  var match$3 = Props.style;
+  var style = match$3 !== undefined ? Caml_option.valFromOption(match$3) : { };
+  var match$4;
   switch (kind) {
     case 0 : 
-        match$3 = /* tuple */[
+        match$4 = /* tuple */[
           React.createElement(ReactFeather.Check, { }),
           "notification__success"
         ];
         break;
     case 1 : 
-        match$3 = /* tuple */[
+        match$4 = /* tuple */[
           React.createElement(ReactFeather.AlertTriangle, { }),
           "notification__warning"
         ];
         break;
     case 2 : 
-        match$3 = /* tuple */[
+        match$4 = /* tuple */[
           React.createElement(ReactFeather.X, { }),
           "notification__error"
         ];
         break;
     case 3 : 
-        match$3 = /* tuple */[
+        match$4 = /* tuple */[
           React.createElement(ReactFeather.Info, { }),
           "notification__generic"
         ];
@@ -172,7 +183,7 @@ function Utils$Notification(Props) {
               className: Cn.make(/* :: */[
                     "notification",
                     /* :: */[
-                      match$3[1],
+                      match$4[1],
                       /* :: */[
                         className,
                         /* [] */0
@@ -184,7 +195,7 @@ function Utils$Notification(Props) {
                   "aria-label": tooltip,
                   className: "notifcation__icon",
                   title: tooltip
-                }, match$3[0]), React.createElement("div", {
+                }, match$4[0]), React.createElement("div", {
                   className: "notification__text"
                 }, children));
 }
@@ -231,21 +242,35 @@ function Utils$PanelContainer(Props) {
 
 var PanelContainer = /* module */[/* make */Utils$PanelContainer];
 
+var Tabs = 0;
+
+var VisuallyHidden = 0;
+
+var Dialog = 0;
+
 export {
+  Tabs ,
+  VisuallyHidden ,
+  Dialog ,
+  splitAt ,
+  descend ,
+  ascend ,
+  alert ,
+  nanoid ,
+  absf ,
+  sortWith ,
+  sortWithF ,
+  confirm ,
+  move ,
   add ,
   arraySum ,
   addFloat ,
   arraySumFloat ,
   last ,
   splitInHalf ,
-  VisuallyHidden ,
-  Dialog ,
-  ReachTabs ,
   WebpackAssets ,
   Entities ,
   hashPath ,
-  dictToMap ,
-  mapToDict ,
   dateFormat ,
   timeFormat ,
   DateOrTimeFormat ,

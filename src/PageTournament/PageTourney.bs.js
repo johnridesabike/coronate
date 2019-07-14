@@ -82,7 +82,7 @@ function PageTourney$Sidebar(Props) {
   var basePath = "#/tourneys/" + tourney[/* id */2];
   var newRound = function ($$event) {
     $$event.preventDefault();
-    if (isItOver && !window.confirm("All rounds have completed. Are you sure you want to begin a new one?")) {
+    if (isItOver && !Utils$Coronate.confirm("All rounds have completed. Are you sure you want to begin a new one?")) {
       return 0;
     } else {
       return Curry._1(tourneyDispatch, /* AddRound */0);
@@ -90,7 +90,7 @@ function PageTourney$Sidebar(Props) {
   };
   var delLastRound = function ($$event) {
     $$event.preventDefault();
-    if (window.confirm("Are you sure you want to delete the last round?")) {
+    if (Utils$Coronate.confirm("Are you sure you want to delete the last round?")) {
       ReasonReactRouter.push("#/tourneys/" + tourney[/* id */2]);
       Utils$Coronate.last(roundList).forEach((function (match_) {
               var whiteScore = match_[/* whiteScore */7];
@@ -211,7 +211,7 @@ function PageTourney$Sidebar(Props) {
                           onClick: newRound
                         }, React.createElement(ReactFeather.Plus, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"
-                            }, "New round"))), React.createElement("li", {
+                            }, " New round"))), React.createElement("li", {
                       style: {
                         textAlign: "center"
                       }
@@ -224,7 +224,7 @@ function PageTourney$Sidebar(Props) {
                           onClick: delLastRound
                         }, React.createElement(ReactFeather.Trash2, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"
-                            }, "Remove last round")))));
+                            }, " Remove last round")))));
 }
 
 var Sidebar = /* module */[/* make */PageTourney$Sidebar];

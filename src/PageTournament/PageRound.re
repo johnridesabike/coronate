@@ -43,7 +43,9 @@ module PlayerMatchInfo = {
       <dd id={"rating-" ++ playerId}>
         {origRating |> Js.Int.toString |> React.string}
         {" (" |> React.string}
-        {Utils.numeral(float_of_int(newRating - origRating))##format("+0")
+        {Externals.Numeral.(
+           float_of_int(newRating - origRating)->numeral->format("+0")
+         )
          |> React.string}
         {")" |> React.string}
       </dd>
@@ -203,12 +205,12 @@ module MatchRow = {
     };
     <tr
       className={
-        selectedMatch
-        ->Belt.Option.mapWithDefault("",
-        x => x->Js.Nullable.toOption
-        ->Belt.Option.mapWithDefault("", id =>
-            match.id === id ? "selected" : "buttons-on-hover"
-          )
+        selectedMatch->Belt.Option.mapWithDefault("", x =>
+          x
+          ->Js.Nullable.toOption
+          ->Belt.Option.mapWithDefault("", id =>
+              match.id === id ? "selected" : "buttons-on-hover"
+            )
         )
       }>
       <th className="table__number round__rowId" scope="row">
@@ -250,30 +252,36 @@ module MatchRow = {
       {isCompact
          ? React.null
          : <td className="round__ controls data__input">
-             {selectedMatch
-             ->Belt.Option.mapWithDefault(React.null,
-             x => 
-              x->Js.Nullable.toOption
-              ->Belt.Option.mapWithDefault(true, id => id !== match.id)
-                ? <button
-                    className="button-ghost"
-                    title="Edit match"
-                    onClick={_ =>
-                      setSelectedMatch->Belt.Option.mapWithDefault((), x => x(_ => Js.Nullable.return(match.id)))
-                    }>
-                    <Icons.circle />
-                    <Utils.VisuallyHidden>
-                      {[|"Edit match for", whiteName, "versus", blackName|]
-                       |> Js.Array.joinWith(" ")
-                       |> React.string}
-                    </Utils.VisuallyHidden>
-                  </button>
-                : <button
-                    className="button-ghost button-pressed"
-                    title="End editing match"
-                    onClick={_ => setSelectedMatch->Belt.Option.mapWithDefault((), x => x(_ => Js.Nullable.null))}>
-                    <Icons.checkCircle />
-                  </button>)}
+             {selectedMatch->Belt.Option.mapWithDefault(React.null, x =>
+                x
+                ->Js.Nullable.toOption
+                ->Belt.Option.mapWithDefault(true, id => id !== match.id)
+                  ? <button
+                      className="button-ghost"
+                      title="Edit match"
+                      onClick={_ =>
+                        setSelectedMatch->Belt.Option.mapWithDefault((), x =>
+                          x(_ => Js.Nullable.return(match.id))
+                        )
+                      }>
+                      <Icons.circle />
+                      <Utils.VisuallyHidden>
+                        {[|"Edit match for", whiteName, "versus", blackName|]
+                         |> Js.Array.joinWith(" ")
+                         |> React.string}
+                      </Utils.VisuallyHidden>
+                    </button>
+                  : <button
+                      className="button-ghost button-pressed"
+                      title="End editing match"
+                      onClick={_ =>
+                        setSelectedMatch->Belt.Option.mapWithDefault((), x =>
+                          x(_ => Js.Nullable.null)
+                        )
+                      }>
+                      <Icons.checkCircle />
+                    </button>
+              )}
              <button
                className="button-ghost"
                title="Open match information."
@@ -290,49 +298,50 @@ module MatchRow = {
                   |> React.string}
                </Utils.VisuallyHidden>
              </button>
-             {switch scoreData {
-               | None => React.null
-               | Some(scoreData) => {
-             <Utils.Dialog
-               isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
-               <button
-                 className="button-micro button-primary"
-                 onClick={_ => setIsModalOpen(_ => false)}>
-                 {"close" |> React.string}
-               </button>
-               <p> {tourney.name |> React.string} </p>
-               <p>
-                 {[|
-                    "Round ",
-                    Js.Int.toString(roundId + 1),
-                    " match ",
-                    Js.Int.toString(pos + 1),
-                  |]
-                  |> Js.Array.joinWith(" ")
-                  |> React.string}
-               </p>
-               <Utils.PanelContainer>
-                 <Utils.Panel>
-                   <PlayerMatchInfo
-                     playerId={match.whiteId}
-                     origRating={match.whiteOrigRating}
-                     newRating={match.whiteNewRating}
-                     getPlayer
-                     scoreData
-                   />
-                 </Utils.Panel>
-                 <Utils.Panel>
-                   <PlayerMatchInfo
-                     playerId={match.blackId}
-                     origRating={match.blackOrigRating}
-                     newRating={match.blackNewRating}
-                     getPlayer
-                     scoreData
-                   />
-                 </Utils.Panel>
-               </Utils.PanelContainer>
-             </Utils.Dialog>
-             }}}
+             {switch (scoreData) {
+              | None => React.null
+              | Some(scoreData) =>
+                <Utils.Dialog
+                  isOpen=isModalOpen
+                  onDismiss={_ => setIsModalOpen(_ => false)}>
+                  <button
+                    className="button-micro button-primary"
+                    onClick={_ => setIsModalOpen(_ => false)}>
+                    {"close" |> React.string}
+                  </button>
+                  <p> {tourney.name |> React.string} </p>
+                  <p>
+                    {[|
+                       "Round ",
+                       Js.Int.toString(roundId + 1),
+                       " match ",
+                       Js.Int.toString(pos + 1),
+                     |]
+                     |> Js.Array.joinWith(" ")
+                     |> React.string}
+                  </p>
+                  <Utils.PanelContainer>
+                    <Utils.Panel>
+                      <PlayerMatchInfo
+                        playerId={match.whiteId}
+                        origRating={match.whiteOrigRating}
+                        newRating={match.whiteNewRating}
+                        getPlayer
+                        scoreData
+                      />
+                    </Utils.Panel>
+                    <Utils.Panel>
+                      <PlayerMatchInfo
+                        playerId={match.blackId}
+                        origRating={match.blackOrigRating}
+                        newRating={match.blackNewRating}
+                        getPlayer
+                        scoreData
+                      />
+                    </Utils.Panel>
+                  </Utils.PanelContainer>
+                </Utils.Dialog>
+              }}
            </td>}
     </tr>;
   };
@@ -536,99 +545,137 @@ module Round = {
   };
 };
 
-/* I extracted this logic to its own function so it could be easily
+/* I extracted this logic to its own module so it could be easily
    reused (e.g. in testing). It may have also made the whole component tree more
    complicated, though. */
-let genRoundData = (~roundId, ~tournament) => {
-  let tourney = tournament.tourney;
-  let activePlayers = tournament.activePlayers;
-  let getPlayer = tournament.getPlayer;
-  let roundList = tourney.roundList;
-  /* TODO: memoize this? matches2ScoreData is relatively expensive*/
-  let scoreData =
-    Converters.matches2ScoreData(Data.rounds2Matches(~roundList, ()));
-  /* Only calculate unmatched players for the latest round. Old rounds
-     don't get to add new players.
-     Should this be memoized?
-     only use unmatched players if this is the last round. */
-  let unmatched =
-    roundId === (roundList |> Js.Array.length) - 1
-      ? Data.getUnmatched(roundList, activePlayers, roundId) : Js.Dict.empty();
-  let unmatchedCount = unmatched |> Js.Dict.keys |> Js.Array.length;
-  /* make a new list so as not to affect auto-pairing*/
-  /* TODO: replace these dicts with a better data type */
-  let unmatchedWithDummy = unmatched |> Js.Dict.entries |> Js.Dict.fromArray;
+module type UsesRoundData = {
+  [@react.component]
+  let make:
+    (
+      ~roundId: int,
+      ~tournament: TournamentData.t,
+      ~activePlayersCount: int,
+      ~scoreData: Js.Dict.t(Scoring.scoreData),
+      ~unmatched: Js.Dict.t(Data.Player.t),
+      ~unmatchedCount: int,
+      ~unmatchedWithDummy: Js.Dict.t(Data.Player.t)
+    ) =>
+    React.element;
+};
+module WithRoundData = (BaseComponent: UsesRoundData) => {
+  [@react.component]
+  let make = (~roundId, ~tournament) => {
+    let tourney = tournament.tourney;
+    let activePlayers = tournament.activePlayers;
+    let getPlayer = tournament.getPlayer;
+    let roundList = tourney.roundList;
+    /* matches2ScoreData is relatively expensive*/
+    let scoreData =
+      React.useMemo1(
+        () =>
+          Converters.matches2ScoreData(Data.rounds2Matches(~roundList, ())),
+        [|roundList|],
+      );
+    /* Only calculate unmatched players for the latest round. Old rounds
+       don't get to add new players.
+       Should this be memoized?
+       only use unmatched players if this is the last round. */
+    let unmatched =
+      roundId === (roundList |> Js.Array.length) - 1
+        ? Data.getUnmatched(roundList, activePlayers, roundId)
+        : Js.Dict.empty();
+    let unmatchedCount = unmatched |> Js.Dict.keys |> Js.Array.length;
+    /* make a new list so as not to affect auto-pairing*/
+    /* TODO: replace these dicts with a better data type */
+    let unmatchedWithDummy = unmatched |> Js.Dict.entries |> Js.Dict.fromArray;
 
-  if (unmatchedCount mod 2 !== 0) {
-    unmatchedWithDummy->Js.Dict.set(Data.dummy_id, getPlayer(Data.dummy_id));
+    if (unmatchedCount mod 2 !== 0) {
+      unmatchedWithDummy->Js.Dict.set(
+        Data.dummy_id,
+        getPlayer(Data.dummy_id),
+      );
+    };
+    let activePlayersCount =
+      activePlayers |> Belt.Map.String.keysToArray |> Js.Array.length;
+    <BaseComponent
+      roundId
+      activePlayersCount
+      tournament
+      scoreData
+      unmatched
+      unmatchedCount
+      unmatchedWithDummy
+    />;
   };
-  let activePlayersCount =
-    activePlayers |> Belt.Map.String.keysToArray |> Js.Array.length;
-  (
-    activePlayersCount,
-    scoreData,
-    unmatched,
-    unmatchedCount,
-    unmatchedWithDummy,
-  );
 };
 
-[@react.component]
-let make = (~roundId, ~tournament) => {
-  let (
-    activePlayersCount,
-    scoreData,
-    unmatched,
-    unmatchedCount,
-    unmatchedWithDummy,
-  ) =
-    genRoundData(~roundId, ~tournament);
-  let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
-  let (openTab, setOpenTab) = React.useState(() => initialTab);
-  /* Auto-switch the tab */
-  React.useEffect3(
-    () => {
-      if (unmatchedCount === activePlayersCount) {
-        setOpenTab(_ => 1);
-      };
-      if (unmatchedCount === 0) {
-        setOpenTab(_ => 0);
-      };
-      None;
-    },
-    (unmatchedCount, activePlayersCount, setOpenTab),
-  );
-  Utils.ReachTabs.(
-    <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
-      <TabList>
-        <Tab disabled={unmatchedCount === activePlayersCount}>
-          <Icons.list />
-          {" Matches" |> React.string}
-        </Tab>
-        <Tab disabled={unmatchedCount === 0}>
-          <Icons.users />
-          {[|" Unmatched players (", unmatchedCount |> Js.Int.toString, ")"|]
-           |> Js.Array.joinWith("")
-           |> React.string}
-        </Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
-        <TabPanel>
-          <div>
-            {unmatchedCount !== 0
-               ? <PairPicker
-                   roundId
-                   tournament
-                   unmatched
-                   unmatchedWithDummy
-                   unmatchedCount
-                   scoreData
-                 />
-               : React.null}
-          </div>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
+module PageRoundBase = {
+  [@react.component]
+  let make =
+      (
+        ~roundId,
+        ~tournament,
+        ~activePlayersCount,
+        ~scoreData,
+        ~unmatched,
+        ~unmatchedCount,
+        ~unmatchedWithDummy,
+      ) => {
+    let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
+    let (openTab, setOpenTab) = React.useState(() => initialTab);
+    /* Auto-switch the tab */
+    React.useEffect3(
+      () => {
+        if (unmatchedCount === activePlayersCount) {
+          setOpenTab(_ => 1);
+        };
+        if (unmatchedCount === 0) {
+          setOpenTab(_ => 0);
+        };
+        None;
+      },
+      (unmatchedCount, activePlayersCount, setOpenTab),
+    );
+    Utils.Tabs.(
+      <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
+        <TabList>
+          <Tab disabled={unmatchedCount === activePlayersCount}>
+            <Icons.list />
+            {" Matches" |> React.string}
+          </Tab>
+          <Tab disabled={unmatchedCount === 0}>
+            <Icons.users />
+            {[|
+               " Unmatched players (",
+               unmatchedCount |> Js.Int.toString,
+               ")",
+             |]
+             |> Js.Array.joinWith("")
+             |> React.string}
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
+          <TabPanel>
+            <div>
+              {unmatchedCount !== 0
+                 ? <PairPicker
+                     roundId
+                     tournament
+                     unmatched
+                     unmatchedWithDummy
+                     unmatchedCount
+                     scoreData
+                   />
+                 : React.null}
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    );
+  };
 };
+
+module PageRound = WithRoundData(PageRoundBase);
+[@react.component]
+let make = (~roundId, ~tournament) => <PageRound roundId tournament />;

@@ -121,6 +121,7 @@ let useLoadingCursor = isLoaded => {
 
 module Db = {
   open Data;
+  module LocalForage = Externals.LocalForage;
   type actionOption =
     | AddAvoidPair(Data.avoidPair)
     | DelAvoidPair(Data.avoidPair)
@@ -129,61 +130,49 @@ module Db = {
     | SetByeValue(float)
     | SetState(db_options)
     | SetLastBackup(Js.Date.t);
-  type instanceConfig = {
-    .
-    "name": string,
-    "storeName": string,
-  };
-  type loFoInstance('a) = {
-    .
-    [@bs.meth] "getItem": string => Js.Promise.t(Js.Nullable.t('a)),
-    [@bs.meth]
-    "getItems":
-      Js.Nullable.t(array(string)) => Js.Promise.t(Js.Dict.t('a)),
-    [@bs.meth] "setItems": Js.Dict.t('a) => Js.Promise.t(unit),
-    [@bs.meth] "setItem": (string, 'a) => Js.Promise.t(unit),
-    [@bs.meth] "removeItems": array(string) => Js.Promise.t(unit),
-    [@bs.meth] "keys": unit => Js.Promise.t(Js.Array.t(string)),
-  };
-  type localForageOptions = {
-    .
-    [@bs.meth] "setItems": Data.db_options_js => Js.Promise.t(unit),
-    [@bs.meth] "getItems": unit => Js.Promise.t(Data.db_options_js),
-  };
-  type localForage = {.};
-
-  [@bs.module "localforage"] external localForage: localForage = "default";
-  [@bs.module "localforage"]
-  external makeOptionsDb: instanceConfig => localForageOptions =
-    "createInstance";
-  [@bs.module "localforage"]
-  external makePlayersDb: instanceConfig => loFoInstance(Player.t) =
-    "createInstance";
-  [@bs.module "localforage"]
-  external makeTournamentsDb: instanceConfig => loFoInstance(Tournament.t) =
-    "createInstance";
-  /*
-   These only need to be done once to extend the JS localforage module:
-   */
-  [%bs.raw {|require("localforage-getitems")|}];
-  [@bs.module "localforage-removeitems"]
-  external removeItemsPrototype: localForage => unit = "extendPrototype";
-  [@bs.module "localforage-setitems"]
-  external setItemsPrototype: localForage => unit = "extendPrototype";
-  setItemsPrototype(localForage);
-  removeItemsPrototype(localForage);
 
   /*******************************************************************************
    * Initialize the databases
    ******************************************************************************/
+  /*
+   BEGIN ADDING PLUGINS TO THE LOCALFORAGE MODULE.
+   This has to be here instead of the `Externals` module because otherwise
+   Webpack doesn't load it.
+   */
+  [@bs.module "localforage-getitems"]
+  external getItemsPrototype: LocalForage.t('a) => unit =
+    "extendPrototype";
+  [@bs.module "localforage-removeitems"]
+  external removeItemsPrototype: LocalForage.t('a) => unit =
+    "extendPrototype";
+  [@bs.module "localforage-setitems"]
+  external setItemsPrototype: LocalForage.t('a) => unit =
+    "extendPrototype";
+  getItemsPrototype(LocalForage.localForage);
+  setItemsPrototype(LocalForage.localForage);
+  removeItemsPrototype(LocalForage.localForage);
+  /*
+   END ADDING PLUGINS TO THE LOCALFORAGE MODULE.
+   */
 
   let database_name = "Coronate";
   let optionsStore =
-    makeOptionsDb({"name": database_name, "storeName": "Options"});
-  let playerStore =
-    makePlayersDb({"name": database_name, "storeName": "Players"});
+    Externals.makeOptionsDb({"name": database_name, "storeName": "Options"});
+  module Players = LocalForage.Instance(Player);
+  let playerStore = Players.create(~name=database_name, ~storeName="Players");
+  module Tournaments = LocalForage.Instance(Tournament);
   let tourneyStore =
-    makeTournamentsDb({"name": database_name, "storeName": "Tournaments"});
+    Tournaments.create(~name=database_name, ~storeName="Tournaments");
+
+  let jsDictToReMap = (dict, transformer) =>
+    dict
+    |> Js.Dict.entries
+    |> Js.Array.map(((key, value)) => (key, value |> transformer))
+    |> Belt.Map.String.fromArray;
+  let reMapToJsDict = (map, transformer) =>
+    map->Belt.Map.String.toArray
+    |> Js.Array.map(((key, value)) => (key, value |> transformer))
+    |> Js.Dict.fromArray;
 
   type testType = {. byeValue: float};
   let loadDemoDB = _: unit => {
@@ -192,8 +181,20 @@ module Db = {
       Js.Promise.(
         all3((
           optionsStore##setItems(DemoData.options |> Data.db_optionsToJs),
-          playerStore##setItems(DemoData.players),
-          tourneyStore##setItems(DemoData.tournaments),
+          playerStore->LocalForage.setItems(
+            DemoData.players->Belt.Map.String.toArray
+            |> Js.Array.map(((key, value)) =>
+                 (key, value |> Data.Player.tToJs)
+               )
+            |> Js.Dict.fromArray,
+          ),
+          tourneyStore->LocalForage.setItems(
+            DemoData.tournaments->Belt.Map.String.toArray
+            |> Js.Array.map(((key, value)) =>
+                 (key, value |> Data.Tournament.tToJsDeep)
+               )
+            |> Js.Dict.fromArray,
+          ),
         ))
         |> then_(value => {
              Utils.alert("Demo data loaded!");
@@ -223,19 +224,24 @@ module Db = {
     };
   };
   let useAllItemsFromDb =
-      (store: loFoInstance('a), reducer: genericReducer('a)) => {
+      (
+        ~store: LocalForage.t('js),
+        ~reducer: genericReducer('re),
+        ~fromJs: 'js => 're,
+        ~toJs: 're => 'js,
+      ) => {
     let (items, dispatch) = React.useReducer(reducer, Map.empty);
     let (isLoaded, setIsLoaded) = React.useState(() => false);
     useLoadingCursor(isLoaded);
-    React.useEffect3(
+    React.useEffect4(
       () => {
         let didCancel = ref(false);
         let _ =
           Js.Promise.(
-            store##getItems(Js.Nullable.null)
+            store->LocalForage.getItems(Js.Nullable.null)
             |> then_(results => {
                  if (! didCancel^) {
-                   dispatch(SetState(results |> Utils.dictToMap));
+                   dispatch(SetState(results->jsDictToReMap(fromJs)));
                    setIsLoaded(_ => true);
                  };
                  resolve(results);
@@ -243,19 +249,19 @@ module Db = {
           );
         Some(() => didCancel := false);
       },
-      (store, dispatch, setIsLoaded),
+      (store, dispatch, setIsLoaded, fromJs),
     );
-    React.useEffect3(
+    React.useEffect4(
       () =>
         switch (isLoaded) {
         | false => None
         | true =>
           let _ =
             Js.Promise.(
-              store##setItems(items |> Utils.mapToDict)
+              store->LocalForage.setItems(items->reMapToJsDict(toJs))
               |> then_(() => {
                    let _ =
-                     store##keys()
+                     store->LocalForage.keys()
                      |> then_(keys => {
                           let stateKeys = items->Map.keysToArray;
                           let deleted =
@@ -263,7 +269,7 @@ module Db = {
                               keys |> filter(x => !(stateKeys |> includes(x)))
                             );
                           if (deleted |> Js.Array.length > 0) {
-                            let _ = store##removeItems(deleted);
+                            let _ = store->LocalForage.removeItems(deleted);
                             ();
                           };
                           resolve();
@@ -273,13 +279,24 @@ module Db = {
             );
           None;
         },
-      (store, items, isLoaded),
+      (store, items, isLoaded, toJs),
     );
     (items, dispatch);
   };
-  let useAllPlayers = () => useAllItemsFromDb(playerStore, genericDbReducer);
+  let useAllPlayers = () =>
+    useAllItemsFromDb(
+      ~store=playerStore,
+      ~reducer=genericDbReducer,
+      ~fromJs=Data.Player.tFromJs,
+      ~toJs=Data.Player.tToJs,
+    );
   let useAllTournaments = () =>
-    useAllItemsFromDb(tourneyStore, genericDbReducer);
+    useAllItemsFromDb(
+      ~store=tourneyStore,
+      ~reducer=genericDbReducer,
+      ~fromJs=Data.Tournament.tFromJsDeep,
+      ~toJs=Data.Tournament.tToJsDeep,
+    );
   let optionsReducer = (state, action) => {
     Js.Array.(
       switch (action) {

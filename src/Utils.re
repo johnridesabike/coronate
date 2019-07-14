@@ -1,27 +1,16 @@
-[@bs.module "ramda"] external ascend: ('b => 'a, 'b, 'b) => int = "ascend";
-[@bs.module "ramda"] external descend: ('b => 'a, 'b, 'b) => int = "descend";
-// Use `Belt.SortArray` instead pls.
-// [@bs.module "ramda"]
-// external sort: (('a, 'a) => int, array('a)) => array('a) = "sort";
-[@bs.module "ramda"]
-external sortWith: (array(('a, 'a) => int), array('a)) => array('a) =
-  "sortWith";
-[@bs.module "ramda"]
-external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
-  "sortWith";
-[@bs.module "ramda"]
-external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
-[@bs.module "ramda"]
-external move: (int, int, array('a)) => array('a) = "move";
-[@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
-[@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
-[@bs.module "nanoid"] external nanoid: unit => string = "default";
-
-[@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
-[@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
-
-type numeral = {. [@bs.meth] "format": string => string};
-[@bs.module "numeral"] external numeral: float => numeral = "default";
+module Tabs = Externals.ReachTabs;
+module VisuallyHidden = Externals.VisuallyHidden;
+module Dialog = Externals.Dialog;
+let splitAt = Externals.splitAt;
+let descend = Externals.descend;
+let ascend = Externals.ascend;
+let alert = Externals.alert;
+let nanoid = Externals.nanoid;
+let absf = Externals.absf;
+let sortWith = Externals.sortWith;
+let sortWithF = Externals.sortWithF;
+let confirm = Externals.confirm;
+let move = Externals.move;
 
 let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
@@ -29,51 +18,6 @@ let addFloat = (a, b) => a +. b;
 let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
 let last = arr => arr[Js.Array.length(arr) - 1];
 let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
-
-module VisuallyHidden = {
-  [@bs.module "@reach/visually-hidden"] [@react.component]
-  external make: (~children: React.element) => React.element = "default";
-};
-module Dialog = {
-  [@bs.module "@reach/dialog"] [@react.component]
-  external make:
-    (
-      ~isOpen: bool,
-      ~onDismiss: unit => unit,
-      ~children: React.element,
-      ~style: ReactDOMRe.Style.t=?
-    ) =>
-    React.element =
-    "Dialog";
-};
-
-module ReachTabs = {
-  module Tabs = {
-    [@bs.module "@reach/tabs"] [@react.component]
-    external make:
-      (~index: int=?, ~onChange: int => unit=?, ~children: React.element) =>
-      React.element =
-      "Tabs";
-  };
-  module TabList = {
-    [@bs.module "@reach/tabs"] [@react.component]
-    external make: (~children: React.element) => React.element = "TabList";
-  };
-  module Tab = {
-    [@bs.module "@reach/tabs"] [@react.component]
-    external make:
-      (~disabled: bool=?, ~children: React.element) => React.element =
-      "Tab";
-  };
-  module TabPanels = {
-    [@bs.module "@reach/tabs"] [@react.component]
-    external make: (~children: React.element) => React.element = "TabPanels";
-  };
-  module TabPanel = {
-    [@bs.module "@reach/tabs"] [@react.component]
-    external make: (~children: React.element) => React.element = "TabPanel";
-  };
-};
 
 module WebpackAssets = {
   let logo: string = [%bs.raw {| require("./icon-min.svg") |}];
@@ -86,9 +30,6 @@ module Entities = {
 
 let hashPath = hashString =>
   hashString |> Js.String.split("/") |> Belt.List.fromArray;
-
-let dictToMap = dict => dict |> Js.Dict.entries |> Belt.Map.String.fromArray;
-let mapToDict = map => map |> Belt.Map.String.toArray |> Js.Dict.fromArray;
 
 type dtFormat = {. [@bs.meth] "format": Js.Date.t => string};
 
@@ -160,7 +101,7 @@ module Notification = {
       (
         ~children,
         ~kind=Generic,
-        ~tooltip,
+        ~tooltip="",
         ~className="",
         ~style=ReactDOMRe.Style.make(),
       ) => {

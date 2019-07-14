@@ -48,7 +48,7 @@ function PageRound$PlayerMatchInfo(Props) {
   var colorBalance = Utils$Coronate.arraySumFloat(match$1[0]);
   var hasBye = Object.keys(opponentResults).includes(Data$Coronate.dummy_id);
   var oppResultsEntries = Js_dict.entries(opponentResults);
-  var prettyBalance = colorBalance < 0.0 ? "White +" + Math.abs(colorBalance).toString() : (
+  var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
     );
   return React.createElement("dl", {
@@ -576,42 +576,52 @@ function PageRound$Round(Props) {
 
 var Round = /* module */[/* make */PageRound$Round];
 
-function genRoundData(roundId, tournament) {
-  var tourney = tournament[/* tourney */7];
-  var activePlayers = tournament[/* activePlayers */0];
-  var getPlayer = tournament[/* getPlayer */1];
-  var roundList = tourney[/* roundList */5];
-  var scoreData = Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
-  var match = roundId === (roundList.length - 1 | 0);
-  var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : { };
-  var unmatchedCount = Object.keys(unmatched).length;
-  var unmatchedWithDummy = Js_dict.fromArray(Js_dict.entries(unmatched));
-  if (unmatchedCount % 2 !== 0) {
-    unmatchedWithDummy[Data$Coronate.dummy_id] = Curry._1(getPlayer, Data$Coronate.dummy_id);
-  }
-  var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
-  return /* tuple */[
-          activePlayersCount,
-          scoreData,
-          unmatched,
-          unmatchedCount,
-          unmatchedWithDummy
-        ];
+function WithRoundData(BaseComponent) {
+  var PageRound$WithRoundData = function (Props) {
+    var roundId = Props.roundId;
+    var tournament = Props.tournament;
+    var tourney = tournament[/* tourney */7];
+    var activePlayers = tournament[/* activePlayers */0];
+    var getPlayer = tournament[/* getPlayer */1];
+    var roundList = tourney[/* roundList */5];
+    var scoreData = React.useMemo((function () {
+            return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+          }), /* array */[roundList]);
+    var match = roundId === (roundList.length - 1 | 0);
+    var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : { };
+    var unmatchedCount = Object.keys(unmatched).length;
+    var unmatchedWithDummy = Js_dict.fromArray(Js_dict.entries(unmatched));
+    if (unmatchedCount % 2 !== 0) {
+      unmatchedWithDummy[Data$Coronate.dummy_id] = Curry._1(getPlayer, Data$Coronate.dummy_id);
+    }
+    var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
+    return React.createElement(BaseComponent[/* make */0], {
+                roundId: roundId,
+                tournament: tournament,
+                activePlayersCount: activePlayersCount,
+                scoreData: scoreData,
+                unmatched: unmatched,
+                unmatchedCount: unmatchedCount,
+                unmatchedWithDummy: unmatchedWithDummy
+              });
+  };
+  return /* module */[/* make */PageRound$WithRoundData];
 }
 
-function PageRound(Props) {
+function PageRound$PageRoundBase(Props) {
   var roundId = Props.roundId;
   var tournament = Props.tournament;
-  var match = genRoundData(roundId, tournament);
-  var unmatchedCount = match[3];
-  var scoreData = match[1];
-  var activePlayersCount = match[0];
-  var match$1 = unmatchedCount === activePlayersCount;
-  var initialTab = match$1 ? 1 : 0;
-  var match$2 = React.useState((function () {
+  var activePlayersCount = Props.activePlayersCount;
+  var scoreData = Props.scoreData;
+  var unmatched = Props.unmatched;
+  var unmatchedCount = Props.unmatchedCount;
+  var unmatchedWithDummy = Props.unmatchedWithDummy;
+  var match = unmatchedCount === activePlayersCount;
+  var initialTab = match ? 1 : 0;
+  var match$1 = React.useState((function () {
           return initialTab;
         }));
-  var setOpenTab = match$2[1];
+  var setOpenTab = match$1[1];
   React.useEffect((function (param) {
           if (unmatchedCount === activePlayersCount) {
             Curry._1(setOpenTab, (function (param) {
@@ -629,9 +639,9 @@ function PageRound(Props) {
         activePlayersCount,
         setOpenTab
       ]);
-  var match$3 = unmatchedCount !== 0;
+  var match$2 = unmatchedCount !== 0;
   return React.createElement(Tabs.Tabs, {
-              index: match$2[0],
+              index: match$1[0],
               onChange: (function (index) {
                   return Curry._1(setOpenTab, (function (param) {
                                 return index;
@@ -659,18 +669,60 @@ function PageRound(Props) {
                             scoreData: scoreData
                           })
                     }), React.createElement(Tabs.TabPanel, {
-                      children: React.createElement("div", undefined, match$3 ? React.createElement(PairPicker$Coronate.make, {
+                      children: React.createElement("div", undefined, match$2 ? React.createElement(PairPicker$Coronate.make, {
                                   roundId: roundId,
                                   tournament: tournament,
                                   scoreData: scoreData,
-                                  unmatched: match[2],
+                                  unmatched: unmatched,
                                   unmatchedCount: unmatchedCount,
-                                  unmatchedWithDummy: match[4]
+                                  unmatchedWithDummy: unmatchedWithDummy
                                 }) : null)
                     })));
 }
 
-var make = PageRound;
+var PageRoundBase = /* module */[/* make */PageRound$PageRoundBase];
+
+function PageRound$WithRoundData(Props) {
+  var roundId = Props.roundId;
+  var tournament = Props.tournament;
+  var tourney = tournament[/* tourney */7];
+  var activePlayers = tournament[/* activePlayers */0];
+  var getPlayer = tournament[/* getPlayer */1];
+  var roundList = tourney[/* roundList */5];
+  var scoreData = React.useMemo((function () {
+          return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+        }), /* array */[roundList]);
+  var match = roundId === (roundList.length - 1 | 0);
+  var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : { };
+  var unmatchedCount = Object.keys(unmatched).length;
+  var unmatchedWithDummy = Js_dict.fromArray(Js_dict.entries(unmatched));
+  if (unmatchedCount % 2 !== 0) {
+    unmatchedWithDummy[Data$Coronate.dummy_id] = Curry._1(getPlayer, Data$Coronate.dummy_id);
+  }
+  var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
+  return React.createElement(PageRound$PageRoundBase, {
+              roundId: roundId,
+              tournament: tournament,
+              activePlayersCount: activePlayersCount,
+              scoreData: scoreData,
+              unmatched: unmatched,
+              unmatchedCount: unmatchedCount,
+              unmatchedWithDummy: unmatchedWithDummy
+            });
+}
+
+var PageRound = /* module */[/* make */PageRound$WithRoundData];
+
+function PageRound$1(Props) {
+  var roundId = Props.roundId;
+  var tournament = Props.tournament;
+  return React.createElement(PageRound$WithRoundData, {
+              roundId: roundId,
+              tournament: tournament
+            });
+}
+
+var make = PageRound$1;
 
 export {
   PlayerMatchInfo ,
@@ -680,7 +732,9 @@ export {
   RoundTable ,
   findById ,
   Round ,
-  genRoundData ,
+  WithRoundData ,
+  PageRoundBase ,
+  PageRound ,
   make ,
   
 }

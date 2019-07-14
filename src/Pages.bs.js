@@ -42,9 +42,12 @@ function Pages$Splash(Props) {
                       }, React.createElement("ol", undefined, React.createElement("li", undefined, React.createElement("button", {
                                     className: "button-primary",
                                     onClick: (function (param) {
-                                        return Hooks$Coronate.Db[/* loadDemoDB */4](/* () */0);
+                                        return Hooks$Coronate.Db[/* loadDemoDB */9](/* () */0);
                                       })
-                                  }, "Click here to load the demo data"), "(optional)"), React.createElement("li", undefined, React.createElement(ReactFeather.ArrowLeft, { }), " Select a menu item."), React.createElement("li", undefined, "Start creating your tournaments!"))), React.createElement("div", {
+                                  }, "Click here to load the demo data"), "(optional)"), React.createElement("li", undefined, React.createElement(ReactFeather.ArrowLeft, { }), " Select a menu item."), React.createElement("li", undefined, "Start creating your tournaments!")), React.createElement(Utils$Coronate.$$Notification[/* make */0], {
+                            children: null,
+                            kind: /* Warning */1
+                          }, "If you experience glitches or crashes,", React.createElement("br", undefined), "clear your browser cache and try again.")), React.createElement("div", {
                         className: "splash__title"
                       }, React.createElement("div", {
                             className: "splash__titleIcon"

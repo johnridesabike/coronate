@@ -3,7 +3,6 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Nanoid from "nanoid";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
@@ -13,6 +12,7 @@ import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Hooks$Coronate from "./Hooks.bs.js";
 import * as Pages$Coronate from "./Pages.bs.js";
+import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as Scoring$Coronate from "./Scoring.bs.js";
 import * as Converters$Coronate from "./Converters.bs.js";
@@ -68,7 +68,7 @@ function PagePlayers$NewPlayerForm(Props) {
     Curry._1(setFirstName, defaultFirstName);
     Curry._1(setLastName, defaultLastName);
     Curry._1(setRating, defaultRating);
-    var id = Nanoid.default();
+    var id = Utils$Coronate.nanoid(/* () */0);
     return Curry._1(dispatch, /* SetItem */Block.__(1, [
                   id,
                   /* record */[
@@ -216,7 +216,7 @@ function PagePlayers$List(Props) {
                                                           player[/* lastName */2],
                                                           "?"
                                                         ].join("");
-                                                      if (window.confirm(message)) {
+                                                      if (Utils$Coronate.confirm(message)) {
                                                         Curry._1(playersDispatch, /* DelItem */Block.__(0, [id]));
                                                         return Curry._1(optionsDispatch, /* DelAvoidSingle */Block.__(2, [id]));
                                                       } else {
@@ -378,18 +378,18 @@ function PagePlayers$Profile(Props) {
                         }))), React.createElement("h3", undefined, "Players to avoid"), React.createElement("ul", undefined, singAvoidList.map((function (pId) {
                         return React.createElement("li", {
                                     key: pId
-                                  }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2], React.createElement("button", {
+                                  }, Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* lastName */2], React.createElement("button", {
                                         "aria-label": /* array */[
                                             "Remove",
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0],
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* firstName */0],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* lastName */2],
                                             "from avoid list."
                                           ].join(" "),
                                         className: "danger button-ghost",
                                         title: /* array */[
                                             "Remove",
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0],
-                                            Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* firstName */0],
+                                            Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* lastName */2],
                                             "from avoid list."
                                           ].join(" "),
                                         onClick: (function (param) {
@@ -412,7 +412,7 @@ function PagePlayers$Profile(Props) {
                             return React.createElement("option", {
                                         key: pId,
                                         value: pId
-                                      }, Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */4](players, pId)[/* lastName */2]);
+                                      }, Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* lastName */2]);
                           }))), " ", React.createElement("input", {
                       className: "button-micro",
                       type: "submit",
@@ -424,7 +424,7 @@ var Profile = /* module */[/* make */PagePlayers$Profile];
 
 function PagePlayers(Props) {
   var id = Props.id;
-  var match = Hooks$Coronate.Db[/* useAllPlayers */7](/* () */0);
+  var match = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
   var playersDispatch = match[1];
   var players = match[0];
   var match$1 = Hooks$Coronate.useSortedTable(Belt_MapString.valuesToArray(players), sortName, false);
@@ -436,7 +436,7 @@ function PagePlayers(Props) {
         players,
         sortDispatch
       ]);
-  var match$2 = Hooks$Coronate.Db[/* useOptions */10](/* () */0);
+  var match$2 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
   var optionsDispatch = match$2[1];
   var tmp;
   if (id !== undefined) {

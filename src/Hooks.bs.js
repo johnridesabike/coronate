@@ -2,8 +2,8 @@
 
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
-import * as Ramda from "ramda";
 import * as React from "react";
+import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Localforage from "localforage";
 import * as Data$Coronate from "./Data.bs.js";
 import * as ReactFeather from "react-feather";
@@ -11,6 +11,8 @@ import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
+import * as Externals$Coronate from "./Externals.bs.js";
+import * as LocalforageGetitems from "localforage-getitems";
 import * as LocalforageSetitems from "localforage-setitems";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as LocalforageRemoveitems from "localforage-removeitems";
@@ -46,11 +48,7 @@ function sortedTableReducer(state, action) {
     }
   }
   var match = newState[/* isDescending */0];
-  var direction = match ? (function (prim, prim$1, prim$2) {
-        return Ramda.descend(prim, prim$1, prim$2);
-      }) : (function (prim, prim$1, prim$2) {
-        return Ramda.ascend(prim, prim$1, prim$2);
-      });
+  var direction = match ? Utils$Coronate.descend : Utils$Coronate.ascend;
   var match$1 = newState[/* key */1];
   var sortFunc;
   if (match$1.tag) {
@@ -143,7 +141,7 @@ function useLoadingCursor(isLoaded) {
   return /* () */0;
 }
 
-((require("localforage-getitems")));
+LocalforageGetitems.extendPrototype(Localforage.default);
 
 LocalforageSetitems.extendPrototype(Localforage.default);
 
@@ -156,24 +154,50 @@ var optionsStore = Localforage.createInstance({
       storeName: "Options"
     });
 
-var playerStore = Localforage.createInstance({
-      name: database_name,
-      storeName: "Players"
-    });
+var Players = Externals$Coronate.LocalForage[/* Instance */0]([]);
 
-var tourneyStore = Localforage.createInstance({
-      name: database_name,
-      storeName: "Tournaments"
-    });
+var playerStore = Curry._2(Players[/* create */0], database_name, "Players");
+
+var Tournaments = Externals$Coronate.LocalForage[/* Instance */0]([]);
+
+var tourneyStore = Curry._2(Tournaments[/* create */0], database_name, "Tournaments");
+
+function jsDictToReMap(dict, transformer) {
+  return Belt_MapString.fromArray(Js_dict.entries(dict).map((function (param) {
+                    return /* tuple */[
+                            param[0],
+                            Curry._1(transformer, param[1])
+                          ];
+                  })));
+}
+
+function reMapToJsDict(map, transformer) {
+  return Js_dict.fromArray(Belt_MapString.toArray(map).map((function (param) {
+                    return /* tuple */[
+                            param[0],
+                            Curry._1(transformer, param[1])
+                          ];
+                  })));
+}
 
 function loadDemoDB(param) {
   ((document.body.style = "wait"));
   Promise.all(/* tuple */[
             optionsStore.setItems(Data$Coronate.db_optionsToJs(DemoData$Coronate.options)),
-            playerStore.setItems(DemoData$Coronate.players),
-            tourneyStore.setItems(DemoData$Coronate.tournaments)
+            playerStore.setItems(Js_dict.fromArray(Belt_MapString.toArray(DemoData$Coronate.players).map((function (param) {
+                            return /* tuple */[
+                                    param[0],
+                                    Data$Coronate.Player[/* tToJs */0](param[1])
+                                  ];
+                          })))),
+            tourneyStore.setItems(Js_dict.fromArray(Belt_MapString.toArray(DemoData$Coronate.tournaments).map((function (param) {
+                            return /* tuple */[
+                                    param[0],
+                                    Data$Coronate.Tournament[/* tToJsDeep */2](param[1])
+                                  ];
+                          }))))
           ]).then((function (value) {
-            window.alert("Demo data loaded!");
+            Utils$Coronate.alert("Demo data loaded!");
             ((document.body.style = "auto"));
             return Promise.resolve(value);
           })).catch((function (param) {
@@ -199,7 +223,7 @@ function genericDbReducer(state, action) {
   }
 }
 
-function useAllItemsFromDb(store, reducer) {
+function useAllItemsFromDb(store, reducer, fromJs, toJs) {
   var match = React.useReducer(Curry.__2(reducer), Belt_MapString.empty);
   var dispatch = match[1];
   var items = match[0];
@@ -213,7 +237,7 @@ function useAllItemsFromDb(store, reducer) {
           var didCancel = /* record */[/* contents */false];
           store.getItems(null).then((function (results) {
                   if (!didCancel[0]) {
-                    Curry._1(dispatch, /* SetState */Block.__(2, [Utils$Coronate.dictToMap(results)]));
+                    Curry._1(dispatch, /* SetState */Block.__(2, [jsDictToReMap(results, fromJs)]));
                     Curry._1(setIsLoaded, (function (param) {
                             return true;
                           }));
@@ -227,11 +251,12 @@ function useAllItemsFromDb(store, reducer) {
         }), /* tuple */[
         store,
         dispatch,
-        setIsLoaded
+        setIsLoaded,
+        fromJs
       ]);
   React.useEffect((function (param) {
           if (isLoaded) {
-            store.setItems(Utils$Coronate.mapToDict(items)).then((function (param) {
+            store.setItems(reMapToJsDict(items, toJs)).then((function (param) {
                     store.keys().then((function (keys) {
                             var stateKeys = Belt_MapString.keysToArray(items);
                             var deleted = keys.filter((function (x) {
@@ -250,7 +275,8 @@ function useAllItemsFromDb(store, reducer) {
         }), /* tuple */[
         store,
         items,
-        isLoaded
+        isLoaded,
+        toJs
       ]);
   return /* tuple */[
           items,
@@ -259,11 +285,11 @@ function useAllItemsFromDb(store, reducer) {
 }
 
 function useAllPlayers(param) {
-  return useAllItemsFromDb(playerStore, genericDbReducer);
+  return useAllItemsFromDb(playerStore, genericDbReducer, Data$Coronate.Player[/* tFromJs */1], Data$Coronate.Player[/* tToJs */0]);
 }
 
 function useAllTournaments(param) {
-  return useAllItemsFromDb(tourneyStore, genericDbReducer);
+  return useAllItemsFromDb(tourneyStore, genericDbReducer, Data$Coronate.Tournament[/* tFromJsDeep */3], Data$Coronate.Tournament[/* tToJsDeep */2]);
 }
 
 function optionsReducer(state, action) {
@@ -377,10 +403,15 @@ function useOptions(param) {
 }
 
 var Db = /* module */[
+  /* LocalForage */0,
   /* database_name */database_name,
   /* optionsStore */optionsStore,
+  /* Players */Players,
   /* playerStore */playerStore,
+  /* Tournaments */Tournaments,
   /* tourneyStore */tourneyStore,
+  /* jsDictToReMap */jsDictToReMap,
+  /* reMapToJsDict */reMapToJsDict,
   /* loadDemoDB */loadDemoDB,
   /* genericDbReducer */genericDbReducer,
   /* useAllItemsFromDb */useAllItemsFromDb,

@@ -2,6 +2,7 @@
 [@bs.val] [@bs.scope "Math"] external log2: float => float = "log2";
 [@bs.val] [@bs.scope "Number"] external isFinite: float => bool = "isFinite";
 open Data;
+module LocalForage = Externals.LocalForage;
 
 let getAllPlayerIdsFromMatches = matchList => {
   open Match;
@@ -80,13 +81,15 @@ let make = (~children, ~tourneyId) => {
       let didCancel = ref(false);
       let _ =
         Js.Promise.(
-          Hooks.Db.tourneyStore##getItem(tourneyId)
+          Hooks.Db.tourneyStore->LocalForage.getItem(tourneyId)
           |> then_(value => {
                if (! didCancel^) {
                  switch (value->Js.Nullable.toOption) {
                  | None => setIsDbError(_ => true)
                  | Some(value) =>
-                   tourneyDispatch(SetTournament(value));
+                   tourneyDispatch(
+                     SetTournament(value->Data.Tournament.tFromJsDeep),
+                   );
                    setIsTourneyLoaded(_ => true);
                  };
                };
@@ -124,7 +127,9 @@ let make = (~children, ~tourneyId) => {
         | _ =>
           let _ =
             Js.Promise.(
-              Hooks.Db.playerStore##getItems(Js.Nullable.return(allTheIds))
+              Hooks.Db.playerStore->LocalForage.getItems(
+                Js.Nullable.return(allTheIds),
+              )
               |> then_(values => {
                    /* This safeguards against trying to fetch dummy IDs or IDs from
                       deleted players. If we updated without this condition, then
@@ -143,7 +148,11 @@ let make = (~children, ~tourneyId) => {
                    Js.log("changed players:");
                    Js.log(changedPlayers |> Js.Array.length);
                    if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                     playersDispatch(SetPlayers(values->Utils.dictToMap));
+                     playersDispatch(
+                       SetPlayers(
+                         values->Hooks.Db.jsDictToReMap(Data.Player.tFromJs),
+                       ),
+                     );
                      setIsPlayersLoaded(_ => true);
                    };
                    resolve(values);
@@ -163,7 +172,11 @@ let make = (~children, ~tourneyId) => {
     () => {
       /* If the tournament wasn't loaded then the id won't match. */
       if (isTourneyLoaded && tourneyId === tourney.id) {
-        let _ = Hooks.Db.tourneyStore##setItem(tourneyId, tourney);
+        let _ =
+          Hooks.Db.tourneyStore->LocalForage.setItem(
+            tourneyId,
+            tourney->Data.Tournament.tToJsDeep,
+          );
         ();
       };
       None;
@@ -176,7 +189,10 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       if (isPlayersLoaded) {
-        let _ = Hooks.Db.playerStore##setItems(players->Utils.mapToDict);
+        let _ =
+          Hooks.Db.playerStore->LocalForage.setItems(
+            players->Hooks.Db.reMapToJsDict(Data.Player.tToJs),
+          );
         ();
       };
       None;

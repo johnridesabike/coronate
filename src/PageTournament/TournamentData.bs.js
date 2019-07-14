@@ -3,7 +3,6 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Nanoid from "nanoid";
 import * as Data$Coronate from "../Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Hooks$Coronate from "../Hooks.bs.js";
@@ -34,7 +33,7 @@ var emptyTourney_000 = /* byeQueue : array */[];
 
 var emptyTourney_001 = /* date */new Date(0.0);
 
-var emptyTourney_002 = /* id */Nanoid.default();
+var emptyTourney_002 = /* id */Utils$Coronate.nanoid(/* () */0);
 
 var emptyTourney_004 = /* playerIds : array */[];
 
@@ -92,14 +91,14 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
-          Hooks$Coronate.Db[/* tourneyStore */3].getItem(tourneyId).then((function (value) {
+          Hooks$Coronate.Db[/* tourneyStore */6].getItem(tourneyId).then((function (value) {
                   if (!didCancel[0]) {
                     if (value == null) {
                       Curry._1(setIsDbError, (function (param) {
                               return true;
                             }));
                     } else {
-                      Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [value]));
+                      Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [Data$Coronate.Tournament[/* tFromJsDeep */3](value)]));
                       Curry._1(setIsTourneyLoaded, (function (param) {
                               return true;
                             }));
@@ -123,7 +122,7 @@ function TournamentData(Props) {
             var allTheIds = getAllPlayerIdsFromMatches(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0)).concat(playerIds);
             var match = allTheIds.length;
             if (match !== 0) {
-              Hooks$Coronate.Db[/* playerStore */2].getItems(allTheIds).then((function (values) {
+              Hooks$Coronate.Db[/* playerStore */4].getItems(allTheIds).then((function (values) {
                       var newIds = Object.keys(values);
                       var oldIds = Belt_MapString.keysToArray(players);
                       var changedPlayers = newIds.filter((function (x) {
@@ -134,7 +133,7 @@ function TournamentData(Props) {
                       console.log("changed players:");
                       console.log(changedPlayers.length);
                       if (changedPlayers.length !== 0 && !didCancel[0]) {
-                        Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Utils$Coronate.dictToMap(values)]));
+                        Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Hooks$Coronate.Db[/* jsDictToReMap */7](values, Data$Coronate.Player[/* tFromJs */1])]));
                         Curry._1(setIsPlayersLoaded, (function (param) {
                                 return true;
                               }));
@@ -162,7 +161,7 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function (param) {
           if (isTourneyLoaded && tourneyId === tourney[/* id */2]) {
-            Hooks$Coronate.Db[/* tourneyStore */3].setItem(tourneyId, tourney);
+            Hooks$Coronate.Db[/* tourneyStore */6].getItem(tourneyId, Data$Coronate.Tournament[/* tToJsDeep */2](tourney));
           }
           return undefined;
         }), /* tuple */[
@@ -172,14 +171,14 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function () {
           if (isPlayersLoaded) {
-            Hooks$Coronate.Db[/* playerStore */2].setItems(Utils$Coronate.mapToDict(players));
+            Hooks$Coronate.Db[/* playerStore */4].setItems(Hooks$Coronate.Db[/* reMapToJsDict */8](players, Data$Coronate.Player[/* tToJs */0]));
           }
           return undefined;
         }), /* tuple */[
         isPlayersLoaded,
         players
       ]);
-  var partial_arg = Data$Coronate.Player[/* getPlayerMaybeMap */4];
+  var partial_arg = Data$Coronate.Player[/* getPlayerMaybeMap */6];
   var getPlayer = function (param) {
     return partial_arg(players, param);
   };
@@ -213,9 +212,12 @@ function TournamentData(Props) {
   }
 }
 
+var LocalForage = 0;
+
 var make = TournamentData;
 
 export {
+  LocalForage ,
   getAllPlayerIdsFromMatches ,
   calcNumOfRounds ,
   emptyTourney ,

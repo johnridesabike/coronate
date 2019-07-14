@@ -3,18 +3,18 @@
 import * as Jest from "@glennsl/bs-jest/src/jest.js";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Data$Coronate from "../src/Data.bs.js";
-import * as Utils$Coronate from "../src/Utils.bs.js";
+import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Pairing$Coronate from "../src/Pairing.bs.js";
 import * as TestData$Coronate from "../src/TestData.bs.js";
 import * as Converters$Coronate from "../src/Converters.bs.js";
 import * as Caml_builtin_exceptions from "bs-platform/lib/es6/caml_builtin_exceptions.js";
 
 function loadPairData(tourneyId) {
-  var tournament = TestData$Coronate.tournaments[tourneyId];
+  var tournament = Belt_MapString.getExn(TestData$Coronate.tournaments, tourneyId);
   var playerIds = tournament[/* playerIds */4];
   var roundList = tournament[/* roundList */5];
   var players = { };
-  Js_dict.values(TestData$Coronate.players).forEach((function (player) {
+  Belt_MapString.valuesToArray(TestData$Coronate.players).forEach((function (player) {
           if (playerIds.includes(player[/* id */1])) {
             players[player[/* id */1]] = player;
             return /* () */0;
@@ -22,7 +22,7 @@ function loadPairData(tourneyId) {
             return 0;
           }
         }));
-  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(Utils$Coronate.dictToMap(players), TestData$Coronate.options[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
+  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(Belt_MapString.fromArray(Js_dict.entries(players)), TestData$Coronate.options[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
 }
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {
@@ -48,7 +48,7 @@ Jest.describe("The lowest-ranking player is automatically picked for byes.", (fu
                               Caml_builtin_exceptions.assert_failure,
                               /* tuple */[
                                 "Pairing_test.re",
-                                43,
+                                46,
                                 14
                               ]
                             ];
@@ -71,7 +71,7 @@ Jest.test("The bye signup queue works", (function (param) {
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  56,
+                  59,
                   12
                 ]
               ];
@@ -89,7 +89,7 @@ Jest.test("If all player have (impossibly) played a bye round, the lowest-rated 
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  67,
+                  70,
                   14
                 ]
               ];
