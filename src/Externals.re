@@ -14,7 +14,17 @@ external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.module "ramda"]
 external move: (int, int, array('a)) => array('a) = "move";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
+[@bs.module]
+external blossom: array((int, int, float)) => array(int) =
+  "edmonds-blossom";
 
+module EloRank = {
+  type t;
+  [@bs.new] [@bs.module] external make: int => t = "elo-rank";
+  [@bs.send] external getExpected: (t, int, int) => int = "getExpected";
+  [@bs.send]
+  external updateRating: (t, int, float, int) => int = "updateRating";
+};
 /*******************************************************************************
   Browser stuff
  ******************************************************************************/
@@ -23,6 +33,12 @@ external move: (int, int, array('a)) => array('a) = "move";
 [@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
+type fileReader = {
+  .
+  [@bs.set] "onload": {. "target": {. "result": string}} => unit,
+  [@bs.meth] "readAsText": string => unit,
+};
+[@bs.new] external makeFileReader: unit => fileReader = "FileReader";
 
 /*******************************************************************************
   Numeral
@@ -36,59 +52,117 @@ module Numeral = {
 
 /*******************************************************************************
   LocalForage
+
+  This devides LocalForage into two basic modules: Map and Obj. Vanilla JS
+  LocalForage is simple: you can put whatever you want into it, and you get
+  whatever comes back out. Dividing it into these modules adds Reason-idiomatic
+  structure.
  ******************************************************************************/
-type localForageOptions = {
-  .
-  [@bs.meth] "setItems": Data.db_options_js => Js.Promise.t(unit),
-  [@bs.meth] "getItems": unit => Js.Promise.t(Data.db_options_js),
-};
-[@bs.module "localforage"]
-external makeOptionsDb:
-  {
+module LocalForage = {
+  type t;
+  [@bs.module "localforage"] external localForage: t = "default";
+  type config = {
     .
     "name": string,
     "storeName": string,
-  } =>
-  localForageOptions =
-  "createInstance";
-
-/* This will replace the above code eventually */
-module LocalForage = {
-  type t('a);
-  module Instance = (DataType: {type localForage;}) => {
-    type config = {
-      .
-      "name": string,
-      "storeName": string,
-    };
-    [@bs.module "localforage"]
-    external localForage: t(DataType.localForage) = "default";
-    [@bs.send]
-    external createInstance: (t('a), config) => t('a) = "createInstance";
-    let create = (~name, ~storeName) => {
-      localForage->createInstance({"name": name, "storeName": storeName});
-    };
   };
-  [@bs.module "localforage"] external localForage: t('a) = "default";
-  [@bs.send]
-  external getItem: (t('a), string) => Js.Promise.t(Js.Nullable.t('a)) =
-    "getItem";
-  [@bs.send]
-  external setItem: (t('a), string, 'a) => Js.Promise.t(unit) = "getItem";
-  [@bs.send]
-  external keys: (t('a), unit) => Js.Promise.t(Js.Array.t(string)) = "keys";
-  /* Plugin methods */
-  [@bs.send]
-  external getItems:
-    (t('a), Js.Nullable.t(array(string))) => Js.Promise.t(Js.Dict.t('a)) =
-    "getItems";
-  [@bs.send]
-  external setItems: (t('a), Js.Dict.t('a)) => Js.Promise.t(unit) =
-    "setItems";
-  [@bs.send]
-  external removeItems: (t('a), array(string)) => Js.Promise.t(unit) =
-    "removeItems";
+  /*
+     The Map module must have a homogenous type. In order to use it, you first
+     must use its `Instance` functor with any module that has a `localForage`
+     type, then use the `make` method to create an instance of the store.
+
+     By requiring a `localForage` type on a module, that allows you to specify
+     a custom type structure that may be different than pure Reason. You can also
+     just say `type localForage = t;` and store the raw compiled Reason.
+
+     All of Map's methods should work fine with any instance's store.
+   */
+  module Map = {
+    type t('a);
+
+    module Instance = (DataType: {type localForage;}) => {
+      [@bs.module "localforage"]
+      external localForage: t(DataType.localForage) = "default";
+      [@bs.send]
+      external createInstance: (t('a), config) => t('a) = "createInstance";
+      let make = (~name, ~storeName) => {
+        localForage->createInstance({"name": name, "storeName": storeName});
+      };
+    };
+
+    [@bs.send]
+    external getItem: (t('a), string) => Js.Promise.t(Js.Nullable.t('a)) =
+      "getItem";
+    [@bs.send]
+    external setItem: (t('a), string, 'a) => Js.Promise.t(unit) = "setItem";
+    [@bs.send]
+    external keys: (t('a), unit) => Js.Promise.t(Js.Array.t(string)) =
+      "keys";
+    /* Plugin methods */
+    [@bs.send]
+    external getItems:
+      (t('a), Js.Nullable.t(array(string))) => Js.Promise.t(Js.Dict.t('a)) =
+      "getItems";
+    [@bs.send]
+    external setItems: (t('a), Js.Dict.t('a)) => Js.Promise.t(unit) =
+      "setItems";
+    [@bs.send]
+    external removeItems: (t('a), array(string)) => Js.Promise.t(unit) =
+      "removeItems";
+  };
+  /*
+    Obj has a fixed set of fields and is heterogenous; each entry can have its
+    own type. The object's structure is definined in the input module's
+    `localForage` type, similar to the instances of Map.
+
+    Like Map.Instance, Obj is a functor that must be combined with another
+    module before use.
+
+    Obj relies on the `getItems` and `setItems` plugin, since accessing
+    individual fields isn't possible (right now).
+
+   */
+  module Obj = {
+    type t('a);
+
+    module Instance = (DataType: {type localForage;}) => {
+      [@bs.module "localforage"]
+      external localForage: t(DataType.localForage) = "default";
+      [@bs.send]
+      external createInstance: (t('a), config) => t('a) = "createInstance";
+      let make = (~name, ~storeName) => {
+        localForage->createInstance({"name": name, "storeName": storeName});
+      };
+    };
+
+    [@bs.send]
+    external getItems:
+      (t('a), Js.Nullable.t(array(string))) => Js.Promise.t('a) =
+      "getItems";
+    [@bs.send]
+    external setItems: (t('a), 'a) => Js.Promise.t(unit) = "setItems";
+  };
+
+  module Plugins = {
+    [@bs.module "localforage-getitems"]
+    external getItemsPrototype: t => unit = "extendPrototype";
+    [@bs.module "localforage-removeitems"]
+    external removeItemsPrototype: t => unit = "extendPrototype";
+    [@bs.module "localforage-setitems"]
+    external setItemsPrototype: t => unit = "extendPrototype";
+
+    let loadGetItems = () => getItemsPrototype(localForage);
+    let loadSetItems = () => setItemsPrototype(localForage);
+    let loadRemoveItems = () => removeItemsPrototype(localForage);
+  };
+  /*
+   END ADDING PLUGINS TO THE LOCALFORAGE MODULE.
+   */
 };
+
+LocalForage.Plugins.loadGetItems();
+LocalForage.Plugins.loadSetItems();
+LocalForage.Plugins.loadRemoveItems();
 
 /*******************************************************************************
   Components

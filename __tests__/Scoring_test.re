@@ -8,14 +8,14 @@ let master = TestData.players->Belt.Map.String.getExn("Grandy_McMaster______");
 
 test("K Factor is calculated correctly", () => {
   // let newbKFactor = getKFactor(newb.matchCount);
-  let masterKFactor = getKFactor(master.matchCount);
+  let masterKFactor = Ratings.getKFactor(master.matchCount);
   // expect(newbKFactor)|>toBe(800);
   expect(masterKFactor) |> toBe(8);
 });
 test("Ratings are calculated correctly", () => {
   let origRatings = (newb.rating, master.rating);
   let matchCounts = (newb.matchCount, master.matchCount);
-  let calcRatingsForPair = calcNewRatings(origRatings, matchCounts);
+  let calcRatingsForPair = Ratings.calcNewRatings(origRatings, matchCounts);
   let newbWon = calcRatingsForPair((1.0, 0.0));
   // not really a good example for this next one because they don't change:
   let masterWon = calcRatingsForPair((0.0, 1.0));
@@ -26,6 +26,6 @@ test("Ratings are calculated correctly", () => {
 test("Ratings never go below 100", () => {
   // The white player begins with a rating of 100 and loses.
   let (newRatingWhite, _) =
-    calcNewRatings((100, 100), (69, 69), (0.0, 1.0));
+    Ratings.calcNewRatings((100, 100), (69, 69), (0.0, 1.0));
   expect(newRatingWhite) |> toBe(100);
 });

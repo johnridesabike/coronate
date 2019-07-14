@@ -6,6 +6,7 @@ import * as React from "react";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Numeral from "numeral";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Db$Coronate from "../Db.bs.js";
 import * as Dialog from "@reach/dialog";
 import * as Data$Coronate from "../Data.bs.js";
 import * as ReactFeather from "react-feather";
@@ -189,8 +190,7 @@ function PairPicker$Stage(Props) {
   var stagedPlayers = Props.stagedPlayers;
   var setStagedPlayers = Props.setStagedPlayers;
   var tourneyDispatch = Props.tourneyDispatch;
-  var match = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
-  var options = match[0];
+  var byeValue = Props.byeValue;
   var stagedPlayersOption_000 = Caml_option.nullable_to_opt(stagedPlayers[0]);
   var stagedPlayersOption_001 = Caml_option.nullable_to_opt(stagedPlayers[1]);
   var blackOpt = stagedPlayersOption_001;
@@ -234,7 +234,7 @@ function PairPicker$Stage(Props) {
       var match$1 = stagedPlayersOption_001;
       if (match$1 !== undefined) {
         Curry._1(tourneyDispatch, /* ManualPair */Block.__(7, [
-                options[/* byeValue */1],
+                byeValue,
                 /* tuple */[
                   Curry._1(getPlayer, match),
                   Curry._1(getPlayer, match$1)
@@ -254,15 +254,15 @@ function PairPicker$Stage(Props) {
       return /* () */0;
     }
   };
-  var match$1 = stagedPlayersOption_000;
+  var match = stagedPlayersOption_000;
   var matchIdeal;
-  if (match$1 !== undefined) {
-    var match$2 = stagedPlayersOption_001;
-    if (match$2 !== undefined) {
+  if (match !== undefined) {
+    var match$1 = stagedPlayersOption_001;
+    if (match$1 !== undefined) {
+      var match$2 = Js_dict.get(pairData, match);
       var match$3 = Js_dict.get(pairData, match$1);
-      var match$4 = Js_dict.get(pairData, match$2);
-      if (match$3 !== undefined && match$4 !== undefined) {
-        var ideal = Pairing$Coronate.calcPairIdeal(match$3, match$4);
+      if (match$2 !== undefined && match$3 !== undefined) {
+        var ideal = Pairing$Coronate.calcPairIdeal(match$2, match$3);
         matchIdeal = Numeral.default(ideal / Pairing$Coronate.maxPriority).format("%");
       } else {
         matchIdeal = "";
@@ -313,18 +313,18 @@ function PairPicker$PlayerInfo(Props) {
   var players = Props.players;
   var getPlayer = Props.getPlayer;
   var scoreData = Props.scoreData;
-  var match = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
-  var avoidDict = match[0][/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
-  var match$1 = Js_dict.get(scoreData, playerId);
-  var playerData = match$1 !== undefined ? match$1 : Scoring$Coronate.createBlankScoreData(playerId);
+  var avoidPairs = Props.avoidPairs;
+  var avoidDict = avoidPairs.reduce(Converters$Coronate.avoidPairReducer, { });
+  var match = Js_dict.get(scoreData, playerId);
+  var playerData = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(playerId);
   var colorScores = playerData[/* colorScores */0];
   var opponentResults = playerData[/* opponentResults */4];
   var results = playerData[/* results */6];
   var colorBalance = Utils$Coronate.arraySumFloat(colorScores);
   var player = Curry._1(getPlayer, playerId);
   var hasBye = Object.keys(opponentResults).includes(Data$Coronate.dummy_id);
-  var match$2 = Js_dict.get(avoidDict, playerId);
-  var avoidList = match$2 !== undefined ? match$2 : /* array */[];
+  var match$1 = Js_dict.get(avoidDict, playerId);
+  var avoidList = match$1 !== undefined ? match$1 : /* array */[];
   var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
     );
@@ -378,8 +378,10 @@ function PairPicker(Props) {
   var p2 = stagedPlayers[1];
   var p1 = stagedPlayers[0];
   var setStagedPlayers = match[1];
-  var match$1 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
-  var options = match$1[0];
+  var match$1 = Db$Coronate.useConfig(/* () */0);
+  var config = match$1[0];
+  var avoidPairs = config[/* avoidPairs */0];
+  var byeValue = config[/* byeValue */1];
   var tourney = tournament[/* tourney */7];
   var activePlayers = tournament[/* activePlayers */0];
   var players = tournament[/* players */4];
@@ -389,7 +391,6 @@ function PairPicker(Props) {
           return false;
         }));
   var setIsModalOpen = match$2[1];
-  var avoidPairs = options[/* avoidPairs */0];
   var pairData = React.useMemo((function () {
           return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(activePlayers, avoidPairs, scoreData));
         }), /* tuple */[
@@ -441,7 +442,7 @@ function PairPicker(Props) {
                       disabled: unmatchedCount === 0,
                       onClick: (function (param) {
                           return Curry._1(tourneyDispatch, /* AutoPair */Block.__(6, [
-                                        options[/* byeValue */1],
+                                        config[/* byeValue */1],
                                         roundId,
                                         pairData,
                                         unmatched,
@@ -474,7 +475,8 @@ function PairPicker(Props) {
                           roundId: roundId,
                           stagedPlayers: stagedPlayers,
                           setStagedPlayers: setStagedPlayers,
-                          tourneyDispatch: tourneyDispatch
+                          tourneyDispatch: tourneyDispatch,
+                          byeValue: byeValue
                         }), React.createElement(Utils$Coronate.PanelContainer[/* make */0], {
                           children: /* array */[
                               p1,
@@ -488,7 +490,8 @@ function PairPicker(Props) {
                                                       playerId: id,
                                                       players: players,
                                                       getPlayer: getPlayer,
-                                                      scoreData: scoreData
+                                                      scoreData: scoreData,
+                                                      avoidPairs: avoidPairs
                                                     }),
                                                 key: id
                                               });

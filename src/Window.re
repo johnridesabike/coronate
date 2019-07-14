@@ -51,6 +51,63 @@ let useWindowContext = () => {
   React.useContext(WindowContext.windowContext);
 };
 
+module About = {
+  [@react.component]
+  let make = () => {
+    <article
+      style={ReactDOMRe.Style.make(
+        ~display="flex",
+        ~justifyContent="space-between",
+        ~width="100%",
+        (),
+      )}>
+      <div
+        style={ReactDOMRe.Style.make(
+          ~flex="0 0 48%",
+          ~textAlign="center",
+          (),
+        )}>
+        <img src=Utils.WebpackAssets.logo height="196" width="196" alt="" />
+      </div>
+      <div style={ReactDOMRe.Style.make(~flex="0 0 48%", ())}>
+        <h1
+          className="title"
+          style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+          {React.string("Coronate")}
+        </h1>
+        <p>
+          {React.string(
+             [|
+               "Copyright ",
+               Utils.Entities.copy,
+               " 2019 John",
+               Utils.Entities.nbsp,
+               "Jackson",
+             |]
+             |> Js.Array.joinWith(""),
+           )}
+        </p>
+        <p> {React.string("Coronate is free software.")} </p>
+        <p>
+          <a
+            href=Utils.github_url
+            onClick={e => e->ElectronUtils.ifElectronOpen}>
+            {React.string("Source code is available")}
+          </a>
+          <br />
+          {React.string(" under the ")}
+          <a
+            href=Utils.license_url
+            onClick={e => e->ElectronUtils.ifElectronOpen}>
+            {React.string("AGPL v3.0 license")}
+          </a>
+          {React.string(".")}
+        </p>
+      </div>
+    </article>;
+  };
+};
+
 let windowReducer = (state, action) => {
   switch (action) {
   | SetBlur(value) => {...state, isBlur: value}
@@ -259,7 +316,7 @@ module Window = {
           className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
           {React.string("Close")}
         </button>
-        <Snippets.About />
+        <About />
       </Utils.Dialog>
     </div>;
   };

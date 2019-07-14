@@ -6,7 +6,7 @@ let nameSort = Hooks.KeyString(x => x.name);
 
 [@react.component]
 let make = () => {
-  let (tourneys, dispatch) = Hooks.Db.useAllTournaments();
+  let (tourneys, dispatch) = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
       ~table=tourneys->Belt.Map.String.valuesToArray,
@@ -47,7 +47,7 @@ let make = () => {
       roundList: [||],
       tieBreaks: [|0, 1, 2|],
     };
-    dispatch(Hooks.Db.SetItem(newId, newTourney));
+    dispatch(Db.SetItem(newId, newTourney));
     setNewTourneyName(_ => "");
     setIsDialogOpen(_ => false);
     ();
@@ -55,7 +55,7 @@ let make = () => {
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
     if (Utils.confirm(message)) {
-      dispatch(Hooks.Db.DelItem(id));
+      dispatch(Db.DelItem(id));
     };
     ();
   };

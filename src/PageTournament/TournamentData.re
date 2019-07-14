@@ -81,7 +81,7 @@ let make = (~children, ~tourneyId) => {
       let didCancel = ref(false);
       let _ =
         Js.Promise.(
-          Hooks.Db.tourneyStore->LocalForage.getItem(tourneyId)
+          Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
           |> then_(value => {
                if (! didCancel^) {
                  switch (value->Js.Nullable.toOption) {
@@ -93,6 +93,10 @@ let make = (~children, ~tourneyId) => {
                    setIsTourneyLoaded(_ => true);
                  };
                };
+               resolve();
+             })
+          |> catch(error => {
+               Js.log2("Error loading tournament", error);
                resolve();
              })
         );
@@ -127,7 +131,7 @@ let make = (~children, ~tourneyId) => {
         | _ =>
           let _ =
             Js.Promise.(
-              Hooks.Db.playerStore->LocalForage.getItems(
+              Db.playerStore->LocalForage.Map.getItems(
                 Js.Nullable.return(allTheIds),
               )
               |> then_(values => {
@@ -150,12 +154,16 @@ let make = (~children, ~tourneyId) => {
                    if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
                      playersDispatch(
                        SetPlayers(
-                         values->Hooks.Db.jsDictToReMap(Data.Player.tFromJs),
+                         values->Db.jsDictToReMap(Data.Player.tFromJs),
                        ),
                      );
                      setIsPlayersLoaded(_ => true);
                    };
                    resolve(values);
+                 })
+              |> catch(error => {
+                   Js.log2("Error loading players", error);
+                   resolve(Js.Dict.empty());
                  })
             );
           ();
@@ -173,7 +181,7 @@ let make = (~children, ~tourneyId) => {
       /* If the tournament wasn't loaded then the id won't match. */
       if (isTourneyLoaded && tourneyId === tourney.id) {
         let _ =
-          Hooks.Db.tourneyStore->LocalForage.setItem(
+          Db.tourneyStore->LocalForage.Map.setItem(
             tourneyId,
             tourney->Data.Tournament.tToJsDeep,
           );
@@ -190,8 +198,8 @@ let make = (~children, ~tourneyId) => {
     () => {
       if (isPlayersLoaded) {
         let _ =
-          Hooks.Db.playerStore->LocalForage.setItems(
-            players->Hooks.Db.reMapToJsDict(Data.Player.tToJs),
+          Db.playerStore->LocalForage.Map.setItems(
+            players->Db.reMapToJsDict(Data.Player.tToJs),
           );
         ();
       };

@@ -198,7 +198,7 @@ function PageRound$MatchRow(Props) {
       var newRatings = match$1 ? /* tuple */[
           match_[/* whiteOrigRating */5],
           match_[/* blackOrigRating */6]
-        ] : Scoring$Coronate.calcNewRatings(/* tuple */[
+        ] : Scoring$Coronate.Ratings[/* calcNewRatings */4](/* tuple */[
               match_[/* whiteOrigRating */5],
               match_[/* blackOrigRating */6]
             ], /* tuple */[

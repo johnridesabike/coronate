@@ -3,7 +3,7 @@ open TournamentDataReducers;
 module Selecting = {
   [@react.component]
   let make = (~tourney: Data.Tournament.t, ~tourneyDispatch) => {
-    let (players, allPlayersDispatch) = Hooks.Db.useAllPlayers();
+    let (players, allPlayersDispatch) = Db.useAllPlayers();
 
     let togglePlayer = event => {
       let id = event->ReactEvent.Form.target##value;

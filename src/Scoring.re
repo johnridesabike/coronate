@@ -88,15 +88,15 @@ type tieBreakData = {
 };
 
 let tieBreakMethods = [|
-  {func:getMedianScore, id:0, name:"Median"},
-  {func:getSolkoffScore, id:1, name:"Solkoff"},
-  {func:getCumulativeScore, id:2, name:"Cumulative score"},
+  {func: getMedianScore, id: 0, name: "Median"},
+  {func: getSolkoffScore, id: 1, name: "Solkoff"},
+  {func: getCumulativeScore, id: 2, name: "Cumulative score"},
   {
-    func:getCumulativeOfOpponentScore,
-    id:3,
-    name:"Cumulative of opposition",
+    func: getCumulativeOfOpponentScore,
+    id: 3,
+    name: "Cumulative of opposition",
   },
-  {func:getColorBalanceScore, id:4, name:"Most black"},
+  {func: getColorBalanceScore, id: 4, name: "Most black"},
 |];
 
 let getNamefromIndex = index => tieBreakMethods[index].name;
@@ -157,10 +157,7 @@ let areScoresEqual = (standing1, standing2) => {
         standing1.tieBreaks
         |> Js.Array.reducei(
              (acc, value, i) =>
-               Js.Array.concat(
-                 acc,
-                 [|value !== standing2.tieBreaks[i]|],
-               ),
+               Js.Array.concat(acc, [|value !== standing2.tieBreaks[i]|]),
              [||],
            )
         |> Js.Array.includes(true)
@@ -197,43 +194,36 @@ let createStandingTree = standingList => {
      );
 };
 
-/*
- TODO: This probably should be a module, but it isn't to maximize JS interop
- */
+module Ratings = {
+  let getKFactor = matchCount => {
+    let ne = matchCount > 0 ? matchCount : 1;
+    800 / ne;
+  };
 
-type eloRank = {
-  .
-  [@bs.meth] "getExpected": (int, int) => int,
-  [@bs.meth] "updateRating": (int, float, int) => int,
-};
+  let floor = 100;
 
-[@bs.new] [@bs.module] external createEloRank: int => eloRank = "elo-rank";
+  let keepAboveFloor = rating => rating > floor ? rating : floor;
 
-let getKFactor = matchCount => {
-  let ne = matchCount > 0 ? matchCount : 1;
-  800 / ne;
-};
-
-let floor = 100;
-
-let keepAboveFloor = rating => rating > floor ? rating : floor;
-
-let calcNewRatings =
+  module EloRank = Externals.EloRank;
+  let calcNewRatings =
+      (
+        (whiteRating, blackRating),
+        (whiteMatchCount, blackMatchCount),
+        (whiteResult, blackResult),
+      ) => {
+    let whiteElo = getKFactor(whiteMatchCount)->EloRank.make;
+    let blackElo = getKFactor(blackMatchCount)->EloRank.make;
+    let (whiteScoreExpected, blackScoreExpected) = (
+      whiteElo->EloRank.getExpected(whiteRating, blackRating),
+      blackElo->EloRank.getExpected(blackRating, whiteRating),
+    );
     (
-      (whiteRating, blackRating),
-      (whiteMatchCount, blackMatchCount),
-      (whiteResult, blackResult),
-    ) => {
-  let whiteElo = getKFactor(whiteMatchCount)->createEloRank;
-  let blackElo = getKFactor(blackMatchCount)->createEloRank;
-  let (whiteScoreExpected, blackScoreExpected) = (
-    whiteElo##getExpected(whiteRating, blackRating),
-    blackElo##getExpected(blackRating, whiteRating),
-  );
-  (
-    whiteElo##updateRating(whiteScoreExpected, whiteResult, whiteRating)
-    ->keepAboveFloor,
-    blackElo##updateRating(blackScoreExpected, blackResult, blackRating)
-    ->keepAboveFloor,
-  );
+      whiteElo
+      ->EloRank.updateRating(whiteScoreExpected, whiteResult, whiteRating)
+      ->keepAboveFloor,
+      blackElo
+      ->EloRank.updateRating(blackScoreExpected, blackResult, blackRating)
+      ->keepAboveFloor,
+    );
+  };
 };

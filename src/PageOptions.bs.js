@@ -9,9 +9,9 @@ import * as Numeral from "numeral";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Belt_Option from "bs-platform/lib/es6/belt_Option.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Db$Coronate from "./Db.bs.js";
 import * as Data$Coronate from "./Data.bs.js";
 import * as ReactFeather from "react-feather";
-import * as Hooks$Coronate from "./Hooks.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
@@ -36,7 +36,7 @@ function invalidAlert(param) {
 
 function decodeWith(json, func) {
   return Belt_Option.mapWithDefault(Belt_Option.mapWithDefault(json, undefined, Js_json.decodeObject), undefined, (function (dict) {
-                return Caml_option.some(Hooks$Coronate.Db[/* jsDictToReMap */7](dict, func));
+                return Caml_option.some(Db$Coronate.jsDictToReMap(dict, func));
               }));
 }
 
@@ -56,7 +56,7 @@ function decodeOptions(json) {
     var match$2 = Belt_Option.mapWithDefault(Js_dict.get(dict, "avoidPairs"), undefined, Js_json.decodeArray);
     var match$3 = Belt_Option.mapWithDefault(Js_dict.get(dict, "lastBackup"), undefined, Js_json.decodeString);
     if (match$1 !== undefined && match$2 !== undefined && match$3 !== undefined) {
-      return Data$Coronate.db_optionsFromJs({
+      return Data$Coronate.Config[/* tFromJs */1]({
                   byeValue: match$1,
                   avoidPairs: match$2,
                   lastBackup: new Date(match$3)
@@ -101,10 +101,10 @@ function PageOptions$LastBackupDate(Props) {
 var LastBackupDate = /* module */[/* make */PageOptions$LastBackupDate];
 
 function PageOptions(Props) {
-  var match = Hooks$Coronate.Db[/* useAllTournaments */13](/* () */0);
+  var match = Db$Coronate.useAllTournaments(/* () */0);
   var tourneysDispatch = match[1];
   var tournaments = match[0];
-  var match$1 = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
+  var match$1 = Db$Coronate.useAllPlayers(/* () */0);
   var playersDispatch = match$1[1];
   var players = match$1[0];
   var match$2 = React.useState((function () {
@@ -112,9 +112,9 @@ function PageOptions(Props) {
         }));
   var setText = match$2[1];
   var text = match$2[0];
-  var match$3 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
-  var optionsDispatch = match$3[1];
-  var options = match$3[0];
+  var match$3 = Db$Coronate.useConfig(/* () */0);
+  var configDispatch = match$3[1];
+  var config = match$3[0];
   var match$4 = Window$Coronate.useWindowContext(/* () */0);
   var windowDispatch = match$4[1];
   React.useEffect((function () {
@@ -125,12 +125,12 @@ function PageOptions(Props) {
         }), /* array */[windowDispatch]);
   var exportData = React.useMemo((function () {
           return {
-                  options: Data$Coronate.db_optionsToJs(options),
-                  players: Hooks$Coronate.Db[/* reMapToJsDict */8](players, Data$Coronate.Player[/* tToJs */0]),
-                  tournaments: Hooks$Coronate.Db[/* reMapToJsDict */8](tournaments, Data$Coronate.Tournament[/* tToJsDeep */2])
+                  config: Data$Coronate.Config[/* tToJs */0](config),
+                  players: Db$Coronate.reMapToJsDict(players, Data$Coronate.Player[/* tToJs */0]),
+                  tournaments: Db$Coronate.reMapToJsDict(tournaments, Data$Coronate.Tournament[/* tToJsDeep */2])
                 };
         }), /* tuple */[
-        options,
+        config,
         tournaments,
         players
       ]);
@@ -146,9 +146,9 @@ function PageOptions(Props) {
         exportData,
         setText
       ]);
-  var loadData = function (tourneys, players, options) {
+  var loadData = function (tourneys, players, config) {
     Curry._1(tourneysDispatch, /* SetState */Block.__(2, [tourneys]));
-    Curry._1(optionsDispatch, /* SetState */Block.__(5, [options]));
+    Curry._1(configDispatch, /* SetState */Block.__(5, [config]));
     Curry._1(playersDispatch, /* SetState */Block.__(2, [players]));
     return Utils$Coronate.alert("Data loaded.");
   };
@@ -226,11 +226,11 @@ function PageOptions(Props) {
   };
   var reloadDemoData = function ($$event) {
     $$event.preventDefault();
-    return loadData(DemoData$Coronate.tournaments, DemoData$Coronate.players, DemoData$Coronate.options);
+    return loadData(DemoData$Coronate.tournaments, DemoData$Coronate.players, DemoData$Coronate.config);
   };
   var loadTestData = function ($$event) {
     $$event.preventDefault();
-    return loadData(TestData$Coronate.tournaments, TestData$Coronate.players, TestData$Coronate.options);
+    return loadData(TestData$Coronate.tournaments, TestData$Coronate.players, TestData$Coronate.config);
   };
   var handleTextChange = function ($$event) {
     var newText = $$event.currentTarget.value;
@@ -247,28 +247,28 @@ function PageOptions(Props) {
                           }, "Select the default score for a bye round."), React.createElement("label", {
                             className: "monospace body-30"
                           }, "1 ", React.createElement("input", {
-                                checked: options[/* byeValue */1] === 1.0,
+                                checked: config[/* byeValue */1] === 1.0,
                                 type: "radio",
                                 onChange: (function (param) {
-                                    return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [1.0]));
+                                    return Curry._1(configDispatch, /* SetByeValue */Block.__(4, [1.0]));
                                   })
                               })), React.createElement("label", {
                             className: "monospace body-30"
                           }, "½ ", React.createElement("input", {
-                                checked: options[/* byeValue */1] === 0.5,
+                                checked: config[/* byeValue */1] === 0.5,
                                 type: "radio",
                                 onChange: (function (param) {
-                                    return Curry._1(optionsDispatch, /* SetByeValue */Block.__(4, [0.5]));
+                                    return Curry._1(configDispatch, /* SetByeValue */Block.__(4, [0.5]));
                                   })
                               }))), React.createElement("h2", undefined, "Manage data"), React.createElement("p", {
                         className: "caption-20"
                       }, "Last export: ", React.createElement(PageOptions$LastBackupDate, {
-                            date: options[/* lastBackup */2]
+                            date: config[/* lastBackup */2]
                           })), React.createElement("p", undefined, React.createElement("a", {
                             download: "coronate-" + (getDateForFile(/* () */0) + ".json"),
                             href: exportDataURI,
                             onClick: (function (param) {
-                                return Curry._1(optionsDispatch, /* SetLastBackup */Block.__(6, [new Date()]));
+                                return Curry._1(configDispatch, /* SetLastBackup */Block.__(6, [new Date()]));
                               })
                           }, React.createElement(ReactFeather.Download, { }), " Export all data")), React.createElement("label", {
                         htmlFor: "file"

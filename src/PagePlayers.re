@@ -21,7 +21,7 @@ module NewPlayerForm = {
       setRating(defaultRating);
       let id = Utils.nanoid();
       dispatch(
-        Hooks.Db.SetItem(
+        Db.SetItem(
           id,
           {firstName, lastName, rating, id, type_: "person", matchCount: 0},
         ),
@@ -82,7 +82,7 @@ module NewPlayerForm = {
 module List = {
   [@react.component]
   let make =
-      (~sorted, ~sortDispatch, ~players, ~playersDispatch, ~optionsDispatch) => {
+      (~sorted, ~sortDispatch, ~players, ~playersDispatch, ~configDispatch) => {
     let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
     let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect1(
@@ -108,8 +108,8 @@ module List = {
           |]
           |> Js.Array.joinWith("");
         if (Utils.confirm(message)) {
-          playersDispatch(Hooks.Db.DelItem(id));
-          optionsDispatch(Hooks.Db.DelAvoidSingle(id));
+          playersDispatch(Db.DelItem(id));
+          configDispatch(Db.DelAvoidSingle(id));
         };
       };
     };
@@ -200,8 +200,8 @@ module Profile = {
         ~player,
         ~players,
         ~playersDispatch,
-        ~options: Data.db_options,
-        ~optionsDispatch,
+        ~config: Data.Config.t,
+        ~configDispatch,
       ) => {
     let playerId = player.id;
     let playerName =
@@ -215,7 +215,7 @@ module Profile = {
       (windowDispatch, playerName),
     );
     let avoidObj =
-      options.avoidPairs
+      config.avoidPairs
       |> Js.Array.reduce(Converters.avoidPairReducer, Js.Dict.empty());
     let singAvoidList =
       switch (avoidObj->Js.Dict.get(playerId)) {
@@ -232,7 +232,7 @@ module Profile = {
       React.useState(() => unavoided[0]);
     let avoidAdd = event => {
       event->ReactEvent.Form.preventDefault;
-      optionsDispatch(Hooks.Db.AddAvoidPair((playerId, selectedAvoider)));
+      configDispatch(Db.AddAvoidPair((playerId, selectedAvoider)));
       /* Reset the selected avoider to the first on the list, but check to
          make sure they weren't they weren't the first. */
       let newSelected =
@@ -247,7 +247,7 @@ module Profile = {
       let matchCount = target##matchCount##value->int_of_string;
       let rating = target##rating##value->int_of_string;
       playersDispatch(
-        Hooks.Db.SetItem(
+        Db.SetItem(
           playerId,
           {
             firstName,
@@ -306,7 +306,7 @@ module Profile = {
             name="kfactor"
             type_="number"
             disabled=true
-            value={player.matchCount->Scoring.getKFactor->string_of_int}
+            value={player.matchCount->Scoring.Ratings.getKFactor->string_of_int}
             readOnly=true
           />
         </p>
@@ -340,7 +340,7 @@ module Profile = {
                   }
                   className="danger button-ghost"
                   onClick={_ =>
-                    optionsDispatch(Hooks.Db.DelAvoidPair((playerId, pId)))
+                    configDispatch(Db.DelAvoidPair((playerId, pId)))
                   }>
                   <Icons.trash />
                 </button>
@@ -378,7 +378,7 @@ module Profile = {
 
 [@react.component]
 let make = (~id=?) => {
-  let (players, playersDispatch) = Hooks.Db.useAllPlayers();
+  let (players, playersDispatch) = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
       ~table=players->Belt.Map.String.valuesToArray,
@@ -392,16 +392,16 @@ let make = (~id=?) => {
     },
     (players, sortDispatch),
   );
-  let (options, optionsDispatch) = Hooks.Db.useOptions();
+  let (config, configDispatch) = Db.useConfig();
   <Window.WindowBody>
     {switch (id) {
      | None =>
-       <List sorted sortDispatch players playersDispatch optionsDispatch />
+       <List sorted sortDispatch players playersDispatch configDispatch />
      | Some([id]) =>
        switch (players->Belt.Map.String.get(id)) {
        | None => <div> {s("Loading...")} </div>
        | Some(player) =>
-         <Profile player players playersDispatch options optionsDispatch />
+         <Profile player players playersDispatch config configDispatch />
        }
      | _ => <Pages.NotFound />
      }}

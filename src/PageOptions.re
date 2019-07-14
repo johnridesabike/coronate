@@ -1,9 +1,3 @@
-type fileReader = {
-  .
-  [@bs.set] "onload": {. "target": {. "result": string}} => unit,
-  [@bs.meth] "readAsText": string => unit,
-};
-[@bs.new] external makeFileReader: unit => fileReader = "FileReader";
 [@bs.val] external node_env: string = "process.env.NODE_ENV";
 let s = React.string;
 
@@ -43,7 +37,7 @@ external unsafeOptionsDecode:
     "byeValue": 'b,
     "lastBackup": 'c,
   } =>
-  Data.db_options_js =
+  Data.Config.js =
   "%identity";
 
 /* Pair this with a jsConverter function to turn a dict of JSON into a map of
@@ -52,7 +46,7 @@ let decodeWith = (json, func) => {
   json
   ->Belt.Option.mapWithDefault(None, Js.Json.decodeObject)
   ->Belt.Option.mapWithDefault(None, dict =>
-      dict->Hooks.Db.jsDictToReMap(func)->Some
+      dict->Db.jsDictToReMap(func)->Some
     );
 };
 
@@ -85,7 +79,7 @@ let decodeOptions = json => {
               "lastBackup": Js.Date.fromString(lastBackup),
             }
             ->unsafeOptionsDecode
-            ->Data.db_optionsFromJs
+            ->Data.Config.tFromJs
             ->Some
           | _ => None
           }
@@ -121,10 +115,10 @@ module LastBackupDate = {
 
 [@react.component]
 let make = () => {
-  let (tournaments, tourneysDispatch) = Hooks.Db.useAllTournaments();
-  let (players, playersDispatch) = Hooks.Db.useAllPlayers();
+  let (tournaments, tourneysDispatch) = Db.useAllTournaments();
+  let (players, playersDispatch) = Db.useAllPlayers();
   let (text, setText) = React.useState(() => "");
-  let (options, optionsDispatch) = Hooks.Db.useOptions();
+  let (config, configDispatch) = Db.useConfig();
   let (_, windowDispatch) = Window.useWindowContext();
   React.useEffect1(
     () => {
@@ -138,12 +132,12 @@ let make = () => {
     React.useMemo3(
       () =>
         {
-          "options": options->Data.db_optionsToJs,
-          "players": players->Hooks.Db.reMapToJsDict(Data.Player.tToJs),
+          "config": config->Data.Config.tToJs,
+          "players": players->Db.reMapToJsDict(Data.Player.tToJs),
           "tournaments":
-            tournaments->Hooks.Db.reMapToJsDict(Data.Tournament.tToJsDeep),
+            tournaments->Db.reMapToJsDict(Data.Tournament.tToJsDeep),
         },
-      (options, tournaments, players),
+      (config, tournaments, players),
     );
   let exportDataURI =
     switch (Js.Json.stringifyAny(exportData)) {
@@ -161,11 +155,11 @@ let make = () => {
     (exportData, setText),
   );
 
-  let loadData = (~tourneys, ~players, ~options) => {
+  let loadData = (~tourneys, ~players, ~config) => {
     /* TODO: implement `fromJSON` */
-    tourneysDispatch(Hooks.Db.SetState(tourneys));
-    optionsDispatch(Hooks.Db.SetState(options));
-    playersDispatch(Hooks.Db.SetState(players));
+    tourneysDispatch(Db.SetState(tourneys));
+    configDispatch(Db.SetState(config));
+    playersDispatch(Db.SetState(players));
 
     Utils.alert("Data loaded.");
   };
@@ -175,23 +169,23 @@ let make = () => {
     | exception _ => invalidAlert()
     | rawJson =>
       switch (rawJson->jsonToData) {
-      | (Some(options), Some(players), Some(tourneys)) =>
-        loadData(~tourneys, ~players, ~options)
+      | (Some(config), Some(players), Some(tourneys)) =>
+        loadData(~tourneys, ~players, ~config)
       | _ => invalidAlert()
       }
     };
   };
   let handleFile = event => {
     event |> ReactEvent.Form.preventDefault;
-    let reader = makeFileReader();
+    let reader = Externals.makeFileReader();
     let onload = ev => {
       let data = ev##target##result;
       switch (data |> Js.Json.parseExn) {
       | exception _ => invalidAlert()
       | rawJson =>
         switch (rawJson->jsonToData) {
-        | (Some(options), Some(players), Some(tourneys)) =>
-          loadData(~tourneys, ~players, ~options)
+        | (Some(config), Some(players), Some(tourneys)) =>
+          loadData(~tourneys, ~players, ~config)
         | _ => invalidAlert()
         }
       };
@@ -205,7 +199,7 @@ let make = () => {
     loadData(
       ~tourneys=DemoData.tournaments,
       ~players=DemoData.players,
-      ~options=DemoData.options,
+      ~config=DemoData.config,
     );
   };
   let loadTestData = event => {
@@ -213,7 +207,7 @@ let make = () => {
     loadData(
       ~tourneys=TestData.tournaments,
       ~players=TestData.players,
-      ~options=TestData.options,
+      ~config=TestData.config,
     );
   };
   let handleTextChange = event => {
@@ -230,31 +224,31 @@ let make = () => {
         <label className="monospace body-30">
           {s("1 ")}
           <input
-            checked={options.byeValue === 1.0}
+            checked={config.byeValue === 1.0}
             type_="radio"
-            onChange={_ => optionsDispatch(Hooks.Db.SetByeValue(1.0))}
+            onChange={_ => configDispatch(Db.SetByeValue(1.0))}
           />
         </label>
         <label className="monospace body-30">
           {s({j|½ |j})}
           <input
-            checked={options.byeValue === 0.5}
+            checked={config.byeValue === 0.5}
             type_="radio"
-            onChange={_ => optionsDispatch(Hooks.Db.SetByeValue(0.5))}
+            onChange={_ => configDispatch(Db.SetByeValue(0.5))}
           />
         </label>
       </form>
       <h2> {s("Manage data")} </h2>
       <p className="caption-20">
         {s("Last export: ")}
-        <LastBackupDate date={options.lastBackup} />
+        <LastBackupDate date={config.lastBackup} />
       </p>
       <p>
         <a
           download={"coronate-" ++ getDateForFile() ++ ".json"}
           href=exportDataURI
           onClick={_ =>
-            optionsDispatch(Hooks.Db.SetLastBackup(Js.Date.make()))
+            configDispatch(Db.SetLastBackup(Js.Date.make()))
           }>
           <Icons.download />
           {s(" Export all data")}

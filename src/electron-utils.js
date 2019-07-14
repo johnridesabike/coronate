@@ -26,10 +26,10 @@ IfElectron.propTypes = {
 const currentWindow = ifElectron(() => electron.remote.getCurrentWindow());
 export {currentWindow};
 
-export function ifElectronOpen(event, url) {
+export function ifElectronOpen(event) {
     return ifElectron(function () {
         event.preventDefault();
-        electron.shell.openExternal(url);
+        electron.shell.openExternal(event.target.href);
     });
 }
 

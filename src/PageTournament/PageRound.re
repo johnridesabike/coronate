@@ -179,7 +179,7 @@ module MatchRow = {
         let newRatings =
           safeCode === `NotSet
             ? (match.whiteOrigRating, match.blackOrigRating)
-            : Scoring.calcNewRatings(
+            : Scoring.Ratings.calcNewRatings(
                 (match.whiteOrigRating, match.blackOrigRating),
                 (white.matchCount, black.matchCount),
                 (newWhiteScore, newBlackScore),

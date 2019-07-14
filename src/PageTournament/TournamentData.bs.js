@@ -3,6 +3,7 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Db$Coronate from "../Db.bs.js";
 import * as Data$Coronate from "../Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Hooks$Coronate from "../Hooks.bs.js";
@@ -91,19 +92,22 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
-          Hooks$Coronate.Db[/* tourneyStore */6].getItem(tourneyId).then((function (value) {
-                  if (!didCancel[0]) {
-                    if (value == null) {
-                      Curry._1(setIsDbError, (function (param) {
-                              return true;
-                            }));
-                    } else {
-                      Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [Data$Coronate.Tournament[/* tFromJsDeep */3](value)]));
-                      Curry._1(setIsTourneyLoaded, (function (param) {
-                              return true;
-                            }));
+          Db$Coronate.tourneyStore.getItem(tourneyId).then((function (value) {
+                    if (!didCancel[0]) {
+                      if (value == null) {
+                        Curry._1(setIsDbError, (function (param) {
+                                return true;
+                              }));
+                      } else {
+                        Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [Data$Coronate.Tournament[/* tFromJsDeep */3](value)]));
+                        Curry._1(setIsTourneyLoaded, (function (param) {
+                                return true;
+                              }));
+                      }
                     }
-                  }
+                    return Promise.resolve(/* () */0);
+                  })).catch((function (error) {
+                  console.log("Error loading tournament", error);
                   return Promise.resolve(/* () */0);
                 }));
           return (function (param) {
@@ -122,23 +126,26 @@ function TournamentData(Props) {
             var allTheIds = getAllPlayerIdsFromMatches(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0)).concat(playerIds);
             var match = allTheIds.length;
             if (match !== 0) {
-              Hooks$Coronate.Db[/* playerStore */4].getItems(allTheIds).then((function (values) {
-                      var newIds = Object.keys(values);
-                      var oldIds = Belt_MapString.keysToArray(players);
-                      var changedPlayers = newIds.filter((function (x) {
-                                return !oldIds.includes(x);
-                              })).concat(oldIds.filter((function (x) {
-                                  return !newIds.includes(x);
-                                })));
-                      console.log("changed players:");
-                      console.log(changedPlayers.length);
-                      if (changedPlayers.length !== 0 && !didCancel[0]) {
-                        Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Hooks$Coronate.Db[/* jsDictToReMap */7](values, Data$Coronate.Player[/* tFromJs */1])]));
-                        Curry._1(setIsPlayersLoaded, (function (param) {
-                                return true;
-                              }));
-                      }
-                      return Promise.resolve(values);
+              Db$Coronate.playerStore.getItems(allTheIds).then((function (values) {
+                        var newIds = Object.keys(values);
+                        var oldIds = Belt_MapString.keysToArray(players);
+                        var changedPlayers = newIds.filter((function (x) {
+                                  return !oldIds.includes(x);
+                                })).concat(oldIds.filter((function (x) {
+                                    return !newIds.includes(x);
+                                  })));
+                        console.log("changed players:");
+                        console.log(changedPlayers.length);
+                        if (changedPlayers.length !== 0 && !didCancel[0]) {
+                          Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Db$Coronate.jsDictToReMap(values, Data$Coronate.Player[/* tFromJs */1])]));
+                          Curry._1(setIsPlayersLoaded, (function (param) {
+                                  return true;
+                                }));
+                        }
+                        return Promise.resolve(values);
+                      })).catch((function (error) {
+                      console.log("Error loading players", error);
+                      return Promise.resolve({ });
                     }));
             } else {
               if (Belt_MapString.keysToArray(players).length !== 0) {
@@ -161,7 +168,7 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function (param) {
           if (isTourneyLoaded && tourneyId === tourney[/* id */2]) {
-            Hooks$Coronate.Db[/* tourneyStore */6].getItem(tourneyId, Data$Coronate.Tournament[/* tToJsDeep */2](tourney));
+            Db$Coronate.tourneyStore.setItem(tourneyId, Data$Coronate.Tournament[/* tToJsDeep */2](tourney));
           }
           return undefined;
         }), /* tuple */[
@@ -171,7 +178,7 @@ function TournamentData(Props) {
       ]);
   React.useEffect((function () {
           if (isPlayersLoaded) {
-            Hooks$Coronate.Db[/* playerStore */4].setItems(Hooks$Coronate.Db[/* reMapToJsDict */8](players, Data$Coronate.Player[/* tToJs */0]));
+            Db$Coronate.playerStore.setItems(Db$Coronate.reMapToJsDict(players, Data$Coronate.Player[/* tToJs */0]));
           }
           return undefined;
         }), /* tuple */[

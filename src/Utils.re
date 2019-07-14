@@ -19,6 +19,10 @@ let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
 let last = arr => arr[Js.Array.length(arr) - 1];
 let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
 
+let github_url = "https://github.com/johnridesabike/coronate";
+let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
+let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
+
 module WebpackAssets = {
   let logo: string = [%bs.raw {| require("./icon-min.svg") |}];
 };

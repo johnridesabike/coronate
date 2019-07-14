@@ -1,7 +1,6 @@
 open Jest;
 open Expect;
 open Converters;
-open Data;
 
 let loadPairData = tourneyId => {
   let tournament = TestData.tournaments->Belt.Map.String.getExn(tourneyId);
@@ -17,7 +16,7 @@ let loadPairData = tourneyId => {
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
   |> createPairingData(
        players |> Js.Dict.entries |> Belt.Map.String.fromArray,
-       TestData.options.avoidPairs,
+       TestData.config.avoidPairs,
      )
   |> Pairing.setUpperHalves;
 };

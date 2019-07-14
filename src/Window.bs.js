@@ -9,7 +9,6 @@ import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Icons$Coronate from "./Icons.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
-import * as Snippets$Coronate from "./Snippets.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
 
@@ -67,6 +66,49 @@ var WindowContext = /* module */[
 function useWindowContext(param) {
   return React.useContext(windowContext);
 }
+
+function Window$About(Props) {
+  return React.createElement("article", {
+              style: {
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between"
+              }
+            }, React.createElement("div", {
+                  style: {
+                    textAlign: "center",
+                    flex: "0 0 48%"
+                  }
+                }, React.createElement("img", {
+                      alt: "",
+                      height: "196",
+                      src: Utils$Coronate.WebpackAssets[/* logo */0],
+                      width: "196"
+                    })), React.createElement("div", {
+                  style: {
+                    flex: "0 0 48%"
+                  }
+                }, React.createElement("h1", {
+                      className: "title",
+                      style: {
+                        textAlign: "left"
+                      }
+                    }, "Coronate"), React.createElement("p", undefined, /* array */[
+                        "Copyright ",
+                        Utils$Coronate.Entities[/* copy */1],
+                        " 2019 John",
+                        Utils$Coronate.Entities[/* nbsp */0],
+                        "Jackson"
+                      ].join("")), React.createElement("p", undefined, "Coronate is free software."), React.createElement("p", undefined, React.createElement("a", {
+                          href: Utils$Coronate.github_url,
+                          onClick: ElectronUtils$Coronate.ifElectronOpen
+                        }, "Source code is available"), React.createElement("br", undefined), " under the ", React.createElement("a", {
+                          href: Utils$Coronate.license_url,
+                          onClick: ElectronUtils$Coronate.ifElectronOpen
+                        }, "AGPL v3.0 license"), ".")));
+}
+
+var About = /* module */[/* make */Window$About];
 
 function windowReducer(state, action) {
   switch (action.tag | 0) {
@@ -355,7 +397,7 @@ function Window$Window(Props) {
                       onClick: (function (param) {
                           return Curry._1(dispatch, /* SetDialog */Block.__(1, [false]));
                         })
-                    }, "Close"), React.createElement(Snippets$Coronate.About[/* make */0], { })));
+                    }, "Close"), React.createElement(Window$About, { })));
 }
 
 var $$Window = /* module */[/* make */Window$Window];
@@ -432,6 +474,7 @@ export {
   initialWinState ,
   WindowContext ,
   useWindowContext ,
+  About ,
   windowReducer ,
   toolbarClasses ,
   WindowsControls ,

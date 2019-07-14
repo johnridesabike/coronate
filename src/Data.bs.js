@@ -193,7 +193,7 @@ var Tournament = /* module */[
   /* tFromJsonDeep */tFromJsonDeep
 ];
 
-function db_optionsToJs(param) {
+function tToJs$3(param) {
   return {
           avoidPairs: param[/* avoidPairs */0],
           byeValue: param[/* byeValue */1],
@@ -201,7 +201,7 @@ function db_optionsToJs(param) {
         };
 }
 
-function db_optionsFromJs(param) {
+function tFromJs$3(param) {
   return /* record */[
           /* avoidPairs */param.avoidPairs,
           /* byeValue */param.byeValue,
@@ -209,14 +209,20 @@ function db_optionsFromJs(param) {
         ];
 }
 
-var defaultOptions_000 = /* avoidPairs : array */[];
+var defaults_000 = /* avoidPairs : array */[];
 
-var defaultOptions_002 = /* lastBackup */new Date(0.0);
+var defaults_002 = /* lastBackup */new Date(0.0);
 
-var defaultOptions = /* record */[
-  defaultOptions_000,
+var defaults = /* record */[
+  defaults_000,
   /* byeValue */1.0,
-  defaultOptions_002
+  defaults_002
+];
+
+var Config = /* module */[
+  /* tToJs */tToJs$3,
+  /* tFromJs */tFromJs$3,
+  /* defaults */defaults
 ];
 
 function rounds2Matches(roundList, lastRound, param) {
@@ -282,12 +288,10 @@ export {
   Player ,
   Match ,
   Tournament ,
-  db_optionsToJs ,
-  db_optionsFromJs ,
-  defaultOptions ,
+  Config ,
   rounds2Matches ,
   getUnmatched ,
   isRoundComplete ,
   
 }
-/* defaultOptions Not a pure module */
+/* defaults Not a pure module */

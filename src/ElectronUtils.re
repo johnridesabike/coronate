@@ -2,7 +2,7 @@
 external ifElectron: 'a => option('b) = "ifElectron";
 
 [@bs.val] [@bs.module "./electron-utils.js"]
-external ifElectronOpen: (ReactEvent.synthetic('a), string) => unit = "ifElectronOpen";
+external ifElectronOpen: ReactEvent.synthetic('a) => unit = "ifElectronOpen";
 
 [@bs.val] [@bs.module "./electron-utils.js"]
 external toggleMaximize: ReactEvent.synthetic('a) => unit = "toggleMaximize";

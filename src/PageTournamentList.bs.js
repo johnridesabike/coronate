@@ -3,6 +3,7 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Db$Coronate from "./Db.bs.js";
 import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
@@ -24,7 +25,7 @@ var nameSort = /* KeyString */Block.__(0, [(function (x) {
       })]);
 
 function PageTournamentList(Props) {
-  var match = Hooks$Coronate.Db[/* useAllTournaments */13](/* () */0);
+  var match = Db$Coronate.useAllTournaments(/* () */0);
   var dispatch = match[1];
   var tourneys = match[0];
   var match$1 = Hooks$Coronate.useSortedTable(Belt_MapString.valuesToArray(tourneys), dateSort, true);

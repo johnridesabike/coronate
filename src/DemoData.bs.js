@@ -2,7 +2,7 @@
 
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
-var options_000 = /* avoidPairs : array */[
+var config_000 = /* avoidPairs : array */[
   /* tuple */[
     "BarbaraGordon_cL6SpI2",
     "JamesGordon_1ts9xICT3"
@@ -17,12 +17,12 @@ var options_000 = /* avoidPairs : array */[
   ]
 ];
 
-var options_002 = /* lastBackup */new Date("1970-01-01T00:00:00.000Z");
+var config_002 = /* lastBackup */new Date("1970-01-01T00:00:00.000Z");
 
-var options = /* record */[
-  options_000,
+var config = /* record */[
+  config_000,
   /* byeValue */1.0,
-  options_002
+  config_002
 ];
 
 var players = Belt_MapString.fromArray(/* array */[
@@ -633,9 +633,9 @@ var tournaments = Belt_MapString.fromArray(/* array */[
     ]);
 
 export {
-  options ,
+  config ,
   players ,
   tournaments ,
   
 }
-/* options Not a pure module */
+/* config Not a pure module */

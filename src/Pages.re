@@ -1,7 +1,3 @@
-let github_url = "https://github.com/johnridesabike/coronate";
-let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
-let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
-
 module CautionFooter = {
   [@react.component]
   let make = () =>
@@ -14,8 +10,8 @@ module CautionFooter = {
         {React.string(Utils.Entities.nbsp)}
         <a
           className="caution__link"
-          href=github_url
-          onClick={e => ElectronUtils.ifElectronOpen(e, github_url)}>
+          href=Utils.github_url
+          onClick={e => e->ElectronUtils.ifElectronOpen}>
           {React.string("Git repository")}
         </a>
         {React.string(".")}
@@ -32,8 +28,7 @@ module Splash = {
           <ol>
             <li>
               <button
-                className="button-primary"
-                onClick={_ => Hooks.Db.loadDemoDB()}>
+                className="button-primary" onClick={_ => Db.loadDemoDB()}>
                 {React.string("Click here to load the demo data")}
               </button>
               {React.string("(optional)")}
@@ -76,14 +71,14 @@ module Splash = {
               {React.string("Coronate is free software.")}
               <br />
               <a
-                href=github_url
-                onClick={e => ElectronUtils.ifElectronOpen(e, github_url)}>
+                href=Utils.github_url
+                onClick={e => e->ElectronUtils.ifElectronOpen}>
                 {React.string("Source code is available")}
               </a>
               {React.string(" under the ")}
               <a
-                href=license_url
-                onClick={e => ElectronUtils.ifElectronOpen(e, license_url)}>
+                href=Utils.license_url
+                onClick={e => e->ElectronUtils.ifElectronOpen}>
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
@@ -92,8 +87,8 @@ module Splash = {
           <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
             <p>
               <a
-                href=issues_url
-                onClick={e => ElectronUtils.ifElectronOpen(e, issues_url)}>
+                href=Utils.issues_url
+                onClick={e => e->ElectronUtils.ifElectronOpen}>
                 {React.string("Suggestions and bug reports are welcome.")}
               </a>
             </p>
@@ -101,12 +96,7 @@ module Splash = {
               {React.string("Built with ")}
               <a
                 href="https://reasonml.github.io/reason-react/"
-                onClick={e =>
-                  ElectronUtils.ifElectronOpen(
-                    e,
-                    "https://reasonml.github.io/reason-react/",
-                  )
-                }>
+                onClick={e => e->ElectronUtils.ifElectronOpen}>
                 {React.string("ReasonReact")}
               </a>
               {React.string(". ")}

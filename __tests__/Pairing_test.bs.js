@@ -22,7 +22,7 @@ function loadPairData(tourneyId) {
             return 0;
           }
         }));
-  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(Belt_MapString.fromArray(Js_dict.entries(players)), TestData$Coronate.options[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
+  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(Belt_MapString.fromArray(Js_dict.entries(players)), TestData$Coronate.config[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
 }
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {
@@ -48,7 +48,7 @@ Jest.describe("The lowest-ranking player is automatically picked for byes.", (fu
                               Caml_builtin_exceptions.assert_failure,
                               /* tuple */[
                                 "Pairing_test.re",
-                                46,
+                                45,
                                 14
                               ]
                             ];
@@ -71,7 +71,7 @@ Jest.test("The bye signup queue works", (function (param) {
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  59,
+                  58,
                   12
                 ]
               ];
@@ -89,7 +89,7 @@ Jest.test("If all player have (impossibly) played a bye round, the lowest-rated 
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  70,
+                  69,
                   14
                 ]
               ];

@@ -6,6 +6,7 @@ import * as React from "react";
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
+import * as Db$Coronate from "./Db.bs.js";
 import * as Dialog from "@reach/dialog";
 import * as Data$Coronate from "./Data.bs.js";
 import * as ReactFeather from "react-feather";
@@ -141,7 +142,7 @@ function PagePlayers$List(Props) {
   var sortDispatch = Props.sortDispatch;
   var players = Props.players;
   var playersDispatch = Props.playersDispatch;
-  var optionsDispatch = Props.optionsDispatch;
+  var configDispatch = Props.configDispatch;
   var match = React.useState((function () {
           return false;
         }));
@@ -218,7 +219,7 @@ function PagePlayers$List(Props) {
                                                         ].join("");
                                                       if (Utils$Coronate.confirm(message)) {
                                                         Curry._1(playersDispatch, /* DelItem */Block.__(0, [id]));
-                                                        return Curry._1(optionsDispatch, /* DelAvoidSingle */Block.__(2, [id]));
+                                                        return Curry._1(configDispatch, /* DelAvoidSingle */Block.__(2, [id]));
                                                       } else {
                                                         return 0;
                                                       }
@@ -259,8 +260,8 @@ function PagePlayers$Profile(Props) {
   var player = Props.player;
   var players = Props.players;
   var playersDispatch = Props.playersDispatch;
-  var options = Props.options;
-  var optionsDispatch = Props.optionsDispatch;
+  var config = Props.config;
+  var configDispatch = Props.configDispatch;
   var playerId = player[/* id */1];
   var playerName = /* array */[
       player[/* firstName */0],
@@ -277,7 +278,7 @@ function PagePlayers$Profile(Props) {
         windowDispatch,
         playerName
       ]);
-  var avoidObj = options[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
+  var avoidObj = config[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
   var match$1 = Js_dict.get(avoidObj, playerId);
   var singAvoidList = match$1 !== undefined ? match$1 : /* array */[];
   var unavoided = Belt_MapString.keysToArray(players).filter((function (id) {
@@ -294,7 +295,7 @@ function PagePlayers$Profile(Props) {
   var selectedAvoider = match$2[0];
   var avoidAdd = function ($$event) {
     $$event.preventDefault();
-    Curry._1(optionsDispatch, /* AddAvoidPair */Block.__(0, [/* tuple */[
+    Curry._1(configDispatch, /* AddAvoidPair */Block.__(0, [/* tuple */[
               playerId,
               selectedAvoider
             ]]));
@@ -374,7 +375,7 @@ function PagePlayers$Profile(Props) {
                           name: "kfactor",
                           readOnly: true,
                           type: "number",
-                          value: String(Scoring$Coronate.getKFactor(player[/* matchCount */3]))
+                          value: String(Scoring$Coronate.Ratings[/* getKFactor */0](player[/* matchCount */3]))
                         }))), React.createElement("h3", undefined, "Players to avoid"), React.createElement("ul", undefined, singAvoidList.map((function (pId) {
                         return React.createElement("li", {
                                     key: pId
@@ -393,7 +394,7 @@ function PagePlayers$Profile(Props) {
                                             "from avoid list."
                                           ].join(" "),
                                         onClick: (function (param) {
-                                            return Curry._1(optionsDispatch, /* DelAvoidPair */Block.__(1, [/* tuple */[
+                                            return Curry._1(configDispatch, /* DelAvoidPair */Block.__(1, [/* tuple */[
                                                             playerId,
                                                             pId
                                                           ]]));
@@ -424,7 +425,7 @@ var Profile = /* module */[/* make */PagePlayers$Profile];
 
 function PagePlayers(Props) {
   var id = Props.id;
-  var match = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
+  var match = Db$Coronate.useAllPlayers(/* () */0);
   var playersDispatch = match[1];
   var players = match[0];
   var match$1 = Hooks$Coronate.useSortedTable(Belt_MapString.valuesToArray(players), sortName, false);
@@ -436,8 +437,8 @@ function PagePlayers(Props) {
         players,
         sortDispatch
       ]);
-  var match$2 = Hooks$Coronate.Db[/* useOptions */15](/* () */0);
-  var optionsDispatch = match$2[1];
+  var match$2 = Db$Coronate.useConfig(/* () */0);
+  var configDispatch = match$2[1];
   var tmp;
   if (id !== undefined) {
     var match$3 = id;
@@ -450,8 +451,8 @@ function PagePlayers(Props) {
                 player: match$4,
                 players: players,
                 playersDispatch: playersDispatch,
-                options: match$2[0],
-                optionsDispatch: optionsDispatch
+                config: match$2[0],
+                configDispatch: configDispatch
               }) : React.createElement("div", undefined, "Loading...");
       }
     } else {
@@ -463,7 +464,7 @@ function PagePlayers(Props) {
           sortDispatch: sortDispatch,
           players: players,
           playersDispatch: playersDispatch,
-          optionsDispatch: optionsDispatch
+          configDispatch: configDispatch
         });
   }
   return React.createElement(Window$Coronate.WindowBody[/* make */0], {

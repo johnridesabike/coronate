@@ -195,25 +195,26 @@ module Tournament = {
   };
 };
 
-[@bs.deriving jsConverter]
-type db_options = {
-  avoidPairs: array(avoidPair),
-  byeValue: float,
-  lastBackup: Js.Date.t,
-};
+module Config = {
+  [@bs.deriving jsConverter]
+  type t = {
+    avoidPairs: array(avoidPair),
+    byeValue: float,
+    lastBackup: Js.Date.t,
+  };
+  type js = {
+    .
+    "avoidPairs": array(avoidPair),
+    "byeValue": float,
+    "lastBackup": Js.Date.t,
+  };
+  type localForage = js;
 
-/* This is what the jsConverter outputs. */
-type db_options_js = {
-  .
-  "avoidPairs": array(avoidPair),
-  "byeValue": float,
-  "lastBackup": Js.Date.t,
-};
-
-let defaultOptions = {
-  byeValue: 1.0,
-  avoidPairs: [||],
-  lastBackup: Js.Date.fromFloat(0.0),
+  let defaults = {
+    byeValue: 1.0,
+    avoidPairs: [||],
+    lastBackup: Js.Date.fromFloat(0.0),
+  };
 };
 
 /*******************************************************************************

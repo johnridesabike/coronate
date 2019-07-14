@@ -1,5 +1,5 @@
 open Data;
-let options = {
+let config = Config.{
   byeValue: 1.0,
   avoidPairs: [|
     ("BarbaraGordon_cL6SpI2", "JamesGordon_1ts9xICT3"),

@@ -166,8 +166,8 @@ module Stage = {
         ~stagedPlayers,
         ~setStagedPlayers,
         ~tourneyDispatch,
+        ~byeValue,
       ) => {
-    let (options, _) = Hooks.Db.useOptions();
     let (white, black) = stagedPlayers;
     let stagedPlayersOption = Js.Nullable.(white->toOption, black->toOption);
     let (whiteOpt, blackOpt) = stagedPlayersOption;
@@ -206,7 +206,7 @@ module Stage = {
       | (Some(white), Some(black)) =>
         tourneyDispatch(
           ManualPair(
-            options.byeValue,
+            byeValue,
             (getPlayer(white), getPlayer(black)),
             roundId,
           ),
@@ -293,10 +293,15 @@ module Stage = {
 module PlayerInfo = {
   [@react.component]
   let make =
-      (~playerId, ~players, ~getPlayer: string => Data.Player.t, ~scoreData) => {
-    let (options, _) = Hooks.Db.useOptions();
+      (
+        ~playerId,
+        ~players,
+        ~getPlayer: string => Data.Player.t,
+        ~scoreData,
+        ~avoidPairs,
+      ) => {
     let avoidDict =
-      options.avoidPairs
+      avoidPairs
       |> Js.Array.reduce(Converters.avoidPairReducer, Js.Dict.empty());
     let playerData =
       switch (scoreData->Js.Dict.get(playerId)) {
@@ -396,7 +401,9 @@ let make =
   let (stagedPlayers, setStagedPlayers) =
     React.useState(() => (Js.Nullable.null, Js.Nullable.null));
   let (p1, p2) = stagedPlayers;
-  let (options, _) = Hooks.Db.useOptions();
+  let (config, _) = Db.useConfig();
+  let avoidPairs = config.avoidPairs;
+  let byeValue = config.byeValue;
   let tourney = tournament.tourney;
   let activePlayers = tournament.activePlayers;
   let players = tournament.players;
@@ -404,7 +411,6 @@ let make =
   let tourneyDispatch = tournament.tourneyDispatch;
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
-  let avoidPairs = options.avoidPairs;
   let pairData =
     React.useMemo3(
       () =>
@@ -445,7 +451,7 @@ let make =
         disabled={unmatchedCount === 0}
         onClick={_ =>
           tourneyDispatch(
-            AutoPair(options.byeValue, roundId, pairData, unmatched, tourney),
+            AutoPair(config.byeValue, roundId, pairData, unmatched, tourney),
           )
         }>
         {"Auto-pair unmatched players" |> React.string}
@@ -472,6 +478,7 @@ let make =
           pairData
           tourneyDispatch
           getPlayer
+          byeValue
         />
         <Utils.PanelContainer>
           {[|p1, p2|]
@@ -480,7 +487,13 @@ let make =
                 | None => React.null
                 | Some(playerId) =>
                   <Utils.Panel key=playerId>
-                    <PlayerInfo playerId scoreData players getPlayer />
+                    <PlayerInfo
+                      playerId
+                      scoreData
+                      players
+                      getPlayer
+                      avoidPairs
+                    />
                   </Utils.Panel>
                 }
               )

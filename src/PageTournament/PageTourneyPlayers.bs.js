@@ -4,11 +4,11 @@ import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Db$Coronate from "../Db.bs.js";
 import * as Dialog from "@reach/dialog";
 import * as Data$Coronate from "../Data.bs.js";
 import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
-import * as Hooks$Coronate from "../Hooks.bs.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as PagePlayers$Coronate from "../PagePlayers.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
@@ -16,7 +16,7 @@ import * as VisuallyHidden from "@reach/visually-hidden";
 function PageTourneyPlayers$Selecting(Props) {
   var tourney = Props.tourney;
   var tourneyDispatch = Props.tourneyDispatch;
-  var match = Hooks$Coronate.Db[/* useAllPlayers */12](/* () */0);
+  var match = Db$Coronate.useAllPlayers(/* () */0);
   var players = match[0];
   var togglePlayer = function ($$event) {
     var id = $$event.target.value;

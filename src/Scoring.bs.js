@@ -216,7 +216,13 @@ function calcNewRatings(param, param$1, param$2) {
         ];
 }
 
-var floor = 100;
+var Ratings = /* module */[
+  /* getKFactor */getKFactor,
+  /* floor */100,
+  /* keepAboveFloor */keepAboveFloor,
+  /* EloRank */0,
+  /* calcNewRatings */calcNewRatings
+];
 
 export {
   isNotDummy ,
@@ -235,10 +241,7 @@ export {
   createStandingList ,
   areScoresEqual ,
   createStandingTree ,
-  getKFactor ,
-  floor ,
-  keepAboveFloor ,
-  calcNewRatings ,
+  Ratings ,
   
 }
 /* elo-rank Not a pure module */

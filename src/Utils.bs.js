@@ -248,6 +248,12 @@ var VisuallyHidden = 0;
 
 var Dialog = 0;
 
+var github_url = "https://github.com/johnridesabike/coronate";
+
+var license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
+
+var issues_url = "https://github.com/johnridesabike/coronate/issues/new";
+
 export {
   Tabs ,
   VisuallyHidden ,
@@ -268,6 +274,9 @@ export {
   arraySumFloat ,
   last ,
   splitInHalf ,
+  github_url ,
+  license_url ,
+  issues_url ,
   WebpackAssets ,
   Entities ,
   hashPath ,

@@ -9,8 +9,6 @@ type t = {
   rating: int,
   score: float,
 };
-[@bs.module]
-external blossom: array((int, int, float)) => array(int) = "edmonds-blossom";
 
 let priority = (value, condition) => condition ? value : 0.0;
 let divisiblePriority = (dividend, divisor) => dividend /. divisor;
@@ -187,6 +185,7 @@ let sortByNetScoreThenRating =
 
 [@bs.val] external js_infinity: int = "Infinity";
 
+
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.
@@ -238,7 +237,7 @@ let pairPlayers = pairData => {
   // Feed all of the potential matches to Edmonds-blossom and let the
   // algorithm work its magic. This returns an array where each index is the
   // ID of one player and each value is the ID of the matched player.
-  |> blossom
+  |> Externals.blossom
   // Translate those IDs into actual pairs of player Ids.
   |> Js.Array.reducei(blossom2Pairs, [||])
   |> sortByNetScoreThenRating
