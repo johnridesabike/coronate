@@ -2,7 +2,6 @@
 
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
-import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 
 var dummy_id = "________DUMMY________";
@@ -245,16 +244,13 @@ function getUnmatched(roundList, players, roundId) {
                       match_[/* blackId */2]
                     ]);
         }), /* array */[]);
-  var unmatched = { };
-  Belt_MapString.valuesToArray(players).forEach((function (player) {
-          if (matchedIds.includes(player[/* id */1])) {
-            return 0;
-          } else {
-            unmatched[player[/* id */1]] = player;
-            return /* () */0;
-          }
-        }));
-  return unmatched;
+  return Belt_MapString.valuesToArray(players).reduce((function (acc, player) {
+                if (matchedIds.includes(player[/* id */1])) {
+                  return acc;
+                } else {
+                  return Belt_MapString.set(acc, player[/* id */1], player);
+                }
+              }), Belt_MapString.empty);
 }
 
 function isRoundComplete(roundList, players, roundId) {
@@ -263,10 +259,10 @@ function isRoundComplete(roundList, players, roundId) {
     return true;
   } else {
     var unmatched = getUnmatched(roundList, players, roundId);
-    var results = Caml_array.caml_array_get(roundList, roundId).map((function (match_) {
+    var results = Belt_Array.getExn(roundList, roundId).map((function (match_) {
             return match_[/* whiteScore */7] + match_[/* blackScore */8];
           }));
-    if (Object.keys(unmatched).length === 0) {
+    if (Belt_MapString.keysToArray(unmatched).length === 0) {
       return !results.includes(0.0);
     } else {
       return false;

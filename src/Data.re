@@ -1,3 +1,4 @@
+open Belt;
 let win = 1.0;
 let loss = 0.0;
 let draw = 0.5;
@@ -86,7 +87,7 @@ module Player = {
   let getPlayerMaybeMap = (playerMap, id) => {
     id === dummy_id
       ? dummyPlayer
-      : playerMap->Belt.Map.String.getWithDefault(id, makeMissingPlayer(id));
+      : playerMap->Map.String.getWithDefault(id, makeMissingPlayer(id));
   };
 };
 
@@ -240,7 +241,7 @@ let rounds2Matches = (~roundList: Tournament.roundList, ~lastRound=?, ()) => {
 // not matched for the specified round.
 let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
   let matchList = {
-    switch (roundList->Belt.Array.get(roundId)) {
+    switch (roundList->Array.get(roundId)) {
     | None => [||]
     | Some(round) => round
     };
@@ -253,14 +254,16 @@ let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
            acc |> Js.Array.concat([|match.whiteId, match.blackId|]),
          [||],
        );
-  let unmatched = Js.Dict.empty();
-  Belt.Map.String.valuesToArray(players)
-  |> Js.Array.forEach((player: Player.t) =>
-       if (!(matchedIds |> Js.Array.includes(player.id))) {
-         unmatched->Js.Dict.set(player.id, player);
-       }
+  Map.String.valuesToArray(players)
+  |> Js.Array.reduce(
+       (acc, player: Player.t) =>
+         if (!(matchedIds |> Js.Array.includes(player.id))) {
+           acc->Map.String.set(player.id, player);
+         } else {
+           acc;
+         },
+       Map.String.empty,
      );
-  unmatched;
 };
 
 let isRoundComplete = (roundList: Tournament.roundList, players, roundId) => {
@@ -270,11 +273,11 @@ let isRoundComplete = (roundList: Tournament.roundList, players, roundId) => {
     : {
       let unmatched = getUnmatched(roundList, players, roundId);
       let results =
-        roundList[roundId]
+        roundList->Array.getExn(roundId)
         |> Js.Array.map((match: Match.t) =>
              match.whiteScore +. match.blackScore
            );
-      Js.Dict.keys(unmatched)
+      unmatched->Map.String.keysToArray
       |> Js.Array.length == 0
       && !(results |> Js.Array.includes(0.0));
     };

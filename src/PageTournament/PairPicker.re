@@ -1,3 +1,4 @@
+open Belt;
 open TournamentDataReducers;
 
 type listEntry = {
@@ -15,8 +16,7 @@ module SelectList = {
     let stagePlayersOption = Js.Nullable.(p1->toOption, p2->toOption);
 
     let initialTable =
-      unmatched
-      |> Js.Dict.values
+      unmatched->Map.String.valuesToArray
       |> Js.Array.map(player => {player, ideal: 0.0});
     let (sorted, sortedDispatch) =
       Hooks.useSortedTable(
@@ -47,7 +47,7 @@ module SelectList = {
           switch (selectedId) {
           | None => 0.0
           | Some(id) =>
-            switch (pairData->Js.Dict.get(id)) {
+            switch (pairData->Map.String.get(id)) {
             | None => 0.0 /* It's a bye player */
             | Some(selectedPlayer) =>
               switch (player) {
@@ -61,11 +61,11 @@ module SelectList = {
         };
         let table =
           unmatched
-          |> Js.Dict.values
+          |> Map.String.valuesToArray
           |> Js.Array.map(player =>
                {
                  player,
-                 ideal: calcIdealOrNot(pairData->Js.Dict.get(player.id)),
+                 ideal: calcIdealOrNot(pairData->Map.String.get(player.id)),
                }
              );
         sortedDispatch(Hooks.SetTable(table));
@@ -89,7 +89,7 @@ module SelectList = {
       | _ => ()
       };
     };
-    unmatched |> Js.Dict.keys |> Js.Array.length === 0
+    unmatched |> Map.String.keysToArray |> Js.Array.length === 0
       ? React.null
       : <table className="content">
           <thead>
@@ -219,7 +219,7 @@ module Stage = {
     let matchIdeal = {
       switch (stagedPlayersOption) {
       | (Some(p1), Some(p2)) =>
-        switch (Js.Dict.(pairData->get(p1), pairData->get(p2))) {
+        switch (Map.String.(pairData->get(p1), pairData->get(p2))) {
         | (Some(p1Data), Some(p2Data)) =>
           let ideal = Pairing.calcPairIdeal(p1Data, p2Data);
           Externals.Numeral.(
@@ -300,11 +300,11 @@ module PlayerInfo = {
         ~scoreData,
         ~avoidPairs,
       ) => {
-    let avoidDict =
+    let avoidMap =
       avoidPairs
-      |> Js.Array.reduce(Converters.avoidPairReducer, Js.Dict.empty());
+      |> Js.Array.reduce(Converters.avoidPairReducer, Map.String.empty);
     let playerData =
-      switch (scoreData->Js.Dict.get(playerId)) {
+      switch (scoreData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)
       | Some(data) => data
       };
@@ -314,9 +314,11 @@ module PlayerInfo = {
     let colorBalance = Utils.arraySumFloat(colorScores);
     let player = getPlayer(playerId);
     let hasBye =
-      opponentResults |> Js.Dict.keys |> Js.Array.includes(Data.dummy_id);
+      opponentResults
+      |> Map.String.keysToArray
+      |> Js.Array.includes(Data.dummy_id);
     let avoidList =
-      switch (avoidDict->Js.Dict.get(playerId)) {
+      switch (avoidMap->Map.String.get(playerId)) {
       | None => [||]
       | Some(avoidList) => avoidList
       };
@@ -346,31 +348,31 @@ module PlayerInfo = {
       <p> {"Opponent history:" |> React.string} </p>
       <ol>
         {opponentResults
-         |> Js.Dict.entries
-         |> Js.Array.map(((opId, result)) =>
-              <li key=opId>
-                {[|
-                   getPlayer(opId).firstName,
-                   getPlayer(opId).lastName,
-                   "-",
-                   switch (result) {
-                   | 0.0 => "Lost"
-                   | 1.0 => "Won"
-                   | 0.5 => "Draw"
-                   | _ => "Draw"
-                   },
-                 |]
-                 |> Js.Array.joinWith(" ")
-                 |> React.string}
-              </li>
-            )
-         |> React.array}
+         ->Map.String.toArray
+         ->Array.map(((opId, result)) =>
+             <li key=opId>
+               {[|
+                  getPlayer(opId).firstName,
+                  getPlayer(opId).lastName,
+                  "-",
+                  switch (result) {
+                  | 0.0 => "Lost"
+                  | 1.0 => "Won"
+                  | 0.5 => "Draw"
+                  | _ => "Draw"
+                  },
+                |]
+                |> Js.Array.joinWith(" ")
+                |> React.string}
+             </li>
+           )
+         ->React.array}
       </ol>
       <p> {"Players to avoid:" |> React.string} </p>
       <ol>
         {avoidList
          |> Js.Array.map(pId =>
-              switch (players->Belt.Map.String.get(pId)) {
+              switch (players->Map.String.get(pId)) {
               /*  don't show players not in this tourney*/
               | None => React.null
               | Some(_) =>
@@ -425,7 +427,7 @@ let make =
       switch (p1->Js.Nullable.toOption) {
       | None => ()
       | Some(p1) =>
-        switch (unmatchedWithDummy->Js.Dict.get(p1)) {
+        switch (unmatchedWithDummy->Map.String.get(p1)) {
         | None => setStagedPlayers(((_, p2)) => (Js.Nullable.null, p2))
         | _ => ()
         }
@@ -433,7 +435,7 @@ let make =
       switch (p2->Js.Nullable.toOption) {
       | None => ()
       | Some(p2) =>
-        switch (unmatchedWithDummy->Js.Dict.get(p2)) {
+        switch (unmatchedWithDummy->Map.String.get(p2)) {
         | None => setStagedPlayers(((p1, _)) => (p1, Js.Nullable.null))
         | _ => ()
         }

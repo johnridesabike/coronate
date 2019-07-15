@@ -1,3 +1,4 @@
+open Belt;
 open Jest;
 open Expect;
 open Converters;
@@ -26,7 +27,7 @@ test("Players have 0 priority of pairing themselves.", () => {
   // realistic. Something nutty must happen for 0 priority pairings to get
   // picked.
   let pairData = loadPairData("Bye_Round_Tourney____");
-  let newb = pairData->Js.Dict.unsafeGet("Newbie_McNewberson___");
+  let newb = pairData->Map.String.getExn("Newbie_McNewberson___");
   let ideal = Pairing.calcPairIdeal(newb, newb);
   expect(ideal) |> toBe(0.0);
 });
@@ -36,7 +37,7 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   let (pairData, byedPlayer) =
     Pairing.setByePlayer([||], Data.dummy_id, dataPreBye);
   test("The lowest-ranking player is removed after bye selection.", () =>
-    expect(Js.Dict.keys(pairData))
+    expect(pairData->Map.String.keysToArray)
     |> not
     |> toContain("Newbie_McNewberson___")
   );

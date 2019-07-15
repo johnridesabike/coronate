@@ -3,7 +3,6 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Numeral from "numeral";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Tabs from "@reach/tabs";
@@ -28,7 +27,7 @@ function PageRound$PlayerMatchInfo(Props) {
   var newRating = Props.newRating;
   var getPlayer = Props.getPlayer;
   var player = Curry._1(getPlayer, playerId);
-  var match = Js_dict.get(scoreData, playerId);
+  var match = Belt_MapString.get(scoreData, playerId);
   var match$1;
   if (match !== undefined) {
     var data = match;
@@ -40,14 +39,14 @@ function PageRound$PlayerMatchInfo(Props) {
   } else {
     match$1 = /* tuple */[
       /* array */[],
-      { },
+      Belt_MapString.empty,
       /* array */[]
     ];
   }
   var opponentResults = match$1[1];
   var colorBalance = Utils$Coronate.arraySumFloat(match$1[0]);
-  var hasBye = Object.keys(opponentResults).includes(Data$Coronate.dummy_id);
-  var oppResultsEntries = Js_dict.entries(opponentResults);
+  var hasBye = Belt_MapString.keysToArray(opponentResults).includes(Data$Coronate.dummy_id);
+  var oppResultsEntries = Belt_MapString.toArray(opponentResults);
   var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
     );
@@ -588,12 +587,10 @@ function WithRoundData(BaseComponent) {
             return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
           }), /* array */[roundList]);
     var match = roundId === (roundList.length - 1 | 0);
-    var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : { };
-    var unmatchedCount = Object.keys(unmatched).length;
-    var unmatchedWithDummy = Js_dict.fromArray(Js_dict.entries(unmatched));
-    if (unmatchedCount % 2 !== 0) {
-      unmatchedWithDummy[Data$Coronate.dummy_id] = Curry._1(getPlayer, Data$Coronate.dummy_id);
-    }
+    var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;
+    var unmatchedCount = Belt_MapString.keysToArray(unmatched).length;
+    var match$1 = unmatchedCount % 2 !== 0;
+    var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(getPlayer, Data$Coronate.dummy_id)) : unmatched;
     var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
     return React.createElement(BaseComponent[/* make */0], {
                 roundId: roundId,
@@ -693,12 +690,10 @@ function PageRound$WithRoundData(Props) {
           return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
         }), /* array */[roundList]);
   var match = roundId === (roundList.length - 1 | 0);
-  var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : { };
-  var unmatchedCount = Object.keys(unmatched).length;
-  var unmatchedWithDummy = Js_dict.fromArray(Js_dict.entries(unmatched));
-  if (unmatchedCount % 2 !== 0) {
-    unmatchedWithDummy[Data$Coronate.dummy_id] = Curry._1(getPlayer, Data$Coronate.dummy_id);
-  }
+  var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;
+  var unmatchedCount = Belt_MapString.keysToArray(unmatched).length;
+  var match$1 = unmatchedCount % 2 !== 0;
+  var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(getPlayer, Data$Coronate.dummy_id)) : unmatched;
   var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
   return React.createElement(PageRound$PageRoundBase, {
               roundId: roundId,

@@ -1,3 +1,4 @@
+open Belt;
 [@react.component]
 let make = (~tournament: TournamentData.t) => {
   let tourney = tournament.tourney;
@@ -12,10 +13,10 @@ let make = (~tournament: TournamentData.t) => {
     if (player1Id === player2Id) {
       <Icons.x className="disabled" />;
     } else {
-      switch (scoreData->Js.Dict.get(player1Id)) {
+      switch (scoreData->Map.String.get(player1Id)) {
       | None => React.null
       | Some(scoreData) =>
-        switch (scoreData.opponentResults->Js.Dict.get(player2Id)) {
+        switch (scoreData.opponentResults->Map.String.get(player2Id)) {
         | None => React.null
         | Some(result) =>
           Externals.Numeral.(result->numeral->format("1/2")) |> React.string
@@ -25,9 +26,9 @@ let make = (~tournament: TournamentData.t) => {
 
   let getRatingChangeTds = playerId => {
     let firstRating =
-      scoreData->Js.Dict.unsafeGet(playerId).ratings[0] |> float_of_int;
+      scoreData->Map.String.getExn(playerId).ratings->Array.getExn(0) |> float_of_int;
     let lastRating =
-      Utils.last(scoreData->Js.Dict.unsafeGet(playerId).ratings)
+      Utils.last(scoreData->Map.String.getExn(playerId).ratings)
       |> float_of_int;
     let change =
       Externals.Numeral.((lastRating -. firstRating)->numeral->format("+0"));

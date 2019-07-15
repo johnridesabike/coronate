@@ -1,3 +1,5 @@
+open Belt;
+
 let scoreByeMatch = (byeValue, match: Data.Match.t) =>
   if (match.whiteId === Data.dummy_id) {
     {...match, whiteScore: 0.0, blackScore: byeValue};
@@ -7,23 +9,18 @@ let scoreByeMatch = (byeValue, match: Data.Match.t) =>
     match;
   };
 
-let autoPair =
-    (~pairData, ~byeValue, ~playerDict, ~tourney: Data.Tournament.t) => {
+let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) => {
   /* the pairData includes any players who were already matched. We need to
      only include the specified players. */
-  let playerIds = playerDict |> Js.Dict.keys;
-  let filteredData = Js.Dict.empty();
-  let _ =
-    Js.Dict.(
-      Js.Array.(
-        pairData
-        |> values
-        |> forEach((datum: Pairing.t) =>
-             if (playerIds |> includes(datum.id)) {
-               filteredData->set(datum.id, datum);
-             }
-           )
-      )
+  let playerIds = playerMap |> Map.String.keysToArray;
+  let filteredData =
+    pairData->Map.String.reduce(
+      Map.String.empty, (acc, key, datum: Pairing.t) =>
+      if (playerIds |> Js.Array.includes(key)) {
+        acc->Map.String.set(key, datum);
+      } else {
+        acc;
+      }
     );
   let (pairdataNoByes, byePlayerData) =
     Pairing.setByePlayer(tourney.byeQueue, Data.dummy_id, filteredData);
@@ -34,7 +31,7 @@ let autoPair =
       pairs |> Js.Array.concat([|(player.id, Data.dummy_id)|])
     | None => pairs
     };
-  let getPlayer = Data.Player.getPlayerMaybe(playerDict);
+  let getPlayer = Data.Player.getPlayerMaybeMap(playerMap);
   let newMatchList =
     pairsWithBye
     |> Js.Array.map(((whiteId, blackId)) =>
@@ -80,8 +77,8 @@ type actionTournament =
   | AutoPair(
       float,
       int,
-      Js.Dict.t(Pairing.t),
-      Js.Dict.t(Data.Player.t),
+      Map.String.t(Pairing.t),
+      Map.String.t(Data.Player.t),
       Data.Tournament.t,
     )
   | ManualPair(float, (Data.Player.t, Data.Player.t), int)
@@ -118,14 +115,14 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
   | SetTourneyPlayers(playerIds) => {...state, playerIds}
   | SetByeQueue(byeQueue) => {...state, byeQueue}
   | SetName(name) => {...state, name}
-  | AutoPair(byeValue, roundId, pairData, playerDict, tourney) =>
+  | AutoPair(byeValue, roundId, pairData, playerMap, tourney) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
     Js.Array.(
       roundList->unsafe_set(
         roundId,
         roundList->unsafe_get(roundId)
-        |> concat(autoPair(~pairData, ~byeValue, ~tourney, ~playerDict)),
+        |> concat(autoPair(~pairData, ~byeValue, ~tourney, ~playerMap)),
       )
     );
     {...state, roundList};
@@ -159,22 +156,30 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
         roundList->unsafe_get(roundId)
         |> findIndex((match: Data.Match.t) => match.id === matchId)
       );
-    let match = roundList[roundId][matchIndex];
-    roundList[roundId][matchIndex] =
-      Data.Match.{
-        ...match,
-        whiteScore,
-        blackScore,
-        whiteNewRating,
-        blackNewRating,
-      };
+    let match = roundList->Array.getExn(roundId)->Array.getExn(matchIndex);
+    let _ =
+      roundList
+      ->Array.getExn(roundId)
+      ->Array.set(
+          matchIndex,
+          Data.Match.{
+            ...match,
+            whiteScore,
+            blackScore,
+            whiteNewRating,
+            blackNewRating,
+          },
+        );
     {...state, roundList};
   | DelMatch(matchId, roundId) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
-    roundList[roundId] =
-      roundList[roundId]
-      |> Js.Array.filter((match: Data.Match.t) => match.id !== matchId);
+    let _ =
+      roundList->Array.set(
+        roundId,
+        roundList->Array.getExn(roundId)
+        |> Js.Array.filter((match: Data.Match.t) => match.id !== matchId),
+      );
     {...state, roundList};
   | SwapColors(matchId, roundId) =>
     /* I don't actually know if this copy is necessary */
@@ -190,23 +195,32 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
     let oldMatch =
       Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
     /* TODO: clean this up. It just reverses the values */
-    roundList[roundId][matchIndex] =
-      Data.Match.{
-        ...oldMatch,
-        whiteId: oldMatch.blackId,
-        blackId: oldMatch.whiteId,
-        whiteScore: oldMatch.blackScore,
-        blackScore: oldMatch.whiteScore,
-        whiteOrigRating: oldMatch.blackOrigRating,
-        blackOrigRating: oldMatch.whiteOrigRating,
-        whiteNewRating: oldMatch.blackNewRating,
-        blackNewRating: oldMatch.whiteNewRating,
-      };
+    let _ =
+      roundList
+      ->Array.getExn(roundId)
+      ->Array.set(
+          matchIndex,
+          Data.Match.{
+            ...oldMatch,
+            whiteId: oldMatch.blackId,
+            blackId: oldMatch.whiteId,
+            whiteScore: oldMatch.blackScore,
+            blackScore: oldMatch.whiteScore,
+            whiteOrigRating: oldMatch.blackOrigRating,
+            blackOrigRating: oldMatch.whiteOrigRating,
+            whiteNewRating: oldMatch.blackNewRating,
+            blackNewRating: oldMatch.whiteNewRating,
+          },
+        );
     {...state, roundList};
   | MoveMatch(oldIndex, newIndex, roundId) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
-    roundList[roundId] = roundList[roundId] |> Utils.move(oldIndex, newIndex);
+    let _ =
+      roundList->Array.set(
+        roundId,
+        roundList->Array.getExn(roundId) |> Utils.move(oldIndex, newIndex),
+      );
     {...state, roundList};
   | UpdateByeScores(newValue) =>
     let roundList =
@@ -229,19 +243,19 @@ type actionPlayer =
   | SetPlayers(Belt.Map.String.t(Data.Player.t));
 
 let playersReducer = (state, action) => {
-  open Belt.Map.String;
-  switch (action) {
-  | SetPlayer(player) =>
-    state->set(player.id, player);
-  | DelPlayer(id) =>
-    /*You should delete all avoid-pairs with the id too.*/
-    state->remove(id);
-  | SetMatchCount(id, matchCount) =>
-    let player = state->getExn(id);
-    state->set(id, Data.Player.{...player, matchCount});
-  | SetRating(id, rating) =>
-    let player = state->getExn(id);
-    state->set(id, Data.Player.{...player, rating});
-  | SetPlayers(state) => state
-  };
+  Belt.Map.String.(
+    switch (action) {
+    | SetPlayer(player) => state->set(player.id, player)
+    | DelPlayer(id) =>
+      /*You should delete all avoid-pairs with the id too.*/
+      state->remove(id)
+    | SetMatchCount(id, matchCount) =>
+      let player = state->getExn(id);
+      state->set(id, Data.Player.{...player, matchCount});
+    | SetRating(id, rating) =>
+      let player = state->getExn(id);
+      state->set(id, Data.Player.{...player, rating});
+    | SetPlayers(state) => state
+    }
+  );
 };

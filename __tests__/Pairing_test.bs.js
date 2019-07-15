@@ -27,7 +27,7 @@ function loadPairData(tourneyId) {
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {
         var pairData = loadPairData("Bye_Round_Tourney____");
-        var newb = pairData["Newbie_McNewberson___"];
+        var newb = Belt_MapString.getExn(pairData, "Newbie_McNewberson___");
         var ideal = Pairing$Coronate.calcPairIdeal(newb, newb);
         return Jest.Expect[/* toBe */2](0.0, Jest.Expect[/* expect */0](ideal));
       }));
@@ -38,7 +38,7 @@ Jest.describe("The lowest-ranking player is automatically picked for byes.", (fu
         var byedPlayer = match[1];
         var pairData = match[0];
         Jest.test("The lowest-ranking player is removed after bye selection.", (function (param) {
-                return Jest.Expect[/* toContain */10]("Newbie_McNewberson___", Jest.Expect[/* not_ */23](Jest.Expect[/* expect */0](Object.keys(pairData))));
+                return Jest.Expect[/* toContain */10]("Newbie_McNewberson___", Jest.Expect[/* not_ */23](Jest.Expect[/* expect */0](Belt_MapString.keysToArray(pairData))));
               }));
         return Jest.test("The lowest-ranking player is returned", (function (param) {
                       if (byedPlayer !== undefined) {
@@ -48,7 +48,7 @@ Jest.describe("The lowest-ranking player is automatically picked for byes.", (fu
                               Caml_builtin_exceptions.assert_failure,
                               /* tuple */[
                                 "Pairing_test.re",
-                                45,
+                                46,
                                 14
                               ]
                             ];
@@ -71,7 +71,7 @@ Jest.test("The bye signup queue works", (function (param) {
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  58,
+                  59,
                   12
                 ]
               ];
@@ -89,7 +89,7 @@ Jest.test("If all player have (impossibly) played a bye round, the lowest-rated 
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
                   "Pairing_test.re",
-                  69,
+                  70,
                   14
                 ]
               ];

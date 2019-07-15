@@ -1,3 +1,4 @@
+open Belt;
 open TournamentDataReducers;
 open TournamentData;
 
@@ -13,18 +14,20 @@ module PlayerMatchInfo = {
       ) => {
     let player = getPlayer(playerId);
     let (colorScores, opponentResults, results) =
-      switch (scoreData->Js.Dict.get(playerId)) {
+      switch (scoreData->Map.String.get(playerId)) {
       | Some((data: Scoring.scoreData)) => (
           data.colorScores,
           data.opponentResults,
           data.results,
         )
-      | None => ([||], Js.Dict.empty(), [||])
+      | None => ([||], Map.String.empty, [||])
       };
     let colorBalance = Utils.arraySumFloat(colorScores);
     let hasBye =
-      opponentResults |> Js.Dict.keys |> Js.Array.includes(Data.dummy_id);
-    let oppResultsEntries = opponentResults |> Js.Dict.entries;
+      opponentResults
+      |> Map.String.keysToArray
+      |> Js.Array.includes(Data.dummy_id);
+    let oppResultsEntries = opponentResults |> Map.String.toArray;
     let prettyBalance =
       if (colorBalance < 0.0) {
         "White +" ++ (colorBalance |> Utils.absf |> Js.Float.toString);
@@ -555,10 +558,10 @@ module type UsesRoundData = {
       ~roundId: int,
       ~tournament: TournamentData.t,
       ~activePlayersCount: int,
-      ~scoreData: Js.Dict.t(Scoring.scoreData),
-      ~unmatched: Js.Dict.t(Data.Player.t),
+      ~scoreData: Map.String.t(Scoring.scoreData),
+      ~unmatched: Map.String.t(Data.Player.t),
       ~unmatchedCount: int,
-      ~unmatchedWithDummy: Js.Dict.t(Data.Player.t)
+      ~unmatchedWithDummy: Map.String.t(Data.Player.t)
     ) =>
     React.element;
 };
@@ -583,18 +586,15 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
     let unmatched =
       roundId === (roundList |> Js.Array.length) - 1
         ? Data.getUnmatched(roundList, activePlayers, roundId)
-        : Js.Dict.empty();
-    let unmatchedCount = unmatched |> Js.Dict.keys |> Js.Array.length;
+        : Map.String.empty;
+    let unmatchedCount =
+      unmatched |> Map.String.keysToArray |> Js.Array.length;
     /* make a new list so as not to affect auto-pairing*/
     /* TODO: replace these dicts with a better data type */
-    let unmatchedWithDummy = unmatched |> Js.Dict.entries |> Js.Dict.fromArray;
-
-    if (unmatchedCount mod 2 !== 0) {
-      unmatchedWithDummy->Js.Dict.set(
-        Data.dummy_id,
-        getPlayer(Data.dummy_id),
-      );
-    };
+    let unmatchedWithDummy =
+      unmatchedCount mod 2 !== 0
+        ? unmatched->Map.String.set(Data.dummy_id, getPlayer(Data.dummy_id))
+        : unmatched;
     let activePlayersCount =
       activePlayers |> Belt.Map.String.keysToArray |> Js.Array.length;
     <BaseComponent

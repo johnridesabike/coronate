@@ -1,35 +1,36 @@
 open Utils;
+open Belt;
 
 type scoreData = {
   colorScores: array(float),
   colors: array(int),
   id: string,
   isDummy: bool,
-  opponentResults: Js.Dict.t(float),
+  opponentResults: Map.String.t(float),
   ratings: array(int),
   results: array(float),
   resultsNoByes: array(float),
 };
 
 let isNotDummy = (scoreDict, oppId) => {
-  switch (Js.Dict.get(scoreDict, oppId)) {
+  switch (scoreDict->Map.String.get(oppId)) {
   | None => true
   | Some(opponent) => !opponent.isDummy
   };
 };
 
 let getPlayerScore = (scoreDict, id) => {
-  switch (Js.Dict.get(scoreDict, id)) {
+  switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(player) => arraySumFloat(player.results)
   };
 };
 
 let getOpponentScores = (scoreDict, id) => {
-  switch (Js.Dict.get(scoreDict, id)) {
+  switch (scoreDict->Map.String.get(id)) {
   | None => [||]
   | Some(player) =>
-    Js.Dict.keys(player.opponentResults)
+    player.opponentResults->Map.String.keysToArray
     |> Js.Array.filter(isNotDummy(scoreDict))
     |> Js.Array.map(getPlayerScore(scoreDict))
   };
@@ -52,7 +53,7 @@ let runningReducer = (acc, score) =>
 
 // USCF § 34E3.
 let getCumulativeScore = (scoreDict, id) => {
-  switch (Js.Dict.get(scoreDict, id)) {
+  switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
     person.resultsNoByes
@@ -63,10 +64,10 @@ let getCumulativeScore = (scoreDict, id) => {
 
 // USCF § 34E4.
 let getCumulativeOfOpponentScore = (scoreDict, id) => {
-  switch (Js.Dict.get(scoreDict, id)) {
+  switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
-    Js.Dict.keys(person.opponentResults)
+    person.opponentResults->Map.String.keysToArray
     |> Js.Array.filter(isNotDummy(scoreDict))
     |> Js.Array.map(getCumulativeScore(scoreDict))
     |> arraySumFloat
@@ -75,14 +76,14 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 
 // USCF § 34E6
 let getColorBalanceScore = (scoreDict, id) => {
-  switch (Js.Dict.get(scoreDict, id)) {
+  switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) => arraySumFloat(person.colorScores)
   };
 };
 
 type tieBreakData = {
-  func: (Js.Dict.t(scoreData), string) => float,
+  func: (Map.String.t(scoreData), string) => float,
   id: int,
   name: string,
 };
@@ -99,7 +100,7 @@ let tieBreakMethods = [|
   {func: getColorBalanceScore, id: 4, name: "Most black"},
 |];
 
-let getNamefromIndex = index => tieBreakMethods[index].name;
+let getNamefromIndex = index => tieBreakMethods->Array.getExn(index).name;
 let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
 
 // This is useful for cases where the regular factory functions return empty
@@ -109,7 +110,7 @@ let createBlankScoreData = id => {
   colors: [||],
   id,
   isDummy: false,
-  opponentResults: Js.Dict.empty(),
+  opponentResults: Map.String.empty,
   ratings: [||],
   results: [||],
   resultsNoByes: [||],
@@ -127,9 +128,9 @@ type standing = {
 // coresponds to the order of the method names in the second list.
 let createStandingList = (methods, scoreData) => {
   let selectedTieBreakFuncs =
-    methods |> Js.Array.map(i => tieBreakMethods[i].func);
+    methods |> Js.Array.map(i => tieBreakMethods->Array.getExn(i).func);
   let standings =
-    Js.Dict.keys(scoreData)
+    scoreData->Map.String.keysToArray
     |> Js.Array.map(id =>
          {
            id,
@@ -157,7 +158,9 @@ let areScoresEqual = (standing1, standing2) => {
         standing1.tieBreaks
         |> Js.Array.reducei(
              (acc, value, i) =>
-               Js.Array.concat(acc, [|value !== standing2.tieBreaks[i]|]),
+               acc->Js.Array.concat([|
+                 value !== standing2.tieBreaks->Array.getExn(i),
+               |]),
              [||],
            )
         |> Js.Array.includes(true)
@@ -176,7 +179,7 @@ let createStandingTree = standingList => {
              // Always make a new rank for the first player
              ? true
              // Make a new rank if the scores aren't equal
-             : !areScoresEqual(standing, standingList[i - 1]);
+             : !areScoresEqual(standing, standingList->Array.getExn(i - 1));
          };
          isNewRank
            // If this player doesn't have the same score, create a new
@@ -186,7 +189,10 @@ let createStandingTree = standingList => {
            // to the last branch
            : {
              let lastIndex = Js.Array.length(acc) - 1;
-             acc[lastIndex] = acc[lastIndex] |> Js.Array.concat([|standing|]);
+             let _ = acc->Array.set(
+               lastIndex,
+               acc->Array.getExn(lastIndex) |> Js.Array.concat([|standing|]),
+             );
              acc;
            };
        },

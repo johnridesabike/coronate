@@ -1,3 +1,4 @@
+open Belt;
 open Data.Player;
 let s = React.string;
 let sortName = Hooks.KeyString(x => x.firstName);
@@ -94,7 +95,7 @@ module List = {
     );
     let delPlayer = (event, id) => {
       ReactEvent.Mouse.preventDefault(event);
-      let playerOpt = players->Belt.Map.String.get(id);
+      let playerOpt = players->Map.String.get(id);
       switch (playerOpt) {
       | None => ()
       | Some(player) =>
@@ -214,29 +215,30 @@ module Profile = {
       },
       (windowDispatch, playerName),
     );
-    let avoidObj =
+    let avoidMap =
       config.avoidPairs
-      |> Js.Array.reduce(Converters.avoidPairReducer, Js.Dict.empty());
+      |> Js.Array.reduce(Converters.avoidPairReducer, Map.String.empty);
     let singAvoidList =
-      switch (avoidObj->Js.Dict.get(playerId)) {
+      switch (avoidMap->Map.String.get(playerId)) {
       | None => [||]
       | Some(idArr) => idArr
       };
     let unavoided =
       players
-      |> Belt.Map.String.keysToArray
+      |> Map.String.keysToArray
       |> Js.Array.(
            filter(id => !(singAvoidList |> includes(id)) && id !== playerId)
          );
     let (selectedAvoider, setSelectedAvoider) =
-      React.useState(() => unavoided[0]);
+      React.useState(() => unavoided->Array.getExn(0));
     let avoidAdd = event => {
       event->ReactEvent.Form.preventDefault;
       configDispatch(Db.AddAvoidPair((playerId, selectedAvoider)));
       /* Reset the selected avoider to the first on the list, but check to
          make sure they weren't they weren't the first. */
       let newSelected =
-        unavoided[0] !== selectedAvoider ? unavoided[0] : unavoided[1];
+        unavoided->Array.getExn(0) !== selectedAvoider
+          ? unavoided->Array.getExn(0) : unavoided->Array.getExn(1);
       setSelectedAvoider(_ => newSelected);
     };
     let handleChange = event => {
@@ -306,7 +308,9 @@ module Profile = {
             name="kfactor"
             type_="number"
             disabled=true
-            value={player.matchCount->Scoring.Ratings.getKFactor->string_of_int}
+            value={
+              player.matchCount->Scoring.Ratings.getKFactor->string_of_int
+            }
             readOnly=true
           />
         </p>
@@ -381,13 +385,13 @@ let make = (~id=?) => {
   let (players, playersDispatch) = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=players->Belt.Map.String.valuesToArray,
+      ~table=players->Map.String.valuesToArray,
       ~key=sortName,
       ~isDescending=false,
     );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(players->Belt.Map.String.valuesToArray));
+      sortDispatch(Hooks.SetTable(players->Map.String.valuesToArray));
       None;
     },
     (players, sortDispatch),
@@ -398,7 +402,7 @@ let make = (~id=?) => {
      | None =>
        <List sorted sortDispatch players playersDispatch configDispatch />
      | Some([id]) =>
-       switch (players->Belt.Map.String.get(id)) {
+       switch (players->Map.String.get(id)) {
        | None => <div> {s("Loading...")} </div>
        | Some(player) =>
          <Profile player players playersDispatch config configDispatch />

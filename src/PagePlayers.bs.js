@@ -3,8 +3,7 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
-import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
 import * as Db$Coronate from "./Db.bs.js";
 import * as Dialog from "@reach/dialog";
@@ -278,8 +277,8 @@ function PagePlayers$Profile(Props) {
         windowDispatch,
         playerName
       ]);
-  var avoidObj = config[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, { });
-  var match$1 = Js_dict.get(avoidObj, playerId);
+  var avoidMap = config[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, Belt_MapString.empty);
+  var match$1 = Belt_MapString.get(avoidMap, playerId);
   var singAvoidList = match$1 !== undefined ? match$1 : /* array */[];
   var unavoided = Belt_MapString.keysToArray(players).filter((function (id) {
           if (singAvoidList.includes(id)) {
@@ -289,7 +288,7 @@ function PagePlayers$Profile(Props) {
           }
         }));
   var match$2 = React.useState((function () {
-          return Caml_array.caml_array_get(unavoided, 0);
+          return Belt_Array.getExn(unavoided, 0);
         }));
   var setSelectedAvoider = match$2[1];
   var selectedAvoider = match$2[0];
@@ -299,8 +298,8 @@ function PagePlayers$Profile(Props) {
               playerId,
               selectedAvoider
             ]]));
-    var match = Caml_array.caml_array_get(unavoided, 0) !== selectedAvoider;
-    var newSelected = match ? Caml_array.caml_array_get(unavoided, 0) : Caml_array.caml_array_get(unavoided, 1);
+    var match = Belt_Array.getExn(unavoided, 0) !== selectedAvoider;
+    var newSelected = match ? Belt_Array.getExn(unavoided, 0) : Belt_Array.getExn(unavoided, 1);
     return Curry._1(setSelectedAvoider, (function (param) {
                   return newSelected;
                 }));

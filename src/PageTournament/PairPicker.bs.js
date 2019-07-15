@@ -3,8 +3,8 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Numeral from "numeral";
+import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Db$Coronate from "../Db.bs.js";
 import * as Dialog from "@reach/dialog";
@@ -40,7 +40,7 @@ function PairPicker$SelectList(Props) {
     stagePlayersOption_000,
     stagePlayersOption_001
   ];
-  var initialTable = Js_dict.values(unmatched).map((function (player) {
+  var initialTable = Belt_MapString.valuesToArray(unmatched).map((function (player) {
           return /* record */[
                   /* player */player,
                   /* ideal */0.0
@@ -82,7 +82,7 @@ function PairPicker$SelectList(Props) {
               selectedId = match$1 !== undefined ? match$1 : undefined;
             }
             if (selectedId !== undefined) {
-              var match$2 = Js_dict.get(pairData, selectedId);
+              var match$2 = Belt_MapString.get(pairData, selectedId);
               if (match$2 !== undefined) {
                 if (player !== undefined) {
                   return Pairing$Coronate.calcPairIdeal(match$2, player) / Pairing$Coronate.maxPriority;
@@ -96,10 +96,10 @@ function PairPicker$SelectList(Props) {
               return 0.0;
             }
           };
-          var table = Js_dict.values(unmatched).map((function (player) {
+          var table = Belt_MapString.valuesToArray(unmatched).map((function (player) {
                   return /* record */[
                           /* player */player,
-                          /* ideal */calcIdealOrNot(Js_dict.get(pairData, player[/* id */1]))
+                          /* ideal */calcIdealOrNot(Belt_MapString.get(pairData, player[/* id */1]))
                         ];
                 }));
           Curry._1(sortedDispatch, /* SetTable */Block.__(2, [table]));
@@ -110,7 +110,7 @@ function PairPicker$SelectList(Props) {
         sortedDispatch,
         stagePlayersOption
       ]);
-  var match$1 = Object.keys(unmatched).length === 0;
+  var match$1 = Belt_MapString.keysToArray(unmatched).length === 0;
   if (match$1) {
     return null;
   } else {
@@ -259,8 +259,8 @@ function PairPicker$Stage(Props) {
   if (match !== undefined) {
     var match$1 = stagedPlayersOption_001;
     if (match$1 !== undefined) {
-      var match$2 = Js_dict.get(pairData, match);
-      var match$3 = Js_dict.get(pairData, match$1);
+      var match$2 = Belt_MapString.get(pairData, match);
+      var match$3 = Belt_MapString.get(pairData, match$1);
       if (match$2 !== undefined && match$3 !== undefined) {
         var ideal = Pairing$Coronate.calcPairIdeal(match$2, match$3);
         matchIdeal = Numeral.default(ideal / Pairing$Coronate.maxPriority).format("%");
@@ -314,16 +314,16 @@ function PairPicker$PlayerInfo(Props) {
   var getPlayer = Props.getPlayer;
   var scoreData = Props.scoreData;
   var avoidPairs = Props.avoidPairs;
-  var avoidDict = avoidPairs.reduce(Converters$Coronate.avoidPairReducer, { });
-  var match = Js_dict.get(scoreData, playerId);
+  var avoidMap = avoidPairs.reduce(Converters$Coronate.avoidPairReducer, Belt_MapString.empty);
+  var match = Belt_MapString.get(scoreData, playerId);
   var playerData = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(playerId);
   var colorScores = playerData[/* colorScores */0];
   var opponentResults = playerData[/* opponentResults */4];
   var results = playerData[/* results */6];
   var colorBalance = Utils$Coronate.arraySumFloat(colorScores);
   var player = Curry._1(getPlayer, playerId);
-  var hasBye = Object.keys(opponentResults).includes(Data$Coronate.dummy_id);
-  var match$1 = Js_dict.get(avoidDict, playerId);
+  var hasBye = Belt_MapString.keysToArray(opponentResults).includes(Data$Coronate.dummy_id);
+  var match$1 = Belt_MapString.get(avoidMap, playerId);
   var avoidList = match$1 !== undefined ? match$1 : /* array */[];
   var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
@@ -334,7 +334,7 @@ function PairPicker$PlayerInfo(Props) {
                   id: "rating-" + player[/* id */1]
                 }, "Rating: ", player[/* rating */4].toString()), React.createElement("p", undefined, "Color balance: " + prettyBalance), React.createElement("p", undefined, "Has had a bye round: " + (
                   hasBye ? "Yes" : "No"
-                )), React.createElement("p", undefined, "Opponent history:"), React.createElement("ol", undefined, Js_dict.entries(opponentResults).map((function (param) {
+                )), React.createElement("p", undefined, "Opponent history:"), React.createElement("ol", undefined, Belt_Array.map(Belt_MapString.toArray(opponentResults), (function (param) {
                         var result = param[1];
                         var opId = param[0];
                         return React.createElement("li", {
@@ -400,7 +400,7 @@ function PairPicker(Props) {
       ]);
   React.useEffect((function (param) {
           if (!(p1 == null)) {
-            var match = Js_dict.get(unmatchedWithDummy, p1);
+            var match = Belt_MapString.get(unmatchedWithDummy, p1);
             if (match === undefined) {
               Curry._1(setStagedPlayers, (function (param) {
                       return /* tuple */[
@@ -412,7 +412,7 @@ function PairPicker(Props) {
             
           }
           if (!(p2 == null)) {
-            var match$1 = Js_dict.get(unmatchedWithDummy, p2);
+            var match$1 = Belt_MapString.get(unmatchedWithDummy, p2);
             if (match$1 === undefined) {
               Curry._1(setStagedPlayers, (function (param) {
                       return /* tuple */[

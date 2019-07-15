@@ -2,11 +2,11 @@
 
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Numeral from "numeral";
-import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Data$Coronate from "../Data.bs.js";
 import * as ReactFeather from "react-feather";
+import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as Scoring$Coronate from "../Scoring.bs.js";
 import * as Converters$Coronate from "../Converters.bs.js";
@@ -25,9 +25,9 @@ function PageTourneyCrossTable(Props) {
                   className: "disabled"
                 });
     } else {
-      var match = Js_dict.get(scoreData, player1Id);
+      var match = Belt_MapString.get(scoreData, player1Id);
       if (match !== undefined) {
-        var match$1 = Js_dict.get(match[/* opponentResults */4], player2Id);
+        var match$1 = Belt_MapString.get(match[/* opponentResults */4], player2Id);
         if (match$1 !== undefined) {
           return Numeral.default(match$1).format("1/2");
         } else {
@@ -39,8 +39,8 @@ function PageTourneyCrossTable(Props) {
     }
   };
   var getRatingChangeTds = function (playerId) {
-    var firstRating = Caml_array.caml_array_get(scoreData[playerId][/* ratings */5], 0);
-    var lastRating = Utils$Coronate.last(scoreData[playerId][/* ratings */5]);
+    var firstRating = Belt_Array.getExn(Belt_MapString.getExn(scoreData, playerId)[/* ratings */5], 0);
+    var lastRating = Utils$Coronate.last(Belt_MapString.getExn(scoreData, playerId)[/* ratings */5]);
     var change = Numeral.default(lastRating - firstRating).format("+0");
     return React.createElement(React.Fragment, undefined, React.createElement("td", {
                     className: "table__number"

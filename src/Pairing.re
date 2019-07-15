@@ -1,3 +1,4 @@
+open Belt;
 type t = {
   id: string,
   avoidIds: array(string),
@@ -88,25 +89,26 @@ let descendingRating = Utils.descend(x => x.rating);
 // "upper half" of it's score group.
 // USCF § 29C1
 let setUpperHalves = data => {
-  let nextData = Js.Dict.empty();
-  let dataList = Js.Dict.values(data);
+  let dataList = data->Map.String.valuesToArray;
   dataList
-  |> Js.Array.forEach(playerData => {
-       let (upperHalfIds, lowerHalfIds) =
-         (dataList |> Js.Array.filter(p2 => p2.score == playerData.score))
-         ->Belt.SortArray.stableSortBy(descendingRating)
-         |> Js.Array.map(p => p.id)
-         |> Utils.splitInHalf;
-       let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);
-       let halfPos =
-         isUpperHalf
-           ? upperHalfIds |> Js.Array.indexOf(playerData.id)
-           : lowerHalfIds |> Js.Array.indexOf(playerData.id);
-       // Is there a faster syntax for this?
-       let newPlayerData = {...playerData, halfPos, isUpperHalf};
-       nextData->Js.Dict.set(playerData.id, newPlayerData);
-     });
-  nextData;
+  |> Js.Array.reduce(
+       (acc, playerData) => {
+         let (upperHalfIds, lowerHalfIds) =
+           (dataList |> Js.Array.filter(p2 => p2.score == playerData.score))
+           ->Belt.SortArray.stableSortBy(descendingRating)
+           |> Js.Array.map(p => p.id)
+           |> Utils.splitInHalf;
+         let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);
+         let halfPos =
+           isUpperHalf
+             ? upperHalfIds |> Js.Array.indexOf(playerData.id)
+             : lowerHalfIds |> Js.Array.indexOf(playerData.id);
+         // Is there a faster syntax for this?
+         let newPlayerData = {...playerData, halfPos, isUpperHalf};
+         acc->Map.String.set(playerData.id, newPlayerData);
+       },
+       Map.String.empty,
+     );
 };
 
 let sortByScoreThenRating =
@@ -119,12 +121,12 @@ let sortByScoreThenRating =
 // players are paired.
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !(p.opponents |> Js.Array.includes(dummyId));
-  (Js.Dict.keys(data) |> Js.Array.length) mod 2 == 0
+  data->Map.String.keysToArray->Js.Array.length mod 2 == 0
     // if the list is even, just return it.
     ? (data, None)
     : {
       let dataList =
-        Js.Dict.values(data)
+        data->Map.String.valuesToArray
         |> Js.Array.filter(hasNotHadBye)
         |> sortByScoreThenRating;
       let playersWithoutByes = dataList |> Js.Array.map(p => p.id);
@@ -134,7 +136,7 @@ let setByePlayer = (byeQueue, dummyId, data) => {
         nextByeSignups |> Js.Array.length > 0
           // Assign the bye to the next person who signed up.
           ? {
-            switch (data->Js.Dict.get(nextByeSignups[0])) {
+            switch (data->Map.String.get(nextByeSignups->Array.getExn(0))) {
             | Some(x) => x
             | None => Utils.last(dataList)
             };
@@ -147,14 +149,12 @@ let setByePlayer = (byeQueue, dummyId, data) => {
               ? Utils.last(dataList)
               // In the impossible situation that *everyone* has played a bye round
               // previously, then just pick the last player.
-              : Js.Dict.values(data) |> sortByScoreThenRating |> Utils.last;
+              : data->Map.String.valuesToArray
+                |> sortByScoreThenRating
+                |> Utils.last;
           };
       };
-      // let byeData = Js.Dict.
-      let dataWithoutBye =
-        Js.Dict.entries(data)
-        |> Js.Array.filter(((key, _)) => key !== dataForNextBye.id)
-        |> Js.Dict.fromArray;
+      let dataWithoutBye = data->Map.String.remove(dataForNextBye.id);
       (dataWithoutBye, Some(dataForNextBye));
     };
 };
@@ -185,15 +185,14 @@ let sortByNetScoreThenRating =
 
 [@bs.val] external js_infinity: int = "Infinity";
 
-
 // Create pairings according to the rules specified in USCF § 27, § 28,
 //  and § 29. This is a work in progress and does not account for all of the
 // rules yet.
 let pairPlayers = pairData => {
   // Because `blossom()` has to use numbers that correspond to array indices,
   // we'll use `playerIdArray` as our source for that.
-  let playerIdArray = Js.Dict.keys(pairData);
-  let playerArray = Js.Dict.values(pairData);
+  let playerIdArray = pairData->Map.String.keysToArray;
+  let playerArray = pairData->Map.String.valuesToArray;
   // Turn the data into blossom-compatible input.
   let pairIdealReducer = (accArr, player1, index) => {
     // slice out players who have already computed, plus the current one
@@ -216,8 +215,10 @@ let pairPlayers = pairData => {
       ? acc
       // Translate the indices into ID strings
       : {
-        let p1 = pairData->Js.Dict.unsafeGet(playerIdArray[p1Index]);
-        let p2 = pairData->Js.Dict.unsafeGet(playerIdArray[p2Index]);
+        let p1 =
+          pairData->Map.String.getExn(playerIdArray->Array.getExn(p1Index));
+        let p2 =
+          pairData->Map.String.getExn(playerIdArray->Array.getExn(p2Index));
 
         // TODO: in the future, we may store the ideal for debugging. Because it
         // rarely serves a purpose, we're not including it now.
