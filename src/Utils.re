@@ -111,10 +111,10 @@ module Notification = {
       ) => {
     let (icon, notifClassName) =
       switch (kind) {
-      | Success => (<Icons.check />, "notification__success")
-      | Warning => (<Icons.alert />, "notification__warning")
-      | Error => (<Icons.x />, "notification__error")
-      | Generic => (<Icons.info />, "notification__generic")
+      | Success => (<Icons.Check />, "notification__success")
+      | Warning => (<Icons.Alert />, "notification__warning")
+      | Error => (<Icons.X />, "notification__error")
+      | Generic => (<Icons.Info />, "notification__generic")
       };
     <div
       className={Cn.make(["notification", notifClassName, className])} style>

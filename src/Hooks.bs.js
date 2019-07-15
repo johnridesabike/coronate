@@ -101,11 +101,13 @@ function Hooks$SortButton(Props) {
                     return Curry._1(dispatch, /* SetKey */Block.__(1, [sortKey]));
                   }
                 })
-            }, React.createElement(ReactFeather.ChevronUp, {
-                  style: {
-                    opacity: "0"
-                  }
-                }), children, match$1 ? React.createElement("span", {
+            }, React.createElement("span", {
+                  "aria-hidden": true
+                }, React.createElement(ReactFeather.ChevronUp, {
+                      style: {
+                        opacity: "0"
+                      }
+                    })), children, match$1 ? React.createElement("span", {
                     style: chevronStyle
                   }, React.createElement(ReactFeather.ChevronUp, { }), React.createElement(VisuallyHidden.default, {
                         children: "Sort ascending."
@@ -118,7 +120,7 @@ function Hooks$SortButton(Props) {
 
 var SortButton = /* module */[/* make */Hooks$SortButton];
 
-function useLoadingCursor(isLoaded) {
+function useLoadingCursorUntil(isLoaded) {
   React.useEffect((function () {
           if (isLoaded) {
             ((document.body.style.cursor = "auto"));
@@ -139,7 +141,7 @@ export {
   sortedTableReducer ,
   useSortedTable ,
   SortButton ,
-  useLoadingCursor ,
+  useLoadingCursorUntil ,
   
 }
 /* react Not a pure module */

@@ -74,10 +74,10 @@ function avoidPairReducer(acc, pair) {
 
 function createPairingData(playerData, avoidPairs, scoreMap) {
   var avoidMap = avoidPairs.reduce(avoidPairReducer, Belt_MapString.empty);
-  return Belt_MapString.valuesToArray(playerData).reduce((function (acc, data) {
-                var match = Belt_MapString.get(scoreMap, data[/* id */1]);
-                var playerStats = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(data[/* id */1]);
-                var match$1 = Belt_MapString.get(avoidMap, data[/* id */1]);
+  return Belt_MapString.reduce(playerData, Belt_MapString.empty, (function (acc, key, data) {
+                var match = Belt_MapString.get(scoreMap, key);
+                var playerStats = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(key);
+                var match$1 = Belt_MapString.get(avoidMap, key);
                 var newAvoidIds = match$1 !== undefined ? match$1 : /* array */[];
                 var newData_000 = /* id */data[/* id */1];
                 var newData_002 = /* colorScores */playerStats[/* colorScores */0];
@@ -96,8 +96,8 @@ function createPairingData(playerData, avoidPairs, scoreMap) {
                   newData_007,
                   newData_008
                 ];
-                return Belt_MapString.set(acc, data[/* id */1], newData);
-              }), Belt_MapString.empty);
+                return Belt_MapString.set(acc, key, newData);
+              }));
 }
 
 var blackValue = 1.0;

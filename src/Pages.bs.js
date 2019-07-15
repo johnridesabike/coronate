@@ -6,7 +6,7 @@ import * as ReactFeather from "react-feather";
 import * as Icons$Coronate from "./Icons.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
-import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
+import * as Electron$Coronate from "./Electron.bs.js";
 
 function Pages$CautionFooter(Props) {
   return React.createElement("aside", {
@@ -19,14 +19,14 @@ function Pages$CautionFooter(Props) {
                     }, " 👉 "), Utils$Coronate.Entities[/* nbsp */0], React.createElement("a", {
                       className: "caution__link",
                       href: Utils$Coronate.github_url,
-                      onClick: ElectronUtils$Coronate.ifElectronOpen
+                      onClick: Electron$Coronate.openInBrowser
                     }, "Git repository"), "."));
 }
 
 var CautionFooter = /* module */[/* make */Pages$CautionFooter];
 
 function Pages$Splash(Props) {
-  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
+  return React.createElement(Window$Coronate.Body[/* make */0], {
               children: React.createElement("div", {
                     className: "splash__splash"
                   }, React.createElement("aside", {
@@ -65,25 +65,25 @@ function Pages$Splash(Props) {
                             }
                           }, React.createElement("p", undefined, "Copyright " + (Utils$Coronate.Entities[/* copy */1] + " 2019 John Jackson.")), React.createElement("p", undefined, "Coronate is free software.", React.createElement("br", undefined), React.createElement("a", {
                                     href: Utils$Coronate.github_url,
-                                    onClick: ElectronUtils$Coronate.ifElectronOpen
+                                    onClick: Electron$Coronate.openInBrowser
                                   }, "Source code is available"), " under the ", React.createElement("a", {
                                     href: Utils$Coronate.license_url,
-                                    onClick: ElectronUtils$Coronate.ifElectronOpen
+                                    onClick: Electron$Coronate.openInBrowser
                                   }, "AGPL v3.0 license"), ".")), React.createElement("div", {
                             style: {
                               textAlign: "right"
                             }
                           }, React.createElement("p", undefined, React.createElement("a", {
                                     href: Utils$Coronate.issues_url,
-                                    onClick: ElectronUtils$Coronate.ifElectronOpen
+                                    onClick: Electron$Coronate.openInBrowser
                                   }, "Suggestions and bug reports are welcome.")), React.createElement("p", undefined, "Built with ", React.createElement("a", {
                                     href: "https://reasonml.github.io/reason-react/",
-                                    onClick: ElectronUtils$Coronate.ifElectronOpen
+                                    onClick: Electron$Coronate.openInBrowser
                                   }, "ReasonReact"), ". ", React.createElement("span", {
                                     style: {
                                       fontSize: "16px"
                                     }
-                                  }, React.createElement(Icons$Coronate.Reason[/* make */0], { }), " ", React.createElement(Icons$Coronate.ReactIcon[/* make */0], { })))))),
+                                  }, React.createElement(Icons$Coronate.Reason[/* make */0], { }), " ", React.createElement(Icons$Coronate.React[/* make */0], { })))))),
               footerFunc: (function (param) {
                   return React.createElement(Pages$CautionFooter, { });
                 })

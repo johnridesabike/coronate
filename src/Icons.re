@@ -1,95 +1,202 @@
-[@bs.module "react-feather"] [@react.component]
-external activity: unit => React.element = "Activity";
-[@bs.module "react-feather"] [@react.component]
-external alert: unit => React.element = "AlertTriangle";
-[@bs.module "react-feather"] [@react.component]
-external arrowDown: unit => React.element = "ArrowDown";
-[@bs.module "react-feather"] [@react.component]
-external arrowLeft: unit => React.element = "ArrowLeft";
-[@bs.module "react-feather"] [@react.component]
-external arrowUp: unit => React.element = "ArrowUp";
-[@bs.module "react-feather"] [@react.component]
-external award: unit => React.element = "Award";
-[@bs.module "react-feather"] [@react.component]
-external check: unit => React.element = "Check";
-[@bs.module "react-feather"] [@react.component]
-external checkCircle: unit => React.element = "CheckCircle";
-[@bs.module "react-feather"] [@react.component]
-external chevronDown: unit => React.element = "ChevronDown";
-[@bs.module "react-feather"] [@react.component]
-external chevronLeft: unit => React.element = "ChevronLeft";
-[@bs.module "react-feather"] [@react.component]
-external chevronRight: unit => React.element = "ChevronRight";
-[@bs.module "react-feather"] [@react.component]
-external chevronUp: (~style: ReactDOMRe.Style.t=?) => React.element = "ChevronUp";
-[@bs.module "react-feather"] [@react.component]
-external circle: unit => React.element = "Circle";
-[@bs.module "react-feather"] [@react.component]
-external download: unit => React.element = "Download";
-[@bs.module "react-feather"] [@react.component]
-external edit: unit => React.element = "Edit";
-[@bs.module "react-feather"] [@react.component]
-external help: unit => React.element = "HelpCircle";
-[@bs.module "react-feather"] [@react.component]
-external info: unit => React.element = "Info";
-[@bs.module "react-feather"] [@react.component]
-external layers: unit => React.element = "Layers";
-[@bs.module "react-feather"] [@react.component]
-external list: unit => React.element = "List";
-[@bs.module "react-feather"] [@react.component]
-external plus: unit => React.element = "Plus";
-[@bs.module "react-feather"] [@react.component]
-external repeat: unit => React.element = "Repeat";
-[@bs.module "react-feather"] [@react.component]
-external settings: unit => React.element = "Settings";
-[@bs.module "react-feather"] [@react.component]
-external sidebar: unit => React.element = "Sidebar";
-[@bs.module "react-feather"] [@react.component]
-external trash: unit => React.element = "Trash2";
-[@bs.module "react-feather"] [@react.component]
-external unfullscreen: unit => React.element = "Minimize2";
-[@bs.module "react-feather"] [@react.component]
-external userMinus: unit => React.element = "UserMinus";
-[@bs.module "react-feather"] [@react.component]
-external userPlus: unit => React.element = "UserPlus";
-[@bs.module "react-feather"] [@react.component]
-external users: unit => React.element = "Users";
-[@bs.module "react-feather"] [@react.component]
-external x: (~className:string=?) => React.element = "X";
+/* module ChevronUp = {
+     [@bs.obj]
+     external makeProps:
+       (
+         ~ariaHidden: 'ariaHidden=?,
+         ~className: 'className=?,
+         ~style: 'style=?,
+         ~key: string=?,
+         unit
+       ) =>
+       {
+         .
+         "aria-hidden": 'ariaHidden,
+         "className": 'className,
+         "style": 'style,
+       } =
+       "";
 
-[@bs.deriving abstract]
+     [@bs.module "react-feather"]
+     external make:
+       React.componentLike(
+         {
+           .
+           "aria-hidden": bool,
+           "className": string,
+           "style": ReactDOMRe.Style.t,
+         },
+         React.element,
+       ) =
+       "ChevronUp";
+   }; */
+
+module Activity = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Activity";
+};
+module Alert = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "AlertTriangle";
+};
+module ArrowDown = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ArrowDown";
+};
+module ArrowLeft = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ArrowLeft";
+};
+module ArrowUp = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ArrowUp";
+};
+module Award = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Award";
+};
+module Check = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Check";
+};
+module CheckCircle = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "CheckCircle";
+};
+module ChevronDown = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ChevronDown";
+};
+module ChevronLeft = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ChevronLeft";
+};
+module ChevronRight = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "ChevronRight";
+};
+module ChevronUp = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: (~style: ReactDOMRe.Style.t=?) => React.element = "ChevronUp";
+};
+module Circle = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Circle";
+};
+module Download = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Download";
+};
+module Edit = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Edit";
+};
+module Help = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "HelpCircle";
+};
+module Info = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Info";
+};
+module Layers = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Layers";
+};
+module List = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "List";
+};
+module Plus = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Plus";
+};
+module Repeat = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Repeat";
+};
+module Settings = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Settings";
+};
+module Sidebar = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Sidebar";
+};
+module Trash = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Trash2";
+};
+module Unfullscreen = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Minimize2";
+};
+module UserMinus = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "UserMinus";
+};
+module UserPlus = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "UserPlus";
+};
+module Users = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Users";
+};
+module X = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: (~className: string=?) => React.element = "X";
+};
+
 type simpleIcon = {
-  svg: string,
-  title: string,
-  hex: string,
+  .
+  "svg": string,
+  "title": string,
+  "hex": string,
+  "path": string,
 };
 
-module SimpleIcon = {
+module SimpleIcon = (IconData: {let icon: simpleIcon;}) => {
   [@react.component]
-  let make = (~icon) =>
-    <span
-      dangerouslySetInnerHTML={"__html": icon->svgGet}
-      ariaLabel={icon->titleGet}
-      style={ReactDOMRe.Style.make(~fill="#" ++ icon->hexGet, ())}
+  let make =
+      (
+        ~height="24",
+        ~width="24",
+        ~className="",
+        ~style=ReactDOMRe.Style.make(),
+        ~ariaLabel=IconData.icon##title ++ " Icon",
+        ~ariaHidden=false,
+      ) =>
+    <svg
       role="img"
-    />;
+      viewBox="0 0 24 24"
+      height
+      width
+      className
+      style=ReactDOMRe.Style.(
+        make(~fill="#" ++ IconData.icon##hex, ())->combine(style)
+      )
+      ariaLabel
+      ariaHidden>
+      <path d=IconData.icon##path />
+    </svg>;
+  make->React.setDisplayName(IconData.icon##title);
 };
 
-module Reason = {
-  [@bs.module "simple-icons/icons/reason"]
-  external icon: simpleIcon = "default";
-  [@react.component]
-  let make = () => <SimpleIcon icon />;
-};
+module Reason =
+  SimpleIcon({
+    [@bs.module "simple-icons/icons/reason"]
+    external icon: simpleIcon = "default";
+  });
 
-module ReactIcon = {
-  [@bs.module "simple-icons/icons/react"]
-  external icon: simpleIcon = "default";
-  [@react.component]
-  let make = () => <SimpleIcon icon />;
-};
+module React =
+  SimpleIcon({
+    [@bs.module "simple-icons/icons/react"]
+    external icon: simpleIcon = "default";
+  });
 
-// https://github.com/microsoft/vscode/tree/master/src/vs/workbench/browser/parts/titlebar/media
+/*
+  https://github.com/microsoft/vscode/tree/master/src/vs/workbench/browser/parts/titlebar/media
+ */
 module Close = {
   [@react.component]
   let make = () =>

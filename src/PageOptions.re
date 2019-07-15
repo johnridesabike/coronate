@@ -214,7 +214,7 @@ let make = () => {
     let newText = event->ReactEvent.Form.currentTarget##value;
     setText(_ => newText);
   };
-  <Window.WindowBody>
+  <Window.Body>
     <div className="content-area">
       <h2> {s("Bye  settings")} </h2>
       <form>
@@ -250,7 +250,7 @@ let make = () => {
           onClick={_ =>
             configDispatch(Db.SetLastBackup(Js.Date.make()))
           }>
-          <Icons.download />
+          <Icons.Download />
           {s(" Export all data")}
         </a>
       </p>
@@ -281,5 +281,5 @@ let make = () => {
         <p> <input type_="submit" value="Load" /> </p>
       </form>
     </div>
-  </Window.WindowBody>;
+  </Window.Body>;
 };

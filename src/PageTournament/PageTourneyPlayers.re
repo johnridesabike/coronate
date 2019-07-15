@@ -137,7 +137,7 @@ let make = (~tournament: TournamentData.t) => {
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
-        <Icons.edit />
+        <Icons.Edit />
         {" Edit player roster" |> React.string}
       </button>
     </div>

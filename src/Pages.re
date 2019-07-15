@@ -11,7 +11,7 @@ module CautionFooter = {
         <a
           className="caution__link"
           href=Utils.github_url
-          onClick={e => e->ElectronUtils.ifElectronOpen}>
+          onClick=Electron.openInBrowser>
           {React.string("Git repository")}
         </a>
         {React.string(".")}
@@ -22,7 +22,7 @@ module CautionFooter = {
 module Splash = {
   [@react.component]
   let make = () => {
-    <Window.WindowBody footerFunc={() => <CautionFooter />}>
+    <Window.Body footerFunc={() => <CautionFooter />}>
       <div className="splash__splash">
         <aside className="splash__hint">
           <ol>
@@ -34,7 +34,7 @@ module Splash = {
               {React.string("(optional)")}
             </li>
             <li>
-              <Icons.arrowLeft />
+              <Icons.ArrowLeft />
               {React.string(" Select a menu item.")}
             </li>
             <li> {React.string("Start creating your tournaments!")} </li>
@@ -70,15 +70,11 @@ module Splash = {
             <p>
               {React.string("Coronate is free software.")}
               <br />
-              <a
-                href=Utils.github_url
-                onClick={e => e->ElectronUtils.ifElectronOpen}>
+              <a href=Utils.github_url onClick=Electron.openInBrowser>
                 {React.string("Source code is available")}
               </a>
               {React.string(" under the ")}
-              <a
-                href=Utils.license_url
-                onClick={e => e->ElectronUtils.ifElectronOpen}>
+              <a href=Utils.license_url onClick=Electron.openInBrowser>
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
@@ -86,9 +82,7 @@ module Splash = {
           </div>
           <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
             <p>
-              <a
-                href=Utils.issues_url
-                onClick={e => e->ElectronUtils.ifElectronOpen}>
+              <a href=Utils.issues_url onClick=Electron.openInBrowser>
                 {React.string("Suggestions and bug reports are welcome.")}
               </a>
             </p>
@@ -96,20 +90,20 @@ module Splash = {
               {React.string("Built with ")}
               <a
                 href="https://reasonml.github.io/reason-react/"
-                onClick={e => e->ElectronUtils.ifElectronOpen}>
+                onClick=Electron.openInBrowser>
                 {React.string("ReasonReact")}
               </a>
               {React.string(". ")}
               <span style={ReactDOMRe.Style.make(~fontSize="16px", ())}>
                 <Icons.Reason />
                 {React.string(" ")}
-                <Icons.ReactIcon />
+                <Icons.React />
               </span>
             </p>
           </div>
         </footer>
       </div>
-    </Window.WindowBody>;
+    </Window.Body>;
   };
 };
 

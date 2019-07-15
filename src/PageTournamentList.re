@@ -59,11 +59,11 @@ let make = () => {
     };
     ();
   };
-  <Window.WindowBody>
+  <Window.Body>
     <div className="content-area">
       <div className="toolbar toolbar__left">
         <button onClick={_ => setIsDialogOpen(_ => true)}>
-          <Icons.plus />
+          <Icons.Plus />
           {s(" Add tournament")}
         </button>
       </div>
@@ -104,7 +104,7 @@ let make = () => {
                            className="danger button-ghost"
                            title={"Delete " ++ t.name}
                            onClick={_ => deleteTournament(t.id, t.name)}>
-                           <Icons.trash />
+                           <Icons.Trash />
                          </button>
                        </td>
                      </tr>
@@ -137,5 +137,5 @@ let make = () => {
         </form>
       </Utils.Dialog>
     </div>
-  </Window.WindowBody>;
+  </Window.Body>;
 };

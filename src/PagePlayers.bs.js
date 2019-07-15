@@ -466,7 +466,7 @@ function PagePlayers(Props) {
           configDispatch: configDispatch
         });
   }
-  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
+  return React.createElement(Window$Coronate.Body[/* make */0], {
               children: tmp
             });
 }

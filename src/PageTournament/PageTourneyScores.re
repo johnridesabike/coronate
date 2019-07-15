@@ -166,14 +166,14 @@ module SelectTieBreaks = {
             className="button-micro"
             disabled={selectedTb === None}
             onClick={_ => moveTb(-1)}>
-            <Icons.arrowUp />
+            <Icons.ArrowUp />
             {" Move up" |> React.string}
           </button>
           <button
             className="button-micro"
             disabled={selectedTb === None}
             onClick={_ => moveTb(1)}>
-            <Icons.arrowDown />
+            <Icons.ArrowDown />
             {" Move down" |> React.string}
           </button>
           <button
@@ -298,9 +298,9 @@ let make = (~tournament: TournamentData.t) => {
   Utils.Tabs.(
     <Tabs>
       <TabList>
-        <Tab> <Icons.list /> {" Scores" |> React.string} </Tab>
+        <Tab> <Icons.List /> {" Scores" |> React.string} </Tab>
         <Tab>
-          <Icons.settings />
+          <Icons.Settings />
           {" Edit tiebreak rules" |> React.string}
         </Tab>
       </TabList>

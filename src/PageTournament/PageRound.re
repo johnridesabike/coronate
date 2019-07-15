@@ -153,7 +153,7 @@ module MatchRow = {
         </span>
       | wonOrLost =>
         wonOrLost === color
-          ? <Icons.award /*ariaLabel="Won"*/ />
+          ? <Icons.Award /*ariaLabel="Won"*/ />
           : <Utils.VisuallyHidden>
               {"Lost" |> React.string}
             </Utils.VisuallyHidden>
@@ -267,7 +267,7 @@ module MatchRow = {
                           x(_ => Js.Nullable.return(match.id))
                         )
                       }>
-                      <Icons.circle />
+                      <Icons.Circle />
                       <Utils.VisuallyHidden>
                         {[|"Edit match for", whiteName, "versus", blackName|]
                          |> Js.Array.joinWith(" ")
@@ -282,14 +282,14 @@ module MatchRow = {
                           x(_ => Js.Nullable.null)
                         )
                       }>
-                      <Icons.checkCircle />
+                      <Icons.CheckCircle />
                     </button>
               )}
              <button
                className="button-ghost"
                title="Open match information."
                onClick={_ => setIsModalOpen(_ => true)}>
-               <Icons.info />
+               <Icons.Info />
                <Utils.VisuallyHidden>
                  {[|
                     "View information for match:",
@@ -491,7 +491,7 @@ module Round = {
               ->Belt.Option.map(x => unMatch(x, matchList))
               ->ignore
             }>
-            <Icons.trash />
+            <Icons.Trash />
             {" Unmatch" |> React.string}
           </button>
           {" " |> React.string}
@@ -504,7 +504,7 @@ module Round = {
               ->Belt.Option.map(x => swapColors(x))
               ->ignore
             }>
-            <Icons.repeat />
+            <Icons.Repeat />
             {" Swap colors" |> React.string}
           </button>
           {" " |> React.string}
@@ -517,7 +517,7 @@ module Round = {
               ->Belt.Option.map(x => moveMatch(x, -1, matchList))
               ->ignore
             }>
-            <Icons.arrowUp />
+            <Icons.ArrowUp />
             {" Move up" |> React.string}
           </button>
           {" " |> React.string}
@@ -530,7 +530,7 @@ module Round = {
               ->Belt.Option.map(x => moveMatch(x, 1, matchList))
               ->ignore
             }>
-            <Icons.arrowDown />
+            <Icons.ArrowDown />
             {" Move down" |> React.string}
           </button>
         </div>
@@ -640,11 +640,11 @@ module PageRoundBase = {
       <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
         <TabList>
           <Tab disabled={unmatchedCount === activePlayersCount}>
-            <Icons.list />
+            <Icons.List />
             {" Matches" |> React.string}
           </Tab>
           <Tab disabled={unmatchedCount === 0}>
-            <Icons.users />
+            <Icons.Users />
             {[|
                " Unmatched players (",
                unmatchedCount |> Js.Int.toString,

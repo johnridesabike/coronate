@@ -117,7 +117,7 @@ module List = {
     <div className="content-area">
       <div className="toolbar toolbar__left">
         <button onClick={_ => setIsDialogOpen(_ => true)}>
-          <Icons.userPlus />
+          <Icons.UserPlus />
           {s(" Add a new player")}
         </button>
       </div>
@@ -169,7 +169,7 @@ module List = {
                     <button
                       className="danger button-ghost"
                       onClick={event => delPlayer(event, p.id)}>
-                      <Icons.trash />
+                      <Icons.Trash />
                       <Utils.VisuallyHidden>
                         {[|"Delete", p.firstName, p.lastName|]
                          |> Js.Array.joinWith(" ")
@@ -271,7 +271,7 @@ module Profile = {
       setSelectedAvoider(_ => id);
     };
     <div className="players__playerInfo content-area">
-      <a href="#/players"> <Icons.chevronLeft /> {s(" Back")} </a>
+      <a href="#/players"> <Icons.ChevronLeft /> {s(" Back")} </a>
       <h2> {s("Profile for " ++ playerName)} </h2>
       <form onChange=handleChange onSubmit=handleChange>
         <p>
@@ -346,7 +346,7 @@ module Profile = {
                   onClick={_ =>
                     configDispatch(Db.DelAvoidPair((playerId, pId)))
                   }>
-                  <Icons.trash />
+                  <Icons.Trash />
                 </button>
               </li>
             )
@@ -397,7 +397,7 @@ let make = (~id=?) => {
     (players, sortDispatch),
   );
   let (config, configDispatch) = Db.useConfig();
-  <Window.WindowBody>
+  <Window.Body>
     {switch (id) {
      | None =>
        <List sorted sortDispatch players playersDispatch configDispatch />
@@ -409,5 +409,5 @@ let make = (~id=?) => {
        }
      | _ => <Pages.NotFound />
      }}
-  </Window.WindowBody>;
+  </Window.Body>;
 };

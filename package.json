@@ -52,13 +52,11 @@
     "react-dom": "^16.8.6",
     "react-feather": "^2.0.3",
     "reason-react": "^0.7.0",
-    "simple-icons": "^1.10.0",
+    "simple-icons": "^1.11.0",
     "typeface-fira-sans": "0.0.54"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.8",
-    "@testing-library/jest-dom": "^4.0.0",
-    "@testing-library/react": "^8.0.5",
     "bs-dom-testing-library": "^0.4.1",
     "bs-jest-dom": "^2.0.1",
     "bs-platform": "^6.0.3",
@@ -71,7 +69,6 @@
     "gh-pages": "^2.0.1",
     "react-scripts": "3.0.1",
     "stylelint": "^10.1.0",
-    "stylelint-config-css-modules": "^1.4.0",
     "stylelint-config-standard": "^18.3.0",
     "typescript": "^3.5.3",
     "wait-on": "^3.3.0"

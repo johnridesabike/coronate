@@ -74,21 +74,21 @@ module Player = {
   /* This function should always be used in components that *might* not be able to
      display current player information. This includes bye rounds with "dummy"
      players, or scoreboards where a player may have been deleted. */
-  let getPlayerMaybe = (playerDict, id) => {
-    id === dummy_id
-      ? dummyPlayer
-      : {
-        switch (playerDict->Js.Dict.get(id)) {
-        | None => makeMissingPlayer(id)
-        | Some(player) => player
-        };
+  let getPlayerMaybe = (playerDict, id) =>
+    if (id === dummy_id) {
+      dummyPlayer;
+    } else {
+      switch (playerDict->Js.Dict.get(id)) {
+      | None => makeMissingPlayer(id)
+      | Some(player) => player
       };
-  };
-  let getPlayerMaybeMap = (playerMap, id) => {
-    id === dummy_id
-      ? dummyPlayer
-      : playerMap->Map.String.getWithDefault(id, makeMissingPlayer(id));
-  };
+    };
+  let getPlayerMaybeMap = (playerMap, id) =>
+    if (id === dummy_id) {
+      dummyPlayer;
+    } else {
+      playerMap->Map.String.getWithDefault(id, makeMissingPlayer(id));
+    };
 };
 
 module Match = {
@@ -254,31 +254,27 @@ let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
            acc |> Js.Array.concat([|match.whiteId, match.blackId|]),
          [||],
        );
-  Map.String.valuesToArray(players)
-  |> Js.Array.reduce(
-       (acc, player: Player.t) =>
-         if (!(matchedIds |> Js.Array.includes(player.id))) {
-           acc->Map.String.set(player.id, player);
-         } else {
-           acc;
-         },
-       Map.String.empty,
-     );
+  players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
+    if (!(matchedIds |> Js.Array.includes(key))) {
+      acc->Map.String.set(key, player);
+    } else {
+      acc;
+    }
+  );
 };
 
-let isRoundComplete = (roundList: Tournament.roundList, players, roundId) => {
-  roundId < Js.Array.length(roundList) - 1
-    // If it's not the last round, it's complete.
-    ? true
-    : {
-      let unmatched = getUnmatched(roundList, players, roundId);
-      let results =
-        roundList->Array.getExn(roundId)
-        |> Js.Array.map((match: Match.t) =>
-             match.whiteScore +. match.blackScore
-           );
-      unmatched->Map.String.keysToArray
-      |> Js.Array.length == 0
-      && !(results |> Js.Array.includes(0.0));
-    };
-};
+let isRoundComplete = (roundList: Tournament.roundList, players, roundId) =>
+  if (roundId < Js.Array.length(roundList) - 1) {
+    /* If it's not the last round, it's complete.*/
+    true;
+  } else {
+    let unmatched = getUnmatched(roundList, players, roundId);
+    let results =
+      roundList->Array.getExn(roundId)
+      |> Js.Array.map((match: Match.t) =>
+           match.whiteScore +. match.blackScore
+         );
+    unmatched->Map.String.keysToArray
+    |> Js.Array.length == 0
+    && !(results |> Js.Array.includes(0.0));
+  };

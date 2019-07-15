@@ -119,17 +119,18 @@ let createPairingData = (playerData, avoidPairs, scoreMap) => {
   open Data.Player;
   let avoidMap =
     avoidPairs |> Js.Array.reduce(avoidPairReducer, Map.String.empty);
-  Belt.Map.String.valuesToArray(playerData)
-  |> Js.Array.reduce(
-       (acc, data) => {
+  playerData
+  ->Map.String.reduce(
+       Map.String.empty,
+       (acc, key, data) => {
          let playerStats = {
-           switch (scoreMap->Map.String.get(data.id)) {
-           | None => Scoring.createBlankScoreData(data.id)
+           switch (scoreMap->Map.String.get(key)) {
+           | None => Scoring.createBlankScoreData(key)
            | Some(x) => x
            };
          };
          let newAvoidIds = {
-           switch (avoidMap->Map.String.get(data.id)) {
+           switch (avoidMap->Map.String.get(key)) {
            | None => [||]
            | Some(x) => x
            };
@@ -147,8 +148,7 @@ let createPairingData = (playerData, avoidPairs, scoreMap) => {
            rating: data.rating,
            score: playerStats.results->Utils.arraySumFloat,
          };
-         acc->Map.String.set(data.id, newData);
+         acc->Map.String.set(key, newData);
        },
-       Map.String.empty,
      );
 };

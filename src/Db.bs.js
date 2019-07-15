@@ -47,18 +47,8 @@ function loadDemoDB(param) {
   ((document.body.style = "wait"));
   Promise.all(/* tuple */[
             configStore.setItems(Data$Coronate.Config[/* tToJs */0](DemoData$Coronate.config)),
-            playerStore.setItems(Js_dict.fromArray(Belt_MapString.toArray(DemoData$Coronate.players).map((function (param) {
-                            return /* tuple */[
-                                    param[0],
-                                    Data$Coronate.Player[/* tToJs */0](param[1])
-                                  ];
-                          })))),
-            tourneyStore.setItems(Js_dict.fromArray(Belt_MapString.toArray(DemoData$Coronate.tournaments).map((function (param) {
-                            return /* tuple */[
-                                    param[0],
-                                    Data$Coronate.Tournament[/* tToJsDeep */2](param[1])
-                                  ];
-                          }))))
+            playerStore.setItems(reMapToJsDict(DemoData$Coronate.players, Data$Coronate.Player[/* tToJs */0])),
+            tourneyStore.setItems(reMapToJsDict(DemoData$Coronate.tournaments, Data$Coronate.Tournament[/* tToJsDeep */2]))
           ]).then((function (value) {
             Utils$Coronate.alert("Demo data loaded!");
             ((document.body.style = "auto"));
@@ -95,7 +85,7 @@ function useAllItemsFromDb(store, reducer, fromJs, toJs) {
         }));
   var setIsLoaded = match$1[1];
   var isLoaded = match$1[0];
-  Hooks$Coronate.useLoadingCursor(isLoaded);
+  Hooks$Coronate.useLoadingCursorUntil(isLoaded);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
           store.getItems(null).then((function (results) {

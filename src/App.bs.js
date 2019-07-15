@@ -70,11 +70,11 @@ function App(Props) {
     exit = 1;
   }
   if (exit === 1) {
-    tmp = React.createElement(Window$Coronate.WindowBody[/* make */0], {
+    tmp = React.createElement(Window$Coronate.Body[/* make */0], {
           children: React.createElement(Pages$Coronate.NotFound[/* make */0], { })
         });
   }
-  return React.createElement(Window$Coronate.$$Window[/* make */0], {
+  return React.createElement(Window$Coronate.make, {
               children: React.createElement("main", {
                     className: "app__main"
                   }, tmp),

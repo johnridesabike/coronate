@@ -83,20 +83,19 @@ module SortButton = {
       className="button-micro dont-hide button-text-ghost title-20"
       style={ReactDOMRe.Style.make(~width="100%", ())}
       onClick={_ => setKeyOrToggleDir()}>
-      <Icons.chevronUp
-        style={ReactDOMRe.Style.make(~opacity="0", ())}
-        /*ariaHidden=true*/
-      />
+      <span ariaHidden=true>
+        <Icons.ChevronUp style={ReactDOMRe.Style.make(~opacity="0", ())} />
+      </span>
       children
       {data.isDescending
          ? <span style=chevronStyle>
-             <Icons.chevronUp />
+             <Icons.ChevronUp />
              <Utils.VisuallyHidden>
                {React.string("Sort ascending.")}
              </Utils.VisuallyHidden>
            </span>
          : <span style=chevronStyle>
-             <Icons.chevronDown />
+             <Icons.ChevronDown />
              <Utils.VisuallyHidden>
                {React.string("Sort descending.")}
              </Utils.VisuallyHidden>
@@ -105,7 +104,7 @@ module SortButton = {
   };
 };
 
-let useLoadingCursor = isLoaded => {
+let useLoadingCursorUntil = isLoaded => {
   React.useEffect1(
     () => {
       let _ =

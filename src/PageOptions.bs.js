@@ -239,7 +239,7 @@ function PageOptions(Props) {
                 }));
   };
   var match$6 = process.env.NODE_ENV !== "production";
-  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
+  return React.createElement(Window$Coronate.Body[/* make */0], {
               children: React.createElement("div", {
                     className: "content-area"
                   }, React.createElement("h2", undefined, "Bye  settings"), React.createElement("form", undefined, React.createElement("p", {

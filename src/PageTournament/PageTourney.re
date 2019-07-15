@@ -118,7 +118,7 @@ module Sidebar = {
         <ul style={ReactDOMRe.Style.make(~marginTop="0", ())}>
           <li>
             <a href="#/tourneys" onDragStart=noDraggy>
-              <Icons.chevronLeft />
+              <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close">
                 {" Back" |> React.string}
               </span>
@@ -129,7 +129,7 @@ module Sidebar = {
         <ul>
           <li>
             <a href={basePath ++ "/setup"} onDragStart=noDraggy>
-              <Icons.settings />
+              <Icons.Settings />
               <span className="sidebar__hide-on-close">
                 {" Setup" |> React.string}
               </span>
@@ -137,7 +137,7 @@ module Sidebar = {
           </li>
           <li>
             <a href=basePath onDragStart=noDraggy>
-              <Icons.users />
+              <Icons.Users />
               <span className="sidebar__hide-on-close">
                 {" Players" |> React.string}
               </span>
@@ -145,7 +145,7 @@ module Sidebar = {
           </li>
           <li>
             <a href={basePath ++ "/status"} onDragStart=noDraggy>
-              <Icons.activity />
+              <Icons.Activity />
               <span className="sidebar__hide-on-close">
                 {" Status" |> React.string}
               </span>
@@ -153,7 +153,7 @@ module Sidebar = {
           </li>
           <li>
             <a href={basePath ++ "/crosstable"} onDragStart=noDraggy>
-              <Icons.layers />
+              <Icons.Layers />
               <span className="sidebar__hide-on-close">
                 {" Crosstable" |> React.string}
               </span>
@@ -161,7 +161,7 @@ module Sidebar = {
           </li>
           <li>
             <a href={basePath ++ "/scores"} onDragStart=noDraggy>
-              <Icons.list />
+              <Icons.List />
               <span className="sidebar__hide-on-close">
                 {" Score detail" |> React.string}
               </span>
@@ -187,7 +187,7 @@ module Sidebar = {
                              "caption-20",
                            ])}>
                            {" Complete " |> React.string}
-                           <Icons.check />
+                           <Icons.Check />
                          </span>
                        : <span
                            className={Cn.make([
@@ -195,7 +195,7 @@ module Sidebar = {
                              "caption-20",
                            ])}>
                            {" Not complete " |> React.string}
-                           <Icons.alert />
+                           <Icons.Alert />
                          </span>}
                   </a>
                 </li>
@@ -211,7 +211,7 @@ module Sidebar = {
             disabled={!isNewRoundReady}
             onClick=newRound
             style={ReactDOMRe.Style.make(~width="100%", ())}>
-            <Icons.plus />
+            <Icons.Plus />
             <span className="sidebar__hide-on-close">
               {" New round" |> React.string}
             </span>
@@ -223,7 +223,7 @@ module Sidebar = {
             onClick=delLastRound
             className="button-micro sidebar-button"
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>
-            <Icons.trash />
+            <Icons.Trash />
             <span className="sidebar__hide-on-close">
               {" Remove last round" |> React.string}
             </span>
@@ -240,7 +240,7 @@ let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 let make = (~tourneyId, ~hashPath) => {
   <TournamentData tourneyId>
     {tournament =>
-       <Window.WindowBody
+       <Window.Body
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>
          {switch (hashPath) {
@@ -253,6 +253,6 @@ let make = (~tourneyId, ~hashPath) => {
             <PageRound tournament roundId={roundId |> int_of_string} />
           | _ => <Pages.NotFound />
           }}
-       </Window.WindowBody>}
+       </Window.Body>}
   </TournamentData>;
 };

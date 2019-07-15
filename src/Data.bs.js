@@ -53,13 +53,12 @@ function makeMissingPlayer(id) {
 }
 
 function getPlayerMaybe(playerDict, id) {
-  var match = id === dummy_id;
-  if (match) {
+  if (id === dummy_id) {
     return dummyPlayer;
   } else {
-    var match$1 = Js_dict.get(playerDict, id);
-    if (match$1 !== undefined) {
-      return match$1;
+    var match = Js_dict.get(playerDict, id);
+    if (match !== undefined) {
+      return match;
     } else {
       return makeMissingPlayer(id);
     }
@@ -67,8 +66,7 @@ function getPlayerMaybe(playerDict, id) {
 }
 
 function getPlayerMaybeMap(playerMap, id) {
-  var match = id === dummy_id;
-  if (match) {
+  if (id === dummy_id) {
     return dummyPlayer;
   } else {
     return Belt_MapString.getWithDefault(playerMap, id, makeMissingPlayer(id));
@@ -244,18 +242,17 @@ function getUnmatched(roundList, players, roundId) {
                       match_[/* blackId */2]
                     ]);
         }), /* array */[]);
-  return Belt_MapString.valuesToArray(players).reduce((function (acc, player) {
-                if (matchedIds.includes(player[/* id */1])) {
+  return Belt_MapString.reduce(players, Belt_MapString.empty, (function (acc, key, player) {
+                if (matchedIds.includes(key)) {
                   return acc;
                 } else {
-                  return Belt_MapString.set(acc, player[/* id */1], player);
+                  return Belt_MapString.set(acc, key, player);
                 }
-              }), Belt_MapString.empty);
+              }));
 }
 
 function isRoundComplete(roundList, players, roundId) {
-  var match = roundId < (roundList.length - 1 | 0);
-  if (match) {
+  if (roundId < (roundList.length - 1 | 0)) {
     return true;
   } else {
     var unmatched = getUnmatched(roundList, players, roundId);

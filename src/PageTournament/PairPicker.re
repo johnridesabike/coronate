@@ -122,7 +122,7 @@ module SelectList = {
                         className="button-ghost"
                         disabled={!isPlayerSelectable(player.id)}
                         onClick={_ => selectPlayer(player.id)}>
-                        <Icons.userPlus />
+                        <Icons.UserPlus />
                         <Utils.VisuallyHidden>
                           {[|"Add", player.firstName, player.lastName|]
                            |> Js.Array.joinWith(" ")
@@ -244,7 +244,7 @@ module Stage = {
                  ariaLabel={"remove " ++ whiteName}
                  className="button-micro"
                  onClick={_ => unstage(White)}>
-                 <Icons.userMinus />
+                 <Icons.UserMinus />
                  {" Remove" |> React.string}
                </button>
              </>
@@ -261,7 +261,7 @@ module Stage = {
                  ariaLabel={"remove " ++ blackName}
                  className="button-micro"
                  onClick={_ => unstage(Black)}>
-                 <Icons.userMinus />
+                 <Icons.UserMinus />
                  {" Remove" |> React.string}
                </button>
              </>
@@ -276,13 +276,13 @@ module Stage = {
           onClick={_ =>
             setStagedPlayers(((oldWhite, oldBlack)) => (oldBlack, oldWhite))
           }>
-          <Icons.repeat />
+          <Icons.Repeat />
           {" Swap colors" |> React.string}
         </button>
         {" " |> React.string}
         <button
           className="button-primary" disabled={!twoAreSelected} onClick=match>
-          <Icons.check />
+          <Icons.Check />
           {" Match selected" |> React.string}
         </button>
       </div>

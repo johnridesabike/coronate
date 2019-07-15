@@ -7,18 +7,16 @@ let loadPairData = tourneyId => {
   let tournament = TestData.tournaments->Belt.Map.String.getExn(tourneyId);
   let playerIds = tournament.playerIds;
   let roundList = tournament.roundList;
-  let players = Js.Dict.empty();
-  Belt.Map.String.valuesToArray(TestData.players)
-  |> Js.Array.forEach((player: Data.Player.t) =>
-       if (playerIds |> Js.Array.includes(player.id)) {
-         players->Js.Dict.set(player.id, player);
-       }
-     );
+  let players =
+    TestData.players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
+      if (playerIds |> Js.Array.includes(key)) {
+        acc->Map.String.set(key, player);
+      } else {
+        acc;
+      }
+    );
   Data.rounds2Matches(~roundList, ())->Converters.matches2ScoreData
-  |> createPairingData(
-       players |> Js.Dict.entries |> Belt.Map.String.fromArray,
-       TestData.config.avoidPairs,
-     )
+  |> createPairingData(players, TestData.config.avoidPairs)
   |> Pairing.setUpperHalves;
 };
 

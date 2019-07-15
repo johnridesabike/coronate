@@ -42,18 +42,10 @@ let loadDemoDB = _: unit => {
           DemoData.config |> Config.tToJs,
         ),
         playerStore->LocalForage.Map.setItems(
-          DemoData.players->Map.String.toArray
-          |> Js.Array.map(((key, value)) =>
-               (key, value |> Data.Player.tToJs)
-             )
-          |> Js.Dict.fromArray,
+          DemoData.players->reMapToJsDict(Data.Player.tToJs),
         ),
         tourneyStore->LocalForage.Map.setItems(
-          DemoData.tournaments->Map.String.toArray
-          |> Js.Array.map(((key, value)) =>
-               (key, value |> Data.Tournament.tToJsDeep)
-             )
-          |> Js.Dict.fromArray,
+          DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
         ),
       ))
       |> then_(value => {
@@ -93,7 +85,7 @@ let useAllItemsFromDb =
     ) => {
   let (items, dispatch) = React.useReducer(reducer, Map.String.empty);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
-  Hooks.useLoadingCursor(isLoaded);
+  Hooks.useLoadingCursorUntil(isLoaded);
   React.useEffect4(
     () => {
       let didCancel = ref(false);

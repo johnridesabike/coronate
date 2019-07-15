@@ -309,7 +309,7 @@ function PageTourney(Props) {
                   if (exit === 1) {
                     tmp = React.createElement(Pages$Coronate.NotFound[/* make */0], { });
                   }
-                  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
+                  return React.createElement(Window$Coronate.Body[/* make */0], {
                               children: tmp,
                               footerFunc: (function (param) {
                                   return footerFunc(tournament, param);

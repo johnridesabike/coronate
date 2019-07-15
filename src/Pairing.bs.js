@@ -63,17 +63,16 @@ var maxPriority = Utils$Coronate.arraySumFloat(/* array */[
     ]);
 
 function calcPairIdeal(player1, player2) {
-  var match = player1[/* id */0] === player2[/* id */0];
-  if (match) {
+  if (player1[/* id */0] === player2[/* id */0]) {
     return 0.0;
   } else {
     var metBefore = player1[/* opponents */6].includes(player2[/* id */0]);
     var mustAvoid = player1[/* avoidIds */1].includes(player2[/* id */0]);
-    var match$1 = player1[/* colors */3].length;
+    var match = player1[/* colors */3].length;
     var isDiffDueColor;
-    if (match$1 !== 0) {
-      var match$2 = player2[/* colors */3].length;
-      isDiffDueColor = match$2 !== 0 ? Utils$Coronate.last(player1[/* colors */3]) !== Utils$Coronate.last(player2[/* colors */3]) : true;
+    if (match !== 0) {
+      var match$1 = player2[/* colors */3].length;
+      isDiffDueColor = match$1 !== 0 ? Utils$Coronate.last(player1[/* colors */3]) !== Utils$Coronate.last(player2[/* colors */3]) : true;
     } else {
       isDiffDueColor = true;
     }
@@ -105,7 +104,7 @@ function descendingRating(param, param$1) {
 
 function setUpperHalves(data) {
   var dataList = Belt_MapString.valuesToArray(data);
-  return dataList.reduce((function (acc, playerData) {
+  return Belt_Array.reduce(dataList, Belt_MapString.empty, (function (acc, playerData) {
                 var match = Utils$Coronate.splitInHalf(Belt_SortArray.stableSortBy(dataList.filter((function (p2) {
                                   return p2[/* score */8] === playerData[/* score */8];
                                 })), descendingRating).map((function (p) {
@@ -133,7 +132,7 @@ function setUpperHalves(data) {
                   newPlayerData_008
                 ];
                 return Belt_MapString.set(acc, playerData[/* id */0], newPlayerData);
-              }), Belt_MapString.empty);
+              }));
 }
 
 var partial_arg = /* array */[

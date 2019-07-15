@@ -65,22 +65,13 @@ function TournamentData(Props) {
   var playersDispatch = match$1[1];
   var players = match$1[0];
   var match$2 = React.useState((function () {
-          return false;
+          return /* NothingIsLoaded */0;
         }));
-  var setIsTourneyLoaded = match$2[1];
-  var isTourneyLoaded = match$2[0];
-  var match$3 = React.useState((function () {
-          return false;
-        }));
-  var setIsPlayersLoaded = match$3[1];
-  var isPlayersLoaded = match$3[0];
-  var match$4 = React.useState((function () {
-          return false;
-        }));
-  var setIsDbError = match$4[1];
-  Hooks$Coronate.useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
-  var match$5 = Window$Coronate.useWindowContext(/* () */0);
-  var windowDispatch = match$5[1];
+  var setLoadStatus = match$2[1];
+  var loadStatus = match$2[0];
+  Hooks$Coronate.useLoadingCursorUntil(loadStatus === /* TourneyAndPlayersAreLoaded */2 || loadStatus === /* Error */3);
+  var match$3 = Window$Coronate.useWindowContext(/* () */0);
+  var windowDispatch = match$3[1];
   React.useEffect((function () {
           Curry._1(windowDispatch, /* SetTitle */Block.__(5, [name]));
           return (function (param) {
@@ -90,18 +81,18 @@ function TournamentData(Props) {
         name,
         windowDispatch
       ]);
-  React.useEffect((function (param) {
+  React.useEffect((function () {
           var didCancel = /* record */[/* contents */false];
           Db$Coronate.tourneyStore.getItem(tourneyId).then((function (value) {
                     if (!didCancel[0]) {
                       if (value == null) {
-                        Curry._1(setIsDbError, (function (param) {
-                                return true;
+                        Curry._1(setLoadStatus, (function (param) {
+                                return /* Error */3;
                               }));
                       } else {
                         Curry._1(tourneyDispatch, /* SetTournament */Block.__(14, [Data$Coronate.Tournament[/* tFromJsDeep */3](value)]));
-                        Curry._1(setIsTourneyLoaded, (function (param) {
-                                return true;
+                        Curry._1(setLoadStatus, (function (param) {
+                                return /* TourneyIsLoaded */1;
                               }));
                       }
                     }
@@ -116,13 +107,11 @@ function TournamentData(Props) {
                   });
         }), /* tuple */[
         tourneyId,
-        tourneyDispatch,
-        setIsTourneyLoaded,
-        setIsDbError
+        tourneyDispatch
       ]);
   React.useEffect((function (param) {
           var didCancel = /* record */[/* contents */false];
-          if (isTourneyLoaded) {
+          if (loadStatus !== /* NothingIsLoaded */0) {
             var allTheIds = getAllPlayerIdsFromMatches(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0)).concat(playerIds);
             var match = allTheIds.length;
             if (match !== 0) {
@@ -134,12 +123,10 @@ function TournamentData(Props) {
                                 })).concat(oldIds.filter((function (x) {
                                     return !newIds.includes(x);
                                   })));
-                        console.log("changed players:");
-                        console.log(changedPlayers.length);
                         if (changedPlayers.length !== 0 && !didCancel[0]) {
                           Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [Db$Coronate.jsDictToReMap(values, Data$Coronate.Player[/* tFromJs */1])]));
-                          Curry._1(setIsPlayersLoaded, (function (param) {
-                                  return true;
+                          Curry._1(setLoadStatus, (function (param) {
+                                  return /* TourneyAndPlayersAreLoaded */2;
                                 }));
                         }
                         return Promise.resolve(values);
@@ -151,8 +138,8 @@ function TournamentData(Props) {
               if (Belt_MapString.keysToArray(players).length !== 0) {
                 Curry._1(playersDispatch, /* SetPlayers */Block.__(4, [players]));
               }
-              Curry._1(setIsPlayersLoaded, (function (param) {
-                      return true;
+              Curry._1(setLoadStatus, (function (param) {
+                      return /* TourneyAndPlayersAreLoaded */2;
                     }));
             }
           }
@@ -164,25 +151,25 @@ function TournamentData(Props) {
         roundList,
         players,
         playerIds,
-        isTourneyLoaded
+        loadStatus
       ]);
   React.useEffect((function (param) {
-          if (isTourneyLoaded && tourneyId === tourney[/* id */2]) {
+          if (loadStatus !== /* NothingIsLoaded */0 && tourneyId === tourney[/* id */2]) {
             Db$Coronate.tourneyStore.setItem(tourneyId, Data$Coronate.Tournament[/* tToJsDeep */2](tourney));
           }
           return undefined;
         }), /* tuple */[
-        isTourneyLoaded,
+        loadStatus,
         tourneyId,
         tourney
       ]);
   React.useEffect((function () {
-          if (isPlayersLoaded) {
+          if (loadStatus === /* TourneyAndPlayersAreLoaded */2) {
             Db$Coronate.playerStore.setItems(Db$Coronate.reMapToJsDict(players, Data$Coronate.Player[/* tToJs */0]));
           }
           return undefined;
         }), /* tuple */[
-        isPlayersLoaded,
+        loadStatus,
         players
       ]);
   var partial_arg = Data$Coronate.Player[/* getPlayerMaybeMap */6];
@@ -196,14 +183,21 @@ function TournamentData(Props) {
             return acc;
           }
         }));
-  var roundCount = calcNumOfRounds(Belt_MapString.keysToArray(activePlayers).length);
+  var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
   var isItOver = roundList.length >= roundCount;
-  var match$6 = roundList.length === 0;
-  var isNewRoundReady = match$6 ? true : Data$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
-  if (match$4[0]) {
-    return React.createElement("div", undefined, "Error: tournament not found.");
-  } else if (!isTourneyLoaded || !isPlayersLoaded) {
-    return React.createElement("div", undefined, "Loading...");
+  var match$4 = roundList.length === 0;
+  var isNewRoundReady = match$4 ? true : Data$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
+  if (loadStatus !== 2) {
+    if (loadStatus >= 3) {
+      debugger;
+      return React.createElement(Window$Coronate.Body[/* make */0], {
+                  children: "Error: tournament couldn't be loaded."
+                });
+    } else {
+      return React.createElement(Window$Coronate.Body[/* make */0], {
+                  children: "Loading..."
+                });
+    }
   } else {
     return Curry._1(children, /* record */[
                 /* activePlayers */activePlayers,

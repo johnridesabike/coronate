@@ -11,7 +11,7 @@ let make = (~tournament: TournamentData.t) => {
 
   let getXScore = (player1Id, player2Id) =>
     if (player1Id === player2Id) {
-      <Icons.x className="disabled" />;
+      <Icons.X className="disabled" />;
     } else {
       switch (scoreData->Map.String.get(player1Id)) {
       | None => React.null

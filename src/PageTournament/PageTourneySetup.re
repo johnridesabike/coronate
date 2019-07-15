@@ -101,7 +101,7 @@ let make = (~tournament: TournamentData.t) => {
          {" " |> React.string}
          <button
            className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
-           <Icons.check />
+           <Icons.Check />
          </button>
        </form>
      | _ =>
@@ -111,7 +111,7 @@ let make = (~tournament: TournamentData.t) => {
          </span>
          {" " |> React.string}
          <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
-           <Icons.edit />
+           <Icons.Edit />
            <Utils.VisuallyHidden>
              {"Edit name" |> React.string}
            </Utils.VisuallyHidden>
@@ -132,7 +132,7 @@ let make = (~tournament: TournamentData.t) => {
          {" " |> React.string}
          <button
            className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
-           <Icons.check />
+           <Icons.Check />
          </button>
        </form>
      | _ =>
@@ -140,7 +140,7 @@ let make = (~tournament: TournamentData.t) => {
          <Utils.DateFormat date={tourney.date} />
          {" " |> React.string}
          <button className="button-ghost" onClick={_ => setEditing(_ => Date)}>
-           <Icons.edit />
+           <Icons.Edit />
            <Utils.VisuallyHidden>
              {"Edit date" |> React.string}
            </Utils.VisuallyHidden>

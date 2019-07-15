@@ -19,6 +19,6 @@
     "photon-colors": "^3.3.2",
     "react-from-svg": "^0.2.0",
     "sharp": "^0.22.1",
-    "svgo": "^1.2.2"
+    "svgo": "^1.3.0"
   }
 }

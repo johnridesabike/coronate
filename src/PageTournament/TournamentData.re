@@ -2,6 +2,7 @@
 [@bs.val] [@bs.scope "Math"] external log2: float => float = "log2";
 [@bs.val] [@bs.scope "Number"] external isFinite: float => bool = "isFinite";
 open Data;
+open Belt;
 module LocalForage = Externals.LocalForage;
 
 let getAllPlayerIdsFromMatches = matchList => {
@@ -35,16 +36,22 @@ let emptyTourney = {
 };
 
 type t = {
-  activePlayers: Belt.Map.String.t(Player.t),
+  activePlayers: Map.String.t(Player.t),
   getPlayer: string => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
-  players: Belt.Map.String.t(Player.t),
+  players: Map.String.t(Player.t),
   playersDispatch: TournamentDataReducers.actionPlayer => unit,
   roundCount: int,
   tourney: Tournament.t,
   tourneyDispatch: TournamentDataReducers.actionTournament => unit,
 };
+
+type loadStatus =
+  | NothingIsLoaded
+  | TourneyIsLoaded
+  | TourneyAndPlayersAreLoaded
+  | Error;
 
 [@react.component]
 let make = (~children, ~tourneyId) => {
@@ -54,14 +61,11 @@ let make = (~children, ~tourneyId) => {
   let playerIds = tourney.playerIds;
   let roundList = tourney.roundList;
   let (players, playersDispatch) =
-    React.useReducer(
-      TournamentDataReducers.playersReducer,
-      Belt.Map.String.empty,
-    );
-  let (isTourneyLoaded, setIsTourneyLoaded) = React.useState(() => false);
-  let (isPlayersLoaded, setIsPlayersLoaded) = React.useState(() => false);
-  let (isDbError, setIsDbError) = React.useState(() => false);
-  Hooks.useLoadingCursor(isPlayersLoaded && isTourneyLoaded);
+    React.useReducer(TournamentDataReducers.playersReducer, Map.String.empty);
+  let (loadStatus, setLoadStatus) = React.useState(() => NothingIsLoaded);
+  Hooks.useLoadingCursorUntil(
+    loadStatus === TourneyAndPlayersAreLoaded || loadStatus === Error,
+  );
   let (_, windowDispatch) = Window.useWindowContext();
   /*
    Set the document title.
@@ -76,7 +80,7 @@ let make = (~children, ~tourneyId) => {
   /*
    Initialize the tournament from the database.
    */
-  React.useEffect4(
+  React.useEffect2(
     () => {
       let didCancel = ref(false);
       let _ =
@@ -85,12 +89,12 @@ let make = (~children, ~tourneyId) => {
           |> then_(value => {
                if (! didCancel^) {
                  switch (value->Js.Nullable.toOption) {
-                 | None => setIsDbError(_ => true)
+                 | None => setLoadStatus(_ => Error)
                  | Some(value) =>
                    tourneyDispatch(
                      SetTournament(value->Data.Tournament.tFromJsDeep),
                    );
-                   setIsTourneyLoaded(_ => true);
+                   setLoadStatus(_ => TourneyIsLoaded);
                  };
                };
                resolve();
@@ -102,7 +106,7 @@ let make = (~children, ~tourneyId) => {
         );
       Some(() => didCancel := true);
     },
-    (tourneyId, tourneyDispatch, setIsTourneyLoaded, setIsDbError),
+    (tourneyId, tourneyDispatch),
   );
   /*
    Hydrate players from DB.
@@ -113,7 +117,7 @@ let make = (~children, ~tourneyId) => {
       /* Don't run this without loading the tourney first. Otherwise, it
          will interpret the placeholder `roundList` data as meaning there
          are no active players and load an empty object.*/
-      if (isTourneyLoaded) {
+      if (loadStatus !== NothingIsLoaded) {
         /* Include players who have played matches but left the tournament,
            as well as players who are registered but havne't played yet. */
         let allTheIds =
@@ -123,11 +127,11 @@ let make = (~children, ~tourneyId) => {
         /* If there are no ids, update the player state and exit early.*/
         switch (allTheIds |> Js.Array.length) {
         | 0 =>
-          /* This check prevents an infinite loop & memory leak. */
-          if (players |> Belt.Map.String.keysToArray |> Js.Array.length !== 0) {
+          /* This check prevents an infinite loop & memory leak: */
+          if (players |> Map.String.keysToArray |> Js.Array.length !== 0) {
             playersDispatch(SetPlayers(players));
           };
-          setIsPlayersLoaded(_ => true);
+          setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         | _ =>
           let _ =
             Js.Promise.(
@@ -140,7 +144,7 @@ let make = (~children, ~tourneyId) => {
                       this `useEffect` would trigger an infinite loop and a memory
                       leak. */
                    let newIds = values |> Js.Dict.keys;
-                   let oldIds = players |> Belt.Map.String.keysToArray;
+                   let oldIds = players |> Map.String.keysToArray;
                    let changedPlayers =
                      Js.Array.(
                        newIds
@@ -149,15 +153,17 @@ let make = (~children, ~tourneyId) => {
                             oldIds |> filter(x => !(newIds |> includes(x))),
                           )
                      );
-                   Js.log("changed players:");
-                   Js.log(changedPlayers |> Js.Array.length);
+                   /* Js.log2(
+                        "changed players:",
+                        changedPlayers |> Js.Array.length,
+                      ); */
                    if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
                      playersDispatch(
                        SetPlayers(
                          values->Db.jsDictToReMap(Data.Player.tFromJs),
                        ),
                      );
-                     setIsPlayersLoaded(_ => true);
+                     setLoadStatus(_ => TourneyAndPlayersAreLoaded);
                    };
                    resolve(values);
                  })
@@ -171,7 +177,7 @@ let make = (~children, ~tourneyId) => {
       };
       Some(() => didCancel := false);
     },
-    (roundList, players, playerIds, isTourneyLoaded),
+    (roundList, players, playerIds, loadStatus),
   );
   /*
    Save tourney to DB.
@@ -179,7 +185,7 @@ let make = (~children, ~tourneyId) => {
   React.useEffect3(
     () => {
       /* If the tournament wasn't loaded then the id won't match. */
-      if (isTourneyLoaded && tourneyId === tourney.id) {
+      if (loadStatus !== NothingIsLoaded && tourneyId === tourney.id) {
         let _ =
           Db.tourneyStore->LocalForage.Map.setItem(
             tourneyId,
@@ -189,14 +195,14 @@ let make = (~children, ~tourneyId) => {
       };
       None;
     },
-    (isTourneyLoaded, tourneyId, tourney),
+    (loadStatus, tourneyId, tourney),
   );
   /*
    Save players to DB.
    */
   React.useEffect2(
     () => {
-      if (isPlayersLoaded) {
+      if (loadStatus === TourneyAndPlayersAreLoaded) {
         let _ =
           Db.playerStore->LocalForage.Map.setItems(
             players->Db.reMapToJsDict(Data.Player.tToJs),
@@ -205,13 +211,13 @@ let make = (~children, ~tourneyId) => {
       };
       None;
     },
-    (isPlayersLoaded, players),
+    (loadStatus, players),
   );
   let getPlayer = Player.getPlayerMaybeMap(players);
   /* `players` includes players in past matches who may have left
      `activePlayers` is only players to be matched in future matches. */
   let activePlayers =
-    Belt.Map.String.(
+    Map.String.(
       players->reduce(empty, (acc, key, player) =>
         if (tourney.playerIds |> Js.Array.includes(key)) {
           acc->set(key, player);
@@ -221,23 +227,16 @@ let make = (~children, ~tourneyId) => {
       )
     );
 
-  let roundCount =
-    activePlayers
-    |> Belt.Map.String.keysToArray
-    |> Js.Array.length
-    |> calcNumOfRounds;
-  let isItOver = roundList |> Js.Array.length >= roundCount;
+  let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
+  let isItOver = roundList |> Array.length >= roundCount;
   let isNewRoundReady =
     Js.Array.(
       roundList |> length === 0
         ? true
         : isRoundComplete(roundList, activePlayers, (roundList |> length) - 1)
     );
-  if (isDbError) {
-    <div> {React.string("Error: tournament not found.")} </div>;
-  } else if (!isTourneyLoaded || !isPlayersLoaded) {
-    <div> {React.string("Loading...")} </div>;
-  } else {
+  switch (loadStatus) {
+  | TourneyAndPlayersAreLoaded =>
     children({
       activePlayers,
       getPlayer,
@@ -248,6 +247,12 @@ let make = (~children, ~tourneyId) => {
       roundCount,
       tourney,
       tourneyDispatch,
-    });
+    })
+  | Error =>
+    [%debugger];
+    <Window.Body>
+      {React.string("Error: tournament couldn't be loaded.")}
+    </Window.Body>;
+  | _ => <Window.Body> {React.string("Loading...")} </Window.Body>
   };
 };

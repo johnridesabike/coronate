@@ -4,13 +4,14 @@ import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Belt_Option from "bs-platform/lib/es6/belt_Option.js";
 import * as Dialog from "@reach/dialog";
 import * as ReactFeather from "react-feather";
 import * as Icons$Coronate from "./Icons.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
+import * as Electron$Coronate from "./Electron.bs.js";
+import * as Webapi__Dom__Document from "bs-webapi/src/Webapi/Webapi__Dom/Webapi__Dom__Document.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
-import * as ElectronUtils$Coronate from "./ElectronUtils.bs.js";
 
 var global_title = "Coronate";
 
@@ -21,6 +22,28 @@ function formatTitle(title) {
   } else {
     return title + " - Coronate";
   }
+}
+
+function windowstateToJs(param) {
+  return {
+          isBlur: param[/* isBlur */0],
+          isDialogOpen: param[/* isDialogOpen */1],
+          isFullScreen: param[/* isFullScreen */2],
+          isMaximized: param[/* isMaximized */3],
+          isSidebarOpen: param[/* isSidebarOpen */4],
+          title: param[/* title */5]
+        };
+}
+
+function windowstateFromJs(param) {
+  return /* record */[
+          /* isBlur */param.isBlur,
+          /* isDialogOpen */param.isDialogOpen,
+          /* isFullScreen */param.isFullScreen,
+          /* isMaximized */param.isMaximized,
+          /* isSidebarOpen */param.isSidebarOpen,
+          /* title */param.title
+        ];
 }
 
 var initialWinState = /* record */[
@@ -57,7 +80,7 @@ var Provider = /* module */[
   /* make */make
 ];
 
-var WindowContext = /* module */[
+var Context = /* module */[
   /* initialState */initialState,
   /* windowContext */windowContext,
   /* Provider */Provider
@@ -101,10 +124,10 @@ function Window$About(Props) {
                         "Jackson"
                       ].join("")), React.createElement("p", undefined, "Coronate is free software."), React.createElement("p", undefined, React.createElement("a", {
                           href: Utils$Coronate.github_url,
-                          onClick: ElectronUtils$Coronate.ifElectronOpen
+                          onClick: Electron$Coronate.openInBrowser
                         }, "Source code is available"), React.createElement("br", undefined), " under the ", React.createElement("a", {
                           href: Utils$Coronate.license_url,
-                          onClick: ElectronUtils$Coronate.ifElectronOpen
+                          onClick: Electron$Coronate.openInBrowser
                         }, "AGPL v3.0 license"), ".")));
 }
 
@@ -170,31 +193,38 @@ function windowReducer(state, action) {
   }
 }
 
+var isElectronMac = Electron$Coronate.isMac && Electron$Coronate.isElectron;
+
 var toolbarClasses = Cn.make(/* :: */[
-      Cn.ifTrue("macos-button-toolbar", ElectronUtils$Coronate.isMac && ElectronUtils$Coronate.isElectron),
+      Cn.ifTrue("macos-button-toolbar", isElectronMac),
       /* :: */[
-        Cn.ifTrue("button-ghost", !(ElectronUtils$Coronate.isMac && ElectronUtils$Coronate.isElectron)),
+        Cn.ifTrue("button-ghost", !isElectronMac),
         /* [] */0
       ]
     ]);
 
-function Window$WindowsControls(Props) {
+function Window$MSWindowsControls(Props) {
   var state = Props.state;
+  var electron = Props.electron;
+  var $$window = electron.remote.getCurrentWindow();
   var middleButton = state[/* isFullScreen */2] ? React.createElement("button", {
           className: "windosControls__winButton button-ghost",
           onClick: (function (param) {
-              return ElectronUtils$Coronate.currentWindow.setFullScreen(false);
+              $$window.setFullScreen(false);
+              return /* () */0;
             })
         }, React.createElement(ReactFeather.Minimize2, { })) : (
       state[/* isMaximized */3] ? React.createElement("button", {
               className: "windosControls__winButton button-ghost",
               onClick: (function (param) {
-                  return ElectronUtils$Coronate.currentWindow.unmaximize();
+                  $$window.unmaximize();
+                  return /* () */0;
                 })
             }, React.createElement(Icons$Coronate.Restore[/* make */0], { })) : React.createElement("button", {
               className: "windosControls__winButton button-ghost",
               onClick: (function (param) {
-                  return ElectronUtils$Coronate.currentWindow.maximize();
+                  $$window.maximize();
+                  return /* () */0;
                 })
             }, React.createElement(Icons$Coronate.Maximize[/* make */0], { }))
     );
@@ -203,7 +233,8 @@ function Window$WindowsControls(Props) {
             }, React.createElement("button", {
                   className: "windowsControls__winButton button-ghost",
                   onClick: (function (param) {
-                      return ElectronUtils$Coronate.currentWindow.minimize();
+                      $$window.minimize();
+                      return /* () */0;
                     })
                 }, React.createElement(Icons$Coronate.Minimize[/* make */0], { })), middleButton, React.createElement("button", {
                   className: Cn.make(/* :: */[
@@ -217,14 +248,15 @@ function Window$WindowsControls(Props) {
                         ]
                       ]),
                   onClick: (function (param) {
-                      return ElectronUtils$Coronate.currentWindow.close();
+                      $$window.close();
+                      return /* () */0;
                     })
                 }, React.createElement(Icons$Coronate.Close[/* make */0], { })));
 }
 
-var WindowsControls = /* module */[/* make */Window$WindowsControls];
+var MSWindowsControls = /* module */[/* make */Window$MSWindowsControls];
 
-function Window$WindowTitleBar(Props) {
+function Window$TitleBar(Props) {
   var state = Props.state;
   var dispatch = Props.dispatch;
   return React.createElement("header", {
@@ -233,27 +265,29 @@ function Window$WindowTitleBar(Props) {
                     /* :: */[
                       "double-click-control",
                       /* :: */[
-                        Cn.ifTrue("traffic-light-padding", ElectronUtils$Coronate.isElectron && ElectronUtils$Coronate.isMac && !state[/* isFullScreen */2]),
+                        Cn.ifTrue("traffic-light-padding", isElectronMac && !state[/* isFullScreen */2]),
                         /* [] */0
                       ]
                     ]
                   ]),
-              onDoubleClick: ElectronUtils$Coronate.macOSDoubleClick
-            }, React.createElement("div", undefined, React.createElement(ElectronUtils$Coronate.IfElectron[/* make */0], {
-                      children: React.createElement("span", {
-                            style: {
-                              display: "inline-flex",
-                              marginRight: "8px",
-                              marginLeft: "4px",
-                              alignItems: "center"
-                            }
-                          }, React.createElement("img", {
-                                alt: "",
-                                height: "16",
-                                src: Utils$Coronate.WebpackAssets[/* logo */0],
-                                width: "16"
-                              })),
-                      onlyWin: true
+              onDoubleClick: Electron$Coronate.macOSDoubleClick
+            }, React.createElement("div", undefined, React.createElement(Electron$Coronate.IfElectron[/* make */0], {
+                      children: (function (param) {
+                          return React.createElement("span", {
+                                      style: {
+                                        display: "inline-flex",
+                                        marginRight: "8px",
+                                        marginLeft: "4px",
+                                        alignItems: "center"
+                                      }
+                                    }, React.createElement("img", {
+                                          alt: "",
+                                          height: "16",
+                                          src: Utils$Coronate.WebpackAssets[/* logo */0],
+                                          width: "16"
+                                        }));
+                        }),
+                      os: /* Windows */0
                     }), React.createElement("button", {
                       className: toolbarClasses,
                       onClick: (function (param) {
@@ -288,17 +322,20 @@ function Window$WindowTitleBar(Props) {
                     textAlign: "center",
                     width: "50%"
                   }
-                }, formatTitle(state[/* title */5])), React.createElement(ElectronUtils$Coronate.IfElectron[/* make */0], {
-                  children: React.createElement(Window$WindowsControls, {
-                        state: state
-                      }),
-                  onlyWin: true
+                }, formatTitle(state[/* title */5])), React.createElement(Electron$Coronate.IfElectron[/* make */0], {
+                  children: (function (electron) {
+                      return React.createElement(Window$MSWindowsControls, {
+                                  state: state,
+                                  electron: electron
+                                });
+                    }),
+                  os: /* Windows */0
                 }));
 }
 
-var WindowTitleBar = /* module */[/* make */Window$WindowTitleBar];
+var TitleBar = /* module */[/* make */Window$TitleBar];
 
-function Window$Window(Props) {
+function $$Window(Props) {
   var children = Props.children;
   var className = Props.className;
   var match = React.useReducer(windowReducer, initialWinState);
@@ -306,51 +343,50 @@ function Window$Window(Props) {
   var state = match[0];
   var title = state[/* title */5];
   React.useEffect((function () {
-          document.title = formatTitle(title);
+          Belt_Option.map(Webapi__Dom__Document.asHtmlDocument(document), (function (x) {
+                  x.title = formatTitle(title);
+                  return /* () */0;
+                }));
           return undefined;
         }), /* array */[title]);
   React.useEffect((function () {
-          var func = ElectronUtils$Coronate.ifElectron((function (param) {
+          var func = Electron$Coronate.ifElectron((function (electron) {
+                  var win = electron.remote.getCurrentWindow();
                   var unregisterListeners = function (param) {
-                    ElectronUtils$Coronate.currentWindow.removeAllListeners("enter-full-screen");
-                    ElectronUtils$Coronate.currentWindow.removeAllListeners("leave-full-screen");
-                    ElectronUtils$Coronate.currentWindow.removeAllListeners("blur");
-                    ElectronUtils$Coronate.currentWindow.removeAllListeners("focus");
-                    ElectronUtils$Coronate.currentWindow.removeAllListeners("maximize");
-                    return ElectronUtils$Coronate.currentWindow.removeAllListeners("unmaximize");
+                    win.removeAllListeners("enter-full-screen");
+                    win.removeAllListeners("leave-full-screen");
+                    win.removeAllListeners("blur");
+                    win.removeAllListeners("focus");
+                    win.removeAllListeners("maximize");
+                    win.removeAllListeners("unmaximize");
+                    return /* () */0;
                   };
                   unregisterListeners(/* () */0);
-                  ElectronUtils$Coronate.currentWindow.on("enter-full-screen", (function (param) {
+                  win.on("enter-full-screen", (function (param) {
                           return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [true]));
                         }));
-                  ElectronUtils$Coronate.currentWindow.on("leave-full-screen", (function (param) {
+                  win.on("leave-full-screen", (function (param) {
                           return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [false]));
                         }));
-                  ElectronUtils$Coronate.currentWindow.on("maximize", (function (param) {
+                  win.on("maximize", (function (param) {
                           return Curry._1(dispatch, /* SetMaximized */Block.__(3, [true]));
                         }));
-                  ElectronUtils$Coronate.currentWindow.on("unmaximize", (function (param) {
+                  win.on("unmaximize", (function (param) {
                           return Curry._1(dispatch, /* SetMaximized */Block.__(3, [false]));
                         }));
-                  ElectronUtils$Coronate.currentWindow.on("blur", (function (param) {
+                  win.on("blur", (function (param) {
                           return Curry._1(dispatch, /* SetBlur */Block.__(0, [true]));
                         }));
-                  ElectronUtils$Coronate.currentWindow.on("focus", (function (param) {
+                  win.on("focus", (function (param) {
                           return Curry._1(dispatch, /* SetBlur */Block.__(0, [false]));
                         }));
-                  Curry._1(dispatch, /* SetBlur */Block.__(0, [ElectronUtils$Coronate.currentWindow.isFocused()]));
-                  Curry._1(dispatch, /* SetFullScreen */Block.__(2, [!ElectronUtils$Coronate.currentWindow.isFocused()]));
-                  Curry._1(dispatch, /* SetMaximized */Block.__(3, [ElectronUtils$Coronate.currentWindow.isMaximized()]));
+                  Curry._1(dispatch, /* SetBlur */Block.__(0, [!win.isFocused()]));
+                  Curry._1(dispatch, /* SetFullScreen */Block.__(2, [win.isFullScreen()]));
+                  Curry._1(dispatch, /* SetMaximized */Block.__(3, [win.isMaximized()]));
                   return unregisterListeners;
                 }));
           if (func !== undefined) {
-            var func$1 = Caml_option.valFromOption(func);
-            var match = func$1 === null;
-            if (match) {
-              return undefined;
-            } else {
-              return func$1;
-            }
+            return func;
           }
           
         }), /* array */[dispatch]);
@@ -364,11 +400,11 @@ function Window$Window(Props) {
                         /* :: */[
                           Cn.ifTrue("window-blur", state[/* isBlur */0]),
                           /* :: */[
-                            Cn.ifTrue("isWindows", ElectronUtils$Coronate.isWin),
+                            Cn.ifTrue("isWindows", Electron$Coronate.isWin),
                             /* :: */[
-                              Cn.ifTrue("isMacOS", ElectronUtils$Coronate.isMac),
+                              Cn.ifTrue("isMacOS", Electron$Coronate.isMac),
                               /* :: */[
-                                Cn.ifTrue("isElectron", ElectronUtils$Coronate.isElectron),
+                                Cn.ifTrue("isElectron", Electron$Coronate.isElectron),
                                 /* [] */0
                               ]
                             ]
@@ -377,7 +413,7 @@ function Window$Window(Props) {
                       ]
                     ]
                   ])
-            }, React.createElement(Window$WindowTitleBar, {
+            }, React.createElement(Window$TitleBar, {
                   state: state,
                   dispatch: dispatch
                 }), React.createElement(make, makeProps(/* tuple */[
@@ -399,8 +435,6 @@ function Window$Window(Props) {
                         })
                     }, "Close"), React.createElement(Window$About, { })));
 }
-
-var $$Window = /* module */[/* make */Window$Window];
 
 function noDraggy(e) {
   e.preventDefault();
@@ -441,7 +475,7 @@ function sidebarCallback(param) {
   return React.createElement(Window$DefaultSidebar, { });
 }
 
-function Window$WindowBody(Props) {
+function Window$Body(Props) {
   var children = Props.children;
   var footerFunc = Props.footerFunc;
   var match = Props.sidebarFunc;
@@ -466,24 +500,29 @@ function Window$WindowBody(Props) {
                   }, Curry._1(footerFunc, /* () */0)) : null);
 }
 
-var WindowBody = /* module */[/* make */Window$WindowBody];
+var Body = /* module */[/* make */Window$Body];
+
+var make$1 = $$Window;
 
 export {
   global_title ,
   formatTitle ,
+  windowstateToJs ,
+  windowstateFromJs ,
   initialWinState ,
-  WindowContext ,
+  Context ,
   useWindowContext ,
   About ,
   windowReducer ,
+  isElectronMac ,
   toolbarClasses ,
-  WindowsControls ,
-  WindowTitleBar ,
-  $$Window ,
+  MSWindowsControls ,
+  TitleBar ,
+  make$1 as make,
   noDraggy ,
   DefaultSidebar ,
   sidebarCallback ,
-  WindowBody ,
+  Body ,
   
 }
 /* windowContext Not a pure module */

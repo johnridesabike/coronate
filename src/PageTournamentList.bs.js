@@ -93,7 +93,7 @@ function PageTournamentList(Props) {
     return /* () */0;
   };
   var match$5 = Belt_MapString.isEmpty(tourneys);
-  return React.createElement(Window$Coronate.WindowBody[/* make */0], {
+  return React.createElement(Window$Coronate.Body[/* make */0], {
               children: React.createElement("div", {
                     className: "content-area"
                   }, React.createElement("div", {
