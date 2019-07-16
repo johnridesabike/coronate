@@ -168,7 +168,10 @@ Icons$SimpleIcon$1.displayName = IconData$1[/* icon */0].title;
 var React$2 = /* module */[/* make */Icons$SimpleIcon$1];
 
 function Icons$Close(Props) {
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
   return React.createElement("svg", {
+              className: className,
               height: "11",
               width: "11",
               fill: "none",
@@ -183,7 +186,10 @@ function Icons$Close(Props) {
 var Close = /* module */[/* make */Icons$Close];
 
 function Icons$Maximize(Props) {
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
   return React.createElement("svg", {
+              className: className,
               height: "11",
               width: "11",
               fill: "none",
@@ -198,7 +204,10 @@ function Icons$Maximize(Props) {
 var Maximize = /* module */[/* make */Icons$Maximize];
 
 function Icons$Minimize(Props) {
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
   return React.createElement("svg", {
+              className: className,
               height: "11",
               width: "11",
               fill: "none",
@@ -213,7 +222,10 @@ function Icons$Minimize(Props) {
 var Minimize = /* module */[/* make */Icons$Minimize];
 
 function Icons$Restore(Props) {
+  var match = Props.className;
+  var className = match !== undefined ? match : "";
   return React.createElement("svg", {
+              className: className,
               height: "11",
               width: "11",
               fill: "none",

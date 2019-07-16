@@ -145,8 +145,10 @@ module MSWindowsControls = {
           unsafe("boxShadow", "none"),
           outlineStyle(`none)
         ]),
+        /* a hack to get around specficity */
+        selector(" svg", [display(`inline)])
       ]);
-    let button_svg =
+    let svg =
       style([display(`inline), unsafe("shapeRendering", "crispEdges")]);
     let close = style([hover([backgroundColor(red_50)])]);
   };
@@ -158,19 +160,19 @@ module MSWindowsControls = {
         <button
           className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.setFullScreen(false)}>
-          <Icons.Unfullscreen />
+          <Icons.Unfullscreen className=Style.svg />
         </button>;
       } else if (state.isMaximized) {
         <button
           className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.unmaximize}>
-          <Icons.Restore />
+          <Icons.Restore className=Style.svg />
         </button>;
       } else {
         <button
           className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.maximize}>
-          <Icons.Maximize />
+          <Icons.Maximize className=Style.svg />
         </button>;
       };
 
@@ -178,13 +180,13 @@ module MSWindowsControls = {
       <button
         className={Cn.make([Style.button, "button-ghost"])}
         onClick={_ => window->Electron.minimize}>
-        <Icons.Minimize />
+        <Icons.Minimize className=Style.svg />
       </button>
       middleButton
       <button
         className={Cn.make([Style.button, Style.close, "button-ghost"])}
         onClick={_ => window->Electron.close}>
-        <Icons.Close />
+        <Icons.Close className=Style.svg />
       </button>
     </div>;
   };

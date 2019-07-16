@@ -258,7 +258,13 @@ var button = Css.style(/* :: */[
                         ]
                       ]
                     ]),
-                /* [] */0
+                /* :: */[
+                  Css.selector(" svg", /* :: */[
+                        Css.display(/* inline */423610969),
+                        /* [] */0
+                      ]),
+                  /* [] */0
+                ]
               ]
             ]
           ]
@@ -266,7 +272,7 @@ var button = Css.style(/* :: */[
       ]
     ]);
 
-var button_svg = Css.style(/* :: */[
+var svg = Css.style(/* :: */[
       Css.display(/* inline */423610969),
       /* :: */[
         Css.unsafe("shapeRendering", "crispEdges"),
@@ -285,7 +291,7 @@ var close = Css.style(/* :: */[
 var Style = /* module */[
   /* container */container,
   /* button */button,
-  /* button_svg */button_svg,
+  /* svg */svg,
   /* close */close
 ];
 
@@ -305,7 +311,9 @@ function Window$MSWindowsControls(Props) {
               $$window.setFullScreen(false);
               return /* () */0;
             })
-        }, React.createElement(ReactFeather.Minimize2, { })) : (
+        }, React.createElement(ReactFeather.Minimize2, {
+              className: svg
+            })) : (
       state[/* isMaximized */3] ? React.createElement("button", {
               className: Cn.make(/* :: */[
                     button,
@@ -318,7 +326,9 @@ function Window$MSWindowsControls(Props) {
                   $$window.unmaximize();
                   return /* () */0;
                 })
-            }, React.createElement(Icons$Coronate.Restore[/* make */0], { })) : React.createElement("button", {
+            }, React.createElement(Icons$Coronate.Restore[/* make */0], {
+                  className: svg
+                })) : React.createElement("button", {
               className: Cn.make(/* :: */[
                     button,
                     /* :: */[
@@ -330,7 +340,9 @@ function Window$MSWindowsControls(Props) {
                   $$window.maximize();
                   return /* () */0;
                 })
-            }, React.createElement(Icons$Coronate.Maximize[/* make */0], { }))
+            }, React.createElement(Icons$Coronate.Maximize[/* make */0], {
+                  className: svg
+                }))
     );
   return React.createElement("div", {
               className: container
@@ -346,7 +358,9 @@ function Window$MSWindowsControls(Props) {
                       $$window.minimize();
                       return /* () */0;
                     })
-                }, React.createElement(Icons$Coronate.Minimize[/* make */0], { })), middleButton, React.createElement("button", {
+                }, React.createElement(Icons$Coronate.Minimize[/* make */0], {
+                      className: svg
+                    })), middleButton, React.createElement("button", {
                   className: Cn.make(/* :: */[
                         button,
                         /* :: */[
@@ -361,7 +375,9 @@ function Window$MSWindowsControls(Props) {
                       $$window.close();
                       return /* () */0;
                     })
-                }, React.createElement(Icons$Coronate.Close[/* make */0], { })));
+                }, React.createElement(Icons$Coronate.Close[/* make */0], {
+                      className: svg
+                    })));
 }
 
 var MSWindowsControls = /* module */[
