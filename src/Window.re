@@ -125,43 +125,64 @@ let toolbarClasses =
   ]);
 
 module MSWindowsControls = {
+  module Style = {
+    open Css;
+    open Utils.PhotonColors;
+    let container =
+      style([
+        height(`calc((`add, `percent(100.0), `px(8)))),
+        margin(`px(-4)),
+      ]);
+    let button =
+      style([
+        fontSize(`px(11)),
+        textAlign(`center),
+        width(`px(46)),
+        height(`percent(100.0)),
+        borderRadius(`zero),
+        focus([
+          borderStyle(`none),
+          unsafe("box-shadow", "none"),
+          unsafe("outline", "none"),
+        ]),
+      ]);
+    let button_svg =
+      style([display(`inline), unsafe("shape-rendering", "crispEdges")]);
+    let close = style([hover([backgroundColor(red_50)])]);
+  };
   [@react.component]
   let make = (~state, ~electron) => {
     let window = electron##remote->Electron.getCurrentWindow;
     let middleButton =
       if (state.isFullScreen) {
         <button
-          className="windosControls__winButton button-ghost"
+          className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.setFullScreen(false)}>
           <Icons.Unfullscreen />
         </button>;
       } else if (state.isMaximized) {
         <button
-          className="windosControls__winButton button-ghost"
+          className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.unmaximize}>
           <Icons.Restore />
         </button>;
       } else {
         <button
-          className="windosControls__winButton button-ghost"
+          className={Cn.make([Style.button, "button-ghost"])}
           onClick={_ => window->Electron.maximize}>
           <Icons.Maximize />
         </button>;
       };
 
-    <div className="windowsControls__container">
+    <div className=Style.container>
       <button
-        className="windowsControls__winButton button-ghost"
+        className={Cn.make([Style.button, "button-ghost"])}
         onClick={_ => window->Electron.minimize}>
         <Icons.Minimize />
       </button>
       middleButton
       <button
-        className={Cn.make([
-          "windowsControls__winButton",
-          "windowsControls__close",
-          "button-ghost",
-        ])}
+        className={Cn.make([Style.button, Style.close, "button-ghost"])}
         onClick={_ => window->Electron.close}>
         <Icons.Close />
       </button>

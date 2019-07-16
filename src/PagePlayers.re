@@ -121,7 +121,7 @@ module List = {
           {s(" Add a new player")}
         </button>
       </div>
-      <table className="players__table">
+      <table style={ReactDOMRe.Style.make(~margin="auto", ())}>
         <caption> {s("Player roster")} </caption>
         <thead>
           <tr>
@@ -270,7 +270,9 @@ module Profile = {
       let id = event->ReactEvent.Focus.currentTarget##value;
       setSelectedAvoider(_ => id);
     };
-    <div className="players__playerInfo content-area">
+    <div
+      className="content-area"
+      style={ReactDOMRe.Style.make(~width="650px", ~margin="auto", ())}>
       <a href="#/players"> <Icons.ChevronLeft /> {s(" Back")} </a>
       <h2> {s("Profile for " ++ playerName)} </h2>
       <form onChange=handleChange onSubmit=handleChange>

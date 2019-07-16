@@ -17,7 +17,6 @@ import * as PageTourneySetup$Coronate from "./PageTourneySetup.bs.js";
 import * as PageTourneyScores$Coronate from "./PageTourneyScores.bs.js";
 import * as PageTourneyPlayers$Coronate from "./PageTourneyPlayers.bs.js";
 import * as PageTournamentStatus$Coronate from "./PageTournamentStatus.bs.js";
-import * as PageTourneyCrossTable$Coronate from "./PageTourneyCrossTable.bs.js";
 
 function PageTourney$Footer(Props) {
   var tournament = Props.tournament;
@@ -257,7 +256,7 @@ function PageTourney(Props) {
                           if (hashPath[1]) {
                             exit = 1;
                           } else {
-                            tmp = React.createElement(PageTourneyCrossTable$Coronate.make, {
+                            tmp = React.createElement(PageTourneyScores$Coronate.Crosstable[/* make */0], {
                                   tournament: tournament
                                 });
                           }

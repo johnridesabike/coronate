@@ -25,7 +25,7 @@ function App(Props) {
             if (match$1[1]) {
               exit = 1;
             } else {
-              tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
+              tmp = React.createElement(Pages$Coronate.Splash[/* make */1], { });
             }
             break;
         case "options" : 
@@ -64,7 +64,7 @@ function App(Props) {
           exit = 1;
       }
     } else {
-      tmp = React.createElement(Pages$Coronate.Splash[/* make */0], { });
+      tmp = React.createElement(Pages$Coronate.Splash[/* make */1], { });
     }
   } else {
     exit = 1;

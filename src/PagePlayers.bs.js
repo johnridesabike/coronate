@@ -165,7 +165,9 @@ function PagePlayers$List(Props) {
                                       }));
                         })
                     }, React.createElement(ReactFeather.UserPlus, { }), " Add a new player")), React.createElement("table", {
-                  className: "players__table"
+                  style: {
+                    margin: "auto"
+                  }
                 }, React.createElement("caption", undefined, "Player roster"), React.createElement("thead", undefined, React.createElement("tr", undefined, React.createElement("th", undefined, React.createElement(Hooks$Coronate.SortButton[/* make */0], {
                                   children: "Name",
                                   sortKey: sortName,
@@ -337,7 +339,11 @@ function PagePlayers$Profile(Props) {
   };
   var match$3 = singAvoidList.length === 0;
   return React.createElement("div", {
-              className: "players__playerInfo content-area"
+              className: "content-area",
+              style: {
+                margin: "auto",
+                width: "650px"
+              }
             }, React.createElement("a", {
                   href: "#/players"
                 }, React.createElement(ReactFeather.ChevronLeft, { }), " Back"), React.createElement("h2", undefined, "Profile for " + playerName), React.createElement("form", {

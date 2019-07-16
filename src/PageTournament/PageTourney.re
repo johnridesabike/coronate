@@ -246,7 +246,7 @@ let make = (~tourneyId, ~hashPath) => {
          {switch (hashPath) {
           | [""] => <PageTourneyPlayers tournament />
           | ["scores"] => <PageTourneyScores tournament />
-          | ["crosstable"] => <PageTourneyCrossTable tournament />
+          | ["crosstable"] => <PageTourneyScores.Crosstable tournament />
           | ["setup"] => <PageTourneySetup tournament />
           | ["status"] => <PageTournamentStatus tournament />
           | ["round", roundId] =>

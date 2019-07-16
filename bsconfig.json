@@ -31,7 +31,8 @@
     "bs-dependencies": [
         "reason-react",
         "re-classnames",
-        "bs-webapi"
+        "bs-webapi",
+        "bs-css"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

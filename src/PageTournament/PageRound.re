@@ -2,6 +2,25 @@ open Belt;
 open TournamentDataReducers;
 open TournamentData;
 
+module Style = {
+  open Css;
+  let winnerSelect = style([width(`percent(100.0)), fontSize(`em(1.0))]);
+  let table = style([width(`percent(100.0))]);
+  /*
+   .round__table tr:not(:last-of-type) {
+       border-bottom-style: solid;
+       border-width: 1px;
+       border-color: var(--grey-40);
+   }
+   */
+  let td = style([padding2(~v=`px(8), ~h=`px(4))]);
+  let rowId =
+    style([width(`px(20)), padding(`px(4)), textAlign(`center)]);
+  let controls = style([width(`px(72))]);
+  let matchResult = style([width(`px(140))]);
+  let playerResult = style([width(`px(32)), textAlign(`center)]);
+};
+
 module PlayerMatchInfo = {
   [@react.component]
   let make =
@@ -108,6 +127,7 @@ module MatchRow = {
         ~setSelectedMatch,
         ~scoreData,
         ~tournament,
+        ~className="",
       ) => {
     let tourney = tournament.tourney;
     let tourneyDispatch = tournament.tourneyDispatch;
@@ -207,33 +227,35 @@ module MatchRow = {
       setMatchResult(event->ReactEvent.Form.target##value);
     };
     <tr
-      className={
+      className={Cn.make([
+        className,
         selectedMatch->Belt.Option.mapWithDefault("", x =>
           x
           ->Js.Nullable.toOption
           ->Belt.Option.mapWithDefault("", id =>
               match.id === id ? "selected" : "buttons-on-hover"
             )
-        )
-      }>
-      <th className="table__number round__rowId" scope="row">
+        ),
+      ])}>
+      <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
         {pos + 1 |> string_of_int |> React.string}
       </th>
-      <td className="round__playerResult"> {resultDisplay(`White)} </td>
+      <td className=Style.playerResult> {resultDisplay(`White)} </td>
       <td
         className={"table__player row__player " ++ whitePlayer.type_}
         id={"match-" ++ string_of_int(pos) ++ "-white"}>
         {whiteName |> React.string}
       </td>
-      <td className="round__playerResult"> {resultDisplay(`Black)} </td>
+      <td className=Style.playerResult> {resultDisplay(`Black)} </td>
       <td
         className={"table__player row__player " ++ blackPlayer.type_}
         id={"match-" ++ string_of_int(pos) ++ "-black"}>
         {blackName |> React.string}
       </td>
-      <td className="round__matchResult data__input row__controls">
+      <td
+        className={Cn.make([Style.matchResult, "data__input row__controls"])}>
         <select
-          className="round__winnerSelect"
+          className=Style.winnerSelect
           disabled=isDummyRound
           value={resultCode |> resultCodesToJs}
           onBlur=setMatchResultBlur
@@ -254,7 +276,7 @@ module MatchRow = {
       </td>
       {isCompact
          ? React.null
-         : <td className="round__ controls data__input">
+         : <td className={Cn.make([Style.controls, "data__input"])}>
              {selectedMatch->Belt.Option.mapWithDefault(React.null, x =>
                 x
                 ->Js.Nullable.toOption
@@ -363,7 +385,7 @@ module RoundTable = {
       ) => {
     let tourney = tournament.tourney;
     let matchList = tourney.roundList->Belt.Array.getUnsafe(roundId);
-    <table className="round__table">
+    <table className=Style.table>
       {matchList |> Js.Array.length === 0
          ? React.null
          : <>
@@ -374,7 +396,7 @@ module RoundTable = {
              </caption>
              <thead>
                <tr>
-                 <th className="round__rowId" scope="col">
+                 <th className=Style.rowId scope="col">
                    {"#" |> React.string}
                  </th>
                  <th scope="col">
@@ -406,7 +428,7 @@ module RoundTable = {
                </tr>
              </thead>
            </>}
-      <tbody className="round__tbody content">
+      <tbody className="content">
         {matchList
          |> Js.Array.mapi((match: Data.Match.t, pos) =>
               <MatchRow
@@ -419,6 +441,7 @@ module RoundTable = {
                 setSelectedMatch
                 scoreData
                 tournament
+                className=Style.td
               />
             )
          |> React.array}
