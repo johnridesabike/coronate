@@ -32,12 +32,12 @@ var topHeader = Css.style(/* :: */[
 var compact = Css.style(/* [] */0);
 
 var row = Css.style(/* :: */[
-      Css.selector(":nth-child(even)", /* :: */[
+      Css.selector(":nth-of-type(even)", /* :: */[
             Css.backgroundColor(Utils$Coronate.PhotonColors[/* white_100 */71]),
             /* [] */0
           ]),
       /* :: */[
-        Css.selector(":nth-child(odd)", /* :: */[
+        Css.selector(":nth-of-type(odd)", /* :: */[
               Css.backgroundColor(Utils$Coronate.PhotonColors[/* grey_20 */50]),
               /* [] */0
             ]),

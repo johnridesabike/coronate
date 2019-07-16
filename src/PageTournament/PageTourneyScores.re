@@ -14,8 +14,8 @@ module Style = {
   let compact = style([]);
   let row =
     style([
-      selector(":nth-child(even)", [backgroundColor(white_100)]),
-      selector(":nth-child(odd)", [backgroundColor(grey_20)]),
+      selector(":nth-of-type(even)", [backgroundColor(white_100)]),
+      selector(":nth-of-type(odd)", [backgroundColor(grey_20)]),
     ]);
   let rowTd =
     style([

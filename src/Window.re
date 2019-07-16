@@ -142,12 +142,12 @@ module MSWindowsControls = {
         borderRadius(`zero),
         focus([
           borderStyle(`none),
-          unsafe("box-shadow", "none"),
+          unsafe("boxShadow", "none"),
           outlineStyle(`none)
         ]),
       ]);
     let button_svg =
-      style([display(`inline), unsafe("shape-rendering", "crispEdges")]);
+      style([display(`inline), unsafe("shapeRendering", "crispEdges")]);
     let close = style([hover([backgroundColor(red_50)])]);
   };
   [@react.component]

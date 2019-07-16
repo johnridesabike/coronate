@@ -251,7 +251,7 @@ var button = Css.style(/* :: */[
                 Css.focus(/* :: */[
                       Css.borderStyle(/* none */-922086728),
                       /* :: */[
-                        Css.unsafe("box-shadow", "none"),
+                        Css.unsafe("boxShadow", "none"),
                         /* :: */[
                           Css.outlineStyle(/* none */-922086728),
                           /* [] */0
@@ -269,7 +269,7 @@ var button = Css.style(/* :: */[
 var button_svg = Css.style(/* :: */[
       Css.display(/* inline */423610969),
       /* :: */[
-        Css.unsafe("shape-rendering", "crispEdges"),
+        Css.unsafe("shapeRendering", "crispEdges"),
         /* [] */0
       ]
     ]);
