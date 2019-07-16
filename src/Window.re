@@ -143,7 +143,7 @@ module MSWindowsControls = {
         focus([
           borderStyle(`none),
           unsafe("box-shadow", "none"),
-          unsafe("outline", "none"),
+          outlineStyle(`none)
         ]),
       ]);
     let button_svg =

@@ -25,7 +25,7 @@ let invalidAlert = () => {
    make up a sort-of-safe-but-not-really way to load arbitrary JSON data. These
    only account for a few of the more major errors that could occur.
    THIS IS NOT EVEN CLOSE TO KIND OF SORT OF SAFE AND NEEDS TO BE REWRITTEN.
-   WOW IS SECURITY AND JUST MAKING SURE THINGS GENERALLY WORK REALLY HARD.
+   Security and just making sure things generally work is really hard.
  */
 external unsafePlayerDecode: Js.Json.t => Data.Player.js = "%identity";
 external unsafeTournamentDecode: Js.Json.t => Data.Tournament.json =

@@ -253,7 +253,7 @@ var button = Css.style(/* :: */[
                       /* :: */[
                         Css.unsafe("box-shadow", "none"),
                         /* :: */[
-                          Css.unsafe("outline", "none"),
+                          Css.outlineStyle(/* none */-922086728),
                           /* [] */0
                         ]
                       ]

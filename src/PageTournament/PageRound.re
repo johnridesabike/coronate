@@ -4,15 +4,20 @@ open TournamentData;
 
 module Style = {
   open Css;
+  open Utils.PhotonColors;
   let winnerSelect = style([width(`percent(100.0)), fontSize(`em(1.0))]);
-  let table = style([width(`percent(100.0))]);
-  /*
-   .round__table tr:not(:last-of-type) {
-       border-bottom-style: solid;
-       border-width: 1px;
-       border-color: var(--grey-40);
-   }
-   */
+  let table =
+    style([
+      width(`percent(100.0)),
+      selector(
+        " tr:not(:last-of-type)",
+        [
+          borderBottomStyle(`solid),
+          borderWidth(`px(1)),
+          borderColor(grey_40),
+        ],
+      ),
+    ]);
   let td = style([padding2(~v=`px(8), ~h=`px(4))]);
   let rowId =
     style([width(`px(20)), padding(`px(4)), textAlign(`center)]);

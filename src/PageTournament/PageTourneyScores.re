@@ -7,20 +7,16 @@ module Style = {
     style([borderCollapse(`collapse), unsafe("width", "min-content")]);
   let topHeader = style([verticalAlign(`bottom)]);
   /*
-   .scores__row:nth-child(even) {
-       background-color: var(--white-100);
-   }
-
-   .scores__row:nth-child(odd) {
-       background-color: var(--grey-20);
-   }
-
    .scores__compact .row:nth-child(odd) {
        background-color: var(--white-100);
    }
    */
   let compact = style([]);
-  let row = style([]);
+  let row =
+    style([
+      selector(":nth-child(even)", [backgroundColor(white_100)]),
+      selector(":nth-child(odd)", [backgroundColor(grey_20)]),
+    ]);
   let rowTd =
     style([
       borderWidth(`px(1)),

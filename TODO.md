@@ -17,6 +17,7 @@
 
 ## Test coverage
 
-- [ ] There is only ever one dummy player per round.
-- [ ] Removing a round resets all of the matches within the round.
-- ... lots of more stuff to reach ~100% coverage.
+- [ ] Migrating to ReasonML broke all of the tests, since the create-react-app Jest configuration doesn't play well with Reason tests. That needs to be fixed.
+- [ ] Test that there is only ever one dummy player per round.
+- [ ] Test that removing a round resets all of the matches within the round.
+- ... lots of other stuff to reach 100% coverage.

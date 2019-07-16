@@ -41,7 +41,22 @@ var table = Css.style(/* :: */[
             -119887163,
             100.0
           ]),
-      /* [] */0
+      /* :: */[
+        Css.selector(" tr:not(:last-of-type)", /* :: */[
+              Css.borderBottomStyle(/* solid */12956715),
+              /* :: */[
+                Css.borderWidth(/* `px */[
+                      25096,
+                      1
+                    ]),
+                /* :: */[
+                  Css.borderColor(Utils$Coronate.PhotonColors[/* grey_40 */52]),
+                  /* [] */0
+                ]
+              ]
+            ]),
+        /* [] */0
+      ]
     ]);
 
 var td = Css.style(/* :: */[
