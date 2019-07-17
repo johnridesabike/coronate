@@ -163,10 +163,10 @@ function setByePlayer(byeQueue, dummyId, data) {
       return playersWithoutByes.includes(id);
     };
     var nextByeSignups = byeQueue.filter(hasntHadBye);
-    var match$1 = nextByeSignups.length > 0;
+    var match$1 = Belt_Array.get(nextByeSignups, 0);
     var dataForNextBye;
-    if (match$1) {
-      var match$2 = Belt_MapString.get(data, Belt_Array.getExn(nextByeSignups, 0));
+    if (match$1 !== undefined) {
+      var match$2 = Belt_MapString.get(data, match$1);
       dataForNextBye = match$2 !== undefined ? match$2 : Utils$Coronate.last(dataList);
     } else {
       var match$3 = dataList.length > 0;

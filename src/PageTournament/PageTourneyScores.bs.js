@@ -13,7 +13,6 @@ import * as ReactFeather from "react-feather";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as Scoring$Coronate from "../Scoring.bs.js";
-import * as Converters$Coronate from "../Converters.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
 var table = Css.style(/* :: */[
@@ -121,7 +120,7 @@ function PageTourneyScores$ScoreTable(Props) {
   var tieBreaks = tourney[/* tieBreaks */6];
   var roundList = tourney[/* roundList */5];
   var tieBreakNames = Scoring$Coronate.getTieBreakNames(tieBreaks);
-  var standingTree = Scoring$Coronate.createStandingTree(Scoring$Coronate.createStandingList(tieBreaks, Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))).filter((function (standing) {
+  var standingTree = Scoring$Coronate.createStandingTree(Scoring$Coronate.createStandingList(tieBreaks, Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))).filter((function (standing) {
               return standing[/* id */0] !== Data$Coronate.dummy_id;
             })));
   return React.createElement("table", {
@@ -416,7 +415,7 @@ function PageTourneyScores$Crosstable(Props) {
   var getPlayer = tournament[/* getPlayer */1];
   var tieBreaks = tourney[/* tieBreaks */6];
   var roundList = tourney[/* roundList */5];
-  var scoreData = Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+  var scoreData = Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
   var standings = Scoring$Coronate.createStandingList(tieBreaks, scoreData);
   var getXScore = function (player1Id, player2Id) {
     if (player1Id === player2Id) {

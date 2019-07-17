@@ -604,7 +604,7 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
     let scoreData =
       React.useMemo1(
         () =>
-          Converters.matches2ScoreData(Data.rounds2Matches(~roundList, ())),
+          Data.Converters.matches2ScoreData(Data.rounds2Matches(~roundList, ())),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds

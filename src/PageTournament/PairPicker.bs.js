@@ -15,7 +15,6 @@ import * as Hooks$Coronate from "../Hooks.bs.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as Pairing$Coronate from "../Pairing.bs.js";
 import * as Scoring$Coronate from "../Scoring.bs.js";
-import * as Converters$Coronate from "../Converters.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 import * as PageTourneyPlayers$Coronate from "./PageTourneyPlayers.bs.js";
 
@@ -314,7 +313,7 @@ function PairPicker$PlayerInfo(Props) {
   var getPlayer = Props.getPlayer;
   var scoreData = Props.scoreData;
   var avoidPairs = Props.avoidPairs;
-  var avoidMap = avoidPairs.reduce(Converters$Coronate.avoidPairReducer, Belt_MapString.empty);
+  var avoidMap = avoidPairs.reduce(Data$Coronate.avoidPairReducer, Belt_MapString.empty);
   var match = Belt_MapString.get(scoreData, playerId);
   var playerData = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(playerId);
   var colorScores = playerData[/* colorScores */0];
@@ -392,7 +391,7 @@ function PairPicker(Props) {
         }));
   var setIsModalOpen = match$2[1];
   var pairData = React.useMemo((function () {
-          return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(activePlayers, avoidPairs, scoreData));
+          return Pairing$Coronate.setUpperHalves(Data$Coronate.Converters[/* createPairingData */10](activePlayers, avoidPairs, scoreData));
         }), /* tuple */[
         activePlayers,
         avoidPairs,

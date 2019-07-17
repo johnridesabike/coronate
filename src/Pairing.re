@@ -1,3 +1,8 @@
+/*
+   This handles all of the logic for calculating pairings. It requires data
+   taken from past tournament scores and player ratings.
+ */
+
 open Belt;
 type t = {
   id: string,
@@ -129,28 +134,24 @@ let setByePlayer = (byeQueue, dummyId, data) => {
       let playersWithoutByes = dataList |> Js.Array.map(p => p.id);
       let hasntHadBye = id => playersWithoutByes |> Js.Array.includes(id);
       let nextByeSignups = byeQueue |> Js.Array.filter(hasntHadBye);
-      let dataForNextBye = {
-        nextByeSignups |> Js.Array.length > 0
-          /* Assign the bye to the next person who signed up. */
-          ? {
-            switch (data->Map.String.get(nextByeSignups->Array.getExn(0))) {
-            | Some(x) => x
-            | None => Utils.last(dataList)
-            };
+      let dataForNextBye =
+        switch (nextByeSignups->Array.get(0)) {
+        /* Assign the bye to the next person who signed up. */
+        | Some(id) =>
+          switch (data->Map.String.get(id)) {
+          | Some(x) => x
+          | None => Utils.last(dataList)
           }
+        | None =>
           /* Assign a bye to the lowest-rated player in the lowest score group.
              Because the list is sorted, the last player is the lowest.
              (USCF § 29L2.) */
-          : {
-            dataList |> Js.Array.length > 0
-              ? Utils.last(dataList)
-              /* In the impossible situation that *everyone* has played a bye round
-                 previously, then just pick the last player. */
-              : data->Map.String.valuesToArray
-                |> sortByScoreThenRating
-                |> Utils.last;
-          };
-      };
+          dataList |> Js.Array.length > 0
+            ? Utils.last(dataList)
+            /* In the impossible situation that *everyone* has played a bye
+               round previously, then just pick the last player. */
+            : data->Map.String.valuesToArray->sortByScoreThenRating->Utils.last
+        };
       let dataWithoutBye = data->Map.String.remove(dataForNextBye.id);
       (dataWithoutBye, Some(dataForNextBye));
     };

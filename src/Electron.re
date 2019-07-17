@@ -1,3 +1,7 @@
+/*
+  This includes rudimentary bindings for the Electron API as well as utility
+  functions that rely on that API.
+*/
 type shell;
 [@bs.send]
 external openExternal: (shell, string) => Js.Promise.t(unit) = "openExternal";
@@ -81,15 +85,14 @@ let macOSDoubleClick = event => {
 };
 
 [@bs.scope "navigator"] [@bs.val] external appVersion: string = "appVersion";
+let isWin = appVersion -> Js.String.includes("Windows");
+let isMac = appVersion |> Js.String.includes("Mac");
 
-let isElectron =
+let isElectron = 
   switch (ifElectron(_ => true)) {
   | None => false
   | Some(x) => x
   };
-
-let isWin = appVersion |> Js.String.includes("Windows");
-let isMac = appVersion |> Js.String.includes("Mac");
 
 type os =
   | Windows

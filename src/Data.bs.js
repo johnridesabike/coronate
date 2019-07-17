@@ -3,8 +3,20 @@
 import * as Js_dict from "bs-platform/lib/es6/js_dict.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
+import * as Utils$Coronate from "./Utils.bs.js";
+import * as Scoring$Coronate from "./Scoring.bs.js";
 
 var dummy_id = "________DUMMY________";
+
+function avoidPairReducer(acc, pair) {
+  var id2 = pair[1];
+  var id1 = pair[0];
+  var match = Belt_MapString.get(acc, id1);
+  var newArr1 = match !== undefined ? match.concat(/* array */[id2]) : /* array */[id2];
+  var match$1 = Belt_MapString.get(acc, id2);
+  var newArr2 = match$1 !== undefined ? match$1.concat(/* array */[id1]) : /* array */[id1];
+  return Belt_MapString.set(Belt_MapString.set(acc, id1, newArr1), id2, newArr2);
+}
 
 function tToJs(param) {
   return {
@@ -267,17 +279,109 @@ function isRoundComplete(roundList, players, roundId) {
   }
 }
 
-var win = 1.0;
+function colorToScore(color) {
+  var match = color === 1;
+  if (match) {
+    return 1.0;
+  } else {
+    return -1.0;
+  }
+}
 
-var loss = 0.0;
+function getOppColor(color) {
+  var match = color === 0;
+  if (match) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
-var draw = 0.5;
+var dummyId = "________DUMMY________";
+
+function isDummyId$1(playerId) {
+  return playerId === dummyId;
+}
+
+function makeScoreData(existingData, playerId, origRating, newRating, result, oppId, color) {
+  var match = Belt_MapString.get(existingData, playerId);
+  var oldData = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(playerId);
+  var match$1 = oldData[/* ratings */5].length;
+  var newRatings = match$1 !== 0 ? /* array */[newRating] : /* array */[
+      origRating,
+      newRating
+    ];
+  var match$2 = oppId === dummyId;
+  var newResultsNoByes = match$2 ? /* array */[] : /* array */[result];
+  var oldOppResults = oldData[/* opponentResults */4];
+  var match$3 = Belt_MapString.get(oldOppResults, oppId);
+  var oppResult = match$3 !== undefined ? match$3 + result : result;
+  var newOpponentResults = Belt_MapString.set(oldOppResults, oppId, oppResult);
+  return /* record */[
+          /* colorScores */oldData[/* colorScores */0].concat(/* array */[colorToScore(color)]),
+          /* colors */oldData[/* colors */1].concat(/* array */[color]),
+          /* id */playerId,
+          /* isDummy */playerId === dummyId,
+          /* opponentResults */newOpponentResults,
+          /* ratings */oldData[/* ratings */5].concat(newRatings),
+          /* results */oldData[/* results */6].concat(/* array */[result]),
+          /* resultsNoByes */oldData[/* resultsNoByes */7].concat(newResultsNoByes)
+        ];
+}
+
+function matches2ScoreData(matchList) {
+  return matchList.reduce((function (acc, match_) {
+                var newDataWhite = makeScoreData(acc, match_[/* whiteId */1], match_[/* whiteOrigRating */5], match_[/* whiteNewRating */3], match_[/* whiteScore */7], match_[/* blackId */2], 0);
+                var newDataBlack = makeScoreData(acc, match_[/* blackId */2], match_[/* blackOrigRating */6], match_[/* blackNewRating */4], match_[/* blackScore */8], match_[/* whiteId */1], 1);
+                return Belt_MapString.set(Belt_MapString.set(acc, match_[/* whiteId */1], newDataWhite), match_[/* blackId */2], newDataBlack);
+              }), Belt_MapString.empty);
+}
+
+function createPairingData(playerData, avoidPairs, scoreMap) {
+  var avoidMap = avoidPairs.reduce(avoidPairReducer, Belt_MapString.empty);
+  return Belt_MapString.reduce(playerData, Belt_MapString.empty, (function (acc, key, data) {
+                var match = Belt_MapString.get(scoreMap, key);
+                var playerStats = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(key);
+                var match$1 = Belt_MapString.get(avoidMap, key);
+                var newAvoidIds = match$1 !== undefined ? match$1 : /* array */[];
+                var newData_000 = /* id */data[/* id */1];
+                var newData_002 = /* colorScores */playerStats[/* colorScores */0];
+                var newData_003 = /* colors */playerStats[/* colors */1];
+                var newData_006 = /* opponents */Belt_MapString.keysToArray(playerStats[/* opponentResults */4]);
+                var newData_007 = /* rating */data[/* rating */4];
+                var newData_008 = /* score */Utils$Coronate.arraySumFloat(playerStats[/* results */6]);
+                var newData = /* record */[
+                  newData_000,
+                  /* avoidIds */newAvoidIds,
+                  newData_002,
+                  newData_003,
+                  /* halfPos */0,
+                  /* isUpperHalf */false,
+                  newData_006,
+                  newData_007,
+                  newData_008
+                ];
+                return Belt_MapString.set(acc, key, newData);
+              }));
+}
+
+var Converters = /* module */[
+  /* blackValue */1.0,
+  /* whiteValue */-1.0,
+  /* black */1,
+  /* white */0,
+  /* colorToScore */colorToScore,
+  /* getOppColor */getOppColor,
+  /* dummyId */dummyId,
+  /* isDummyId */isDummyId$1,
+  /* makeScoreData */makeScoreData,
+  /* matches2ScoreData */matches2ScoreData,
+  /* createPairingData */createPairingData
+];
 
 export {
-  win ,
-  loss ,
-  draw ,
   dummy_id ,
+  avoidPairReducer ,
   Player ,
   Match ,
   Tournament ,
@@ -285,6 +389,7 @@ export {
   rounds2Matches ,
   getUnmatched ,
   isRoundComplete ,
+  Converters ,
   
 }
 /* defaults Not a pure module */

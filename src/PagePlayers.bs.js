@@ -15,7 +15,6 @@ import * as Pages$Coronate from "./Pages.bs.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as Scoring$Coronate from "./Scoring.bs.js";
-import * as Converters$Coronate from "./Converters.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
 function s(prim) {
@@ -279,7 +278,7 @@ function PagePlayers$Profile(Props) {
         windowDispatch,
         playerName
       ]);
-  var avoidMap = config[/* avoidPairs */0].reduce(Converters$Coronate.avoidPairReducer, Belt_MapString.empty);
+  var avoidMap = config[/* avoidPairs */0].reduce(Data$Coronate.avoidPairReducer, Belt_MapString.empty);
   var match$1 = Belt_MapString.get(avoidMap, playerId);
   var singAvoidList = match$1 !== undefined ? match$1 : /* array */[];
   var unavoided = Belt_MapString.keysToArray(players).filter((function (id) {

@@ -1,14 +1,6 @@
 open Belt;
 open Data;
 module LocalForage = Externals.LocalForage;
-type actionOption =
-  | AddAvoidPair(Data.avoidPair)
-  | DelAvoidPair(Data.avoidPair)
-  | DelAvoidSingle(string)
-  | SetAvoidPairs(array(avoidPair))
-  | SetByeValue(float)
-  | SetState(Config.t)
-  | SetLastBackup(Js.Date.t);
 
 /*******************************************************************************
  * Initialize the databases
@@ -136,6 +128,7 @@ let useAllItemsFromDb =
   );
   (items, dispatch);
 };
+
 let useAllPlayers = () =>
   useAllItemsFromDb(
     ~store=playerStore,
@@ -143,6 +136,7 @@ let useAllPlayers = () =>
     ~fromJs=Data.Player.tFromJs,
     ~toJs=Data.Player.tToJs,
   );
+
 let useAllTournaments = () =>
   useAllItemsFromDb(
     ~store=tourneyStore,
@@ -150,6 +144,16 @@ let useAllTournaments = () =>
     ~fromJs=Data.Tournament.tFromJsDeep,
     ~toJs=Data.Tournament.tToJsDeep,
   );
+
+type actionOption =
+  | AddAvoidPair(Data.avoidPair)
+  | DelAvoidPair(Data.avoidPair)
+  | DelAvoidSingle(string)
+  | SetAvoidPairs(array(avoidPair))
+  | SetByeValue(float)
+  | SetState(Config.t)
+  | SetLastBackup(Js.Date.t);
+
 let configReducer = (state: Config.t, action) => {
   Js.Array.(
     switch (action) {

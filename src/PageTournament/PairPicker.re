@@ -302,7 +302,7 @@ module PlayerInfo = {
       ) => {
     let avoidMap =
       avoidPairs
-      |> Js.Array.reduce(Converters.avoidPairReducer, Map.String.empty);
+      |> Js.Array.reduce(Data.avoidPairReducer, Map.String.empty);
     let playerData =
       switch (scoreData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)
@@ -417,7 +417,7 @@ let make =
     React.useMemo3(
       () =>
         scoreData
-        |> Converters.createPairingData(activePlayers, avoidPairs)
+        |> Data.Converters.createPairingData(activePlayers, avoidPairs)
         |> Pairing.setUpperHalves,
       (activePlayers, avoidPairs, scoreData),
     );

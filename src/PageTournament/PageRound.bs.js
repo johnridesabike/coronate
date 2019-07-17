@@ -18,7 +18,6 @@ import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Pages$Coronate from "../Pages.bs.js";
 import * as Utils$Coronate from "../Utils.bs.js";
 import * as Scoring$Coronate from "../Scoring.bs.js";
-import * as Converters$Coronate from "../Converters.bs.js";
 import * as PairPicker$Coronate from "./PairPicker.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
 
@@ -715,7 +714,7 @@ function WithRoundData(BaseComponent) {
     var getPlayer = tournament[/* getPlayer */1];
     var roundList = tourney[/* roundList */5];
     var scoreData = React.useMemo((function () {
-            return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+            return Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
           }), /* array */[roundList]);
     var match = roundId === (roundList.length - 1 | 0);
     var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;
@@ -818,7 +817,7 @@ function PageRound$WithRoundData(Props) {
   var getPlayer = tournament[/* getPlayer */1];
   var roundList = tourney[/* roundList */5];
   var scoreData = React.useMemo((function () {
-          return Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+          return Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
         }), /* array */[roundList]);
   var match = roundId === (roundList.length - 1 | 0);
   var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;

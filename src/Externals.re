@@ -155,9 +155,6 @@ module LocalForage = {
     let loadSetItems = () => setItemsPrototype(localForage);
     let loadRemoveItems = () => removeItemsPrototype(localForage);
   };
-  /*
-   END ADDING PLUGINS TO THE LOCALFORAGE MODULE.
-   */
 };
 
 LocalForage.Plugins.loadGetItems();

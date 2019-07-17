@@ -5,7 +5,6 @@ import * as Data$Coronate from "../src/Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Pairing$Coronate from "../src/Pairing.bs.js";
 import * as TestData$Coronate from "../src/TestData.bs.js";
-import * as Converters$Coronate from "../src/Converters.bs.js";
 import * as Caml_builtin_exceptions from "bs-platform/lib/es6/caml_builtin_exceptions.js";
 
 function loadPairData(tourneyId) {
@@ -19,7 +18,7 @@ function loadPairData(tourneyId) {
             return acc;
           }
         }));
-  return Pairing$Coronate.setUpperHalves(Converters$Coronate.createPairingData(players, TestData$Coronate.config[/* avoidPairs */0], Converters$Coronate.matches2ScoreData(Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
+  return Pairing$Coronate.setUpperHalves(Data$Coronate.Converters[/* createPairingData */10](players, TestData$Coronate.config[/* avoidPairs */0], Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0))));
 }
 
 Jest.test("Players have 0 priority of pairing themselves.", (function (param) {

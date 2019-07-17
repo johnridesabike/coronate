@@ -56,15 +56,15 @@ function macOSDoubleClick($$event) {
   return /* () */0;
 }
 
+var isWin = "Windows".includes(navigator.appVersion);
+
+var isMac = navigator.appVersion.includes("Mac");
+
 var match = ifElectron((function (param) {
         return true;
       }));
 
 var isElectron = match !== undefined ? match : false;
-
-var isWin = navigator.appVersion.includes("Windows");
-
-var isMac = navigator.appVersion.includes("Mac");
 
 function Electron$IfElectron(Props) {
   var children = Props.children;
@@ -86,9 +86,9 @@ export {
   openInBrowser ,
   toggleMaximize ,
   macOSDoubleClick ,
-  isElectron ,
   isWin ,
   isMac ,
+  isElectron ,
   IfElectron ,
   
 }

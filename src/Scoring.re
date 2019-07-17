@@ -1,3 +1,8 @@
+/*
+  This handles all of the score tiebreak logic. Not all of the USCF methods
+  are implemented yet, just the most common ones.
+*/
+
 open Utils;
 open Belt;
 
@@ -175,7 +180,7 @@ let createStandingTree = standingList => {
   |> Js.Array.reducei(
        (acc, standing, i) => {
          let isNewRank = {
-           i == 0
+           i === 0
              // Always make a new rank for the first player
              ? true
              // Make a new rank if the scores aren't equal

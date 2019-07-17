@@ -1,3 +1,8 @@
+/*
+  This contains all of the logic and components that make up the window,
+  including titlebar, default sidebar, and layout.
+*/
+
 open Belt;
 
 let global_title = "Coronate";
