@@ -14,13 +14,13 @@ external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.module "ramda"]
 external move: (int, int, array('a)) => array('a) = "move";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
-[@bs.module]
+[@bs.module "edmonds-blossom"]
 external blossom: array((int, int, float)) => array(int) =
-  "edmonds-blossom";
+  "default";
 
 module EloRank = {
   type t;
-  [@bs.new] [@bs.module] external make: int => t = "elo-rank";
+  [@bs.new] [@bs.module "elo-rank"] external make: int => t = "default";
   [@bs.send] external getExpected: (t, int, int) => int = "getExpected";
   [@bs.send]
   external updateRating: (t, int, float, int) => int = "updateRating";

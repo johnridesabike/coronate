@@ -25,7 +25,7 @@
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(bs-platform)/).+\\.js$'",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(bs-platform|reason-react|@glennsl\/bs-jest|bs-jest-dom|re-classnames|bs-css|bs-webapi|bs-react-testing-library|bs-dom-testing-library)/)'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",

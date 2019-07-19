@@ -8,5 +8,5 @@ window.getComputedStyle = jest.fn().mockImplementation(
 window.confirm = jest.fn(() => true);
 window.alert = jest.fn(() => true);
 
-jest.mock("./Db");
+jest.mock("./Db.bs");
 // jest.mock("./pages/tournament/tournament-data");

@@ -9,10 +9,10 @@
     "sources": [
         {
             "dir": "src",
-            "subdirs": true
+            "subdirs": ["PageTournament"]
         },
         {
-          "dir": "__tests__",
+          "dir": "src/__tests__",
           "type": "dev"
         }
     ],

@@ -3,8 +3,8 @@
 import * as Jest from "@glennsl/bs-jest/src/jest.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
-import * as Scoring$Coronate from "../src/Scoring.bs.js";
-import * as TestData$Coronate from "../src/TestData.bs.js";
+import * as Scoring$Coronate from "../Scoring.bs.js";
+import * as TestData$Coronate from "../TestData.bs.js";
 
 var newb = Belt_MapString.getExn(TestData$Coronate.players, "Newbie_McNewberson___");
 

@@ -3,10 +3,10 @@
 import * as Jest from "@glennsl/bs-jest/src/jest.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as PageRound$Coronate from "../src/PageTournament/PageRound.bs.js";
+import * as PageRound$Coronate from "../PageTournament/PageRound.bs.js";
 import * as ReactTestingLibrary from "bs-react-testing-library/src/ReactTestingLibrary.bs.js";
 import * as ReactTestingLibrary$1 from "react-testing-library";
-import * as TournamentData$Coronate from "../src/PageTournament/TournamentData.bs.js";
+import * as TournamentData$Coronate from "../PageTournament/TournamentData.bs.js";
 
 afterEach((function () {
         ReactTestingLibrary$1.cleanup();

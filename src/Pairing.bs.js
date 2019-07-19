@@ -256,7 +256,7 @@ function pairPlayers(pairData) {
       }
     }
   };
-  return sortByNetScoreThenRating(EdmondsBlossom(playerArray.reduce(pairIdealReducer, /* array */[])).reduce(blossom2Pairs, /* array */[])).map(assignColorsForPair);
+  return sortByNetScoreThenRating(EdmondsBlossom.default(playerArray.reduce(pairIdealReducer, /* array */[])).reduce(blossom2Pairs, /* array */[])).map(assignColorsForPair);
 }
 
 export {

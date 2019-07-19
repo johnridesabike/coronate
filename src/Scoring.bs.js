@@ -206,8 +206,8 @@ function keepAboveFloor(rating) {
 function calcNewRatings(param, param$1, param$2) {
   var blackRating = param[1];
   var whiteRating = param[0];
-  var whiteElo = new EloRank(getKFactor(param$1[0]));
-  var blackElo = new EloRank(getKFactor(param$1[1]));
+  var whiteElo = new EloRank.default(getKFactor(param$1[0]));
+  var blackElo = new EloRank.default(getKFactor(param$1[1]));
   var whiteScoreExpected = whiteElo.getExpected(whiteRating, blackRating);
   var blackScoreExpected = blackElo.getExpected(blackRating, whiteRating);
   return /* tuple */[
