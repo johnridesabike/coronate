@@ -1,4 +1,3 @@
-[@bs.val] [@bs.scope "Math"] external ceil: float => float = "ceil";
 [@bs.val] [@bs.scope "Math"] external log2: float => float = "log2";
 [@bs.val] [@bs.scope "Number"] external isFinite: float => bool = "isFinite";
 open Data;

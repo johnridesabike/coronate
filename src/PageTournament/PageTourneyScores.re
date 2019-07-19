@@ -137,9 +137,7 @@ module ScoreTable = {
                            + " score",
                          )}*/
 
-                         {Externals.Numeral.(
-                            standing.score->numeral->format("1/2")
-                          )
+                         {Numeral.(standing.score->make->format("1/2"))
                           |> React.string}
                        </td>
                      {isCompact
@@ -158,9 +156,7 @@ module ScoreTable = {
                                      + tieBreakNames[j],
                                    )}*/
 
-                                   {Externals.Numeral.(
-                                      score->numeral->format("1/2")
-                                    )
+                                   {Numeral.(score->make->format("1/2"))
                                     |> React.string}
                                  </td>
                              )
@@ -390,7 +386,7 @@ module Crosstable = {
           switch (scoreData.opponentResults->Map.String.get(player2Id)) {
           | None => React.null
           | Some(result) =>
-            Externals.Numeral.(result->numeral->format("1/2")) |> React.string
+            Numeral.make(result)->Numeral.format("1/2") |> React.string
           }
         };
       };
@@ -403,9 +399,7 @@ module Crosstable = {
         Utils.last(scoreData->Map.String.getExn(playerId).ratings)
         |> float_of_int;
       let change =
-        Externals.Numeral.(
-          (lastRating -. firstRating)->numeral->format("+0")
-        );
+        Numeral.make(lastRating -. firstRating)->Numeral.format("+0");
       <>
         <td className={Cn.make([Style.rowTd, "table__number"])}>
           {lastRating |> Js.Float.toString |> React.string}
@@ -461,7 +455,7 @@ module Crosstable = {
                  |> React.array}
                 /* Output their score and rating change */
                 <td className={Cn.make([Style.rowTd, "table__number"])}>
-                  {Externals.Numeral.(standing.score->numeral->format("1/2"))
+                  {Numeral.make(standing.score)->Numeral.format("1/2")
                    |> React.string}
                 </td>
                 {getRatingChangeTds(standing.id)}

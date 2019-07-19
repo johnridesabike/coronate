@@ -3,11 +3,11 @@ let s = React.string;
 
 let getDateForFile = () => {
   let date = Js.Date.make();
-  Externals.Numeral.(
+  Numeral.(
     [|
       date |> Js.Date.getFullYear |> Js.Float.toString,
-      ((date |> Js.Date.getMonth) +. 1.0)->numeral->format("00"),
-      ((date |> Js.Date.getDay) +. 1.0)->numeral->format("00"),
+      ((date |> Js.Date.getMonth) +. 1.0)->make->format("00"),
+      ((date |> Js.Date.getDay) +. 1.0)->make->format("00"),
     |]
     |> Js.Array.joinWith("-")
   );

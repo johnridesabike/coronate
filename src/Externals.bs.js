@@ -7,8 +7,6 @@ import * as LocalforageRemoveitems from "localforage-removeitems";
 
 var EloRank = /* module */[];
 
-var Numeral = /* module */[];
-
 function Instance(DataType) {
   var make = function (name, storeName) {
     return Localforage.default.createInstance({
@@ -90,7 +88,6 @@ var ReachTabs = /* module */[
 
 export {
   EloRank ,
-  Numeral ,
   LocalForage ,
   VisuallyHidden ,
   Dialog ,

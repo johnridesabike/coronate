@@ -6,8 +6,8 @@ let configData = {
     config.avoidPairs |> Js.Array.concat(DemoData.config.avoidPairs),
 };
 let tournamentData =
-  tournaments->Map.String.merge(DemoData.tournaments, (_, a, _) => a);
-let playerData = players->Map.String.merge(DemoData.players, (_, a, _) => a);
+  tournaments->Map.String.merge(DemoData.tournaments, (_, _, a) => a);
+let playerData = players->Map.String.merge(DemoData.players, (_, _, a) => a);
 
 /* copied from Db */
 type actionDb('a) =

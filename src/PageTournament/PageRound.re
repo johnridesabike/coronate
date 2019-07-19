@@ -70,9 +70,9 @@ module PlayerMatchInfo = {
       <dd id={"rating-" ++ playerId}>
         {origRating |> Js.Int.toString |> React.string}
         {" (" |> React.string}
-        {Externals.Numeral.(
-           float_of_int(newRating - origRating)->numeral->format("+0")
-         )
+        {float_of_int(newRating - origRating)
+         ->Numeral.make
+         ->Numeral.format("+0")
          |> React.string}
         {")" |> React.string}
       </dd>
@@ -604,7 +604,9 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
     let scoreData =
       React.useMemo1(
         () =>
-          Data.Converters.matches2ScoreData(Data.rounds2Matches(~roundList, ())),
+          Data.Converters.matches2ScoreData(
+            Data.rounds2Matches(~roundList, ()),
+          ),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds

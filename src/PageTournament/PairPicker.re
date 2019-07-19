@@ -139,8 +139,7 @@ module SelectList = {
                     <td>
                       {(
                          isOnePlayerSelected
-                           ? Externals.Numeral.(ideal->numeral->format("%"))
-                           : "-"
+                           ? Numeral.(ideal->make->format("%")) : "-"
                        )
                        |> React.string}
                     </td>
@@ -222,9 +221,7 @@ module Stage = {
         switch (Map.String.(pairData->get(p1), pairData->get(p2))) {
         | (Some(p1Data), Some(p2Data)) =>
           let ideal = Pairing.calcPairIdeal(p1Data, p2Data);
-          Externals.Numeral.(
-            (ideal /. Pairing.maxPriority)->numeral->format("%")
-          );
+          Numeral.((ideal /. Pairing.maxPriority)->make->format("%"));
         | _ => ""
         }
       | _ => ""
@@ -301,8 +298,7 @@ module PlayerInfo = {
         ~avoidPairs,
       ) => {
     let avoidMap =
-      avoidPairs
-      |> Js.Array.reduce(Data.avoidPairReducer, Map.String.empty);
+      avoidPairs |> Js.Array.reduce(Data.avoidPairReducer, Map.String.empty);
     let playerData =
       switch (scoreData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)

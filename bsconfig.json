@@ -9,21 +9,21 @@
     "sources": [
         {
             "dir": "src",
-            "subdirs": ["PageTournament"]
+            "subdirs": [
+                "PageTournament",
+                "__mocks__",
+                "PageTournament/__mocks__"
+            ]
         },
         {
-          "dir": "src/__tests__",
-          "type": "dev"
+            "dir": "src/__tests__",
+            "type": "dev"
         }
     ],
     "package-specs": [
         {
             "module": "es6",
             "in-source": true
-        },
-        {
-            "module": "commonjs",
-            "in-source": false
         }
     ],
     "suffix": ".bs.js",
@@ -32,7 +32,8 @@
         "reason-react",
         "re-classnames",
         "bs-webapi",
-        "bs-css"
+        "bs-css",
+        "@johnridesabike/bs-numeral"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

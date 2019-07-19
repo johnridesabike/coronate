@@ -1,13 +1,14 @@
 open Data;
-let config = Config.{
-  byeValue: 1.0,
-  avoidPairs: [|
-    ("BarbaraGordon_cL6SpI2", "JamesGordon_1ts9xICT3"),
-    ("Joker_v0z2416fpAZ9o2c", "HarleyQuinn_-10-02VPH"),
-    ("HelenaWayne_fE6O0DJcE", "BruceWayne_lv_ZsUHTU9"),
-  |],
-  lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
-};
+let config =
+  Config.{
+    byeValue: 1.0,
+    avoidPairs: [|
+      ("BarbaraGordon_cL6SpI2", "JamesGordon_1ts9xICT3"),
+      ("Joker_v0z2416fpAZ9o2c", "HarleyQuinn_-10-02VPH"),
+      ("HelenaWayne_fE6O0DJcE", "BruceWayne_lv_ZsUHTU9"),
+    |],
+    lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
+  };
 
 let players =
   Belt.Map.String.fromArray([|
@@ -63,7 +64,7 @@ let players =
         firstName: "Kate",
         lastName: "Kane",
         rating: 1539,
-        matchCount: 9
+        matchCount: 9,
       },
     ),
     (
@@ -247,7 +248,6 @@ let tournaments =
           [|
             {
               id: "FUASEeyES6ez_ROoT6qmU",
-
               whiteId: "JasonTodd_fc9CeOa-Luw",
               blackId: "DickGrayson_1C2rCokHH",
               whiteScore: 0.0,
@@ -259,7 +259,6 @@ let tournaments =
             },
             {
               id: "gqPyD66QMPF-pup41xsB2",
-
               whiteId: "JamesGordon_1ts9xICT3",
               blackId: "AlfredPennyworth_y4dW",
               whiteScore: 0.0,
@@ -271,7 +270,6 @@ let tournaments =
             },
             {
               id: "KpS1lQSzsQWQ3VVWJyA2P",
-
               whiteId: "KateKane_klFW6gDfUOTX",
               blackId: "BarbaraGordon_cL6SpI2",
               whiteScore: 0.5,
@@ -283,7 +281,6 @@ let tournaments =
             },
             {
               id: "OgFuy-wq8mz378EWat46u",
-
               whiteId: "SelinaKyle_rJBH-45Xoy",
               blackId: "BruceWayne_lv_ZsUHTU9",
               whiteScore: 0.0,
@@ -295,7 +292,6 @@ let tournaments =
             },
             {
               id: "f8Ps3GUmd0ZRsBBY8rZOp",
-
               whiteId: "HelenaWayne_fE6O0DJcE",
               blackId: "________DUMMY________",
               whiteScore: 1.0,
@@ -309,7 +305,6 @@ let tournaments =
           [|
             {
               id: "6seKrw7ehbhL766g6L2PF",
-
               whiteId: "DickGrayson_1C2rCokHH",
               blackId: "KateKane_klFW6gDfUOTX",
               whiteScore: 1.0,
@@ -321,7 +316,6 @@ let tournaments =
             },
             {
               id: "TCSjz48ZXqjamtYUFNg0B",
-
               whiteId: "BruceWayne_lv_ZsUHTU9",
               blackId: "HelenaWayne_fE6O0DJcE",
               whiteScore: 1.0,
@@ -333,7 +327,6 @@ let tournaments =
             },
             {
               id: "zF64DEsN8sHydpDDsg37E",
-
               whiteId: "AlfredPennyworth_y4dW",
               blackId: "SelinaKyle_rJBH-45Xoy",
               whiteScore: 0.0,
@@ -345,7 +338,6 @@ let tournaments =
             },
             {
               id: "qVGt1EJq9y0MmvFtumM0A",
-
               whiteId: "BarbaraGordon_cL6SpI2",
               blackId: "JasonTodd_fc9CeOa-Luw",
               whiteScore: 1.0,
@@ -357,7 +349,6 @@ let tournaments =
             },
             {
               id: "UhfHaRWr_-BtVo22xAuJu",
-
               whiteId: "JamesGordon_1ts9xICT3",
               blackId: "________DUMMY________",
               whiteScore: 1.0,
@@ -371,7 +362,6 @@ let tournaments =
           [|
             {
               id: "odrOOnZJUe0YAwkfUDqUb",
-
               whiteId: "AlfredPennyworth_y4dW",
               blackId: "BruceWayne_lv_ZsUHTU9",
               whiteScore: 0.0,
@@ -383,7 +373,6 @@ let tournaments =
             },
             {
               id: "qzCMqUwNIDAcFSAuA5yCm",
-
               whiteId: "HelenaWayne_fE6O0DJcE",
               blackId: "DickGrayson_1C2rCokHH",
               whiteScore: 1.0,
@@ -395,7 +384,6 @@ let tournaments =
             },
             {
               id: "6QgVqdtcJPjfVp3UZ8S9g",
-
               whiteId: "SelinaKyle_rJBH-45Xoy",
               blackId: "BarbaraGordon_cL6SpI2",
               whiteScore: 1.0,
@@ -407,7 +395,6 @@ let tournaments =
             },
             {
               id: "as45gODKMLC5-3_UsTyx5",
-
               whiteId: "KateKane_klFW6gDfUOTX",
               blackId: "JamesGordon_1ts9xICT3",
               whiteScore: 0.0,
@@ -419,7 +406,6 @@ let tournaments =
             },
             {
               id: "Pc0CWecSfeGNfvBPjyEIj",
-
               whiteId: "JasonTodd_fc9CeOa-Luw",
               blackId: "________DUMMY________",
               whiteScore: 1.0,
@@ -433,7 +419,6 @@ let tournaments =
           [|
             {
               id: "xj0y_Iqkb-g3MDGgmYx2-",
-
               whiteId: "BruceWayne_lv_ZsUHTU9",
               blackId: "KateKane_klFW6gDfUOTX",
               whiteScore: 1.0,
@@ -445,7 +430,6 @@ let tournaments =
             },
             {
               id: "HWYWtsyaqUkHRExM6kQrt",
-
               whiteId: "DickGrayson_1C2rCokHH",
               blackId: "JamesGordon_1ts9xICT3",
               whiteScore: 1.0,
@@ -457,7 +441,6 @@ let tournaments =
             },
             {
               id: "uAzHZVMC71liQZ-6fWWeD",
-
               whiteId: "HelenaWayne_fE6O0DJcE",
               blackId: "SelinaKyle_rJBH-45Xoy",
               whiteScore: 0.0,
@@ -469,7 +452,6 @@ let tournaments =
             },
             {
               id: "_tCBn9YNIyto-vXpxm7WI",
-
               whiteId: "JasonTodd_fc9CeOa-Luw",
               blackId: "AlfredPennyworth_y4dW",
               whiteScore: 0.0,
@@ -481,7 +463,6 @@ let tournaments =
             },
             {
               id: "L7yatE2oVKlV7LOY6-d7Y",
-
               whiteId: "BarbaraGordon_cL6SpI2",
               blackId: "________DUMMY________",
               whiteScore: 1.0,
@@ -527,7 +508,6 @@ let tournaments =
           [|
             {
               id: "5f8GYcR8V44NYvTN1cZle",
-
               whiteId: "EdwardNigma_j80JfWOZq",
               blackId: "BruceWayne_lv_ZsUHTU9",
               whiteScore: 0.0,
@@ -539,7 +519,6 @@ let tournaments =
             },
             {
               id: "GPTct4sL368SryTLFUu8E",
-
               whiteId: "JonathanCrane_R4Q8tVW",
               blackId: "AlfredPennyworth_y4dW",
               whiteScore: 0.0,
@@ -551,7 +530,6 @@ let tournaments =
             },
             {
               id: "AxtoztZ6O19nyrLfZ4YaU",
-
               whiteId: "HarveyDent_0eYIiP_Ij5",
               blackId: "DickGrayson_1C2rCokHH",
               whiteScore: 1.0,
@@ -563,7 +541,6 @@ let tournaments =
             },
             {
               id: "bUM_tWQsAtPe1gqRzlXd1",
-
               whiteId: "RasAlGhul_k9n8k852bHr",
               blackId: "SelinaKyle_rJBH-45Xoy",
               whiteScore: 0.5,
@@ -575,7 +552,6 @@ let tournaments =
             },
             {
               id: "bAOVlP-M5xaPk1qofNReb",
-
               whiteId: "OswaldCobblepot_lfCro",
               blackId: "BarbaraGordon_cL6SpI2",
               whiteScore: 1.0,
@@ -587,7 +563,6 @@ let tournaments =
             },
             {
               id: "4omlgiGSaE1BmrHdABSym",
-
               whiteId: "PamelaIsley_vH5vD8uPB",
               blackId: "KateKane_klFW6gDfUOTX",
               whiteScore: 0.0,
@@ -599,7 +574,6 @@ let tournaments =
             },
             {
               id: "ysdEVYS2AyuKyOAwLLpTF",
-
               whiteId: "HarleyQuinn_-10-02VPH",
               blackId: "JamesGordon_1ts9xICT3",
               whiteScore: 1.0,
@@ -611,7 +585,6 @@ let tournaments =
             },
             {
               id: "YoJ9WGokAYrmJjfxCCf87",
-
               whiteId: "VictorFries_cWaQoW014",
               blackId: "Joker_v0z2416fpAZ9o2c",
               whiteScore: 0.0,
@@ -623,7 +596,6 @@ let tournaments =
             },
             {
               id: "Az7SBl3cs7rbwKPBI0IsU",
-
               whiteId: "HelenaWayne_fE6O0DJcE",
               blackId: "JasonTodd_fc9CeOa-Luw",
               whiteScore: 1.0,
@@ -634,6 +606,7 @@ let tournaments =
               blackNewRating: 1101,
             },
           |],
+          [||],
         |],
       },
     ),

@@ -18,14 +18,7 @@ function RoundPanels_test$BattleForGothamCityRound(Props) {
 
 var BattleForGothamCityRound = /* module */[/* make */RoundPanels_test$BattleForGothamCityRound];
 
-function regex(text) {
-  return /* `RegExp */[
-          889580489,
-          new RegExp(text)
-        ];
-}
-
-Jest.describe("Tabs aut-change correctly.", (function (param) {
+Jest.describe("Tabs auto-change correctly.", (function (param) {
         var page = ReactTestingLibrary.render(undefined, undefined, React.createElement(RoundPanels_test$BattleForGothamCityRound, {
                   children: (function (t) {
                       return React.createElement(PageRound$Coronate.make, {
@@ -34,7 +27,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                                 });
                     })
                 }));
-        var partial_arg_001 = new RegExp("/^unmatched players \\([0-9]+\\)$/i");
+        var partial_arg_001 = (/unmatched players \(/i);
         var partial_arg = /* `RegExp */[
           889580489,
           partial_arg_001
@@ -44,7 +37,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
               var param$1 = eta;
               return ReactTestingLibrary.getByText(partial_arg, param, param$1);
             })(page);
-        var partial_arg_001$1 = new RegExp("/^matches$/i");
+        var partial_arg_001$1 = (/^matches$/i);
         var partial_arg$1 = /* `RegExp */[
           889580489,
           partial_arg_001$1
@@ -59,7 +52,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
               }));
         Jest.test("Tab doesn't change focus if there are still players to be matched.", (function (param) {
                 var arg = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001 = new RegExp("/add bruce wayne/i");
+                var partial_arg_001 = (/add bruce wayne/i);
                 var partial_arg = /* `RegExp */[
                   889580489,
                   partial_arg_001
@@ -72,7 +65,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg, param, param$1);
                           })(page)));
                 var arg$1 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$1 = new RegExp("/add dick grayson/i");
+                var partial_arg_001$1 = (/add dick grayson/i);
                 var partial_arg$1 = /* `RegExp */[
                   889580489,
                   partial_arg_001$1
@@ -85,7 +78,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg$1, param, param$1);
                           })(page)));
                 var arg$2 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$2 = new RegExp("/^match selected$/i");
+                var partial_arg_001$2 = (/^match selected$/i);
                 var partial_arg$2 = /* `RegExp */[
                   889580489,
                   partial_arg_001$2
@@ -101,7 +94,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
               }));
         Jest.test("The tab selection doesn't change if there are still matched players", (function (param) {
                 var arg = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001 = new RegExp("/add alfred pennyworth/i");
+                var partial_arg_001 = (/add alfred pennyworth/i);
                 var partial_arg = /* `RegExp */[
                   889580489,
                   partial_arg_001
@@ -114,7 +107,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg, param, param$1);
                           })(page)));
                 var arg$1 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$1 = new RegExp("/add barbara gordon/i");
+                var partial_arg_001$1 = (/add barbara gordon/i);
                 var partial_arg$1 = /* `RegExp */[
                   889580489,
                   partial_arg_001$1
@@ -127,7 +120,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg$1, param, param$1);
                           })(page)));
                 var arg$2 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$2 = new RegExp("/^match selected$/i");
+                var partial_arg_001$2 = (/^match selected$/i);
                 var partial_arg$2 = /* `RegExp */[
                   889580489,
                   partial_arg_001$2
@@ -144,7 +137,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                         return Curry._2(arg$3, undefined, eta);
                       })(matchesTab));
                 var arg$4 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$3 = new RegExp("/edit match for bruce wayne versus dick grayson/i");
+                var partial_arg_001$3 = (/edit match for bruce wayne versus dick grayson/i);
                 var partial_arg$3 = /* `RegExp */[
                   889580489,
                   partial_arg_001$3
@@ -157,7 +150,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg$3, param, param$1);
                           })(page)));
                 var arg$5 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$4 = new RegExp("/^unmatch$/i");
+                var partial_arg_001$4 = (/^unmatch$/i);
                 var partial_arg$4 = /* `RegExp */[
                   889580489,
                   partial_arg_001$4
@@ -169,11 +162,11 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             var param$1 = eta;
                             return ReactTestingLibrary.getByText(partial_arg$4, param, param$1);
                           })(page)));
-                return JestDom.toHaveAttribute("aria-selected", "true", Jest.Expect[/* expect */0](selectTab));
+                return JestDom.toHaveAttribute("aria-selected", "true", Jest.Expect[/* expect */0](matchesTab));
               }));
         Jest.test("The tab selection changes when all players have been unmatched", (function (param) {
                 var arg = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001 = new RegExp("/edit match for alfred pennyworth versus barbara gordon/i");
+                var partial_arg_001 = (/edit match for alfred pennyworth versus barbara gordon/i);
                 var partial_arg = /* `RegExp */[
                   889580489,
                   partial_arg_001
@@ -186,7 +179,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                             return ReactTestingLibrary.getByText(partial_arg, param, param$1);
                           })(page)));
                 var arg$1 = ReactTestingLibrary.FireEvent[/* click */8];
-                var partial_arg_001$1 = new RegExp("/^unmatch$/i");
+                var partial_arg_001$1 = (/^unmatch$/i);
                 var partial_arg$1 = /* `RegExp */[
                   889580489,
                   partial_arg_001$1
@@ -202,7 +195,7 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
               }));
         return Jest.test("The tab selection changes when all players have been paired", (function (param) {
                       var arg = ReactTestingLibrary.FireEvent[/* click */8];
-                      var partial_arg_001 = new RegExp("/^auto-pair unmatched players$/i");
+                      var partial_arg_001 = (/^auto-pair unmatched players$/i);
                       var partial_arg = /* `RegExp */[
                         889580489,
                         partial_arg_001
@@ -214,13 +207,12 @@ Jest.describe("Tabs aut-change correctly.", (function (param) {
                                   var param$1 = eta;
                                   return ReactTestingLibrary.getByText(partial_arg, param, param$1);
                                 })(page)));
-                      return JestDom.toHaveAttribute("aria-selected", "false", Jest.Expect[/* expect */0](selectTab));
+                      return JestDom.toHaveAttribute("aria-selected", "false", Jest.Expect[/* expect */0](matchesTab));
                     }));
       }));
 
 export {
   BattleForGothamCityRound ,
-  regex ,
   
 }
 /*  Not a pure module */

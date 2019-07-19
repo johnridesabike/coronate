@@ -41,16 +41,6 @@ type fileReader = {
 [@bs.new] external makeFileReader: unit => fileReader = "FileReader";
 
 /*******************************************************************************
-  Numeral
- ******************************************************************************/
-
-module Numeral = {
-  type t;
-  [@bs.module "numeral"] external numeral: float => t = "default";
-  [@bs.send] external format: (t, string) => string = "format";
-};
-
-/*******************************************************************************
   LocalForage
 
   This devides LocalForage into two basic modules: Map and Obj. Vanilla JS

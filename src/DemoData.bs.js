@@ -521,7 +521,8 @@ var tournaments = Belt_MapString.fromArray(/* array */[
             "JonathanCrane_R4Q8tVW",
             "HarveyDent_0eYIiP_Ij5"
           ],
-          /* roundList : array */[/* array */[
+          /* roundList : array */[
+            /* array */[
               /* record */[
                 /* id */"5f8GYcR8V44NYvTN1cZle",
                 /* whiteId */"EdwardNigma_j80JfWOZq",
@@ -621,7 +622,9 @@ var tournaments = Belt_MapString.fromArray(/* array */[
                 /* whiteScore */1.0,
                 /* blackScore */0.0
               ]
-            ]],
+            ],
+            /* array */[]
+          ],
           /* tieBreaks : array */[
             0,
             1,

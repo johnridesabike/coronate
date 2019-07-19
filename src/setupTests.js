@@ -9,4 +9,4 @@ window.confirm = jest.fn(() => true);
 window.alert = jest.fn(() => true);
 
 jest.mock("./Db.bs");
-// jest.mock("./pages/tournament/tournament-data");
+jest.mock("./PageTournament/TournamentData.bs");

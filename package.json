@@ -25,13 +25,14 @@
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(bs-platform|reason-react|@glennsl\/bs-jest|bs-jest-dom|re-classnames|bs-css|bs-webapi|bs-react-testing-library|bs-dom-testing-library)/)'",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@glennsl/bs-jest|re-classnames|bs-[a-z\\-]+|@johnridesabike/bs-numeral)/)'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",
     "re:test": "jest /lib/js/__tests__ --watch"
   },
   "dependencies": {
+    "@johnridesabike/bs-numeral": "^1.0.5",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
@@ -45,7 +46,6 @@
     "localforage-removeitems": "^1.4.0",
     "localforage-setitems": "^1.4.0",
     "nanoid": "^2.0.3",
-    "numeral": "^2.0.6",
     "photon-colors": "^3.3.2",
     "ramda": "^0.26.1",
     "re-classnames": "^4.0.0",
@@ -54,7 +54,7 @@
     "react-feather": "^2.0.3",
     "reason-react": "^0.7.0",
     "simple-icons": "^1.11.0",
-    "typeface-fira-sans": "0.0.54"
+    "typeface-fira-sans": "0.0.75"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.8",
@@ -63,8 +63,8 @@
     "bs-platform": "^6.0.3",
     "bs-react-testing-library": "^0.5.0",
     "concurrently": "^4.1.1",
-    "electron": "^5.0.6",
-    "electron-builder": "^21.0.15",
+    "electron": "^5.0.7",
+    "electron-builder": "^21.1.1",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.2",
     "gh-pages": "^2.0.1",
