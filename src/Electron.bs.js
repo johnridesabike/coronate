@@ -56,7 +56,7 @@ function macOSDoubleClick($$event) {
   return /* () */0;
 }
 
-var isWin = "Windows".includes(navigator.appVersion);
+var isWin = navigator.appVersion.includes("Windows");
 
 var isMac = navigator.appVersion.includes("Mac");
 

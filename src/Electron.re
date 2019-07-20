@@ -85,7 +85,7 @@ let macOSDoubleClick = event => {
 };
 
 [@bs.scope "navigator"] [@bs.val] external appVersion: string = "appVersion";
-let isWin = appVersion -> Js.String.includes("Windows");
+let isWin = appVersion |> Js.String.includes("Windows");
 let isMac = appVersion |> Js.String.includes("Mac");
 
 let isElectron = 
@@ -108,7 +108,7 @@ module IfElectron = {
       };
     switch (electron) {
     | Some(electron) =>
-      isThisTheRightOs ? children(electron) : ReasonReact.null
+      isThisTheRightOs ? children(electron) : ReasonReact.null;
     | None => ReasonReact.null
     };
   };
