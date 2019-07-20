@@ -318,18 +318,18 @@ function PairPicker$PlayerInfo(Props) {
   var playerData = match !== undefined ? match : Scoring$Coronate.createBlankScoreData(playerId);
   var colorScores = playerData[/* colorScores */0];
   var opponentResults = playerData[/* opponentResults */4];
-  var results = playerData[/* results */6];
-  var colorBalance = Utils$Coronate.arraySumFloat(colorScores);
+  var results = playerData[/* results */7];
+  var colorBalance = Utils$Coronate.listSumFloat(colorScores);
   var player = Curry._1(getPlayer, playerId);
   var hasBye = Belt_MapString.keysToArray(opponentResults).includes(Data$Coronate.dummy_id);
   var match$1 = Belt_MapString.get(avoidMap, playerId);
-  var avoidList = match$1 !== undefined ? match$1 : /* array */[];
+  var avoidList = match$1 !== undefined ? match$1 : /* [] */0;
   var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
       colorBalance > 0.0 ? "Black +" + colorBalance.toString() : "Even"
     );
   return React.createElement("dl", {
               className: "player-card"
-            }, React.createElement("h3", undefined, player[/* firstName */0] + (" " + player[/* lastName */2])), React.createElement("p", undefined, "Score: ", Utils$Coronate.arraySumFloat(results).toString()), React.createElement("p", {
+            }, React.createElement("h3", undefined, player[/* firstName */0] + (" " + player[/* lastName */2])), React.createElement("p", undefined, "Score: ", Utils$Coronate.listSumFloat(results).toString()), React.createElement("p", {
                   id: "rating-" + player[/* id */1]
                 }, "Rating: ", player[/* rating */4].toString()), React.createElement("p", undefined, "Color balance: " + prettyBalance), React.createElement("p", undefined, "Has had a bye round: " + (
                   hasBye ? "Yes" : "No"
@@ -346,7 +346,7 @@ function PairPicker$PlayerInfo(Props) {
                                           result !== 0.5 && result === 1.0 ? "Won" : "Draw"
                                         ) : "Lost"
                                     ].join(" "));
-                      }))), React.createElement("p", undefined, "Players to avoid:"), React.createElement("ol", undefined, avoidList.map((function (pId) {
+                      }))), React.createElement("p", undefined, "Players to avoid:"), React.createElement("ol", undefined, Utils$Coronate.listToReactArray(avoidList, (function (pId) {
                         var match = Belt_MapString.get(players, pId);
                         if (match !== undefined) {
                           return React.createElement("li", {

@@ -3,6 +3,7 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_format from "bs-platform/lib/es6/caml_format.js";
 import * as Db$Coronate from "./Db.bs.js";
@@ -280,9 +281,11 @@ function PagePlayers$Profile(Props) {
       ]);
   var avoidMap = config[/* avoidPairs */0].reduce(Data$Coronate.avoidPairReducer, Belt_MapString.empty);
   var match$1 = Belt_MapString.get(avoidMap, playerId);
-  var singAvoidList = match$1 !== undefined ? match$1 : /* array */[];
+  var singAvoidList = match$1 !== undefined ? match$1 : /* [] */0;
   var unavoided = Belt_MapString.keysToArray(players).filter((function (id) {
-          if (singAvoidList.includes(id)) {
+          if (Belt_List.has(singAvoidList, id, (function (prim, prim$1) {
+                    return prim === prim$1;
+                  }))) {
             return false;
           } else {
             return id !== playerId;
@@ -336,7 +339,6 @@ function PagePlayers$Profile(Props) {
                   return id;
                 }));
   };
-  var match$3 = singAvoidList.length === 0;
   return React.createElement("div", {
               className: "content-area",
               style: {
@@ -380,7 +382,7 @@ function PagePlayers$Profile(Props) {
                           readOnly: true,
                           type: "number",
                           value: String(Scoring$Coronate.Ratings[/* getKFactor */0](player[/* matchCount */3]))
-                        }))), React.createElement("h3", undefined, "Players to avoid"), React.createElement("ul", undefined, singAvoidList.map((function (pId) {
+                        }))), React.createElement("h3", undefined, "Players to avoid"), React.createElement("ul", undefined, Utils$Coronate.listToReactArray(singAvoidList, (function (pId) {
                         return React.createElement("li", {
                                     key: pId
                                   }, Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* firstName */0], " ", Data$Coronate.Player[/* getPlayerMaybeMap */6](players, pId)[/* lastName */2], React.createElement("button", {
@@ -404,7 +406,7 @@ function PagePlayers$Profile(Props) {
                                                           ]]));
                                           })
                                       }, React.createElement(ReactFeather.Trash2, { })));
-                      })), match$3 ? React.createElement("li", undefined, "None") : null), React.createElement("form", {
+                      })), singAvoidList ? null : React.createElement("li", undefined, "None")), React.createElement("form", {
                   onSubmit: avoidAdd
                 }, React.createElement("label", {
                       htmlFor: "avoid-select"

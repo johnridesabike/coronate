@@ -2,6 +2,7 @@
 
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as EloRank from "elo-rank";
+import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_int32 from "bs-platform/lib/es6/caml_int32.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
@@ -20,7 +21,7 @@ function isNotDummy(scoreDict, oppId) {
 function getPlayerScore(scoreDict, id) {
   var match = Belt_MapString.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(match[/* results */6]);
+    return Utils$Coronate.listSumFloat(match[/* results */7]);
   } else {
     return 0.0;
   }
@@ -52,13 +53,17 @@ function getSolkoffScore(scoreDict, id) {
 }
 
 function runningReducer(acc, score) {
-  return acc.concat(/* array */[Utils$Coronate.last(acc) + score]);
+  var lastScore = acc ? acc[0] : 0.0;
+  return /* :: */[
+          lastScore + score,
+          acc
+        ];
 }
 
 function getCumulativeScore(scoreDict, id) {
   var match = Belt_MapString.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(match[/* resultsNoByes */7].reduce(runningReducer, /* array */[0.0]));
+    return Utils$Coronate.listSumFloat(Belt_List.reduce(match[/* resultsNoByes */8], /* [] */0, runningReducer));
   } else {
     return 0.0;
   }
@@ -80,7 +85,7 @@ function getCumulativeOfOpponentScore(scoreDict, id) {
 function getColorBalanceScore(scoreDict, id) {
   var match = Belt_MapString.get(scoreDict, id);
   if (match !== undefined) {
-    return Utils$Coronate.arraySumFloat(match[/* colorScores */0]);
+    return Utils$Coronate.listSumFloat(match[/* colorScores */0]);
   } else {
     return 0.0;
   }
@@ -124,14 +129,15 @@ function getTieBreakNames(idList) {
 
 function createBlankScoreData(id) {
   return /* record */[
-          /* colorScores : array */[],
-          /* colors : array */[],
+          /* colorScores : [] */0,
+          /* colors : [] */0,
           /* id */id,
           /* isDummy */false,
           /* opponentResults */Belt_MapString.empty,
-          /* ratings : array */[],
-          /* results : array */[],
-          /* resultsNoByes : array */[]
+          /* ratings : [] */0,
+          /* firstRating */0,
+          /* results : [] */0,
+          /* resultsNoByes : [] */0
         ];
 }
 

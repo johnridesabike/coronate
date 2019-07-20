@@ -16,6 +16,7 @@ let add = (a, b) => a + b;
 let arraySum = arr => Js.Array.reduce(add, 0, arr);
 let addFloat = (a, b) => a +. b;
 let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
+let listSumFloat = list => list->Belt.List.reduce(0.0, addFloat);
 let last = arr => arr[Js.Array.length(arr) - 1];
 let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
 
@@ -35,6 +36,14 @@ module Entities = {
 
 let hashPath = hashString =>
   hashString |> Js.String.split("/") |> Belt.List.fromArray;
+
+let listToReactArray = (list, func) => {
+  list
+  ->Belt.List.reduce([||], (acc, item) =>
+      acc|>Js.Array.concat([|func(item)|])
+    )
+  ->React.array;
+};
 
 type dtFormat = {. [@bs.meth] "format": Js.Date.t => string};
 

@@ -220,15 +220,16 @@ module Profile = {
       |> Js.Array.reduce(Data.avoidPairReducer, Map.String.empty);
     let singAvoidList =
       switch (avoidMap->Map.String.get(playerId)) {
-      | None => [||]
-      | Some(idArr) => idArr
+      | None => []
+      | Some(x) => x
       };
     let unavoided =
       players
       |> Map.String.keysToArray
-      |> Js.Array.(
-           filter(id => !(singAvoidList |> includes(id)) && id !== playerId)
+      |> Js.Array.filter(id =>
+           !singAvoidList->Belt.List.has(id, (===)) && id !== playerId
          );
+
     let (selectedAvoider, setSelectedAvoider) =
       React.useState(() => unavoided->Array.getExn(0));
     let avoidAdd = event => {
@@ -319,42 +320,42 @@ module Profile = {
       </form>
       <h3> {s("Players to avoid")} </h3>
       <ul>
-        {singAvoidList
-         |> Js.Array.map(pId =>
-              <li key=pId>
-                {s(players->getPlayerMaybeMap(pId).firstName)}
-                {s(" ")}
-                {s(players->getPlayerMaybeMap(pId).lastName)}
-                <button
-                  ariaLabel={
-                    [|
-                      "Remove",
-                      players->getPlayerMaybeMap(pId).firstName,
-                      players->getPlayerMaybeMap(pId).lastName,
-                      "from avoid list.",
-                    |]
-                    |> Js.Array.joinWith(" ")
-                  }
-                  title={
-                    [|
-                      "Remove",
-                      players->getPlayerMaybeMap(pId).firstName,
-                      players->getPlayerMaybeMap(pId).lastName,
-                      "from avoid list.",
-                    |]
-                    |> Js.Array.joinWith(" ")
-                  }
-                  className="danger button-ghost"
-                  onClick={_ =>
-                    configDispatch(Db.DelAvoidPair((playerId, pId)))
-                  }>
-                  <Icons.Trash />
-                </button>
-              </li>
-            )
-         |> ReasonReact.array}
-        {singAvoidList |> Js.Array.length === 0
-           ? <li> {s("None")} </li> : React.null}
+        {singAvoidList->Utils.listToReactArray(pId =>
+           <li key=pId>
+             {s(players->getPlayerMaybeMap(pId).firstName)}
+             {s(" ")}
+             {s(players->getPlayerMaybeMap(pId).lastName)}
+             <button
+               ariaLabel={
+                 [|
+                   "Remove",
+                   players->getPlayerMaybeMap(pId).firstName,
+                   players->getPlayerMaybeMap(pId).lastName,
+                   "from avoid list.",
+                 |]
+                 |> Js.Array.joinWith(" ")
+               }
+               title={
+                 [|
+                   "Remove",
+                   players->getPlayerMaybeMap(pId).firstName,
+                   players->getPlayerMaybeMap(pId).lastName,
+                   "from avoid list.",
+                 |]
+                 |> Js.Array.joinWith(" ")
+               }
+               className="danger button-ghost"
+               onClick={_ =>
+                 configDispatch(Db.DelAvoidPair((playerId, pId)))
+               }>
+               <Icons.Trash />
+             </button>
+           </li>
+         )}
+        {switch (singAvoidList) {
+         | [] => <li> {s("None")} </li>
+         | _ => React.null
+         }}
       </ul>
       <form onSubmit=avoidAdd>
         <label htmlFor="avoid-select">

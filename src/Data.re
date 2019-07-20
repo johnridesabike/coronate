@@ -1,9 +1,9 @@
 open Belt;
 /*
-let win = 1.0;
-let loss = 0.0;
-let draw = 0.5;
-*/
+ let win = 1.0;
+ let loss = 0.0;
+ let draw = 0.5;
+ */
 /* This is used in by matches to indicate a dummy player. The
    `getPlayerMaybe()` method returns a special dummy player profile when
    fetching this ID.
@@ -21,19 +21,19 @@ type avoidPair = (string, string);
  */
 let avoidPairReducer = (acc, pair) => {
   let (id1, id2) = pair;
-  let newArr1 = {
+  let newList1 = {
     switch (acc->Map.String.get(id1)) {
-    | None => [|id2|]
-    | Some(currentArr1) => currentArr1 |> Js.Array.concat([|id2|])
+    | None => [id2]
+    | Some(currentList1) => [id2, ...currentList1]
     };
   };
-  let newArr2 = {
+  let newList2 = {
     switch (acc->Map.String.get(id2)) {
-    | None => [|id1|]
-    | Some(currentArr2) => currentArr2 |> Js.Array.concat([|id1|])
+    | None => [id1]
+    | Some(currentList2) => [id1, ...currentList2]
     };
   };
-  acc->Map.String.set(id1, newArr1)->Map.String.set(id2, newArr2);
+  acc->Map.String.set(id1, newList1)->Map.String.set(id2, newList2);
 };
 
 /*
@@ -339,14 +339,14 @@ module Converters = {
     };
     // The ratings will always begin with the `origRating` of the
     // first match they were in.
-    let newRatings = {
-      switch (oldData.ratings |> Js.Array.length) {
-      | 0 => [|origRating, newRating|]
-      | _ => [|newRating|]
+    let (newRatings, firstRating) =
+      switch (oldData.ratings) {
+      | [] => ([newRating], origRating)
+      | ratings => ([newRating, ...ratings], origRating)
       };
-    };
     let newResultsNoByes = {
-      isDummyId(oppId) ? [||] : [|result|];
+      isDummyId(oppId)
+        ? oldData.resultsNoByes : [result, ...oldData.resultsNoByes];
     };
     let oldOppResults = oldData.opponentResults;
     let oppResult = {
@@ -356,18 +356,17 @@ module Converters = {
       };
     };
     let newOpponentResults = oldOppResults->Map.String.set(oppId, oppResult);
-    Js.Array.(
-      Scoring.{
-        results: oldData.results |> concat([|result|]),
-        resultsNoByes: oldData.resultsNoByes |> concat(newResultsNoByes),
-        colors: oldData.colors |> concat([|color|]),
-        colorScores: oldData.colorScores |> concat([|colorToScore(color)|]),
-        opponentResults: newOpponentResults,
-        ratings: oldData.ratings |> concat(newRatings),
-        isDummy: isDummyId(playerId),
-        id: playerId,
-      }
-    );
+    Scoring.{
+      results: [result, ...oldData.results],
+      resultsNoByes: newResultsNoByes,
+      colors: [color, ...oldData.colors],
+      colorScores: [colorToScore(color), ...oldData.colorScores],
+      opponentResults: newOpponentResults,
+      ratings: newRatings,
+      firstRating: firstRating,
+      isDummy: isDummyId(playerId),
+      id: playerId,
+    };
   };
 
   let matches2ScoreData = (matchList: array(Match.t)) => {
@@ -417,7 +416,7 @@ module Converters = {
         };
         let newAvoidIds = {
           switch (avoidMap->Map.String.get(key)) {
-          | None => [||]
+          | None => []
           | Some(x) => x
           };
         };
@@ -430,9 +429,12 @@ module Converters = {
           halfPos: 0,
           id: data.id,
           isUpperHalf: false,
-          opponents: playerStats.opponentResults->Map.String.keysToArray,
+          opponents:
+            playerStats.opponentResults
+            ->Map.String.keysToArray
+            ->List.fromArray,
           rating: data.rating,
-          score: playerStats.results->Utils.arraySumFloat,
+          score: playerStats.results->Utils.listSumFloat,
         };
         acc->Map.String.set(key, newData);
       },

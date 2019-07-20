@@ -307,7 +307,7 @@ module PlayerInfo = {
     let colorScores = playerData.colorScores;
     let opponentResults = playerData.opponentResults;
     let results = playerData.results;
-    let colorBalance = Utils.arraySumFloat(colorScores);
+    let colorBalance = Utils.listSumFloat(colorScores);
     let player = getPlayer(playerId);
     let hasBye =
       opponentResults
@@ -315,7 +315,7 @@ module PlayerInfo = {
       |> Js.Array.includes(Data.dummy_id);
     let avoidList =
       switch (avoidMap->Map.String.get(playerId)) {
-      | None => [||]
+      | None => []
       | Some(avoidList) => avoidList
       };
     let prettyBalance =
@@ -331,7 +331,7 @@ module PlayerInfo = {
       <h3> {player.firstName ++ " " ++ player.lastName |> React.string} </h3>
       <p>
         {"Score: " |> React.string}
-        {Utils.arraySumFloat(results) |> Js.Float.toString |> React.string}
+        {Utils.listSumFloat(results) |> Js.Float.toString |> React.string}
       </p>
       <p id={"rating-" ++ player.id}>
         {"Rating: " |> React.string}
@@ -366,21 +366,19 @@ module PlayerInfo = {
       </ol>
       <p> {"Players to avoid:" |> React.string} </p>
       <ol>
-        {avoidList
-         |> Js.Array.map(pId =>
-              switch (players->Map.String.get(pId)) {
-              /*  don't show players not in this tourney*/
-              | None => React.null
-              | Some(_) =>
-                <li key=pId>
-                  {getPlayer(pId).firstName
-                   ++ " "
-                   ++ getPlayer(pId).lastName
-                   |> React.string}
-                </li>
-              }
-            )
-         |> React.array}
+        {avoidList->Utils.listToReactArray(pId =>
+           switch (players->Map.String.get(pId)) {
+           /*  don't show players not in this tourney*/
+           | None => React.null
+           | Some(_) =>
+             <li key=pId>
+               {getPlayer(pId).firstName
+                ++ " "
+                ++ getPlayer(pId).lastName
+                |> React.string}
+             </li>
+           }
+         )}
       </ol>
     </dl>;
   };

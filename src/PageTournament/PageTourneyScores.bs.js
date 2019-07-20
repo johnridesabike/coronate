@@ -437,8 +437,9 @@ function PageTourneyScores$Crosstable(Props) {
     }
   };
   var getRatingChangeTds = function (playerId) {
-    var firstRating = Belt_Array.getExn(Belt_MapString.getExn(scoreData, playerId)[/* ratings */5], 0);
-    var lastRating = Utils$Coronate.last(Belt_MapString.getExn(scoreData, playerId)[/* ratings */5]);
+    var firstRating = Belt_MapString.getExn(scoreData, playerId)[/* firstRating */6];
+    var match = Belt_MapString.getExn(scoreData, playerId)[/* ratings */5];
+    var lastRating = match ? match[0] : firstRating;
     var change = Numeral.default(lastRating - firstRating).format("+0");
     return React.createElement(React.Fragment, undefined, React.createElement("td", {
                     className: Cn.make(/* :: */[

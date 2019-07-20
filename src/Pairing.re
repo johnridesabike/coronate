@@ -2,16 +2,15 @@
    This handles all of the logic for calculating pairings. It requires data
    taken from past tournament scores and player ratings.
  */
-
 open Belt;
 type t = {
   id: string,
-  avoidIds: array(string),
-  colorScores: array(float),
-  colors: array(int),
+  avoidIds: list(string),
+  colorScores: list(float),
+  colors: list(int),
   halfPos: int,
   isUpperHalf: bool,
-  opponents: array(string),
+  opponents: list(string),
   rating: int,
   score: float,
 };
@@ -60,18 +59,17 @@ let calcPairIdeal = (player1, player2) =>
   if (player1.id == player2.id) {
     0.0;
   } else {
-    let metBefore = player1.opponents |> Js.Array.includes(player2.id);
-    let mustAvoid = player1.avoidIds |> Js.Array.includes(player2.id);
-    let isDiffDueColor = {
-      switch (player1.colors |> Js.Array.length) {
-      | 0 => true
-      | _ =>
-        switch (player2.colors |> Js.Array.length) {
-        | 0 => true
-        | _ => player1.colors->Utils.last !== player2.colors->Utils.last
+    let metBefore = player1.opponents->List.has(player2.id, (===));
+    let mustAvoid = player1.avoidIds->List.has(player2.id, (===));
+    let isDiffDueColor =
+      switch (player1.colors) {
+      | [] => true
+      | [lastColor1, ..._] =>
+        switch (player2.colors) {
+        | [] => true
+        | [lastColor2, ..._] => lastColor1 !== lastColor2
         }
       };
-    };
     let scoreDiff = Utils.absf(player1.score -. player2.score) +. 1.0;
     let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1);
     let isDiffHalf =
@@ -122,7 +120,7 @@ let sortByScoreThenRating =
    After calling this, be sure to add the bye round after the non-bye'd
    players are paired. */
 let setByePlayer = (byeQueue, dummyId, data) => {
-  let hasNotHadBye = p => !(p.opponents |> Js.Array.includes(dummyId));
+  let hasNotHadBye = p => !p.opponents->List.has(dummyId, (===));
   data->Map.String.keysToArray->Js.Array.length mod 2 == 0
     /* if the list is even, just return it. */
     ? (data, None)
@@ -162,8 +160,8 @@ let assignColorsForPair = pair => {
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  Utils.arraySumFloat(player1.colorScores)
-  < Utils.arraySumFloat(player2.colorScores)
+  Utils.listSumFloat(player1.colorScores)
+  < Utils.listSumFloat(player2.colorScores)
     /* player 1 has played as white more than player 2 */
     ? (player2.id, player1.id)
     /* player 1 has played as black more than player 2

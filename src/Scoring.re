@@ -1,20 +1,21 @@
 /*
-  This handles all of the score tiebreak logic. Not all of the USCF methods
-  are implemented yet, just the most common ones.
-*/
+   This handles all of the score tiebreak logic. Not all of the USCF methods
+   are implemented yet, just the most common ones.
+ */
 
 open Utils;
 open Belt;
 
 type scoreData = {
-  colorScores: array(float),
-  colors: array(int),
+  colorScores: list(float),
+  colors: list(int),
   id: string,
   isDummy: bool,
   opponentResults: Map.String.t(float),
-  ratings: array(int),
-  results: array(float),
-  resultsNoByes: array(float),
+  ratings: list(int),
+  firstRating: int,
+  results: list(float),
+  resultsNoByes: list(float),
 };
 
 let isNotDummy = (scoreDict, oppId) => {
@@ -27,7 +28,7 @@ let isNotDummy = (scoreDict, oppId) => {
 let getPlayerScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(player) => arraySumFloat(player.results)
+  | Some(player) => listSumFloat(player.results)
   };
 };
 
@@ -53,17 +54,21 @@ let getSolkoffScore = (scoreDict, id) =>
   getOpponentScores(scoreDict, id) |> arraySumFloat;
 
 // turn the regular score list into a "running" score list
-let runningReducer = (acc, score) =>
-  Js.Array.concat([|last(acc) +. score|], acc);
+let runningReducer = (acc, score) => {
+  let lastScore =
+    switch (acc) {
+    | [last, ..._] => last
+    | [] => 0.0
+    };
+  [lastScore +. score, ...acc];
+};
 
 // USCF § 34E3.
 let getCumulativeScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
-    person.resultsNoByes
-    |> Js.Array.reduce(runningReducer, [|0.0|])
-    |> arraySumFloat
+    person.resultsNoByes->List.reduce([], runningReducer)->listSumFloat
   };
 };
 
@@ -83,7 +88,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 let getColorBalanceScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) => arraySumFloat(person.colorScores)
+  | Some(person) => listSumFloat(person.colorScores)
   };
 };
 
@@ -111,14 +116,15 @@ let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
 // This is useful for cases where the regular factory functions return empty
 // results because a player hasn't been added yet.
 let createBlankScoreData = id => {
-  colorScores: [||],
-  colors: [||],
+  colorScores: [],
+  colors: [],
   id,
   isDummy: false,
   opponentResults: Map.String.empty,
-  ratings: [||],
-  results: [||],
-  resultsNoByes: [||],
+  ratings: [],
+  firstRating: 0,
+  results: [],
+  resultsNoByes: [],
 };
 
 type standing = {
@@ -194,10 +200,12 @@ let createStandingTree = standingList => {
            // to the last branch
            : {
              let lastIndex = Js.Array.length(acc) - 1;
-             let _ = acc->Array.set(
-               lastIndex,
-               acc->Array.getExn(lastIndex) |> Js.Array.concat([|standing|]),
-             );
+             let _ =
+               acc->Array.set(
+                 lastIndex,
+                 acc->Array.getExn(lastIndex)
+                 |> Js.Array.concat([|standing|]),
+               );
              acc;
            };
        },

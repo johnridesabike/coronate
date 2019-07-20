@@ -393,11 +393,12 @@ module Crosstable = {
 
     let getRatingChangeTds = playerId => {
       let firstRating =
-        scoreData->Map.String.getExn(playerId).ratings->Array.getExn(0)
-        |> float_of_int;
+        scoreData->Map.String.getExn(playerId).firstRating->float_of_int;
       let lastRating =
-        Utils.last(scoreData->Map.String.getExn(playerId).ratings)
-        |> float_of_int;
+        switch (scoreData->Map.String.getExn(playerId).ratings) {
+        | [] => firstRating
+        | [rating, ..._] => rating->float_of_int
+        };
       let change =
         Numeral.make(lastRating -. firstRating)->Numeral.format("+0");
       <>

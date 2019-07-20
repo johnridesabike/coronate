@@ -2,6 +2,7 @@
 
 import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Css from "bs-css/src/Css.js";
+import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as Ramda from "ramda";
 import * as React from "react";
 import * as Nanoid from "nanoid";
@@ -67,6 +68,10 @@ function arraySumFloat(arr) {
   return arr.reduce(addFloat, 0.0);
 }
 
+function listSumFloat(list) {
+  return Belt_List.reduce(list, 0.0, addFloat);
+}
+
 function last(arr) {
   return Caml_array.caml_array_get(arr, arr.length - 1 | 0);
 }
@@ -91,6 +96,12 @@ var Entities = /* module */[
 
 function hashPath(hashString) {
   return Belt_List.fromArray(hashString.split("/"));
+}
+
+function listToReactArray(list, func) {
+  return Belt_List.reduce(list, /* array */[], (function (acc, item) {
+                return acc.concat(/* array */[Curry._1(func, item)]);
+              }));
 }
 
 var dateFormat = (
@@ -740,6 +751,7 @@ export {
   arraySum ,
   addFloat ,
   arraySumFloat ,
+  listSumFloat ,
   last ,
   splitInHalf ,
   github_url ,
@@ -748,6 +760,7 @@ export {
   WebpackAssets ,
   Entities ,
   hashPath ,
+  listToReactArray ,
   dateFormat ,
   timeFormat ,
   DateOrTimeFormat ,
