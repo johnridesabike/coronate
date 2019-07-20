@@ -124,7 +124,7 @@ function PageTournamentList(Props) {
                                                 className: "buttons-on-hover"
                                               }, React.createElement("td", undefined, React.createElement("a", {
                                                         href: "#/tourneys/" + t[/* id */2]
-                                                      }, t[/* name */3])), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */0], {
+                                                      }, t[/* name */3])), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */2], {
                                                         date: t[/* date */1]
                                                       })), React.createElement("td", undefined, React.createElement("button", {
                                                         "aria-label": "Delete " + t[/* name */3],

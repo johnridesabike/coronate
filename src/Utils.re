@@ -40,58 +40,52 @@ let hashPath = hashString =>
 let listToReactArray = (list, func) => {
   list
   ->Belt.List.reduce([||], (acc, item) =>
-      acc|>Js.Array.concat([|func(item)|])
+      acc |> Js.Array.concat([|func(item)|])
     )
   ->React.array;
 };
 
-type dtFormat = {. [@bs.meth] "format": Js.Date.t => string};
-
-let dateFormat: dtFormat = [%raw
-  {|
-  new Intl.DateTimeFormat(
-      "en-US",
-      {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-      }
-  )
-|}
-];
-
-let timeFormat: dtFormat = [%raw
-  {|
-  new Intl.DateTimeFormat(
-      "en-US",
-      {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
-      }
-  )
-|}
-];
-
-module DateOrTimeFormat = {
+module DateTimeFormatComponent =
+       (
+         Config: {
+           let locale: Externals.IntlDateTimeFormat.locale;
+           let config: Externals.IntlDateTimeFormat.config_;
+         },
+       ) => {
+  module IDTF = Externals.IntlDateTimeFormat;
+  let dtobj = IDTF.make(IDTF.string_of_locale(Config.locale), Config.config);
   [@react.component]
-  let make = (~dtFormatObj, ~date) =>
+  let make = (~date) =>
     <time dateTime={date |> Js.Date.toISOString}>
-      {dtFormatObj##format(date) |> React.string}
+      {dtobj->IDTF.format(date)->React.string}
     </time>;
 };
 
-module DateFormat = {
-  [@react.component]
-  let make = (~date) => <DateOrTimeFormat dtFormatObj=dateFormat date />;
-};
+module DateFormat =
+  DateTimeFormatComponent({
+    let locale = `en_us;
+    let config =
+      Externals.IntlDateTimeFormat.config(
+        ~day=`two_digit,
+        ~month=`short,
+        ~year=`numeric,
+        (),
+      );
+  });
 
-module DateTimeFormat = {
-  [@react.component]
-  let make = (~date) => <DateOrTimeFormat dtFormatObj=timeFormat date />;
-};
+module DateTimeFormat =
+  DateTimeFormatComponent({
+    let locale = `en_us;
+    let config =
+      Externals.IntlDateTimeFormat.config(
+        ~day=`two_digit,
+        ~month=`short,
+        ~year=`numeric,
+        ~hour=`two_digit,
+        ~minute=`two_digit,
+        (),
+      );
+  });
 
 /* module PlaceHolderButton = {
      [@react.component]
@@ -102,39 +96,6 @@ module DateTimeFormat = {
          disabled=true
        />;
    }; */
-
-type notification =
-  | Success
-  | Warning
-  | Error
-  | Generic;
-
-module Notification = {
-  [@react.component]
-  let make =
-      (
-        ~children,
-        ~kind=Generic,
-        ~tooltip="",
-        ~className="",
-        ~style=ReactDOMRe.Style.make(),
-      ) => {
-    let (icon, notifClassName) =
-      switch (kind) {
-      | Success => (<Icons.Check />, "notification__success")
-      | Warning => (<Icons.Alert />, "notification__warning")
-      | Error => (<Icons.X />, "notification__error")
-      | Generic => (<Icons.Info />, "notification__generic")
-      };
-    <div
-      className={Cn.make(["notification", notifClassName, className])} style>
-      <div ariaLabel=tooltip className="notifcation__icon" title=tooltip>
-        icon
-      </div>
-      <div className="notification__text"> children </div>
-    </div>;
-  };
-};
 
 module Style = {
   open Css;
@@ -254,4 +215,78 @@ module PhotonColors = {
   let ink_90 = `hex("0f1126");
 
   let white_100 = `hex("ffffff");
+};
+
+type notification =
+  | Success
+  | Warning
+  | Error
+  | Generic;
+
+module Notification = {
+  module Style = {
+    open Css;
+    let container =
+      style([
+        display(`flex),
+        flexDirection(`row),
+        justifyContent(`center),
+        minHeight(`px(32)),
+        fontSize(`px(13)),
+        fontWeight(`num(400)),
+        paddingTop(`px(4)),
+        paddingBottom(`px(4)),
+        margin2(~v=`px(4), ~h=`zero),
+        borderRadius(`px(4)),
+      ]);
+    let text =
+      style([display(`flex), flexDirection(`row), alignItems(`center)]);
+    let icon =
+      style([
+        display(`flex),
+        flexDirection(`row),
+        alignItems(`center),
+        flexShrink(1.0),
+        margin2(~v=`zero, ~h=`px(4)),
+        fontSize(`px(16)),
+        cursor(`help),
+      ]);
+    let success =
+      style([
+        color(PhotonColors.green_90),
+        backgroundColor(PhotonColors.green_50),
+      ]);
+    let warning =
+      style([
+        color(PhotonColors.yellow_90),
+        backgroundColor(PhotonColors.yellow_50),
+      ]);
+    let error =
+      style([
+        color(PhotonColors.white_100),
+        backgroundColor(PhotonColors.red_60),
+      ]);
+  };
+  [@react.component]
+  let make =
+      (
+        ~children,
+        ~kind=Generic,
+        ~tooltip="",
+        ~className="",
+        ~style=ReactDOMRe.Style.make(),
+      ) => {
+    let (icon, notifClassName) =
+      switch (kind) {
+      | Success => (<Icons.Check />, Style.success)
+      | Warning => (<Icons.Alert />, Style.warning)
+      | Error => (<Icons.X />, Style.error)
+      | Generic => (<Icons.Info />, "")
+      };
+    <div
+      className={Cn.make([Style.container, notifClassName, className])} style>
+      <div ariaLabel=tooltip className=Style.icon title=tooltip> icon </div>
+      <div className=Style.text> children </div>
+    </div>;
+  };
 };

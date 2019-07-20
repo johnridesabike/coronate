@@ -135,7 +135,7 @@ function PageTourneySetup(Props) {
                           })
                       }, React.createElement(ReactFeather.Check, { }))), editing !== 1 ? React.createElement("p", {
                     className: "caption-30"
-                  }, React.createElement(Utils$Coronate.DateFormat[/* make */0], {
+                  }, React.createElement(Utils$Coronate.DateFormat[/* make */2], {
                         date: tourney[/* date */1]
                       }), " ", React.createElement("button", {
                         className: "button-ghost",

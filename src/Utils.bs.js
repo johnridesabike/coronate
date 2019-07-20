@@ -10,6 +10,7 @@ import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as ReactFeather from "react-feather";
+import * as Externals$Coronate from "./Externals.bs.js";
 
 function splitAt(prim, prim$1) {
   return Ramda.splitAt(prim, prim$1);
@@ -104,120 +105,54 @@ function listToReactArray(list, func) {
               }));
 }
 
-var dateFormat = (
-  new Intl.DateTimeFormat(
-      "en-US",
-      {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-      }
-  )
-);
+function DateTimeFormatComponent(Config) {
+  var dtobj = new Intl.DateTimeFormat(Externals$Coronate.IntlDateTimeFormat[/* string_of_locale */0](Config[/* locale */0]), Config[/* config */1]);
+  var Utils$DateTimeFormatComponent = function (Props) {
+    var date = Props.date;
+    return React.createElement("time", {
+                dateTime: date.toISOString()
+              }, dtobj.format(date));
+  };
+  return /* module */[
+          /* IDTF */0,
+          /* dtobj */dtobj,
+          /* make */Utils$DateTimeFormatComponent
+        ];
+}
 
-var timeFormat = (
-  new Intl.DateTimeFormat(
-      "en-US",
-      {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
-      }
-  )
-);
+var config = Externals$Coronate.IntlDateTimeFormat[/* config */4](/* two_digit */156521338, /* short */-64519044, /* numeric */734061261, undefined, undefined, /* () */0);
 
-function Utils$DateOrTimeFormat(Props) {
-  var dtFormatObj = Props.dtFormatObj;
+var dtobj = new Intl.DateTimeFormat(Externals$Coronate.IntlDateTimeFormat[/* string_of_locale */0](/* en_us */-260666444), config);
+
+function Utils$DateTimeFormatComponent(Props) {
   var date = Props.date;
   return React.createElement("time", {
               dateTime: date.toISOString()
-            }, dtFormatObj.format(date));
+            }, dtobj.format(date));
 }
 
-var DateOrTimeFormat = /* module */[/* make */Utils$DateOrTimeFormat];
+var DateFormat = /* module */[
+  /* IDTF */0,
+  /* dtobj */dtobj,
+  /* make */Utils$DateTimeFormatComponent
+];
 
-function Utils$DateFormat(Props) {
+var config$1 = Externals$Coronate.IntlDateTimeFormat[/* config */4](/* two_digit */156521338, /* short */-64519044, /* numeric */734061261, /* two_digit */156521338, /* two_digit */156521338, /* () */0);
+
+var dtobj$1 = new Intl.DateTimeFormat(Externals$Coronate.IntlDateTimeFormat[/* string_of_locale */0](/* en_us */-260666444), config$1);
+
+function Utils$DateTimeFormatComponent$1(Props) {
   var date = Props.date;
-  return React.createElement(Utils$DateOrTimeFormat, {
-              dtFormatObj: dateFormat,
-              date: date
-            });
+  return React.createElement("time", {
+              dateTime: date.toISOString()
+            }, dtobj$1.format(date));
 }
 
-var DateFormat = /* module */[/* make */Utils$DateFormat];
-
-function Utils$DateTimeFormat(Props) {
-  var date = Props.date;
-  return React.createElement(Utils$DateOrTimeFormat, {
-              dtFormatObj: timeFormat,
-              date: date
-            });
-}
-
-var DateTimeFormat = /* module */[/* make */Utils$DateTimeFormat];
-
-function Utils$Notification(Props) {
-  var children = Props.children;
-  var match = Props.kind;
-  var kind = match !== undefined ? match : /* Generic */3;
-  var match$1 = Props.tooltip;
-  var tooltip = match$1 !== undefined ? match$1 : "";
-  var match$2 = Props.className;
-  var className = match$2 !== undefined ? match$2 : "";
-  var match$3 = Props.style;
-  var style = match$3 !== undefined ? Caml_option.valFromOption(match$3) : { };
-  var match$4;
-  switch (kind) {
-    case 0 : 
-        match$4 = /* tuple */[
-          React.createElement(ReactFeather.Check, { }),
-          "notification__success"
-        ];
-        break;
-    case 1 : 
-        match$4 = /* tuple */[
-          React.createElement(ReactFeather.AlertTriangle, { }),
-          "notification__warning"
-        ];
-        break;
-    case 2 : 
-        match$4 = /* tuple */[
-          React.createElement(ReactFeather.X, { }),
-          "notification__error"
-        ];
-        break;
-    case 3 : 
-        match$4 = /* tuple */[
-          React.createElement(ReactFeather.Info, { }),
-          "notification__generic"
-        ];
-        break;
-    
-  }
-  return React.createElement("div", {
-              className: Cn.make(/* :: */[
-                    "notification",
-                    /* :: */[
-                      match$4[1],
-                      /* :: */[
-                        className,
-                        /* [] */0
-                      ]
-                    ]
-                  ]),
-              style: style
-            }, React.createElement("div", {
-                  "aria-label": tooltip,
-                  className: "notifcation__icon",
-                  title: tooltip
-                }, match$4[0]), React.createElement("div", {
-                  className: "notification__text"
-                }, children));
-}
-
-var $$Notification = /* module */[/* make */Utils$Notification];
+var DateTimeFormat = /* module */[
+  /* IDTF */0,
+  /* dtobj */dtobj$1,
+  /* make */Utils$DateTimeFormatComponent$1
+];
 
 var panels = Css.style(/* :: */[
       Css.display(/* flex */-1010954439),
@@ -285,6 +220,36 @@ function Utils$PanelContainer(Props) {
 }
 
 var PanelContainer = /* module */[/* make */Utils$PanelContainer];
+
+var green_50 = /* `hex */[
+  5194459,
+  "30e60b"
+];
+
+var green_90 = /* `hex */[
+  5194459,
+  "003706"
+];
+
+var yellow_50 = /* `hex */[
+  5194459,
+  "ffe900"
+];
+
+var yellow_90 = /* `hex */[
+  5194459,
+  "3e2800"
+];
+
+var red_60 = /* `hex */[
+  5194459,
+  "d70022"
+];
+
+var white_100 = /* `hex */[
+  5194459,
+  "ffffff"
+];
 
 var PhotonColors_000 = /* magenta_50 : `hex */[
   5194459,
@@ -406,11 +371,6 @@ var PhotonColors_023 = /* teal_90 : `hex */[
   "002d3e"
 ];
 
-var PhotonColors_024 = /* green_50 : `hex */[
-  5194459,
-  "30e60b"
-];
-
 var PhotonColors_025 = /* green_60 : `hex */[
   5194459,
   "12bc00"
@@ -424,16 +384,6 @@ var PhotonColors_026 = /* green_70 : `hex */[
 var PhotonColors_027 = /* green_80 : `hex */[
   5194459,
   "006504"
-];
-
-var PhotonColors_028 = /* green_90 : `hex */[
-  5194459,
-  "003706"
-];
-
-var PhotonColors_029 = /* yellow_50 : `hex */[
-  5194459,
-  "ffe900"
 ];
 
 var PhotonColors_030 = /* yellow_60 : `hex */[
@@ -451,19 +401,9 @@ var PhotonColors_032 = /* yellow_80 : `hex */[
   "715100"
 ];
 
-var PhotonColors_033 = /* yellow_90 : `hex */[
-  5194459,
-  "3e2800"
-];
-
 var PhotonColors_034 = /* red_50 : `hex */[
   5194459,
   "ff0039"
-];
-
-var PhotonColors_035 = /* red_60 : `hex */[
-  5194459,
-  "d70022"
 ];
 
 var PhotonColors_036 = /* red_70 : `hex */[
@@ -641,11 +581,6 @@ var PhotonColors_070 = /* ink_90 : `hex */[
   "0f1126"
 ];
 
-var PhotonColors_071 = /* white_100 : `hex */[
-  5194459,
-  "ffffff"
-];
-
 var PhotonColors = /* module */[
   PhotonColors_000,
   PhotonColors_001,
@@ -671,18 +606,18 @@ var PhotonColors = /* module */[
   PhotonColors_021,
   PhotonColors_022,
   PhotonColors_023,
-  PhotonColors_024,
+  /* green_50 */green_50,
   PhotonColors_025,
   PhotonColors_026,
   PhotonColors_027,
-  PhotonColors_028,
-  PhotonColors_029,
+  /* green_90 */green_90,
+  /* yellow_50 */yellow_50,
   PhotonColors_030,
   PhotonColors_031,
   PhotonColors_032,
-  PhotonColors_033,
+  /* yellow_90 */yellow_90,
   PhotonColors_034,
-  PhotonColors_035,
+  /* red_60 */red_60,
   PhotonColors_036,
   PhotonColors_037,
   PhotonColors_038,
@@ -718,7 +653,197 @@ var PhotonColors = /* module */[
   PhotonColors_068,
   PhotonColors_069,
   PhotonColors_070,
-  PhotonColors_071
+  /* white_100 */white_100
+];
+
+var container = Css.style(/* :: */[
+      Css.display(/* flex */-1010954439),
+      /* :: */[
+        Css.flexDirection(/* row */5693978),
+        /* :: */[
+          Css.justifyContent(/* center */98248149),
+          /* :: */[
+            Css.minHeight(/* `px */[
+                  25096,
+                  32
+                ]),
+            /* :: */[
+              Css.fontSize(/* `px */[
+                    25096,
+                    13
+                  ]),
+              /* :: */[
+                Css.fontWeight(/* `num */[
+                      5496390,
+                      400
+                    ]),
+                /* :: */[
+                  Css.paddingTop(/* `px */[
+                        25096,
+                        4
+                      ]),
+                  /* :: */[
+                    Css.paddingBottom(/* `px */[
+                          25096,
+                          4
+                        ]),
+                    /* :: */[
+                      Css.margin2(/* `px */[
+                            25096,
+                            4
+                          ], /* zero */-789508312),
+                      /* :: */[
+                        Css.borderRadius(/* `px */[
+                              25096,
+                              4
+                            ]),
+                        /* [] */0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+var text = Css.style(/* :: */[
+      Css.display(/* flex */-1010954439),
+      /* :: */[
+        Css.flexDirection(/* row */5693978),
+        /* :: */[
+          Css.alignItems(/* center */98248149),
+          /* [] */0
+        ]
+      ]
+    ]);
+
+var icon = Css.style(/* :: */[
+      Css.display(/* flex */-1010954439),
+      /* :: */[
+        Css.flexDirection(/* row */5693978),
+        /* :: */[
+          Css.alignItems(/* center */98248149),
+          /* :: */[
+            Css.flexShrink(1.0),
+            /* :: */[
+              Css.margin2(/* zero */-789508312, /* `px */[
+                    25096,
+                    4
+                  ]),
+              /* :: */[
+                Css.fontSize(/* `px */[
+                      25096,
+                      16
+                    ]),
+                /* :: */[
+                  Css.cursor(/* help */-989121855),
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+var success = Css.style(/* :: */[
+      Css.color(green_90),
+      /* :: */[
+        Css.backgroundColor(green_50),
+        /* [] */0
+      ]
+    ]);
+
+var warning = Css.style(/* :: */[
+      Css.color(yellow_90),
+      /* :: */[
+        Css.backgroundColor(yellow_50),
+        /* [] */0
+      ]
+    ]);
+
+var error = Css.style(/* :: */[
+      Css.color(white_100),
+      /* :: */[
+        Css.backgroundColor(red_60),
+        /* [] */0
+      ]
+    ]);
+
+var Style$1 = /* module */[
+  /* container */container,
+  /* text */text,
+  /* icon */icon,
+  /* success */success,
+  /* warning */warning,
+  /* error */error
+];
+
+function Utils$Notification(Props) {
+  var children = Props.children;
+  var match = Props.kind;
+  var kind = match !== undefined ? match : /* Generic */3;
+  var match$1 = Props.tooltip;
+  var tooltip = match$1 !== undefined ? match$1 : "";
+  var match$2 = Props.className;
+  var className = match$2 !== undefined ? match$2 : "";
+  var match$3 = Props.style;
+  var style = match$3 !== undefined ? Caml_option.valFromOption(match$3) : { };
+  var match$4;
+  switch (kind) {
+    case 0 : 
+        match$4 = /* tuple */[
+          React.createElement(ReactFeather.Check, { }),
+          success
+        ];
+        break;
+    case 1 : 
+        match$4 = /* tuple */[
+          React.createElement(ReactFeather.AlertTriangle, { }),
+          warning
+        ];
+        break;
+    case 2 : 
+        match$4 = /* tuple */[
+          React.createElement(ReactFeather.X, { }),
+          error
+        ];
+        break;
+    case 3 : 
+        match$4 = /* tuple */[
+          React.createElement(ReactFeather.Info, { }),
+          ""
+        ];
+        break;
+    
+  }
+  return React.createElement("div", {
+              className: Cn.make(/* :: */[
+                    container,
+                    /* :: */[
+                      match$4[1],
+                      /* :: */[
+                        className,
+                        /* [] */0
+                      ]
+                    ]
+                  ]),
+              style: style
+            }, React.createElement("div", {
+                  "aria-label": tooltip,
+                  className: icon,
+                  title: tooltip
+                }, match$4[0]), React.createElement("div", {
+                  className: text
+                }, children));
+}
+
+var $$Notification = /* module */[
+  /* Style */Style$1,
+  /* make */Utils$Notification
 ];
 
 var Tabs = 0;
@@ -761,16 +886,14 @@ export {
   Entities ,
   hashPath ,
   listToReactArray ,
-  dateFormat ,
-  timeFormat ,
-  DateOrTimeFormat ,
+  DateTimeFormatComponent ,
   DateFormat ,
   DateTimeFormat ,
-  $$Notification ,
   Style ,
   Panel ,
   PanelContainer ,
   PhotonColors ,
+  $$Notification ,
   
 }
 /* logo Not a pure module */

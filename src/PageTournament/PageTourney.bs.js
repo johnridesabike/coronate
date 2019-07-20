@@ -41,7 +41,7 @@ function PageTourney$Footer(Props) {
                   }
                 }, "Rounds: ", String(roundList.length), React.createElement("small", undefined, " out of "), String(tournament[/* roundCount */6])), React.createElement("hr", {
                   className: "win__footer-divider"
-                }), React.createElement(Utils$Coronate.$$Notification[/* make */0], {
+                }), React.createElement(Utils$Coronate.$$Notification[/* make */1], {
                   children: tooltipText,
                   kind: match[1],
                   tooltip: tooltipText,

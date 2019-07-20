@@ -90,7 +90,7 @@ function PageOptions$LastBackupDate(Props) {
   var date = Props.date;
   var match = date.getTime();
   if (match !== 0.0) {
-    return React.createElement(Utils$Coronate.DateTimeFormat[/* make */0], {
+    return React.createElement(Utils$Coronate.DateTimeFormat[/* make */2], {
                 date: date
               });
   } else {

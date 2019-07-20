@@ -1,3 +1,4 @@
+open Belt;
 /*******************************************************************************
   Misc. utilities
  ******************************************************************************/
@@ -15,8 +16,7 @@ external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 external move: (int, int, array('a)) => array('a) = "move";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 [@bs.module "edmonds-blossom"]
-external blossom: array((int, int, float)) => array(int) =
-  "default";
+external blossom: array((int, int, float)) => array(int) = "default";
 
 module EloRank = {
   type t;
@@ -198,4 +198,46 @@ module ReachTabs = {
     [@bs.module "@reach/tabs"] [@react.component]
     external make: (~children: React.element) => React.element = "TabPanel";
   };
+};
+
+module IntlDateTimeFormat = {
+  type t;
+  type locale = [ | `en_us];
+  let string_of_locale = locale =>
+    switch (locale) {
+    | `en_us => "en-US"
+    };
+  type numbered = [ | `two_digit];
+  let string_of_numbered = x =>
+    switch (x) {
+    | `two_digit => "2-digit"->Js.Undefined.return
+    };
+  type month = [ | `short];
+  let string_of_month = month =>
+    switch (month) {
+    | `short => "short"->Js.Undefined.return
+    };
+  type year = [ | `numeric];
+  let string_of_year = year =>
+    switch (year) {
+    | `numeric => "numeric"->Js.Undefined.return
+    };
+  [@bs.deriving abstract]
+  type config_ = {
+    day: Js.undefined(string),
+    month: Js.undefined(string),
+    year: Js.undefined(string),
+    hour: Js.undefined(string),
+    minute: Js.undefined(string),
+  };
+  let config = (~day=?, ~month=?, ~year=?, ~hour=?, ~minute=?, ()) =>
+    config_(
+      ~day=day->Option.mapWithDefault(Js.undefined, string_of_numbered),
+      ~month=month->Option.mapWithDefault(Js.undefined, string_of_month),
+      ~year=year->Option.mapWithDefault(Js.undefined, string_of_year),
+      ~hour=hour->Option.mapWithDefault(Js.undefined, string_of_numbered),
+      ~minute=minute->Option.mapWithDefault(Js.undefined, string_of_numbered),
+    );
+  [@bs.new] external make: (string, config_) => t = "Intl.DateTimeFormat";
+  [@bs.send] external format: (t, Js.Date.t) => string = "format";
 };

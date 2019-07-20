@@ -68,48 +68,6 @@ code {
     color: var(--grey-50);
 }
 
-.notification {
-    display: flex;
-    flex-flow: row;
-    justify-content: center;
-    min-height: 32px;
-    font-size: 13px;
-    font-weight: 400;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    margin: 4px 0;
-    border-radius: 4px;
-}
-
-.notification__icon,
-.notification__text {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-}
-
-.notification__icon {
-    flex-shrink: 1;
-    margin: 0 4px;
-    font-size: 16px;
-    cursor: help;
-}
-
-.notification__success {
-    color: var(--green-90);
-    background-color: var(--green-50);
-}
-
-.notification__warning {
-    color: var(--yellow-90);
-    background-color: var(--yellow-50);
-}
-
-.notification__error {
-    color: var(--white-100);
-    background-color: var(--red-60);
-}
-
 .title {
     font-family: "Fira Sans", var(--font-main), sans-serif;
 }

@@ -266,7 +266,7 @@ function Pages$Splash(Props) {
                                 className: hintLi
                               }, React.createElement(ReactFeather.ArrowLeft, { }), " Select a menu item."), React.createElement("li", {
                                 className: hintLi
-                              }, "Start creating your tournaments!")), React.createElement(Utils$Coronate.$$Notification[/* make */0], {
+                              }, "Start creating your tournaments!")), React.createElement(Utils$Coronate.$$Notification[/* make */1], {
                             children: null,
                             kind: /* Warning */1
                           }, "If you experience glitches or crashes,", React.createElement("br", undefined), "clear your browser cache and try again.")), React.createElement("div", {
