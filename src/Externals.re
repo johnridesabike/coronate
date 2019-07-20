@@ -43,7 +43,7 @@ type fileReader = {
 /*******************************************************************************
   LocalForage
 
-  This devides LocalForage into two basic modules: Map and Obj. Vanilla JS
+  This divides LocalForage into two basic modules: Map and Obj. Vanilla JS
   LocalForage is simple: you can put whatever you want into it, and you get
   whatever comes back out. Dividing it into these modules adds Reason-idiomatic
   structure.
@@ -62,8 +62,8 @@ module LocalForage = {
      type, then use the `make` method to create an instance of the store.
 
      By requiring a `localForage` type on a module, that allows you to specify
-     a custom type structure that may be different than pure Reason. You can also
-     just say `type localForage = t;` and store the raw compiled Reason.
+     a custom type structure that may be different than pure Reason. You can
+     also just say `type localForage = t;` and store the raw compiled Reason.
 
      All of Map's methods should work fine with any instance's store.
    */
