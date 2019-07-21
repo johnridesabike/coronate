@@ -709,10 +709,8 @@ function WithRoundData(BaseComponent) {
   var PageRound$WithRoundData = function (Props) {
     var roundId = Props.roundId;
     var tournament = Props.tournament;
-    var tourney = tournament[/* tourney */7];
+    var roundList = tournament[/* tourney */7][/* roundList */5];
     var activePlayers = tournament[/* activePlayers */0];
-    var getPlayer = tournament[/* getPlayer */1];
-    var roundList = tourney[/* roundList */5];
     var scoreData = React.useMemo((function () {
             return Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
           }), /* array */[roundList]);
@@ -720,7 +718,7 @@ function WithRoundData(BaseComponent) {
     var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;
     var unmatchedCount = Belt_MapString.keysToArray(unmatched).length;
     var match$1 = unmatchedCount % 2 !== 0;
-    var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(getPlayer, Data$Coronate.dummy_id)) : unmatched;
+    var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(tournament[/* getPlayer */1], Data$Coronate.dummy_id)) : unmatched;
     var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
     return React.createElement(BaseComponent[/* make */0], {
                 roundId: roundId,
@@ -812,10 +810,8 @@ var PageRoundBase = /* module */[/* make */PageRound$PageRoundBase];
 function PageRound$WithRoundData(Props) {
   var roundId = Props.roundId;
   var tournament = Props.tournament;
-  var tourney = tournament[/* tourney */7];
+  var roundList = tournament[/* tourney */7][/* roundList */5];
   var activePlayers = tournament[/* activePlayers */0];
-  var getPlayer = tournament[/* getPlayer */1];
-  var roundList = tourney[/* roundList */5];
   var scoreData = React.useMemo((function () {
           return Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
         }), /* array */[roundList]);
@@ -823,7 +819,7 @@ function PageRound$WithRoundData(Props) {
   var unmatched = match ? Data$Coronate.getUnmatched(roundList, activePlayers, roundId) : Belt_MapString.empty;
   var unmatchedCount = Belt_MapString.keysToArray(unmatched).length;
   var match$1 = unmatchedCount % 2 !== 0;
-  var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(getPlayer, Data$Coronate.dummy_id)) : unmatched;
+  var unmatchedWithDummy = match$1 ? Belt_MapString.set(unmatched, Data$Coronate.dummy_id, Curry._1(tournament[/* getPlayer */1], Data$Coronate.dummy_id)) : unmatched;
   var activePlayersCount = Belt_MapString.keysToArray(activePlayers).length;
   return React.createElement(PageRound$PageRoundBase, {
               roundId: roundId,

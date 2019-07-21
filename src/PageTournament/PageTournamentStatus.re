@@ -1,7 +1,6 @@
 [@react.component]
 let make = (~tournament: TournamentData.t) => {
-  let tourney = tournament.tourney;
-  let getPlayer = tournament.getPlayer;
+  let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
   let lastRound =
     if (tourney.roundList |> Js.Array.length === 0) {
       <p> {"No rounds played yet." |> React.string} </p>;

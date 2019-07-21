@@ -400,11 +400,13 @@ let make =
   let (config, _) = Db.useConfig();
   let avoidPairs = config.avoidPairs;
   let byeValue = config.byeValue;
-  let tourney = tournament.tourney;
-  let activePlayers = tournament.activePlayers;
-  let players = tournament.players;
-  let getPlayer = tournament.getPlayer;
-  let tourneyDispatch = tournament.tourneyDispatch;
+  let {
+    TournamentData.tourney,
+    TournamentData.activePlayers,
+    TournamentData.players,
+    TournamentData.getPlayer,
+    TournamentData.tourneyDispatch,
+  } = tournament;
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
   let pairData =

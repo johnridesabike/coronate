@@ -8,7 +8,6 @@ import * as PageTourneyScores$Coronate from "./PageTourneyScores.bs.js";
 function PageTournamentStatus(Props) {
   var tournament = Props.tournament;
   var tourney = tournament[/* tourney */7];
-  var getPlayer = tournament[/* getPlayer */1];
   var lastRound;
   if (tourney[/* roundList */5].length === 0) {
     lastRound = React.createElement("p", undefined, "No rounds played yet.");
@@ -35,7 +34,7 @@ function PageTournamentStatus(Props) {
                       children: React.createElement(PageTourneyScores$Coronate.ScoreTable[/* make */0], {
                             isCompact: true,
                             tourney: tourney,
-                            getPlayer: getPlayer,
+                            getPlayer: tournament[/* getPlayer */1],
                             title: "Rankings"
                           })
                     })));

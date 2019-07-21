@@ -596,10 +596,12 @@ module type UsesRoundData = {
 module WithRoundData = (BaseComponent: UsesRoundData) => {
   [@react.component]
   let make = (~roundId, ~tournament) => {
-    let tourney = tournament.tourney;
-    let activePlayers = tournament.activePlayers;
-    let getPlayer = tournament.getPlayer;
-    let roundList = tourney.roundList;
+    let {
+      TournamentData.tourney,
+      TournamentData.activePlayers,
+      TournamentData.getPlayer,
+    } = tournament;
+    let {Data.Tournament.roundList} = tourney;
     /* matches2ScoreData is relatively expensive*/
     let scoreData =
       React.useMemo1(

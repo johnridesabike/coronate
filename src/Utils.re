@@ -293,10 +293,9 @@ module Router = {
     hashString |> Js.String.split("/") |> Belt.List.fromArray;
 
   module HashLink = {
-    open ReasonReact.Router;
     [@react.component]
     let make = (~children, ~to_, ~onDragStart: ReactEvent.Mouse.t => unit=?) => {
-      let {hash} = useUrl();
+      let {ReasonReact.Router.hash} = ReasonReact.Router.useUrl();
       let ariaCurrent = hash === to_ ? "true" : "false";
       /*
          Reason hasn't implemented the aria-current attribute yet, we have to

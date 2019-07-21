@@ -382,7 +382,6 @@ var SelectTieBreaks = /* module */[/* make */PageTourneyScores$SelectTieBreaks];
 
 function PageTourneyScores(Props) {
   var tournament = Props.tournament;
-  var getPlayer = tournament[/* getPlayer */1];
   var tourney = tournament[/* tourney */7];
   var tourneyDispatch = tournament[/* tourneyDispatch */8];
   return React.createElement(Tabs.Tabs, {
@@ -398,7 +397,7 @@ function PageTourneyScores(Props) {
                 }, React.createElement(Tabs.TabPanel, {
                       children: React.createElement(PageTourneyScores$ScoreTable, {
                             tourney: tourney,
-                            getPlayer: getPlayer,
+                            getPlayer: tournament[/* getPlayer */1],
                             title: "Score detail"
                           })
                     }), React.createElement(Tabs.TabPanel, {
@@ -413,10 +412,8 @@ function PageTourneyScores$Crosstable(Props) {
   var tournament = Props.tournament;
   var tourney = tournament[/* tourney */7];
   var getPlayer = tournament[/* getPlayer */1];
-  var tieBreaks = tourney[/* tieBreaks */6];
-  var roundList = tourney[/* roundList */5];
-  var scoreData = Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(roundList, undefined, /* () */0));
-  var standings = Scoring$Coronate.createStandingList(tieBreaks, scoreData);
+  var scoreData = Data$Coronate.Converters[/* matches2ScoreData */9](Data$Coronate.rounds2Matches(tourney[/* roundList */5], undefined, /* () */0));
+  var standings = Scoring$Coronate.createStandingList(tourney[/* tieBreaks */6], scoreData);
   var getXScore = function (player1Id, player2Id) {
     if (player1Id === player2Id) {
       return React.createElement(ReactFeather.X, {

@@ -108,16 +108,15 @@ var PlayerList = /* module */[/* make */PageTourneyPlayers$PlayerList];
 function PageTourneyPlayers(Props) {
   var tournament = Props.tournament;
   var tourney = tournament[/* tourney */7];
+  var playerIds = tourney[/* playerIds */4];
+  var byeQueue = tourney[/* byeQueue */0];
   var tourneyDispatch = tournament[/* tourneyDispatch */8];
   var activePlayers = tournament[/* activePlayers */0];
-  var playerIds = tourney[/* playerIds */4];
-  var roundList = tourney[/* roundList */5];
-  var byeQueue = tourney[/* byeQueue */0];
   var match = React.useState((function () {
           return playerIds.length === 0;
         }));
   var setIsSelecting = match[1];
-  var matches = Data$Coronate.rounds2Matches(roundList, undefined, /* () */0);
+  var matches = Data$Coronate.rounds2Matches(tourney[/* roundList */5], undefined, /* () */0);
   var match$1 = byeQueue.length;
   return React.createElement("div", {
               className: "content-area"

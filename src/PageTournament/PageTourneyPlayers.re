@@ -125,12 +125,16 @@ module PlayerList = {
 
 [@react.component]
 let make = (~tournament: TournamentData.t) => {
-  let tourney = tournament.tourney;
-  let tourneyDispatch = tournament.tourneyDispatch;
-  let activePlayers = tournament.activePlayers;
-  let playerIds = tourney.playerIds;
-  let roundList = tourney.roundList;
-  let byeQueue = tourney.byeQueue;
+  let {
+    TournamentData.tourney,
+    TournamentData.tourneyDispatch,
+    TournamentData.activePlayers,
+  } = tournament;
+  let {
+    Data.Tournament.playerIds,
+    Data.Tournament.roundList,
+    Data.Tournament.byeQueue,
+  } = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() => playerIds |> Js.Array.length === 0);
   let matches = Data.rounds2Matches(~roundList, ());

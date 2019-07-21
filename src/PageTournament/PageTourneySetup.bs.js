@@ -26,8 +26,8 @@ function makeDateInput(date) {
 
 function PageTourneySetup(Props) {
   var tournament = Props.tournament;
-  var tourney = tournament[/* tourney */7];
   var tourneyDispatch = tournament[/* tourneyDispatch */8];
+  var tourney = tournament[/* tourney */7];
   var match = React.useState((function () {
           return /* NotEditing */2;
         }));

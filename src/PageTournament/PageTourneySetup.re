@@ -30,8 +30,7 @@ type inputs =
 
 [@react.component]
 let make = (~tournament: TournamentData.t) => {
-  let tourney = tournament.tourney;
-  let tourneyDispatch = tournament.tourneyDispatch;
+  let {TournamentData.tourney, TournamentData.tourneyDispatch} = tournament;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);

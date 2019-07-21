@@ -381,11 +381,11 @@ function PairPicker(Props) {
   var config = match$1[0];
   var avoidPairs = config[/* avoidPairs */0];
   var byeValue = config[/* byeValue */1];
+  var tourneyDispatch = tournament[/* tourneyDispatch */8];
   var tourney = tournament[/* tourney */7];
-  var activePlayers = tournament[/* activePlayers */0];
   var players = tournament[/* players */4];
   var getPlayer = tournament[/* getPlayer */1];
-  var tourneyDispatch = tournament[/* tourneyDispatch */8];
+  var activePlayers = tournament[/* activePlayers */0];
   var match$2 = React.useState((function () {
           return false;
         }));
