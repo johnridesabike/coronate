@@ -853,8 +853,9 @@ function Utils$Router$HashLink(Props) {
   var to_ = Props.to_;
   var onDragStart = Props.onDragStart;
   var match = ReasonReactRouter.useUrl(undefined, /* () */0);
-  var match$1 = match[/* hash */1] === to_;
-  var ariaCurrent = match$1 ? "true" : "false";
+  var hash = match[/* hash */1];
+  var isCurrent = to_ === "/" ? hash === "" || hash === to_ : hash === to_;
+  var ariaCurrent = isCurrent ? "true" : "false";
   return React.createElement("a", {
               "aria-current": ariaCurrent,
               href: "#" + to_,
@@ -878,7 +879,7 @@ Numeral.registerFormat("fraction", {
                   remainder !== 0.75 ? "" : "¾"
                 ) : "½"
             ) : "¼";
-          var match = whole === 0.0;
+          var match = whole === 0.0 && fraction !== "";
           var stringedWhole = match ? "" : whole.toString();
           return stringedWhole + fraction;
         }),

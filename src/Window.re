@@ -1,7 +1,7 @@
 /*
-  This contains all of the logic and components that make up the window,
-  including titlebar, default sidebar, and layout.
-*/
+   This contains all of the logic and components that make up the window,
+   including titlebar, default sidebar, and layout.
+ */
 open Belt;
 open Utils.Router;
 
@@ -121,14 +121,6 @@ let windowReducer = (state, action) => {
   };
 };
 
-let isElectronMac = Electron.isMac && Electron.isElectron;
-
-let toolbarClasses =
-  Cn.make([
-    "macos-button-toolbar"->Cn.ifTrue(isElectronMac),
-    "button-ghost"->Cn.ifTrue(!isElectronMac),
-  ]);
-
 module MSWindowsControls = {
   module Style = {
     open Css;
@@ -140,6 +132,7 @@ module MSWindowsControls = {
       ]);
     let button =
       style([
+        color(grey_90),
         fontSize(`px(11)),
         textAlign(`center),
         width(`px(46)),
@@ -148,10 +141,10 @@ module MSWindowsControls = {
         focus([
           borderStyle(`none),
           unsafe("boxShadow", "none"),
-          outlineStyle(`none)
+          outlineStyle(`none),
         ]),
         /* a hack to get around specficity */
-        selector(" svg", [display(`inline)])
+        selector(" svg", [display(`inline)]),
       ]);
     let svg =
       style([display(`inline), unsafe("shapeRendering", "crispEdges")]);
@@ -198,6 +191,18 @@ module MSWindowsControls = {
 };
 
 module TitleBar = {
+  module Style = {
+    open Css;
+    open Utils.PhotonColors;
+    let button = style([color(grey_90)]);
+  };
+  let isElectronMac = Electron.isMac && Electron.isElectron;
+  let toolbarClasses =
+    Cn.make([
+      Style.button,
+      "macos-button-toolbar"->Cn.ifTrue(isElectronMac),
+      "button-ghost"->Cn.ifTrue(!isElectronMac),
+    ]);
   [@react.component]
   let make = (~state, ~dispatch) => {
     <header

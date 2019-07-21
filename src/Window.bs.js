@@ -194,16 +194,6 @@ function windowReducer(state, action) {
   }
 }
 
-var isElectronMac = Electron$Coronate.isMac && Electron$Coronate.isElectron;
-
-var toolbarClasses = Cn.make(/* :: */[
-      Cn.ifTrue("macos-button-toolbar", isElectronMac),
-      /* :: */[
-        Cn.ifTrue("button-ghost", !isElectronMac),
-        /* [] */0
-      ]
-    ]);
-
 var container = Css.style(/* :: */[
       Css.height(/* `calc */[
             -1044768619,
@@ -229,41 +219,44 @@ var container = Css.style(/* :: */[
     ]);
 
 var button = Css.style(/* :: */[
-      Css.fontSize(/* `px */[
-            25096,
-            11
-          ]),
+      Css.color(Utils$Coronate.PhotonColors[/* grey_90 */57]),
       /* :: */[
-        Css.textAlign(/* center */98248149),
+        Css.fontSize(/* `px */[
+              25096,
+              11
+            ]),
         /* :: */[
-          Css.width(/* `px */[
-                25096,
-                46
-              ]),
+          Css.textAlign(/* center */98248149),
           /* :: */[
-            Css.height(/* `percent */[
-                  -119887163,
-                  100.0
+            Css.width(/* `px */[
+                  25096,
+                  46
                 ]),
             /* :: */[
-              Css.borderRadius(/* zero */-789508312),
+              Css.height(/* `percent */[
+                    -119887163,
+                    100.0
+                  ]),
               /* :: */[
-                Css.focus(/* :: */[
-                      Css.borderStyle(/* none */-922086728),
-                      /* :: */[
-                        Css.unsafe("boxShadow", "none"),
-                        /* :: */[
-                          Css.outlineStyle(/* none */-922086728),
-                          /* [] */0
-                        ]
-                      ]
-                    ]),
+                Css.borderRadius(/* zero */-789508312),
                 /* :: */[
-                  Css.selector(" svg", /* :: */[
-                        Css.display(/* inline */423610969),
-                        /* [] */0
+                  Css.focus(/* :: */[
+                        Css.borderStyle(/* none */-922086728),
+                        /* :: */[
+                          Css.unsafe("boxShadow", "none"),
+                          /* :: */[
+                            Css.outlineStyle(/* none */-922086728),
+                            /* [] */0
+                          ]
+                        ]
                       ]),
-                  /* [] */0
+                  /* :: */[
+                    Css.selector(" svg", /* :: */[
+                          Css.display(/* inline */423610969),
+                          /* [] */0
+                        ]),
+                    /* [] */0
+                  ]
                 ]
               ]
             ]
@@ -385,6 +378,26 @@ var MSWindowsControls = /* module */[
   /* make */Window$MSWindowsControls
 ];
 
+var button$1 = Css.style(/* :: */[
+      Css.color(Utils$Coronate.PhotonColors[/* grey_90 */57]),
+      /* [] */0
+    ]);
+
+var Style$1 = /* module */[/* button */button$1];
+
+var isElectronMac = Electron$Coronate.isMac && Electron$Coronate.isElectron;
+
+var toolbarClasses = Cn.make(/* :: */[
+      button$1,
+      /* :: */[
+        Cn.ifTrue("macos-button-toolbar", isElectronMac),
+        /* :: */[
+          Cn.ifTrue("button-ghost", !isElectronMac),
+          /* [] */0
+        ]
+      ]
+    ]);
+
 function Window$TitleBar(Props) {
   var state = Props.state;
   var dispatch = Props.dispatch;
@@ -462,7 +475,12 @@ function Window$TitleBar(Props) {
                 }));
 }
 
-var TitleBar = /* module */[/* make */Window$TitleBar];
+var TitleBar = /* module */[
+  /* Style */Style$1,
+  /* isElectronMac */isElectronMac,
+  /* toolbarClasses */toolbarClasses,
+  /* make */Window$TitleBar
+];
 
 function $$Window(Props) {
   var children = Props.children;
@@ -647,8 +665,6 @@ export {
   useWindowContext ,
   About ,
   windowReducer ,
-  isElectronMac ,
-  toolbarClasses ,
   MSWindowsControls ,
   TitleBar ,
   make$1 as make,
