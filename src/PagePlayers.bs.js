@@ -193,12 +193,13 @@ function PagePlayers$List(Props) {
                                         className: "buttons-on-hover"
                                       }, React.createElement("td", {
                                             className: "table__player"
-                                          }, React.createElement("a", {
-                                                href: "#/players/" + p[/* id */1]
-                                              }, /* array */[
-                                                  p[/* firstName */0],
-                                                  p[/* lastName */2]
-                                                ].join(" "))), React.createElement("td", {
+                                          }, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                                                children: /* array */[
+                                                    p[/* firstName */0],
+                                                    p[/* lastName */2]
+                                                  ].join(" "),
+                                                to_: "/players/" + p[/* id */1]
+                                              })), React.createElement("td", {
                                             className: "table__number"
                                           }, String(p[/* rating */4])), React.createElement("td", {
                                             className: "table__number"
@@ -345,8 +346,9 @@ function PagePlayers$Profile(Props) {
                 margin: "auto",
                 width: "650px"
               }
-            }, React.createElement("a", {
-                  href: "#/players"
+            }, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                  children: null,
+                  to_: "/players"
                 }, React.createElement(ReactFeather.ChevronLeft, { }), " Back"), React.createElement("h2", undefined, "Profile for " + playerName), React.createElement("form", {
                   onChange: handleChange,
                   onSubmit: handleChange

@@ -108,7 +108,7 @@ function Pages$CautionFooter(Props) {
                   ])
             }, React.createElement("p", {
                   className: text
-                }, "This is beta software. Want to help make it better? Check out the ", React.createElement("span", {
+                }, "⚠️", " This is beta software. Want to help make it better? Check out the ", React.createElement("span", {
                       "aria-hidden": true,
                       role: "img"
                     }, " 👉 "), Utils$Coronate.Entities[/* nbsp */0], React.createElement("a", {

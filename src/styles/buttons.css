@@ -131,7 +131,7 @@ input[type="text"][disabled]:hover,
 }
 
 .macos-button-toolbar {
-    color: var(--grey-80);
+    color: var(--grey-90);
     background-color: var(--grey-20);
     border-color:
         var(--grey-90-a20)

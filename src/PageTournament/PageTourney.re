@@ -1,3 +1,4 @@
+open Utils.Router;
 open TournamentData;
 module Footer = {
   [@react.component]
@@ -63,7 +64,7 @@ module Sidebar = {
     } = tournament;
     let roundList = tourney.roundList;
     let isComplete = Data.isRoundComplete(roundList, activePlayers);
-    let basePath = "#/tourneys/" ++ tourney.id;
+    let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
       event->ReactEvent.Mouse.preventDefault;
       let confirmText =
@@ -117,55 +118,55 @@ module Sidebar = {
       <nav>
         <ul style={ReactDOMRe.Style.make(~marginTop="0", ())}>
           <li>
-            <a href="#/tourneys" onDragStart=noDraggy>
+            <HashLink to_="/tourneys" onDragStart=noDraggy>
               <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close">
                 {" Back" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
         </ul>
         <hr />
         <ul>
           <li>
-            <a href={basePath ++ "/setup"} onDragStart=noDraggy>
+            <HashLink to_={basePath ++ "/setup"} onDragStart=noDraggy>
               <Icons.Settings />
               <span className="sidebar__hide-on-close">
                 {" Setup" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
           <li>
-            <a href=basePath onDragStart=noDraggy>
+            <HashLink to_=basePath onDragStart=noDraggy>
               <Icons.Users />
               <span className="sidebar__hide-on-close">
                 {" Players" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
           <li>
-            <a href={basePath ++ "/status"} onDragStart=noDraggy>
+            <HashLink to_={basePath ++ "/status"} onDragStart=noDraggy>
               <Icons.Activity />
               <span className="sidebar__hide-on-close">
                 {" Status" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
           <li>
-            <a href={basePath ++ "/crosstable"} onDragStart=noDraggy>
+            <HashLink to_={basePath ++ "/crosstable"} onDragStart=noDraggy>
               <Icons.Layers />
               <span className="sidebar__hide-on-close">
                 {" Crosstable" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
           <li>
-            <a href={basePath ++ "/scores"} onDragStart=noDraggy>
+            <HashLink to_={basePath ++ "/scores"} onDragStart=noDraggy>
               <Icons.List />
               <span className="sidebar__hide-on-close">
                 {" Score detail" |> React.string}
               </span>
-            </a>
+            </HashLink>
           </li>
         </ul>
         <hr />
@@ -176,8 +177,8 @@ module Sidebar = {
           {roundList
            |> Js.Array.mapi((_, id) =>
                 <li key={id |> string_of_int}>
-                  <a
-                    href={basePath ++ "/round/" ++ string_of_int(id)}
+                  <HashLink
+                    to_={basePath ++ "/round/" ++ string_of_int(id)}
                     onDragStart=noDraggy>
                     {id + 1 |> string_of_int |> React.string}
                     {id |> isComplete
@@ -197,7 +198,7 @@ module Sidebar = {
                            {" Not complete " |> React.string}
                            <Icons.Alert />
                          </span>}
-                  </a>
+                  </HashLink>
                 </li>
               )
            |> React.array}

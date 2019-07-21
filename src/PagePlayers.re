@@ -1,5 +1,6 @@
 open Belt;
 open Data.Player;
+open Utils.Router;
 let s = React.string;
 let sortName = Hooks.KeyString(x => x.firstName);
 let sortRating = Hooks.KeyInt(x => x.rating);
@@ -153,11 +154,11 @@ module List = {
            |> Js.Array.map(p =>
                 <tr key={p.id} className="buttons-on-hover">
                   <td className="table__player">
-                    <a href={"#/players/" ++ p.id}>
+                    <HashLink to_={"/players/" ++ p.id}>
                       {[|p.firstName, p.lastName|]
                        |> Js.Array.joinWith(" ")
                        |> s}
-                    </a>
+                    </HashLink>
                   </td>
                   <td className="table__number">
                     {p.rating->string_of_int->s}
@@ -274,7 +275,7 @@ module Profile = {
     <div
       className="content-area"
       style={ReactDOMRe.Style.make(~width="650px", ~margin="auto", ())}>
-      <a href="#/players"> <Icons.ChevronLeft /> {s(" Back")} </a>
+      <HashLink to_="/players"> <Icons.ChevronLeft /> {s(" Back")} </HashLink>
       <h2> {s("Profile for " ++ playerName)} </h2>
       <form onChange=handleChange onSubmit=handleChange>
         <p>

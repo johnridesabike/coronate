@@ -1,3 +1,4 @@
+open Utils.Router;
 open Data.Tournament;
 let s = React.string;
 /* These can't be definined inline or the comparisons don't work. */
@@ -96,7 +97,7 @@ let make = () => {
                {sorted.table
                 |> Js.Array.map(t =>
                      <tr key={t.id} className="buttons-on-hover">
-                       <td> <a href={"#/tourneys/" ++ t.id}> t.name->s </a> </td>
+                       <td> <HashLink to_={"/tourneys/" ++ t.id}> t.name->s </HashLink> </td>
                        <td> <Utils.DateFormat date={t.date} /> </td>
                        <td>
                          <button

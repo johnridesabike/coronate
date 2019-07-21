@@ -175,9 +175,10 @@ function PageTourneySetup(Props) {
                 }, "Change byes to ½"), React.createElement("p", {
                   className: "caption-30",
                   id: "score-desc"
-                }, "This will update all bye matches which have been previously\n                scored in this tournament. To change the default bye value in\n                future matches, go to the ", React.createElement("a", {
-                      href: "#/options"
-                    }, "app options"), "."));
+                }, "This will update all bye matches which have been previously\n                scored in this tournament. To change the default bye value in\n                future matches, go to the ", React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                      children: "app options",
+                      to_: "/options"
+                    }), "."));
 }
 
 var make = PageTourneySetup;

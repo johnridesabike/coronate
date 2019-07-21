@@ -34,9 +34,9 @@ module CautionFooter = {
   let make = () =>
     <aside className={Cn.make([Styles.container, "body-20"])}>
       <p className=Styles.text>
-        {React.string(
-           "This is beta software. Want to help make it better? Check out the ",
-         )}
+        {React.string({j|⚠️|j})}
+        {" This is beta software. Want to help make it better? Check out the "
+         |> React.string}
         <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
         {React.string(Utils.Entities.nbsp)}
         <a
@@ -87,17 +87,9 @@ module Splash = {
         display(`flex),
         alignItems(`center),
       ]);
-    let titleIcon = style([
-      flexShrink(1.0),
-      marginRight(`px(8))
-    ]);
-    let titleText = style([
-      flexGrow(1.0)
-    ])
-    let subtitle = style([
-      textAlign(`right),
-      margin(`zero)
-    ])
+    let titleIcon = style([flexShrink(1.0), marginRight(`px(8))]);
+    let titleText = style([flexGrow(1.0)]);
+    let subtitle = style([textAlign(`right), margin(`zero)]);
   };
   [@react.component]
   let make = () => {

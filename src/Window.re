@@ -2,8 +2,8 @@
   This contains all of the logic and components that make up the window,
   including titlebar, default sidebar, and layout.
 */
-
 open Belt;
+open Utils.Router;
 
 let global_title = "Coronate";
 
@@ -356,36 +356,36 @@ module DefaultSidebar = {
     <nav>
       <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
         <li>
-          <a href="#/tourneys" onDragStart=noDraggy>
+          <HashLink to_="/tourneys" onDragStart=noDraggy>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Tournaments")}
             </span>
-          </a>
+          </HashLink>
         </li>
         <li>
-          <a href="#/players" onDragStart=noDraggy>
+          <HashLink to_="/players" onDragStart=noDraggy>
             <Icons.Users />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Players")}
             </span>
-          </a>
+          </HashLink>
         </li>
         <li>
-          <a href="#/options" onDragStart=noDraggy>
+          <HashLink to_="/options" onDragStart=noDraggy>
             <Icons.Settings />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Options")}
             </span>
-          </a>
+          </HashLink>
         </li>
         <li>
-          <a href="#/" onDragStart=noDraggy>
+          <HashLink to_="/" onDragStart=noDraggy>
             <Icons.Help />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Info")}
             </span>
-          </a>
+          </HashLink>
         </li>
       </ul>
     </nav>;

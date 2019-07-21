@@ -10,11 +10,9 @@ import * as PagePlayers$Coronate from "./PagePlayers.bs.js";
 import * as PageTourney$Coronate from "./PageTournament/PageTourney.bs.js";
 import * as PageTournamentList$Coronate from "./PageTournamentList.bs.js";
 
-((require("./side-effects")));
-
 function App(Props) {
   var url = ReasonReactRouter.useUrl(undefined, /* () */0);
-  var match = Utils$Coronate.hashPath(url[/* hash */1]);
+  var match = Utils$Coronate.Router[/* hashPath */0](url[/* hash */1]);
   var tmp;
   var exit = 0;
   if (match && match[0] === "") {
@@ -88,4 +86,4 @@ export {
   make ,
   
 }
-/*  Not a pure module */
+/* react Not a pure module */

@@ -34,9 +34,6 @@ module Entities = {
   let copy = "\xA9";
 };
 
-let hashPath = hashString =>
-  hashString |> Js.String.split("/") |> Belt.List.fromArray;
-
 let listToReactArray = (list, func) => {
   list
   ->Belt.List.reduce([||], (acc, item) =>
@@ -290,3 +287,59 @@ module Notification = {
     </div>;
   };
 };
+
+module Router = {
+  let hashPath = hashString =>
+    hashString |> Js.String.split("/") |> Belt.List.fromArray;
+
+  module HashLink = {
+    open ReasonReact.Router;
+    [@react.component]
+    let make = (~children, ~to_, ~onDragStart: ReactEvent.Mouse.t => unit=?) => {
+      let {hash} = useUrl();
+      let ariaCurrent = hash === to_ ? "true" : "false";
+      /*
+         Reason hasn't implemented the aria-current attribute yet, we have to
+         define it ourselves!
+       */
+      ReactDOMRe.createElement(
+        "a",
+        ~props=
+          ReactDOMRe.objToDOMProps({
+            "aria-current": ariaCurrent,
+            "href": "#" ++ to_,
+            "onDragStart": onDragStart,
+          }),
+        [|children|],
+      );
+    };
+  };
+};
+
+/*
+  Side effects
+*/
+Numeral.registerFormat(
+  "fraction",
+  {
+    "format": (value, _format, _roundingFunction) => {
+      let whole = floor(value);
+      let remainder = value -. whole;
+      let fraction =
+        switch (remainder) {
+        | 0.25 => {js|¼|js}
+        | 0.5 => {js|½|js}
+        | 0.75 => {js|¾|js}
+        | _ => ""
+        };
+      let stringedWhole = whole === 0.0 ? "" : Js.Float.toString(whole);
+      stringedWhole ++ fraction;
+    },
+    "regexps": {
+      "format": [%re "/(1\/2)/"],
+      "unformat": [%re "/(1\/2)/"],
+    },
+    /* This doesn't do anything currently */
+    "unformat": value => Js.Float.fromString(value),
+  },
+);

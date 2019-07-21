@@ -2,6 +2,7 @@
    Note to future self & other maintainers: getDate() begins at 1, and
    getMonth() begins at 0. An HTML date input requires that the month begins at
    1 and the JS Date() object requires that the month begins at 0. */
+open Utils.Router;
 let makeDateInput = date => {
   open Js.Date;
   let year = date |> getFullYear |> Js.Float.toString;
@@ -160,7 +161,7 @@ let make = (~tournament: TournamentData.t) => {
                 scored in this tournament. To change the default bye value in
                 future matches, go to the "
        |> React.string}
-      <a href="#/options"> {"app options" |> React.string} </a>
+      <HashLink to_="/options"> {"app options" |> React.string} </HashLink>
       {"." |> React.string}
     </p>
   </div>;

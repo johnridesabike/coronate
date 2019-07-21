@@ -6,10 +6,12 @@ import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as Ramda from "ramda";
 import * as React from "react";
 import * as Nanoid from "nanoid";
+import * as Numeral from "@johnridesabike/bs-numeral/src/Numeral.bs.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as ReactFeather from "react-feather";
+import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as Externals$Coronate from "./Externals.bs.js";
 
 function splitAt(prim, prim$1) {
@@ -94,10 +96,6 @@ var Entities = /* module */[
   /* nbsp */"\xa0",
   /* copy */"\xa9"
 ];
-
-function hashPath(hashString) {
-  return Belt_List.fromArray(hashString.split("/"));
-}
 
 function listToReactArray(list, func) {
   return Belt_List.reduce(list, /* array */[], (function (acc, item) {
@@ -846,6 +844,53 @@ var $$Notification = /* module */[
   /* make */Utils$Notification
 ];
 
+function hashPath(hashString) {
+  return Belt_List.fromArray(hashString.split("/"));
+}
+
+function Utils$Router$HashLink(Props) {
+  var children = Props.children;
+  var to_ = Props.to_;
+  var onDragStart = Props.onDragStart;
+  var match = ReasonReactRouter.useUrl(undefined, /* () */0);
+  var match$1 = match[/* hash */1] === to_;
+  var ariaCurrent = match$1 ? "true" : "false";
+  return React.createElement("a", {
+              "aria-current": ariaCurrent,
+              href: "#" + to_,
+              onDragStart: onDragStart
+            }, children);
+}
+
+var HashLink = /* module */[/* make */Utils$Router$HashLink];
+
+var Router = /* module */[
+  /* hashPath */hashPath,
+  /* HashLink */HashLink
+];
+
+Numeral.registerFormat("fraction", {
+      format: (function (value, _format, _roundingFunction) {
+          var whole = Math.floor(value);
+          var remainder = value - whole;
+          var fraction = remainder !== 0.25 ? (
+              remainder !== 0.5 ? (
+                  remainder !== 0.75 ? "" : "¾"
+                ) : "½"
+            ) : "¼";
+          var match = whole === 0.0;
+          var stringedWhole = match ? "" : whole.toString();
+          return stringedWhole + fraction;
+        }),
+      regexps: {
+        format: (/(1\/2)/),
+        unformat: (/(1\/2)/)
+      },
+      unformat: (function (value) {
+          return Number(value);
+        })
+    });
+
 var Tabs = 0;
 
 var VisuallyHidden = 0;
@@ -884,7 +929,6 @@ export {
   issues_url ,
   WebpackAssets ,
   Entities ,
-  hashPath ,
   listToReactArray ,
   DateTimeFormatComponent ,
   DateFormat ,
@@ -894,6 +938,7 @@ export {
   PanelContainer ,
   PhotonColors ,
   $$Notification ,
+  Router ,
   
 }
 /* logo Not a pure module */

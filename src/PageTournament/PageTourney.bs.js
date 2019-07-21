@@ -78,7 +78,7 @@ function PageTourney$Sidebar(Props) {
   var getPlayer = tournament[/* getPlayer */1];
   var activePlayers = tournament[/* activePlayers */0];
   var roundList = tourney[/* roundList */5];
-  var basePath = "#/tourneys/" + tourney[/* id */2];
+  var basePath = "/tourneys/" + tourney[/* id */2];
   var newRound = function ($$event) {
     $$event.preventDefault();
     if (isItOver && !Utils$Coronate.confirm("All rounds have completed. Are you sure you want to begin a new one?")) {
@@ -143,33 +143,39 @@ function PageTourney$Sidebar(Props) {
                       style: {
                         marginTop: "0"
                       }
-                    }, React.createElement("li", undefined, React.createElement("a", {
-                              href: "#/tourneys",
+                    }, React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: "/tourneys",
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.ChevronLeft, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
-                                }, " Back")))), React.createElement("hr", undefined), React.createElement("ul", undefined, React.createElement("li", undefined, React.createElement("a", {
-                              href: basePath + "/setup",
+                                }, " Back")))), React.createElement("hr", undefined), React.createElement("ul", undefined, React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: basePath + "/setup",
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.Settings, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
-                                }, " Setup"))), React.createElement("li", undefined, React.createElement("a", {
-                              href: basePath,
+                                }, " Setup"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: basePath,
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.Users, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
-                                }, " Players"))), React.createElement("li", undefined, React.createElement("a", {
-                              href: basePath + "/status",
+                                }, " Players"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: basePath + "/status",
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.Activity, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
-                                }, " Status"))), React.createElement("li", undefined, React.createElement("a", {
-                              href: basePath + "/crosstable",
+                                }, " Status"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: basePath + "/crosstable",
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.Layers, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
-                                }, " Crosstable"))), React.createElement("li", undefined, React.createElement("a", {
-                              href: basePath + "/scores",
+                                }, " Crosstable"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                              children: null,
+                              to_: basePath + "/scores",
                               onDragStart: noDraggy
                             }, React.createElement(ReactFeather.List, { }), React.createElement("span", {
                                   className: "sidebar__hide-on-close"
@@ -181,8 +187,9 @@ function PageTourney$Sidebar(Props) {
                             var match = Data$Coronate.isRoundComplete(roundList, activePlayers, id);
                             return React.createElement("li", {
                                         key: String(id)
-                                      }, React.createElement("a", {
-                                            href: basePath + ("/round/" + String(id)),
+                                      }, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                                            children: null,
+                                            to_: basePath + ("/round/" + String(id)),
                                             onDragStart: noDraggy
                                           }, String(id + 1 | 0), match ? React.createElement("span", {
                                                   className: Cn.make(/* :: */[

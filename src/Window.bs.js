@@ -575,23 +575,27 @@ function Window$DefaultSidebar(Props) {
                   style: {
                     margin: "0"
                   }
-                }, React.createElement("li", undefined, React.createElement("a", {
-                          href: "#/tourneys",
+                }, React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                          children: null,
+                          to_: "/tourneys",
                           onDragStart: noDraggy
                         }, React.createElement(ReactFeather.Award, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"
-                            }, Utils$Coronate.Entities[/* nbsp */0] + "Tournaments"))), React.createElement("li", undefined, React.createElement("a", {
-                          href: "#/players",
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Tournaments"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                          children: null,
+                          to_: "/players",
                           onDragStart: noDraggy
                         }, React.createElement(ReactFeather.Users, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"
-                            }, Utils$Coronate.Entities[/* nbsp */0] + "Players"))), React.createElement("li", undefined, React.createElement("a", {
-                          href: "#/options",
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Players"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                          children: null,
+                          to_: "/options",
                           onDragStart: noDraggy
                         }, React.createElement(ReactFeather.Settings, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"
-                            }, Utils$Coronate.Entities[/* nbsp */0] + "Options"))), React.createElement("li", undefined, React.createElement("a", {
-                          href: "#/",
+                            }, Utils$Coronate.Entities[/* nbsp */0] + "Options"))), React.createElement("li", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                          children: null,
+                          to_: "/",
                           onDragStart: noDraggy
                         }, React.createElement(ReactFeather.HelpCircle, { }), React.createElement("span", {
                               className: "sidebar__hide-on-close"

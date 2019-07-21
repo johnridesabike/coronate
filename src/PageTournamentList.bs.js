@@ -122,9 +122,10 @@ function PageTournamentList(Props) {
                                     return React.createElement("tr", {
                                                 key: t[/* id */2],
                                                 className: "buttons-on-hover"
-                                              }, React.createElement("td", undefined, React.createElement("a", {
-                                                        href: "#/tourneys/" + t[/* id */2]
-                                                      }, t[/* name */3])), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */2], {
+                                              }, React.createElement("td", undefined, React.createElement(Utils$Coronate.Router[/* HashLink */1][/* make */0], {
+                                                        children: t[/* name */3],
+                                                        to_: "/tourneys/" + t[/* id */2]
+                                                      })), React.createElement("td", undefined, React.createElement(Utils$Coronate.DateFormat[/* make */2], {
                                                         date: t[/* date */1]
                                                       })), React.createElement("td", undefined, React.createElement("button", {
                                                         "aria-label": "Delete " + t[/* name */3],
