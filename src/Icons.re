@@ -1,35 +1,3 @@
-/* module ChevronUp = {
-     [@bs.obj]
-     external makeProps:
-       (
-         ~ariaHidden: 'ariaHidden=?,
-         ~className: 'className=?,
-         ~style: 'style=?,
-         ~key: string=?,
-         unit
-       ) =>
-       {
-         .
-         "aria-hidden": 'ariaHidden,
-         "className": 'className,
-         "style": 'style,
-       } =
-       "";
-
-     [@bs.module "react-feather"]
-     external make:
-       React.componentLike(
-         {
-           .
-           "aria-hidden": bool,
-           "className": string,
-           "style": ReactDOMRe.Style.t,
-         },
-         React.element,
-       ) =
-       "ChevronUp";
-   }; */
-
 module Activity = {
   [@bs.module "react-feather"] [@react.component]
   external make: unit => React.element = "Activity";

@@ -5,11 +5,11 @@ import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as PageRound$Coronate from "../PageTournament/PageRound.bs.js";
 import * as ReactTestingLibrary from "bs-react-testing-library/src/ReactTestingLibrary.bs.js";
-import * as ReactTestingLibrary$1 from "react-testing-library";
+import * as React$1 from "@testing-library/react";
 import * as TournamentData$Coronate from "../PageTournament/TournamentData.bs.js";
 
 afterEach((function () {
-        ReactTestingLibrary$1.cleanup();
+        React$1.cleanup();
         return /* () */0;
       }));
 
@@ -70,6 +70,24 @@ Jest.test("Ratings are updated correctly after a match.", (function (param) {
                     var param = undefined;
                     var param$1 = eta;
                     return ReactTestingLibrary.getByText(partial_arg$2, param, param$1);
+                  })(page)));
+        Curry._2(ReactTestingLibrary.FireEvent[/* change */7], {
+              target: {
+                value: /* White */-588596599
+              }
+            }, ReactTestingLibrary.getByDisplayValue("Select winner", page));
+        var arg$3 = ReactTestingLibrary.FireEvent[/* click */8];
+        var partial_arg_001$3 = (/view information for match: bruce wayne versus dick grayson/i);
+        var partial_arg$3 = /* `RegExp */[
+          889580489,
+          partial_arg_001$3
+        ];
+        ((function (eta) {
+                return Curry._2(arg$3, undefined, eta);
+              })((function (eta) {
+                    var param = undefined;
+                    var param$1 = eta;
+                    return ReactTestingLibrary.getByText(partial_arg$3, param, param$1);
                   })(page)));
         return Jest.Expect[/* toBe */2](true, Jest.Expect[/* expect */0](true));
       }));

@@ -297,10 +297,11 @@ module Router = {
     let make = (~children, ~to_, ~onDragStart: ReactEvent.Mouse.t => unit=?) => {
       let {ReasonReact.Router.hash} = ReasonReact.Router.useUrl();
       /* There's a special case for using "/" as a path */
-      let isCurrent = switch to_ {
-      | "/" => hash === "" || hash === to_
-      | _ => hash === to_ 
-      };
+      let isCurrent =
+        switch (to_) {
+        | "/" => hash === "" || hash === to_
+        | _ => hash === to_
+        };
       let ariaCurrent = isCurrent ? "true" : "false";
       /*
          Reason hasn't implemented the aria-current attribute yet, we have to
@@ -321,8 +322,8 @@ module Router = {
 };
 
 /*
-  Side effects
-*/
+   Side effects
+ */
 Numeral.registerFormat(
   "fraction",
   {
@@ -336,7 +337,8 @@ Numeral.registerFormat(
         | 0.75 => {js|¾|js}
         | _ => ""
         };
-      let stringedWhole = whole === 0.0 && fraction !== "" ? "" : Js.Float.toString(whole);
+      let stringedWhole =
+        whole === 0.0 && fraction !== "" ? "" : Js.Float.toString(whole);
       stringedWhole ++ fraction;
     },
     "regexps": {

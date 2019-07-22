@@ -12,7 +12,7 @@
     "url": "https://github.com/johnridesabike/coronate.git"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build": "npm run re:build && react-scripts build",
     "build:electron-all": "npm run build && electron-builder build -mw",
     "build:electron-win": "npm run build && electron-builder build -w",
     "deploy:github-pages": "npm run build && gh-pages -d build",
@@ -54,10 +54,10 @@
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.8",
-    "bs-dom-testing-library": "^0.4.1",
+    "bs-dom-testing-library": "^0.5.0",
     "bs-jest-dom": "^2.0.1",
     "bs-platform": "^6.0.3",
-    "bs-react-testing-library": "^0.5.0",
+    "bs-react-testing-library": "^0.6.0",
     "concurrently": "^4.1.1",
     "electron": "^5.0.7",
     "electron-builder": "^21.1.1",
