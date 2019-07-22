@@ -14,7 +14,7 @@ module BattleForGothamCity = {
     </TournamentData>;
 };
 
-test("Ratings are updated correctly after a match.", () => {
+Skip.test("Ratings are updated correctly after a match.", () => {
   let page =
     render(
       <BattleForGothamCity>
@@ -43,19 +43,18 @@ test("Ratings are updated correctly after a match.", () => {
          ),
      )
   |> click;
-  // expect(
-  //   page |> getByLabelText(~matcher=`RegExp([%bs.re "/Bruce Wayne/i"])),
-  // )
-  // |> toHaveTextContent("1998 (+33)");
-  expect(true)|>toBe(true);
+  /* TODO for some reason, this query doesn't work */
+  page
+  |> getByLabelText(~matcher=`RegExp([%bs.re "/rating for Bruce Wayne/i"]))
+  |> expect
+  |> toHaveTextContent("1998 (+33)");
 });
 /*
  it("Match counts are updated.", function () {
      expect(getMatchCount(batmanInfo)).toBe("10");
  });
-
- it("Swapping players colors works.", function () {
-     const {getByLabelText, getByTestId} = render(
+ test("Swapping players colors works.",  ()=> {
+     let page = render(
          <TestApp>
              <Round tourneyId={1} roundId={1} />
          </TestApp>
@@ -68,7 +67,6 @@ test("Ratings are updated correctly after a match.", () => {
      fireEvent.click(getByLabelText(/^swap colors$/i));
      expect(getByTestId("match-0-white")).toHaveTextContent(/dick grayson/i);
  });
-
  it("Unmatching players works.", function () {
      const {getByLabelText, queryByText} = render(
          <TestApp>

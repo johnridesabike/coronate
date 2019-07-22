@@ -60,14 +60,15 @@ module PlayerMatchInfo = {
       } else {
         "Even";
       };
+    let fullName = player.firstName ++ " " ++ player.lastName;
     <dl className="player-card">
-      <h3> {player.firstName ++ " " ++ player.lastName |> React.string} </h3>
+      <h3> {fullName |> React.string} </h3>
       <dt> {"Score" |> React.string} </dt>
       <dd>
         {results |> Utils.listSumFloat |> Js.Float.toString |> React.string}
       </dd>
       <dt> {"Rating" |> React.string} </dt>
-      <dd id={"rating-" ++ playerId}>
+      <dd ariaLabel={"Rating for " ++ fullName}>
         {origRating |> Js.Int.toString |> React.string}
         {" (" |> React.string}
         {float_of_int(newRating - origRating)
@@ -84,27 +85,26 @@ module PlayerMatchInfo = {
       <dd>
         <ol>
           {oppResultsEntries
-           |> Js.Array.mapi(((opId, result), i)
-                /* don't show the most recent (current) opponent*/
-                =>
-                  i < (oppResultsEntries |> Js.Array.length) - 1
-                    ? <li key=opId>
-                        {[|
-                           getPlayer(opId).firstName,
-                           getPlayer(opId).lastName,
-                           "-",
-                           switch (result) {
-                           | 0.0 => "Lost"
-                           | 1.0 => "Won"
-                           | 0.5 => "Draw"
-                           | _ => "Draw"
-                           },
-                         |]
-                         |> Js.Array.joinWith(" ")
-                         |> React.string}
-                      </li>
-                    : React.null
-                )
+           /* don't show the most recent (current) opponent*/
+           |> Js.Array.mapi(((opId, result), i) =>
+                i < (oppResultsEntries |> Js.Array.length) - 1
+                  ? <li key=opId>
+                      {[|
+                         getPlayer(opId).firstName,
+                         getPlayer(opId).lastName,
+                         "-",
+                         switch (result) {
+                         | 0.0 => "Lost"
+                         | 1.0 => "Won"
+                         | 0.5 => "Draw"
+                         | _ => "Draw"
+                         },
+                       |]
+                       |> Js.Array.joinWith(" ")
+                       |> React.string}
+                    </li>
+                  : React.null
+              )
            |> React.array}
         </ol>
       </dd>
@@ -134,11 +134,13 @@ module MatchRow = {
         ~tournament,
         ~className="",
       ) => {
-    let tourney = tournament.tourney;
-    let tourneyDispatch = tournament.tourneyDispatch;
-    let players = tournament.players;
-    let getPlayer = tournament.getPlayer;
-    let playersDispatch = tournament.playersDispatch;
+    let {
+      TournamentData.tourney,
+      TournamentData.tourneyDispatch,
+      TournamentData.players,
+      TournamentData.getPlayer,
+      TournamentData.playersDispatch,
+    } = tournament;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
     let resultCode =
       if (match.whiteScore > match.blackScore) {

@@ -172,6 +172,13 @@ module Splash = {
               {React.string("Built with ")}
               <a
                 className=Style.footerLink
+                href="https://reasonml.github.io/"
+                onClick=Electron.openInBrowser>
+                {React.string("ReasonML")}
+              </a>
+              {React.string(" & ")}
+              <a
+                className=Style.footerLink
                 href="https://reasonml.github.io/reason-react/"
                 onClick=Electron.openInBrowser>
                 {React.string("ReasonReact")}

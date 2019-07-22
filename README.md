@@ -13,9 +13,8 @@ Coronate is a free alternative to pricey professional tournament software. Anyon
 
 [Read more about how to use the app here](https://johnridesa.bike/software/coronate/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
 
-## ⚠️ The master branch is unstable ⚠️
-
-I recently rewrote the JavaScript code into [ReasonML](https://reasonml.github.io). Although Reason is inherently safer, the new code hasn't been tested as much as the previous JS code. There are most likely some bugs lurking. Use at your own peril.
+![Round screenshot](./screenshot-round.png)
+![Scoring screenshot](./screenshot-score-detail.png)
 
 ## 🏁 Getting Started
 
@@ -56,15 +55,19 @@ npm test
 
 ## 🎈 Usage
 
-Coronate works completely in your local browser. You can run your live demo of it with the command:
+Coronate works completely in your local browser. You can run your live demo of it with these two commands:
 ```
+npm run re:watch
 npm start
 ```
+*If you're using an editor that can compile ReasonML code automatically, such as VS Code and [reason-vscode](https://marketplace.visualstudio.com/items?itemName=jaredly.reason-vscode), then you don't need to run `re:watch`*
+
 and then open this URL: `http://localhost:3000`.
 
 Because it keeps your data in your browser's storage, be mindful that data loss can happen unexpectedly depending on your settings. The app's "options" page has a button to back up your data in an external file.
 
-To use the standalone Electron version, run:
+
+To use the standalone Electron version, then run this instead of `start`:
 ```
 npm run start:electron
 ```
@@ -102,8 +105,9 @@ Linux builds have not been tested.
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime
 - [ReasonML](https://reasonml.github.io) - most of the code
 - [ReasonReact](https://reasonml.github.io/reason-react/) - interface
-- [Electron](https://electronjs.org/) - standalone executables
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
+- [bs-css](https://github.com/SentiaAnalytics/bs-css) (with [Emotion](https://emotion.sh/)) - styling
+- [Electron](https://electronjs.org/) - standalone executables
 - [Feather](https://feathericons.com/) - icons
 - [Simple Icons](http://simpleicons.org/) - more icons
 
