@@ -290,9 +290,8 @@ let make = (~children, ~className) => {
     [|title|],
   );
   React.useEffect1(
-    () => {
-      open Electron;
-      let func =
+    () =>
+      Electron.(
         ifElectron(electron => {
           let win = electron->getRemote->getCurrentWindow;
           /* This will ensure that stale event listeners aren't persisted.
@@ -320,12 +319,8 @@ let make = (~children, ~className) => {
           dispatch(SetMaximized(win->isMaximized));
           // I don't think this ever really fires, but can it hurt?
           unregisterListeners;
-        });
-      switch (func) {
-      | None => None
-      | Some(func) => Some(func)
-      };
-    },
+        })
+      ),
     [|dispatch|],
   );
   <div

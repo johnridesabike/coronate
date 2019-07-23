@@ -497,45 +497,41 @@ function $$Window(Props) {
           return undefined;
         }), /* array */[title]);
   React.useEffect((function () {
-          var func = Electron$Coronate.ifElectron((function (electron) {
-                  var win = electron.remote.getCurrentWindow();
-                  var unregisterListeners = function (param) {
-                    win.removeAllListeners("enter-full-screen");
-                    win.removeAllListeners("leave-full-screen");
-                    win.removeAllListeners("blur");
-                    win.removeAllListeners("focus");
-                    win.removeAllListeners("maximize");
-                    win.removeAllListeners("unmaximize");
-                    return /* () */0;
-                  };
-                  unregisterListeners(/* () */0);
-                  win.on("enter-full-screen", (function (param) {
-                          return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [true]));
-                        }));
-                  win.on("leave-full-screen", (function (param) {
-                          return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [false]));
-                        }));
-                  win.on("maximize", (function (param) {
-                          return Curry._1(dispatch, /* SetMaximized */Block.__(3, [true]));
-                        }));
-                  win.on("unmaximize", (function (param) {
-                          return Curry._1(dispatch, /* SetMaximized */Block.__(3, [false]));
-                        }));
-                  win.on("blur", (function (param) {
-                          return Curry._1(dispatch, /* SetBlur */Block.__(0, [true]));
-                        }));
-                  win.on("focus", (function (param) {
-                          return Curry._1(dispatch, /* SetBlur */Block.__(0, [false]));
-                        }));
-                  Curry._1(dispatch, /* SetBlur */Block.__(0, [!win.isFocused()]));
-                  Curry._1(dispatch, /* SetFullScreen */Block.__(2, [win.isFullScreen()]));
-                  Curry._1(dispatch, /* SetMaximized */Block.__(3, [win.isMaximized()]));
-                  return unregisterListeners;
-                }));
-          if (func !== undefined) {
-            return func;
-          }
-          
+          return Electron$Coronate.ifElectron((function (electron) {
+                        var win = electron.remote.getCurrentWindow();
+                        var unregisterListeners = function (param) {
+                          win.removeAllListeners("enter-full-screen");
+                          win.removeAllListeners("leave-full-screen");
+                          win.removeAllListeners("blur");
+                          win.removeAllListeners("focus");
+                          win.removeAllListeners("maximize");
+                          win.removeAllListeners("unmaximize");
+                          return /* () */0;
+                        };
+                        unregisterListeners(/* () */0);
+                        win.on("enter-full-screen", (function (param) {
+                                return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [true]));
+                              }));
+                        win.on("leave-full-screen", (function (param) {
+                                return Curry._1(dispatch, /* SetFullScreen */Block.__(2, [false]));
+                              }));
+                        win.on("maximize", (function (param) {
+                                return Curry._1(dispatch, /* SetMaximized */Block.__(3, [true]));
+                              }));
+                        win.on("unmaximize", (function (param) {
+                                return Curry._1(dispatch, /* SetMaximized */Block.__(3, [false]));
+                              }));
+                        win.on("blur", (function (param) {
+                                return Curry._1(dispatch, /* SetBlur */Block.__(0, [true]));
+                              }));
+                        win.on("focus", (function (param) {
+                                return Curry._1(dispatch, /* SetBlur */Block.__(0, [false]));
+                              }));
+                        Curry._1(dispatch, /* SetBlur */Block.__(0, [!win.isFocused()]));
+                        Curry._1(dispatch, /* SetFullScreen */Block.__(2, [win.isFullScreen()]));
+                        Curry._1(dispatch, /* SetMaximized */Block.__(3, [win.isMaximized()]));
+                        return unregisterListeners;
+                      }));
         }), /* array */[dispatch]);
   return React.createElement("div", {
               className: Cn.make(/* :: */[
