@@ -8,7 +8,6 @@ let alert = Externals.alert;
 let nanoid = Externals.nanoid;
 let absf = Externals.absf;
 let sortWith = Externals.sortWith;
-let sortWithF = Externals.sortWithF;
 let confirm = Externals.confirm;
 let move = Externals.move;
 

@@ -111,8 +111,11 @@ let setUpperHalves = data => {
   );
 };
 
-let sortByScoreThenRating =
-  Utils.sortWith([|descendingScore, descendingRating|]);
+let sortByScoreThenRating = (data1, data2) =>
+  switch (compare(data1.score, data2.score)) {
+  | 0 => compare(data1.rating, data2.rating)
+  | x => x
+  };
 
 /* This this returns a tuple of two objects: The modified array of player data
    without the player assigned a bye, and the player assigned a bye.
@@ -121,34 +124,42 @@ let sortByScoreThenRating =
    players are paired. */
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !p.opponents->List.has(dummyId, (===));
-  data->Map.String.keysToArray->Js.Array.length mod 2 == 0
+  data->Map.String.keysToArray->Js.Array.length mod 2 === 0
     /* if the list is even, just return it. */
     ? (data, None)
     : {
       let dataList =
-        data->Map.String.valuesToArray
-        |> Js.Array.filter(hasNotHadBye)
-        |> sortByScoreThenRating;
-      let playersWithoutByes = dataList |> Js.Array.map(p => p.id);
-      let hasntHadBye = id => playersWithoutByes |> Js.Array.includes(id);
-      let nextByeSignups = byeQueue |> Js.Array.filter(hasntHadBye);
+        data
+        ->Map.String.valuesToArray
+        ->List.fromArray
+        ->List.keep(hasNotHadBye)
+        ->List.sort(sortByScoreThenRating);
+      let playerIdsWithoutByes = dataList->List.map(p => p.id);
+      let hasntHadByeFn = id => playerIdsWithoutByes->List.has(id, (===));
+      let nextByeSignups = byeQueue->List.fromArray->List.keep(hasntHadByeFn);
       let dataForNextBye =
-        switch (nextByeSignups->Array.get(0)) {
+        switch (nextByeSignups) {
         /* Assign the bye to the next person who signed up. */
-        | Some(id) =>
+        | [id, ..._] =>
           switch (data->Map.String.get(id)) {
           | Some(x) => x
-          | None => Utils.last(dataList)
+          | None => dataList->List.getExn(0)
           }
-        | None =>
+        | [] =>
           /* Assign a bye to the lowest-rated player in the lowest score group.
              Because the list is sorted, the last player is the lowest.
              (USCF § 29L2.) */
-          dataList |> Js.Array.length > 0
-            ? Utils.last(dataList)
-            /* In the impossible situation that *everyone* has played a bye
-               round previously, then just pick the last player. */
-            : data->Map.String.valuesToArray->sortByScoreThenRating->Utils.last
+          switch (dataList) {
+          | [data, ..._] => data
+          /* In the impossible situation that *everyone* has played a bye
+             round previously, then just pick the last player. */
+          | [] =>
+            data
+            ->Map.String.valuesToArray
+            ->List.fromArray
+            ->List.sort(sortByScoreThenRating)
+            ->List.getExn(0)
+          }
         };
       let dataWithoutBye = data->Map.String.remove(dataForNextBye.id);
       (dataWithoutBye, Some(dataForNextBye));
@@ -173,11 +184,11 @@ let netScore = ((player1, player2)) => player1.score +. player2.score;
 let netRating = ((player1, player2)) =>
   float_of_int(player1.rating) +. float_of_int(player2.rating);
 
-let netScoreDescend = (pair1, pair2) => netScore(pair2) -. netScore(pair1);
-let netRatingDescend = (pair1, pair2) =>
-  netRating(pair2) -. netRating(pair1);
-let sortByNetScoreThenRating =
-  Utils.sortWithF([|netScoreDescend, netRatingDescend|]);
+let sortByNetScoreThenRating = (pair1, pair2) =>
+  switch (compare(netScore(pair2), netScore(pair1))) {
+  | 0 => compare(netRating(pair2), netRating(pair1))
+  | x => x
+  };
 
 [@bs.val] external js_infinity: int = "Infinity";
 
@@ -237,6 +248,6 @@ let pairPlayers = pairData => {
   |> Externals.blossom
   /* Translate those IDs into actual pairs of player Ids. */
   |> Js.Array.reducei(blossom2Pairs, [||])
-  |> sortByNetScoreThenRating
+  |> Js.Array.sortInPlaceWith(sortByNetScoreThenRating)
   |> Js.Array.map(assignColorsForPair);
 };

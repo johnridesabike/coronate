@@ -5,6 +5,7 @@ import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
+import * as Caml_primitive from "bs-platform/lib/es6/caml_primitive.js";
 import * as Utils$Coronate from "./Utils.bs.js";
 import * as EdmondsBlossom from "edmonds-blossom";
 
@@ -140,13 +141,13 @@ function setUpperHalves(data) {
               }));
 }
 
-var partial_arg = /* array */[
-  descendingScore,
-  descendingRating
-];
-
-function sortByScoreThenRating(param) {
-  return Utils$Coronate.sortWith(partial_arg, param);
+function sortByScoreThenRating(data1, data2) {
+  var x = Caml_primitive.caml_float_compare(data1[/* score */8], data2[/* score */8]);
+  if (x !== 0) {
+    return x;
+  } else {
+    return Caml_primitive.caml_int_compare(data1[/* rating */7], data2[/* rating */7]);
+  }
 }
 
 function setByePlayer(byeQueue, dummyId, data) {
@@ -162,22 +163,22 @@ function setByePlayer(byeQueue, dummyId, data) {
             undefined
           ];
   } else {
-    var dataList = sortByScoreThenRating(Belt_MapString.valuesToArray(data).filter(hasNotHadBye));
-    var playersWithoutByes = dataList.map((function (p) {
+    var dataList = Belt_List.sort(Belt_List.keep(Belt_List.fromArray(Belt_MapString.valuesToArray(data)), hasNotHadBye), sortByScoreThenRating);
+    var playerIdsWithoutByes = Belt_List.map(dataList, (function (p) {
             return p[/* id */0];
           }));
-    var hasntHadBye = function (id) {
-      return playersWithoutByes.includes(id);
+    var hasntHadByeFn = function (id) {
+      return Belt_List.has(playerIdsWithoutByes, id, (function (prim, prim$1) {
+                    return prim === prim$1;
+                  }));
     };
-    var nextByeSignups = byeQueue.filter(hasntHadBye);
-    var match$1 = Belt_Array.get(nextByeSignups, 0);
+    var nextByeSignups = Belt_List.keep(Belt_List.fromArray(byeQueue), hasntHadByeFn);
     var dataForNextBye;
-    if (match$1 !== undefined) {
-      var match$2 = Belt_MapString.get(data, match$1);
-      dataForNextBye = match$2 !== undefined ? match$2 : Utils$Coronate.last(dataList);
+    if (nextByeSignups) {
+      var match$1 = Belt_MapString.get(data, nextByeSignups[0]);
+      dataForNextBye = match$1 !== undefined ? match$1 : Belt_List.getExn(dataList, 0);
     } else {
-      var match$3 = dataList.length > 0;
-      dataForNextBye = match$3 ? Utils$Coronate.last(dataList) : Utils$Coronate.last(sortByScoreThenRating(Belt_MapString.valuesToArray(data)));
+      dataForNextBye = dataList ? dataList[0] : Belt_List.getExn(Belt_List.sort(Belt_List.fromArray(Belt_MapString.valuesToArray(data)), sortByScoreThenRating), 0);
     }
     var dataWithoutBye = Belt_MapString.remove(data, dataForNextBye[/* id */0]);
     return /* tuple */[
@@ -212,21 +213,13 @@ function netRating(param) {
   return param[0][/* rating */7] + param[1][/* rating */7];
 }
 
-function netScoreDescend(pair1, pair2) {
-  return netScore(pair2) - netScore(pair1);
-}
-
-function netRatingDescend(pair1, pair2) {
-  return netRating(pair2) - netRating(pair1);
-}
-
-var partial_arg$1 = /* array */[
-  netScoreDescend,
-  netRatingDescend
-];
-
-function sortByNetScoreThenRating(param) {
-  return Utils$Coronate.sortWithF(partial_arg$1, param);
+function sortByNetScoreThenRating(pair1, pair2) {
+  var x = Caml_primitive.caml_float_compare(netScore(pair2), netScore(pair1));
+  if (x !== 0) {
+    return x;
+  } else {
+    return Caml_primitive.caml_float_compare(netRating(pair2), netRating(pair1));
+  }
 }
 
 function pairPlayers(pairData) {
@@ -263,7 +256,7 @@ function pairPlayers(pairData) {
       }
     }
   };
-  return sortByNetScoreThenRating(EdmondsBlossom.default(playerArray.reduce(pairIdealReducer, /* array */[])).reduce(blossom2Pairs, /* array */[])).map(assignColorsForPair);
+  return EdmondsBlossom.default(playerArray.reduce(pairIdealReducer, /* array */[])).reduce(blossom2Pairs, /* array */[]).sort(sortByNetScoreThenRating).map(assignColorsForPair);
 }
 
 export {
@@ -285,8 +278,6 @@ export {
   assignColorsForPair ,
   netScore ,
   netRating ,
-  netScoreDescend ,
-  netRatingDescend ,
   sortByNetScoreThenRating ,
   pairPlayers ,
   

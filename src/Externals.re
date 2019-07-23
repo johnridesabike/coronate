@@ -8,9 +8,6 @@ open Belt;
 external sortWith: (array(('a, 'a) => int), array('a)) => array('a) =
   "sortWith";
 [@bs.module "ramda"]
-external sortWithF: (array(('a, 'a) => float), array('a)) => array('a) =
-  "sortWith";
-[@bs.module "ramda"]
 external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
 [@bs.module "ramda"]
 external move: (int, int, array('a)) => array('a) = "move";

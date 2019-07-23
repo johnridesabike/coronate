@@ -43,10 +43,6 @@ function sortWith(prim, prim$1) {
   return Ramda.sortWith(prim, prim$1);
 }
 
-function sortWithF(prim, prim$1) {
-  return Ramda.sortWith(prim, prim$1);
-}
-
 function confirm(prim) {
   return window.confirm(prim);
 }
@@ -915,7 +911,6 @@ export {
   nanoid ,
   absf ,
   sortWith ,
-  sortWithF ,
   confirm ,
   move ,
   add ,
