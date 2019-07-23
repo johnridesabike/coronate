@@ -3,7 +3,9 @@
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 
-var electron = (window.require ? window.require("electron") : undefined);
+var match = window.require;
+
+var electron = match !== undefined ? Curry._1(match, "electron") : undefined;
 
 function ifElectron(fn) {
   if (electron !== undefined) {
@@ -60,11 +62,11 @@ var isWin = navigator.appVersion.includes("Windows");
 
 var isMac = navigator.appVersion.includes("Mac");
 
-var match = ifElectron((function (param) {
+var match$1 = ifElectron((function (param) {
         return true;
       }));
 
-var isElectron = match !== undefined ? match : false;
+var isElectron = match$1 !== undefined ? match$1 : false;
 
 function Electron$IfElectron(Props) {
   var children = Props.children;
@@ -92,4 +94,4 @@ export {
   IfElectron ,
   
 }
-/* electron Not a pure module */
+/* match Not a pure module */

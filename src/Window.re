@@ -152,7 +152,7 @@ module MSWindowsControls = {
   };
   [@react.component]
   let make = (~state, ~electron) => {
-    let window = electron##remote->Electron.getCurrentWindow;
+    let window = electron->Electron.getRemote->Electron.getCurrentWindow;
     let middleButton =
       if (state.isFullScreen) {
         <button
@@ -294,7 +294,7 @@ let make = (~children, ~className) => {
       open Electron;
       let func =
         ifElectron(electron => {
-          let win = electron##remote->getCurrentWindow;
+          let win = electron->getRemote->getCurrentWindow;
           /* This will ensure that stale event listeners aren't persisted.
              That typically won't be relevant to production builds, but
              in a dev environment, where the page reloads frequently,

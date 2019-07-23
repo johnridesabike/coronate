@@ -1,21 +1,22 @@
 /*
-  This includes rudimentary bindings for the Electron API as well as utility
-  functions that rely on that API.
-*/
+   This includes rudimentary bindings for the Electron API as well as utility
+   functions that rely on that API.
+ */
+type t;
 type shell;
-[@bs.send]
-external openExternal: (shell, string) => Js.Promise.t(unit) = "openExternal";
+type window;
+type remote;
 type systemPreferences;
+[@bs.get] external getShell: t => shell = "shell";
+[@bs.get] external getRemote: t => remote = "remote";
+[@bs.get]
+external getSystemPreferences: remote => systemPreferences =
+  "systemPreferences";
 [@bs.send]
 external getUserDefault: (systemPreferences, string, string) => string =
   "getUserDefault";
-type remote = {. "systemPreferences": systemPreferences};
-type t = {
-  .
-  "shell": shell,
-  "remote": remote,
-};
-type window;
+[@bs.send]
+external openExternal: (shell, string) => Js.Promise.t(unit) = "openExternal";
 [@bs.send] external getCurrentWindow: remote => window = "getCurrentWindow";
 [@bs.send] external setFullScreen: (window, bool) => unit = "setFullScreen";
 [@bs.send] external unmaximize: window => unit = "unmaximize";
@@ -29,9 +30,14 @@ type window;
 external removeAllListeners: (window, string) => unit = "removeAllListeners";
 [@bs.send] external on: (window, string, unit => unit) => unit = "on";
 
-let electron: option(t) = [%raw
-  "window.require ? window.require(\"electron\") : undefined"
-];
+[@bs.scope "window"] [@bs.val]
+external windowRequire: option(string => option(t)) = "require";
+
+let electron =
+  switch (windowRequire) {
+  | Some(require) => require("electron")
+  | None => None
+  };
 
 let ifElectron = fn => {
   switch (electron) {
@@ -40,13 +46,14 @@ let ifElectron = fn => {
   };
 };
 
-let currentWindow = ifElectron(electron => electron##remote->getCurrentWindow);
+let currentWindow =
+  ifElectron(electron => electron->getRemote->getCurrentWindow);
 
 let openInBrowser = event => {
   let _ =
     ifElectron(electron => {
       event->ReactEvent.Mouse.preventDefault;
-      electron##shell->openExternal(event->ReactEvent.Mouse.target##href);
+      electron->getShell->openExternal(event->ReactEvent.Mouse.target##href);
     });
   ();
 };
@@ -70,9 +77,11 @@ let macOSDoubleClick = event => {
         /* We don't want double-clicking buttons to (un)maximize. */
         if (target##className |> Js.String.includes("double-click-control")) {
           let doubleClickAction =
-            electron##remote##systemPreferences
+            electron
+            ->getRemote
+            ->getSystemPreferences
             ->getUserDefault("AppleActionOnDoubleClick", "string");
-          let window = electron##remote->getCurrentWindow;
+          let window = electron->getRemote->getCurrentWindow;
           switch (doubleClickAction) {
           | "Minimize" => window->minimize
           | "Maximize" => window->toggleMaximize
@@ -88,7 +97,7 @@ let macOSDoubleClick = event => {
 let isWin = appVersion |> Js.String.includes("Windows");
 let isMac = appVersion |> Js.String.includes("Mac");
 
-let isElectron = 
+let isElectron =
   switch (ifElectron(_ => true)) {
   | None => false
   | Some(x) => x
@@ -108,7 +117,7 @@ module IfElectron = {
       };
     switch (electron) {
     | Some(electron) =>
-      isThisTheRightOs ? children(electron) : ReasonReact.null;
+      isThisTheRightOs ? children(electron) : ReasonReact.null
     | None => ReasonReact.null
     };
   };
