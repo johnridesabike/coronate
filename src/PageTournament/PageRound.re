@@ -46,7 +46,7 @@ module PlayerMatchInfo = {
         )
       | None => ([], Map.String.empty, [])
       };
-    let colorBalance = Utils.listSumF(colorScores);
+    let colorBalance = Utils.List.sumF(colorScores);
     let hasBye =
       opponentResults
       |> Map.String.keysToArray
@@ -54,7 +54,7 @@ module PlayerMatchInfo = {
     let oppResultsEntries = opponentResults |> Map.String.toArray;
     let prettyBalance =
       if (colorBalance < 0.0) {
-        "White +" ++ (colorBalance |> Utils.absf |> Js.Float.toString);
+        "White +" ++ (colorBalance |> abs_float |> Js.Float.toString);
       } else if (colorBalance > 0.0) {
         "Black +" ++ (colorBalance |> Js.Float.toString);
       } else {
@@ -65,7 +65,7 @@ module PlayerMatchInfo = {
       <h3> {fullName |> React.string} </h3>
       <dt> {"Score" |> React.string} </dt>
       <dd>
-        {results |> Utils.listSumF |> Js.Float.toString |> React.string}
+        {results |> Utils.List.sumF |> Js.Float.toString |> React.string}
       </dd>
       <dt> {"Rating" |> React.string} </dt>
       <dd ariaLabel={"Rating for " ++ fullName}>

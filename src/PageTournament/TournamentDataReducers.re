@@ -157,29 +157,29 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
         |> findIndex((match: Data.Match.t) => match.id === matchId)
       );
     let match = roundList->Array.getExn(roundId)->Array.getExn(matchIndex);
-    let _ =
-      roundList
-      ->Array.getExn(roundId)
-      ->Array.set(
-          matchIndex,
-          Data.Match.{
-            ...match,
-            whiteScore,
-            blackScore,
-            whiteNewRating,
-            blackNewRating,
-          },
-        );
+    roundList
+    ->Array.getExn(roundId)
+    ->Array.set(
+        matchIndex,
+        Data.Match.{
+          ...match,
+          whiteScore,
+          blackScore,
+          whiteNewRating,
+          blackNewRating,
+        },
+      )
+    |> ignore;
     {...state, roundList};
   | DelMatch(matchId, roundId) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
-    let _ =
-      roundList->Array.set(
-        roundId,
-        roundList->Array.getExn(roundId)
-        |> Js.Array.filter((match: Data.Match.t) => match.id !== matchId),
-      );
+    roundList->Array.set(
+      roundId,
+      roundList->Array.getExn(roundId)
+      |> Js.Array.filter((match: Data.Match.t) => match.id !== matchId),
+    )
+    |> ignore;
     {...state, roundList};
   | SwapColors(matchId, roundId) =>
     /* I don't actually know if this copy is necessary */
@@ -195,34 +195,32 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
     let oldMatch =
       Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
     /* TODO: clean this up. It just reverses the values */
-    let _ =
-      roundList
-      ->Array.getExn(roundId)
-      ->Array.set(
-          matchIndex,
-          Data.Match.{
-            ...oldMatch,
-            whiteId: oldMatch.blackId,
-            blackId: oldMatch.whiteId,
-            whiteScore: oldMatch.blackScore,
-            blackScore: oldMatch.whiteScore,
-            whiteOrigRating: oldMatch.blackOrigRating,
-            blackOrigRating: oldMatch.whiteOrigRating,
-            whiteNewRating: oldMatch.blackNewRating,
-            blackNewRating: oldMatch.whiteNewRating,
-          },
-        );
+    roundList
+    ->Array.getExn(roundId)
+    ->Array.set(
+        matchIndex,
+        Data.Match.{
+          ...oldMatch,
+          whiteId: oldMatch.blackId,
+          blackId: oldMatch.whiteId,
+          whiteScore: oldMatch.blackScore,
+          blackScore: oldMatch.whiteScore,
+          whiteOrigRating: oldMatch.blackOrigRating,
+          blackOrigRating: oldMatch.whiteOrigRating,
+          whiteNewRating: oldMatch.blackNewRating,
+          blackNewRating: oldMatch.whiteNewRating,
+        },
+      )
+    |> ignore;
     {...state, roundList};
   | MoveMatch(oldIndex, newIndex, roundId) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
-    let _ =
-      roundList->Array.set(
-        roundId,
-        roundList
-        ->Array.getExn(roundId)
-        ->Utils.Array.swap(oldIndex, newIndex),
-      );
+    roundList->Array.set(
+      roundId,
+      roundList->Array.getExn(roundId)->Utils.Array.swap(oldIndex, newIndex),
+    )
+    |> ignore;
     {...state, roundList};
   | UpdateByeScores(newValue) =>
     let roundList =

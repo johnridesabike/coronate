@@ -321,7 +321,7 @@ module Profile = {
       </form>
       <h3> {s("Players to avoid")} </h3>
       <ul>
-        {singAvoidList->Utils.listToReactArray(pId =>
+        {singAvoidList->Utils.List.toReactArray(pId =>
            <li key=pId>
              {s(players->getPlayerMaybeMap(pId).firstName)}
              {s(" ")}

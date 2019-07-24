@@ -307,7 +307,7 @@ module PlayerInfo = {
     let colorScores = playerData.colorScores;
     let opponentResults = playerData.opponentResults;
     let results = playerData.results;
-    let colorBalance = Utils.listSumF(colorScores);
+    let colorBalance = Utils.List.sumF(colorScores);
     let player = getPlayer(playerId);
     let hasBye =
       opponentResults
@@ -320,7 +320,7 @@ module PlayerInfo = {
       };
     let prettyBalance =
       if (colorBalance < 0.0) {
-        "White +" ++ (colorBalance |> Utils.absf |> Js.Float.toString);
+        "White +" ++ (colorBalance |> abs_float |> Js.Float.toString);
       } else if (colorBalance > 0.0) {
         "Black +" ++ (colorBalance |> Js.Float.toString);
       } else {
@@ -331,7 +331,7 @@ module PlayerInfo = {
       <h3> {player.firstName ++ " " ++ player.lastName |> React.string} </h3>
       <p>
         {"Score: " |> React.string}
-        {Utils.listSumF(results) |> Js.Float.toString |> React.string}
+        {Utils.List.sumF(results) |> Js.Float.toString |> React.string}
       </p>
       <p id={"rating-" ++ player.id}>
         {"Rating: " |> React.string}
@@ -366,7 +366,7 @@ module PlayerInfo = {
       </ol>
       <p> {"Players to avoid:" |> React.string} </p>
       <ol>
-        {avoidList->Utils.listToReactArray(pId =>
+        {avoidList->Utils.List.toReactArray(pId =>
            switch (players->Map.String.get(pId)) {
            /*  don't show players not in this tourney*/
            | None => React.null

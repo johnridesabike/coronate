@@ -1,8 +1,8 @@
-[@bs.val] [@bs.scope "Math"] external log2: float => float = "log2";
-[@bs.val] [@bs.scope "Number"] external isFinite: float => bool = "isFinite";
 open Data;
 open Belt;
 module LocalForage = Externals.LocalForage;
+
+let log2 = num => log(num) /. log(2.0);
 
 let getAllPlayerIdsFromMatches = matchList => {
   open Match;
@@ -19,8 +19,8 @@ let getAllPlayerIdsFromMatches = matchList => {
 };
 
 let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount->float_of_int->log2->ceil;
-  roundCount->isFinite ? roundCount->int_of_float : 0;
+  let roundCount = playerCount |> float_of_int |> log2 |> ceil;
+  roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
 };
 
 open Tournament;
@@ -82,24 +82,24 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       let didCancel = ref(false);
-      let _ =
-        Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
-        |> Repromise.map(value =>
-             if (! didCancel^) {
-               switch (value->Js.Nullable.toOption) {
-               | None => setLoadStatus(_ => Error)
-               | Some(value) =>
-                 tourneyDispatch(
-                   SetTournament(value->Data.Tournament.tFromJsDeep),
-                 );
-                 setLoadStatus(_ => TourneyIsLoaded);
-               };
-             }
-           )
-        |> Repromise.Rejectable.catch(error => {
-             Js.log2("Error loading tournament", error);
-             Repromise.resolved();
-           });
+      Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
+      |> Repromise.map(value =>
+           if (! didCancel^) {
+             switch (value->Js.Nullable.toOption) {
+             | None => setLoadStatus(_ => Error)
+             | Some(value) =>
+               tourneyDispatch(
+                 SetTournament(value->Data.Tournament.tFromJsDeep),
+               );
+               setLoadStatus(_ => TourneyIsLoaded);
+             };
+           }
+         )
+      |> Repromise.Rejectable.catch(error => {
+           Js.log2("Error loading tournament", error);
+           Repromise.resolved();
+         })
+      |> ignore;
 
       Some(() => didCancel := true);
     },
@@ -130,43 +130,38 @@ let make = (~children, ~tourneyId) => {
           };
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         | _ =>
-          let _ =
-            Db.playerStore->LocalForage.Map.getItems(
-              Js.Nullable.return(allTheIds),
-            )
-            |> Repromise.map(values => {
-                 /* This safeguards against trying to fetch dummy IDs or IDs from
-                    deleted players. If we updated without this condition, then
-                    this `useEffect` would trigger an infinite loop and a memory
-                    leak. */
-                 let newIds = values |> Js.Dict.keys;
-                 let oldIds = players |> Map.String.keysToArray;
-                 let changedPlayers =
-                   Js.Array.(
-                     newIds
-                     |> filter(x => !(oldIds |> includes(x)))
-                     |> concat(
-                          oldIds |> filter(x => !(newIds |> includes(x))),
-                        )
-                   );
-                 /* Js.log2(
-                      "changed players:",
-                      changedPlayers |> Js.Array.length,
-                    ); */
-                 if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                   playersDispatch(
-                     SetPlayers(
-                       values->Db.jsDictToReMap(Data.Player.tFromJs),
-                     ),
-                   );
-                   setLoadStatus(_ => TourneyAndPlayersAreLoaded);
-                 };
-               })
-            |> Repromise.Rejectable.catch(error => {
-                 Js.log2("Error loading players", error);
-                 Repromise.resolved();
-               });
-          ();
+          Db.playerStore->LocalForage.Map.getItems(
+            Js.Nullable.return(allTheIds),
+          )
+          |> Repromise.map(values => {
+               /* This safeguards against trying to fetch dummy IDs or IDs from
+                  deleted players. If we updated without this condition, then
+                  this `useEffect` would trigger an infinite loop and a memory
+                  leak. */
+               let newIds = values |> Js.Dict.keys;
+               let oldIds = players |> Map.String.keysToArray;
+               let changedPlayers =
+                 Js.Array.(
+                   newIds
+                   |> filter(x => !(oldIds |> includes(x)))
+                   |> concat(oldIds |> filter(x => !(newIds |> includes(x))))
+                 );
+               /* Js.log2(
+                    "changed players:",
+                    changedPlayers |> Js.Array.length,
+                  ); */
+               if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
+                 playersDispatch(
+                   SetPlayers(values->Db.jsDictToReMap(Data.Player.tFromJs)),
+                 );
+                 setLoadStatus(_ => TourneyAndPlayersAreLoaded);
+               };
+             })
+          |> Repromise.Rejectable.catch(error => {
+               Js.log2("Error loading players", error);
+               Repromise.resolved();
+             })
+          |> ignore
         };
       };
       Some(() => didCancel := false);
@@ -180,12 +175,11 @@ let make = (~children, ~tourneyId) => {
     () => {
       /* If the tournament wasn't loaded then the id won't match. */
       if (loadStatus !== NothingIsLoaded && tourneyId === tourney.id) {
-        let _ =
-          Db.tourneyStore->LocalForage.Map.setItem(
-            tourneyId,
-            tourney->Data.Tournament.tToJsDeep,
-          );
-        ();
+        Db.tourneyStore->LocalForage.Map.setItem(
+          tourneyId,
+          tourney->Data.Tournament.tToJsDeep,
+        )
+        |> ignore;
       };
       None;
     },
@@ -197,11 +191,10 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       if (loadStatus === TourneyAndPlayersAreLoaded) {
-        let _ =
-          Db.playerStore->LocalForage.Map.setItems(
-            players->Db.reMapToJsDict(Data.Player.tToJs),
-          );
-        ();
+        Db.playerStore->LocalForage.Map.setItems(
+          players->Db.reMapToJsDict(Data.Player.tToJs),
+        )
+        |> ignore;
       };
       None;
     },

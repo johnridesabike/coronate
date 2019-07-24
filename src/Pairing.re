@@ -70,7 +70,7 @@ let calcPairIdeal = (player1, player2) =>
         | [lastColor2, ..._] => lastColor1 !== lastColor2
         }
       };
-    let scoreDiff = Utils.absf(player1.score -. player2.score) +. 1.0;
+    let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0;
     let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1);
     let isDiffHalf =
       player1.isUpperHalf !== player2.isUpperHalf
@@ -179,8 +179,7 @@ let assignColorsForPair = pair => {
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  Utils.listSumF(player1.colorScores)
-  < Utils.listSumF(player2.colorScores)
+  Utils.List.sumF(player1.colorScores) < Utils.List.sumF(player2.colorScores)
     /* player 1 has played as white more than player 2 */
     ? (player2.id, player1.id)
     /* player 1 has played as black more than player 2
@@ -198,8 +197,6 @@ let sortByNetScoreThenRating = (pair1, pair2) =>
   | x => x
   };
 
-[@bs.val] external js_infinity: int = "Infinity";
-
 /* Create pairings according to the rules specified in USCF § 27, § 28,
     and § 29. This is a work in progress and does not account for all of the
    rules yet. */
@@ -212,8 +209,7 @@ let pairPlayers = pairData => {
   let pairIdealReducer = (accArr, player1, index) => {
     /* slice out players who have already computed, plus the current one */
     let playerMatches =
-      playerArray
-      |> Js.Array.slice(~start=index + 1, ~end_=js_infinity)
+      playerArray->Array.sliceToEnd(index + 1)
       |> Js.Array.map(player2 =>
            (
              playerIdArray |> Js.Array.indexOf(player1.id),

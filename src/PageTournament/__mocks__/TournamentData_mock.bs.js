@@ -8,6 +8,10 @@ import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
 import * as TournamentDataReducers$Coronate from "../TournamentDataReducers.bs.js";
 
+function log2(num) {
+  return Math.log(num) / Math.log(2.0);
+}
+
 var configData_000 = /* avoidPairs */TestData$Coronate.config[/* avoidPairs */0].concat(DemoData$Coronate.config[/* avoidPairs */0]);
 
 var configData_001 = /* byeValue */TestData$Coronate.config[/* byeValue */1];
@@ -29,8 +33,8 @@ var playerData = Belt_MapString.merge(TestData$Coronate.players, DemoData$Corona
       }));
 
 function calcNumOfRounds(playerCount) {
-  var roundCount = Math.ceil(Math.log2(playerCount));
-  var match = Number.isFinite(roundCount);
+  var roundCount = Math.ceil(log2(playerCount));
+  var match = roundCount !== Number.NEGATIVE_INFINITY;
   if (match) {
     return roundCount | 0;
   } else {
@@ -79,6 +83,7 @@ function TournamentData_Mock(Props) {
 var make = TournamentData_Mock;
 
 export {
+  log2 ,
   configData ,
   tournamentData ,
   playerData ,

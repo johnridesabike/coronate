@@ -50,12 +50,11 @@ let currentWindow =
   ifElectron(electron => electron->getRemote->getCurrentWindow);
 
 let openInBrowser = event => {
-  let _ =
-    ifElectron(electron => {
-      event->ReactEvent.Mouse.preventDefault;
-      electron->getShell->openExternal(event->ReactEvent.Mouse.target##href);
-    });
-  ();
+  ifElectron(electron => {
+    event->ReactEvent.Mouse.preventDefault;
+    electron->getShell->openExternal(event->ReactEvent.Mouse.target##href);
+  })
+  |> ignore;
 };
 
 let toggleMaximize = win =>
@@ -69,28 +68,27 @@ let toggleMaximize = win =>
    https://github.com/electron/electron/issues/16385#issuecomment-453955377
  */
 let macOSDoubleClick = event => {
-  let _ =
-    ifElectron(electron => {
-      let target = event->ReactEvent.Mouse.target;
-      /* sometimes `className` isn't a string.*/
-      if (target##className##includes) {
-        /* We don't want double-clicking buttons to (un)maximize. */
-        if (target##className |> Js.String.includes("double-click-control")) {
-          let doubleClickAction =
-            electron
-            ->getRemote
-            ->getSystemPreferences
-            ->getUserDefault("AppleActionOnDoubleClick", "string");
-          let window = electron->getRemote->getCurrentWindow;
-          switch (doubleClickAction) {
-          | "Minimize" => window->minimize
-          | "Maximize" => window->toggleMaximize
-          | _ => ()
-          };
+  ifElectron(electron => {
+    let target = event->ReactEvent.Mouse.target;
+    /* sometimes `className` isn't a string.*/
+    if (target##className##includes) {
+      /* We don't want double-clicking buttons to (un)maximize. */
+      if (target##className |> Js.String.includes("double-click-control")) {
+        let doubleClickAction =
+          electron
+          ->getRemote
+          ->getSystemPreferences
+          ->getUserDefault("AppleActionOnDoubleClick", "string");
+        let window = electron->getRemote->getCurrentWindow;
+        switch (doubleClickAction) {
+        | "Minimize" => window->minimize
+        | "Maximize" => window->toggleMaximize
+        | _ => ()
         };
       };
-    });
-  ();
+    };
+  })
+  |> ignore;
 };
 
 [@bs.scope "navigator"] [@bs.val] external appVersion: string = "appVersion";

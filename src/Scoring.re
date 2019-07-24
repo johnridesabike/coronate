@@ -26,7 +26,7 @@ let isNotDummy = (scoreDict, oppId) => {
 let getPlayerScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(player) => Utils.listSumF(player.results)
+  | Some(player) => Utils.List.sumF(player.results)
   };
 };
 
@@ -42,8 +42,7 @@ let getOpponentScores = (scoreDict, id) => {
 
 // USCF § 34E1
 let getMedianScore = (scoreDict, id) =>
-  getOpponentScores(scoreDict, id)
-  ->SortArray.stableSortBy(compare)
+  getOpponentScores(scoreDict, id)->SortArray.stableSortBy(compare)
   |> Js.Array.slice(~start=1, ~end_=-1)
   |> Utils.Array.sumF;
 
@@ -66,7 +65,7 @@ let getCumulativeScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
-    person.resultsNoByes->List.reduce([], runningReducer)->Utils.listSumF
+    person.resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
   };
 };
 
@@ -86,7 +85,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 let getColorBalanceScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) => Utils.listSumF(person.colorScores)
+  | Some(person) => Utils.List.sumF(person.colorScores)
   };
 };
 
@@ -217,12 +216,11 @@ let createStandingTree = standingList => {
            // to the last branch
            : {
              let lastIndex = Js.Array.length(acc) - 1;
-             let _ =
-               acc->Array.set(
-                 lastIndex,
-                 acc->Array.getExn(lastIndex)
-                 |> Js.Array.concat([|standing|]),
-               );
+             acc->Array.set(
+               lastIndex,
+               acc->Array.getExn(lastIndex) |> Js.Array.concat([|standing|]),
+             )
+             |> ignore;
              acc;
            };
        },

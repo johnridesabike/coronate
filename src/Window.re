@@ -279,12 +279,12 @@ let make = (~children, ~className) => {
   let title = state.title;
   React.useEffect1(
     () => {
-      let _ =
-        Webapi.Dom.(
-          document
-          ->Document.asHtmlDocument
-          ->Option.map(x => x->HtmlDocument.setTitle(formatTitle(title)))
-        );
+      Webapi.Dom.(
+        document
+        ->Document.asHtmlDocument
+        ->Option.map(x => x->HtmlDocument.setTitle(formatTitle(title)))
+      )
+      |> ignore;
       None;
     },
     [|title|],

@@ -16,8 +16,6 @@ module EloRank = {
 /*******************************************************************************
   Browser stuff
  ******************************************************************************/
-[@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
-[@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
 

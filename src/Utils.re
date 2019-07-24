@@ -4,31 +4,36 @@ module VisuallyHidden = Externals.VisuallyHidden;
 module Dialog = Externals.Dialog;
 let alert = Externals.alert;
 let nanoid = Externals.nanoid;
-let absf = Externals.absf;
 let confirm = Externals.confirm;
 
 let github_url = "https://github.com/johnridesabike/coronate";
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
 let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
 
-let add = (a, b) => a + b;
-let addFloat = (a, b) => a +. b;
-let listSumF = list => list->Belt.List.reduce(0.0, addFloat);
 let ascend = (getter, a, b) => compare(getter(a), getter(b));
 let descend = (getter, a, b) => compare(getter(b), getter(a));
 
 module Array = {
   let last = arr => arr->Array.get(Js.Array.length(arr) - 1);
-  let sum = arr => Js.Array.reduce(add, 0, arr);
-  let sumF = arr => Js.Array.reduce(addFloat, 0.0, arr);
+  let sum = arr => Js.Array.reduce((+), 0, arr);
+  let sumF = arr => Js.Array.reduce((+.), 0.0, arr);
   let swap = (arr, idx1, idx2) => {
     switch (arr->Array.get(idx1), arr->Array.get(idx2)) {
     | (Some(item1), Some(item2)) =>
-      let _ = arr->Array.set(idx1, item2);
-      let _ = arr->Array.set(idx2, item1);
+      arr->Array.set(idx1, item2) |> ignore;
+      arr->Array.set(idx2, item1) |> ignore;
       arr;
     | _ => arr
     };
+  };
+};
+
+module List = {
+  let sumF = list => List.reduce(list, 0.0, (+.));
+  let toReactArray = (list, fn) => {
+    let result = [||];
+    List.forEach(list, item => result |> Js.Array.unshift(fn(item)));
+    React.array(result);
   };
 };
 
@@ -41,11 +46,6 @@ module Entities = {
   let nbsp = "\xa0";
   let copy = "\xA9";
 };
-
-let listToReactArray = (list, fn) =>
-  list
-  ->Belt.List.reduce([||], (arr, x) => Js.Array.concat(arr, [|fn(x)|]))
-  ->React.array;
 
 module DateTimeFormatComponent =
        (
@@ -294,8 +294,18 @@ module Notification = {
 };
 
 module Router = {
-  let hashPath = hashString =>
-    hashString |> Js.String.split("/") |> Belt.List.fromArray;
+  let hashPath = hashString => {
+    let path =
+      switch (hashString |> Js.String.split("/") |> Belt.List.fromArray) {
+      /* The first item is always an empty string, so we're removing it */
+      | [_, ...rest] => rest
+      | list => list
+      };
+    switch (path) {
+    | [] => [""]
+    | list => list
+    };
+  };
 
   module HashLink = {
     [@react.component]

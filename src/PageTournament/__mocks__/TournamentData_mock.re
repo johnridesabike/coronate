@@ -1,7 +1,7 @@
-[@bs.val] [@bs.scope "Math"] external log2: float => float = "log2";
-[@bs.val] [@bs.scope "Number"] external isFinite: float => bool = "isFinite";
 open Belt;
 open Data;
+
+let log2 = (num) => log(num) /. log(2.0);
 /*
   I'm depreciating `DemoData`, but currently merging it with `TestData` so
   tests can keep working.
@@ -17,8 +17,8 @@ let tournamentData =
 let playerData = players->Map.String.merge(DemoData.players, (_, _, a) => a);
 
 let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount->float_of_int->log2->ceil;
-  roundCount->isFinite ? roundCount->int_of_float : 0;
+  let roundCount = playerCount |> float_of_int |> log2 |> ceil;
+  roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
 };
 
 open Tournament;

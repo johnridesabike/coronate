@@ -27,26 +27,25 @@ let reMapToJsDict = (map, transformer) =>
 type testType = {. byeValue: float};
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw "document.body.style = \"wait\""];
-  let _ =
-    Repromise.all3(
-      configStore->LocalForage.Obj.setItems(DemoData.config |> Config.tToJs),
-      playerStore->LocalForage.Map.setItems(
-        DemoData.players->reMapToJsDict(Data.Player.tToJs),
-      ),
-      tourneyStore->LocalForage.Map.setItems(
-        DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
-      ),
-    )
-    |> Repromise.map(_ => {
-         Utils.alert("Demo data loaded!");
-         let _: unit = [%bs.raw "document.body.style = \"auto\""];
-         ();
-       })
-    |> Repromise.Rejectable.catch(_ => {
-         let _: unit = [%bs.raw "document.body.style = \"auto\""];
-         Repromise.resolved();
-       });
-  ();
+  Repromise.all3(
+    configStore->LocalForage.Obj.setItems(DemoData.config |> Config.tToJs),
+    playerStore->LocalForage.Map.setItems(
+      DemoData.players->reMapToJsDict(Data.Player.tToJs),
+    ),
+    tourneyStore->LocalForage.Map.setItems(
+      DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
+    ),
+  )
+  |> Repromise.map(_ => {
+       Utils.alert("Demo data loaded!");
+       let _: unit = [%bs.raw "document.body.style = \"auto\""];
+       ();
+     })
+  |> Repromise.Rejectable.catch(_ => {
+       let _: unit = [%bs.raw "document.body.style = \"auto\""];
+       Repromise.resolved();
+     })
+  |> ignore;
 };
 /*******************************************************************************
  * Generic database hooks
@@ -77,14 +76,14 @@ let useAllItemsFromDb =
   React.useEffect4(
     () => {
       let didCancel = ref(false);
-      let _ =
-        store->LocalForage.Map.getItems(Js.Nullable.null)
-        |> Repromise.map(results =>
-             if (! didCancel^) {
-               dispatch(SetState(results->jsDictToReMap(fromJs)));
-               setIsLoaded(_ => true);
-             }
-           );
+      store->LocalForage.Map.getItems(Js.Nullable.null)
+      |> Repromise.map(results =>
+           if (! didCancel^) {
+             dispatch(SetState(results->jsDictToReMap(fromJs)));
+             setIsLoaded(_ => true);
+           }
+         )
+      |> ignore;
 
       Some(() => didCancel := false);
     },
@@ -95,24 +94,22 @@ let useAllItemsFromDb =
       switch (isLoaded) {
       | false => None
       | true =>
-        let _ =
-          store->LocalForage.Map.setItems(items->reMapToJsDict(toJs))
-          |> Repromise.map(() => {
-               let _ =
-                 store->LocalForage.Map.keys()
-                 |> Repromise.map(keys => {
-                      let stateKeys = items->Map.String.keysToArray;
-                      let deleted =
-                        Js.Array.(
-                          keys |> filter(x => !(stateKeys |> includes(x)))
-                        );
-                      if (deleted |> Js.Array.length > 0) {
-                        let _ = store->LocalForage.Map.removeItems(deleted);
-                        ();
-                      };
-                    });
-               ();
-             });
+        store->LocalForage.Map.setItems(items->reMapToJsDict(toJs))
+        |> Repromise.map(() =>
+             store->LocalForage.Map.keys()
+             |> Repromise.map(keys => {
+                  let stateKeys = items->Map.String.keysToArray;
+                  let deleted =
+                    Js.Array.(
+                      keys |> filter(x => !(stateKeys |> includes(x)))
+                    );
+                  if (deleted |> Js.Array.length > 0) {
+                    store->LocalForage.Map.removeItems(deleted) |> ignore;
+                  };
+                })
+             |> ignore
+           )
+        |> ignore;
         None;
       },
     (store, items, isLoaded, toJs),
@@ -184,17 +181,17 @@ let useConfig = () => {
   React.useEffect2(
     () => {
       let didCancel = ref(false);
-      let _ =
-        configStore->LocalForage.Obj.getItems(Js.Nullable.null)
-        |> Repromise.map(valuesJs => {
-             let values = Config.tFromJs(valuesJs);
-             if (! didCancel^) {
-               dispatch(SetAvoidPairs(values.avoidPairs));
-               dispatch(SetByeValue(values.byeValue));
-               dispatch(SetLastBackup(values.lastBackup));
-               setIsLoaded(_ => true);
-             };
-           });
+      configStore->LocalForage.Obj.getItems(Js.Nullable.null)
+      |> Repromise.map(valuesJs => {
+           let values = Config.tFromJs(valuesJs);
+           if (! didCancel^) {
+             dispatch(SetAvoidPairs(values.avoidPairs));
+             dispatch(SetByeValue(values.byeValue));
+             dispatch(SetLastBackup(values.lastBackup));
+             setIsLoaded(_ => true);
+           };
+         })
+      |> ignore;
 
       Some(() => didCancel := true);
     },
@@ -205,7 +202,8 @@ let useConfig = () => {
       switch (isLoaded) {
       | false => None
       | true =>
-        let _ = configStore->LocalForage.Obj.setItems(config |> Config.tToJs);
+        configStore->LocalForage.Obj.setItems(config |> Config.tToJs)
+        |> ignore;
         None;
       },
     (config, isLoaded),
