@@ -147,7 +147,7 @@ function PageRound$PlayerMatchInfo(Props) {
     ];
   }
   var opponentResults = match$1[1];
-  var colorBalance = Utils$Coronate.listSumFloat(match$1[0]);
+  var colorBalance = Utils$Coronate.listSumF(match$1[0]);
   var hasBye = Belt_MapString.keysToArray(opponentResults).includes(Data$Coronate.dummy_id);
   var oppResultsEntries = Belt_MapString.toArray(opponentResults);
   var prettyBalance = colorBalance < 0.0 ? "White +" + Utils$Coronate.absf(colorBalance).toString() : (
@@ -156,7 +156,7 @@ function PageRound$PlayerMatchInfo(Props) {
   var fullName = player[/* firstName */0] + (" " + player[/* lastName */2]);
   return React.createElement("dl", {
               className: "player-card"
-            }, React.createElement("h3", undefined, fullName), React.createElement("dt", undefined, "Score"), React.createElement("dd", undefined, Utils$Coronate.listSumFloat(match$1[2]).toString()), React.createElement("dt", undefined, "Rating"), React.createElement("dd", {
+            }, React.createElement("h3", undefined, fullName), React.createElement("dt", undefined, "Score"), React.createElement("dd", undefined, Utils$Coronate.listSumF(match$1[2]).toString()), React.createElement("dt", undefined, "Rating"), React.createElement("dd", {
                   "aria-label": "Rating for " + fullName
                 }, origRating.toString(), " (", Numeral.default(newRating - origRating | 0).format("+0"), ")"), React.createElement("dt", undefined, "Color balance"), React.createElement("dd", undefined, prettyBalance), React.createElement("dt", undefined, "Has had a bye round"), React.createElement("dd", undefined, hasBye ? "Yes" : "No"), React.createElement("dt", undefined, "Opponent history"), React.createElement("dd", undefined, React.createElement("ol", undefined, oppResultsEntries.map((function (param, i) {
                             var result = param[1];

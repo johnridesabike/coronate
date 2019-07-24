@@ -85,28 +85,31 @@ module Sidebar = {
         ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */
-        roundList
-        |> Utils.last
-        |> Js.Array.forEach((match: Data.Match.t) => {
-             /* Don't change players who haven't scored.*/
-             let whiteScore = match.whiteScore;
-             let blackScore = match.blackScore;
-             let whiteId = match.whiteId;
-             let blackId = match.blackId;
-             let whiteOrigRating = match.whiteOrigRating;
-             let blackOrigRating = match.blackOrigRating;
-             if (whiteScore +. blackScore !== 0.0) {
-               [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
-               |> Js.Array.forEach(((id, rating)) =>
-                    if (id !== Data.dummy_id) {
-                      /* Don't try to set the dummy */
-                      let matchCount = getPlayer(id).matchCount;
-                      playersDispatch(SetMatchCount(id, matchCount - 1));
-                      playersDispatch(SetRating(id, rating));
-                    }
-                  );
-             };
-           });
+        switch (Utils.Array.last(roundList)) {
+        | None => ()
+        | Some(round) =>
+          round
+          |> Js.Array.forEach((match: Data.Match.t) => {
+               /* Don't change players who haven't scored.*/
+               let whiteScore = match.whiteScore;
+               let blackScore = match.blackScore;
+               let whiteId = match.whiteId;
+               let blackId = match.blackId;
+               let whiteOrigRating = match.whiteOrigRating;
+               let blackOrigRating = match.blackOrigRating;
+               if (whiteScore +. blackScore !== 0.0) {
+                 [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
+                 |> Js.Array.forEach(((id, rating)) =>
+                      if (id !== Data.dummy_id) {
+                        /* Don't try to set the dummy */
+                        let matchCount = getPlayer(id).matchCount;
+                        playersDispatch(SetMatchCount(id, matchCount - 1));
+                        playersDispatch(SetRating(id, rating));
+                      }
+                    );
+               };
+             })
+        };
         tourneyDispatch(DelLastRound);
         if (roundList |> Js.Array.length === 1) {
           /* Automatically remake round 1.*/

@@ -176,8 +176,9 @@ let make = () => {
     };
   };
   let handleFile = event => {
+    module FileReader = Externals.FileReader;
     event |> ReactEvent.Form.preventDefault;
-    let reader = Externals.makeFileReader();
+    let reader = FileReader.make();
     let onload = ev => {
       let data = ev##target##result;
       switch (data |> Js.Json.parseExn) {
@@ -190,9 +191,12 @@ let make = () => {
         }
       };
     };
-    reader##onload #= onload;
-    reader##readAsText(event->ReactEvent.Form.currentTarget##files[0]);
-    event->ReactEvent.Form.currentTarget##value #= ""; // so the filename won't linger onscreen
+    reader->FileReader.setOnLoad(onload);
+    reader->FileReader.readAsText(
+      event->ReactEvent.Form.currentTarget##files[0],
+    );
+    // so the filename won't linger onscreen
+    event->ReactEvent.Form.currentTarget##value #= "";
   };
   let reloadDemoData = event => {
     event |> ReactEvent.Mouse.preventDefault;
@@ -247,9 +251,7 @@ let make = () => {
         <a
           download={"coronate-" ++ getDateForFile() ++ ".json"}
           href=exportDataURI
-          onClick={_ =>
-            configDispatch(Db.SetLastBackup(Js.Date.make()))
-          }>
+          onClick={_ => configDispatch(Db.SetLastBackup(Js.Date.make()))}>
           <Icons.Download />
           {s(" Export all data")}
         </a>

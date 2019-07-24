@@ -1,6 +1,3 @@
-let ascend = (getter, a, b) => compare(getter(a), getter(b));
-let descend = (getter, a, b) => compare(getter(b), getter(a));
-
 type keyFunc('a) =
   | KeyString('a => string)
   | KeyInt('a => int)
@@ -27,7 +24,7 @@ let sortedTableReducer = (state, action) => {
     | SetKey(key) => {...state, key}
     | SortWithoutUpdating => state
     };
-  let direction = newState.isDescending ? descend : ascend;
+  let direction = newState.isDescending ? Utils.descend : Utils.ascend;
   let sortFunc =
     switch (newState.key) {
     | KeyString(func) =>

@@ -16,6 +16,7 @@ import * as Utils$Coronate from "./Utils.bs.js";
 import * as Window$Coronate from "./Window.bs.js";
 import * as DemoData$Coronate from "./DemoData.bs.js";
 import * as TestData$Coronate from "./TestData.bs.js";
+import * as Externals$Coronate from "./Externals.bs.js";
 
 function s(prim) {
   return prim;

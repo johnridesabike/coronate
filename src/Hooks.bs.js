@@ -3,18 +3,10 @@
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
-import * as Caml_obj from "bs-platform/lib/es6/caml_obj.js";
 import * as ReactFeather from "react-feather";
 import * as Belt_SortArray from "bs-platform/lib/es6/belt_SortArray.js";
+import * as Utils$Coronate from "./Utils.bs.js";
 import * as VisuallyHidden from "@reach/visually-hidden";
-
-function ascend(getter, a, b) {
-  return Caml_obj.caml_compare(Curry._1(getter, a), Curry._1(getter, b));
-}
-
-function descend(getter, a, b) {
-  return Caml_obj.caml_compare(Curry._1(getter, b), Curry._1(getter, a));
-}
 
 function sortedTableReducer(state, action) {
   var newState;
@@ -47,7 +39,7 @@ function sortedTableReducer(state, action) {
     }
   }
   var match = newState[/* isDescending */0];
-  var direction = match ? descend : ascend;
+  var direction = match ? Utils$Coronate.descend : Utils$Coronate.ascend;
   var match$1 = newState[/* key */1];
   var sortFunc;
   if (match$1.tag) {
@@ -143,8 +135,6 @@ function useLoadingCursorUntil(isLoaded) {
 }
 
 export {
-  ascend ,
-  descend ,
   sortedTableReducer ,
   useSortedTable ,
   SortButton ,

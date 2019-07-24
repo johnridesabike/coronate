@@ -1,16 +1,6 @@
-open Belt;
 /*******************************************************************************
   Misc. utilities
  ******************************************************************************/
-[@bs.module "ramda"] external ascend: ('b => 'a, 'b, 'b) => int = "ascend";
-[@bs.module "ramda"] external descend: ('b => 'a, 'b, 'b) => int = "descend";
-[@bs.module "ramda"]
-external sortWith: (array(('a, 'a) => int), array('a)) => array('a) =
-  "sortWith";
-[@bs.module "ramda"]
-external splitAt: (int, array('a)) => (array('a), array('a)) = "splitAt";
-[@bs.module "ramda"]
-external move: (int, int, array('a)) => array('a) = "move";
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
 [@bs.module "edmonds-blossom"]
 external blossom: array((int, int, float)) => array(int) = "default";
@@ -22,20 +12,22 @@ module EloRank = {
   [@bs.send]
   external updateRating: (t, int, float, int) => int = "updateRating";
 };
+
 /*******************************************************************************
   Browser stuff
  ******************************************************************************/
-
 [@bs.scope "Math"] [@bs.val] external abs: int => int = "abs";
 [@bs.scope "Math"] [@bs.val] external absf: float => float = "abs";
 [@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
 [@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
-type fileReader = {
-  .
-  [@bs.set] "onload": {. "target": {. "result": string}} => unit,
-  [@bs.meth] "readAsText": string => unit,
+
+module FileReader = {
+  type t;
+  [@bs.new] external make: unit => t = "FileReader";
+  type onloadArg = {. "target": {. "result": string}};
+  [@bs.set] external setOnLoad: (t, onloadArg => unit) => unit = "onload";
+  [@bs.send] external readAsText: (t, string) => unit = "readAsText";
 };
-[@bs.new] external makeFileReader: unit => fileReader = "FileReader";
 
 /*******************************************************************************
   LocalForage
@@ -198,6 +190,7 @@ module ReachTabs = {
 };
 
 module IntlDateTimeFormat = {
+  open Belt;
   type t;
   type locale = [ | `en_us];
   let string_of_locale = locale =>

@@ -262,7 +262,7 @@ function Pages$Splash(Props) {
                                     onClick: (function (param) {
                                         return Db$Coronate.loadDemoDB(/* () */0);
                                       })
-                                  }, "Click here to load the demo data"), "(optional)"), React.createElement("li", {
+                                  }, "Click here to load the demo data"), " (optional)"), React.createElement("li", {
                                 className: hintLi
                               }, React.createElement(ReactFeather.ArrowLeft, { }), " Select a menu item."), React.createElement("li", {
                                 className: hintLi
@@ -325,7 +325,7 @@ function Pages$Splash(Props) {
                                     className: footerLink,
                                     href: "https://reasonml.github.io/",
                                     onClick: Electron$Coronate.openInBrowser
-                                  }, "ReasonML"), " & ", React.createElement("a", {
+                                  }, "Reason"), " & ", React.createElement("a", {
                                     className: footerLink,
                                     href: "https://reasonml.github.io/reason-react/",
                                     onClick: Electron$Coronate.openInBrowser

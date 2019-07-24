@@ -149,7 +149,7 @@ function tournamentReducer(state, action) {
                   /* name */state[/* name */3],
                   /* playerIds */state[/* playerIds */4],
                   /* roundList */state[/* roundList */5],
-                  /* tieBreaks */Utils$Coronate.move(action[0], action[1], state[/* tieBreaks */6])
+                  /* tieBreaks */Utils$Coronate.$$Array[/* swap */3](state[/* tieBreaks */6], action[0], action[1])
                 ];
       case 3 : 
           return /* record */[
@@ -300,7 +300,7 @@ function tournamentReducer(state, action) {
       case 12 : 
           var roundId$5 = action[2];
           var roundList$5 = state[/* roundList */5].slice();
-          Belt_Array.set(roundList$5, roundId$5, Utils$Coronate.move(action[0], action[1], Belt_Array.getExn(roundList$5, roundId$5)));
+          Belt_Array.set(roundList$5, roundId$5, Utils$Coronate.$$Array[/* swap */3](Belt_Array.getExn(roundList$5, roundId$5), action[0], action[1]));
           return /* record */[
                   /* byeQueue */state[/* byeQueue */0],
                   /* date */state[/* date */1],

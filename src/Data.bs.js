@@ -384,7 +384,7 @@ function createPairingData(playerData, avoidPairs, scoreMap) {
                 var newData_003 = /* colors */playerStats[/* colors */1];
                 var newData_006 = /* opponents */Belt_List.fromArray(Belt_MapString.keysToArray(playerStats[/* opponentResults */4]));
                 var newData_007 = /* rating */data[/* rating */4];
-                var newData_008 = /* score */Utils$Coronate.listSumFloat(playerStats[/* results */7]);
+                var newData_008 = /* score */Utils$Coronate.listSumF(playerStats[/* results */7]);
                 var newData = /* record */[
                   newData_000,
                   /* avoidIds */newAvoidIds,

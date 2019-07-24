@@ -46,7 +46,7 @@ let differentDueColor = priority(4.0);
 /* This is useful for dividing against a calculated priority, to inspect how
    "compatible" two players may be. */
 let maxPriority =
-  Utils.arraySumFloat([|
+  Utils.Array.sumF([|
     differentHalf(true, 1.0),
     differentDueColor(true),
     sameScores(1.0),
@@ -75,7 +75,7 @@ let calcPairIdeal = (player1, player2) =>
     let isDiffHalf =
       player1.isUpperHalf !== player2.isUpperHalf
       && player1.score === player2.score;
-    Utils.arraySumFloat([|
+    Utils.Array.sumF([|
       differentDueColor(isDiffDueColor),
       sameScores(scoreDiff),
       differentHalf(isDiffHalf, halfDiff),
@@ -85,6 +85,14 @@ let calcPairIdeal = (player1, player2) =>
 
 let descendingScore = Utils.descend(x => x.score);
 let descendingRating = Utils.descend(x => x.rating);
+
+let splitInHalf = arr => {
+  let midpoint = Js.Array.length(arr) / 2;
+  (
+    arr->Array.slice(~offset=0, ~len=midpoint),
+    arr->Array.sliceToEnd(midpoint),
+  );
+};
 
 /* for each object sent to this, it determines whether or not it's in the
    "upper half" of it's score group.
@@ -98,7 +106,7 @@ let setUpperHalves = data => {
         (dataList |> Js.Array.filter(p2 => p2.score == playerData.score))
         ->Belt.SortArray.stableSortBy(descendingRating)
         |> Js.Array.map(p => p.id)
-        |> Utils.splitInHalf;
+        |> splitInHalf;
       let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);
       let halfPos =
         isUpperHalf
@@ -171,8 +179,8 @@ let assignColorsForPair = pair => {
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  Utils.listSumFloat(player1.colorScores)
-  < Utils.listSumFloat(player2.colorScores)
+  Utils.listSumF(player1.colorScores)
+  < Utils.listSumF(player2.colorScores)
     /* player 1 has played as white more than player 2 */
     ? (player2.id, player1.id)
     /* player 1 has played as black more than player 2

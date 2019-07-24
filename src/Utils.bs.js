@@ -3,28 +3,16 @@
 import * as Cn from "re-classnames/src/Cn.bs.js";
 import * as Css from "bs-css/src/Css.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
-import * as Ramda from "ramda";
 import * as React from "react";
 import * as Nanoid from "nanoid";
 import * as Numeral from "@johnridesabike/bs-numeral/src/Numeral.bs.js";
+import * as Caml_obj from "bs-platform/lib/es6/caml_obj.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
-import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
+import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as ReactFeather from "react-feather";
 import * as ReasonReactRouter from "reason-react/src/ReasonReactRouter.js";
 import * as Externals$Coronate from "./Externals.bs.js";
-
-function splitAt(prim, prim$1) {
-  return Ramda.splitAt(prim, prim$1);
-}
-
-function descend(prim, prim$1, prim$2) {
-  return Ramda.descend(prim, prim$1, prim$2);
-}
-
-function ascend(prim, prim$1, prim$2) {
-  return Ramda.ascend(prim, prim$1, prim$2);
-}
 
 function alert(prim) {
   window.alert(prim);
@@ -39,45 +27,60 @@ function absf(prim) {
   return Math.abs(prim);
 }
 
-function sortWith(prim, prim$1) {
-  return Ramda.sortWith(prim, prim$1);
-}
-
 function confirm(prim) {
   return window.confirm(prim);
-}
-
-function move(prim, prim$1, prim$2) {
-  return Ramda.move(prim, prim$1, prim$2);
 }
 
 function add(a, b) {
   return a + b | 0;
 }
 
-function arraySum(arr) {
-  return arr.reduce(add, 0);
-}
-
 function addFloat(a, b) {
   return a + b;
 }
 
-function arraySumFloat(arr) {
-  return arr.reduce(addFloat, 0.0);
-}
-
-function listSumFloat(list) {
+function listSumF(list) {
   return Belt_List.reduce(list, 0.0, addFloat);
 }
 
-function last(arr) {
-  return Caml_array.caml_array_get(arr, arr.length - 1 | 0);
+function ascend(getter, a, b) {
+  return Caml_obj.caml_compare(Curry._1(getter, a), Curry._1(getter, b));
 }
 
-function splitInHalf(arr) {
-  return Ramda.splitAt(arr.length / 2 | 0, arr);
+function descend(getter, a, b) {
+  return Caml_obj.caml_compare(Curry._1(getter, b), Curry._1(getter, a));
 }
+
+function last(arr) {
+  return Belt_Array.get(arr, arr.length - 1 | 0);
+}
+
+function sum(arr) {
+  return arr.reduce(add, 0);
+}
+
+function sumF(arr) {
+  return arr.reduce(addFloat, 0.0);
+}
+
+function swap(arr, idx1, idx2) {
+  var match = Belt_Array.get(arr, idx1);
+  var match$1 = Belt_Array.get(arr, idx2);
+  if (match !== undefined && match$1 !== undefined) {
+    Belt_Array.set(arr, idx1, Caml_option.valFromOption(match$1));
+    Belt_Array.set(arr, idx2, Caml_option.valFromOption(match));
+    return arr;
+  } else {
+    return arr;
+  }
+}
+
+var $$Array = /* module */[
+  /* last */last,
+  /* sum */sum,
+  /* sumF */sumF,
+  /* swap */swap
+];
 
 var logo = ( require("./assets/icon-min.svg") );
 
@@ -93,9 +96,9 @@ var Entities = /* module */[
   /* copy */"\xa9"
 ];
 
-function listToReactArray(list, func) {
-  return Belt_List.reduce(list, /* array */[], (function (acc, item) {
-                return acc.concat(/* array */[Curry._1(func, item)]);
+function listToReactArray(list, fn) {
+  return Belt_List.reduce(list, /* array */[], (function (arr, x) {
+                return /* array */[Curry._1(fn, x)].concat(arr);
               }));
 }
 
@@ -904,25 +907,19 @@ export {
   Tabs ,
   VisuallyHidden ,
   Dialog ,
-  splitAt ,
-  descend ,
-  ascend ,
   alert ,
   nanoid ,
   absf ,
-  sortWith ,
   confirm ,
-  move ,
-  add ,
-  arraySum ,
-  addFloat ,
-  arraySumFloat ,
-  listSumFloat ,
-  last ,
-  splitInHalf ,
   github_url ,
   license_url ,
   issues_url ,
+  add ,
+  addFloat ,
+  listSumF ,
+  ascend ,
+  descend ,
+  $$Array ,
   WebpackAssets ,
   Entities ,
   listToReactArray ,

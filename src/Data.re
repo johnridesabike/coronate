@@ -434,7 +434,7 @@ module Converters = {
             ->Map.String.keysToArray
             ->List.fromArray,
           rating: data.rating,
-          score: playerStats.results->Utils.listSumFloat,
+          score: playerStats.results->Utils.listSumF,
         };
         acc->Map.String.set(key, newData);
       },

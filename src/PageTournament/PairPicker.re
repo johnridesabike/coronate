@@ -307,7 +307,7 @@ module PlayerInfo = {
     let colorScores = playerData.colorScores;
     let opponentResults = playerData.opponentResults;
     let results = playerData.results;
-    let colorBalance = Utils.listSumFloat(colorScores);
+    let colorBalance = Utils.listSumF(colorScores);
     let player = getPlayer(playerId);
     let hasBye =
       opponentResults
@@ -331,7 +331,7 @@ module PlayerInfo = {
       <h3> {player.firstName ++ " " ++ player.lastName |> React.string} </h3>
       <p>
         {"Score: " |> React.string}
-        {Utils.listSumFloat(results) |> Js.Float.toString |> React.string}
+        {Utils.listSumF(results) |> Js.Float.toString |> React.string}
       </p>
       <p id={"rating-" ++ player.id}>
         {"Rating: " |> React.string}

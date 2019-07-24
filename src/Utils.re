@@ -1,27 +1,36 @@
+open Belt;
 module Tabs = Externals.ReachTabs;
 module VisuallyHidden = Externals.VisuallyHidden;
 module Dialog = Externals.Dialog;
-let splitAt = Externals.splitAt;
-let descend = Externals.descend;
-let ascend = Externals.ascend;
 let alert = Externals.alert;
 let nanoid = Externals.nanoid;
 let absf = Externals.absf;
-let sortWith = Externals.sortWith;
 let confirm = Externals.confirm;
-let move = Externals.move;
-
-let add = (a, b) => a + b;
-let arraySum = arr => Js.Array.reduce(add, 0, arr);
-let addFloat = (a, b) => a +. b;
-let arraySumFloat = arr => Js.Array.reduce(addFloat, 0.0, arr);
-let listSumFloat = list => list->Belt.List.reduce(0.0, addFloat);
-let last = arr => arr[Js.Array.length(arr) - 1];
-let splitInHalf = arr => arr |> splitAt(Js.Array.length(arr) / 2);
 
 let github_url = "https://github.com/johnridesabike/coronate";
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
 let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
+
+let add = (a, b) => a + b;
+let addFloat = (a, b) => a +. b;
+let listSumF = list => list->Belt.List.reduce(0.0, addFloat);
+let ascend = (getter, a, b) => compare(getter(a), getter(b));
+let descend = (getter, a, b) => compare(getter(b), getter(a));
+
+module Array = {
+  let last = arr => arr->Array.get(Js.Array.length(arr) - 1);
+  let sum = arr => Js.Array.reduce(add, 0, arr);
+  let sumF = arr => Js.Array.reduce(addFloat, 0.0, arr);
+  let swap = (arr, idx1, idx2) => {
+    switch (arr->Array.get(idx1), arr->Array.get(idx2)) {
+    | (Some(item1), Some(item2)) =>
+      let _ = arr->Array.set(idx1, item2);
+      let _ = arr->Array.set(idx2, item1);
+      arr;
+    | _ => arr
+    };
+  };
+};
 
 module WebpackAssets = {
   let logo: string = [%bs.raw {| require("./assets/icon-min.svg") |}];
@@ -33,13 +42,10 @@ module Entities = {
   let copy = "\xA9";
 };
 
-let listToReactArray = (list, func) => {
+let listToReactArray = (list, fn) =>
   list
-  ->Belt.List.reduce([||], (acc, item) =>
-      acc |> Js.Array.concat([|func(item)|])
-    )
+  ->Belt.List.reduce([||], (arr, x) => Js.Array.concat(arr, [|fn(x)|]))
   ->React.array;
-};
 
 module DateTimeFormatComponent =
        (

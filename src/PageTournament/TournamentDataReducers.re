@@ -110,7 +110,7 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
     }
   | MoveTieBreak(oldIndex, newIndex) => {
       ...state,
-      tieBreaks: state.tieBreaks |> Utils.move(oldIndex, newIndex),
+      tieBreaks: state.tieBreaks->Utils.Array.swap(oldIndex, newIndex),
     }
   | SetTourneyPlayers(playerIds) => {...state, playerIds}
   | SetByeQueue(byeQueue) => {...state, byeQueue}
@@ -219,7 +219,9 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
     let _ =
       roundList->Array.set(
         roundId,
-        roundList->Array.getExn(roundId) |> Utils.move(oldIndex, newIndex),
+        roundList
+        ->Array.getExn(roundId)
+        ->Utils.Array.swap(oldIndex, newIndex),
       );
     {...state, roundList};
   | UpdateByeScores(newValue) =>

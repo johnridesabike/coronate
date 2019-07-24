@@ -2,8 +2,6 @@
    This handles all of the score tiebreak logic. Not all of the USCF methods
    are implemented yet, just the most common ones.
  */
-
-open Utils;
 open Belt;
 
 type scoreData = {
@@ -28,7 +26,7 @@ let isNotDummy = (scoreDict, oppId) => {
 let getPlayerScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(player) => listSumFloat(player.results)
+  | Some(player) => Utils.listSumF(player.results)
   };
 };
 
@@ -45,13 +43,13 @@ let getOpponentScores = (scoreDict, id) => {
 // USCF § 34E1
 let getMedianScore = (scoreDict, id) =>
   getOpponentScores(scoreDict, id)
-  ->Belt.SortArray.stableSortBy(ascend(x => x))
+  ->SortArray.stableSortBy(compare)
   |> Js.Array.slice(~start=1, ~end_=-1)
-  |> arraySumFloat;
+  |> Utils.Array.sumF;
 
 // USCF § 34E2.
 let getSolkoffScore = (scoreDict, id) =>
-  getOpponentScores(scoreDict, id) |> arraySumFloat;
+  getOpponentScores(scoreDict, id) |> Utils.Array.sumF;
 
 // turn the regular score list into a "running" score list
 let runningReducer = (acc, score) => {
@@ -68,7 +66,7 @@ let getCumulativeScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
-    person.resultsNoByes->List.reduce([], runningReducer)->listSumFloat
+    person.resultsNoByes->List.reduce([], runningReducer)->Utils.listSumF
   };
 };
 
@@ -80,7 +78,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
     person.opponentResults->Map.String.keysToArray
     |> Js.Array.filter(isNotDummy(scoreDict))
     |> Js.Array.map(getCumulativeScore(scoreDict))
-    |> arraySumFloat
+    |> Utils.Array.sumF
   };
 };
 
@@ -88,7 +86,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 let getColorBalanceScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) => listSumFloat(person.colorScores)
+  | Some(person) => Utils.listSumF(person.colorScores)
   };
 };
 
@@ -133,10 +131,36 @@ type standing = {
   tieBreaks: array(float),
 };
 
-// Sort the standings by score, see USCF tie-break rules from § 34.
-// Returns the list of the standings. Each standing has a `tieBreaks` property
-// which lists the score associated with each method. The order of these
-// coresponds to the order of the method names in the second list.
+let standingsSorter = (a, b) => {
+  let result = ref(0);
+  let tieBreakIndex = ref(0);
+  let break = ref(false);
+  while (result^ === 0 && ! break^) {
+    switch (compare(b.score, a.score)) {
+    | 0 =>
+      switch (
+        b.tieBreaks->Array.get(tieBreakIndex^),
+        a.tieBreaks->Array.get(tieBreakIndex^),
+      ) {
+      | (Some(tb_b), Some(tb_a)) =>
+        switch (compare(tb_b, tb_a)) {
+        | 0 => tieBreakIndex := tieBreakIndex^ + 1
+        | x => result := x
+        }
+      | _ => break := true
+      }
+    | x => result := x
+    };
+  };
+  result^;
+};
+
+/*
+ Sort the standings by score, see USCF tie-break rules from § 34.
+ Returns the list of the standings. Each standing has a `tieBreaks` property
+ which lists the score associated with each method. The order of these
+ coresponds to the order of the method names in the second list.
+ */
 let createStandingList = (methods, scoreData) => {
   let selectedTieBreakFuncs =
     methods |> Js.Array.map(i => tieBreakMethods->Array.getExn(i).func);
@@ -151,14 +175,7 @@ let createStandingList = (methods, scoreData) => {
              |> Js.Array.map(func => func(scoreData, id)),
          }
        );
-  // create a list of functions to pass to `sortWith`. This will sort by
-  // scores and then by each tiebreak value.
-  let sortTieBreakFuncList =
-    selectedTieBreakFuncs
-    |> Js.Array.mapi((_, index) => descend(x => x.tieBreaks[index]));
-  let sortFuncList =
-    sortTieBreakFuncList->Js.Array.concat([|descend(x => x.score)|]);
-  sortWith(sortFuncList, standings);
+  SortArray.stableSortBy(standings, standingsSorter);
 };
 
 let areScoresEqual = (standing1, standing2) => {

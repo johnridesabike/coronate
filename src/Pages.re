@@ -102,7 +102,7 @@ module Splash = {
                 className="button-primary" onClick={_ => Db.loadDemoDB()}>
                 {React.string("Click here to load the demo data")}
               </button>
-              {React.string("(optional)")}
+              {React.string(" (optional)")}
             </li>
             <li className=Style.hintLi>
               <Icons.ArrowLeft />
@@ -174,7 +174,7 @@ module Splash = {
                 className=Style.footerLink
                 href="https://reasonml.github.io/"
                 onClick=Electron.openInBrowser>
-                {React.string("ReasonML")}
+                {React.string("Reason")}
               </a>
               {React.string(" & ")}
               <a

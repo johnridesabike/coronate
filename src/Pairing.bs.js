@@ -57,7 +57,7 @@ function differentDueColor(param) {
   }
 }
 
-var maxPriority = Utils$Coronate.arraySumFloat(/* array */[
+var maxPriority = Utils$Coronate.$$Array[/* sumF */2](/* array */[
       halfPosition(1.0),
       4.0,
       16.0 / 1.0,
@@ -85,7 +85,7 @@ function calcPairIdeal(player1, player2) {
     var scoreDiff = Utils$Coronate.absf(player1[/* score */8] - player2[/* score */8]) + 1.0;
     var halfDiff = Pervasives.abs(player1[/* halfPos */4] - player2[/* halfPos */4] | 0) + 1 | 0;
     var isDiffHalf = player1[/* isUpperHalf */5] !== player2[/* isUpperHalf */5] && player1[/* score */8] === player2[/* score */8];
-    return Utils$Coronate.arraySumFloat(/* array */[
+    return Utils$Coronate.$$Array[/* sumF */2](/* array */[
                 isDiffDueColor ? 4.0 : 0.0,
                 16.0 / scoreDiff,
                 (
@@ -108,10 +108,18 @@ function descendingRating(param, param$1) {
               }), param, param$1);
 }
 
+function splitInHalf(arr) {
+  var midpoint = arr.length / 2 | 0;
+  return /* tuple */[
+          Belt_Array.slice(arr, 0, midpoint),
+          Belt_Array.sliceToEnd(arr, midpoint)
+        ];
+}
+
 function setUpperHalves(data) {
   var dataList = Belt_MapString.valuesToArray(data);
   return Belt_Array.reduce(dataList, Belt_MapString.empty, (function (acc, playerData) {
-                var match = Utils$Coronate.splitInHalf(Belt_SortArray.stableSortBy(dataList.filter((function (p2) {
+                var match = splitInHalf(Belt_SortArray.stableSortBy(dataList.filter((function (p2) {
                                   return p2[/* score */8] === playerData[/* score */8];
                                 })), descendingRating).map((function (p) {
                             return p[/* id */0];
@@ -191,7 +199,7 @@ function setByePlayer(byeQueue, dummyId, data) {
 function assignColorsForPair(pair) {
   var player2 = pair[1];
   var player1 = pair[0];
-  var match = Utils$Coronate.listSumFloat(player1[/* colorScores */2]) < Utils$Coronate.listSumFloat(player2[/* colorScores */2]);
+  var match = Utils$Coronate.listSumF(player1[/* colorScores */2]) < Utils$Coronate.listSumF(player2[/* colorScores */2]);
   if (match) {
     return /* tuple */[
             player2[/* id */0],
@@ -272,6 +280,7 @@ export {
   calcPairIdeal ,
   descendingScore ,
   descendingRating ,
+  splitInHalf ,
   setUpperHalves ,
   sortByScoreThenRating ,
   setByePlayer ,

@@ -319,7 +319,7 @@ function PairPicker$PlayerInfo(Props) {
   var colorScores = playerData[/* colorScores */0];
   var opponentResults = playerData[/* opponentResults */4];
   var results = playerData[/* results */7];
-  var colorBalance = Utils$Coronate.listSumFloat(colorScores);
+  var colorBalance = Utils$Coronate.listSumF(colorScores);
   var player = Curry._1(getPlayer, playerId);
   var hasBye = Belt_MapString.keysToArray(opponentResults).includes(Data$Coronate.dummy_id);
   var match$1 = Belt_MapString.get(avoidMap, playerId);
@@ -329,7 +329,7 @@ function PairPicker$PlayerInfo(Props) {
     );
   return React.createElement("dl", {
               className: "player-card"
-            }, React.createElement("h3", undefined, player[/* firstName */0] + (" " + player[/* lastName */2])), React.createElement("p", undefined, "Score: ", Utils$Coronate.listSumFloat(results).toString()), React.createElement("p", {
+            }, React.createElement("h3", undefined, player[/* firstName */0] + (" " + player[/* lastName */2])), React.createElement("p", undefined, "Score: ", Utils$Coronate.listSumF(results).toString()), React.createElement("p", {
                   id: "rating-" + player[/* id */1]
                 }, "Rating: ", player[/* rating */4].toString()), React.createElement("p", undefined, "Color balance: " + prettyBalance), React.createElement("p", undefined, "Has had a bye round: " + (
                   hasBye ? "Yes" : "No"

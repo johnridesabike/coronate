@@ -2,6 +2,8 @@
 
 [See the pairing & scoring TODO document.](https://github.com/johnridesabike/coronate/tree/master/src/TODO_Pairing_Scoring.md)
 
+- [ ] improve security and code quality of JSON import and export.
+
 ## User interface to-dos
 
 - [ ] Overhaul the pair-picker view. It should show more information about potential pairings and have a preview & confirmation for the auto-pairings.

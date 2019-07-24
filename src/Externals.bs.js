@@ -8,6 +8,8 @@ import * as LocalforageRemoveitems from "localforage-removeitems";
 
 var EloRank = /* module */[];
 
+var $$FileReader = /* module */[];
+
 function Instance(DataType) {
   var make = function (name, storeName) {
     return Localforage.default.createInstance({
@@ -123,6 +125,7 @@ var IntlDateTimeFormat = /* module */[
 
 export {
   EloRank ,
+  $$FileReader ,
   LocalForage ,
   VisuallyHidden ,
   Dialog ,

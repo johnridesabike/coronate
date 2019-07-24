@@ -91,44 +91,47 @@ function PageTourney$Sidebar(Props) {
     $$event.preventDefault();
     if (Utils$Coronate.confirm("Are you sure you want to delete the last round?")) {
       ReasonReactRouter.push("#/tourneys/" + tourney[/* id */2]);
-      Utils$Coronate.last(roundList).forEach((function (match_) {
-              var whiteScore = match_[/* whiteScore */7];
-              var blackScore = match_[/* blackScore */8];
-              var whiteId = match_[/* whiteId */1];
-              var blackId = match_[/* blackId */2];
-              var whiteOrigRating = match_[/* whiteOrigRating */5];
-              var blackOrigRating = match_[/* blackOrigRating */6];
-              if (whiteScore + blackScore !== 0.0) {
-                /* array */[
-                    /* tuple */[
-                      whiteId,
-                      whiteOrigRating
-                    ],
-                    /* tuple */[
-                      blackId,
-                      blackOrigRating
-                    ]
-                  ].forEach((function (param) {
-                        var id = param[0];
-                        if (id !== Data$Coronate.dummy_id) {
-                          var matchCount = Curry._1(getPlayer, id)[/* matchCount */3];
-                          Curry._1(playersDispatch, /* SetMatchCount */Block.__(2, [
-                                  id,
-                                  matchCount - 1 | 0
-                                ]));
-                          return Curry._1(playersDispatch, /* SetRating */Block.__(3, [
-                                        id,
-                                        param[1]
-                                      ]));
-                        } else {
-                          return 0;
-                        }
-                      }));
-                return /* () */0;
-              } else {
-                return 0;
-              }
-            }));
+      var match = Utils$Coronate.$$Array[/* last */0](roundList);
+      if (match !== undefined) {
+        match.forEach((function (match_) {
+                var whiteScore = match_[/* whiteScore */7];
+                var blackScore = match_[/* blackScore */8];
+                var whiteId = match_[/* whiteId */1];
+                var blackId = match_[/* blackId */2];
+                var whiteOrigRating = match_[/* whiteOrigRating */5];
+                var blackOrigRating = match_[/* blackOrigRating */6];
+                if (whiteScore + blackScore !== 0.0) {
+                  /* array */[
+                      /* tuple */[
+                        whiteId,
+                        whiteOrigRating
+                      ],
+                      /* tuple */[
+                        blackId,
+                        blackOrigRating
+                      ]
+                    ].forEach((function (param) {
+                          var id = param[0];
+                          if (id !== Data$Coronate.dummy_id) {
+                            var matchCount = Curry._1(getPlayer, id)[/* matchCount */3];
+                            Curry._1(playersDispatch, /* SetMatchCount */Block.__(2, [
+                                    id,
+                                    matchCount - 1 | 0
+                                  ]));
+                            return Curry._1(playersDispatch, /* SetRating */Block.__(3, [
+                                          id,
+                                          param[1]
+                                        ]));
+                          } else {
+                            return 0;
+                          }
+                        }));
+                  return /* () */0;
+                } else {
+                  return 0;
+                }
+              }));
+      }
       Curry._1(tourneyDispatch, /* DelLastRound */1);
       if (roundList.length === 1) {
         return Curry._1(tourneyDispatch, /* AddRound */0);
