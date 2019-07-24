@@ -44,25 +44,25 @@ Once you have a local copy of the code, run this command in the project's direct
 npm install
 ```
 
-## 🔧 Running the tests
-
-The current tests are incomplete and only test a few of the most fragile functions.
-
-You can run the tests with the command:
-```
-npm test
-```
-
 ## 🎈 Usage
 
-Coronate works completely in your local browser. You can run your live demo of it with these two commands:
+Coronate works completely in your local browser. Running it only requires two commands.
+
+First run this:
+
 ```
 npm run re:watch
+```
+
+*Note: If you're using an editor that can compile Reason code automatically, such as VS Code and [reason-vscode](https://marketplace.visualstudio.com/items?itemName=jaredly.reason-vscode), then you don't need to run `re:watch`*
+
+Then run this:
+
+```
 npm start
 ```
-*If you're using an editor that can compile ReasonML code automatically, such as VS Code and [reason-vscode](https://marketplace.visualstudio.com/items?itemName=jaredly.reason-vscode), then you don't need to run `re:watch`*
 
-and then open this URL: `http://localhost:3000`.
+And then open this URL: `http://localhost:3000`.
 
 Because it keeps your data in your browser's storage, be mindful that data loss can happen unexpectedly depending on your settings. The app's "options" page has a button to back up your data in an external file.
 
@@ -76,6 +76,17 @@ Or if you're on Windows, then run:
 npm run start:electron-win
 ```
 The Electron functionality is almost identical to the web version. The biggest difference is that it stores your data separately from your browser.
+
+## 🔧 Running the tests
+
+The current tests are incomplete and only test a few of the most fragile functions.
+
+Just as with using the live version, you need to run `npm run re:watch` first (but not if you're using an editor that compiles Reason automatically).
+
+Then you can run the tests with the command:
+```
+npm test
+```
 
 ## 🚀 Deployment 
 

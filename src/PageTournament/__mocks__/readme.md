@@ -1,1 +1,3 @@
-⚠️ This doesn't work right now. I don't know how to make it work with ReasonML ⚠️
+To make testing easier, these mocks eliminate all of the async storage functions.
+
+Tests won't be able to detect any bugs with storage, so that will need to be tested separately.
