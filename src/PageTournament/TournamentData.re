@@ -83,26 +83,24 @@ let make = (~children, ~tourneyId) => {
     () => {
       let didCancel = ref(false);
       let _ =
-        Js.Promise.(
-          Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
-          |> then_(value => {
-               if (! didCancel^) {
-                 switch (value->Js.Nullable.toOption) {
-                 | None => setLoadStatus(_ => Error)
-                 | Some(value) =>
-                   tourneyDispatch(
-                     SetTournament(value->Data.Tournament.tFromJsDeep),
-                   );
-                   setLoadStatus(_ => TourneyIsLoaded);
-                 };
+        Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
+        |> Repromise.map(value =>
+             if (! didCancel^) {
+               switch (value->Js.Nullable.toOption) {
+               | None => setLoadStatus(_ => Error)
+               | Some(value) =>
+                 tourneyDispatch(
+                   SetTournament(value->Data.Tournament.tFromJsDeep),
+                 );
+                 setLoadStatus(_ => TourneyIsLoaded);
                };
-               resolve();
-             })
-          |> catch(error => {
-               Js.log2("Error loading tournament", error);
-               resolve();
-             })
-        );
+             }
+           )
+        |> Repromise.Rejectable.catch(error => {
+             Js.log2("Error loading tournament", error);
+             Repromise.resolved();
+           });
+
       Some(() => didCancel := true);
     },
     (tourneyId, tourneyDispatch),
@@ -133,44 +131,41 @@ let make = (~children, ~tourneyId) => {
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         | _ =>
           let _ =
-            Js.Promise.(
-              Db.playerStore->LocalForage.Map.getItems(
-                Js.Nullable.return(allTheIds),
-              )
-              |> then_(values => {
-                   /* This safeguards against trying to fetch dummy IDs or IDs from
-                      deleted players. If we updated without this condition, then
-                      this `useEffect` would trigger an infinite loop and a memory
-                      leak. */
-                   let newIds = values |> Js.Dict.keys;
-                   let oldIds = players |> Map.String.keysToArray;
-                   let changedPlayers =
-                     Js.Array.(
-                       newIds
-                       |> filter(x => !(oldIds |> includes(x)))
-                       |> concat(
-                            oldIds |> filter(x => !(newIds |> includes(x))),
-                          )
-                     );
-                   /* Js.log2(
-                        "changed players:",
-                        changedPlayers |> Js.Array.length,
-                      ); */
-                   if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                     playersDispatch(
-                       SetPlayers(
-                         values->Db.jsDictToReMap(Data.Player.tFromJs),
-                       ),
-                     );
-                     setLoadStatus(_ => TourneyAndPlayersAreLoaded);
-                   };
-                   resolve(values);
-                 })
-              |> catch(error => {
-                   Js.log2("Error loading players", error);
-                   resolve(Js.Dict.empty());
-                 })
-            );
+            Db.playerStore->LocalForage.Map.getItems(
+              Js.Nullable.return(allTheIds),
+            )
+            |> Repromise.map(values => {
+                 /* This safeguards against trying to fetch dummy IDs or IDs from
+                    deleted players. If we updated without this condition, then
+                    this `useEffect` would trigger an infinite loop and a memory
+                    leak. */
+                 let newIds = values |> Js.Dict.keys;
+                 let oldIds = players |> Map.String.keysToArray;
+                 let changedPlayers =
+                   Js.Array.(
+                     newIds
+                     |> filter(x => !(oldIds |> includes(x)))
+                     |> concat(
+                          oldIds |> filter(x => !(newIds |> includes(x))),
+                        )
+                   );
+                 /* Js.log2(
+                      "changed players:",
+                      changedPlayers |> Js.Array.length,
+                    ); */
+                 if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
+                   playersDispatch(
+                     SetPlayers(
+                       values->Db.jsDictToReMap(Data.Player.tFromJs),
+                     ),
+                   );
+                   setLoadStatus(_ => TourneyAndPlayersAreLoaded);
+                 };
+               })
+            |> Repromise.Rejectable.catch(error => {
+                 Js.log2("Error loading players", error);
+                 Repromise.resolved();
+               });
           ();
         };
       };

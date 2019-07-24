@@ -33,7 +33,8 @@
         "re-classnames",
         "bs-webapi",
         "bs-css",
-        "@johnridesabike/bs-numeral"
+        "@johnridesabike/bs-numeral",
+        "@aantron/repromise"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

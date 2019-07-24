@@ -28,28 +28,24 @@ type testType = {. byeValue: float};
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw "document.body.style = \"wait\""];
   let _ =
-    Js.Promise.(
-      all3((
-        configStore->LocalForage.Obj.setItems(
-          DemoData.config |> Config.tToJs,
-        ),
-        playerStore->LocalForage.Map.setItems(
-          DemoData.players->reMapToJsDict(Data.Player.tToJs),
-        ),
-        tourneyStore->LocalForage.Map.setItems(
-          DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
-        ),
-      ))
-      |> then_(value => {
-           Utils.alert("Demo data loaded!");
-           let _: unit = [%bs.raw "document.body.style = \"auto\""];
-           resolve(value);
-         })
-      |> catch(_ => {
-           let _: unit = [%bs.raw "document.body.style = \"auto\""];
-           resolve(((), (), ()));
-         })
-    );
+    Repromise.all3(
+      configStore->LocalForage.Obj.setItems(DemoData.config |> Config.tToJs),
+      playerStore->LocalForage.Map.setItems(
+        DemoData.players->reMapToJsDict(Data.Player.tToJs),
+      ),
+      tourneyStore->LocalForage.Map.setItems(
+        DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
+      ),
+    )
+    |> Repromise.map(_ => {
+         Utils.alert("Demo data loaded!");
+         let _: unit = [%bs.raw "document.body.style = \"auto\""];
+         ();
+       })
+    |> Repromise.Rejectable.catch(_ => {
+         let _: unit = [%bs.raw "document.body.style = \"auto\""];
+         Repromise.resolved();
+       });
   ();
 };
 /*******************************************************************************
@@ -82,16 +78,14 @@ let useAllItemsFromDb =
     () => {
       let didCancel = ref(false);
       let _ =
-        Js.Promise.(
-          store->LocalForage.Map.getItems(Js.Nullable.null)
-          |> then_(results => {
-               if (! didCancel^) {
-                 dispatch(SetState(results->jsDictToReMap(fromJs)));
-                 setIsLoaded(_ => true);
-               };
-               resolve(results);
-             })
-        );
+        store->LocalForage.Map.getItems(Js.Nullable.null)
+        |> Repromise.map(results =>
+             if (! didCancel^) {
+               dispatch(SetState(results->jsDictToReMap(fromJs)));
+               setIsLoaded(_ => true);
+             }
+           );
+
       Some(() => didCancel := false);
     },
     (store, dispatch, setIsLoaded, fromJs),
@@ -102,26 +96,23 @@ let useAllItemsFromDb =
       | false => None
       | true =>
         let _ =
-          Js.Promise.(
-            store->LocalForage.Map.setItems(items->reMapToJsDict(toJs))
-            |> then_(() => {
-                 let _ =
-                   store->LocalForage.Map.keys()
-                   |> then_(keys => {
-                        let stateKeys = items->Map.String.keysToArray;
-                        let deleted =
-                          Js.Array.(
-                            keys |> filter(x => !(stateKeys |> includes(x)))
-                          );
-                        if (deleted |> Js.Array.length > 0) {
-                          let _ = store->LocalForage.Map.removeItems(deleted);
-                          ();
-                        };
-                        resolve();
-                      });
-                 resolve();
-               })
-          );
+          store->LocalForage.Map.setItems(items->reMapToJsDict(toJs))
+          |> Repromise.map(() => {
+               let _ =
+                 store->LocalForage.Map.keys()
+                 |> Repromise.map(keys => {
+                      let stateKeys = items->Map.String.keysToArray;
+                      let deleted =
+                        Js.Array.(
+                          keys |> filter(x => !(stateKeys |> includes(x)))
+                        );
+                      if (deleted |> Js.Array.length > 0) {
+                        let _ = store->LocalForage.Map.removeItems(deleted);
+                        ();
+                      };
+                    });
+               ();
+             });
         None;
       },
     (store, items, isLoaded, toJs),
@@ -194,19 +185,17 @@ let useConfig = () => {
     () => {
       let didCancel = ref(false);
       let _ =
-        Js.Promise.(
-          configStore->LocalForage.Obj.getItems(Js.Nullable.null)
-          |> then_(valuesJs => {
-               let values = Config.tFromJs(valuesJs);
-               if (! didCancel^) {
-                 dispatch(SetAvoidPairs(values.avoidPairs));
-                 dispatch(SetByeValue(values.byeValue));
-                 dispatch(SetLastBackup(values.lastBackup));
-                 setIsLoaded(_ => true);
-               };
-               resolve();
-             })
-        );
+        configStore->LocalForage.Obj.getItems(Js.Nullable.null)
+        |> Repromise.map(valuesJs => {
+             let values = Config.tFromJs(valuesJs);
+             if (! didCancel^) {
+               dispatch(SetAvoidPairs(values.avoidPairs));
+               dispatch(SetByeValue(values.byeValue));
+               dispatch(SetLastBackup(values.lastBackup));
+               setIsLoaded(_ => true);
+             };
+           });
+
       Some(() => didCancel := true);
     },
     (setIsLoaded, dispatch),

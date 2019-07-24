@@ -28,6 +28,7 @@
     "re:watch": "bsb -make-world -clean-world -w"
   },
   "dependencies": {
+    "@aantron/repromise": "^0.6.1",
     "@johnridesabike/bs-numeral": "^1.0.5",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",

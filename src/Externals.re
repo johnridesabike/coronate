@@ -40,10 +40,10 @@ module FileReader = {
 module LocalForage = {
   type t;
   [@bs.module "localforage"] external localForage: t = "default";
+  [@bs.deriving abstract]
   type config = {
-    .
-    "name": string,
-    "storeName": string,
+    name: string,
+    storeName: string,
   };
   /*
      The Map module must have a homogenous type. In order to use it, you first
@@ -65,28 +65,28 @@ module LocalForage = {
       [@bs.send]
       external createInstance: (t('a), config) => t('a) = "createInstance";
       let make = (~name, ~storeName) => {
-        localForage->createInstance({"name": name, "storeName": storeName});
+        localForage->createInstance(config(~name, ~storeName));
       };
     };
 
     [@bs.send]
-    external getItem: (t('a), string) => Js.Promise.t(Js.Nullable.t('a)) =
+    external getItem: (t('a), string) => Repromise.t(Js.Nullable.t('a)) =
       "getItem";
     [@bs.send]
-    external setItem: (t('a), string, 'a) => Js.Promise.t(unit) = "setItem";
+    external setItem: (t('a), string, 'a) => Repromise.t(unit) = "setItem";
     [@bs.send]
-    external keys: (t('a), unit) => Js.Promise.t(Js.Array.t(string)) =
+    external keys: (t('a), unit) => Repromise.t(Js.Array.t(string)) =
       "keys";
     /* Plugin methods */
     [@bs.send]
     external getItems:
-      (t('a), Js.Nullable.t(array(string))) => Js.Promise.t(Js.Dict.t('a)) =
+      (t('a), Js.Nullable.t(array(string))) => Repromise.t(Js.Dict.t('a)) =
       "getItems";
     [@bs.send]
-    external setItems: (t('a), Js.Dict.t('a)) => Js.Promise.t(unit) =
+    external setItems: (t('a), Js.Dict.t('a)) => Repromise.t(unit) =
       "setItems";
     [@bs.send]
-    external removeItems: (t('a), array(string)) => Js.Promise.t(unit) =
+    external removeItems: (t('a), array(string)) => Repromise.t(unit) =
       "removeItems";
   };
   /*
@@ -110,16 +110,16 @@ module LocalForage = {
       [@bs.send]
       external createInstance: (t('a), config) => t('a) = "createInstance";
       let make = (~name, ~storeName) => {
-        localForage->createInstance({"name": name, "storeName": storeName});
+        localForage->createInstance(config(~name, ~storeName));
       };
     };
 
     [@bs.send]
     external getItems:
-      (t('a), Js.Nullable.t(array(string))) => Js.Promise.t('a) =
+      (t('a), Js.Nullable.t(array(string))) => Repromise.t('a) =
       "getItems";
     [@bs.send]
-    external setItems: (t('a), 'a) => Js.Promise.t(unit) = "setItems";
+    external setItems: (t('a), 'a) => Repromise.t(unit) = "setItems";
   };
 
   module Plugins = {
@@ -189,6 +189,9 @@ module ReachTabs = {
   };
 };
 
+/*******************************************************************************
+  Experimental (more than usual)
+ ******************************************************************************/
 module IntlDateTimeFormat = {
   open Belt;
   type t;
