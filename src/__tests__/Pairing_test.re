@@ -33,7 +33,7 @@ test("Players have 0 priority of pairing themselves.", () => {
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData("Bye_Round_Tourney____");
   let (pairData, byedPlayer) =
-    Pairing.setByePlayer([||], Data.dummy_id, dataPreBye);
+    Pairing.setByePlayer([||], Data.Player.dummy_id, dataPreBye);
   test("The lowest-ranking player is removed after bye selection.", () =>
     expect(pairData->Map.String.keysToArray)
     |> not
@@ -52,7 +52,7 @@ test("The bye signup queue works", () => {
   let byeQueue = [|"Newbie_McNewberson___", "Joel_Robinson________"|];
   // Newbie McNewberson already played the first bye round
   let (_, byedPlayer) =
-    Pairing.setByePlayer(byeQueue, Data.dummy_id, dataPreBye);
+    Pairing.setByePlayer(byeQueue, Data.Player.dummy_id, dataPreBye);
   switch (byedPlayer) {
   | None => assert(false)
   | Some(player) => expect(player.id) |> toBe("Joel_Robinson________")
@@ -63,7 +63,7 @@ test(
   () => {
     let dataPreBye = loadPairData("Bye_Tourney_3________");
     let (_, byedPlayer) =
-      Pairing.setByePlayer([||], Data.dummy_id, dataPreBye);
+      Pairing.setByePlayer([||], Data.Player.dummy_id, dataPreBye);
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) => expect(player.id) |> toBe("Newbie_McNewberson___")

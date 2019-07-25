@@ -50,7 +50,7 @@ module PlayerMatchInfo = {
     let hasBye =
       opponentResults
       |> Map.String.keysToArray
-      |> Js.Array.includes(Data.dummy_id);
+      |> Js.Array.includes(Data.Player.dummy_id);
     let oppResultsEntries = opponentResults |> Map.String.toArray;
     let prettyBalance =
       if (colorBalance < 0.0) {
@@ -155,7 +155,7 @@ module MatchRow = {
     let whitePlayer = getPlayer(match.whiteId);
     let blackPlayer = getPlayer(match.blackId);
     let isDummyRound =
-      [|match.whiteId, match.blackId|] |> Js.Array.includes(Data.dummy_id);
+      [|match.whiteId, match.blackId|] |> Js.Array.includes(Data.Player.dummy_id);
 
     let whiteName =
       [|whitePlayer.firstName, whitePlayer.lastName|]
@@ -627,7 +627,7 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
     /* TODO: replace these dicts with a better data type */
     let unmatchedWithDummy =
       unmatchedCount mod 2 !== 0
-        ? unmatched->Map.String.set(Data.dummy_id, getPlayer(Data.dummy_id))
+        ? unmatched->Map.String.set(Data.Player.dummy_id, getPlayer(Data.Player.dummy_id))
         : unmatched;
     let activePlayersCount =
       activePlayers |> Belt.Map.String.keysToArray |> Js.Array.length;

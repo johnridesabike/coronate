@@ -90,7 +90,7 @@ let hasHadBye = (matchList, playerId) => {
            acc |> concat([|match.whiteId, match.blackId|]),
          [||],
        )
-    |> includes(Data.dummy_id)
+    |> includes(Data.Player.dummy_id)
   );
 };
 

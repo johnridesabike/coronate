@@ -298,7 +298,8 @@ module PlayerInfo = {
         ~avoidPairs,
       ) => {
     let avoidMap =
-      avoidPairs |> Js.Array.reduce(Data.avoidPairReducer, Map.String.empty);
+      avoidPairs
+      |> Js.Array.reduce(Data.Config.avoidPairReducer, Map.String.empty);
     let playerData =
       switch (scoreData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)
@@ -312,7 +313,7 @@ module PlayerInfo = {
     let hasBye =
       opponentResults
       |> Map.String.keysToArray
-      |> Js.Array.includes(Data.dummy_id);
+      |> Js.Array.includes(Data.Player.dummy_id);
     let avoidList =
       switch (avoidMap->Map.String.get(playerId)) {
       | None => []

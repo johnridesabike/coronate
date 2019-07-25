@@ -1,37 +1,8 @@
 open Belt;
-/*
- let win = 1.0;
- let loss = 0.0;
- let draw = 0.5;
- */
-/* This is used in by matches to indicate a dummy player. The
-   `getPlayerMaybe()` method returns a special dummy player profile when
-   fetching this ID.
-   This ID conforms to the NanoID regex, which currently has no purpose. */
-let dummy_id = "________DUMMY________";
 type id = string;
 /*
  let isNanoId = str => str |> Js.Re.test_([%re "/^[A-Za-z0-9_-]{21}$/"]);
  */
-type avoidPair = (string, string);
-
-/*
- Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
- `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
- */
-let avoidPairReducer = (acc, (id1, id2)) => {
-  let newList1 =
-    switch (acc->Map.String.get(id1)) {
-    | None => [id2]
-    | Some(currentList) => [id2, ...currentList]
-    };
-  let newList2 =
-    switch (acc->Map.String.get(id2)) {
-    | None => [id1]
-    | Some(currentList) => [id1, ...currentList]
-    };
-  acc->Map.String.set(id1, newList1)->Map.String.set(id2, newList2);
-};
 
 /*
   The jsConverter is useful for importing and exporting types to JSON or
@@ -52,7 +23,7 @@ module Player = {
     lastName: string,
     matchCount: int,
     rating: int,
-    type_: string // used for CSS styling etc. Default "person".
+    type_: string // used for CSS styling etc. Default to "person" please.
   };
   let decode = json =>
     Json.Decode.{
@@ -75,6 +46,11 @@ module Player = {
       ])
     );
 
+  /* This is used in by matches to indicate a dummy player. The
+     `getPlayerMaybe()` method returns a special dummy player profile when
+     fetching this ID.
+     This ID conforms to the NanoID regex, which currently has no purpose. */
+  let dummy_id = "________DUMMY________";
   // These are useful for passing to `filter()` methods.
   let isDummyId = playerId => playerId == dummy_id;
 
@@ -160,16 +136,19 @@ module Match = {
 };
 
 module Tournament = {
-  type roundList = array(array(Match.t));
   type t = {
     byeQueue: array(id),
     date: Js.Date.t,
     id,
     name: string,
     playerIds: array(id),
-    roundList,
+    roundList: array(array(Match.t)),
     tieBreaks: array(int),
   };
+  /*
+   LocalForage/IndexedDB sometimes automatically parses the date for us
+   already, and I'm not sure how to propertly handle it.
+   */
   external unsafe_date: Js.Json.t => Js.Date.t = "%identity";
   let decode = json =>
     Json.Decode.{
@@ -196,6 +175,7 @@ module Tournament = {
 };
 
 module Config = {
+  type avoidPair = (string, string);
   type t = {
     avoidPairs: array(avoidPair),
     byeValue: float,
@@ -219,6 +199,24 @@ module Config = {
     byeValue: 1.0,
     avoidPairs: [||],
     lastBackup: Js.Date.fromFloat(0.0),
+  };
+
+  /*
+   Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
+   `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
+   */
+  let avoidPairReducer = (acc, (id1, id2)) => {
+    let newList1 =
+      switch (acc->Map.String.get(id1)) {
+      | None => [id2]
+      | Some(currentList) => [id2, ...currentList]
+      };
+    let newList2 =
+      switch (acc->Map.String.get(id2)) {
+      | None => [id1]
+      | Some(currentList) => [id1, ...currentList]
+      };
+    acc->Map.String.set(id1, newList1)->Map.String.set(id2, newList2);
   };
 };
 
@@ -351,10 +349,11 @@ module Converters = {
     matchList
     |> Js.Array.reduce(
          (acc, match) => {
+           open Match;
            let newDataWhite =
              makeScoreData(
                ~existingData=acc,
-               ~playerId=match.Match.whiteId,
+               ~playerId=match.whiteId,
                ~origRating=match.whiteOrigRating,
                ~newRating=match.whiteNewRating,
                ~result=match.whiteScore,
@@ -380,9 +379,8 @@ module Converters = {
   };
 
   let createPairingData = (playerData, avoidPairs, scoreMap) => {
-    open Player;
     let avoidMap =
-      avoidPairs |> Js.Array.reduce(avoidPairReducer, Map.String.empty);
+      avoidPairs |> Js.Array.reduce(Config.avoidPairReducer, Map.String.empty);
     playerData->Map.String.reduce(
       Map.String.empty,
       (acc, key, data) => {
@@ -400,20 +398,21 @@ module Converters = {
         };
         /* `isUpperHalf` and `halfPos` will have to be set by another
            function later. */
-        let newData: Pairing.t = {
-          avoidIds: newAvoidIds,
-          colorScores: playerStats.colorScores,
-          colors: playerStats.colors,
-          halfPos: 0,
-          id: data.id,
-          isUpperHalf: false,
-          opponents:
-            playerStats.opponentResults
-            ->Map.String.keysToArray
-            ->List.fromArray,
-          rating: data.rating,
-          score: playerStats.results->Utils.List.sumF,
-        };
+        let newData =
+          Pairing.{
+            avoidIds: newAvoidIds,
+            colorScores: playerStats.colorScores,
+            colors: playerStats.colors,
+            halfPos: 0,
+            id: data.Player.id,
+            isUpperHalf: false,
+            opponents:
+              playerStats.opponentResults
+              ->Map.String.keysToArray
+              ->List.fromArray,
+            rating: data.rating,
+            score: playerStats.results->Utils.List.sumF,
+          };
         acc->Map.String.set(key, newData);
       },
     );

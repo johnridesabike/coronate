@@ -51,8 +51,8 @@ module ScoreTable = {
       Data.rounds2Matches(~roundList, ())
       |> Data.Converters.matches2ScoreData
       |> Scoring.createStandingList(tieBreaks)
-      |> Js.Array.filter((standing: Scoring.standing) =>
-           standing.id !== Data.dummy_id
+      |> Js.Array.filter(standing =>
+           !Data.Player.isDummyId(standing.Scoring.id)
          )
       |> Scoring.createStandingTree;
     <table

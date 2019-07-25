@@ -6,7 +6,7 @@ module LocalForage = Externals.LocalForage;
  ******************************************************************************/
 let database_name = "Coronate";
 module ConfigDb =
-  LocalForage.Obj(
+  LocalForage.Object(
     Data.Config,
     {
       let name = database_name;
@@ -54,8 +54,6 @@ type actionDb('a) =
   | DelItem(string)
   | SetItem(string, 'a)
   | SetState(Map.String.t('a));
-type genericReducer('a) =
-  (Map.String.t('a), actionDb('a)) => Map.String.t('a);
 let genericDbReducer = (state, action) => {
   switch (action) {
   | SetItem(id, item) => state->Map.String.set(id, item)
@@ -128,10 +126,10 @@ let useAllTournaments =
   );
 
 type actionOption =
-  | AddAvoidPair(Data.avoidPair)
-  | DelAvoidPair(Data.avoidPair)
+  | AddAvoidPair(Data.Config.avoidPair)
+  | DelAvoidPair(Data.Config.avoidPair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(array(Data.avoidPair))
+  | SetAvoidPairs(array(Data.Config.avoidPair))
   | SetByeValue(float)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);

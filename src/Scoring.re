@@ -6,7 +6,7 @@ open Belt;
 
 type scoreData = {
   colorScores: list(float),
-  colors: list(int),
+  colors: list(int), // This is used to create pairing data
   id: string,
   isDummy: bool,
   opponentResults: Map.String.t(float),

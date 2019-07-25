@@ -56,9 +56,7 @@ type loadStatus =
 let make = (~children, ~tourneyId) => {
   let (tourney, tourneyDispatch) =
     React.useReducer(TournamentDataReducers.tournamentReducer, emptyTourney);
-  let name = tourney.name;
-  let playerIds = tourney.playerIds;
-  let roundList = tourney.roundList;
+  let {Tournament.name, Tournament.playerIds, Tournament.roundList} = tourney;
   let (players, playersDispatch) =
     React.useReducer(TournamentDataReducers.playersReducer, Map.String.empty);
   let (loadStatus, setLoadStatus) = React.useState(() => NothingIsLoaded);

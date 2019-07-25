@@ -1,9 +1,9 @@
 open Belt;
 
 let scoreByeMatch = (byeValue, match: Data.Match.t) =>
-  if (match.whiteId === Data.dummy_id) {
+  if (Data.Player.isDummyId(match.whiteId)) {
     {...match, whiteScore: 0.0, blackScore: byeValue};
-  } else if (match.blackId === Data.dummy_id) {
+  } else if (Data.Player.isDummyId(match.blackId)) {
     {...match, whiteScore: byeValue, blackScore: 0.0};
   } else {
     match;
@@ -23,12 +23,16 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
       }
     );
   let (pairdataNoByes, byePlayerData) =
-    Pairing.setByePlayer(tourney.byeQueue, Data.dummy_id, filteredData);
+    Pairing.setByePlayer(
+      tourney.byeQueue,
+      Data.Player.dummy_id,
+      filteredData,
+    );
   let pairs = Pairing.pairPlayers(pairdataNoByes);
   let pairsWithBye =
     switch (byePlayerData) {
     | Some(player) =>
-      pairs |> Js.Array.concat([|(player.id, Data.dummy_id)|])
+      pairs |> Js.Array.concat([|(player.id, Data.Player.dummy_id)|])
     | None => pairs
     };
   let getPlayer = Data.Player.getPlayerMaybeMap(playerMap);

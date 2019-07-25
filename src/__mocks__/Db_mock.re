@@ -25,10 +25,10 @@ let genericDbReducer = (state, action) => {
 };
 
 type actionOption =
-  | AddAvoidPair(Data.avoidPair)
-  | DelAvoidPair(Data.avoidPair)
+  | AddAvoidPair(Data.Config.avoidPair)
+  | DelAvoidPair(Data.Config.avoidPair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(array(Data.avoidPair))
+  | SetAvoidPairs(array(Data.Config.avoidPair))
   | SetByeValue(float)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);

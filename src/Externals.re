@@ -30,10 +30,9 @@ module FileReader = {
 /*******************************************************************************
   LocalForage
 
-  This divides LocalForage into two basic modules: Map and Obj. Vanilla JS
-  LocalForage is simple: you can put whatever you want into it, and you get
-  whatever comes back out. Dividing it into these modules adds Reason-idiomatic
-  structure.
+  This divides LocalForage into two functors modules: Map and Object. Once
+  an functor creates a module, that module becomes a type-safe way to access
+  the store's contents.
  ******************************************************************************/
 module LocalForage = {
   type t;
@@ -53,21 +52,18 @@ module LocalForage = {
     let storeName: string;
   };
   /*
-     The Map module must have a homogenous type. In order to use it, you first
-     must use its `Instance` functor with any module that has a `localForage`
-     type, then use the `make` method to create an instance of the store.
+     Map is a functor that can take any module that has an `encode` function,
+     `decode` function, and a `t` type. The output module will contain a store
+     and functions that can access that store and return either the data type or
+     `Belt.Map.String` objects.
 
-     By requiring a `localForage` type on a module, that allows you to specify
-     a custom type structure that may be different than pure Reason. You can
-     also just say `type localForage = t;` and store the raw compiled Reason.
-
-     All of Map's methods should work fine with any instance's store.
+     The main functions the `encode` and `decode` automatically, but you can
+     directly pass `Js.Json.t` with the `*_json` functions. Instead of 
+     `Belt.Map.String`, those functions retun `Js.Dict`s.
    */
   module Map = (Data: Data, Config: Config) => {
-    type t;
-    type data_t = Data.t;
+    type data = Data.t;
     open Belt;
-    [@bs.module "localforage"] external localForage: t = "default";
     [@bs.send] external createInstance: (t, config) => t = "createInstance";
     let store =
       localForage->createInstance(
@@ -138,17 +134,10 @@ module LocalForage = {
     own type. The object's structure is definined in the input module's
     `localForage` type, similar to the instances of Map.
 
-    Like Map.Instance, Obj is a functor that must be combined with another
-    module before use.
-
     Obj relies on the `getItems` and `setItems` plugin, since accessing
     individual fields isn't possible (right now).
-
    */
-  module Obj = (Data: Data, Config: Config) => {
-    type t;
-
-    [@bs.module "localforage"] external localForage: t = "default";
+  module Object = (Data: Data, Config: Config) => {
     [@bs.send] external createInstance: (t, config) => t = "createInstance";
     let store =
       localForage->createInstance(

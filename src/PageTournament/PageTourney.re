@@ -100,7 +100,7 @@ module Sidebar = {
                if (whiteScore +. blackScore !== 0.0) {
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
-                      if (id !== Data.dummy_id) {
+                      if (id !== Data.Player.dummy_id) {
                         /* Don't try to set the dummy */
                         let matchCount = getPlayer(id).matchCount;
                         playersDispatch(SetMatchCount(id, matchCount - 1));
