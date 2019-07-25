@@ -33,14 +33,14 @@ external removeAllListeners: (window, string) => unit = "removeAllListeners";
 [@bs.scope "window"] [@bs.val]
 external windowRequire: option(string => option(t)) = "require";
 
-let electron =
+let electron_ =
   switch (windowRequire) {
   | Some(require) => require("electron")
   | None => None
   };
 
 let ifElectron = fn => {
-  switch (electron) {
+  switch (electron_) {
   | Some(electron) => Some(fn(electron))
   | None => None
   };
@@ -113,7 +113,7 @@ module IfElectron = {
       | Windows => isWin
       | Mac => isMac
       };
-    switch (electron) {
+    switch (electron_) {
     | Some(electron) =>
       isThisTheRightOs ? children(electron) : ReasonReact.null
     | None => ReasonReact.null

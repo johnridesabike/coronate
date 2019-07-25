@@ -104,8 +104,10 @@ module PlayerList = {
     <>
       {players
        |> Map.String.valuesToArray
-       |> Js.Array.map((p: Player.t) =>
-            <tr key={p.id} className={Cn.make([p.type_, "player"])}>
+       |> Js.Array.map(p =>
+            <tr
+              key={p.Player.id}
+              className={Cn.make([Player.Type.toString(p.type_), "player"])}>
               <td> {React.string(p.firstName)} </td>
               <td> {React.string(p.lastName)} </td>
               <td>

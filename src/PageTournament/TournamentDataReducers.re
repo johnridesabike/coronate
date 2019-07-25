@@ -1,22 +1,22 @@
 open Belt;
 open Data;
 
-let scoreByeMatch = (byeValue, match: Match.t) =>
+let scoreByeMatch = (byeValue, match) =>
   if (Player.isDummyId(match.Match.whiteId)) {
     {
       ...match,
-      result: ByeValue.resultForPlayerColor(byeValue, MatchResult.Black),
+      result: ByeValue.resultForPlayerColor(byeValue, Match.Result.Black),
     };
   } else if (Player.isDummyId(match.blackId)) {
     {
       ...match,
-      result: ByeValue.resultForPlayerColor(byeValue, MatchResult.White),
+      result: ByeValue.resultForPlayerColor(byeValue, Match.Result.White),
     };
   } else {
     match;
   };
 
-let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) => {
+let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney) => {
   /* the pairData includes any players who were already matched. We need to
      only include the specified players. */
   let playerIds = playerMap |> Map.String.keysToArray;
@@ -29,7 +29,11 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
       }
     );
   let (pairdataNoByes, byePlayerData) =
-    Pairing.setByePlayer(tourney.byeQueue, Player.dummy_id, filteredData);
+    Pairing.setByePlayer(
+      tourney.Tournament.byeQueue,
+      Player.dummy_id,
+      filteredData,
+    );
   let pairs = Pairing.pairPlayers(pairdataNoByes);
   let pairsWithBye =
     switch (byePlayerData) {
@@ -49,18 +53,18 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
            blackNewRating: getPlayer(blackId).rating,
            whiteId,
            blackId,
-           result: MatchResult.NotSet,
+           result: Match.Result.NotSet,
          }
        );
   newMatchList |> Js.Array.map(scoreByeMatch(byeValue));
 };
 
-let manualPair = ((white: Data.Player.t, black: Data.Player.t), byeValue) => {
-  Data.Match.{
+let manualPair = ((white, black), byeValue) => {
+  Match.{
     id: Utils.nanoid(),
-    result: MatchResult.NotSet,
-    whiteId: white.id,
-    blackId: black.id,
+    result: Match.Result.NotSet,
+    whiteId: white.Player.id,
+    blackId: black.Player.id,
     whiteOrigRating: white.rating,
     blackOrigRating: black.rating,
     whiteNewRating: white.rating,
@@ -75,29 +79,29 @@ type actionTournament =
   | AddTieBreak(int)
   | DelTieBreak(int)
   | MoveTieBreak(int, int)
-  | SetTourneyPlayers(array(Data.id))
-  | SetByeQueue(array(Data.id))
+  | SetTourneyPlayers(array(id))
+  | SetByeQueue(array(id))
   | SetName(string)
   | AutoPair(
       ByeValue.t,
       int,
       Map.String.t(Pairing.t),
-      Map.String.t(Data.Player.t),
-      Data.Tournament.t,
+      Map.String.t(Player.t),
+      Tournament.t,
     )
-  | ManualPair(ByeValue.t, (Data.Player.t, Data.Player.t), int)
+  | ManualPair(ByeValue.t, (Player.t, Player.t), int)
   | SetDate(Js.Date.t)
-  | SetMatchResult(Data.id, (int, int), MatchResult.t, int)
-  | DelMatch(Data.id, int)
-  | SwapColors(Data.id, int)
+  | SetMatchResult(id, (int, int), Match.Result.t, int)
+  | DelMatch(id, int)
+  | SwapColors(id, int)
   | MoveMatch(int, int, int)
   | UpdateByeScores(ByeValue.t)
-  | SetTournament(Data.Tournament.t);
+  | SetTournament(Tournament.t);
 
 let tournamentReducer = (state, action) => {
   switch (action) {
   | AddRound =>
-    Data.Tournament.{
+    Tournament.{
       ...state,
       roundList: state.roundList |> Js.Array.concat([|[||]|]),
     }
@@ -159,14 +163,14 @@ let tournamentReducer = (state, action) => {
     let matchIndex =
       Js.Array.(
         roundList->unsafe_get(roundId)
-        |> findIndex((match: Data.Match.t) => match.id === matchId)
+        |> findIndex((match: Match.t) => match.id === matchId)
       );
     let match = roundList->Array.getExn(roundId)->Array.getExn(matchIndex);
     roundList
     ->Array.getExn(roundId)
     ->Array.set(
         matchIndex,
-        Data.Match.{...match, result, whiteNewRating, blackNewRating},
+        Match.{...match, result, whiteNewRating, blackNewRating},
       )
     |> ignore;
     {...state, roundList};
@@ -176,7 +180,7 @@ let tournamentReducer = (state, action) => {
     roundList->Array.set(
       roundId,
       roundList->Array.getExn(roundId)
-      |> Js.Array.filter((match: Data.Match.t) => match.id !== matchId),
+      |> Js.Array.filter((match: Match.t) => match.id !== matchId),
     )
     |> ignore;
     {...state, roundList};
@@ -189,16 +193,17 @@ let tournamentReducer = (state, action) => {
     let matchIndex =
       Js.Array.(
         roundList->unsafe_get(roundId)
-        |> findIndex((match: Data.Match.t) => match.id === matchId)
+        |> findIndex((match: Match.t) => match.id === matchId)
       );
     let oldMatch =
       Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
     let result =
-      MatchResult.(
+      Match.Result.(
         switch (oldMatch.result) {
         | WhiteWon => BlackWon
         | BlackWon => WhiteWon
-        | x => x
+        | Draw => Draw
+        | NotSet => NotSet
         }
       );
     /* TODO: clean this up. It just reverses the values */
@@ -206,7 +211,7 @@ let tournamentReducer = (state, action) => {
     ->Array.getExn(roundId)
     ->Array.set(
         matchIndex,
-        Data.Match.{
+        Match.{
           ...oldMatch,
           result,
           whiteId: oldMatch.blackId,
@@ -242,11 +247,11 @@ let tournamentReducer = (state, action) => {
 };
 
 type actionPlayer =
-  | SetPlayer(Data.Player.t)
-  | DelPlayer(Data.id)
-  | SetMatchCount(Data.id, int)
-  | SetRating(Data.id, int)
-  | SetPlayers(Belt.Map.String.t(Data.Player.t));
+  | SetPlayer(Player.t)
+  | DelPlayer(id)
+  | SetMatchCount(id, int)
+  | SetRating(id, int)
+  | SetPlayers(Belt.Map.String.t(Player.t));
 
 let playersReducer = (state, action) => {
   Belt.Map.String.(
@@ -257,10 +262,10 @@ let playersReducer = (state, action) => {
       state->remove(id)
     | SetMatchCount(id, matchCount) =>
       let player = state->getExn(id);
-      state->set(id, Data.Player.{...player, matchCount});
+      state->set(id, Player.{...player, matchCount});
     | SetRating(id, rating) =>
       let player = state->getExn(id);
-      state->set(id, Data.Player.{...player, rating});
+      state->set(id, Player.{...player, rating});
     | SetPlayers(state) => state
     }
   );

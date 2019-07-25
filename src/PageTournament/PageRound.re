@@ -33,8 +33,8 @@ module PlayerMatchInfo = {
     let player = getPlayer(playerId);
     let (colorScores, opponentResults, results) =
       switch (scoreData->Map.String.get(playerId)) {
-      | Some((data: Scoring.scoreData)) => (
-          data.colorScores,
+      | Some(data) => (
+          data.Scoring.colorScores,
           data.opponentResults,
           data.results,
         )
@@ -88,7 +88,7 @@ module PlayerMatchInfo = {
                          getPlayer(opId).lastName,
                          "-",
                          /*
-                          TODO: This should be in sync with the `MatchResult`
+                          TODO: This should be in sync with the `Match.Result`
                           types
                           */
                          switch (result) {
@@ -145,8 +145,11 @@ module MatchRow = {
       [|blackPlayer.firstName, blackPlayer.lastName|]
       |> Js.Array.joinWith(" ");
 
-    let resultDisplay = color => {
-      let won = <Icons.Award /*ariaLabel="Won"*/ />;
+    let resultDisplay = playerColor => {
+      let won =
+        <Icons.Award
+          className=Css.(style([color(Utils.PhotonColors.yellow_70)]))
+        />;
       let lost =
         <Utils.VisuallyHidden> {React.string("Lost")} </Utils.VisuallyHidden>;
       switch (match.result) {
@@ -159,16 +162,16 @@ module MatchRow = {
         <span
           ariaLabel="Draw"
           role="img"
-          style={ReactDOMRe.Style.make(~filter="grayscale(100%)", ())}>
+          style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
           {React.string({js|🤝|js})}
         </span>
       | BlackWon =>
-        switch (color) {
-        | MatchResult.White => lost
+        switch (playerColor) {
+        | Match.Result.White => lost
         | Black => won
         }
       | WhiteWon =>
-        switch (color) {
+        switch (playerColor) {
         | White => won
         | Black => lost
         }
@@ -176,13 +179,13 @@ module MatchRow = {
     };
 
     let setMatchResult = jsResultCode => {
-      let result = MatchResult.fromString(jsResultCode);
+      let result = Match.Result.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
       if (match.result !== result) {
         let white = players->Map.String.getExn(match.whiteId);
         let black = players->Map.String.getExn(match.blackId);
-        let newWhiteScore = MatchResult.(toFloat(result, White));
-        let newBlackScore = MatchResult.(toFloat(result, Black));
+        let newWhiteScore = result->Match.Result.(toFloat(White));
+        let newBlackScore = result->Match.Result.(toFloat(Black));
         let newRatings =
           result === NotSet
             ? (match.whiteOrigRating, match.blackOrigRating)
@@ -195,7 +198,7 @@ module MatchRow = {
         playersDispatch(SetRating(white.id, whiteNewRating));
         playersDispatch(SetRating(black.id, blackNewRating));
         /* if the result hasn't been scored yet, increment the matchCount*/
-        if (match.result !== MatchResult.NotSet) {
+        if (match.result !== Match.Result.NotSet) {
           playersDispatch(SetMatchCount(white.id, white.matchCount + 1));
           playersDispatch(SetMatchCount(black.id, black.matchCount + 1));
         };
@@ -224,17 +227,21 @@ module MatchRow = {
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
         {pos + 1 |> string_of_int |> React.string}
       </th>
-      <td className=Style.playerResult>
-        {resultDisplay(MatchResult.White)}
-      </td>
+      <td className=Style.playerResult> {resultDisplay(White)} </td>
       <td
-        className={"table__player row__player " ++ whitePlayer.type_}
+        className={Cn.make([
+          "table__player row__player",
+          Player.Type.toString(whitePlayer.type_),
+        ])}
         id={"match-" ++ string_of_int(pos) ++ "-white"}>
         {React.string(whiteName)}
       </td>
       <td className=Style.playerResult> {resultDisplay(Black)} </td>
       <td
-        className={"table__player row__player " ++ blackPlayer.type_}
+        className={Cn.make([
+          "table__player row__player",
+          Player.Type.toString(blackPlayer.type_),
+        ])}
         id={"match-" ++ string_of_int(pos) ++ "-black"}>
         {React.string(blackName)}
       </td>
@@ -243,19 +250,19 @@ module MatchRow = {
         <select
           className=Style.winnerSelect
           disabled=isDummyRound
-          value={MatchResult.toString(match.result)}
+          value={Match.Result.toString(match.result)}
           onBlur=setMatchResultBlur
           onChange=setMatchResultChange>
-          <option value={MatchResult.toString(NotSet)}>
+          <option value={Match.Result.toString(NotSet)}>
             {React.string("Select winner")}
           </option>
-          <option value={MatchResult.toString(WhiteWon)}>
+          <option value={Match.Result.toString(WhiteWon)}>
             {React.string("White won")}
           </option>
-          <option value={MatchResult.toString(BlackWon)}>
+          <option value={Match.Result.toString(BlackWon)}>
             {React.string("Black won")}
           </option>
-          <option value={MatchResult.toString(Draw)}>
+          <option value={Match.Result.toString(Draw)}>
             {React.string("Draw")}
           </option>
         </select>
@@ -378,7 +385,6 @@ module RoundTable = {
              <caption className={isCompact ? "title-30" : "title-40"}>
                {React.string("Round ")}
                {roundId + 1 |> Js.Int.toString |> React.string}
-               {React.string(" matches")}
              </caption>
              <thead>
                <tr>
@@ -566,7 +572,7 @@ module type UsesRoundData = {
       ~roundId: int,
       ~tournament: TournamentData.t,
       ~activePlayersCount: int,
-      ~scoreData: Map.String.t(Scoring.scoreData),
+      ~scoreData: Map.String.t(Scoring.t),
       ~unmatched: Map.String.t(Data.Player.t),
       ~unmatchedCount: int,
       ~unmatchedWithDummy: Map.String.t(Data.Player.t)

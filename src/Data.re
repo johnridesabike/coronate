@@ -5,13 +5,38 @@ type id = string;
  */
 
 module Player = {
+  module Type = {
+    /*
+      These are mainly used for CSS styling.
+     */
+    type t =
+      | Person
+      | Dummy
+      | Missing;
+    let toString = data =>
+      switch (data) {
+      | Person => "person"
+      | Dummy => "dummy"
+      | Missing => "missing"
+      };
+    let fromString = str =>
+      switch (str) {
+      | "person" => Person
+      | "dummy" => Dummy
+      | "missing" => Missing
+      | _ => Person
+      };
+    let encode = data => data |> toString |> Json.Encode.string;
+    let decode = data => data |> Json.Decode.string |> fromString;
+  };
+
   type t = {
     firstName: string,
     id,
     lastName: string,
     matchCount: int,
     rating: int,
-    type_: string // used for CSS styling etc. Default to "person" please.
+    type_: Type.t,
   };
   let decode = json =>
     Json.Decode.{
@@ -20,7 +45,7 @@ module Player = {
       lastName: json |> field("lastName", string),
       matchCount: json |> field("matchCount", int),
       rating: json |> field("rating", int),
-      type_: json |> field("type_", string),
+      type_: json |> field("type_", Type.decode),
     };
   let encode = data =>
     Json.Encode.(
@@ -30,35 +55,38 @@ module Player = {
         ("lastName", data.lastName |> string),
         ("matchCount", data.matchCount |> int),
         ("rating", data.rating |> int),
-        ("type_", data.type_ |> string),
+        ("type_", data.type_ |> Type.encode),
       ])
     );
 
-  /* This is used in by matches to indicate a dummy player. The
-     `getPlayerMaybe()` method returns a special dummy player profile when
-     fetching this ID.
-     This ID conforms to the NanoID regex, which currently has no purpose. */
+  /*
+    This is used in by matches to indicate a dummy player. The `getPlayerMaybe`
+    function returns a special dummy player profile when fetching this ID.
+    This ID conforms to the NanoID regex, which currently has no purpose.
+   */
   let dummy_id = "________DUMMY________";
-  // These are useful for passing to `filter()` methods.
-  let isDummyId = playerId => playerId == dummy_id;
+  /* This are useful for passing to `filter()` methods.*/
+  let isDummyId = playerId => playerId === dummy_id;
 
-  // This is the dummy profile that `getPlayerMaybe()` returns for bye rounds.
+  /* This is the dummy profile that `getPlayerMaybe()` returns for bye rounds.*/
   let dummyPlayer = {
     id: dummy_id,
     firstName: "Bye",
     lastName: "Player",
-    type_: "dummy",
+    type_: Type.Dummy,
     matchCount: 0,
     rating: 0,
   };
 
-  // If `getPlayerMaybe()` can't find a profile (e.g. if it was deleted) then it
-  // outputs this instead. The ID will be the same as missing player's ID.
+  /*
+    If `getPlayerMaybe()` can't find a profile (e.g. if it was deleted) then it
+    outputs this instead. The ID will be the same as missing player's ID.
+   */
   let makeMissingPlayer = id => {
     id,
     firstName: "Anonymous",
     lastName: "Player",
-    type_: "missing",
+    type_: Type.Missing,
     matchCount: 0,
     rating: 0,
   };
@@ -74,49 +102,48 @@ module Player = {
     };
 };
 
-module MatchResult = {
-  type t =
-    | WhiteWon
-    | BlackWon
-    | Draw
-    | NotSet;
-  type color =
-    | White
-    | Black;
-  let toFloat = (score, color) =>
-    switch (score) {
-    | WhiteWon =>
-      switch (color) {
-      | White => 1.0
-      | Black => 0.0
-      }
-    | BlackWon =>
-      switch (color) {
-      | White => 0.0
-      | Black => 1.0
-      }
-    | Draw => 0.5
-    | NotSet => 0.0
-    };
-  let toString = score =>
-    switch (score) {
-    | WhiteWon => "whiteWon"
-    | BlackWon => "blackWon"
-    | Draw => "draw"
-    | NotSet => "notSet"
-    };
-  let fromString = score =>
-    switch (score) {
-    | "whiteWon" => WhiteWon
-    | "blackWon" => BlackWon
-    | "draw" => Draw
-    | _ => NotSet
-    };
-  let encode = data => data |> toString |> Json.Encode.string;
-  let decode = json => json |> Json.Decode.string |> fromString;
-};
-
 module Match = {
+  module Result = {
+    type t =
+      | WhiteWon
+      | BlackWon
+      | Draw
+      | NotSet;
+    type color =
+      | White
+      | Black;
+    let toFloat = (score, color) =>
+      switch (score) {
+      | WhiteWon =>
+        switch (color) {
+        | White => 1.0
+        | Black => 0.0
+        }
+      | BlackWon =>
+        switch (color) {
+        | White => 0.0
+        | Black => 1.0
+        }
+      | Draw => 0.5
+      | NotSet => 0.0
+      };
+    let toString = score =>
+      switch (score) {
+      | WhiteWon => "whiteWon"
+      | BlackWon => "blackWon"
+      | Draw => "draw"
+      | NotSet => "notSet"
+      };
+    let fromString = score =>
+      switch (score) {
+      | "whiteWon" => WhiteWon
+      | "blackWon" => BlackWon
+      | "draw" => Draw
+      | _ => NotSet
+      };
+    let encode = data => data |> toString |> Json.Encode.string;
+    let decode = json => json |> Json.Decode.string |> fromString;
+  };
   type t = {
     id,
     whiteId: id,
@@ -125,7 +152,7 @@ module Match = {
     blackNewRating: int,
     whiteOrigRating: int,
     blackOrigRating: int,
-    result: MatchResult.t,
+    result: Result.t,
   };
   let decode = json =>
     Json.Decode.{
@@ -136,7 +163,7 @@ module Match = {
       blackNewRating: json |> field("blackNewRating", int),
       whiteOrigRating: json |> field("whiteOrigRating", int),
       blackOrigRating: json |> field("blackOrigRating", int),
-      result: json |> field("result", MatchResult.decode),
+      result: json |> field("result", Result.decode),
     };
   let encode = data =>
     Json.Encode.(
@@ -148,7 +175,7 @@ module Match = {
         ("blackNewRating", data.blackNewRating |> int),
         ("whiteOrigRating", data.whiteOrigRating |> int),
         ("blackOrigRating", data.blackOrigRating |> int),
-        ("result", data.result |> MatchResult.encode),
+        ("result", data.result |> Result.encode),
       ])
     );
 };
@@ -210,7 +237,7 @@ module ByeValue = {
   let encode = data => data |> toJson |> Json.Encode.float;
   let decode = json => json |> Json.Decode.float |> fromJson;
   let resultForPlayerColor = (byeValue, color) =>
-    MatchResult.(
+    Match.Result.(
       switch (byeValue) {
       | Half => Draw
       | Full =>
@@ -272,10 +299,12 @@ module Config = {
  * Round functions
  ******************************************************************************/
 
-// This flattens a list of rounds to a list of matches.
-// The optional `lastRound` parameter will slice the rounds to only the last
-// index specified. For example: if you just want to see the scores through
-// round 2 and not include round 3.
+/*
+ This flattens a list of rounds to a list of matches.
+ The optional `lastRound` parameter will slice the rounds to only the last
+ index specified. For example: if you just want to see the scores through
+ round 2 and not include round 3.
+ */
 let rounds2Matches = (~roundList, ~lastRound=?, ()) => {
   let rounds = {
     switch (lastRound) {
@@ -287,8 +316,10 @@ let rounds2Matches = (~roundList, ~lastRound=?, ()) => {
   |> Js.Array.reduce((acc, round) => acc |> Js.Array.concat(round), [||]);
 };
 
-// This creates a filtered version of `players` with only the players that are
-// not matched for the specified round.
+/*
+ This creates a filtered version of `players` with only the players that are
+ not matched for the specified round.
+ */
 let getUnmatched = (roundList, players, roundId) => {
   let matchList = {
     switch (roundList->Array.get(roundId)) {
@@ -296,7 +327,7 @@ let getUnmatched = (roundList, players, roundId) => {
     | Some(round) => round
     };
   };
-  // flatten all of the ids from the matches to one list.
+  /* flatten all of the ids from the matches to one list.*/
   let matchedIds =
     matchList
     |> Js.Array.reduce(
@@ -314,16 +345,16 @@ let getUnmatched = (roundList, players, roundId) => {
 };
 
 let isRoundComplete = (roundList, players, roundId) =>
+  /* If it's not the last round, it's complete.*/
   if (roundId < Js.Array.length(roundList) - 1) {
     true;
-        /* If it's not the last round, it's complete.*/
   } else {
     let unmatched = getUnmatched(roundList, players, roundId);
     let results =
       roundList->Array.getExn(roundId)
       |> Js.Array.map(match => match.Match.result);
     Map.String.size(unmatched) === 0
-    && !(results |> Js.Array.includes(MatchResult.NotSet));
+    && !(results |> Js.Array.includes(Match.Result.NotSet));
   };
 
 module Converters = {
@@ -331,19 +362,6 @@ module Converters = {
     This module is designed to convert types from the `Data` module to types to
     be used in the `Pairing` and `Scoring` module.
    */
-  let blackValue = 1.0;
-  let whiteValue = (-1.0);
-
-  let black = 1;
-  let white = 0;
-
-  let colorToScore = color => color == black ? blackValue : whiteValue;
-
-  let getOppColor = color => color == white ? black : white;
-
-  let dummyId = "________DUMMY________";
-
-  let isDummyId = playerId => playerId == dummyId;
 
   let makeScoreData =
       (
@@ -355,22 +373,23 @@ module Converters = {
         ~oppId,
         ~color,
       ) => {
-    // Get existing score data to update, or create it fresh
     let oldData = {
       switch (existingData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)
       | Some(data) => data
       };
     };
-    // The ratings will always begin with the `origRating` of the
-    // first match they were in.
+    /*
+     The ratings will always begin with the `origRating` of the  first match
+     they were in.
+     */
     let (newRatings, firstRating) =
       switch (oldData.ratings) {
       | [] => ([newRating], origRating)
       | ratings => ([newRating, ...ratings], origRating)
       };
     let newResultsNoByes = {
-      isDummyId(oppId)
+      Player.isDummyId(oppId)
         ? oldData.resultsNoByes : [result, ...oldData.resultsNoByes];
     };
     let oldOppResults = oldData.opponentResults;
@@ -385,11 +404,11 @@ module Converters = {
       results: [result, ...oldData.results],
       resultsNoByes: newResultsNoByes,
       colors: [color, ...oldData.colors],
-      colorScores: [colorToScore(color), ...oldData.colorScores],
+      colorScores: [Color.toScore(color), ...oldData.colorScores],
       opponentResults: newOpponentResults,
       ratings: newRatings,
       firstRating,
-      isDummy: isDummyId(playerId),
+      isDummy: Player.isDummyId(playerId),
       id: playerId,
     };
   };
@@ -405,9 +424,9 @@ module Converters = {
                ~playerId=match.whiteId,
                ~origRating=match.whiteOrigRating,
                ~newRating=match.whiteNewRating,
-               ~result=match.result->MatchResult.(toFloat(White)),
+               ~result=match.result->Match.Result.(toFloat(White)),
                ~oppId=match.blackId,
-               ~color=white,
+               ~color=Scoring.Color.White,
              );
            let newDataBlack =
              makeScoreData(
@@ -415,9 +434,9 @@ module Converters = {
                ~playerId=match.blackId,
                ~origRating=match.blackOrigRating,
                ~newRating=match.blackNewRating,
-               ~result=match.result->MatchResult.(toFloat(Black)),
+               ~result=match.result->Match.Result.(toFloat(Black)),
                ~oppId=match.whiteId,
-               ~color=black,
+               ~color=Scoring.Color.Black,
              );
            acc
            ->Map.String.set(match.whiteId, newDataWhite)

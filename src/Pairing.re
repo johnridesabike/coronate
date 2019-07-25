@@ -7,7 +7,7 @@ type t = {
   id: string,
   avoidIds: list(string),
   colorScores: list(float),
-  colors: list(int),
+  colors: list(Scoring.Color.t),
   halfPos: int,
   isUpperHalf: bool,
   opponents: list(string),
@@ -18,7 +18,7 @@ type t = {
 let priority = (value, condition) => condition ? value : 0.0;
 let divisiblePriority = (dividend, divisor) => dividend /. divisor;
 
-// The following values probably need to be tweaked a lot.
+/* The following values probably need to be tweaked a lot. */
 
 /* The weight given to avoid players meeting twice. This same weight is given to
    avoid matching players on each other's "avoid" list.
@@ -56,7 +56,7 @@ let maxPriority =
 /* Given two `PairingData` objects, this assigns a number for how much they
    should be matched. The number gets fed to the `blossom` algorithm. */
 let calcPairIdeal = (player1, player2) =>
-  if (player1.id == player2.id) {
+  if (player1.id === player2.id) {
     0.0;
   } else {
     let metBefore = player1.opponents->List.has(player2.id, (===));
@@ -103,7 +103,7 @@ let setUpperHalves = data => {
     Map.String.empty,
     (acc, playerData) => {
       let (upperHalfIds, lowerHalfIds) =
-        (dataList |> Js.Array.filter(p2 => p2.score == playerData.score))
+        (dataList |> Js.Array.filter(p2 => p2.score === playerData.score))
         ->Belt.SortArray.stableSortBy(descendingRating)
         |> Js.Array.map(p => p.id)
         |> splitInHalf;
@@ -112,7 +112,6 @@ let setUpperHalves = data => {
         isUpperHalf
           ? upperHalfIds |> Js.Array.indexOf(playerData.id)
           : lowerHalfIds |> Js.Array.indexOf(playerData.id);
-      // Is there a faster syntax for this?
       let newPlayerData = {...playerData, halfPos, isUpperHalf};
       acc->Map.String.set(playerData.id, newPlayerData);
     },
@@ -222,7 +221,7 @@ let pairPlayers = pairData => {
   let blossom2Pairs = (acc, p1Index, p2Index) => {
     /* Filter out unmatched players. Blossom will automatically include
        their missing IDs in its results. */
-    p1Index == (-1)
+    p1Index === (-1)
       ? acc
       /* Translate the indices into ID strings */
       : {

@@ -100,7 +100,7 @@ module Sidebar = {
                  Match.blackOrigRating,
                } = match;
                /* Don't change players who haven't scored.*/
-               if (result !== MatchResult.NotSet) {
+               if (result !== Match.Result.NotSet) {
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
                       if (id !== Player.dummy_id) {

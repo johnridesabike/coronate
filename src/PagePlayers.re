@@ -25,7 +25,14 @@ module NewPlayerForm = {
       dispatch(
         Db.SetItem(
           id,
-          {firstName, lastName, rating, id, type_: "person", matchCount: 0},
+          {
+            firstName,
+            lastName,
+            rating,
+            id,
+            type_: Type.Person,
+            matchCount: 0,
+          },
         ),
       );
     };

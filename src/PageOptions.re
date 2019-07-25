@@ -143,7 +143,7 @@ let make = () => {
     reader->FileReader.readAsText(
       event->ReactEvent.Form.currentTarget##files->Array.getExn(0),
     );
-    // so the filename won't linger onscreen
+    /* so the filename won't linger onscreen */
     event->ReactEvent.Form.currentTarget##value #= "";
   };
   let reloadDemoData = event => {

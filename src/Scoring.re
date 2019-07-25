@@ -4,9 +4,28 @@
  */
 open Belt;
 
-type scoreData = {
+module Color = {
+  type t =
+    | White
+    | Black;
+  let opposite = color =>
+    switch (color) {
+    | White => Black
+    | Black => White
+    };
+  /*
+    This is used for calculating the "most black" tiebreak.
+   */
+  let toScore = color =>
+    switch (color) {
+    | White => (-1.0)
+    | Black => 1.0
+    };
+};
+
+type t = {
   colorScores: list(float),
-  colors: list(int), // This is used to create pairing data
+  colors: list(Color.t), /* This is used to create pairing data*/
   id: string,
   isDummy: bool,
   opponentResults: Map.String.t(float),
@@ -40,17 +59,17 @@ let getOpponentScores = (scoreDict, id) => {
   };
 };
 
-// USCF § 34E1
+/* USCF § 34E1 */
 let getMedianScore = (scoreDict, id) =>
   getOpponentScores(scoreDict, id)->SortArray.stableSortBy(compare)
   |> Js.Array.slice(~start=1, ~end_=-1)
   |> Utils.Array.sumF;
 
-// USCF § 34E2.
+/* USCF § 34E2.*/
 let getSolkoffScore = (scoreDict, id) =>
   getOpponentScores(scoreDict, id) |> Utils.Array.sumF;
 
-// turn the regular score list into a "running" score list
+/* turn the regular score list into a "running" score list */
 let runningReducer = (acc, score) => {
   let lastScore =
     switch (acc) {
@@ -60,7 +79,7 @@ let runningReducer = (acc, score) => {
   [lastScore +. score, ...acc];
 };
 
-// USCF § 34E3.
+/* USCF § 34E3.*/
 let getCumulativeScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
@@ -69,7 +88,7 @@ let getCumulativeScore = (scoreDict, id) => {
   };
 };
 
-// USCF § 34E4.
+/* USCF § 34E4.*/
 let getCumulativeOfOpponentScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
@@ -81,7 +100,7 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
   };
 };
 
-// USCF § 34E6
+/* USCF § 34E6. */
 let getColorBalanceScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
@@ -90,7 +109,7 @@ let getColorBalanceScore = (scoreDict, id) => {
 };
 
 type tieBreakData = {
-  func: (Map.String.t(scoreData), string) => float,
+  func: (Map.String.t(t), string) => float,
   id: int,
   name: string,
 };
@@ -110,8 +129,10 @@ let tieBreakMethods = [|
 let getNamefromIndex = index => tieBreakMethods->Array.getExn(index).name;
 let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
 
-// This is useful for cases where the regular factory functions return empty
-// results because a player hasn't been added yet.
+/*
+ This is useful for cases where the regular factory functions return empty
+ results because a player hasn't been added yet.
+ */
 let createBlankScoreData = id => {
   colorScores: [],
   colors: [],
@@ -194,26 +215,28 @@ let areScoresEqual = (standing1, standing2) => {
       );
 };
 
-// Groups the standings by score, see USCF tie-break rules from § 34.
-// example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
-// first, Pete is 2nd, Bob is 3rd.
+/*
+ Groups the standings by score, see USCF tie-break rules from § 34.
+ example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
+ first, Pete is 2nd, Bob is 3rd.
+ */
 let createStandingTree = standingList => {
   standingList
   |> Js.Array.reducei(
        (acc, standing, i) => {
          let isNewRank = {
            i === 0
-             // Always make a new rank for the first player
+             /* Always make a new rank for the first player */
              ? true
-             // Make a new rank if the scores aren't equal
+             /* Make a new rank if the scores aren't equal */
              : !areScoresEqual(standing, standingList->Array.getExn(i - 1));
          };
          isNewRank
-           // If this player doesn't have the same score, create a new
-           // branch of the tree
+           /* If this player doesn't have the same score, create a new
+              branch of the tree. */
            ? acc |> Js.Array.concat([|[|standing|]|])
-           // If this player has the same score as the last, append it
-           // to the last branch
+           /* If this player has the same score as the last, append it
+              to the last branch. */
            : {
              let lastIndex = Js.Array.length(acc) - 1;
              acc->Array.set(

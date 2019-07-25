@@ -349,7 +349,7 @@ module PlayerInfo = {
                   getPlayer(opId).lastName,
                   "-",
                   /*
-                   TODO: This should be in sync with the `MatchResult` types
+                   TODO: This should be in sync with the `Match.Result` types
                    */
                   switch (result) {
                   | 0.0 => "Lost"

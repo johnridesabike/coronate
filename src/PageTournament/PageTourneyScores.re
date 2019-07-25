@@ -85,7 +85,7 @@ module ScoreTable = {
               |> Js.Array.mapi((standing: Scoring.standing, i) =>
                    <tr key={standing.id} className=Style.row>
                      {i === 0
-                        // Only display the rank once
+                        /* Only display the rank once */
                         ? <th
                             className={Cn.make([
                               "table__number",
