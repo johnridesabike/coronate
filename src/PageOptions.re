@@ -1,3 +1,4 @@
+open Belt;
 [@bs.val] external node_env: string = "process.env.NODE_ENV";
 let s = React.string;
 
@@ -20,88 +21,39 @@ let invalidAlert = () => {
   );
 };
 
-/*
-   Welcome to the world of JSON encoding and decoding! The next several functions
-   make up a sort-of-safe-but-not-really way to load arbitrary JSON data. These
-   only account for a few of the more major errors that could occur.
-   THIS IS NOT EVEN CLOSE TO KIND OF SORT OF SAFE AND NEEDS TO BE REWRITTEN.
-   Security and just making sure things generally work is really hard.
- */
-external unsafePlayerDecode: Js.Json.t => Data.Player.js = "%identity";
-external unsafeTournamentDecode: Js.Json.t => Data.Tournament.json =
-  "%identity";
-external unsafeOptionsDecode:
-  {
-    .
-    "avoidPairs": 'a,
-    "byeValue": 'b,
-    "lastBackup": 'c,
-  } =>
-  Data.Config.js =
-  "%identity";
+let dictToMap = dict => dict |> Js.Dict.entries |> Map.String.fromArray;
+let mapToDict = map => map |> Map.String.toArray |> Js.Dict.fromArray;
 
-/* Pair this with a jsConverter function to turn a dict of JSON into a map of
-   RE records */
-let decodeWith = (json, func) => {
-  json
-  ->Belt.Option.mapWithDefault(None, Js.Json.decodeObject)
-  ->Belt.Option.mapWithDefault(None, dict =>
-      dict->Db.jsDictToReMap(func)->Some
-    );
+type input_data = {
+  config: Data.Config.t,
+  players: Map.String.t(Data.Player.t),
+  tournaments: Map.String.t(Data.Tournament.t),
 };
 
-let decodePlayer = json => {
-  json->unsafePlayerDecode->Data.Player.tFromJs;
-};
+let decodeOptions = json =>
+  Json.Decode.{
+    config: json |> field("config", Data.Config.decode),
+    players: json |> field("players", dict(Data.Player.decode)) |> dictToMap,
+    tournaments:
+      json |> field("tournaments", dict(Data.Tournament.decode)) |> dictToMap,
+  };
 
-let decodeTourney = json => {
-  json->unsafeTournamentDecode->Data.Tournament.tFromJsonDeep;
-};
-
-/* Options get a special converter because their entries don't map to the same
-   types*/
-let decodeOptions = json => {
-  Js.Dict.(
-    Belt.Option.(
-      Js.Json.(
-        switch (json->decodeObject) {
-        | None => None
-        | Some(dict) =>
-          switch (
-            dict->get("byeValue")->mapWithDefault(None, decodeNumber),
-            dict->get("avoidPairs")->mapWithDefault(None, decodeArray),
-            dict->get("lastBackup")->mapWithDefault(None, decodeString),
-          ) {
-          | (Some(byeValue), Some(avoidPairs), Some(lastBackup)) =>
-            {
-              "byeValue": byeValue,
-              "avoidPairs": avoidPairs,
-              "lastBackup": Js.Date.fromString(lastBackup),
-            }
-            ->unsafeOptionsDecode
-            ->Data.Config.tFromJs
-            ->Some
-          | _ => None
-          }
-        }
-      )
-    )
+let encodeOptions = data =>
+  Json.Encode.(
+    object_([
+      ("config", data.config |> Data.Config.encode),
+      (
+        "players",
+        data.players->Map.String.map(Data.Player.encode) |> mapToDict |> dict,
+      ),
+      (
+        "tournaments",
+        data.tournaments->Map.String.map(Data.Tournament.encode)
+        |> mapToDict
+        |> dict,
+      ),
+    ])
   );
-};
-
-let jsonToData = json => {
-  Js.Json.(
-    switch (json->decodeObject) {
-    | None => (None, None, None)
-    | Some(dict) =>
-      Belt.Option.(
-        dict->Js.Dict.get("options")->mapWithDefault(None, decodeOptions),
-        dict->Js.Dict.get("players")->decodeWith(decodePlayer),
-        dict->Js.Dict.get("tournaments")->decodeWith(decodeTourney),
-      )
-    }
-  );
-};
 
 module LastBackupDate = {
   [@react.component]
@@ -112,6 +64,9 @@ module LastBackupDate = {
     };
   };
 };
+/* Using the raw JSON stringify because its formatting is prettier. */
+[@bs.scope "JSON"] [@bs.val]
+external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
 let make = () => {
@@ -130,34 +85,27 @@ let make = () => {
   /* memoize this so the `useEffect` hook syncs with the correct states */
   let exportData =
     React.useMemo3(
-      () =>
-        {
-          "config": config->Data.Config.tToJs,
-          "players": players->Db.reMapToJsDict(Data.Player.tToJs),
-          "tournaments":
-            tournaments->Db.reMapToJsDict(Data.Tournament.tToJsDeep),
-        },
+      () => {config, players, tournaments},
       (config, tournaments, players),
     );
   let exportDataURI =
-    switch (Js.Json.stringifyAny(exportData)) {
-    | Some(str) =>
-      "data:application/json," ++ str->Js.Global.encodeURIComponent
-    | None => ""
-    };
+    exportData
+    |> encodeOptions
+    |> Json.stringify
+    |> Js.Global.encodeURIComponent;
   React.useEffect2(
     () => {
-      /* Using the raw JSON stringify because its formatting is prettier. */
-      let json: string = [%raw "JSON.stringify(exportData, null, 4)"];
+      let encoded = exportData |> encodeOptions;
+      let json = stringify(encoded, Js.null, 4);
       setText(_ => json);
       None;
     },
     (exportData, setText),
   );
 
-  let loadData = (~tourneys, ~players, ~config) => {
+  let loadData = (~tournaments, ~players, ~config) => {
     /* TODO: implement `fromJSON` */
-    tourneysDispatch(Db.SetState(tourneys));
+    tourneysDispatch(Db.SetState(tournaments));
     configDispatch(Db.SetState(config));
     playersDispatch(Db.SetState(players));
 
@@ -165,13 +113,13 @@ let make = () => {
   };
   let handleText = event => {
     event |> ReactEvent.Form.preventDefault;
-    switch (text |> Js.Json.parseExn) {
-    | exception _ => invalidAlert()
-    | rawJson =>
-      switch (rawJson->jsonToData) {
-      | (Some(config), Some(players), Some(tourneys)) =>
-        loadData(~tourneys, ~players, ~config)
-      | _ => invalidAlert()
+    switch (text |> Json.parse) {
+    | None => invalidAlert()
+    | Some(rawJson) =>
+      switch (rawJson |> decodeOptions) {
+      | exception (Json.Decode.DecodeError(_)) => invalidAlert()
+      | {config, players, tournaments} =>
+        loadData(~tournaments, ~players, ~config)
       }
     };
   };
@@ -181,19 +129,19 @@ let make = () => {
     let reader = FileReader.make();
     let onload = ev => {
       let data = ev##target##result;
-      switch (data |> Js.Json.parseExn) {
-      | exception _ => invalidAlert()
-      | rawJson =>
-        switch (rawJson->jsonToData) {
-        | (Some(config), Some(players), Some(tourneys)) =>
-          loadData(~tourneys, ~players, ~config)
-        | _ => invalidAlert()
+      switch (data |> Json.parse) {
+      | None => invalidAlert()
+      | Some(rawJson) =>
+        switch (rawJson |> decodeOptions) {
+        | exception (Json.Decode.DecodeError(_)) => invalidAlert()
+        | {config, players, tournaments} =>
+          loadData(~tournaments, ~players, ~config)
         }
       };
     };
     reader->FileReader.setOnLoad(onload);
     reader->FileReader.readAsText(
-      event->ReactEvent.Form.currentTarget##files[0],
+      event->ReactEvent.Form.currentTarget##files->Array.getExn(0),
     );
     // so the filename won't linger onscreen
     event->ReactEvent.Form.currentTarget##value #= "";
@@ -201,7 +149,7 @@ let make = () => {
   let reloadDemoData = event => {
     event |> ReactEvent.Mouse.preventDefault;
     loadData(
-      ~tourneys=DemoData.tournaments,
+      ~tournaments=DemoData.tournaments,
       ~players=DemoData.players,
       ~config=DemoData.config,
     );
@@ -209,7 +157,7 @@ let make = () => {
   let loadTestData = event => {
     event |> ReactEvent.Mouse.preventDefault;
     loadData(
-      ~tourneys=TestData.tournaments,
+      ~tournaments=TestData.tournaments,
       ~players=TestData.players,
       ~config=TestData.config,
     );
@@ -250,7 +198,7 @@ let make = () => {
       <p>
         <a
           download={"coronate-" ++ getDateForFile() ++ ".json"}
-          href=exportDataURI
+          href={"data:application/json," ++ exportDataURI}
           onClick={_ => configDispatch(Db.SetLastBackup(Js.Date.make()))}>
           <Icons.Download />
           {s(" Export all data")}

@@ -82,15 +82,13 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       let didCancel = ref(false);
-      Db.tourneyStore->LocalForage.Map.getItem(tourneyId)
+      Db.Tournaments.getItem(tourneyId)
       |> Repromise.map(value =>
            if (! didCancel^) {
-             switch (value->Js.Nullable.toOption) {
+             switch (value) {
              | None => setLoadStatus(_ => Error)
              | Some(value) =>
-               tourneyDispatch(
-                 SetTournament(value->Data.Tournament.tFromJsDeep),
-               );
+               tourneyDispatch(SetTournament(value));
                setLoadStatus(_ => TourneyIsLoaded);
              };
            }
@@ -130,15 +128,13 @@ let make = (~children, ~tourneyId) => {
           };
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         | _ =>
-          Db.playerStore->LocalForage.Map.getItems(
-            Js.Nullable.return(allTheIds),
-          )
+          Db.Players.getItems(allTheIds)
           |> Repromise.map(values => {
                /* This safeguards against trying to fetch dummy IDs or IDs from
                   deleted players. If we updated without this condition, then
                   this `useEffect` would trigger an infinite loop and a memory
                   leak. */
-               let newIds = values |> Js.Dict.keys;
+               let newIds = values->Map.String.keysToArray;
                let oldIds = players |> Map.String.keysToArray;
                let changedPlayers =
                  Js.Array.(
@@ -151,9 +147,7 @@ let make = (~children, ~tourneyId) => {
                     changedPlayers |> Js.Array.length,
                   ); */
                if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                 playersDispatch(
-                   SetPlayers(values->Db.jsDictToReMap(Data.Player.tFromJs)),
-                 );
+                 playersDispatch(SetPlayers(values));
                  setLoadStatus(_ => TourneyAndPlayersAreLoaded);
                };
              })
@@ -175,11 +169,7 @@ let make = (~children, ~tourneyId) => {
     () => {
       /* If the tournament wasn't loaded then the id won't match. */
       if (loadStatus !== NothingIsLoaded && tourneyId === tourney.id) {
-        Db.tourneyStore->LocalForage.Map.setItem(
-          tourneyId,
-          tourney->Data.Tournament.tToJsDeep,
-        )
-        |> ignore;
+        Db.Tournaments.setItem(tourneyId, tourney) |> ignore;
       };
       None;
     },
@@ -191,10 +181,7 @@ let make = (~children, ~tourneyId) => {
   React.useEffect2(
     () => {
       if (loadStatus === TourneyAndPlayersAreLoaded) {
-        Db.playerStore->LocalForage.Map.setItems(
-          players->Db.reMapToJsDict(Data.Player.tToJs),
-        )
-        |> ignore;
+        Db.Players.setItems(players) |> ignore;
       };
       None;
     },

@@ -22,13 +22,14 @@
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@glennsl/bs-jest|re-classnames|bs-[a-z\\-]+|@johnridesabike/bs-numeral)/)'",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@[a-z\\-]+\/bs-[a-z\\-]+|re-classnames|bs-[a-z\\-]+)|@aantron/repromise/)'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w"
   },
   "dependencies": {
     "@aantron/repromise": "^0.6.1",
+    "@glennsl/bs-json": "^4.0.0",
     "@johnridesabike/bs-numeral": "^1.0.5",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",

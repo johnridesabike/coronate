@@ -19,20 +19,17 @@ type avoidPair = (string, string);
  Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
  `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
  */
-let avoidPairReducer = (acc, pair) => {
-  let (id1, id2) = pair;
-  let newList1 = {
+let avoidPairReducer = (acc, (id1, id2)) => {
+  let newList1 =
     switch (acc->Map.String.get(id1)) {
     | None => [id2]
-    | Some(currentList1) => [id2, ...currentList1]
+    | Some(currentList) => [id2, ...currentList]
     };
-  };
-  let newList2 = {
+  let newList2 =
     switch (acc->Map.String.get(id2)) {
     | None => [id1]
-    | Some(currentList2) => [id1, ...currentList2]
+    | Some(currentList) => [id1, ...currentList]
     };
-  };
   acc->Map.String.set(id1, newList1)->Map.String.set(id2, newList2);
 };
 
@@ -48,9 +45,7 @@ let avoidPairReducer = (acc, pair) => {
   doesn't *seem* to be significant. Most of it happens in asyncronous functions
   anyway.
  */
-
 module Player = {
-  [@bs.deriving jsConverter]
   type t = {
     firstName: string,
     id,
@@ -59,16 +54,27 @@ module Player = {
     rating: int,
     type_: string // used for CSS styling etc. Default "person".
   };
-  type js = {
-    .
-    "firstName": string,
-    "id": string,
-    "lastName": string,
-    "matchCount": int,
-    "rating": int,
-    "type_": string,
-  };
-  type localForage = js;
+  let decode = json =>
+    Json.Decode.{
+      firstName: json |> field("firstName", string),
+      id: json |> field("id", string),
+      lastName: json |> field("lastName", string),
+      matchCount: json |> field("matchCount", int),
+      rating: json |> field("rating", int),
+      type_: json |> field("type_", string),
+    };
+  let encode = data =>
+    Json.Encode.(
+      object_([
+        ("firstName", data.firstName |> string),
+        ("id", data.id |> string),
+        ("lastName", data.lastName |> string),
+        ("matchCount", data.matchCount |> int),
+        ("rating", data.rating |> int),
+        ("type_", data.type_ |> string),
+      ])
+    );
+
   // These are useful for passing to `filter()` methods.
   let isDummyId = playerId => playerId == dummy_id;
 
@@ -114,7 +120,6 @@ module Player = {
 };
 
 module Match = {
-  [@bs.deriving jsConverter]
   type t = {
     id,
     whiteId: id,
@@ -126,23 +131,36 @@ module Match = {
     whiteScore: float,
     blackScore: float,
   };
-  type js = {
-    .
-    "id": id,
-    "whiteId": id,
-    "blackId": id,
-    "whiteNewRating": int,
-    "blackNewRating": int,
-    "whiteOrigRating": int,
-    "blackOrigRating": int,
-    "whiteScore": float,
-    "blackScore": float,
-  };
+  let decode = json =>
+    Json.Decode.{
+      id: json |> field("id", string),
+      whiteId: json |> field("whiteId", string),
+      blackId: json |> field("blackId", string),
+      whiteNewRating: json |> field("whiteNewRating", int),
+      blackNewRating: json |> field("blackNewRating", int),
+      whiteOrigRating: json |> field("whiteOrigRating", int),
+      blackOrigRating: json |> field("blackOrigRating", int),
+      whiteScore: json |> field("whiteScore", Json.Decode.float),
+      blackScore: json |> field("blackScore", Json.Decode.float),
+    };
+  let encode = data =>
+    Json.Encode.(
+      object_([
+        ("id", data.id |> string),
+        ("whiteId", data.whiteId |> string),
+        ("blackId", data.blackId |> string),
+        ("whiteNewRating", data.whiteNewRating |> int),
+        ("blackNewRating", data.blackNewRating |> int),
+        ("whiteOrigRating", data.whiteOrigRating |> int),
+        ("blackOrigRating", data.blackOrigRating |> int),
+        ("whiteScore", data.whiteScore |> Json.Encode.float),
+        ("blackScore", data.blackScore |> Json.Encode.float),
+      ])
+    );
 };
 
 module Tournament = {
   type roundList = array(array(Match.t));
-  [@bs.deriving jsConverter]
   type t = {
     byeQueue: array(id),
     date: Js.Date.t,
@@ -152,87 +170,51 @@ module Tournament = {
     roundList,
     tieBreaks: array(int),
   };
-  type js = {
-    .
-    "byeQueue": array(id),
-    "date": Js.Date.t,
-    "id": id,
-    "name": string,
-    "playerIds": array(id),
-    "roundList": array(array(Match.js)),
-    "tieBreaks": array(int),
-  };
-  type localForage = js;
-  /* This is almost exactly like the `js` type, except for the date field*/
-  type json = {
-    .
-    "byeQueue": array(id),
-    "date": string,
-    "id": id,
-    "name": string,
-    "playerIds": array(id),
-    "roundList": array(array(Match.js)),
-    "tieBreaks": array(int),
-  };
-  /* The built in jsConverter only does a shallow conversion, for technical and
-     uninteresting reasons. We need it to deeply convert the `roundList` field,
-     so that's where this function comes in.
-
-     Also, this is yet-another reason why managing nested records in state are a
-     pain point. (For more fun functions that have to wrangle this, see the
-     `TournamentDataReducers` module.) Is there a better way to organize this?
-     */
-  let tToJsDeep = (tourney: t): js => {
-    "byeQueue": tourney.byeQueue,
-    "date": tourney.date,
-    "id": tourney.id,
-    "name": tourney.name,
-    "playerIds": tourney.playerIds,
-    "roundList":
-      tourney.roundList
-      |> Js.Array.map(round => round |> Js.Array.map(Match.tToJs)),
-    "tieBreaks": tourney.tieBreaks,
-  };
-  let tFromJsDeep = (tourney: js) => {
-    byeQueue: tourney##byeQueue,
-    date: tourney##date,
-    id: tourney##id,
-    name: tourney##name,
-    playerIds: tourney##playerIds,
-    roundList:
-      tourney##roundList
-      |> Js.Array.map(round => round |> Js.Array.map(Match.tFromJs)),
-    tieBreaks: tourney##tieBreaks,
-  };
-  /* Exactly like the `tFromJsDeep` function, except for the date field*/
-  let tFromJsonDeep = (tourney: json) => {
-    byeQueue: tourney##byeQueue,
-    date: Js.Date.fromString(tourney##date),
-    id: tourney##id,
-    name: tourney##name,
-    playerIds: tourney##playerIds,
-    roundList:
-      tourney##roundList
-      |> Js.Array.map(round => round |> Js.Array.map(Match.tFromJs)),
-    tieBreaks: tourney##tieBreaks,
-  };
+  external unsafe_date: Js.Json.t => Js.Date.t = "%identity";
+  let decode = json =>
+    Json.Decode.{
+      byeQueue: json |> field("byeQueue", array(string)),
+      date: json |> field("date", oneOf([date, unsafe_date])),
+      id: json |> field("id", string),
+      name: json |> field("name", string),
+      playerIds: json |> field("playerIds", array(string)),
+      roundList: json |> field("roundList", array(array(Match.decode))),
+      tieBreaks: json |> field("tieBreaks", array(int)),
+    };
+  let encode = data =>
+    Json.Encode.(
+      object_([
+        ("byeQueue", data.byeQueue |> stringArray),
+        ("date", data.date |> date),
+        ("id", data.id |> string),
+        ("name", data.name |> string),
+        ("playerIds", data.playerIds |> stringArray),
+        ("roundList", data.roundList |> array(array(Match.encode))),
+        ("tieBreaks", data.tieBreaks |> array(int)),
+      ])
+    );
 };
 
 module Config = {
-  [@bs.deriving jsConverter]
   type t = {
     avoidPairs: array(avoidPair),
     byeValue: float,
     lastBackup: Js.Date.t,
   };
-  type js = {
-    .
-    "avoidPairs": array(avoidPair),
-    "byeValue": float,
-    "lastBackup": Js.Date.t,
-  };
-  type localForage = js;
-
+  let decode = json =>
+    Json.Decode.{
+      avoidPairs: json |> field("avoidPairs", array(pair(string, string))),
+      byeValue: json |> field("byeValue", Json.Decode.float),
+      lastBackup: json |> field("lastBackup", date),
+    };
+  let encode = data =>
+    Json.Encode.(
+      object_([
+        ("avoidPairs", data.avoidPairs |> array(pair(string, string))),
+        ("byeValue", data.byeValue |> Json.Encode.float),
+        ("lastBackup", data.lastBackup |> date),
+      ])
+    );
   let defaults = {
     byeValue: 1.0,
     avoidPairs: [||],
@@ -248,7 +230,7 @@ module Config = {
 // The optional `lastRound` parameter will slice the rounds to only the last
 // index specified. For example: if you just want to see the scores through
 // round 2 and not include round 3.
-let rounds2Matches = (~roundList: Tournament.roundList, ~lastRound=?, ()) => {
+let rounds2Matches = (~roundList, ~lastRound=?, ()) => {
   let rounds = {
     switch (lastRound) {
     | None => roundList
@@ -261,7 +243,7 @@ let rounds2Matches = (~roundList: Tournament.roundList, ~lastRound=?, ()) => {
 
 // This creates a filtered version of `players` with only the players that are
 // not matched for the specified round.
-let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
+let getUnmatched = (roundList, players, roundId) => {
   let matchList = {
     switch (roundList->Array.get(roundId)) {
     | None => [||]
@@ -272,8 +254,8 @@ let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
   let matchedIds =
     matchList
     |> Js.Array.reduce(
-         (acc, match: Match.t) =>
-           acc |> Js.Array.concat([|match.whiteId, match.blackId|]),
+         (acc, match) =>
+           acc |> Js.Array.concat([|match.Match.whiteId, match.blackId|]),
          [||],
        );
   players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
@@ -285,7 +267,7 @@ let getUnmatched = (roundList: Tournament.roundList, players, roundId) => {
   );
 };
 
-let isRoundComplete = (roundList: Tournament.roundList, players, roundId) =>
+let isRoundComplete = (roundList, players, roundId) =>
   if (roundId < Js.Array.length(roundList) - 1) {
     true;
         /* If it's not the last round, it's complete.*/
@@ -293,12 +275,8 @@ let isRoundComplete = (roundList: Tournament.roundList, players, roundId) =>
     let unmatched = getUnmatched(roundList, players, roundId);
     let results =
       roundList->Array.getExn(roundId)
-      |> Js.Array.map((match: Match.t) =>
-           match.whiteScore +. match.blackScore
-         );
-    unmatched->Map.String.keysToArray
-    |> Js.Array.length == 0
-    && !(results |> Js.Array.includes(0.0));
+      |> Js.Array.map(match => match.Match.whiteScore +. match.blackScore);
+    Map.String.size(unmatched) === 0 && !(results |> Js.Array.includes(0.0));
   };
 
 module Converters = {
@@ -363,20 +341,20 @@ module Converters = {
       colorScores: [colorToScore(color), ...oldData.colorScores],
       opponentResults: newOpponentResults,
       ratings: newRatings,
-      firstRating: firstRating,
+      firstRating,
       isDummy: isDummyId(playerId),
       id: playerId,
     };
   };
 
-  let matches2ScoreData = (matchList: array(Match.t)) => {
+  let matches2ScoreData = matchList => {
     matchList
     |> Js.Array.reduce(
-         (acc, match: Match.t) => {
+         (acc, match) => {
            let newDataWhite =
              makeScoreData(
                ~existingData=acc,
-               ~playerId=match.whiteId,
+               ~playerId=match.Match.whiteId,
                ~origRating=match.whiteOrigRating,
                ~newRating=match.whiteNewRating,
                ~result=match.whiteScore,

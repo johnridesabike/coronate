@@ -1,45 +1,45 @@
 open Belt;
-open Data;
 module LocalForage = Externals.LocalForage;
 
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
 let database_name = "Coronate";
-module ConfigDb = LocalForage.Obj.Instance(Data.Config);
-let configStore = ConfigDb.make(~name=database_name, ~storeName="Options");
-module Players = LocalForage.Map.Instance(Player);
-let playerStore = Players.make(~name=database_name, ~storeName="Players");
-module Tournaments = LocalForage.Map.Instance(Tournament);
-let tourneyStore =
-  Tournaments.make(~name=database_name, ~storeName="Tournaments");
+module ConfigDb =
+  LocalForage.Obj(
+    Data.Config,
+    {
+      let name = database_name;
+      let storeName = "Options";
+    },
+  );
+module Players =
+  LocalForage.Map(
+    Data.Player,
+    {
+      let name = database_name;
+      let storeName = "Players";
+    },
+  );
+module Tournaments =
+  LocalForage.Map(
+    Data.Tournament,
+    {
+      let name = database_name;
+      let storeName = "Tournaments";
+    },
+  );
 
-let jsDictToReMap = (dict, transformer) =>
-  dict
-  |> Js.Dict.entries
-  |> Js.Array.map(((key, value)) => (key, value |> transformer))
-  |> Map.String.fromArray;
-let reMapToJsDict = (map, transformer) =>
-  map->Map.String.toArray
-  |> Js.Array.map(((key, value)) => (key, value |> transformer))
-  |> Js.Dict.fromArray;
-
-type testType = {. byeValue: float};
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw "document.body.style = \"wait\""];
   Repromise.all3(
-    configStore->LocalForage.Obj.setItems(DemoData.config |> Config.tToJs),
-    playerStore->LocalForage.Map.setItems(
-      DemoData.players->reMapToJsDict(Data.Player.tToJs),
-    ),
-    tourneyStore->LocalForage.Map.setItems(
-      DemoData.tournaments->reMapToJsDict(Data.Tournament.tToJsDeep),
-    ),
+    ConfigDb.store->ConfigDb.setItems(DemoData.config),
+    Players.setItems(DemoData.players),
+    Tournaments.setItems(DemoData.tournaments),
   )
   |> Repromise.map(_ => {
-       Utils.alert("Demo data loaded!");
        let _: unit = [%bs.raw "document.body.style = \"auto\""];
-       ();
+       Utils.alert("Demo data loaded!");
      })
   |> Repromise.Rejectable.catch(_ => {
        let _: unit = [%bs.raw "document.body.style = \"auto\""];
@@ -63,40 +63,35 @@ let genericDbReducer = (state, action) => {
   | SetState(state) => state
   };
 };
-let useAllItemsFromDb =
-    (
-      ~store: LocalForage.Map.t('js),
-      ~reducer: genericReducer('re),
-      ~fromJs: 'js => 're,
-      ~toJs: 're => 'js,
-    ) => {
-  let (items, dispatch) = React.useReducer(reducer, Map.String.empty);
+
+let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
+  let (items, dispatch) =
+    React.useReducer(genericDbReducer, Map.String.empty);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
   Hooks.useLoadingCursorUntil(isLoaded);
-  React.useEffect4(
+  React.useEffect2(
     () => {
       let didCancel = ref(false);
-      store->LocalForage.Map.getItems(Js.Nullable.null)
+      getAllItems()
       |> Repromise.map(results =>
            if (! didCancel^) {
-             dispatch(SetState(results->jsDictToReMap(fromJs)));
+             dispatch(SetState(results));
              setIsLoaded(_ => true);
            }
          )
       |> ignore;
-
       Some(() => didCancel := false);
     },
-    (store, dispatch, setIsLoaded, fromJs),
+    (dispatch, setIsLoaded),
   );
-  React.useEffect4(
+  React.useEffect2(
     () =>
       switch (isLoaded) {
       | false => None
       | true =>
-        store->LocalForage.Map.setItems(items->reMapToJsDict(toJs))
+        setItems(items)
         |> Repromise.map(() =>
-             store->LocalForage.Map.keys()
+             getKeys()
              |> Repromise.map(keys => {
                   let stateKeys = items->Map.String.keysToArray;
                   let deleted =
@@ -104,7 +99,7 @@ let useAllItemsFromDb =
                       keys |> filter(x => !(stateKeys |> includes(x)))
                     );
                   if (deleted |> Js.Array.length > 0) {
-                    store->LocalForage.Map.removeItems(deleted) |> ignore;
+                    removeItems(deleted) |> ignore;
                   };
                 })
              |> ignore
@@ -112,37 +107,36 @@ let useAllItemsFromDb =
         |> ignore;
         None;
       },
-    (store, items, isLoaded, toJs),
+    (items, isLoaded),
   );
   (items, dispatch);
 };
 
-let useAllPlayers = () =>
-  useAllItemsFromDb(
-    ~store=playerStore,
-    ~reducer=genericDbReducer,
-    ~fromJs=Data.Player.tFromJs,
-    ~toJs=Data.Player.tToJs,
+let useAllPlayers =
+  useAllDb(
+    ~getAllItems=Players.getAllItems,
+    ~setItems=Players.setItems,
+    ~removeItems=Players.removeItems,
+    ~getKeys=Players.getKeys,
   );
-
-let useAllTournaments = () =>
-  useAllItemsFromDb(
-    ~store=tourneyStore,
-    ~reducer=genericDbReducer,
-    ~fromJs=Data.Tournament.tFromJsDeep,
-    ~toJs=Data.Tournament.tToJsDeep,
+let useAllTournaments =
+  useAllDb(
+    ~getAllItems=Tournaments.getAllItems,
+    ~setItems=Tournaments.setItems,
+    ~removeItems=Tournaments.removeItems,
+    ~getKeys=Tournaments.getKeys,
   );
 
 type actionOption =
   | AddAvoidPair(Data.avoidPair)
   | DelAvoidPair(Data.avoidPair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(array(avoidPair))
+  | SetAvoidPairs(array(Data.avoidPair))
   | SetByeValue(float)
-  | SetState(Config.t)
+  | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
-let configReducer = (state: Config.t, action) => {
+let configReducer = (state: Data.Config.t, action) => {
   Js.Array.(
     switch (action) {
     | AddAvoidPair(pair) => {
@@ -176,21 +170,21 @@ let configReducer = (state: Config.t, action) => {
   );
 };
 let useConfig = () => {
-  let (config, dispatch) = React.useReducer(configReducer, Config.defaults);
+  let (config, dispatch) =
+    React.useReducer(configReducer, Data.Config.defaults);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
   React.useEffect2(
     () => {
       let didCancel = ref(false);
-      configStore->LocalForage.Obj.getItems(Js.Nullable.null)
-      |> Repromise.map(valuesJs => {
-           let values = Config.tFromJs(valuesJs);
+      ConfigDb.store->ConfigDb.getItems
+      |> Repromise.map(values =>
            if (! didCancel^) {
-             dispatch(SetAvoidPairs(values.avoidPairs));
+             dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
              dispatch(SetByeValue(values.byeValue));
              dispatch(SetLastBackup(values.lastBackup));
              setIsLoaded(_ => true);
-           };
-         })
+           }
+         )
       |> ignore;
 
       Some(() => didCancel := true);
@@ -202,8 +196,7 @@ let useConfig = () => {
       switch (isLoaded) {
       | false => None
       | true =>
-        configStore->LocalForage.Obj.setItems(config |> Config.tToJs)
-        |> ignore;
+        ConfigDb.store->ConfigDb.setItems(config) |> ignore;
         None;
       },
     (config, isLoaded),

@@ -34,7 +34,8 @@
         "bs-webapi",
         "bs-css",
         "@johnridesabike/bs-numeral",
-        "@aantron/repromise"
+        "@aantron/repromise",
+        "@glennsl/bs-json"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",
