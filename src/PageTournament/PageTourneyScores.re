@@ -1,4 +1,5 @@
 open Belt;
+open Data;
 
 module Style = {
   open Css;
@@ -37,14 +38,8 @@ module Style = {
 
 module ScoreTable = {
   [@react.component]
-  let make =
-      (
-        ~isCompact=false,
-        ~tourney: Data.Tournament.t,
-        ~getPlayer: string => Data.Player.t,
-        ~title,
-      ) => {
-    let tieBreaks = tourney.tieBreaks;
+  let make = (~isCompact=false, ~tourney, ~getPlayer, ~title) => {
+    let tieBreaks = tourney.Tournament.tieBreaks;
     let roundList = tourney.roundList;
     let tieBreakNames = Scoring.getTieBreakNames(tieBreaks);
     let standingTree =
@@ -62,13 +57,13 @@ module ScoreTable = {
           "title-30"->Cn.ifTrue(isCompact),
           "title-40"->Cn.ifTrue(!isCompact),
         ])}>
-        {title |> React.string}
+        {React.string(title)}
       </caption>
       <thead>
         <tr className=Style.topHeader>
-          <th className="title-10" scope="col"> {"Rank" |> React.string} </th>
-          <th className="title-10" scope="col"> {"Name" |> React.string} </th>
-          <th className="title-10" scope="col"> {"Score" |> React.string} </th>
+          <th className="title-10" scope="col"> {React.string("Rank")} </th>
+          <th className="title-10" scope="col"> {React.string("Name")} </th>
+          <th className="title-10" scope="col"> {React.string("Score")} </th>
           {isCompact
              ? React.null
              : tieBreakNames
@@ -77,7 +72,7 @@ module ScoreTable = {
                       key={i |> string_of_int}
                       className="title-10"
                       scope="col">
-                      {name |> React.string}
+                      {React.string(name)}
                     </th>
                   )
                |> React.array}
@@ -110,9 +105,11 @@ module ScoreTable = {
                               Style.rowTd,
                               Style.playerName,
                             ])}>
-                            {getPlayer(standing.id).firstName |> React.string}
-                            {Utils.Entities.nbsp |> React.string}
-                            {getPlayer(standing.id).lastName |> React.string}
+                            {React.string(
+                               getPlayer(standing.id).Player.firstName,
+                             )}
+                            {React.string(Utils.Entities.nbsp)}
+                            {React.string(getPlayer(standing.id).lastName)}
                           </td>  /* Use the name as a header if not compact. */
                         : <th
                             className={Cn.make([
@@ -121,9 +118,9 @@ module ScoreTable = {
                             ])}
                             /*dataTestid={rank |>string_of_int}*/
                             scope="row">
-                            {getPlayer(standing.id).firstName |> React.string}
-                            {Utils.Entities.nbsp |> React.string}
-                            {getPlayer(standing.id).lastName |> React.string}
+                            {React.string(getPlayer(standing.id).firstName)}
+                            {React.string(Utils.Entities.nbsp)}
+                            {React.string(getPlayer(standing.id).lastName)}
                           </th>}
                      <td
                        className={Cn.make([
@@ -137,8 +134,8 @@ module ScoreTable = {
                            + " score",
                          )}*/
 
-                         {Numeral.(standing.score->make->format("1/2"))
-                          |> React.string}
+                         Numeral.(standing.score->make->format("1/2"))
+                         ->React.string
                        </td>
                      {isCompact
                         ? React.null
@@ -156,8 +153,8 @@ module ScoreTable = {
                                      + tieBreakNames[j],
                                    )}*/
 
-                                   {Numeral.(score->make->format("1/2"))
-                                    |> React.string}
+                                   Numeral.(score->make->format("1/2"))
+                                   ->React.string
                                  </td>
                              )
                           |> React.array}
@@ -173,8 +170,8 @@ module ScoreTable = {
 
 module SelectTieBreaks = {
   [@react.component]
-  let make = (~tourney: Data.Tournament.t, ~tourneyDispatch) => {
-    let tieBreaks = tourney.tieBreaks;
+  let make = (~tourney, ~tourneyDispatch) => {
+    let tieBreaks = tourney.Tournament.tieBreaks;
     let (selectedTb, setSelectedTb) = React.useState(() => None);
     let defaultId = x =>
       switch (x) {
@@ -210,21 +207,21 @@ module SelectTieBreaks = {
             className="button-micro"
             disabled={selectedTb === None}
             onClick={_ => toggleTb(None)}>
-            {"Toggle" |> React.string}
+            {React.string("Toggle")}
           </button>
           <button
             className="button-micro"
             disabled={selectedTb === None}
             onClick={_ => moveTb(-1)}>
             <Icons.ArrowUp />
-            {" Move up" |> React.string}
+            {React.string(" Move up")}
           </button>
           <button
             className="button-micro"
             disabled={selectedTb === None}
             onClick={_ => moveTb(1)}>
             <Icons.ArrowDown />
-            {" Move down" |> React.string}
+            {React.string(" Move down")}
           </button>
           <button
             className={Cn.make([
@@ -233,19 +230,19 @@ module SelectTieBreaks = {
             ])}
             disabled={selectedTb === None}
             onClick={_ => setSelectedTb(_ => None)}>
-            {"Done" |> React.string}
+            {React.string("Done")}
           </button>
         </div>
         <table>
           <caption className="title-30">
-            {"Selected tiebreak methods" |> React.string}
+            {React.string("Selected tiebreak methods")}
           </caption>
           <thead>
             <tr>
-              <th> {"Name" |> React.string} </th>
+              <th> {React.string("Name")} </th>
               <th>
                 <Utils.VisuallyHidden>
-                  {"Controls" |> React.string}
+                  {React.string("Controls")}
                 </Utils.VisuallyHidden>
               </th>
             </tr>
@@ -277,14 +274,13 @@ module SelectTieBreaks = {
                               : setSelectedTb(_ => Some(id))
                           }
                         }>
-                        {(
+                        {React.string(
                            switch (selectedTb) {
                            | None => "Edit"
                            | Some(selectedTb) =>
                              selectedTb === id ? "Done" : "Edit"
-                           }
-                         )
-                         |> React.string}
+                           },
+                         )}
                       </button>
                     </td>
                   </tr>
@@ -294,17 +290,17 @@ module SelectTieBreaks = {
         </table>
       </Utils.Panel>
       <Utils.Panel>
-        <div className="toolbar"> {Utils.Entities.nbsp |> React.string} </div>
+        <div className="toolbar"> {React.string(Utils.Entities.nbsp)} </div>
         <table style={ReactDOMRe.Style.make(~marginTop="16px", ())}>
           <caption className="title-30">
-            {"Available tiebreak methods" |> React.string}
+            {React.string("Available tiebreak methods")}
           </caption>
           <thead>
             <tr>
-              <th> {"Name" |> React.string} </th>
+              <th> {React.string("Name")} </th>
               <th>
                 <Utils.VisuallyHidden>
-                  {"Controls" |> React.string}
+                  {React.string("Controls")}
                 </Utils.VisuallyHidden>
               </th>
             </tr>
@@ -319,7 +315,7 @@ module SelectTieBreaks = {
                           tieBreaks |> Js.Array.includes(m.id)
                             ? "disabled" : "enabled"
                         }>
-                        {m.name |> React.string}
+                        {React.string(m.name)}
                       </span>
                     </td>
                     <td>
@@ -328,7 +324,7 @@ module SelectTieBreaks = {
                          : <button
                              className="button-micro"
                              onClick={_ => toggleTb(Some(m.id))}>
-                             {"Add" |> React.string}
+                             {React.string("Add")}
                            </button>}
                     </td>
                   </tr>
@@ -342,17 +338,14 @@ module SelectTieBreaks = {
 };
 
 [@react.component]
-let make = (~tournament: TournamentData.t) => {
+let make = (~tournament) => {
   let {TournamentData.getPlayer, TournamentData.tourney} = tournament;
   let tourneyDispatch = tournament.tourneyDispatch;
   Utils.Tabs.(
     <Tabs>
       <TabList>
-        <Tab> <Icons.List /> {" Scores" |> React.string} </Tab>
-        <Tab>
-          <Icons.Settings />
-          {" Edit tiebreak rules" |> React.string}
-        </Tab>
+        <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
+        <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
@@ -366,7 +359,7 @@ let make = (~tournament: TournamentData.t) => {
 
 module Crosstable = {
   [@react.component]
-  let make = (~tournament: TournamentData.t) => {
+  let make = (~tournament) => {
     let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
     let {Data.Tournament.tieBreaks, Data.Tournament.roundList} = tourney;
     let scoreData =
@@ -383,7 +376,7 @@ module Crosstable = {
           switch (scoreData.opponentResults->Map.String.get(player2Id)) {
           | None => React.null
           | Some(result) =>
-            Numeral.make(result)->Numeral.format("1/2") |> React.string
+            Numeral.make(result)->Numeral.format("1/2")->React.string
           }
         };
       };
@@ -403,17 +396,17 @@ module Crosstable = {
           {lastRating |> Js.Float.toString |> React.string}
         </td>
         <td className={Cn.make([Style.rowTd, "table__number body-10"])}>
-          {change |> React.string}
+          {React.string(change)}
         </td>
       </>;
     };
 
     <table className=Style.table>
-      <caption> {"Crosstable" |> React.string} </caption>
+      <caption> {React.string("Crosstable")} </caption>
       <thead>
         <tr>
-          <th> {"#" |> React.string} </th>
-          <th> {"Name" |> React.string} </th>
+          <th> {React.string("#")} </th>
+          <th> {React.string("Name")} </th>
           /* Display a rank as a shorthand for each player. */
           {standings
            |> Js.Array.mapi((_, rank) =>
@@ -422,8 +415,8 @@ module Crosstable = {
                 </th>
               )
            |> React.array}
-          <th> {"Score" |> React.string} </th>
-          <th colSpan=2> {"Rating" |> React.string} </th>
+          <th> {React.string("Score")} </th>
+          <th colSpan=2> {React.string("Rating")} </th>
         </tr>
       </thead>
       <tbody>
@@ -437,9 +430,9 @@ module Crosstable = {
                 <th
                   className={Cn.make([Style.rowTh, Style.playerName])}
                   scope="row">
-                  {getPlayer(standing.id).firstName |> React.string}
-                  {Utils.Entities.nbsp |> React.string}
-                  {getPlayer(standing.id).lastName |> React.string}
+                  {React.string(getPlayer(standing.id).firstName)}
+                  {React.string(Utils.Entities.nbsp)}
+                  {React.string(getPlayer(standing.id).lastName)}
                 </th>
                 /* Output a cell for each other player */
                 {standings
@@ -453,8 +446,9 @@ module Crosstable = {
                  |> React.array}
                 /* Output their score and rating change */
                 <td className={Cn.make([Style.rowTd, "table__number"])}>
-                  {Numeral.make(standing.score)->Numeral.format("1/2")
-                   |> React.string}
+                  {Numeral.make(standing.score)
+                   ->Numeral.format("1/2")
+                   ->React.string}
                 </td>
                 {getRatingChangeTds(standing.id)}
               </tr>

@@ -1,8 +1,9 @@
 open Belt;
+open Data;
 open TournamentDataReducers;
 
 type listEntry = {
-  player: Data.Player.t,
+  player: Player.t,
   ideal: float,
 };
 
@@ -96,19 +97,19 @@ module SelectList = {
             <tr>
               <th>
                 <Utils.VisuallyHidden>
-                  {"Controls" |> React.string}
+                  {React.string("Controls")}
                 </Utils.VisuallyHidden>
               </th>
               <th>
                 <Hooks.SortButton
                   sortKey=sortByName data=sorted dispatch=sortedDispatch>
-                  {"Name" |> React.string}
+                  {React.string("Name")}
                 </Hooks.SortButton>
               </th>
               <th>
                 <Hooks.SortButton
                   sortKey=sortByIdeal data=sorted dispatch=sortedDispatch>
-                  {"Ideal" |> React.string}
+                  {React.string("Ideal")}
                 </Hooks.SortButton>
               </th>
             </tr>
@@ -131,17 +132,15 @@ module SelectList = {
                       </button>
                     </td>
                     <td>
-                      {player.firstName
-                       ++ " "
-                       ++ player.lastName
-                       |> React.string}
+                      {React.string(
+                         player.firstName ++ " " ++ player.lastName,
+                       )}
                     </td>
                     <td>
-                      {(
+                      {React.string(
                          isOnePlayerSelected
-                           ? Numeral.(ideal->make->format("%")) : "-"
-                       )
-                       |> React.string}
+                           ? Numeral.(ideal->make->format("%")) : "-",
+                       )}
                     </td>
                   </tr>
                 )
@@ -159,7 +158,7 @@ module Stage = {
   [@react.component]
   let make =
       (
-        ~getPlayer: string => Data.Player.t,
+        ~getPlayer,
         ~pairData,
         ~roundId,
         ~stagedPlayers,
@@ -184,7 +183,9 @@ module Stage = {
       switch (whiteOpt) {
       | None => ""
       | Some(player) =>
-        getPlayer(player).firstName ++ " " ++ getPlayer(player).lastName
+        getPlayer(player).Player.firstName
+        ++ " "
+        ++ getPlayer(player).lastName
       };
     let blackName =
       switch (blackOpt) {
@@ -229,43 +230,43 @@ module Stage = {
     };
 
     <div>
-      <h2> {"Selected for matching:" |> React.string} </h2>
+      <h2> {React.string("Selected for matching:")} </h2>
       <div className="content">
         <p>
-          {"White: " |> React.string}
+          {React.string("White: ")}
           {switch (whiteOpt) {
            | Some(_) =>
              <>
-               {whiteName ++ " " |> React.string}
+               {React.string(whiteName ++ " ")}
                <button
                  ariaLabel={"remove " ++ whiteName}
                  className="button-micro"
                  onClick={_ => unstage(White)}>
                  <Icons.UserMinus />
-                 {" Remove" |> React.string}
+                 {React.string(" Remove")}
                </button>
              </>
            | None => React.null
            }}
         </p>
         <p>
-          {"Black: " |> React.string}
+          {React.string("Black: ")}
           {switch (blackOpt) {
            | Some(_) =>
              <>
-               {blackName ++ " " |> React.string}
+               {React.string(blackName ++ " ")}
                <button
                  ariaLabel={"remove " ++ blackName}
                  className="button-micro"
                  onClick={_ => unstage(Black)}>
                  <Icons.UserMinus />
-                 {" Remove" |> React.string}
+                 {React.string(" Remove")}
                </button>
              </>
            | None => React.null
            }}
         </p>
-        <p> {"Match ideal: " ++ matchIdeal |> React.string} </p>
+        <p> {React.string("Match ideal: " ++ matchIdeal)} </p>
       </div>
       <div className="toolbar">
         <button
@@ -274,13 +275,13 @@ module Stage = {
             setStagedPlayers(((oldWhite, oldBlack)) => (oldBlack, oldWhite))
           }>
           <Icons.Repeat />
-          {" Swap colors" |> React.string}
+          {React.string(" Swap colors")}
         </button>
-        {" " |> React.string}
+        {React.string(" ")}
         <button
           className="button-primary" disabled={!twoAreSelected} onClick=match>
           <Icons.Check />
-          {" Match selected" |> React.string}
+          {React.string(" Match selected")}
         </button>
       </div>
     </div>;
@@ -289,14 +290,7 @@ module Stage = {
 
 module PlayerInfo = {
   [@react.component]
-  let make =
-      (
-        ~playerId,
-        ~players,
-        ~getPlayer: string => Data.Player.t,
-        ~scoreData,
-        ~avoidPairs,
-      ) => {
+  let make = (~playerId, ~players, ~getPlayer, ~scoreData, ~avoidPairs) => {
     let avoidMap =
       avoidPairs
       |> Js.Array.reduce(Data.Config.avoidPairReducer, Map.String.empty);
@@ -329,20 +323,22 @@ module PlayerInfo = {
       };
 
     <dl className="player-card">
-      <h3> {player.firstName ++ " " ++ player.lastName |> React.string} </h3>
+      <h3>
+        {React.string(player.Player.firstName ++ " " ++ player.lastName)}
+      </h3>
       <p>
-        {"Score: " |> React.string}
+        {React.string("Score: ")}
         {Utils.List.sumF(results) |> Js.Float.toString |> React.string}
       </p>
       <p id={"rating-" ++ player.id}>
-        {"Rating: " |> React.string}
+        {React.string("Rating: ")}
         {player.rating |> Js.Int.toString |> React.string}
       </p>
-      <p> {"Color balance: " ++ prettyBalance |> React.string} </p>
+      <p> {React.string("Color balance: " ++ prettyBalance)} </p>
       <p>
-        {"Has had a bye round: " ++ (hasBye ? "Yes" : "No") |> React.string}
+        {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
       </p>
-      <p> {"Opponent history:" |> React.string} </p>
+      <p> {React.string("Opponent history:")} </p>
       <ol>
         {opponentResults
          ->Map.String.toArray
@@ -352,6 +348,9 @@ module PlayerInfo = {
                   getPlayer(opId).firstName,
                   getPlayer(opId).lastName,
                   "-",
+                  /*
+                   TODO: This should be in sync with the `MatchResult` types
+                   */
                   switch (result) {
                   | 0.0 => "Lost"
                   | 1.0 => "Won"
@@ -365,7 +364,7 @@ module PlayerInfo = {
            )
          ->React.array}
       </ol>
-      <p> {"Players to avoid:" |> React.string} </p>
+      <p> {React.string("Players to avoid:")} </p>
       <ol>
         {avoidList->Utils.List.toReactArray(pId =>
            switch (players->Map.String.get(pId)) {
@@ -373,10 +372,9 @@ module PlayerInfo = {
            | None => React.null
            | Some(_) =>
              <li key=pId>
-               {getPlayer(pId).firstName
-                ++ " "
-                ++ getPlayer(pId).lastName
-                |> React.string}
+               {React.string(
+                  getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName,
+                )}
              </li>
            }
          )}
@@ -389,7 +387,7 @@ module PlayerInfo = {
 let make =
     (
       ~roundId,
-      ~tournament: TournamentData.t,
+      ~tournament,
       ~scoreData,
       ~unmatched,
       ~unmatchedCount,
@@ -414,7 +412,7 @@ let make =
     React.useMemo3(
       () =>
         scoreData
-        |> Data.Converters.createPairingData(activePlayers, avoidPairs)
+        |> Converters.createPairingData(activePlayers, avoidPairs)
         |> Pairing.setUpperHalves,
       (activePlayers, avoidPairs, scoreData),
     );
@@ -453,11 +451,11 @@ let make =
             AutoPair(config.byeValue, roundId, pairData, unmatched, tourney),
           )
         }>
-        {"Auto-pair unmatched players" |> React.string}
+        {React.string("Auto-pair unmatched players")}
       </button>
-      {" " |> React.string}
+      {React.string(" ")}
       <button onClick={_ => setIsModalOpen(_ => true)}>
-        {"Add or remove players from the roster." |> React.string}
+        {React.string("Add or remove players from the roster.")}
       </button>
     </div>
     <Utils.PanelContainer>
@@ -504,7 +502,7 @@ let make =
       isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
       <button
         className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
-        {"Done" |> React.string}
+        {React.string("Done")}
       </button>
       <PageTourneyPlayers.Selecting tourney tourneyDispatch />
     </Utils.Dialog>

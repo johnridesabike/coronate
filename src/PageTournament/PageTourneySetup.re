@@ -29,7 +29,7 @@ type inputs =
   | NotEditing;
 
 [@react.component]
-let make = (~tournament: TournamentData.t) => {
+let make = (~tournament) => {
   let {TournamentData.tourney, TournamentData.tourneyDispatch} = tournament;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
@@ -56,12 +56,12 @@ let make = (~tournament: TournamentData.t) => {
   );
 
   let changeToOne = _ => {
-    tourneyDispatch(UpdateByeScores(1.0));
+    tourneyDispatch(UpdateByeScores(Data.ByeValue.Full));
     Utils.alert("Bye scores updated to 1.");
   };
 
   let changeToOneHalf = _ => {
-    tourneyDispatch(UpdateByeScores(0.5));
+    tourneyDispatch(UpdateByeScores(Data.ByeValue.Half));
     Utils.alert({js|Bye scores updated to ½.|js});
   };
 
@@ -98,7 +98,7 @@ let make = (~tournament: TournamentData.t) => {
              )
            }
          />
-         {" " |> React.string}
+         {React.string(" ")}
          <button
            className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
            <Icons.Check />
@@ -107,13 +107,13 @@ let make = (~tournament: TournamentData.t) => {
      | _ =>
        <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
          <span className="inputPlaceholder">
-           {tourney.name |> React.string}
+           {React.string(tourney.name)}
          </span>
-         {" " |> React.string}
+         {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
            <Icons.Edit />
            <Utils.VisuallyHidden>
-             {"Edit name" |> React.string}
+             {React.string("Edit name")}
            </Utils.VisuallyHidden>
          </button>
        </h1>
@@ -129,7 +129,7 @@ let make = (~tournament: TournamentData.t) => {
            value={makeDateInput(tourney.date)}
            onChange=updateDate
          />
-         {" " |> React.string}
+         {React.string(" ")}
          <button
            className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
            <Icons.Check />
@@ -138,30 +138,31 @@ let make = (~tournament: TournamentData.t) => {
      | _ =>
        <p className="caption-30">
          <Utils.DateFormat date={tourney.date} />
-         {" " |> React.string}
+         {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Date)}>
            <Icons.Edit />
            <Utils.VisuallyHidden>
-             {"Edit date" |> React.string}
+             {React.string("Edit date")}
            </Utils.VisuallyHidden>
          </button>
        </p>
      }}
-    <h2> {"Change bye scores" |> React.string} </h2>
+    <h2> {React.string("Change bye scores")} </h2>
     <button ariaDescribedby="score-desc" onClick=changeToOne>
-      {"Change byes to 1" |> React.string}
+      {React.string("Change byes to 1")}
     </button>
-    {" " |> React.string}
+    {React.string(" ")}
     <button ariaDescribedby="score-desc" onClick=changeToOneHalf>
-      {{js|Change byes to ½|js} |> React.string}
+      {React.string({js|Change byes to ½|js})}
     </button>
     <p className="caption-30" id="score-desc">
-      {"This will update all bye matches which have been previously
-                scored in this tournament. To change the default bye value in
-                future matches, go to the "
-       |> React.string}
-      <HashLink to_="/options"> {"app options" |> React.string} </HashLink>
-      {"." |> React.string}
+      {React.string(
+         "This will update all bye matches which have been previously
+          scored in this tournament. To change the default bye value in
+          future matches, go to the ",
+       )}
+      <HashLink to_="/options"> {React.string("app options")} </HashLink>
+      {React.string(".")}
     </p>
   </div>;
 };

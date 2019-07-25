@@ -323,15 +323,15 @@ module Profile = {
       <ul>
         {singAvoidList->Utils.List.toReactArray(pId =>
            <li key=pId>
-             {s(players->getPlayerMaybeMap(pId).firstName)}
+             {s(players->getPlayerMaybe(pId).firstName)}
              {s(" ")}
-             {s(players->getPlayerMaybeMap(pId).lastName)}
+             {s(players->getPlayerMaybe(pId).lastName)}
              <button
                ariaLabel={
                  [|
                    "Remove",
-                   players->getPlayerMaybeMap(pId).firstName,
-                   players->getPlayerMaybeMap(pId).lastName,
+                   players->getPlayerMaybe(pId).firstName,
+                   players->getPlayerMaybe(pId).lastName,
                    "from avoid list.",
                  |]
                  |> Js.Array.joinWith(" ")
@@ -339,8 +339,8 @@ module Profile = {
                title={
                  [|
                    "Remove",
-                   players->getPlayerMaybeMap(pId).firstName,
-                   players->getPlayerMaybeMap(pId).lastName,
+                   players->getPlayerMaybe(pId).firstName,
+                   players->getPlayerMaybe(pId).lastName,
                    "from avoid list.",
                  |]
                  |> Js.Array.joinWith(" ")
@@ -370,9 +370,9 @@ module Profile = {
           {unavoided
            |> Js.Array.map(pId =>
                 <option key=pId value=pId>
-                  {s(players->getPlayerMaybeMap(pId).firstName)}
+                  {s(players->getPlayerMaybe(pId).firstName)}
                   {s(" ")}
-                  {s(players->getPlayerMaybeMap(pId).lastName)}
+                  {s(players->getPlayerMaybe(pId).lastName)}
                 </option>
               )
            |> ReasonReact.array}

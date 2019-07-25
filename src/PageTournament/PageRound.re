@@ -1,6 +1,7 @@
 open Belt;
 open TournamentDataReducers;
 open TournamentData;
+open Data;
 
 module Style = {
   open Css;
@@ -28,14 +29,7 @@ module Style = {
 
 module PlayerMatchInfo = {
   [@react.component]
-  let make =
-      (
-        ~playerId,
-        ~scoreData,
-        ~origRating,
-        ~newRating,
-        ~getPlayer: string => Data.Player.t,
-      ) => {
+  let make = (~playerId, ~scoreData, ~origRating, ~newRating, ~getPlayer) => {
     let player = getPlayer(playerId);
     let (colorScores, opponentResults, results) =
       switch (scoreData->Map.String.get(playerId)) {
@@ -60,28 +54,28 @@ module PlayerMatchInfo = {
       } else {
         "Even";
       };
-    let fullName = player.firstName ++ " " ++ player.lastName;
+    let fullName = player.Player.firstName ++ " " ++ player.lastName;
     <dl className="player-card">
-      <h3> {fullName |> React.string} </h3>
-      <dt> {"Score" |> React.string} </dt>
+      <h3> {React.string(fullName)} </h3>
+      <dt> {React.string("Score")} </dt>
       <dd>
         {results |> Utils.List.sumF |> Js.Float.toString |> React.string}
       </dd>
-      <dt> {"Rating" |> React.string} </dt>
+      <dt> {React.string("Rating")} </dt>
       <dd ariaLabel={"Rating for " ++ fullName}>
         {origRating |> Js.Int.toString |> React.string}
-        {" (" |> React.string}
+        {React.string(" (")}
         {float_of_int(newRating - origRating)
          ->Numeral.make
          ->Numeral.format("+0")
-         |> React.string}
-        {")" |> React.string}
+         ->React.string}
+        {React.string(")")}
       </dd>
-      <dt> {"Color balance" |> React.string} </dt>
-      <dd> {prettyBalance |> React.string} </dd>
-      <dt> {"Has had a bye round" |> React.string} </dt>
-      <dd> {(hasBye ? "Yes" : "No") |> React.string} </dd>
-      <dt> {"Opponent history" |> React.string} </dt>
+      <dt> {React.string("Color balance")} </dt>
+      <dd> {React.string(prettyBalance)} </dd>
+      <dt> {React.string("Has had a bye round")} </dt>
+      <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
+      <dt> {React.string("Opponent history")} </dt>
       <dd>
         <ol>
           {oppResultsEntries
@@ -93,6 +87,10 @@ module PlayerMatchInfo = {
                          getPlayer(opId).firstName,
                          getPlayer(opId).lastName,
                          "-",
+                         /*
+                          TODO: This should be in sync with the `MatchResult`
+                          types
+                          */
                          switch (result) {
                          | 0.0 => "Lost"
                          | 1.0 => "Won"
@@ -112,21 +110,13 @@ module PlayerMatchInfo = {
   };
 };
 
-[@bs.deriving jsConverter]
-type resultCodes = [
-  | [@bs.as "White"] `White
-  | [@bs.as "Black"] `Black
-  | [@bs.as "Draw"] `Draw
-  | [@bs.as "NotSet"] `NotSet
-];
-
 module MatchRow = {
   [@react.component]
   let make =
       (
         ~isCompact=false,
         ~pos,
-        ~match: Data.Match.t,
+        ~match,
         ~roundId,
         ~selectedMatch,
         ~setSelectedMatch,
@@ -136,26 +126,17 @@ module MatchRow = {
       ) => {
     let {
       TournamentData.tourney,
-      TournamentData.tourneyDispatch,
-      TournamentData.players,
-      TournamentData.getPlayer,
-      TournamentData.playersDispatch,
+      tourneyDispatch,
+      players,
+      getPlayer,
+      playersDispatch,
     } = tournament;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
-    let resultCode =
-      if (match.whiteScore > match.blackScore) {
-        `White;
-      } else if (match.blackScore > match.whiteScore) {
-        `Black;
-      } else if (match.whiteScore === 0.5 && match.blackScore === 0.5) {
-        `Draw;
-      } else {
-        `NotSet;
-      };
-    let whitePlayer = getPlayer(match.whiteId);
+    let whitePlayer = getPlayer(match.Match.whiteId);
     let blackPlayer = getPlayer(match.blackId);
     let isDummyRound =
-      [|match.whiteId, match.blackId|] |> Js.Array.includes(Data.Player.dummy_id);
+      [|match.whiteId, match.blackId|]
+      |> Js.Array.includes(Data.Player.dummy_id);
 
     let whiteName =
       [|whitePlayer.firstName, whitePlayer.lastName|]
@@ -165,49 +146,45 @@ module MatchRow = {
       |> Js.Array.joinWith(" ");
 
     let resultDisplay = color => {
-      switch (resultCode) {
-      | `NotSet =>
+      let won = <Icons.Award /*ariaLabel="Won"*/ />;
+      let lost =
+        <Utils.VisuallyHidden> {React.string("Lost")} </Utils.VisuallyHidden>;
+      switch (match.result) {
+      | NotSet =>
         <Utils.VisuallyHidden>
-          {"Not set" |> React.string}
+          {React.string("Not set")}
         </Utils.VisuallyHidden>
-      | `Draw =>
+      | Draw =>
         /* TODO: find a better icon for draws.*/
         <span
           ariaLabel="Draw"
           role="img"
           style={ReactDOMRe.Style.make(~filter="grayscale(100%)", ())}>
-          {{js|🤝|js} |> React.string}
+          {React.string({js|🤝|js})}
         </span>
-      | wonOrLost =>
-        wonOrLost === color
-          ? <Icons.Award /*ariaLabel="Won"*/ />
-          : <Utils.VisuallyHidden>
-              {"Lost" |> React.string}
-            </Utils.VisuallyHidden>
+      | BlackWon =>
+        switch (color) {
+        | MatchResult.White => lost
+        | Black => won
+        }
+      | WhiteWon =>
+        switch (color) {
+        | White => won
+        | Black => lost
+        }
       };
     };
 
     let setMatchResult = jsResultCode => {
-      let safeCode =
-        switch (jsResultCode->resultCodesFromJs) {
-        | Some(code) => code
-        | None => `NotSet
-        };
-      let result =
-        switch (safeCode) {
-        | `White => (1.0, 0.0)
-        | `Black => (0.0, 1.0)
-        | `Draw => (0.5, 0.5)
-        | `NotSet => (0.0, 0.0)
-        };
-      let (newWhiteScore, newBlackScore) = result;
+      let result = MatchResult.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
-      if (match.whiteScore !== newWhiteScore
-          || match.blackScore !== newBlackScore) {
-        let white = players->Belt.Map.String.getExn(match.whiteId);
-        let black = players->Belt.Map.String.getExn(match.blackId);
+      if (match.result !== result) {
+        let white = players->Map.String.getExn(match.whiteId);
+        let black = players->Map.String.getExn(match.blackId);
+        let newWhiteScore = MatchResult.(toFloat(result, White));
+        let newBlackScore = MatchResult.(toFloat(result, Black));
         let newRatings =
-          safeCode === `NotSet
+          result === NotSet
             ? (match.whiteOrigRating, match.blackOrigRating)
             : Scoring.Ratings.calcNewRatings(
                 (match.whiteOrigRating, match.blackOrigRating),
@@ -218,7 +195,7 @@ module MatchRow = {
         playersDispatch(SetRating(white.id, whiteNewRating));
         playersDispatch(SetRating(black.id, blackNewRating));
         /* if the result hasn't been scored yet, increment the matchCount*/
-        if (match.whiteScore +. match.blackScore === 0.0) {
+        if (match.result !== MatchResult.NotSet) {
           playersDispatch(SetMatchCount(white.id, white.matchCount + 1));
           playersDispatch(SetMatchCount(black.id, black.matchCount + 1));
         };
@@ -236,10 +213,10 @@ module MatchRow = {
     <tr
       className={Cn.make([
         className,
-        selectedMatch->Belt.Option.mapWithDefault("", x =>
+        selectedMatch->Option.mapWithDefault("", x =>
           x
           ->Js.Nullable.toOption
-          ->Belt.Option.mapWithDefault("", id =>
+          ->Option.mapWithDefault("", id =>
               match.id === id ? "selected" : "buttons-on-hover"
             )
         ),
@@ -247,52 +224,54 @@ module MatchRow = {
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
         {pos + 1 |> string_of_int |> React.string}
       </th>
-      <td className=Style.playerResult> {resultDisplay(`White)} </td>
+      <td className=Style.playerResult>
+        {resultDisplay(MatchResult.White)}
+      </td>
       <td
         className={"table__player row__player " ++ whitePlayer.type_}
         id={"match-" ++ string_of_int(pos) ++ "-white"}>
-        {whiteName |> React.string}
+        {React.string(whiteName)}
       </td>
-      <td className=Style.playerResult> {resultDisplay(`Black)} </td>
+      <td className=Style.playerResult> {resultDisplay(Black)} </td>
       <td
         className={"table__player row__player " ++ blackPlayer.type_}
         id={"match-" ++ string_of_int(pos) ++ "-black"}>
-        {blackName |> React.string}
+        {React.string(blackName)}
       </td>
       <td
         className={Cn.make([Style.matchResult, "data__input row__controls"])}>
         <select
           className=Style.winnerSelect
           disabled=isDummyRound
-          value={resultCode |> resultCodesToJs}
+          value={MatchResult.toString(match.result)}
           onBlur=setMatchResultBlur
           onChange=setMatchResultChange>
-          <option value={`NotSet |> resultCodesToJs}>
-            {"Select winner" |> React.string}
+          <option value={MatchResult.toString(NotSet)}>
+            {React.string("Select winner")}
           </option>
-          <option value={`White |> resultCodesToJs}>
-            {"White won" |> React.string}
+          <option value={MatchResult.toString(WhiteWon)}>
+            {React.string("White won")}
           </option>
-          <option value={`Black |> resultCodesToJs}>
-            {"Black won" |> React.string}
+          <option value={MatchResult.toString(BlackWon)}>
+            {React.string("Black won")}
           </option>
-          <option value={`Draw |> resultCodesToJs}>
-            {"Draw" |> React.string}
+          <option value={MatchResult.toString(Draw)}>
+            {React.string("Draw")}
           </option>
         </select>
       </td>
       {isCompact
          ? React.null
          : <td className={Cn.make([Style.controls, "data__input"])}>
-             {selectedMatch->Belt.Option.mapWithDefault(React.null, x =>
+             {selectedMatch->Option.mapWithDefault(React.null, x =>
                 x
                 ->Js.Nullable.toOption
-                ->Belt.Option.mapWithDefault(true, id => id !== match.id)
+                ->Option.mapWithDefault(true, id => id !== match.id)
                   ? <button
                       className="button-ghost"
                       title="Edit match"
                       onClick={_ =>
-                        setSelectedMatch->Belt.Option.mapWithDefault((), x =>
+                        setSelectedMatch->Option.mapWithDefault((), x =>
                           x(_ => Js.Nullable.return(match.id))
                         )
                       }>
@@ -307,7 +286,7 @@ module MatchRow = {
                       className="button-ghost button-pressed"
                       title="End editing match"
                       onClick={_ =>
-                        setSelectedMatch->Belt.Option.mapWithDefault((), x =>
+                        setSelectedMatch->Option.mapWithDefault((), x =>
                           x(_ => Js.Nullable.null)
                         )
                       }>
@@ -339,9 +318,9 @@ module MatchRow = {
                   <button
                     className="button-micro button-primary"
                     onClick={_ => setIsModalOpen(_ => false)}>
-                    {"close" |> React.string}
+                    {React.string("close")}
                   </button>
-                  <p> {tourney.name |> React.string} </p>
+                  <p> {React.string(tourney.name)} </p>
                   <p>
                     {[|
                        "Round ",
@@ -391,45 +370,45 @@ module RoundTable = {
         ~scoreData=?,
       ) => {
     let tourney = tournament.tourney;
-    let matchList = tourney.roundList->Belt.Array.getUnsafe(roundId);
+    let matchList = tourney.roundList->Array.getUnsafe(roundId);
     <table className=Style.table>
       {matchList |> Js.Array.length === 0
          ? React.null
          : <>
              <caption className={isCompact ? "title-30" : "title-40"}>
-               {"Round " |> React.string}
+               {React.string("Round ")}
                {roundId + 1 |> Js.Int.toString |> React.string}
-               {" matches" |> React.string}
+               {React.string(" matches")}
              </caption>
              <thead>
                <tr>
                  <th className=Style.rowId scope="col">
-                   {"#" |> React.string}
+                   {React.string("#")}
                  </th>
                  <th scope="col">
                    <Utils.VisuallyHidden>
-                     {"White result" |> React.string}
+                     {React.string("White result")}
                    </Utils.VisuallyHidden>
                  </th>
                  <th className="row__player" scope="col">
-                   {"White" |> React.string}
+                   {React.string("White")}
                  </th>
                  <th scope="col">
                    <Utils.VisuallyHidden>
-                     {"Black result" |> React.string}
+                     {React.string("Black result")}
                    </Utils.VisuallyHidden>
                  </th>
                  <th className="row__player" scope="col">
-                   {"Black" |> React.string}
+                   {React.string("Black")}
                  </th>
                  <th className="row__result" scope="col">
-                   {"Match result" |> React.string}
+                   {React.string("Match result")}
                  </th>
                  {isCompact
                     ? React.null
                     : <th className="row__controls" scope="col">
                         <Utils.VisuallyHidden>
-                          {"Controls" |> React.string}
+                          {React.string("Controls")}
                         </Utils.VisuallyHidden>
                       </th>}
                </tr>
@@ -437,7 +416,7 @@ module RoundTable = {
            </>}
       <tbody className="content">
         {matchList
-         |> Js.Array.mapi((match: Data.Match.t, pos) =>
+         |> Js.Array.mapi((match: Match.t, pos) =>
               <MatchRow
                 key={match.id}
                 isCompact
@@ -458,8 +437,7 @@ module RoundTable = {
 };
 
 let findById = (id, list) =>
-  (list |> Js.Array.filter((x: Data.Match.t) => x.id === id))
-  ->Belt.Array.getUnsafe(0);
+  (list |> Js.Array.filter((x: Match.t) => x.id === id))->Array.getUnsafe(0);
 
 module Round = {
   [@react.component]
@@ -468,13 +446,13 @@ module Round = {
     let players = tournament.players;
     let tourneyDispatch = tournament.tourneyDispatch;
     let playersDispatch = tournament.playersDispatch;
-    let matchList = tourney.roundList->Belt.Array.get(roundId);
+    let matchList = tourney.roundList->Array.get(roundId);
     let (selectedMatch, setSelectedMatch) =
       React.useState(() => Js.Nullable.null);
 
     let unMatch = (matchId, matchList) => {
       let match = findById(matchId, matchList);
-      if (match.whiteScore +. match.blackScore !== 0.0) {
+      if (match.result !== NotSet) {
         /* checks if the match has been scored yet & resets the players'
            records */
         [|
@@ -482,7 +460,7 @@ module Round = {
           (match.blackId, match.blackOrigRating),
         |]
         |> Js.Array.forEach(((id, rating)) =>
-             switch (players->Belt.Map.String.get(id)) {
+             switch (players->Map.String.get(id)) {
              /* If there was a dummy player or a deleted player then bail
                 on the dispatch. */
              | None => ()
@@ -518,54 +496,54 @@ module Round = {
             onClick={_ =>
               selectedMatch
               ->Js.Nullable.toOption
-              ->Belt.Option.map(x => unMatch(x, matchList))
+              ->Option.map(x => unMatch(x, matchList))
               ->ignore
             }>
             <Icons.Trash />
-            {" Unmatch" |> React.string}
+            {React.string(" Unmatch")}
           </button>
-          {" " |> React.string}
+          {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch === Js.Nullable.null}
             onClick={_ =>
               selectedMatch
               ->Js.Nullable.toOption
-              ->Belt.Option.map(x => swapColors(x))
+              ->Option.map(x => swapColors(x))
               ->ignore
             }>
             <Icons.Repeat />
-            {" Swap colors" |> React.string}
+            {React.string(" Swap colors")}
           </button>
-          {" " |> React.string}
+          {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch === Js.Nullable.null}
             onClick={_ =>
               selectedMatch
               ->Js.Nullable.toOption
-              ->Belt.Option.map(x => moveMatch(x, -1, matchList))
+              ->Option.map(x => moveMatch(x, -1, matchList))
               ->ignore
             }>
             <Icons.ArrowUp />
-            {" Move up" |> React.string}
+            {React.string(" Move up")}
           </button>
-          {" " |> React.string}
+          {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch === Js.Nullable.null}
             onClick={_ =>
               selectedMatch
               ->Js.Nullable.toOption
-              ->Belt.Option.map(x => moveMatch(x, 1, matchList))
+              ->Option.map(x => moveMatch(x, 1, matchList))
               ->ignore
             }>
             <Icons.ArrowDown />
-            {" Move down" |> React.string}
+            {React.string(" Move down")}
           </button>
         </div>
         {matchList |> Js.Array.length === 0
-           ? <p> {"No players matched yet." |> React.string} </p> : React.null}
+           ? <p> {React.string("No players matched yet.")} </p> : React.null}
         <RoundTable
           roundId
           selectedMatch
@@ -607,10 +585,7 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
     /* matches2ScoreData is relatively expensive*/
     let scoreData =
       React.useMemo1(
-        () =>
-          Data.Converters.matches2ScoreData(
-            Data.rounds2Matches(~roundList, ()),
-          ),
+        () => Converters.matches2ScoreData(rounds2Matches(~roundList, ())),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds
@@ -619,18 +594,20 @@ module WithRoundData = (BaseComponent: UsesRoundData) => {
        only use unmatched players if this is the last round. */
     let unmatched =
       roundId === (roundList |> Js.Array.length) - 1
-        ? Data.getUnmatched(roundList, activePlayers, roundId)
-        : Map.String.empty;
+        ? getUnmatched(roundList, activePlayers, roundId) : Map.String.empty;
     let unmatchedCount =
       unmatched |> Map.String.keysToArray |> Js.Array.length;
     /* make a new list so as not to affect auto-pairing*/
     /* TODO: replace these dicts with a better data type */
     let unmatchedWithDummy =
       unmatchedCount mod 2 !== 0
-        ? unmatched->Map.String.set(Data.Player.dummy_id, getPlayer(Data.Player.dummy_id))
+        ? unmatched->Map.String.set(
+            Player.dummy_id,
+            getPlayer(Data.Player.dummy_id),
+          )
         : unmatched;
     let activePlayersCount =
-      activePlayers |> Belt.Map.String.keysToArray |> Js.Array.length;
+      activePlayers |> Map.String.keysToArray |> Js.Array.length;
     <BaseComponent
       roundId
       activePlayersCount
@@ -675,7 +652,7 @@ module PageRoundBase = {
         <TabList>
           <Tab disabled={unmatchedCount === activePlayersCount}>
             <Icons.List />
-            {" Matches" |> React.string}
+            {React.string(" Matches")}
           </Tab>
           <Tab disabled={unmatchedCount === 0}>
             <Icons.Users />

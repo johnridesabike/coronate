@@ -4,18 +4,6 @@ type id = string;
  let isNanoId = str => str |> Js.Re.test_([%re "/^[A-Za-z0-9_-]{21}$/"]);
  */
 
-/*
-  The jsConverter is useful for importing and exporting types to JSON or
-  indexedDB storage. Yes, you can store the plain JS representation of a Reason
-  record without such conversions, but the advantage to the conversions is that
-  they enable manual editing of the JSON data. Also, the exact way that Reason
-  encodes its records to JS is arbitrary. Changing a field can change how the
-  whole record gets encoded. The jsConverter helps to give consistency.
-
-  I have not measured the performance impact of these conversions, but it
-  doesn't *seem* to be significant. Most of it happens in asyncronous functions
-  anyway.
- */
 module Player = {
   type t = {
     firstName: string,
@@ -78,21 +66,54 @@ module Player = {
   /* This function should always be used in components that *might* not be able to
      display current player information. This includes bye rounds with "dummy"
      players, or scoreboards where a player may have been deleted. */
-  let getPlayerMaybe = (playerDict, id) =>
-    if (id === dummy_id) {
-      dummyPlayer;
-    } else {
-      switch (playerDict->Js.Dict.get(id)) {
-      | None => makeMissingPlayer(id)
-      | Some(player) => player
-      };
-    };
-  let getPlayerMaybeMap = (playerMap, id) =>
+  let getPlayerMaybe = (playerMap, id) =>
     if (id === dummy_id) {
       dummyPlayer;
     } else {
       playerMap->Map.String.getWithDefault(id, makeMissingPlayer(id));
     };
+};
+
+module MatchResult = {
+  type t =
+    | WhiteWon
+    | BlackWon
+    | Draw
+    | NotSet;
+  type color =
+    | White
+    | Black;
+  let toFloat = (score, color) =>
+    switch (score) {
+    | WhiteWon =>
+      switch (color) {
+      | White => 1.0
+      | Black => 0.0
+      }
+    | BlackWon =>
+      switch (color) {
+      | White => 0.0
+      | Black => 1.0
+      }
+    | Draw => 0.5
+    | NotSet => 0.0
+    };
+  let toString = score =>
+    switch (score) {
+    | WhiteWon => "whiteWon"
+    | BlackWon => "blackWon"
+    | Draw => "draw"
+    | NotSet => "notSet"
+    };
+  let fromString = score =>
+    switch (score) {
+    | "whiteWon" => WhiteWon
+    | "blackWon" => BlackWon
+    | "draw" => Draw
+    | _ => NotSet
+    };
+  let encode = data => data |> toString |> Json.Encode.string;
+  let decode = json => json |> Json.Decode.string |> fromString;
 };
 
 module Match = {
@@ -104,8 +125,7 @@ module Match = {
     blackNewRating: int,
     whiteOrigRating: int,
     blackOrigRating: int,
-    whiteScore: float,
-    blackScore: float,
+    result: MatchResult.t,
   };
   let decode = json =>
     Json.Decode.{
@@ -116,8 +136,7 @@ module Match = {
       blackNewRating: json |> field("blackNewRating", int),
       whiteOrigRating: json |> field("whiteOrigRating", int),
       blackOrigRating: json |> field("blackOrigRating", int),
-      whiteScore: json |> field("whiteScore", Json.Decode.float),
-      blackScore: json |> field("blackScore", Json.Decode.float),
+      result: json |> field("result", MatchResult.decode),
     };
   let encode = data =>
     Json.Encode.(
@@ -129,8 +148,7 @@ module Match = {
         ("blackNewRating", data.blackNewRating |> int),
         ("whiteOrigRating", data.whiteOrigRating |> int),
         ("blackOrigRating", data.blackOrigRating |> int),
-        ("whiteScore", data.whiteScore |> Json.Encode.float),
-        ("blackScore", data.blackScore |> Json.Encode.float),
+        ("result", data.result |> MatchResult.encode),
       ])
     );
 };
@@ -174,29 +192,59 @@ module Tournament = {
     );
 };
 
+module ByeValue = {
+  type t =
+    | Full
+    | Half;
+  let toJson = data =>
+    switch (data) {
+    | Full => 1.0
+    | Half => 0.5
+    };
+  let fromJson = json =>
+    switch (json) {
+    | 1.0 => Full
+    | 0.5 => Half
+    | _ => Full
+    };
+  let encode = data => data |> toJson |> Json.Encode.float;
+  let decode = json => json |> Json.Decode.float |> fromJson;
+  let resultForPlayerColor = (byeValue, color) =>
+    MatchResult.(
+      switch (byeValue) {
+      | Half => Draw
+      | Full =>
+        switch (color) {
+        | White => WhiteWon
+        | Black => BlackWon
+        }
+      }
+    );
+};
+
 module Config = {
   type avoidPair = (string, string);
   type t = {
     avoidPairs: array(avoidPair),
-    byeValue: float,
+    byeValue: ByeValue.t,
     lastBackup: Js.Date.t,
   };
   let decode = json =>
     Json.Decode.{
       avoidPairs: json |> field("avoidPairs", array(pair(string, string))),
-      byeValue: json |> field("byeValue", Json.Decode.float),
+      byeValue: json |> field("byeValue", ByeValue.decode),
       lastBackup: json |> field("lastBackup", date),
     };
   let encode = data =>
     Json.Encode.(
       object_([
         ("avoidPairs", data.avoidPairs |> array(pair(string, string))),
-        ("byeValue", data.byeValue |> Json.Encode.float),
+        ("byeValue", data.byeValue |> ByeValue.encode),
         ("lastBackup", data.lastBackup |> date),
       ])
     );
   let defaults = {
-    byeValue: 1.0,
+    byeValue: Full,
     avoidPairs: [||],
     lastBackup: Js.Date.fromFloat(0.0),
   };
@@ -273,8 +321,9 @@ let isRoundComplete = (roundList, players, roundId) =>
     let unmatched = getUnmatched(roundList, players, roundId);
     let results =
       roundList->Array.getExn(roundId)
-      |> Js.Array.map(match => match.Match.whiteScore +. match.blackScore);
-    Map.String.size(unmatched) === 0 && !(results |> Js.Array.includes(0.0));
+      |> Js.Array.map(match => match.Match.result);
+    Map.String.size(unmatched) === 0
+    && !(results |> Js.Array.includes(MatchResult.NotSet));
   };
 
 module Converters = {
@@ -356,7 +405,7 @@ module Converters = {
                ~playerId=match.whiteId,
                ~origRating=match.whiteOrigRating,
                ~newRating=match.whiteNewRating,
-               ~result=match.whiteScore,
+               ~result=match.result->MatchResult.(toFloat(White)),
                ~oppId=match.blackId,
                ~color=white,
              );
@@ -366,7 +415,7 @@ module Converters = {
                ~playerId=match.blackId,
                ~origRating=match.blackOrigRating,
                ~newRating=match.blackNewRating,
-               ~result=match.blackScore,
+               ~result=match.result->MatchResult.(toFloat(Black)),
                ~oppId=match.whiteId,
                ~color=black,
              );

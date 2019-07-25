@@ -52,7 +52,7 @@ function TournamentData_Mock(Props) {
               return tourney[/* playerIds */4].includes(id);
             })));
   var players = match$1[0];
-  var partial_arg = Data$Coronate.Player[/* getPlayerMaybeMap */7];
+  var partial_arg = Data$Coronate.Player[/* getPlayerMaybe */6];
   var getPlayer = function (param) {
     return partial_arg(players, param);
   };

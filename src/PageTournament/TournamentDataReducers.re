@@ -1,10 +1,17 @@
 open Belt;
+open Data;
 
-let scoreByeMatch = (byeValue, match: Data.Match.t) =>
-  if (Data.Player.isDummyId(match.whiteId)) {
-    {...match, whiteScore: 0.0, blackScore: byeValue};
-  } else if (Data.Player.isDummyId(match.blackId)) {
-    {...match, whiteScore: byeValue, blackScore: 0.0};
+let scoreByeMatch = (byeValue, match: Match.t) =>
+  if (Player.isDummyId(match.Match.whiteId)) {
+    {
+      ...match,
+      result: ByeValue.resultForPlayerColor(byeValue, MatchResult.Black),
+    };
+  } else if (Player.isDummyId(match.blackId)) {
+    {
+      ...match,
+      result: ByeValue.resultForPlayerColor(byeValue, MatchResult.White),
+    };
   } else {
     match;
   };
@@ -14,8 +21,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
      only include the specified players. */
   let playerIds = playerMap |> Map.String.keysToArray;
   let filteredData =
-    pairData->Map.String.reduce(
-      Map.String.empty, (acc, key, datum: Pairing.t) =>
+    pairData->Map.String.reduce(Map.String.empty, (acc, key, datum) =>
       if (playerIds |> Js.Array.includes(key)) {
         acc->Map.String.set(key, datum);
       } else {
@@ -23,23 +29,19 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
       }
     );
   let (pairdataNoByes, byePlayerData) =
-    Pairing.setByePlayer(
-      tourney.byeQueue,
-      Data.Player.dummy_id,
-      filteredData,
-    );
+    Pairing.setByePlayer(tourney.byeQueue, Player.dummy_id, filteredData);
   let pairs = Pairing.pairPlayers(pairdataNoByes);
   let pairsWithBye =
     switch (byePlayerData) {
     | Some(player) =>
-      pairs |> Js.Array.concat([|(player.id, Data.Player.dummy_id)|])
+      pairs |> Js.Array.concat([|(player.id, Player.dummy_id)|])
     | None => pairs
     };
-  let getPlayer = Data.Player.getPlayerMaybeMap(playerMap);
+  let getPlayer = Player.getPlayerMaybe(playerMap);
   let newMatchList =
     pairsWithBye
     |> Js.Array.map(((whiteId, blackId)) =>
-         Data.Match.{
+         Match.{
            id: Utils.nanoid(),
            whiteOrigRating: getPlayer(whiteId).rating,
            blackOrigRating: getPlayer(blackId).rating,
@@ -47,8 +49,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
            blackNewRating: getPlayer(blackId).rating,
            whiteId,
            blackId,
-           whiteScore: 0.0,
-           blackScore: 0.0,
+           result: MatchResult.NotSet,
          }
        );
   newMatchList |> Js.Array.map(scoreByeMatch(byeValue));
@@ -57,8 +58,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney: Data.Tournament.t) =
 let manualPair = ((white: Data.Player.t, black: Data.Player.t), byeValue) => {
   Data.Match.{
     id: Utils.nanoid(),
-    whiteScore: 0.0,
-    blackScore: 0.0,
+    result: MatchResult.NotSet,
     whiteId: white.id,
     blackId: black.id,
     whiteOrigRating: white.rating,
@@ -79,24 +79,25 @@ type actionTournament =
   | SetByeQueue(array(Data.id))
   | SetName(string)
   | AutoPair(
-      float,
+      ByeValue.t,
       int,
       Map.String.t(Pairing.t),
       Map.String.t(Data.Player.t),
       Data.Tournament.t,
     )
-  | ManualPair(float, (Data.Player.t, Data.Player.t), int)
+  | ManualPair(ByeValue.t, (Data.Player.t, Data.Player.t), int)
   | SetDate(Js.Date.t)
-  | SetMatchResult(Data.id, (int, int), (float, float), int)
+  | SetMatchResult(Data.id, (int, int), MatchResult.t, int)
   | DelMatch(Data.id, int)
   | SwapColors(Data.id, int)
   | MoveMatch(int, int, int)
-  | UpdateByeScores(float)
+  | UpdateByeScores(ByeValue.t)
   | SetTournament(Data.Tournament.t);
 
-let tournamentReducer = (state: Data.Tournament.t, action) => {
+let tournamentReducer = (state, action) => {
   switch (action) {
-  | AddRound => {
+  | AddRound =>
+    Data.Tournament.{
       ...state,
       roundList: state.roundList |> Js.Array.concat([|[||]|]),
     }
@@ -145,7 +146,7 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
   | SetMatchResult(
       matchId,
       (whiteNewRating, blackNewRating),
-      (whiteScore, blackScore),
+      result,
       roundId,
     ) =>
     /* This is a lot of nested values, but right now I'm not sure what the
@@ -165,13 +166,7 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
     ->Array.getExn(roundId)
     ->Array.set(
         matchIndex,
-        Data.Match.{
-          ...match,
-          whiteScore,
-          blackScore,
-          whiteNewRating,
-          blackNewRating,
-        },
+        Data.Match.{...match, result, whiteNewRating, blackNewRating},
       )
     |> ignore;
     {...state, roundList};
@@ -198,6 +193,14 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
       );
     let oldMatch =
       Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
+    let result =
+      MatchResult.(
+        switch (oldMatch.result) {
+        | WhiteWon => BlackWon
+        | BlackWon => WhiteWon
+        | x => x
+        }
+      );
     /* TODO: clean this up. It just reverses the values */
     roundList
     ->Array.getExn(roundId)
@@ -205,10 +208,9 @@ let tournamentReducer = (state: Data.Tournament.t, action) => {
         matchIndex,
         Data.Match.{
           ...oldMatch,
+          result,
           whiteId: oldMatch.blackId,
           blackId: oldMatch.whiteId,
-          whiteScore: oldMatch.blackScore,
-          blackScore: oldMatch.whiteScore,
           whiteOrigRating: oldMatch.blackOrigRating,
           blackOrigRating: oldMatch.whiteOrigRating,
           whiteNewRating: oldMatch.blackNewRating,

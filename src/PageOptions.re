@@ -176,17 +176,21 @@ let make = () => {
         <label className="monospace body-30">
           {s("1 ")}
           <input
-            checked={config.byeValue === 1.0}
+            checked={config.byeValue === Data.ByeValue.Full}
             type_="radio"
-            onChange={_ => configDispatch(Db.SetByeValue(1.0))}
+            onChange={_ =>
+              configDispatch(Db.SetByeValue(Data.ByeValue.Full))
+            }
           />
         </label>
         <label className="monospace body-30">
           {s({j|½ |j})}
           <input
-            checked={config.byeValue === 0.5}
+            checked={config.byeValue === Data.ByeValue.Half}
             type_="radio"
-            onChange={_ => configDispatch(Db.SetByeValue(0.5))}
+            onChange={_ =>
+              configDispatch(Db.SetByeValue(Data.ByeValue.Half))
+            }
           />
         </label>
       </form>

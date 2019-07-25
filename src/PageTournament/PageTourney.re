@@ -1,5 +1,7 @@
 open Utils.Router;
 open TournamentData;
+open Data;
+
 module Footer = {
   [@react.component]
   let make = (~tournament) => {
@@ -21,9 +23,9 @@ module Footer = {
         <label
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
-          {"Rounds: " |> React.string}
+          {React.string("Rounds: ")}
           {roundList |> Js.Array.length |> string_of_int |> React.string}
-          <small> {" out of " |> React.string} </small>
+          <small> {React.string(" out of ")} </small>
           {roundCount |> string_of_int |> React.string}
         </label>
         <hr className="win__footer-divider" />
@@ -39,7 +41,7 @@ module Footer = {
             ~minHeight="initial",
             (),
           )}>
-          {tooltipText |> React.string}
+          {React.string(tooltipText)}
         </Utils.Notification>
       </>
     );
@@ -63,7 +65,7 @@ module Sidebar = {
       tourneyDispatch,
     } = tournament;
     let roundList = tourney.roundList;
-    let isComplete = Data.isRoundComplete(roundList, activePlayers);
+    let isComplete = isRoundComplete(roundList, activePlayers);
     let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
       event->ReactEvent.Mouse.preventDefault;
@@ -89,18 +91,19 @@ module Sidebar = {
         | None => ()
         | Some(round) =>
           round
-          |> Js.Array.forEach((match: Data.Match.t) => {
+          |> Js.Array.forEach(match => {
+               let {
+                 Match.result,
+                 Match.whiteId,
+                 Match.blackId,
+                 Match.whiteOrigRating,
+                 Match.blackOrigRating,
+               } = match;
                /* Don't change players who haven't scored.*/
-               let whiteScore = match.whiteScore;
-               let blackScore = match.blackScore;
-               let whiteId = match.whiteId;
-               let blackId = match.blackId;
-               let whiteOrigRating = match.whiteOrigRating;
-               let blackOrigRating = match.blackOrigRating;
-               if (whiteScore +. blackScore !== 0.0) {
+               if (result !== MatchResult.NotSet) {
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
-                      if (id !== Data.Player.dummy_id) {
+                      if (id !== Player.dummy_id) {
                         /* Don't try to set the dummy */
                         let matchCount = getPlayer(id).matchCount;
                         playersDispatch(SetMatchCount(id, matchCount - 1));
@@ -124,7 +127,7 @@ module Sidebar = {
             <HashLink to_="/tourneys" onDragStart=noDraggy>
               <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close">
-                {" Back" |> React.string}
+                {React.string(" Back")}
               </span>
             </HashLink>
           </li>
@@ -135,7 +138,7 @@ module Sidebar = {
             <HashLink to_={basePath ++ "/setup"} onDragStart=noDraggy>
               <Icons.Settings />
               <span className="sidebar__hide-on-close">
-                {" Setup" |> React.string}
+                {React.string(" Setup")}
               </span>
             </HashLink>
           </li>
@@ -143,7 +146,7 @@ module Sidebar = {
             <HashLink to_=basePath onDragStart=noDraggy>
               <Icons.Users />
               <span className="sidebar__hide-on-close">
-                {" Players" |> React.string}
+                {React.string(" Players")}
               </span>
             </HashLink>
           </li>
@@ -151,7 +154,7 @@ module Sidebar = {
             <HashLink to_={basePath ++ "/status"} onDragStart=noDraggy>
               <Icons.Activity />
               <span className="sidebar__hide-on-close">
-                {" Status" |> React.string}
+                {React.string(" Status")}
               </span>
             </HashLink>
           </li>
@@ -159,7 +162,7 @@ module Sidebar = {
             <HashLink to_={basePath ++ "/crosstable"} onDragStart=noDraggy>
               <Icons.Layers />
               <span className="sidebar__hide-on-close">
-                {" Crosstable" |> React.string}
+                {React.string(" Crosstable")}
               </span>
             </HashLink>
           </li>
@@ -167,14 +170,14 @@ module Sidebar = {
             <HashLink to_={basePath ++ "/scores"} onDragStart=noDraggy>
               <Icons.List />
               <span className="sidebar__hide-on-close">
-                {" Score detail" |> React.string}
+                {React.string(" Score detail")}
               </span>
             </HashLink>
           </li>
         </ul>
         <hr />
         <h5 className="sidebar__hide-on-close sidebar__header">
-          {"Rounds" |> React.string}
+          {React.string("Rounds")}
         </h5>
         <ul className="center-on-close">
           {roundList
@@ -190,7 +193,7 @@ module Sidebar = {
                              "sidebar__hide-on-close",
                              "caption-20",
                            ])}>
-                           {" Complete " |> React.string}
+                           {React.string(" Complete ")}
                            <Icons.Check />
                          </span>
                        : <span
@@ -198,7 +201,7 @@ module Sidebar = {
                              "sidebar__hide-on-close",
                              "caption-20",
                            ])}>
-                           {" Not complete " |> React.string}
+                           {React.string(" Not complete ")}
                            <Icons.Alert />
                          </span>}
                   </HashLink>
@@ -217,7 +220,7 @@ module Sidebar = {
             style={ReactDOMRe.Style.make(~width="100%", ())}>
             <Icons.Plus />
             <span className="sidebar__hide-on-close">
-              {" New round" |> React.string}
+              {React.string(" New round")}
             </span>
           </button>
         </li>
@@ -229,7 +232,7 @@ module Sidebar = {
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>
             <Icons.Trash />
             <span className="sidebar__hide-on-close">
-              {" Remove last round" |> React.string}
+              {React.string(" Remove last round")}
             </span>
           </button>
         </li>

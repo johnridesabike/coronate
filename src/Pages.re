@@ -35,8 +35,9 @@ module CautionFooter = {
     <aside className={Cn.make([Styles.container, "body-20"])}>
       <p className=Styles.text>
         {React.string({j|⚠️|j})}
-        {" This is beta software. Want to help make it better? Check out the "
-         |> React.string}
+        {React.string(
+           " This is beta software. Want to help make it better? Check out the ",
+         )}
         <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
         {React.string(Utils.Entities.nbsp)}
         <a
@@ -113,9 +114,9 @@ module Splash = {
             </li>
           </ol>
           <Utils.Notification kind=Utils.Warning>
-            {"If you experience glitches or crashes," |> React.string}
+            {React.string("If you experience glitches or crashes,")}
             <br />
-            {"clear your browser cache and try again." |> React.string}
+            {React.string("clear your browser cache and try again.")}
           </Utils.Notification>
         </aside>
         <div className=Style.title>

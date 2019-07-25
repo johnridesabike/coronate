@@ -49,7 +49,7 @@ let make = (~children, ~tourneyId) => {
         tourney.playerIds |> Js.Array.includes(id)
       ),
     );
-  let getPlayer = Player.getPlayerMaybeMap(players);
+  let getPlayer = Player.getPlayerMaybe(players);
   /* `players` includes players in past matches who may have left
      `activePlayers` is only players to be matched in future matches. */
   let activePlayers =

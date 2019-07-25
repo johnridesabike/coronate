@@ -1,16 +1,17 @@
 [@react.component]
-let make = (~tournament: TournamentData.t) => {
+let make = (~tournament) => {
   let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
   let lastRound =
     if (tourney.roundList |> Js.Array.length === 0) {
-      <p> {"No rounds played yet." |> React.string} </p>;
+      <p> {React.string("No rounds played yet.")} </p>;
     } else {
       let lastRoundId = (tourney.roundList |> Js.Array.length) - 1;
       if (tourney.roundList->Belt.Array.getUnsafe(lastRoundId)
           |> Js.Array.length === 0) {
         <p>
-          {"Matched players in the current round will be shown here."
-           |> React.string}
+          {React.string(
+             "Matched players in the current round will be shown here.",
+           )}
         </p>;
       } else {
         <PageRound.RoundTable roundId=lastRoundId tournament isCompact=true />;
@@ -18,7 +19,7 @@ let make = (~tournament: TournamentData.t) => {
     };
   <>
     <h2 style={ReactDOMRe.Style.make(~textAlign="center", ())}>
-      {"Tournament status" |> React.string}
+      {React.string("Tournament status")}
     </h2>
     <Utils.PanelContainer
       style={ReactDOMRe.Style.make(~justifyContent="center", ())}>

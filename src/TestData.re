@@ -1,6 +1,6 @@
 open Data;
 let config = Config.{
-  byeValue: 1.0,
+  byeValue: ByeValue.Full,
   avoidPairs: [|
     ("TVs_Frank____________", "TVs_Son_of_TVs_Frank_"),
     ("Pearl_Forrester______", "Dr_Clayton_Forrester_"),
@@ -242,8 +242,7 @@ let tournaments =
           [|
             {
               id: "xTXxZHB0sTt__xIAg45fm",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 2592,
               blackNewRating: 1833,
               whiteOrigRating: 2600,
@@ -254,8 +253,7 @@ let tournaments =
             },
             {
               id: "zQcf9RWXK7iuU6ibPzrhU",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 2400,
               blackNewRating: 1600,
               whiteOrigRating: 2400,
@@ -266,8 +264,7 @@ let tournaments =
             },
             {
               id: "Vw_X0c7O4vshrYEO-oSzR",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1738,
               blackNewRating: 1526,
               whiteOrigRating: 1800,
@@ -278,8 +275,7 @@ let tournaments =
             },
             {
               id: "iSDujOVkOTrcLv_KJmd7s",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 800,
               blackNewRating: 0,
               whiteOrigRating: 800,
@@ -309,8 +305,7 @@ let tournaments =
           [|
             {
               id: "KkFr4B7FDqiHRWmACgApf",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1894,
               blackNewRating: 2202,
               whiteOrigRating: 1900,
@@ -321,8 +316,7 @@ let tournaments =
             },
             {
               id: "R_BTsGSziwgyvFZM3yc5u",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 793,
               blackNewRating: 0,
               whiteOrigRating: 793,
@@ -335,8 +329,7 @@ let tournaments =
           [|
             {
               id: "rcyCfpZU6olav5kdVac44",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 2187,
               blackNewRating: 953,
               whiteOrigRating: 2202,
@@ -347,8 +340,7 @@ let tournaments =
             },
             {
               id: "Nc0Om5fEuwSuzFls9wmME",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 1894,
               blackNewRating: 0,
               whiteOrigRating: 1894,
@@ -361,8 +353,7 @@ let tournaments =
           [|
             {
               id: "uawjKwbiA38RP8pA--tlw",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 952,
               blackNewRating: 1894,
               whiteOrigRating: 953,
@@ -373,8 +364,7 @@ let tournaments =
             },
             {
               id: "-kwIDxjPhWVRbqxtRZ26_",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 2187,
               blackNewRating: 0,
               whiteOrigRating: 2187,
@@ -409,8 +399,7 @@ let tournaments =
           [|
             {
               id: "KdLva8hWqYHdaU9KnFTe2",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1699,
               blackNewRating: 2600,
               whiteOrigRating: 1700,
@@ -421,8 +410,7 @@ let tournaments =
             },
             {
               id: "WDPFsNF1yADs4qofFwCY0",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 1650,
               blackNewRating: 2389,
               whiteOrigRating: 1600,
@@ -433,8 +421,7 @@ let tournaments =
             },
             {
               id: "R5sXfTOJw5vrJ4IytAjSi",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1400,
               blackNewRating: 2100,
               whiteOrigRating: 1400,
@@ -445,8 +432,7 @@ let tournaments =
             },
             {
               id: "2YOsn_JJFnaUMhRBAc9KY",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 1597,
               blackNewRating: 1728,
               whiteOrigRating: 800,
@@ -482,8 +468,7 @@ let tournaments =
           [|
             {
               id: "ryWXwvFGwBKQqGBbMYeps",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1699,
               blackNewRating: 2600,
               whiteOrigRating: 1700,
@@ -494,8 +479,7 @@ let tournaments =
             },
             {
               id: "2KKVbi0AfNxfJAJobTgP5",
-              whiteScore: 1.0,
-              blackScore: 0.0,
+              result: MatchResult.WhiteWon,
               whiteNewRating: 1650,
               blackNewRating: 2389,
               whiteOrigRating: 1600,
@@ -506,8 +490,7 @@ let tournaments =
             },
             {
               id: "zdlBHBAqgV2qabn2oBa2a",
-              whiteScore: 0.0,
-              blackScore: 1.0,
+              result: MatchResult.BlackWon,
               whiteNewRating: 1400,
               blackNewRating: 2100,
               whiteOrigRating: 1400,
@@ -518,8 +501,7 @@ let tournaments =
             },
             {
               id: "8fGxU3tLpd8GibuSQr9-Y",
-              whiteScore: 0.5,
-              blackScore: 0.5,
+              result: MatchResult.Draw,
               whiteNewRating: 1197,
               blackNewRating: 1764,
               whiteOrigRating: 800,
