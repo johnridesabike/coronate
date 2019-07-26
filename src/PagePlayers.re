@@ -225,7 +225,7 @@ module Profile = {
     );
     let avoidMap =
       config.avoidPairs
-      |> Js.Array.reduce(Data.Config.avoidPairReducer, Map.String.empty);
+      ->Set.reduce(Map.String.empty, Data.AvoidPairs.reduceToMap);
     let singAvoidList =
       switch (avoidMap->Map.String.get(playerId)) {
       | None => []

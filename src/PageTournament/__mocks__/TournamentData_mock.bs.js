@@ -2,6 +2,7 @@
 
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Data$Coronate from "../../Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
@@ -12,7 +13,7 @@ function log2(num) {
   return Math.log(num) / Math.log(2.0);
 }
 
-var configData_000 = /* avoidPairs */TestData$Coronate.config[/* avoidPairs */0].concat(DemoData$Coronate.config[/* avoidPairs */0]);
+var configData_000 = /* avoidPairs */Belt_Set.mergeMany(TestData$Coronate.config[/* avoidPairs */0], Belt_Set.toArray(DemoData$Coronate.config[/* avoidPairs */0]));
 
 var configData_001 = /* byeValue */TestData$Coronate.config[/* byeValue */1];
 

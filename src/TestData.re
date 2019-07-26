@@ -1,14 +1,19 @@
 open Data;
-let config = Config.{
-  byeValue: ByeValue.Full,
-  avoidPairs: [|
-    ("TVs_Frank____________", "TVs_Son_of_TVs_Frank_"),
-    ("Pearl_Forrester______", "Dr_Clayton_Forrester_"),
-    ("Kinga_Forrester______", "Dr_Clayton_Forrester_"),
-    ("Kinga_Forrester______", "Pearl_Forrester______"),
-  |],
-  lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
-};
+let config =
+  Config.{
+    byeValue: ByeValue.Full,
+    avoidPairs:
+      Belt.Set.fromArray(
+        [|
+          ("TVs_Frank____________", "TVs_Son_of_TVs_Frank_"),
+          ("Pearl_Forrester______", "Dr_Clayton_Forrester_"),
+          ("Kinga_Forrester______", "Dr_Clayton_Forrester_"),
+          ("Kinga_Forrester______", "Pearl_Forrester______"),
+        |],
+        ~id=(module AvoidPairs.T),
+      ),
+    lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
+  };
 let players =
   Belt.Map.String.fromArray([|
     (

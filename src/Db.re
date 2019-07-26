@@ -33,7 +33,7 @@ module Tournaments =
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw "document.body.style = \"wait\""];
   Repromise.all3(
-    ConfigDb.store->ConfigDb.setItems(DemoData.config),
+    ConfigDb.setItems(DemoData.config),
     Players.setItems(DemoData.players),
     Tournaments.setItems(DemoData.tournaments),
   )
@@ -125,47 +125,40 @@ let useAllTournaments =
     ~getKeys=Tournaments.getKeys,
   );
 
-type actionOption =
-  | AddAvoidPair(Data.Config.avoidPair)
-  | DelAvoidPair(Data.Config.avoidPair)
+type actionConfig =
+  | AddAvoidPair(Data.AvoidPairs.pair)
+  | DelAvoidPair(Data.AvoidPairs.pair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(array(Data.Config.avoidPair))
+  | SetAvoidPairs(Data.AvoidPairs.t)
   | SetByeValue(Data.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
-let configReducer = (state: Data.Config.t, action) => {
-  Js.Array.(
-    switch (action) {
-    | AddAvoidPair(pair) => {
-        ...state,
-        avoidPairs: state.avoidPairs |> concat([|pair|]),
-      }
-    | DelAvoidPair((user1, user2)) => {
-        ...state,
-        avoidPairs:
-          state.avoidPairs
-          |> filter(((p1, p2)) =>
-               !(
-                 [|p1, p2|]
-                 |> includes(user1)
-                 && [|p1, p2|]
-                 |> includes(user2)
-               )
-             ),
-      }
-    | DelAvoidSingle(id) => {
-        ...state,
-        avoidPairs:
-          state.avoidPairs
-          |> filter(((p1, p2)) => !([|p1, p2|] |> includes(id))),
-      }
-    | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
-    | SetByeValue(byeValue) => {...state, byeValue}
-    | SetLastBackup(lastBackup) => {...state, lastBackup}
-    | SetState(state) => state
+let configReducer = (state, action) => {
+  switch (action) {
+  | AddAvoidPair(pair) =>
+    Data.Config.{...state, avoidPairs: state.avoidPairs->Set.add(pair)}
+  | DelAvoidPair(pair) => {
+      ...state,
+      avoidPairs: state.avoidPairs->Set.remove(pair),
     }
-  );
+  | DelAvoidSingle(id) => {
+      ...state,
+      avoidPairs:
+        state.avoidPairs
+        ->Set.reduce(Data.AvoidPairs.make(), (acc, (p1, p2)) =>
+            if (p1 === id || p2 === id) {
+              acc;
+            } else {
+              acc->Set.add((p1, p2));
+            }
+          ),
+    }
+  | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
+  | SetByeValue(byeValue) => {...state, byeValue}
+  | SetLastBackup(lastBackup) => {...state, lastBackup}
+  | SetState(state) => state
+  };
 };
 let useConfig = () => {
   let (config, dispatch) =
@@ -174,29 +167,31 @@ let useConfig = () => {
   React.useEffect2(
     () => {
       let didCancel = ref(false);
-      ConfigDb.store->ConfigDb.getItems
+      ConfigDb.getItems()
       |> Repromise.map(values =>
-           if (! didCancel^) {
-             dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
-             dispatch(SetByeValue(values.byeValue));
-             dispatch(SetLastBackup(values.lastBackup));
-             setIsLoaded(_ => true);
+           switch (values) {
+           | Some(values) =>
+             if (! didCancel^) {
+               dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
+               dispatch(SetByeValue(values.byeValue));
+               dispatch(SetLastBackup(values.lastBackup));
+               setIsLoaded(_ => true);
+             }
+           | None => ()
            }
          )
       |> ignore;
-
       Some(() => didCancel := true);
     },
     (setIsLoaded, dispatch),
   );
   React.useEffect2(
-    () =>
-      switch (isLoaded) {
-      | false => None
-      | true =>
-        ConfigDb.store->ConfigDb.setItems(config) |> ignore;
-        None;
-      },
+    () => {
+      if (isLoaded) {
+        ConfigDb.setItems(config) |> ignore;
+      };
+      None;
+    },
     (config, isLoaded),
   );
   (config, dispatch);

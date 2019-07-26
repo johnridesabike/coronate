@@ -1,7 +1,7 @@
 open Belt;
 open Data;
 
-let log2 = (num) => log(num) /. log(2.0);
+let log2 = num => log(num) /. log(2.0);
 /*
   I'm depreciating `DemoData`, but currently merging it with `TestData` so
   tests can keep working.
@@ -10,7 +10,7 @@ open TestData;
 let configData = {
   ...config,
   avoidPairs:
-    config.avoidPairs |> Js.Array.concat(DemoData.config.avoidPairs),
+    config.avoidPairs->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
 };
 let tournamentData =
   tournaments->Map.String.merge(DemoData.tournaments, (_, _, a) => a);

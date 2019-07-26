@@ -3,7 +3,7 @@ open TestData;
 let configData = {
   ...config,
   avoidPairs:
-    config.avoidPairs |> Js.Array.concat(DemoData.config.avoidPairs),
+    config.avoidPairs->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
 };
 let tournamentData =
   tournaments->Map.String.merge(DemoData.tournaments, (_, _, a) => a);
@@ -24,47 +24,40 @@ let genericDbReducer = (state, action) => {
   };
 };
 
-type actionOption =
-  | AddAvoidPair(Data.Config.avoidPair)
-  | DelAvoidPair(Data.Config.avoidPair)
+type actionConfig =
+  | AddAvoidPair(Data.AvoidPairs.pair)
+  | DelAvoidPair(Data.AvoidPairs.pair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(array(Data.Config.avoidPair))
+  | SetAvoidPairs(Data.AvoidPairs.t)
   | SetByeValue(Data.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
-let configReducer = (state: Data.Config.t, action) => {
-  Js.Array.(
-    switch (action) {
-    | AddAvoidPair(pair) => {
-        ...state,
-        avoidPairs: state.avoidPairs |> concat([|pair|]),
-      }
-    | DelAvoidPair((user1, user2)) => {
-        ...state,
-        avoidPairs:
-          state.avoidPairs
-          |> filter(((p1, p2)) =>
-               !(
-                 [|p1, p2|]
-                 |> includes(user1)
-                 && [|p1, p2|]
-                 |> includes(user2)
-               )
-             ),
-      }
-    | DelAvoidSingle(id) => {
-        ...state,
-        avoidPairs:
-          state.avoidPairs
-          |> filter(((p1, p2)) => !([|p1, p2|] |> includes(id))),
-      }
-    | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
-    | SetByeValue(byeValue) => {...state, byeValue}
-    | SetLastBackup(lastBackup) => {...state, lastBackup}
-    | SetState(state) => state
+let configReducer = (state, action) => {
+  switch (action) {
+  | AddAvoidPair(pair) =>
+    Data.Config.{...state, avoidPairs: state.avoidPairs->Set.add(pair)}
+  | DelAvoidPair(pair) => {
+      ...state,
+      avoidPairs: state.avoidPairs->Set.remove(pair),
     }
-  );
+  | DelAvoidSingle(id) => {
+      ...state,
+      avoidPairs:
+        state.avoidPairs
+        ->Set.reduce(Data.AvoidPairs.make(), (acc, (p1, p2)) =>
+            if (p1 === id || p2 === id) {
+              acc;
+            } else {
+              acc->Set.add((p1, p2));
+            }
+          ),
+    }
+  | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
+  | SetByeValue(byeValue) => {...state, byeValue}
+  | SetLastBackup(lastBackup) => {...state, lastBackup}
+  | SetState(state) => state
+  };
 };
 /* Instead of taking an IndexedDB store as an argument, this takes an object
    with the mocked data. */

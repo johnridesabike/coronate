@@ -44,6 +44,7 @@ module LocalForage = {
   };
   module type Data = {
     type t;
+    /* tip: use bs-json to make these functions */
     let decode: Js.Json.t => t;
     let encode: t => Js.Json.t;
   };
@@ -51,83 +52,103 @@ module LocalForage = {
     let name: string;
     let storeName: string;
   };
+  [@bs.send] external createInstance: (t, config) => t = "createInstance";
+  [@bs.send]
+  external setItem:
+    (t, string, Js.Json.t) => Repromise.Rejectable.t(unit, exn) =
+    "setItem";
+  [@bs.send]
+  external getItem:
+    (t, string) => Repromise.Rejectable.t(Js.Nullable.t(Js.Json.t), exn) =
+    "getItem";
+  [@bs.send]
+  external keys: t => Repromise.Rejectable.t(Js.Array.t(string), exn) =
+    "keys";
+  /* Plugin methods */
+  [@bs.send]
+  external getItems_dict:
+    (t, array(string)) => Repromise.Rejectable.t(Js.Dict.t(Js.Json.t), exn) =
+    "getItems";
+  [@bs.send]
+  external getAllItems_dict:
+    t => Repromise.Rejectable.t(Js.Dict.t(Js.Json.t), exn) =
+    "getItems";
+  [@bs.send]
+  external getAllItems_json: t => Repromise.Rejectable.t(Js.Json.t, exn) =
+    "getItems";
+  [@bs.send]
+  external setItems_dict:
+    (t, Js.Dict.t(Js.Json.t)) => Repromise.Rejectable.t(unit, exn) =
+    "setItems";
+  [@bs.send]
+  external setItems_json: (t, Js.Json.t) => Repromise.Rejectable.t(unit, exn) =
+    "setItems";
+  [@bs.send]
+  external removeItems:
+    (t, array(string)) => Repromise.Rejectable.t(unit, exn) =
+    "removeItems";
+
+  let handleError_ = error => {
+    Js.Console.error(error);
+    Repromise.resolved();
+  };
   /*
      Map is a functor that can take any module that has an `encode` function,
      `decode` function, and a `t` type. The output module will contain a store
      and functions that can access that store and return either the data type or
      `Belt.Map.String` objects.
-
-     The main functions the `encode` and `decode` automatically, but you can
-     directly pass `Js.Json.t` with the `*_json` functions. Instead of 
-     `Belt.Map.String`, those functions retun `Js.Dict`s.
    */
   module Map = (Data: Data, Config: Config) => {
-    type data = Data.t;
     open Belt;
-    [@bs.send] external createInstance: (t, config) => t = "createInstance";
     let store =
       localForage->createInstance(
         config(~name=Config.name, ~storeName=Config.storeName),
       );
-
-    [@bs.send]
-    external getItem_: (t, string) => Repromise.t(Js.Nullable.t(Js.Json.t)) =
-      "getItem";
     let getItem = key =>
-      getItem_(store, key)
-      |> Repromise.map(value =>
+      getItem(store, key)
+      |> Repromise.Rejectable.map(value =>
            switch (Js.Nullable.toOption(value)) {
            | Some(value) => Some(Data.decode(value))
            | None => None
            }
-         );
-
-    [@bs.send]
-    external setItem_json: (t, string, Js.Json.t) => Repromise.t(unit) =
-      "setItem";
-    let setItem = (key, value) =>
-      setItem_json(store, key, Data.encode(value));
-
-    [@bs.send]
-    external keys_: (t, unit) => Repromise.t(Js.Array.t(string)) = "keys";
-    let getKeys = keys_(store);
-
-    /* Plugin methods */
-    [@bs.send]
-    external getItems_json:
-      (t, Js.Nullable.t(array(string))) =>
-      Repromise.t(Js.Dict.t(Js.Json.t)) =
-      "getItems";
-
-    let parseItems_ = items => {
+         )
+      |> Repromise.Rejectable.catch(error => {
+           Js.Console.error(error);
+           Repromise.resolved(None);
+         });
+    let setItem = (key, value) => setItem(store, key, Data.encode(value));
+    let getKeys = () =>
+      keys(store)
+      |> Repromise.Rejectable.catch(error => {
+           Js.Console.error(error);
+           Repromise.resolved([||]);
+         });
+    let parseItems = items =>
       items
       ->Js.Dict.entries
       ->Map.String.fromArray
       ->Map.String.map(Data.decode);
+    let handleError_map = error => {
+      Js.Console.error(error);
+      Repromise.resolved(Map.String.empty);
     };
-
     let getItems = keys =>
-      getItems_json(store, Js.Nullable.return(keys))
-      |> Repromise.map(parseItems_);
-    let getAllItems = () => {
-      getItems_json(store, Js.Nullable.null) |> Repromise.map(parseItems_);
-    };
-
-    [@bs.send]
-    external setItems_json: (t, Js.Dict.t(Js.Json.t)) => Repromise.t(unit) =
-      "setItems";
+      getItems_dict(store, keys)
+      |> Repromise.Rejectable.map(parseItems)
+      |> Repromise.Rejectable.catch(handleError_map);
+    let getAllItems = () =>
+      getAllItems_dict(store)
+      |> Repromise.Rejectable.map(parseItems)
+      |> Repromise.Rejectable.catch(handleError_map);
     let setItems = items => {
-      let dict =
-        Map.String.toArray(items)
-        |> Js.Array.map(((key, value)) => (key, Data.encode(value)))
-        |> Js.Dict.fromArray;
-      setItems_json(store, dict);
+      items
+      ->Map.String.map(Data.encode)
+      ->Map.String.toArray
+      ->Js.Dict.fromArray
+      |> setItems_dict(store)
+      |> Repromise.Rejectable.catch(handleError_);
     };
-
-    [@bs.send]
-    external removeItems_: (t, array(string)) => Repromise.t(unit) =
-      "removeItems";
-    let removeItems = removeItems_(store);
+    let removeItems = removeItems(store);
   };
   /*
     Obj has a fixed set of fields and is heterogenous; each entry can have its
@@ -138,24 +159,27 @@ module LocalForage = {
     individual fields isn't possible (right now).
    */
   module Object = (Data: Data, Config: Config) => {
-    [@bs.send] external createInstance: (t, config) => t = "createInstance";
     let store =
       localForage->createInstance(
         config(~name=Config.name, ~storeName=Config.storeName),
       );
-
-    [@bs.send]
-    external getItems_json:
-      (t, Js.Nullable.t(array(string))) => Repromise.t(Js.Json.t) =
-      "getItems";
-    let getItems = t =>
-      getItems_json(t, Js.Nullable.null) |> Repromise.map(Data.decode);
-
-    [@bs.send]
-    external setItems_json: (t, Js.Json.t) => Repromise.t(unit) = "setItems";
-    let setItems = (t, items) => setItems_json(t, Data.encode(items));
+    let getItems = () =>
+      getAllItems_json(store)
+      |> Repromise.Rejectable.map(x => Some(Data.decode(x)))
+      |> Repromise.Rejectable.catch(error => {
+           Js.Console.error(error);
+           Repromise.resolved(None);
+         });
+    let setItems = items =>
+      setItems_json(store, Data.encode(items))
+      |> Repromise.Rejectable.catch(handleError_);
   };
 
+  /*
+   If we were going to make this binding more extensible in the way that
+   LocalForage already is, then these may be functors or something else fancy.
+   In the meantime, I'm just hard-coding the plugins I need.
+   */
   module Plugins = {
     [@bs.module "localforage-getitems"]
     external getItemsPrototype: t => unit = "extendPrototype";

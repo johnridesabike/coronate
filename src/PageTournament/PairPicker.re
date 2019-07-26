@@ -303,8 +303,7 @@ module PlayerInfo = {
   [@react.component]
   let make = (~playerId, ~players, ~getPlayer, ~scoreData, ~avoidPairs) => {
     let avoidMap =
-      avoidPairs
-      |> Js.Array.reduce(Data.Config.avoidPairReducer, Map.String.empty);
+      avoidPairs->Set.reduce(Map.String.empty, Data.AvoidPairs.reduceToMap);
     let playerData =
       switch (scoreData->Map.String.get(playerId)) {
       | None => Scoring.createBlankScoreData(playerId)
