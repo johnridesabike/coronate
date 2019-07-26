@@ -43,7 +43,8 @@ module SelectList = {
             switch (stagePlayersOption) {
             | (Some(id), None) => Some(id)
             | (None, Some(id)) => Some(id)
-            | _ => None
+            | (None, None)
+            | (Some(_), Some(_)) => None
             };
           switch (selectedId) {
           | None => 0.0
@@ -87,7 +88,7 @@ module SelectList = {
         )
       | (None, None) =>
         setStagedPlayers(_ => (Js.Nullable.return(id), Js.Nullable.null))
-      | _ => ()
+      | (Some(_), Some(_)) => ()
       };
     };
     unmatched |> Map.String.keysToArray |> Js.Array.length === 0
@@ -172,12 +173,16 @@ module Stage = {
     let noneAreSelected =
       switch (stagedPlayersOption) {
       | (None, None) => true
-      | _ => false
+      | (Some(_), Some(_))
+      | (Some(_), None)
+      | (None, Some(_)) => false
       };
     let twoAreSelected =
       switch (stagedPlayersOption) {
       | (Some(_), Some(_)) => true
-      | _ => false
+      | (None, None)
+      | (Some(_), None)
+      | (None, Some(_)) => false
       };
     let whiteName =
       switch (whiteOpt) {
@@ -212,7 +217,9 @@ module Stage = {
           ),
         );
         setStagedPlayers(_ => (Js.Nullable.null, Js.Nullable.null));
-      | _ => ()
+      | (None, None)
+      | (Some(_), None)
+      | (None, Some(_)) => ()
       };
     };
 
@@ -223,9 +230,13 @@ module Stage = {
         | (Some(p1Data), Some(p2Data)) =>
           let ideal = Pairing.calcPairIdeal(p1Data, p2Data);
           Numeral.((ideal /. Pairing.maxPriority)->make->format("%"));
-        | _ => ""
+        | (None, None)
+        | (Some(_), None)
+        | (None, Some(_)) => ""
         }
-      | _ => ""
+      | (None, None)
+      | (Some(_), None)
+      | (None, Some(_)) => ""
       };
     };
 
@@ -424,7 +435,7 @@ let make =
       | Some(p1) =>
         switch (unmatchedWithDummy->Map.String.get(p1)) {
         | None => setStagedPlayers(((_, p2)) => (Js.Nullable.null, p2))
-        | _ => ()
+        | Some(_) => ()
         }
       };
       switch (p2->Js.Nullable.toOption) {
@@ -432,7 +443,7 @@ let make =
       | Some(p2) =>
         switch (unmatchedWithDummy->Map.String.get(p2)) {
         | None => setStagedPlayers(((p1, _)) => (p1, Js.Nullable.null))
-        | _ => ()
+        | Some(_) => ()
         }
       };
       None;

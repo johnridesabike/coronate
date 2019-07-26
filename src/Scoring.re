@@ -167,7 +167,9 @@ let standingsSorter = (a, b) => {
         | 0 => tieBreakIndex := tieBreakIndex^ + 1
         | x => result := x
         }
-      | _ => break := true
+      | (None, Some(_))
+      | (Some(_), None)
+      | (None, None) => break := true
       }
     | x => result := x
     };

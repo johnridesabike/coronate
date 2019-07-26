@@ -225,6 +225,8 @@ let make = (~children, ~tourneyId) => {
     <Window.Body>
       {React.string("Error: tournament couldn't be loaded.")}
     </Window.Body>;
-  | _ => <Window.Body> {React.string("Loading...")} </Window.Body>
+  | NothingIsLoaded
+  | TourneyIsLoaded =>
+    <Window.Body> {React.string("Loading...")} </Window.Body>
   };
 };

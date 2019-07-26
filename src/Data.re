@@ -125,6 +125,7 @@ module Match = {
         | Black => 1.0
         }
       | Draw => 0.5
+      /* This loses data, so is a one-way trip. Use with prudence! */
       | NotSet => 0.0
       };
     let toString = score =>

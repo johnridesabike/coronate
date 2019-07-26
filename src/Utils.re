@@ -23,7 +23,9 @@ module Array = {
       arr->Array.set(idx1, item2) |> ignore;
       arr->Array.set(idx2, item1) |> ignore;
       arr;
-    | _ => arr
+    | (None, None)
+    | (Some(_), None)
+    | (None, Some(_)) => arr
     };
   };
 };

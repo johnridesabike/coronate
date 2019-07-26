@@ -197,10 +197,20 @@ module MatchRow = {
         let (whiteNewRating, blackNewRating) = newRatings;
         playersDispatch(SetRating(white.id, whiteNewRating));
         playersDispatch(SetRating(black.id, blackNewRating));
-        /* if the result hasn't been scored yet, increment the matchCount*/
-        if (match.result !== Match.Result.NotSet) {
+        switch (match.result) {
+        /* If the result hasn't been scored yet, increment the matchCounts */
+        | NotSet =>
           playersDispatch(SetMatchCount(white.id, white.matchCount + 1));
           playersDispatch(SetMatchCount(black.id, black.matchCount + 1));
+        /* If the result is being un-scored, decrement the matchCounts */
+        | WhiteWon
+        | BlackWon
+        | Draw when result === NotSet =>
+          playersDispatch(SetMatchCount(white.id, white.matchCount - 1));
+          playersDispatch(SetMatchCount(black.id, black.matchCount - 1));
+        | WhiteWon
+        | BlackWon
+        | Draw => ()
         };
         tourneyDispatch(
           SetMatchResult(match.id, newRatings, result, roundId),
