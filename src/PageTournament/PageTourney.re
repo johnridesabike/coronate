@@ -8,15 +8,20 @@ module Footer = {
     let {roundCount, tourney, isItOver, isNewRoundReady} = tournament;
     let roundList = tourney.roundList;
     let (tooltipText, tooltipKind) =
-      if (!isNewRoundReady) {
-        (Utils.Entities.nbsp ++ "Round in progress.", Utils.Generic);
-      } else if (isItOver) {
-        (Utils.Entities.nbsp ++ " All rounds have completed.", Utils.Warning);
-      } else {
-        (
+      switch (isNewRoundReady, isItOver) {
+      | (true, false) => (
           Utils.Entities.nbsp ++ " Ready to begin a new round.",
           Utils.Success,
-        );
+        )
+      | (false, false)
+      | (false, true) => (
+          Utils.Entities.nbsp ++ "Round in progress.",
+          Utils.Generic,
+        )
+      | (true, true) => (
+          Utils.Entities.nbsp ++ " All rounds have completed.",
+          Utils.Warning,
+        )
       };
     ReactDOMRe.(
       <>
@@ -100,7 +105,11 @@ module Sidebar = {
                  Match.blackOrigRating,
                } = match;
                /* Don't change players who haven't scored.*/
-               if (result !== Match.Result.NotSet) {
+               switch (result) {
+               | Match.Result.NotSet => ()
+               | BlackWon
+               | Draw
+               | WhiteWon =>
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
                       if (id !== Player.dummy_id) {
@@ -109,12 +118,12 @@ module Sidebar = {
                         playersDispatch(SetMatchCount(id, matchCount - 1));
                         playersDispatch(SetRating(id, rating));
                       }
-                    );
+                    )
                };
              })
         };
         tourneyDispatch(DelLastRound);
-        if (roundList |> Js.Array.length === 1) {
+        if (Js.Array.length(roundList) === 1) {
           /* Automatically remake round 1.*/
           tourneyDispatch(AddRound);
         };

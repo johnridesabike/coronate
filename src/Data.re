@@ -365,10 +365,10 @@ let getUnmatched = (roundList, players, roundId) => {
          [||],
        );
   players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
-    if (!(matchedIds |> Js.Array.includes(key))) {
-      acc->Map.String.set(key, player);
-    } else {
+    if (matchedIds |> Js.Array.includes(key)) {
       acc;
+    } else {
+      acc->Map.String.set(key, player);
     }
   );
 };

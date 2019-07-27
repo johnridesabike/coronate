@@ -7,8 +7,7 @@ let make = (~tournament) => {
       <p> {React.string("No rounds played yet.")} </p>;
     } else {
       let lastRoundId = (tourney.roundList |> Js.Array.length) - 1;
-      if (tourney.roundList->Array.getExn(lastRoundId)
-          |> Js.Array.length === 0) {
+      if (tourney.roundList->Array.getExn(lastRoundId)->Js.Array.length === 0) {
         <p>
           {React.string(
              "Matched players in the current round will be shown here.",

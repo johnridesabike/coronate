@@ -48,10 +48,6 @@ module LocalForage = {
     let decode: Js.Json.t => t;
     let encode: t => Js.Json.t;
   };
-  module type Config = {
-    let name: string;
-    let storeName: string;
-  };
   [@bs.send] external createInstance: (t, config) => t = "createInstance";
   /* `config` is mainly used for setting configs, but can also be used for
      getting info */
@@ -67,6 +63,15 @@ module LocalForage = {
   [@bs.send]
   external keys: t => Repromise.Rejectable.t(Js.Array.t(string), exn) =
     "keys";
+  [@bs.send]
+  external clear_: t => Repromise.Rejectable.t(unit, exn) = "clear";
+  /* THIS CLEARS EVERY SINGLE ITEM IN EVERY STORE. */
+  let clear = () =>
+    clear_(localForage)
+    |> Repromise.Rejectable.catch(error => {
+         Js.Console.error(error);
+         Repromise.resolved();
+       });
   /* Plugin methods */
   [@bs.send]
   external getItems_dict:
@@ -90,18 +95,17 @@ module LocalForage = {
   external removeItems:
     (t, array(string)) => Repromise.Rejectable.t(unit, exn) =
     "removeItems";
-
-  let handleError_ = error => {
-    Js.Console.error(error);
-    Repromise.resolved();
-  };
   /*
      Map is a functor that can take any module that has an `encode` function,
      `decode` function, and a `t` type. The output module will contain a store
      and functions that can access that store and return either the data type or
      `Belt.Map.String` objects.
    */
-  module Map = (Data: Data, Config: Config) => {
+  module Map =
+         (Data: Data, Config: {
+                        let name: string;
+                        let storeName: string;
+                      }) => {
     open Belt;
     open Result;
     let store =
@@ -110,10 +114,11 @@ module LocalForage = {
       );
     let getItem = key =>
       getItem(store, key)
-      |> Repromise.Rejectable.map(value =>
-           switch (Js.Nullable.toOption(value)) {
-           | Some(value) => Some(Data.decode(value))
-           | None => None
+      |> Repromise.Rejectable.andThen(value =>
+           switch (value->Js.Nullable.toOption->Option.map(Data.decode)) {
+           | Some(value) => Repromise.Rejectable.resolved(Some(value))
+           | None => Repromise.Rejectable.resolved(None)
+           | exception x => Repromise.Rejectable.rejected(x)
            }
          )
       |> Repromise.Rejectable.catch(error => {
@@ -159,12 +164,15 @@ module LocalForage = {
          )
       |> Repromise.Rejectable.catch(handleError_map);
     let setItems = items => {
-      items
+      items /* this part should probably have better error handling */
       ->Map.String.map(Data.encode)
       ->Map.String.toArray
       ->Js.Dict.fromArray
       |> setItems_dict(store)
-      |> Repromise.Rejectable.catch(handleError_);
+      |> Repromise.Rejectable.catch(error => {
+           Js.Console.error(error);
+           Repromise.resolved();
+         });
     };
     let removeItems = removeItems(store);
   };
@@ -176,22 +184,41 @@ module LocalForage = {
     Obj relies on the `getItems` and `setItems` plugin, since accessing
     individual fields isn't possible (right now).
    */
-  module Object = (Data: Data, Config: Config) => {
+  module Object =
+         (
+           Data: Data,
+           Config: {
+             let name: string;
+             let storeName: string;
+             let default: Data.t;
+           },
+         ) => {
     open Belt.Result;
+    let default = Config.default;
     let store =
       localForage->createInstance(
         config(~name=Config.name, ~storeName=Config.storeName),
       );
     let getItems = () =>
       getAllItems_json(store)
-      |> Repromise.Rejectable.map(x => Ok(Data.decode(x)))
+      |> Repromise.Rejectable.andThen(items =>
+           switch (Data.decode(items)) {
+           | exception x => Repromise.Rejectable.rejected(x)
+           | x => Repromise.Rejectable.resolved(Ok(x))
+           }
+         )
       |> Repromise.Rejectable.catch(error => {
            Js.Console.error(error);
-           Repromise.resolved(Error(error));
+           Repromise.resolved(Error(default));
          });
-    let setItems = items =>
+    let setItems = items => {
       setItems_json(store, Data.encode(items))
-      |> Repromise.Rejectable.catch(handleError_);
+      |> Repromise.Rejectable.map(x => Ok(x))
+      |> Repromise.Rejectable.catch(error => {
+           Js.Console.error(error);
+           Repromise.resolved(Error());
+         });
+    };
   };
 
   /*

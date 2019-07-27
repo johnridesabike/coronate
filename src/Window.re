@@ -157,24 +157,26 @@ module MSWindowsControls = {
         onClick={_ => minimize(window)}>
         <Icons.Minimize className=Style.svg />
       </button>
-      {if (state.isFullScreen) {
+      {switch (state.isFullScreen, state.isMaximized) {
+       | (true, true)
+       | (true, false) =>
          <button
            className={Cn.make([Style.button, "button-ghost"])}
            onClick={_ => window->setFullScreen(false)}>
            <Icons.Unfullscreen className=Style.svg />
-         </button>;
-       } else if (state.isMaximized) {
+         </button>
+       | (false, true) =>
          <button
            className={Cn.make([Style.button, "button-ghost"])}
            onClick={_ => unmaximize(window)}>
            <Icons.Restore className=Style.svg />
-         </button>;
-       } else {
+         </button>
+       | (false, false) =>
          <button
            className={Cn.make([Style.button, "button-ghost"])}
            onClick={_ => maximize(window)}>
            <Icons.Maximize className=Style.svg />
-         </button>;
+         </button>
        }}
       <button
         className={Cn.make([Style.button, Style.close, "button-ghost"])}

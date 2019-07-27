@@ -31,11 +31,12 @@ external removeAllListeners: (window, string) => unit = "removeAllListeners";
 [@bs.send] external on: (window, string, unit => unit) => unit = "on";
 
 [@bs.scope "window"] [@bs.val]
-external windowRequire: option(string => option(t)) = "require";
+external windowRequire: Js.Nullable.t(string => Js.Nullable.t(t)) =
+  "require";
 
 let electron_ =
-  switch (windowRequire) {
-  | Some(require) => require("electron")
+  switch (Js.Nullable.toOption(windowRequire)) {
+  | Some(require) => require("electron") |> Js.Nullable.toOption
   | None => None
   };
 
@@ -57,15 +58,16 @@ let openInBrowser = event => {
   |> ignore;
 };
 
-let toggleMaximize = win =>
-  if (!win->isMaximized) {
-    win->maximize;
+let toggleMaximize = window =>
+  if (isMaximized(window)) {
+    unmaximize(window);
   } else {
-    win->unmaximize;
+    maximize(window);
   };
 
 /*
    https://github.com/electron/electron/issues/16385#issuecomment-453955377
+   This function is ugly but it works.
  */
 let macOSDoubleClick = event => {
   ifElectron(electron => {

@@ -47,12 +47,10 @@ module PlayerMatchInfo = {
       |> Js.Array.includes(Data.Player.dummy_id);
     let oppResultsEntries = opponentResults |> Map.String.toArray;
     let prettyBalance =
-      if (colorBalance < 0.0) {
-        "White +" ++ (colorBalance |> abs_float |> Js.Float.toString);
-      } else if (colorBalance > 0.0) {
-        "Black +" ++ (colorBalance |> Js.Float.toString);
-      } else {
-        "Even";
+      switch (colorBalance) {
+      | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)
+      | x when x > 0.0 => "Black +" ++ (x |> Js.Float.toString)
+      | _ => "Even"
       };
     let fullName = player.Player.firstName ++ " " ++ player.lastName;
     <dl className="player-card">
@@ -187,13 +185,17 @@ module MatchRow = {
         let newWhiteScore = result->Match.Result.(toFloat(White));
         let newBlackScore = result->Match.Result.(toFloat(Black));
         let newRatings =
-          result === NotSet
-            ? (match.whiteOrigRating, match.blackOrigRating)
-            : Scoring.Ratings.calcNewRatings(
-                (match.whiteOrigRating, match.blackOrigRating),
-                (white.matchCount, black.matchCount),
-                (newWhiteScore, newBlackScore),
-              );
+          switch (result) {
+          | NotSet => (match.whiteOrigRating, match.blackOrigRating)
+          | BlackWon
+          | WhiteWon
+          | Draw =>
+            Scoring.Ratings.calcNewRatings(
+              (match.whiteOrigRating, match.blackOrigRating),
+              (white.matchCount, black.matchCount),
+              (newWhiteScore, newBlackScore),
+            )
+          };
         let (whiteNewRating, blackNewRating) = newRatings;
         playersDispatch(SetRating(white.id, whiteNewRating));
         playersDispatch(SetRating(black.id, blackNewRating));

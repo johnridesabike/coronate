@@ -2,18 +2,17 @@ open Belt;
 open Data;
 
 let scoreByeMatch = (byeValue, match) =>
-  if (Player.isDummyId(match.Match.whiteId)) {
-    {
+  switch (Player.(isDummyId(match.Match.whiteId), isDummyId(match.blackId))) {
+  | (true, false) => {
       ...match,
       result: ByeValue.resultForPlayerColor(byeValue, Match.Result.Black),
-    };
-  } else if (Player.isDummyId(match.blackId)) {
-    {
+    }
+  | (false, true) => {
       ...match,
       result: ByeValue.resultForPlayerColor(byeValue, Match.Result.White),
-    };
-  } else {
-    match;
+    }
+  | (false, false) /* lol */
+  | (true, true) => match
   };
 
 let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney) => {

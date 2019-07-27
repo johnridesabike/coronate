@@ -324,12 +324,10 @@ module PlayerInfo = {
       | Some(avoidList) => avoidList
       };
     let prettyBalance =
-      if (colorBalance < 0.0) {
-        "White +" ++ (colorBalance |> abs_float |> Js.Float.toString);
-      } else if (colorBalance > 0.0) {
-        "Black +" ++ (colorBalance |> Js.Float.toString);
-      } else {
-        "Even";
+      switch (colorBalance) {
+      | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)
+      | x when x > 0.0 => "Black +" ++ (x |> Js.Float.toString)
+      | _ => "Even"
       };
 
     <dl className="player-card">

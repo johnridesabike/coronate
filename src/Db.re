@@ -1,20 +1,21 @@
 open Belt;
-module LocalForage = Externals.LocalForage;
+open Result;
 
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
 let database_name = "Coronate";
 module ConfigDb =
-  LocalForage.Object(
+  Externals.LocalForage.Object(
     Data.Config,
     {
       let name = database_name;
       let storeName = "Options";
+      let default = Data.Config.defaults;
     },
   );
 module Players =
-  LocalForage.Map(
+  Externals.LocalForage.Map(
     Data.Player,
     {
       let name = database_name;
@@ -22,7 +23,7 @@ module Players =
     },
   );
 module Tournaments =
-  LocalForage.Map(
+  Externals.LocalForage.Map(
     Data.Tournament,
     {
       let name = database_name;
@@ -62,62 +63,59 @@ let genericDbReducer = (state, action) => {
   };
 };
 
-type loadStatus =
-  | IsNotLoaded
-  | IsLoaded
-  | Error;
-
-let isLoaded = status =>
-  switch (status) {
-  | IsNotLoaded => false
-  | IsLoaded
-  | Error => true
-  };
-
 let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
   let (items, dispatch) =
     React.useReducer(genericDbReducer, Map.String.empty);
-  let (loadStatus, setLoadStatus) = React.useState(() => IsNotLoaded);
-  Hooks.useLoadingCursorUntil(isLoaded(loadStatus));
+  let (isLoaded, setIsLoaded) = React.useState(() => false);
+  Hooks.useLoadingCursorUntil(isLoaded);
+  /*
+    Load items from the database.
+   */
   React.useEffect0(() => {
     let didCancel = ref(false);
     getAllItems()
     |> Repromise.map(results =>
          switch (results) {
-         | Result.Error(_) => setLoadStatus(_ => Error)
-         | Ok(_) when didCancel^ => ()
+         | _ when didCancel^ => ()
+         /* Even if there was an error, we'll clear the database. This means a
+            corrupt database will get wiped. In the future, we may need to
+            replace this with more elegant error recovery. */
+         | Error(_) =>
+           Externals.LocalForage.clear() |> ignore;
+           setIsLoaded(_ => true);
          | Ok(results) =>
            dispatch(SetState(results));
-           setLoadStatus(_ => IsLoaded);
+           setIsLoaded(_ => true);
          }
        )
     |> ignore;
     Some(() => didCancel := false);
   });
+  /*
+    Save items to the database.
+   */
   React.useEffect2(
-    () =>
-      switch (loadStatus) {
-      | IsNotLoaded
-      | Error => None
-      | IsLoaded =>
+    () => {
+      if (isLoaded) {
         setItems(items)
         |> Repromise.map(() =>
              getKeys()
              |> Repromise.map(keys => {
-                  let stateKeys = items->Map.String.keysToArray;
+                  let stateKeys = Map.String.keysToArray(items);
                   let deleted =
                     Js.Array.(
                       keys |> filter(x => !(stateKeys |> includes(x)))
                     );
-                  if (deleted |> Js.Array.length > 0) {
+                  if (Js.Array.length(deleted) > 0) {
                     removeItems(deleted) |> ignore;
                   };
                 })
              |> ignore
            )
         |> ignore;
-        None;
-      },
+      };
+      None;
+    },
     (items, isLoaded),
   );
   (items, dispatch);
@@ -174,29 +172,32 @@ let configReducer = (state, action) => {
   };
 };
 let useConfig = () => {
-  let (config, dispatch) =
-    React.useReducer(configReducer, Data.Config.defaults);
+  let (config, dispatch) = React.useReducer(configReducer, ConfigDb.default);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
-  React.useEffect2(
-    () => {
-      let didCancel = ref(false);
-      ConfigDb.getItems()
-      |> Repromise.map(values =>
-           switch (values) {
-           | Result.Error(_) => ()
-           | Result.Ok(_) when didCancel^ => ()
-           | Result.Ok(values) =>
-             dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
-             dispatch(SetByeValue(values.byeValue));
-             dispatch(SetLastBackup(values.lastBackup));
-             setIsLoaded(_ => true);
-           }
-         )
-      |> ignore;
-      Some(() => didCancel := true);
-    },
-    (setIsLoaded, dispatch),
-  );
+  /*
+     Load items from the database.
+   */
+  React.useEffect0(() => {
+    let didCancel = ref(false);
+    ConfigDb.getItems()
+    |> Repromise.map(values =>
+         switch (values) {
+         | _ when didCancel^ => ()
+         | Error(_) =>
+           /* Again, if the database was corrupt, then wipe it. */
+           Externals.LocalForage.clear() |> ignore;
+           setIsLoaded(_ => true);
+         | Ok(values) =>
+           dispatch(SetState(values));
+           setIsLoaded(_ => true);
+         }
+       )
+    |> ignore;
+    Some(() => didCancel := true);
+  });
+  /*
+     Save items to the database.
+   */
   React.useEffect2(
     () => {
       if (isLoaded) {

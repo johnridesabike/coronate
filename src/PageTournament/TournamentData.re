@@ -83,7 +83,7 @@ let make = (~children, ~tourneyId) => {
   /*
    Initialize the tournament from the database.
    */
-  React.useEffect2(
+  React.useEffect1(
     () => {
       let didCancel = ref(false);
       Db.Tournaments.getItem(tourneyId)
@@ -100,7 +100,7 @@ let make = (~children, ~tourneyId) => {
 
       Some(() => didCancel := true);
     },
-    (tourneyId, tourneyDispatch),
+    [|tourneyId|],
   );
   /*
    Hydrate players from DB.
