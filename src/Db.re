@@ -62,31 +62,44 @@ let genericDbReducer = (state, action) => {
   };
 };
 
+type loadStatus =
+  | IsNotLoaded
+  | IsLoaded
+  | Error;
+
+let isLoaded = status =>
+  switch (status) {
+  | IsNotLoaded => false
+  | IsLoaded
+  | Error => true
+  };
+
 let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
   let (items, dispatch) =
     React.useReducer(genericDbReducer, Map.String.empty);
-  let (isLoaded, setIsLoaded) = React.useState(() => false);
-  Hooks.useLoadingCursorUntil(isLoaded);
-  React.useEffect2(
-    () => {
-      let didCancel = ref(false);
-      getAllItems()
-      |> Repromise.map(results =>
-           if (! didCancel^) {
-             dispatch(SetState(results));
-             setIsLoaded(_ => true);
-           }
-         )
-      |> ignore;
-      Some(() => didCancel := false);
-    },
-    (dispatch, setIsLoaded),
-  );
+  let (loadStatus, setLoadStatus) = React.useState(() => IsNotLoaded);
+  Hooks.useLoadingCursorUntil(isLoaded(loadStatus));
+  React.useEffect0(() => {
+    let didCancel = ref(false);
+    getAllItems()
+    |> Repromise.map(results =>
+         switch (results) {
+         | Result.Error(_) => setLoadStatus(_ => Error)
+         | Ok(_) when didCancel^ => ()
+         | Ok(results) =>
+           dispatch(SetState(results));
+           setLoadStatus(_ => IsLoaded);
+         }
+       )
+    |> ignore;
+    Some(() => didCancel := false);
+  });
   React.useEffect2(
     () =>
-      switch (isLoaded) {
-      | false => None
-      | true =>
+      switch (loadStatus) {
+      | IsNotLoaded
+      | Error => None
+      | IsLoaded =>
         setItems(items)
         |> Repromise.map(() =>
              getKeys()
@@ -170,14 +183,13 @@ let useConfig = () => {
       ConfigDb.getItems()
       |> Repromise.map(values =>
            switch (values) {
-           | Some(values) =>
-             if (! didCancel^) {
-               dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
-               dispatch(SetByeValue(values.byeValue));
-               dispatch(SetLastBackup(values.lastBackup));
-               setIsLoaded(_ => true);
-             }
-           | None => ()
+           | Result.Error(_) => ()
+           | Result.Ok(_) when didCancel^ => ()
+           | Result.Ok(values) =>
+             dispatch(SetAvoidPairs(values.Data.Config.avoidPairs));
+             dispatch(SetByeValue(values.byeValue));
+             dispatch(SetLastBackup(values.lastBackup));
+             setIsLoaded(_ => true);
            }
          )
       |> ignore;

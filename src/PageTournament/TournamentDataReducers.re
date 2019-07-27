@@ -251,10 +251,10 @@ type actionPlayer =
   | DelPlayer(id)
   | SetMatchCount(id, int)
   | SetRating(id, int)
-  | SetPlayers(Belt.Map.String.t(Player.t));
+  | SetPlayers(Map.String.t(Player.t));
 
 let playersReducer = (state, action) => {
-  Belt.Map.String.(
+  Map.String.(
     switch (action) {
     | SetPlayer(player) => state->set(player.id, player)
     | DelPlayer(id) =>

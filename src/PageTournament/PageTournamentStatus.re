@@ -1,3 +1,4 @@
+open Belt;
 [@react.component]
 let make = (~tournament) => {
   let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
@@ -6,7 +7,7 @@ let make = (~tournament) => {
       <p> {React.string("No rounds played yet.")} </p>;
     } else {
       let lastRoundId = (tourney.roundList |> Js.Array.length) - 1;
-      if (tourney.roundList->Belt.Array.getUnsafe(lastRoundId)
+      if (tourney.roundList->Array.getExn(lastRoundId)
           |> Js.Array.length === 0) {
         <p>
           {React.string(

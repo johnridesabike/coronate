@@ -7,8 +7,8 @@ type listEntry = {
   ideal: float,
 };
 
-let sortByName = Hooks.KeyString((x: listEntry) => x.player.firstName);
-let sortByIdeal = Hooks.KeyFloat((x: listEntry) => x.ideal);
+let sortByName = Hooks.GetString(x => x.player.firstName);
+let sortByIdeal = Hooks.GetFloat(x => x.ideal);
 
 module SelectList = {
   [@react.component]
@@ -22,8 +22,8 @@ module SelectList = {
     let (sorted, sortedDispatch) =
       Hooks.useSortedTable(
         ~table=initialTable,
-        ~key=sortByName,
-        ~isDescending=true,
+        ~column=sortByName,
+        ~isDescending=false,
       );
     let isNullSelected = [|p1, p2|] |> Js.Array.includes(Js.Nullable.null);
     let isOnePlayerSelected = p1 !== p2 && isNullSelected;
@@ -103,13 +103,13 @@ module SelectList = {
               </th>
               <th>
                 <Hooks.SortButton
-                  sortKey=sortByName data=sorted dispatch=sortedDispatch>
+                  sortColumn=sortByName data=sorted dispatch=sortedDispatch>
                   {React.string("Name")}
                 </Hooks.SortButton>
               </th>
               <th>
                 <Hooks.SortButton
-                  sortKey=sortByIdeal data=sorted dispatch=sortedDispatch>
+                  sortColumn=sortByIdeal data=sorted dispatch=sortedDispatch>
                   {React.string("Ideal")}
                 </Hooks.SortButton>
               </th>

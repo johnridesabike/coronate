@@ -1,9 +1,10 @@
+open Belt;
 open Data;
 let config =
   Config.{
     byeValue: ByeValue.Full,
     avoidPairs:
-      Belt.Set.fromArray(
+      Set.fromArray(
         [|
           ("TVs_Frank____________", "TVs_Son_of_TVs_Frank_"),
           ("Pearl_Forrester______", "Dr_Clayton_Forrester_"),
@@ -15,7 +16,7 @@ let config =
     lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
   };
 let players =
-  Belt.Map.String.fromArray([|
+  Map.String.fromArray([|
     (
       "Cambot_______________",
       Player.{
@@ -205,7 +206,7 @@ let players =
     ),
   |]);
 let tournaments =
-  Belt.Map.String.fromArray([|
+  Map.String.fromArray([|
     (
       "Bye_Round_Tourney____",
       Tournament.{

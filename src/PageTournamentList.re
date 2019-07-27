@@ -1,17 +1,17 @@
+open Belt;
 open Utils.Router;
 open Data.Tournament;
-let s = React.string;
 /* These can't be definined inline or the comparisons don't work. */
-let dateSort = Hooks.KeyDate(x => x.date);
-let nameSort = Hooks.KeyString(x => x.name);
+let dateSort = Hooks.GetDate(x => x.date);
+let nameSort = Hooks.GetString(x => x.name);
 
 [@react.component]
 let make = () => {
   let (tourneys, dispatch) = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=tourneys->Belt.Map.String.valuesToArray,
-      ~key=dateSort,
+      ~table=tourneys->Map.String.valuesToArray,
+      ~column=dateSort,
       ~isDescending=true,
     );
   let (newTourneyName, setNewTourneyName) = React.useState(() => "");
@@ -26,7 +26,7 @@ let make = () => {
   );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(tourneys->Belt.Map.String.valuesToArray));
+      sortDispatch(Hooks.SetTable(tourneys->Map.String.valuesToArray));
       None;
     },
     (tourneys, sortDispatch),
@@ -34,61 +34,62 @@ let make = () => {
 
   let updateNewName = event => {
     setNewTourneyName(event->ReactEvent.Form.currentTarget##value);
-    ();
   };
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
-    let newId = Utils.nanoid();
-    let newTourney = {
-      byeQueue: [||],
-      date: Js.Date.make(),
-      id: newId,
-      name: newTourneyName,
-      playerIds: [||],
-      roundList: [||],
-      tieBreaks: [|0, 1, 2|],
-    };
-    dispatch(Db.SetItem(newId, newTourney));
+    let id = Utils.nanoid();
+    dispatch(
+      Db.SetItem(
+        id,
+        {
+          byeQueue: [||],
+          date: Js.Date.make(),
+          id,
+          name: newTourneyName,
+          playerIds: [||],
+          roundList: [||],
+          tieBreaks: [|0, 1, 2|],
+        },
+      ),
+    );
     setNewTourneyName(_ => "");
     setIsDialogOpen(_ => false);
-    ();
   };
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
     if (Utils.confirm(message)) {
       dispatch(Db.DelItem(id));
     };
-    ();
   };
   <Window.Body>
     <div className="content-area">
       <div className="toolbar toolbar__left">
         <button onClick={_ => setIsDialogOpen(_ => true)}>
           <Icons.Plus />
-          {s(" Add tournament")}
+          {React.string(" Add tournament")}
         </button>
       </div>
-      {tourneys->Belt.Map.String.isEmpty
-         ? <p> {s("No tournaments are added yet.")} </p>
+      {Map.String.isEmpty(tourneys)
+         ? <p> {React.string("No tournaments are added yet.")} </p>
          : <table>
-             <caption> {s("Tournament list")} </caption>
+             <caption> {React.string("Tournament list")} </caption>
              <thead>
                <tr>
                  <th>
                    <Hooks.SortButton
-                     data=sorted dispatch=sortDispatch sortKey=nameSort>
-                     {s("Name")}
+                     data=sorted dispatch=sortDispatch sortColumn=nameSort>
+                     {React.string("Name")}
                    </Hooks.SortButton>
                  </th>
                  <th>
                    <Hooks.SortButton
-                     data=sorted dispatch=sortDispatch sortKey=dateSort>
-                     {s("Date")}
+                     data=sorted dispatch=sortDispatch sortColumn=dateSort>
+                     {React.string("Date")}
                    </Hooks.SortButton>
                  </th>
                  <th>
                    <Utils.VisuallyHidden>
-                     {s("Controls")}
+                     {React.string("Controls")}
                    </Utils.VisuallyHidden>
                  </th>
                </tr>
@@ -97,7 +98,11 @@ let make = () => {
                {sorted.table
                 |> Js.Array.map(t =>
                      <tr key={t.id} className="buttons-on-hover">
-                       <td> <HashLink to_={"/tourneys/" ++ t.id}> t.name->s </HashLink> </td>
+                       <td>
+                         <HashLink to_={"/tourneys/" ++ t.id}>
+                           {React.string(t.name)}
+                         </HashLink>
+                       </td>
                        <td> <Utils.DateFormat date={t.date} /> </td>
                        <td>
                          <button
@@ -117,12 +122,12 @@ let make = () => {
         isOpen=isDialogOpen onDismiss={() => setIsDialogOpen(_ => false)}>
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
-          {s("Close")}
+          {React.string("Close")}
         </button>
         <form onSubmit=makeTournament>
           <fieldset>
-            <legend> {s("Make a new tournament")} </legend>
-            <label htmlFor="tourney-name"> {s("Name:")} </label>
+            <legend> {React.string("Make a new tournament")} </legend>
+            <label htmlFor="tourney-name"> {React.string("Name:")} </label>
             <input
               id="tourney-name"
               name="tourney-name"
@@ -132,7 +137,7 @@ let make = () => {
               value=newTourneyName
               onChange=updateNewName
             />
-            {s(" ")}
+            {React.string(" ")}
             <input className="button-primary" type_="submit" value="Create" />
           </fieldset>
         </form>

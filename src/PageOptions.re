@@ -1,6 +1,5 @@
 open Belt;
 [@bs.val] external node_env: string = "process.env.NODE_ENV";
-let s = React.string;
 
 let getDateForFile = () => {
   let date = Js.Date.make();
@@ -59,7 +58,7 @@ module LastBackupDate = {
   [@react.component]
   let make = (~date) => {
     switch (date |> Js.Date.getTime) {
-    | 0.0 => s("Never")
+    | 0.0 => React.string("Never")
     | _ => <Utils.DateTimeFormat date />
     };
   };
@@ -168,13 +167,13 @@ let make = () => {
   };
   <Window.Body>
     <div className="content-area">
-      <h2> {s("Bye  settings")} </h2>
+      <h2> {React.string("Bye  settings")} </h2>
       <form>
         <p className="caption-30">
-          {s("Select the default score for a bye round.")}
+          {React.string("Select the default score for a bye round.")}
         </p>
         <label className="monospace body-30">
-          {s("1 ")}
+          {React.string("1 ")}
           <input
             checked={config.byeValue === Data.ByeValue.Full}
             type_="radio"
@@ -184,7 +183,7 @@ let make = () => {
           />
         </label>
         <label className="monospace body-30">
-          {s({j|½ |j})}
+          {React.string({j|½ |j})}
           <input
             checked={config.byeValue === Data.ByeValue.Half}
             type_="radio"
@@ -194,9 +193,9 @@ let make = () => {
           />
         </label>
       </form>
-      <h2> {s("Manage data")} </h2>
+      <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">
-        {s("Last export: ")}
+        {React.string("Last export: ")}
         <LastBackupDate date={config.lastBackup} />
       </p>
       <p>
@@ -205,23 +204,25 @@ let make = () => {
           href={"data:application/json," ++ exportDataURI}
           onClick={_ => configDispatch(Db.SetLastBackup(Js.Date.make()))}>
           <Icons.Download />
-          {s(" Export all data")}
+          {React.string(" Export all data")}
         </a>
       </p>
-      <label htmlFor="file"> {s("Load data file:")} </label>
+      <label htmlFor="file"> {React.string("Load data file:")} </label>
       <input id="file" name="file" type_="file" onChange=handleFile />
-      <h2> {s("Danger zone")} </h2>
+      <h2> {React.string("Danger zone")} </h2>
       <p className="caption-30">
-        {s("I hope you know what you're doing...")}
+        {React.string("I hope you know what you're doing...")}
       </p>
       <button onClick=reloadDemoData>
-        {s("Reset demo data (this erases everything else)")}
+        {React.string("Reset demo data (this erases everything else)")}
       </button>
-      {s(" ")}
+      {React.string(" ")}
       {node_env !== "production"
-         ? <button onClick=loadTestData> {s("Load testing data")} </button>
+         ? <button onClick=loadTestData>
+             {React.string("Load testing data")}
+           </button>
          : React.null}
-      <h3> {s("Advanced: manually edit data")} </h3>
+      <h3> {React.string("Advanced: manually edit data")} </h3>
       <form onSubmit=handleText>
         <textarea
           className="json"

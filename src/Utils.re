@@ -1,4 +1,3 @@
-open Belt;
 module Tabs = Externals.ReachTabs;
 module VisuallyHidden = Externals.VisuallyHidden;
 module Dialog = Externals.Dialog;
@@ -14,6 +13,7 @@ let ascend = (getter, a, b) => compare(getter(a), getter(b));
 let descend = (getter, a, b) => compare(getter(b), getter(a));
 
 module Array = {
+  open Belt;
   let last = arr => arr->Array.get(Js.Array.length(arr) - 1);
   let sum = arr => Js.Array.reduce((+), 0, arr);
   let sumF = arr => Js.Array.reduce((+.), 0.0, arr);
@@ -31,6 +31,7 @@ module Array = {
 };
 
 module List = {
+  open Belt;
   let sumF = list => List.reduce(list, 0.0, (+.));
   let toReactArray = (list, fn) => {
     let result = [||];

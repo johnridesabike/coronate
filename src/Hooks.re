@@ -1,18 +1,19 @@
-type keyFunc('a) =
-  | KeyString('a => string)
-  | KeyInt('a => int)
-  | KeyFloat('a => float)
-  | KeyDate('a => Js.Date.t);
+open Belt;
+type getter('a) =
+  | GetString('a => string)
+  | GetInt('a => int)
+  | GetFloat('a => float)
+  | GetDate('a => Js.Date.t);
 
 type tableState('a) = {
   isDescending: bool,
-  key: keyFunc('a),
+  column: getter('a),
   table: Js.Array.t('a),
 };
 
 type actionTable('a) =
   | SetIsDescending(bool)
-  | SetKey(keyFunc('a))
+  | SetColumn(getter('a))
   | SetTable(Js.Array.t('a))
   | SortWithoutUpdating;
 
@@ -21,24 +22,24 @@ let sortedTableReducer = (state, action) => {
     switch (action) {
     | SetTable(table) => {...state, table}
     | SetIsDescending(isDescending) => {...state, isDescending}
-    | SetKey(key) => {...state, key}
+    | SetColumn(column) => {...state, column}
     | SortWithoutUpdating => state
     };
   let direction = newState.isDescending ? Utils.descend : Utils.ascend;
   let sortFunc =
-    switch (newState.key) {
-    | KeyString(func) =>
+    switch (newState.column) {
+    | GetString(func) =>
       (str => str |> func |> Js.String.toLowerCase) |> direction
-    | KeyInt(func) => func |> direction
-    | KeyFloat(func) => func |> direction
-    | KeyDate(func) => func |> direction
+    | GetInt(func) => func |> direction
+    | GetFloat(func) => func |> direction
+    | GetDate(func) => func |> direction
     };
-  let table = newState.table->Belt.SortArray.stableSortBy(sortFunc);
+  let table = newState.table->SortArray.stableSortBy(sortFunc);
   {...newState, table};
 };
 
-let useSortedTable = (~table, ~key, ~isDescending) => {
-  let initialState = {table, key, isDescending};
+let useSortedTable = (~table, ~column, ~isDescending) => {
+  let initialState = {table, column, isDescending};
   let (state, dispatch) = React.useReducer(sortedTableReducer, initialState);
   React.useEffect1(
     () => {
@@ -52,13 +53,7 @@ let useSortedTable = (~table, ~key, ~isDescending) => {
 
 module SortButton = {
   [@react.component]
-  let make =
-      (
-        ~children,
-        ~sortKey: keyFunc('a),
-        ~data: tableState('a),
-        ~dispatch: actionTable('a) => unit,
-      ) => {
+  let make = (~children, ~sortColumn, ~data, ~dispatch) => {
     /*
        These === comparisons *only* work if the `sortKey` values are definined
        outside a React component. If you try to define them inline, e.g.
@@ -68,13 +63,13 @@ module SortButton = {
        and ensure correct comparisons.
      */
     let setKeyOrToggleDir = () => {
-      data.key === sortKey
+      data.column === sortColumn
         ? dispatch(SetIsDescending(!data.isDescending))
-        : dispatch(SetKey(sortKey));
+        : dispatch(SetColumn(sortColumn));
     };
     let chevronStyle =
       ReactDOMRe.Style.(
-        data.key === sortKey
+        data.column === sortColumn
           ? make(~opacity="1", ()) : make(~opacity="0", ())
       );
     <button

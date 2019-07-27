@@ -52,6 +52,14 @@ type loadStatus =
   | TourneyAndPlayersAreLoaded
   | Error;
 
+let isLoadedDone = status =>
+  switch (status) {
+  | NothingIsLoaded
+  | TourneyIsLoaded => false
+  | TourneyAndPlayersAreLoaded
+  | Error => true
+  };
+
 [@react.component]
 let make = (~children, ~tourneyId) => {
   let (tourney, tourneyDispatch) =
@@ -60,9 +68,7 @@ let make = (~children, ~tourneyId) => {
   let (players, playersDispatch) =
     React.useReducer(TournamentDataReducers.playersReducer, Map.String.empty);
   let (loadStatus, setLoadStatus) = React.useState(() => NothingIsLoaded);
-  Hooks.useLoadingCursorUntil(
-    loadStatus === TourneyAndPlayersAreLoaded || loadStatus === Error,
-  );
+  Hooks.useLoadingCursorUntil(isLoadedDone(loadStatus));
   let (_, windowDispatch) = Window.useWindowContext();
   /*
    Set the document title.
@@ -82,19 +88,14 @@ let make = (~children, ~tourneyId) => {
       let didCancel = ref(false);
       Db.Tournaments.getItem(tourneyId)
       |> Repromise.map(value =>
-           if (! didCancel^) {
-             switch (value) {
-             | None => setLoadStatus(_ => Error)
-             | Some(value) =>
-               tourneyDispatch(SetTournament(value));
-               setLoadStatus(_ => TourneyIsLoaded);
-             };
+           switch (value) {
+           | None => setLoadStatus(_ => Error)
+           | Some(_) when didCancel^ => ()
+           | Some(value) =>
+             tourneyDispatch(SetTournament(value));
+             setLoadStatus(_ => TourneyIsLoaded);
            }
          )
-      |> Repromise.Rejectable.catch(error => {
-           Js.log2("Error loading tournament", error);
-           Repromise.resolved();
-         })
       |> ignore;
 
       Some(() => didCancel := true);
@@ -110,7 +111,11 @@ let make = (~children, ~tourneyId) => {
       /* Don't run this without loading the tourney first. Otherwise, it
          will interpret the placeholder `roundList` data as meaning there
          are no active players and load an empty object.*/
-      if (loadStatus !== NothingIsLoaded) {
+      switch (loadStatus) {
+      | NothingIsLoaded => ()
+      | TourneyIsLoaded
+      | TourneyAndPlayersAreLoaded
+      | Error =>
         /* Include players who have played matches but left the tournament,
            as well as players who are registered but havne't played yet. */
         let allTheIds =
@@ -118,41 +123,40 @@ let make = (~children, ~tourneyId) => {
           |> getAllPlayerIdsFromMatches
           |> Js.Array.concat(playerIds);
         /* If there are no ids, update the player state and exit early.*/
-        switch (allTheIds |> Js.Array.length) {
+        switch (Js.Array.length(allTheIds)) {
         | 0 =>
           /* This check prevents an infinite loop & memory leak: */
-          if (players |> Map.String.keysToArray |> Js.Array.length !== 0) {
+          if (Map.String.size(players) !== 0) {
             playersDispatch(SetPlayers(players));
           };
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         | _ =>
           Db.Players.getItems(allTheIds)
-          |> Repromise.map(values => {
-               /* This safeguards against trying to fetch dummy IDs or IDs from
-                  deleted players. If we updated without this condition, then
-                  this `useEffect` would trigger an infinite loop and a memory
-                  leak. */
-               let newIds = values->Map.String.keysToArray;
-               let oldIds = players |> Map.String.keysToArray;
-               let changedPlayers =
-                 Js.Array.(
-                   newIds
-                   |> filter(x => !(oldIds |> includes(x)))
-                   |> concat(oldIds |> filter(x => !(newIds |> includes(x))))
-                 );
-               /* Js.log2(
-                    "changed players:",
-                    changedPlayers |> Js.Array.length,
-                  ); */
-               if (changedPlayers |> Js.Array.length !== 0 && ! didCancel^) {
-                 playersDispatch(SetPlayers(values));
-                 setLoadStatus(_ => TourneyAndPlayersAreLoaded);
-               };
-             })
-          |> Repromise.Rejectable.catch(error => {
-               Js.log2("Error loading players", error);
-               Repromise.resolved();
-             })
+          |> Repromise.map(values =>
+               switch (values) {
+               | Result.Error(_) => setLoadStatus(_ => Error)
+               | Ok(_) when didCancel^ => ()
+               | Ok(values) =>
+                 /* This safeguards against trying to fetch dummy IDs or IDs
+                    from deleted players. If we updated without this condition,
+                    then this `useEffect` would trigger an infinite loop and a
+                    memoryleak. */
+                 let newIds =
+                   values->Map.String.keysToArray->Set.String.fromArray;
+                 let oldIds =
+                   players->Map.String.keysToArray->Set.String.fromArray;
+                 let changedPlayers =
+                   Set.String.(
+                     union(diff(newIds, oldIds), diff(newIds, oldIds))->size
+                   );
+                 switch (changedPlayers) {
+                 | 0 => ()
+                 | _ =>
+                   playersDispatch(SetPlayers(values));
+                   setLoadStatus(_ => TourneyAndPlayersAreLoaded);
+                 };
+               }
+             )
           |> ignore
         };
       };
@@ -165,9 +169,18 @@ let make = (~children, ~tourneyId) => {
    */
   React.useEffect3(
     () => {
-      /* If the tournament wasn't loaded then the id won't match. */
-      if (loadStatus !== NothingIsLoaded && tourneyId === tourney.id) {
-        Db.Tournaments.setItem(tourneyId, tourney) |> ignore;
+      switch (loadStatus) {
+      | NothingIsLoaded
+      | Error => ()
+      | TourneyIsLoaded
+      | TourneyAndPlayersAreLoaded =>
+        /*
+           If the tournament wasn't loaded then the id won't match. IDK if this
+           is really necessary. At some point it fixed a weird bug.
+         */
+        // if (tourneyId === tourney.id) {
+        Db.Tournaments.setItem(tourneyId, tourney) |> ignore
+      // }
       };
       None;
     },
@@ -178,8 +191,11 @@ let make = (~children, ~tourneyId) => {
    */
   React.useEffect2(
     () => {
-      if (loadStatus === TourneyAndPlayersAreLoaded) {
-        Db.Players.setItems(players) |> ignore;
+      switch (loadStatus) {
+      | NothingIsLoaded
+      | TourneyIsLoaded
+      | Error => ()
+      | TourneyAndPlayersAreLoaded => Db.Players.setItems(players) |> ignore
       };
       None;
     },

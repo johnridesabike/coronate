@@ -104,7 +104,7 @@ let setUpperHalves = data => {
     (acc, playerData) => {
       let (upperHalfIds, lowerHalfIds) =
         (dataList |> Js.Array.filter(p2 => p2.score === playerData.score))
-        ->Belt.SortArray.stableSortBy(descendingRating)
+        ->SortArray.stableSortBy(descendingRating)
         |> Js.Array.map(p => p.id)
         |> splitInHalf;
       let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);

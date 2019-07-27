@@ -3,6 +3,7 @@
    getMonth() begins at 0. An HTML date input requires that the month begins at
    1 and the JS Date() object requires that the month begins at 0. */
 open Utils.Router;
+open Belt;
 let makeDateInput = date => {
   open Js.Date;
   let year = date |> getFullYear |> Js.Float.toString;
@@ -39,7 +40,7 @@ let make = (~tournament) => {
       myref
       ->React.Ref.current
       ->Js.Nullable.toOption
-      ->Belt.Option.map(x => x->Element.unsafeAsHtmlElement->HtmlElement.focus)
+      ->Option.map(x => x->Element.unsafeAsHtmlElement->HtmlElement.focus)
       ->ignore
     );
 

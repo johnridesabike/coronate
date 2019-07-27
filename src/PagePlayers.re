@@ -1,10 +1,9 @@
 open Belt;
 open Data.Player;
 open Utils.Router;
-let s = React.string;
-let sortName = Hooks.KeyString(x => x.firstName);
-let sortRating = Hooks.KeyInt(x => x.rating);
-let sortMatchCount = Hooks.KeyInt(x => x.matchCount);
+let sortName = Hooks.GetString(x => x.firstName);
+let sortRating = Hooks.GetInt(x => x.rating);
+let sortMatchCount = Hooks.GetInt(x => x.matchCount);
 
 let defaultFirstName = _ => "";
 let defaultLastName = _ => "";
@@ -51,9 +50,9 @@ module NewPlayerForm = {
 
     <form onSubmit=handleSubmit>
       <fieldset>
-        <legend> {s("Register a new player")} </legend>
+        <legend> {React.string("Register a new player")} </legend>
         <p>
-          <label htmlFor="firstName"> {s("First name")} </label>
+          <label htmlFor="firstName"> {React.string("First name")} </label>
           <input
             name="firstName"
             type_="text"
@@ -63,7 +62,7 @@ module NewPlayerForm = {
           />
         </p>
         <p>
-          <label htmlFor="lastName"> {s("Last name")} </label>
+          <label htmlFor="lastName"> {React.string("Last name")} </label>
           <input
             name="lastName"
             type_="text"
@@ -73,7 +72,7 @@ module NewPlayerForm = {
           />
         </p>
         <p>
-          <label htmlFor="rating"> {s("Rating")} </label>
+          <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
             name="rating"
             type_="number"
@@ -88,7 +87,7 @@ module NewPlayerForm = {
   };
 };
 
-module List = {
+module PlayerList = {
   [@react.component]
   let make =
       (~sorted, ~sortDispatch, ~players, ~playersDispatch, ~configDispatch) => {
@@ -126,33 +125,35 @@ module List = {
       <div className="toolbar toolbar__left">
         <button onClick={_ => setIsDialogOpen(_ => true)}>
           <Icons.UserPlus />
-          {s(" Add a new player")}
+          {React.string(" Add a new player")}
         </button>
       </div>
       <table style={ReactDOMRe.Style.make(~margin="auto", ())}>
-        <caption> {s("Player roster")} </caption>
+        <caption> {React.string("Player roster")} </caption>
         <thead>
           <tr>
             <th>
               <Hooks.SortButton
-                data=sorted dispatch=sortDispatch sortKey=sortName>
-                {s("Name")}
+                data=sorted dispatch=sortDispatch sortColumn=sortName>
+                {React.string("Name")}
               </Hooks.SortButton>
             </th>
             <th>
               <Hooks.SortButton
-                data=sorted dispatch=sortDispatch sortKey=sortRating>
-                {s("Rating")}
+                data=sorted dispatch=sortDispatch sortColumn=sortRating>
+                {React.string("Rating")}
               </Hooks.SortButton>
             </th>
             <th>
               <Hooks.SortButton
-                data=sorted dispatch=sortDispatch sortKey=sortMatchCount>
-                {s("Matches")}
+                data=sorted dispatch=sortDispatch sortColumn=sortMatchCount>
+                {React.string("Matches")}
               </Hooks.SortButton>
             </th>
             <th>
-              <Utils.VisuallyHidden> {s("Controls")} </Utils.VisuallyHidden>
+              <Utils.VisuallyHidden>
+                {React.string("Controls")}
+              </Utils.VisuallyHidden>
             </th>
           </tr>
         </thead>
@@ -164,14 +165,14 @@ module List = {
                     <HashLink to_={"/players/" ++ p.id}>
                       {[|p.firstName, p.lastName|]
                        |> Js.Array.joinWith(" ")
-                       |> s}
+                       |> React.string}
                     </HashLink>
                   </td>
                   <td className="table__number">
-                    {p.rating->string_of_int->s}
+                    {p.rating->string_of_int->React.string}
                   </td>
                   <td className="table__number">
-                    {p.matchCount->string_of_int->s}
+                    {p.matchCount->string_of_int->React.string}
                   </td>
                   <td>
                     <button
@@ -181,7 +182,7 @@ module List = {
                       <Utils.VisuallyHidden>
                         {[|"Delete", p.firstName, p.lastName|]
                          |> Js.Array.joinWith(" ")
-                         |> s}
+                         |> React.string}
                       </Utils.VisuallyHidden>
                     </button>
                   </td>
@@ -194,7 +195,7 @@ module List = {
         isOpen=isDialogOpen onDismiss={_ => setIsDialogOpen(_ => false)}>
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
-          {s("Close")}
+          {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />
       </Utils.Dialog>
@@ -235,7 +236,7 @@ module Profile = {
       players
       |> Map.String.keysToArray
       |> Js.Array.filter(id =>
-           !singAvoidList->Belt.List.has(id, (===)) && id !== playerId
+           !singAvoidList->List.has(id, (===)) && id !== playerId
          );
 
     let (selectedAvoider, setSelectedAvoider) =
@@ -282,11 +283,14 @@ module Profile = {
     <div
       className="content-area"
       style={ReactDOMRe.Style.make(~width="650px", ~margin="auto", ())}>
-      <HashLink to_="/players"> <Icons.ChevronLeft /> {s(" Back")} </HashLink>
-      <h2> {s("Profile for " ++ playerName)} </h2>
+      <HashLink to_="/players">
+        <Icons.ChevronLeft />
+        {React.string(" Back")}
+      </HashLink>
+      <h2> {React.string("Profile for " ++ playerName)} </h2>
       <form onChange=handleChange onSubmit=handleChange>
         <p>
-          <label htmlFor="firstName"> {s("First name")} </label>
+          <label htmlFor="firstName"> {React.string("First name")} </label>
           <input
             defaultValue={player.firstName}
             name="firstName"
@@ -294,11 +298,13 @@ module Profile = {
           />
         </p>
         <p>
-          <label htmlFor="lastName"> {s("Last name")} </label>
+          <label htmlFor="lastName"> {React.string("Last name")} </label>
           <input defaultValue={player.lastName} name="lastName" type_="text" />
         </p>
         <p>
-          <label htmlFor="matchCount"> {s("Matches played")} </label>
+          <label htmlFor="matchCount">
+            {React.string("Matches played")}
+          </label>
           <input
             defaultValue={player.matchCount->string_of_int}
             name="matchCount"
@@ -306,7 +312,7 @@ module Profile = {
           />
         </p>
         <p>
-          <label htmlFor="rating"> {s("Rating")} </label>
+          <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
             defaultValue={player.rating->string_of_int}
             name="rating"
@@ -314,7 +320,7 @@ module Profile = {
           />
         </p>
         <p>
-          <label htmlFor="Kfactor"> {s("K factor")} </label>
+          <label htmlFor="Kfactor"> {React.string("K factor")} </label>
           <input
             name="kfactor"
             type_="number"
@@ -326,13 +332,13 @@ module Profile = {
           />
         </p>
       </form>
-      <h3> {s("Players to avoid")} </h3>
+      <h3> {React.string("Players to avoid")} </h3>
       <ul>
         {singAvoidList->Utils.List.toReactArray(pId =>
            <li key=pId>
-             {s(players->getPlayerMaybe(pId).firstName)}
-             {s(" ")}
-             {s(players->getPlayerMaybe(pId).lastName)}
+             {React.string(players->getPlayerMaybe(pId).firstName)}
+             {React.string(" ")}
+             {React.string(players->getPlayerMaybe(pId).lastName)}
              <button
                ariaLabel={
                  [|
@@ -361,13 +367,13 @@ module Profile = {
            </li>
          )}
         {switch (singAvoidList) {
-         | [] => <li> {s("None")} </li>
+         | [] => <li> {React.string("None")} </li>
          | _ => React.null
          }}
       </ul>
       <form onSubmit=avoidAdd>
         <label htmlFor="avoid-select">
-          {s("Select a new player to avoid.")}
+          {React.string("Select a new player to avoid.")}
         </label>
         <select
           id="avoid-select"
@@ -377,14 +383,14 @@ module Profile = {
           {unavoided
            |> Js.Array.map(pId =>
                 <option key=pId value=pId>
-                  {s(players->getPlayerMaybe(pId).firstName)}
-                  {s(" ")}
-                  {s(players->getPlayerMaybe(pId).lastName)}
+                  {React.string(players->getPlayerMaybe(pId).firstName)}
+                  {React.string(" ")}
+                  {React.string(players->getPlayerMaybe(pId).lastName)}
                 </option>
               )
            |> ReasonReact.array}
         </select>
-        {s(" ")}
+        {React.string(" ")}
         <input className="button-micro" type_="submit" value="Add" />
       </form>
     </div>;
@@ -397,7 +403,7 @@ let make = (~id=?) => {
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
       ~table=players->Map.String.valuesToArray,
-      ~key=sortName,
+      ~column=sortName,
       ~isDescending=false,
     );
   React.useEffect2(
@@ -411,10 +417,16 @@ let make = (~id=?) => {
   <Window.Body>
     {switch (id) {
      | None =>
-       <List sorted sortDispatch players playersDispatch configDispatch />
+       <PlayerList
+         sorted
+         sortDispatch
+         players
+         playersDispatch
+         configDispatch
+       />
      | Some([id]) =>
        switch (players->Map.String.get(id)) {
-       | None => <div> {s("Loading...")} </div>
+       | None => <div> {React.string("Loading...")} </div>
        | Some(player) =>
          <Profile player players playersDispatch config configDispatch />
        }

@@ -53,6 +53,9 @@ module LocalForage = {
     let storeName: string;
   };
   [@bs.send] external createInstance: (t, config) => t = "createInstance";
+  /* `config` is mainly used for setting configs, but can also be used for
+     getting info */
+  [@bs.send] external configGet: t => config = "config";
   [@bs.send]
   external setItem:
     (t, string, Js.Json.t) => Repromise.Rejectable.t(unit, exn) =
@@ -100,6 +103,7 @@ module LocalForage = {
    */
   module Map = (Data: Data, Config: Config) => {
     open Belt;
+    open Result;
     let store =
       localForage->createInstance(
         config(~name=Config.name, ~storeName=Config.storeName),
@@ -129,16 +133,30 @@ module LocalForage = {
       ->Map.String.fromArray
       ->Map.String.map(Data.decode);
     let handleError_map = error => {
+      Js.Console.error2(
+        "Couldn't load database:",
+        store |> configGet |> storeNameGet,
+      );
       Js.Console.error(error);
-      Repromise.resolved(Map.String.empty);
+      Repromise.resolved(Error(Map.String.empty));
     };
     let getItems = keys =>
       getItems_dict(store, keys)
-      |> Repromise.Rejectable.map(parseItems)
+      |> Repromise.Rejectable.andThen(items =>
+           switch (parseItems(items)) {
+           | exception x => Repromise.Rejectable.rejected(x)
+           | x => Repromise.Rejectable.resolved(Ok(x))
+           }
+         )
       |> Repromise.Rejectable.catch(handleError_map);
     let getAllItems = () =>
       getAllItems_dict(store)
-      |> Repromise.Rejectable.map(parseItems)
+      |> Repromise.Rejectable.andThen(items =>
+           switch (parseItems(items)) {
+           | exception x => Repromise.Rejectable.rejected(x)
+           | x => Repromise.Rejectable.resolved(Ok(x))
+           }
+         )
       |> Repromise.Rejectable.catch(handleError_map);
     let setItems = items => {
       items
@@ -159,16 +177,17 @@ module LocalForage = {
     individual fields isn't possible (right now).
    */
   module Object = (Data: Data, Config: Config) => {
+    open Belt.Result;
     let store =
       localForage->createInstance(
         config(~name=Config.name, ~storeName=Config.storeName),
       );
     let getItems = () =>
       getAllItems_json(store)
-      |> Repromise.Rejectable.map(x => Some(Data.decode(x)))
+      |> Repromise.Rejectable.map(x => Ok(Data.decode(x)))
       |> Repromise.Rejectable.catch(error => {
            Js.Console.error(error);
-           Repromise.resolved(None);
+           Repromise.resolved(Error(error));
          });
     let setItems = items =>
       setItems_json(store, Data.encode(items))
