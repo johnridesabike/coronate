@@ -18,10 +18,9 @@ let scoreByeMatch = (byeValue, match) =>
 let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney) => {
   /* the pairData includes any players who were already matched. We need to
      only include the specified players. */
-  let playerIds = playerMap |> Map.String.keysToArray;
   let filteredData =
     pairData->Map.String.reduce(Map.String.empty, (acc, key, datum) =>
-      if (playerIds |> Js.Array.includes(key)) {
+      if (playerMap->Map.String.has(key)) {
         acc->Map.String.set(key, datum);
       } else {
         acc;
@@ -205,7 +204,7 @@ let tournamentReducer = (state, action) => {
         | NotSet => NotSet
         }
       );
-    /* TODO: clean this up. It just reverses the values */
+    /* This just reverses the values */
     roundList
     ->Array.getExn(roundId)
     ->Array.set(

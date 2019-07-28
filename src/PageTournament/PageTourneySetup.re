@@ -67,10 +67,9 @@ let make = (~tournament) => {
   };
 
   let updateDate = event => {
+    let rawDate = ReactEvent.Form.currentTarget(event)##value;
     let (rawYear, rawMonth, rawDay) =
-      switch (
-        ReactEvent.Form.currentTarget(event)##value |> Js.String.split("-")
-      ) {
+      switch (rawDate |> Js.String.split("-")) {
       | [|year, month, day|] => (year, month, day)
       | _ => ("2000", "01", "01") /* this was chosen randomly*/
       };
@@ -105,7 +104,8 @@ let make = (~tournament) => {
            <Icons.Check />
          </button>
        </form>
-     | _ =>
+     | Date
+     | NotEditing =>
        <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
          <span className="inputPlaceholder">
            {React.string(tourney.name)}
@@ -136,7 +136,8 @@ let make = (~tournament) => {
            <Icons.Check />
          </button>
        </form>
-     | _ =>
+     | Name
+     | NotEditing =>
        <p className="caption-30">
          <Utils.DateFormat date={tourney.date} />
          {React.string(" ")}

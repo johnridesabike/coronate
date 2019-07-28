@@ -22,7 +22,7 @@
     "start": "react-scripts start",
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@[a-z\\-]+\/bs-[a-z\\-]+|re-classnames|bs-[a-z\\-]+)|@aantron/repromise/)'",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@[a-z\\-]+/bs-[a-z\\-]+|re-classnames|bs-[a-z\\-]+)|@aantron/repromise/)'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w"
@@ -59,7 +59,7 @@
     "bs-react-testing-library": "^0.6.0",
     "concurrently": "^4.1.1",
     "electron": "^5.0.8",
-    "electron-builder": "^21.1.1",
+    "electron-builder": "^21.1.5",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.3",
     "gh-pages": "^2.0.1",

@@ -14,7 +14,6 @@ let getAllPlayerIdsFromMatches = matchList => {
            [||],
          )
     );
-  /* TODO: Not a set. Does it need to be? */
   allPlayers;
 };
 
@@ -123,14 +122,13 @@ let make = (~children, ~tourneyId) => {
           |> getAllPlayerIdsFromMatches
           |> Js.Array.concat(playerIds);
         /* If there are no ids, update the player state and exit early.*/
-        switch (Js.Array.length(allTheIds)) {
-        | 0 =>
+        if (Js.Array.length(allTheIds) === 0) {
           /* This check prevents an infinite loop & memory leak: */
           if (Map.String.size(players) !== 0) {
             playersDispatch(SetPlayers(players));
           };
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
-        | _ =>
+        } else {
           Db.Players.getItems(allTheIds)
           |> Repromise.map(values =>
                switch (values) {
@@ -149,15 +147,13 @@ let make = (~children, ~tourneyId) => {
                    Set.String.(
                      union(diff(newIds, oldIds), diff(newIds, oldIds))->size
                    );
-                 switch (changedPlayers) {
-                 | 0 => ()
-                 | _ =>
+                 if (changedPlayers !== 0) {
                    playersDispatch(SetPlayers(values));
                    setLoadStatus(_ => TourneyAndPlayersAreLoaded);
                  };
                }
              )
-          |> ignore
+          |> ignore;
         };
       };
       Some(() => didCancel := false);

@@ -224,19 +224,19 @@ module ByeValue = {
   type t =
     | Full
     | Half;
-  let toJson = data =>
+  let toFloat = data =>
     switch (data) {
     | Full => 1.0
     | Half => 0.5
     };
-  let fromJson = json =>
+  let fromFloat = json =>
     switch (json) {
     | 1.0 => Full
     | 0.5 => Half
     | _ => Full
     };
-  let encode = data => data |> toJson |> Json.Encode.float;
-  let decode = json => json |> Json.Decode.float |> fromJson;
+  let encode = data => data |> toFloat |> Json.Encode.float;
+  let decode = json => json |> Json.Decode.float |> fromFloat;
   let resultForPlayerColor = (byeValue, color) =>
     Match.Result.(
       switch (byeValue) {
@@ -445,32 +445,40 @@ module Converters = {
   let matches2ScoreData = matchList => {
     matchList
     |> Js.Array.reduce(
-         (acc, match) => {
-           open Match;
-           let newDataWhite =
-             makeScoreData(
-               ~existingData=acc,
-               ~playerId=match.whiteId,
-               ~origRating=match.whiteOrigRating,
-               ~newRating=match.whiteNewRating,
-               ~result=match.result->Match.Result.(toFloat(White)),
-               ~oppId=match.blackId,
-               ~color=Scoring.Color.White,
-             );
-           let newDataBlack =
-             makeScoreData(
-               ~existingData=acc,
-               ~playerId=match.blackId,
-               ~origRating=match.blackOrigRating,
-               ~newRating=match.blackNewRating,
-               ~result=match.result->Match.Result.(toFloat(Black)),
-               ~oppId=match.whiteId,
-               ~color=Scoring.Color.Black,
-             );
-           acc
-           ->Map.String.set(match.whiteId, newDataWhite)
-           ->Map.String.set(match.blackId, newDataBlack);
-         },
+         (acc, match) =>
+           Match.(
+             switch (match.result) {
+             | NotSet => acc
+             | WhiteWon
+             | BlackWon
+             | Draw =>
+               let whiteData =
+                 makeScoreData(
+                   ~existingData=acc,
+                   ~playerId=match.whiteId,
+                   ~origRating=match.whiteOrigRating,
+                   ~newRating=match.whiteNewRating,
+                   ~result=match.result->Match.Result.(toFloat(White)),
+                   ~oppId=match.blackId,
+                   ~color=Scoring.Color.White,
+                 );
+               let blackData =
+                 makeScoreData(
+                   ~existingData=acc,
+                   ~playerId=match.blackId,
+                   ~origRating=match.blackOrigRating,
+                   ~newRating=match.blackNewRating,
+                   ~result=match.result->Match.Result.(toFloat(Black)),
+                   ~oppId=match.whiteId,
+                   ~color=Scoring.Color.Black,
+                 );
+               Map.String.(
+                 acc
+                 ->set(match.whiteId, whiteData)
+                 ->set(match.blackId, blackData)
+               );
+             }
+           ),
          Map.String.empty,
        );
   };

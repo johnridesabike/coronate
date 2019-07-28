@@ -164,12 +164,12 @@ let make = (~tournament) => {
       </Utils.Panel>
       <Utils.Panel>
         <h3> {React.string("Bye queue")} </h3>
-        {switch (byeQueue |> Js.Array.length) {
-         | 0 =>
+        {if (Js.Array.length(byeQueue) === 0) {
            <p>
              {React.string("No players have signed up for a bye round.")}
-           </p>
-         | _ => React.null
+           </p>;
+         } else {
+           React.null;
          }}
         <ol>
           {byeQueue

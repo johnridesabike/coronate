@@ -91,63 +91,63 @@ module SelectList = {
       | (Some(_), Some(_)) => ()
       };
     };
-    unmatched |> Map.String.keysToArray |> Js.Array.length === 0
-      ? React.null
-      : <table className="content">
-          <thead>
-            <tr>
-              <th>
-                <Utils.VisuallyHidden>
-                  {React.string("Controls")}
-                </Utils.VisuallyHidden>
-              </th>
-              <th>
-                <Hooks.SortButton
-                  sortColumn=sortByName data=sorted dispatch=sortedDispatch>
-                  {React.string("Name")}
-                </Hooks.SortButton>
-              </th>
-              <th>
-                <Hooks.SortButton
-                  sortColumn=sortByIdeal data=sorted dispatch=sortedDispatch>
-                  {React.string("Ideal")}
-                </Hooks.SortButton>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.table
-             |> Js.Array.map(({player, ideal}) =>
-                  <tr key={player.id}>
-                    <td>
-                      <button
-                        className="button-ghost"
-                        disabled={!isPlayerSelectable(player.id)}
-                        onClick={_ => selectPlayer(player.id)}>
-                        <Icons.UserPlus />
-                        <Utils.VisuallyHidden>
-                          {[|"Add", player.firstName, player.lastName|]
-                           |> Js.Array.joinWith(" ")
-                           |> React.string}
-                        </Utils.VisuallyHidden>
-                      </button>
-                    </td>
-                    <td>
-                      {React.string(
-                         player.firstName ++ " " ++ player.lastName,
-                       )}
-                    </td>
-                    <td>
-                      {React.string(
-                         isOnePlayerSelected
-                           ? Numeral.(ideal->make->format("%")) : "-",
-                       )}
-                    </td>
-                  </tr>
-                )
-             |> React.array}
-          </tbody>
-        </table>;
+    if (Map.String.size(unmatched) === 0) {
+      React.null;
+    } else {
+      <table className="content">
+        <thead>
+          <tr>
+            <th>
+              <Utils.VisuallyHidden>
+                {React.string("Controls")}
+              </Utils.VisuallyHidden>
+            </th>
+            <th>
+              <Hooks.SortButton
+                sortColumn=sortByName data=sorted dispatch=sortedDispatch>
+                {React.string("Name")}
+              </Hooks.SortButton>
+            </th>
+            <th>
+              <Hooks.SortButton
+                sortColumn=sortByIdeal data=sorted dispatch=sortedDispatch>
+                {React.string("Ideal")}
+              </Hooks.SortButton>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.table
+           |> Js.Array.map(({player, ideal}) =>
+                <tr key={player.id}>
+                  <td>
+                    <button
+                      className="button-ghost"
+                      disabled={!isPlayerSelectable(player.id)}
+                      onClick={_ => selectPlayer(player.id)}>
+                      <Icons.UserPlus />
+                      <Utils.VisuallyHidden>
+                        {[|"Add", player.firstName, player.lastName|]
+                         |> Js.Array.joinWith(" ")
+                         |> React.string}
+                      </Utils.VisuallyHidden>
+                    </button>
+                  </td>
+                  <td>
+                    {React.string(player.firstName ++ " " ++ player.lastName)}
+                  </td>
+                  <td>
+                    {React.string(
+                       isOnePlayerSelected
+                         ? Numeral.(ideal->make->format("%")) : "-",
+                     )}
+                  </td>
+                </tr>
+              )
+           |> React.array}
+        </tbody>
+      </table>;
+    };
   };
 };
 
@@ -299,97 +299,38 @@ module Stage = {
   };
 };
 
-module PlayerInfo = {
-  [@react.component]
-  let make = (~playerId, ~players, ~getPlayer, ~scoreData, ~avoidPairs) => {
-    let avoidMap =
-      avoidPairs->Set.reduce(Map.String.empty, Data.AvoidPairs.reduceToMap);
-    let playerData =
-      switch (scoreData->Map.String.get(playerId)) {
-      | None => Scoring.createBlankScoreData(playerId)
-      | Some(data) => data
-      };
-    let colorScores = playerData.colorScores;
-    let opponentResults = playerData.opponentResults;
-    let results = playerData.results;
-    let colorBalance = Utils.List.sumF(colorScores);
-    let player = getPlayer(playerId);
-    let hasBye =
-      opponentResults
-      |> Map.String.keysToArray
-      |> Js.Array.includes(Data.Player.dummy_id);
-    let avoidList =
-      switch (avoidMap->Map.String.get(playerId)) {
-      | None => []
-      | Some(avoidList) => avoidList
-      };
-    let prettyBalance =
-      switch (colorBalance) {
-      | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)
-      | x when x > 0.0 => "Black +" ++ (x |> Js.Float.toString)
-      | _ => "Even"
-      };
-
-    <dl className="player-card">
-      <h3>
-        {React.string(player.Player.firstName ++ " " ++ player.lastName)}
-      </h3>
-      <p>
-        {React.string("Score: ")}
-        {Utils.List.sumF(results) |> Js.Float.toString |> React.string}
-      </p>
-      <p id={"rating-" ++ player.id}>
-        {React.string("Rating: ")}
-        {player.rating |> Js.Int.toString |> React.string}
-      </p>
-      <p> {React.string("Color balance: " ++ prettyBalance)} </p>
-      <p>
-        {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
-      </p>
-      <p> {React.string("Opponent history:")} </p>
-      <ol>
-        {opponentResults
-         ->Map.String.toArray
-         ->Array.map(((opId, result)) =>
-             <li key=opId>
-               {[|
-                  getPlayer(opId).firstName,
-                  getPlayer(opId).lastName,
-                  "-",
-                  /*
-                   TODO: This should be in sync with the `Match.Result` types
-                   */
-                  switch (result) {
-                  | 0.0 => "Lost"
-                  | 1.0 => "Won"
-                  | 0.5 => "Draw"
-                  | _ => "Draw"
-                  },
-                |]
-                |> Js.Array.joinWith(" ")
-                |> React.string}
-             </li>
-           )
-         ->React.array}
-      </ol>
-      <p> {React.string("Players to avoid:")} </p>
-      <ol>
-        {avoidList->Utils.List.toReactArray(pId =>
-           switch (players->Map.String.get(pId)) {
-           /*  don't show players not in this tourney*/
-           | None => React.null
-           | Some(_) =>
-             <li key=pId>
-               {React.string(
-                  getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName,
-                )}
-             </li>
-           }
-         )}
-      </ol>
-    </dl>;
-  };
-};
+module PlayerInfo =
+  HigherOrderComponents.WithScoreInfo({
+    [@react.component]
+    let make =
+        (
+          ~hasBye,
+          ~colorBalance,
+          ~player,
+          ~score,
+          ~rating,
+          ~opponentResults,
+          ~avoidListHtml,
+        ) => {
+      let fullName = player.Player.firstName ++ " " ++ player.lastName;
+      <dl className="player-card">
+        <h3> {React.string(fullName)} </h3>
+        <p>
+          {React.string("Score: ")}
+          {score |> Js.Float.toString |> React.string}
+        </p>
+        <p id={"rating-" ++ player.id}> {React.string("Rating: ")} rating </p>
+        <p> {React.string("Color balance: " ++ colorBalance)} </p>
+        <p>
+          {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
+        </p>
+        <p> {React.string("Opponent history:")} </p>
+        <ol> opponentResults </ol>
+        <p> {React.string("Players to avoid:")} </p>
+        avoidListHtml
+      </dl>;
+    };
+  });
 
 [@react.component]
 let make =
@@ -409,10 +350,10 @@ let make =
   let byeValue = config.byeValue;
   let {
     TournamentData.tourney,
-    TournamentData.activePlayers,
-    TournamentData.players,
-    TournamentData.getPlayer,
-    TournamentData.tourneyDispatch,
+    activePlayers,
+    players,
+    getPlayer,
+    tourneyDispatch,
   } = tournament;
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
@@ -488,16 +429,18 @@ let make =
         <Utils.PanelContainer>
           {[|p1, p2|]
            |> Js.Array.map(id =>
-                switch (id->Js.Nullable.toOption) {
+                switch (Js.Nullable.toOption(id)) {
                 | None => React.null
                 | Some(playerId) =>
                   <Utils.Panel key=playerId>
                     <PlayerInfo
-                      playerId
+                      player={getPlayer(playerId)}
                       scoreData
                       players
-                      getPlayer
                       avoidPairs
+                      origRating={getPlayer(playerId).rating}
+                      newRating=None
+                      getPlayer
                     />
                   </Utils.Panel>
                 }

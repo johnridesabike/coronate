@@ -193,8 +193,7 @@ let createStandingList = (methods, scoreData) => {
            id,
            score: getPlayerScore(scoreData, id),
            tieBreaks:
-             selectedTieBreakFuncs
-             |> Js.Array.map(func => func(scoreData, id)),
+             selectedTieBreakFuncs |> Js.Array.map(fn => fn(scoreData, id)),
          }
        );
   SortArray.stableSortBy(standings, standingsSorter);

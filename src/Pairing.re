@@ -131,46 +131,46 @@ let sortByScoreThenRating = (data1, data2) =>
    players are paired. */
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !p.opponents->List.has(dummyId, (===));
-  data->Map.String.keysToArray->Js.Array.length mod 2 === 0
+  if (Map.String.size(data) mod 2 === 0) {
     /* if the list is even, just return it. */
-    ? (data, None)
-    : {
-      let dataList =
-        data
-        ->Map.String.valuesToArray
-        ->List.fromArray
-        ->List.keep(hasNotHadBye)
-        ->List.sort(sortByScoreThenRating);
-      let playerIdsWithoutByes = dataList->List.map(p => p.id);
-      let hasntHadByeFn = id => playerIdsWithoutByes->List.has(id, (===));
-      let nextByeSignups = byeQueue->List.fromArray->List.keep(hasntHadByeFn);
-      let dataForNextBye =
-        switch (nextByeSignups) {
-        /* Assign the bye to the next person who signed up. */
-        | [id, ..._] =>
-          switch (data->Map.String.get(id)) {
-          | Some(x) => x
-          | None => dataList->List.getExn(0)
-          }
+    (data, None);
+  } else {
+    let dataList =
+      data
+      ->Map.String.valuesToArray
+      ->List.fromArray
+      ->List.keep(hasNotHadBye)
+      ->List.sort(sortByScoreThenRating);
+    let playerIdsWithoutByes = dataList->List.map(p => p.id);
+    let hasntHadByeFn = id => playerIdsWithoutByes->List.has(id, (===));
+    let nextByeSignups = byeQueue->List.fromArray->List.keep(hasntHadByeFn);
+    let dataForNextBye =
+      switch (nextByeSignups) {
+      /* Assign the bye to the next person who signed up. */
+      | [id, ..._] =>
+        switch (data->Map.String.get(id)) {
+        | Some(x) => x
+        | None => dataList->List.getExn(0)
+        }
+      | [] =>
+        /* Assign a bye to the lowest-rated player in the lowest score group.
+           Because the list is sorted, the last player is the lowest.
+           (USCF § 29L2.) */
+        switch (dataList) {
+        | [data, ..._] => data
+        /* In the impossible situation that *everyone* has played a bye
+           round previously, then just pick the last player. */
         | [] =>
-          /* Assign a bye to the lowest-rated player in the lowest score group.
-             Because the list is sorted, the last player is the lowest.
-             (USCF § 29L2.) */
-          switch (dataList) {
-          | [data, ..._] => data
-          /* In the impossible situation that *everyone* has played a bye
-             round previously, then just pick the last player. */
-          | [] =>
-            data
-            ->Map.String.valuesToArray
-            ->List.fromArray
-            ->List.sort(sortByScoreThenRating)
-            ->List.getExn(0)
-          }
-        };
-      let dataWithoutBye = data->Map.String.remove(dataForNextBye.id);
-      (dataWithoutBye, Some(dataForNextBye));
-    };
+          data
+          ->Map.String.valuesToArray
+          ->List.fromArray
+          ->List.sort(sortByScoreThenRating)
+          ->List.getExn(0)
+        }
+      };
+    let dataWithoutBye = data->Map.String.remove(dataForNextBye.id);
+    (dataWithoutBye, Some(dataForNextBye));
+  };
 };
 
 let assignColorsForPair = pair => {
@@ -187,8 +187,7 @@ let assignColorsForPair = pair => {
 };
 
 let netScore = ((player1, player2)) => player1.score +. player2.score;
-let netRating = ((player1, player2)) =>
-  float_of_int(player1.rating) +. float_of_int(player2.rating);
+let netRating = ((player1, player2)) => player1.rating + player2.rating;
 
 let sortByNetScoreThenRating = (pair1, pair2) =>
   switch (compare(netScore(pair2), netScore(pair1))) {
@@ -218,31 +217,32 @@ let pairPlayers = pairData => {
          );
     accArr |> Js.Array.concat(playerMatches);
   };
-  let blossom2Pairs = (acc, p1Index, p2Index) => {
+  let blossom2Pairs = (acc, p1Index, p2Index) =>
     /* Filter out unmatched players. Blossom will automatically include
        their missing IDs in its results. */
-    p1Index === (-1)
-      ? acc
+    if (p1Index === (-1)) {
+      acc;
+    } else {
       /* Translate the indices into ID strings */
-      : {
-        let p1 =
-          pairData->Map.String.getExn(playerIdArray->Array.getExn(p1Index));
-        let p2 =
-          pairData->Map.String.getExn(playerIdArray->Array.getExn(p2Index));
-
-        /* TODO: in the future, we may store the ideal for debugging. Because it
-           rarely serves a purpose, we're not including it now.
-           const ideal = potentialMatches.filter(
-               (pair) => pair[0] === p1Id && pair[1] === p2Id
-           )[0][2];
-           Blossom returns a lot of redundant matches. Check that this matchup
-           wasn't already added. */
-        let matched = acc |> Js.Array.map(((player, _)) => player);
-        !(matched |> Js.Array.includes(p1))
-        && !(matched |> Js.Array.includes(p2))
-          ? acc |> Js.Array.concat([|(p1, p2)|]) : acc;
+      let p1 =
+        pairData->Map.String.getExn(playerIdArray->Array.getExn(p1Index));
+      let p2 =
+        pairData->Map.String.getExn(playerIdArray->Array.getExn(p2Index));
+      /* In the future, we may store the ideal for debugging. Because it
+         rarely serves a purpose, we're not including it now.
+         const ideal = potentialMatches.filter(
+             (pair) => pair[0] === p1Id && pair[1] === p2Id
+         )[0][2];
+         Blossom returns a lot of redundant matches. Check that this matchup
+         wasn't already added. */
+      let matched = acc |> Js.Array.map(((player, _)) => player);
+      if (!(matched |> Js.Array.includes(p1))
+          && !(matched |> Js.Array.includes(p2))) {
+        acc |> Js.Array.concat([|(p1, p2)|]);
+      } else {
+        acc;
       };
-  };
+    };
   playerArray
   |> Js.Array.reducei(pairIdealReducer, [||])
   /* Feed all of the potential matches to Edmonds-blossom and let the

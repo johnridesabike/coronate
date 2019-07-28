@@ -56,12 +56,12 @@ let encodeOptions = data =>
 
 module LastBackupDate = {
   [@react.component]
-  let make = (~date) => {
-    switch (date |> Js.Date.getTime) {
-    | 0.0 => React.string("Never")
-    | _ => <Utils.DateTimeFormat date />
+  let make = (~date) =>
+    if (Js.Date.getTime(date) === 0.0) {
+      React.string("Never");
+    } else {
+      <Utils.DateTimeFormat date />;
     };
-  };
 };
 /* Using the raw JSON stringify because its formatting is prettier. */
 [@bs.scope "JSON"] [@bs.val]
@@ -103,7 +103,6 @@ let make = () => {
   );
 
   let loadData = (~tournaments, ~players, ~config) => {
-    /* TODO: implement `fromJSON` */
     tourneysDispatch(Db.SetState(tournaments));
     configDispatch(Db.SetState(config));
     playersDispatch(Db.SetState(players));
