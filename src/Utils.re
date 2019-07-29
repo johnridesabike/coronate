@@ -50,44 +50,36 @@ module Entities = {
   let copy = "\xA9";
 };
 
-module DateTimeFormatComponent =
-       (
-         Config: {
-           let locale: Externals.IntlDateTimeFormat.locale;
-           let config: Externals.IntlDateTimeFormat.config_;
-         },
-       ) => {
-  module IDTF = Externals.IntlDateTimeFormat;
-  let dtobj = IDTF.make(IDTF.string_of_locale(Config.locale), Config.config);
+module MakeDateTimeFormat = (M: {let formatter: Intl.DateTimeFormat.t;}) => {
   [@react.component]
   let make = (~date) =>
-    <time dateTime={date |> Js.Date.toISOString}>
-      {dtobj->IDTF.format(date)->React.string}
+    <time dateTime={Js.Date.toISOString(date)}>
+      {M.formatter->Intl.DateTimeFormat.format(date)->React.string}
     </time>;
 };
 
 module DateFormat =
-  DateTimeFormatComponent({
-    let locale = `en_us;
-    let config =
-      Externals.IntlDateTimeFormat.config(
-        ~day=`two_digit,
-        ~month=`short,
-        ~year=`numeric,
+  MakeDateTimeFormat({
+    let formatter =
+      Intl.DateTimeFormat.make(
+        ~locales=[|"en-US"|],
+        ~day=TwoDigit,
+        ~month=Short,
+        ~year=Numeric,
         (),
       );
   });
 
 module DateTimeFormat =
-  DateTimeFormatComponent({
-    let locale = `en_us;
-    let config =
-      Externals.IntlDateTimeFormat.config(
-        ~day=`two_digit,
-        ~month=`short,
-        ~year=`numeric,
-        ~hour=`two_digit,
-        ~minute=`two_digit,
+  MakeDateTimeFormat({
+    let formatter =
+      Intl.DateTimeFormat.make(
+        ~locales=[|"en-US"|],
+        ~day=TwoDigit,
+        ~month=Short,
+        ~year=Numeric,
+        ~hour=TwoDigit,
+        ~minute=TwoDigit,
         (),
       );
   });

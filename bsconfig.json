@@ -35,7 +35,8 @@
         "bs-css",
         "@johnridesabike/bs-numeral",
         "@aantron/repromise",
-        "@glennsl/bs-json"
+        "@glennsl/bs-json",
+        "bs-intl"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

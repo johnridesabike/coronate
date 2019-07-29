@@ -35,6 +35,7 @@
     "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
     "bs-css": "^9.0.1",
+    "bs-intl": "^1.1.0",
     "bs-webapi": "^0.15.2",
     "edmonds-blossom": "^1.0.0",
     "electron-is-dev": "^1.1.0",
