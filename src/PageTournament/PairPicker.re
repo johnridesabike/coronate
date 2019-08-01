@@ -1,6 +1,5 @@
 open Belt;
 open Data;
-open TournamentDataReducers;
 
 type listEntry = {
   player: Player.t,
@@ -164,8 +163,9 @@ module Stage = {
         ~roundId,
         ~stagedPlayers,
         ~setStagedPlayers,
-        ~tourneyDispatch,
+        ~setTourney,
         ~byeValue,
+        ~tourney,
       ) => {
     let (white, black) = stagedPlayers;
     let stagedPlayersOption = Js.Nullable.(white->toOption, black->toOption);
@@ -209,13 +209,18 @@ module Stage = {
     let match = _ => {
       switch (stagedPlayersOption) {
       | (Some(white), Some(black)) =>
-        tourneyDispatch(
-          ManualPair(
-            byeValue,
-            (getPlayer(white), getPlayer(black)),
+        let roundList =
+          Match.addMatches(
+            tourney.Tournament.roundList,
             roundId,
-          ),
-        );
+            [|
+              Match.manualPair(
+                (getPlayer(white), getPlayer(black)),
+                byeValue,
+              ),
+            |],
+          );
+        setTourney({...tourney, roundList});
         setStagedPlayers(_ => (Js.Nullable.null, Js.Nullable.null));
       | (None, None)
       | (Some(_), None)
@@ -348,13 +353,7 @@ let make =
   let (config, _) = Db.useConfig();
   let avoidPairs = config.avoidPairs;
   let byeValue = config.byeValue;
-  let {
-    TournamentData.tourney,
-    activePlayers,
-    players,
-    getPlayer,
-    tourneyDispatch,
-  } = tournament;
+  let {TournamentData.tourney, activePlayers, players, getPlayer, setTourney} = tournament;
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
   let pairData =
@@ -388,6 +387,21 @@ let make =
     },
     (unmatchedWithDummy, p1, p2, setStagedPlayers),
   );
+  let autoPair = _ => {
+    /* I don't actually know if this copy is necessary */
+    let roundList =
+      Match.addMatches(
+        tourney.roundList,
+        roundId,
+        Match.autoPair(
+          ~pairData,
+          ~byeValue=config.byeValue,
+          ~byeQueue=tourney.byeQueue,
+          ~playerMap=unmatched,
+        ),
+      );
+    setTourney({...tourney, roundList});
+  };
   <div
     className="content-area"
     style={ReactDOMRe.Style.make(~width="720px", ())}>
@@ -395,11 +409,7 @@ let make =
       <button
         className="button-primary"
         disabled={unmatchedCount === 0}
-        onClick={_ =>
-          tourneyDispatch(
-            AutoPair(config.byeValue, roundId, pairData, unmatched, tourney),
-          )
-        }>
+        onClick=autoPair>
         {React.string("Auto-pair unmatched players")}
       </button>
       {React.string(" ")}
@@ -422,9 +432,10 @@ let make =
           setStagedPlayers
           stagedPlayers
           pairData
-          tourneyDispatch
+          setTourney
           getPlayer
           byeValue
+          tourney
         />
         <Utils.PanelContainer>
           {[|p1, p2|]
@@ -455,7 +466,7 @@ let make =
         className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
         {React.string("Done")}
       </button>
-      <PageTourneyPlayers.Selecting tourney tourneyDispatch />
+      <PageTourneyPlayers.Selecting tourney setTourney />
     </Utils.Dialog>
   </div>;
 };

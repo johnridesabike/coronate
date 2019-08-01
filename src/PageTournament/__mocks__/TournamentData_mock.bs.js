@@ -8,7 +8,6 @@ import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
 import * as Data_Match$Coronate from "../../Data/Data_Match.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
-import * as TournamentDataReducers$Coronate from "../TournamentDataReducers.bs.js";
 
 function log2(num) {
   return Math.log(num) / Math.log(2.0);
@@ -44,13 +43,29 @@ function calcNumOfRounds(playerCount) {
   }
 }
 
+function tournamentReducer(param, action) {
+  return action;
+}
+
+function playersReducer(state, action) {
+  switch (action.tag | 0) {
+    case 0 : 
+        return Belt_MapString.set(state, action[0], action[1]);
+    case 1 : 
+        return Belt_MapString.remove(state, action[0]);
+    case 2 : 
+        return action[0];
+    
+  }
+}
+
 function TournamentData_Mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
-  var match = React.useReducer(TournamentDataReducers$Coronate.tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
+  var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
   var tourney = match[0];
   var roundList = tourney[/* roundList */5];
-  var match$1 = React.useReducer(TournamentDataReducers$Coronate.playersReducer, Belt_MapString.keep(playerData, (function (id, param) {
+  var match$1 = React.useReducer(playersReducer, Belt_MapString.keep(playerData, (function (id, param) {
               return tourney[/* playerIds */4].includes(id);
             })));
   var players = match$1[0];
@@ -77,7 +92,7 @@ function TournamentData_Mock(Props) {
               /* playersDispatch */match$1[1],
               /* roundCount */roundCount,
               /* tourney */tourney,
-              /* tourneyDispatch */match[1]
+              /* setTourney */match[1]
             ]);
 }
 
@@ -89,6 +104,8 @@ export {
   tournamentData ,
   playerData ,
   calcNumOfRounds ,
+  tournamentReducer ,
+  playersReducer ,
   make ,
   
 }

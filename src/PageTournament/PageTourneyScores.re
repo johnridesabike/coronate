@@ -170,7 +170,7 @@ module ScoreTable = {
 
 module SelectTieBreaks = {
   [@react.component]
-  let make = (~tourney, ~tourneyDispatch) => {
+  let make = (~tourney, ~setTourney) => {
     let tieBreaks = tourney.Tournament.tieBreaks;
     let (selectedTb, setSelectedTb) = React.useState(() => None);
     let defaultId = x =>
@@ -185,10 +185,18 @@ module SelectTieBreaks = {
 
     let toggleTb = id =>
       if (tieBreaks |> Js.Array.includes(defaultId(id))) {
-        tourneyDispatch(TournamentDataReducers.DelTieBreak(defaultId(id)));
+        setTourney({
+          ...tourney,
+          tieBreaks:
+            tourney.tieBreaks
+            |> Js.Array.filter(tbId => defaultId(id) !== tbId),
+        });
         setSelectedTb(_ => None);
       } else {
-        tourneyDispatch(TournamentDataReducers.AddTieBreak(defaultId(id)));
+        setTourney({
+          ...tourney,
+          tieBreaks: tourney.tieBreaks |> Js.Array.concat([|defaultId(id)|]),
+        });
       };
 
     let moveTb = direction => {
@@ -196,7 +204,11 @@ module SelectTieBreaks = {
       | None => ()
       | Some(selectedTb) =>
         let index = tieBreaks |> Js.Array.indexOf(selectedTb);
-        tourneyDispatch(MoveTieBreak(index, index + direction));
+        setTourney({
+          ...tourney,
+          tieBreaks:
+            tourney.tieBreaks->Utils.Array.swap(index, index + direction),
+        });
       };
     };
 
@@ -339,8 +351,7 @@ module SelectTieBreaks = {
 
 [@react.component]
 let make = (~tournament) => {
-  let {TournamentData.getPlayer, TournamentData.tourney} = tournament;
-  let tourneyDispatch = tournament.tourneyDispatch;
+  let {TournamentData.getPlayer, tourney, setTourney} = tournament;
   Utils.Tabs.(
     <Tabs>
       <TabList>
@@ -351,7 +362,7 @@ let make = (~tournament) => {
         <TabPanel>
           <ScoreTable tourney getPlayer title="Score detail" />
         </TabPanel>
-        <TabPanel> <SelectTieBreaks tourney tourneyDispatch /> </TabPanel>
+        <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
       </TabPanels>
     </Tabs>
   );
@@ -363,7 +374,8 @@ module Crosstable = {
     let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
     let {Data.Tournament.tieBreaks, Data.Tournament.roundList} = tourney;
     let scoreData =
-      Match.rounds2Matches(~roundList, ()) |> Data.Converters.matches2ScoreData;
+      Match.rounds2Matches(~roundList, ())
+      |> Data.Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(tieBreaks, scoreData);
 
     let getXScore = (player1Id, player2Id) =>

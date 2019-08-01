@@ -1,5 +1,4 @@
 open Belt;
-open TournamentDataReducers;
 open TournamentData;
 open Data;
 
@@ -75,7 +74,7 @@ module MatchRow = {
       ) => {
     let {
       TournamentData.tourney,
-      tourneyDispatch,
+      setTourney,
       players,
       getPlayer,
       playersDispatch,
@@ -148,34 +147,42 @@ module MatchRow = {
             )
           };
         let (whiteNewRating, blackNewRating) = newRatings;
-        playersDispatch(SetPlayer({...white, rating: whiteNewRating}));
-        playersDispatch(SetPlayer({...black, rating: blackNewRating}));
+        playersDispatch(Set(white.id, {...white, rating: whiteNewRating}));
+        playersDispatch(Set(black.id, {...black, rating: blackNewRating}));
         switch (match.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | NotSet =>
           playersDispatch(
-            SetPlayer({...white, matchCount: white.matchCount + 1}),
+            Set(white.id, {...white, matchCount: white.matchCount + 1}),
           );
           playersDispatch(
-            SetPlayer({...black, matchCount: black.matchCount + 1}),
+            Set(black.id, {...black, matchCount: black.matchCount + 1}),
           );
         /* If the result is being un-scored, decrement the matchCounts */
         | WhiteWon
         | BlackWon
         | Draw when result === NotSet =>
           playersDispatch(
-            SetPlayer({...white, matchCount: white.matchCount - 1}),
+            Set(white.id, {...white, matchCount: white.matchCount - 1}),
           );
           playersDispatch(
-            SetPlayer({...black, matchCount: black.matchCount - 1}),
+            Set(black.id, {...black, matchCount: black.matchCount - 1}),
           );
         | WhiteWon
         | BlackWon
         | Draw => ()
         };
-        tourneyDispatch(
-          SetMatchResult(match.id, newRatings, result, roundId),
-        );
+        setTourney({
+          ...tourney,
+          roundList:
+            Match.setResult(
+              ~matchId=match.id,
+              ~result,
+              ~roundId,
+              ~roundList=tourney.roundList,
+              ~newRatings,
+            ),
+        });
       };
     };
     let setMatchResultBlur = event => {
@@ -421,10 +428,7 @@ let findById = (id, list) =>
 module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
-    let tourney = tournament.tourney;
-    let players = tournament.players;
-    let tourneyDispatch = tournament.tourneyDispatch;
-    let playersDispatch = tournament.playersDispatch;
+    let {TournamentData.tourney, players, setTourney, playersDispatch} = tournament;
     let matchList = tourney.roundList->Array.get(roundId);
     let (selectedMatch, setSelectedMatch) =
       React.useState(() => Js.Nullable.null);
@@ -445,28 +449,48 @@ module Round = {
              | None => ()
              | Some(player) =>
                playersDispatch(
-                 SetPlayer({
-                   ...player,
-                   rating,
-                   matchCount: player.matchCount - 1,
-                 }),
+                 Set(
+                   player.id,
+                   {...player, rating, matchCount: player.matchCount - 1},
+                 ),
                )
              }
            );
       };
-      tourneyDispatch(DelMatch(matchId, roundId));
+      /* I don't actually know if this copy is necessary */
+      let roundList = tourney.roundList |> Js.Array.copy;
+      roundList->Array.set(
+        roundId,
+        roundList->Array.getExn(roundId)
+        |> Js.Array.filter((match: Match.t) => match.id !== matchId),
+      )
+      |> ignore;
+      setTourney({...tourney, roundList});
       setSelectedMatch(_ => Js.Nullable.null);
     };
 
     let swapColors = matchId => {
-      tourneyDispatch(SwapColors(matchId, roundId));
+      setTourney({
+        ...tourney,
+        roundList:
+          Match.swapColors(~matchId, ~roundId, ~roundList=tourney.roundList),
+      });
     };
 
     let moveMatch = (matchId, direction, matchList) => {
       let oldIndex =
         matchList |> Js.Array.indexOf(findById(matchId, matchList));
       let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
-      tourneyDispatch(MoveMatch(oldIndex, newIndex, roundId));
+      /* I don't actually know if this copy is necessary */
+      let roundList = tourney.roundList |> Js.Array.copy;
+      roundList->Array.set(
+        roundId,
+        roundList
+        ->Array.getExn(roundId)
+        ->Utils.Array.swap(oldIndex, newIndex),
+      )
+      |> ignore;
+      setTourney({...tourney, roundList});
     };
 
     switch (matchList) {

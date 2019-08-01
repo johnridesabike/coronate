@@ -19,9 +19,9 @@ module WithRoundData =
                ~tournament: TournamentData.t,
                ~activePlayersCount: int,
                ~scoreData: Map.String.t(Scoring.t),
-               ~unmatched: Map.String.t(Data.Player.t),
+               ~unmatched: Map.String.t(Player.t),
                ~unmatchedCount: int,
-               ~unmatchedWithDummy: Map.String.t(Data.Player.t)
+               ~unmatchedWithDummy: Map.String.t(Player.t)
              ) =>
              React.element;
          },
@@ -33,7 +33,7 @@ module WithRoundData =
       TournamentData.activePlayers,
       TournamentData.getPlayer,
     } = tournament;
-    let {Data.Tournament.roundList} = tourney;
+    let {Tournament.roundList} = tourney;
     /* matches2ScoreData is relatively expensive*/
     let scoreData =
       React.useMemo1(
@@ -54,7 +54,7 @@ module WithRoundData =
       unmatchedCount mod 2 !== 0
         ? unmatched->Map.String.set(
             Player.dummy_id,
-            getPlayer(Data.Player.dummy_id),
+            getPlayer(Player.dummy_id),
           )
         : unmatched;
     let activePlayersCount = Map.String.size(activePlayers);
@@ -84,7 +84,7 @@ module WithScoreInfo =
              (
                ~hasBye: bool,
                ~colorBalance: string,
-               ~player: Data.Player.t,
+               ~player: Player.t,
                ~score: float,
                ~rating: React.element,
                ~opponentResults: React.element,
@@ -109,7 +109,7 @@ module WithScoreInfo =
       | Some(data) => data
       | None => Scoring.createBlankScoreData(player.id)
       };
-    let hasBye = opponentResults->Map.String.has(Data.Player.dummy_id);
+    let hasBye = opponentResults->Map.String.has(Player.dummy_id);
     let colorBalance =
       switch (Utils.List.sumF(colorScores)) {
       | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)

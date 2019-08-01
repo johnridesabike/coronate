@@ -3,6 +3,7 @@
    getMonth() begins at 0. An HTML date input requires that the month begins at
    1 and the JS Date() object requires that the month begins at 0. */
 open Utils.Router;
+open Data;
 open Belt;
 let makeDateInput = date => {
   open Js.Date;
@@ -22,8 +23,6 @@ let makeDateInput = date => {
   [|year, month, day|] |> Js.Array.joinWith("-");
 };
 
-open TournamentDataReducers;
-
 type inputs =
   | Name
   | Date
@@ -31,7 +30,7 @@ type inputs =
 
 [@react.component]
 let make = (~tournament) => {
-  let {TournamentData.tourney, TournamentData.tourneyDispatch} = tournament;
+  let {TournamentData.tourney, setTourney} = tournament;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);
@@ -57,12 +56,26 @@ let make = (~tournament) => {
   );
 
   let changeToOne = _ => {
-    tourneyDispatch(UpdateByeScores(Data.ByeValue.Full));
+    setTourney({
+      ...tourney,
+      roundList:
+        Match.updateByeScores(
+          ~newValue=ByeValue.Full,
+          ~roundList=tourney.roundList,
+        ),
+    });
     Utils.alert("Bye scores updated to 1.");
   };
 
   let changeToOneHalf = _ => {
-    tourneyDispatch(UpdateByeScores(Data.ByeValue.Half));
+    setTourney({
+      ...tourney,
+      roundList:
+        Match.updateByeScores(
+          ~newValue=Data.ByeValue.Half,
+          ~roundList=tourney.roundList,
+        ),
+    });
     Utils.alert({js|Bye scores updated to ½.|js});
   };
 
@@ -76,12 +89,10 @@ let make = (~tournament) => {
     let year = Js.Float.fromString(rawYear);
     let month = Js.Float.fromString(rawMonth) -. 1.0;
     let date = Js.Float.fromString(rawDay);
-    tourneyDispatch(
-      SetTournament({
-        ...tourney,
-        date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
-      }),
-    );
+    setTourney({
+      ...tourney,
+      date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
+    });
   };
 
   <div className="content-area">
@@ -98,12 +109,10 @@ let make = (~tournament) => {
            type_="text"
            value={tourney.name}
            onChange={event =>
-             tourneyDispatch(
-               SetTournament({
-                 ...tourney,
-                 name: event->ReactEvent.Form.currentTarget##value,
-               }),
-             )
+             setTourney({
+               ...tourney,
+               name: event->ReactEvent.Form.currentTarget##value,
+             })
            }
          />
          {React.string(" ")}

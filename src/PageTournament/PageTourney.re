@@ -68,7 +68,7 @@ module Sidebar = {
       activePlayers,
       players,
       playersDispatch,
-      tourneyDispatch,
+      setTourney,
     } = tournament;
     let roundList = tourney.roundList;
     let isComplete = Match.isRoundComplete(roundList, activePlayers);
@@ -80,10 +80,13 @@ module Sidebar = {
         ++ "one?";
       if (isItOver) {
         if (Utils.confirm(confirmText)) {
-          tourneyDispatch(AddRound);
+          setTourney({
+            ...tourney,
+            roundList: Match.addRound(roundList),
+          });
         };
       } else {
-        tourneyDispatch(AddRound);
+        setTourney({...tourney, roundList: Match.addRound(roundList)});
       };
     };
 
@@ -113,32 +116,41 @@ module Sidebar = {
                | WhiteWon =>
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
-                        switch (players->Map.String.get(id)) {
-                        | Some(player) =>
-                          playersDispatch(
-                            SetPlayer({
+                      switch (players->Map.String.get(id)) {
+                      | Some(player) =>
+                        playersDispatch(
+                          Set(
+                            player.id,
+                            {
                               ...player,
                               matchCount: player.matchCount - 1,
                               rating,
-                            }),
-                          )
-                        /* Don't try to set dummy or deleted players */
-                        | None => ()
-                        }
-                      )
-                      //   if (id !== Player.dummy_id) {
-                      //     /* Don't try to set the dummy */
-                      //     let matchCount = getPlayer(id).matchCount;
-                      //     playersDispatch(SetMatchCount(id, matchCount - 1));
-                      //     playersDispatch(SetRating(id, rating));
-                      //   }
+                            },
+                          ),
+                        )
+                      /* Don't try to set dummy or deleted players */
+                      | None => ()
+                      }
+                    )
+               //   if (id !== Player.dummy_id) {
+               //     /* Don't try to set the dummy */
+               //     let matchCount = getPlayer(id).matchCount;
+               //     playersDispatch(SetMatchCount(id, matchCount - 1));
+               //     playersDispatch(SetRating(id, rating));
+               //   }
                };
              })
         };
-        tourneyDispatch(DelLastRound);
+        setTourney({
+          ...tourney,
+          roundList: Match.delLastRound(roundList),
+        });
         if (Js.Array.length(roundList) === 1) {
           /* Automatically remake round 1.*/
-          tourneyDispatch(AddRound);
+          setTourney({
+            ...tourney,
+            roundList: Match.addRound(roundList),
+          });
         };
       };
     };

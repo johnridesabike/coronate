@@ -1,5 +1,6 @@
 open Data;
 open Belt;
+open Tournament;
 module LocalForage = Externals.LocalForage;
 
 let log2 = num => log(num) /. log(2.0);
@@ -22,7 +23,6 @@ let calcNumOfRounds = playerCount => {
   roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
 };
 
-open Tournament;
 let emptyTourney = {
   name: "",
   playerIds: [||],
@@ -33,16 +33,34 @@ let emptyTourney = {
   byeQueue: [||],
 };
 
+let tournamentReducer = (_, action) => action;
+
+type action('a) =
+  | Set(string, 'a)
+  | Del(string)
+  | SetAll(Map.String.t('a));
+
+let playersReducer = (state, action) => {
+  Map.String.(
+    switch (action) {
+    | Set(id, player) => state->set(id, player)
+    /*You should delete all avoid-pairs with the id too.*/
+    | Del(id) => state->remove(id)
+    | SetAll(state) => state
+    }
+  );
+};
+
 type t = {
   activePlayers: Map.String.t(Player.t),
   getPlayer: string => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
   players: Map.String.t(Player.t),
-  playersDispatch: TournamentDataReducers.actionPlayer => unit,
+  playersDispatch: action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
-  tourneyDispatch: TournamentDataReducers.actionTournament => unit,
+  setTourney: Tournament.t => unit,
 };
 
 type loadStatus =
@@ -61,11 +79,11 @@ let isLoadedDone = status =>
 
 [@react.component]
 let make = (~children, ~tourneyId) => {
-  let (tourney, tourneyDispatch) =
-    React.useReducer(TournamentDataReducers.tournamentReducer, emptyTourney);
+  let (tourney, setTourney) =
+    React.useReducer(tournamentReducer, emptyTourney);
   let {Tournament.name, Tournament.playerIds, Tournament.roundList} = tourney;
   let (players, playersDispatch) =
-    React.useReducer(TournamentDataReducers.playersReducer, Map.String.empty);
+    React.useReducer(playersReducer, Map.String.empty);
   let (loadStatus, setLoadStatus) = React.useState(() => NothingIsLoaded);
   Hooks.useLoadingCursorUntil(isLoadedDone(loadStatus));
   let (_, windowDispatch) = Window.useWindowContext();
@@ -91,7 +109,7 @@ let make = (~children, ~tourneyId) => {
            | None => setLoadStatus(_ => Error)
            | Some(_) when didCancel^ => ()
            | Some(value) =>
-             tourneyDispatch(SetTournament(value));
+             setTourney(value);
              setLoadStatus(_ => TourneyIsLoaded);
            }
          )
@@ -125,7 +143,7 @@ let make = (~children, ~tourneyId) => {
         if (Js.Array.length(allTheIds) === 0) {
           /* This check prevents an infinite loop & memory leak: */
           if (Map.String.size(players) !== 0) {
-            playersDispatch(SetPlayers(players));
+            playersDispatch(SetAll(players));
           };
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         } else {
@@ -148,7 +166,7 @@ let make = (~children, ~tourneyId) => {
                      union(diff(newIds, oldIds), diff(newIds, oldIds))->size
                    );
                  if (changedPlayers !== 0) {
-                   playersDispatch(SetPlayers(values));
+                   playersDispatch(SetAll(values));
                    setLoadStatus(_ => TourneyAndPlayersAreLoaded);
                  };
                }
@@ -234,7 +252,7 @@ let make = (~children, ~tourneyId) => {
       playersDispatch,
       roundCount,
       tourney,
-      tourneyDispatch,
+      setTourney,
     })
   | Error =>
     [%debugger];

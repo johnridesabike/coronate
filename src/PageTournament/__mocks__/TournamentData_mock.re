@@ -22,29 +22,47 @@ let calcNumOfRounds = playerCount => {
 };
 
 open Tournament;
+let tournamentReducer = (_, action) => action;
+
+type action('a) =
+  | Set(string, 'a)
+  | Del(string)
+  | SetAll(Map.String.t('a));
+
+let playersReducer = (state, action) => {
+  Map.String.(
+    switch (action) {
+    | Set(id, player) => state->set(id, player)
+    /*You should delete all avoid-pairs with the id too.*/
+    | Del(id) => state->remove(id)
+    | SetAll(state) => state
+    }
+  );
+};
+
 type t = {
   activePlayers: Map.String.t(Player.t),
   getPlayer: string => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
   players: Map.String.t(Player.t),
-  playersDispatch: TournamentDataReducers.actionPlayer => unit,
+  playersDispatch: action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
-  tourneyDispatch: TournamentDataReducers.actionTournament => unit,
+  setTourney: Tournament.t => unit,
 };
 
 [@react.component]
 let make = (~children, ~tourneyId) => {
-  let (tourney, tourneyDispatch) =
+  let (tourney, setTourney) =
     React.useReducer(
-      TournamentDataReducers.tournamentReducer,
+      tournamentReducer,
       tournamentData->Map.String.getExn(tourneyId),
     );
   let roundList = tourney.roundList;
   let (players, playersDispatch) =
     React.useReducer(
-      TournamentDataReducers.playersReducer,
+      playersReducer,
       playerData->Map.String.keep((id, _) =>
         tourney.playerIds |> Js.Array.includes(id)
       ),
@@ -84,6 +102,6 @@ let make = (~children, ~tourneyId) => {
     playersDispatch,
     roundCount,
     tourney,
-    tourneyDispatch,
+    setTourney,
   });
 };

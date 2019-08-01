@@ -153,6 +153,80 @@ let manualPair = ((white, black), byeValue) => {
   |> scoreByeMatch(byeValue);
 };
 
+let setResult = (~matchId, ~result, ~roundId, ~roundList, ~newRatings) => {
+  /* This is a lot of nested values, but right now I'm not sure what the
+     easier way of doing this is*/
+  /* I don't actually know if this copy is necessary */
+  let (whiteNewRating, blackNewRating) = newRatings;
+  let roundList = Js.Array.copy(roundList);
+  Js.Array.(
+    roundList->unsafe_set(roundId, roundList->unsafe_get(roundId) |> copy)
+  );
+  let matchIndex =
+    Js.Array.(
+      roundList->unsafe_get(roundId)
+      |> findIndex(match => match.id === matchId)
+    );
+  let match = Belt.Array.(roundList->getExn(roundId)->getExn(matchIndex));
+  Belt.Array.(
+    roundList
+    ->getExn(roundId)
+    ->set(matchIndex, {...match, result, whiteNewRating, blackNewRating})
+    |> ignore
+  );
+  roundList;
+};
+
+let swapColors = (~matchId, ~roundId, ~roundList) => {
+  /* I don't actually know if this copy is necessary */
+  let roundList = roundList |> Js.Array.copy;
+  Js.Array.(
+    roundList->unsafe_set(roundId, roundList->unsafe_get(roundId) |> copy)
+  );
+  let matchIndex =
+    Js.Array.(
+      roundList->unsafe_get(roundId)
+      |> findIndex(match => match.id === matchId)
+    );
+  let oldMatch =
+    Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
+  let result =
+    Result.(
+      switch (oldMatch.result) {
+      | WhiteWon => BlackWon
+      | BlackWon => WhiteWon
+      | Draw => Draw
+      | NotSet => NotSet
+      }
+    );
+  /* This just reverses the values */
+  Belt.Array.(
+    roundList
+    ->getExn(roundId)
+    ->set(
+        matchIndex,
+        {
+          ...oldMatch,
+          result,
+          whiteId: oldMatch.blackId,
+          blackId: oldMatch.whiteId,
+          whiteOrigRating: oldMatch.blackOrigRating,
+          blackOrigRating: oldMatch.whiteOrigRating,
+          whiteNewRating: oldMatch.blackNewRating,
+          blackNewRating: oldMatch.whiteNewRating,
+        },
+      )
+    |> ignore
+  );
+  roundList;
+};
+
+let updateByeScores = (~newValue, ~roundList) =>
+  Js.Array.(
+    roundList
+    |> map(round => round |> map(match => match |> scoreByeMatch(newValue)))
+  );
+
 /*******************************************************************************
  * Round functions
  ******************************************************************************/
@@ -216,3 +290,17 @@ let isRoundComplete = (roundList, players, roundId) =>
     Belt.Map.String.size(unmatched) === 0
     && !(results |> Js.Array.includes(Result.NotSet));
   };
+
+let addRound = roundList => roundList |> Js.Array.concat([|[||]|]);
+let delLastRound = roundList =>
+  roundList |> Js.Array.slice(~start=0, ~end_=-1);
+
+let addMatches = (roundList, roundId, matches) => {
+  open Js.Array;
+  let newRoundList = copy(roundList);
+  newRoundList->unsafe_set(
+    roundId,
+    newRoundList->unsafe_get(roundId) |> concat(matches),
+  );
+  newRoundList;
+};

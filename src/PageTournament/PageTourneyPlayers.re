@@ -1,30 +1,25 @@
 open Belt;
-open TournamentDataReducers;
 open Data;
 
 module Selecting = {
   [@react.component]
-  let make = (~tourney, ~tourneyDispatch) => {
+  let make = (~tourney, ~setTourney) => {
     let (players, allPlayersDispatch) = Db.useAllPlayers();
 
     let togglePlayer = event => {
       let id = event->ReactEvent.Form.target##value;
       if (event->ReactEvent.Form.target##checked) {
-        tourneyDispatch(
-          SetTournament(
-            Tournament.{
-              ...tourney,
-              playerIds: tourney.playerIds |> Js.Array.concat([|id|]),
-            },
-          ),
+        setTourney(
+          Tournament.{
+            ...tourney,
+            playerIds: tourney.playerIds |> Js.Array.concat([|id|]),
+          },
         );
       } else {
-        tourneyDispatch(
-          SetTournament({
-            ...tourney,
-            playerIds: tourney.playerIds |> Js.Array.filter(pId => pId !== id),
-          }),
-        );
+        setTourney({
+          ...tourney,
+          playerIds: tourney.playerIds |> Js.Array.filter(pId => pId !== id),
+        });
       };
     };
 
@@ -33,20 +28,16 @@ module Selecting = {
         <button
           className="button-micro"
           onClick={_ =>
-            tourneyDispatch(
-              SetTournament({
-                ...tourney,
-                playerIds: players |> Map.String.keysToArray,
-              }),
-            )
+            setTourney({
+              ...tourney,
+              playerIds: players |> Map.String.keysToArray,
+            })
           }>
           {React.string("Select all")}
         </button>
         <button
           className="button-micro"
-          onClick={_ =>
-            tourneyDispatch(SetTournament({...tourney, playerIds: [||]}))
-          }>
+          onClick={_ => setTourney({...tourney, playerIds: [||]})}>
           {React.string("Select none")}
         </button>
       </div>
@@ -109,7 +100,7 @@ let hasHadBye = (matchList, playerId) => {
 
 module PlayerList = {
   [@react.component]
-  let make = (~players, ~tourney, ~tourneyDispatch, ~byeQueue) => {
+  let make = (~players, ~tourney, ~setTourney, ~byeQueue) => {
     <>
       {players
        |> Map.String.valuesToArray
@@ -124,11 +115,11 @@ module PlayerList = {
                   className="button-micro"
                   disabled={byeQueue |> Js.Array.includes(p.id)}
                   onClick={_ =>
-                    tourneyDispatch(
-                      SetTournament({
+                    setTourney(
+                      Tournament.{
                         ...tourney,
                         byeQueue: byeQueue |> Js.Array.concat([|p.id|]),
-                      }),
+                      },
                     )
                   }>
                   {React.string("Bye signup")}
@@ -145,7 +136,7 @@ module PlayerList = {
 let make = (~tournament) => {
   let {
     TournamentData.tourney,
-    TournamentData.tourneyDispatch,
+    TournamentData.setTourney,
     TournamentData.activePlayers,
   } = tournament;
   let {Tournament.playerIds, Tournament.roundList, Tournament.byeQueue} = tourney;
@@ -172,7 +163,7 @@ let make = (~tournament) => {
           <tbody className="content">
             <PlayerList
               byeQueue
-              tourneyDispatch
+              setTourney
               tourney
               players=activePlayers
             />
@@ -206,13 +197,11 @@ let make = (~tournament) => {
                   <button
                     className="button-micro"
                     onClick={_ =>
-                      tourneyDispatch(
-                        SetTournament({
-                          ...tourney,
-                          byeQueue:
-                            byeQueue |> Js.Array.filter(id => pId !== id),
-                        }),
-                      )
+                      setTourney({
+                        ...tourney,
+                        byeQueue:
+                          byeQueue |> Js.Array.filter(id => pId !== id),
+                      })
                     }>
                     {React.string("Remove")}
                   </button>
@@ -228,7 +217,7 @@ let make = (~tournament) => {
           onClick={_ => setIsSelecting(_ => false)}>
           {React.string("Done")}
         </button>
-        <Selecting tourney tourneyDispatch />
+        <Selecting tourney setTourney />
       </Utils.Dialog>
     </Utils.PanelContainer>
   </div>;
