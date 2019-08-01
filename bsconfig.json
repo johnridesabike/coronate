@@ -11,6 +11,7 @@
             "dir": "src",
             "subdirs": [
                 "PageTournament",
+                "Data",
                 "__mocks__",
                 "PageTournament/__mocks__"
             ]

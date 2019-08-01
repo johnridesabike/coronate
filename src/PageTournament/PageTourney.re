@@ -1,3 +1,4 @@
+open Belt;
 open Utils.Router;
 open TournamentData;
 open Data;
@@ -64,13 +65,13 @@ module Sidebar = {
       tourney,
       isItOver,
       isNewRoundReady,
-      getPlayer,
       activePlayers,
+      players,
       playersDispatch,
       tourneyDispatch,
     } = tournament;
     let roundList = tourney.roundList;
-    let isComplete = isRoundComplete(roundList, activePlayers);
+    let isComplete = Match.isRoundComplete(roundList, activePlayers);
     let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
       event->ReactEvent.Mouse.preventDefault;
@@ -112,13 +113,25 @@ module Sidebar = {
                | WhiteWon =>
                  [|(whiteId, whiteOrigRating), (blackId, blackOrigRating)|]
                  |> Js.Array.forEach(((id, rating)) =>
-                      if (id !== Player.dummy_id) {
-                        /* Don't try to set the dummy */
-                        let matchCount = getPlayer(id).matchCount;
-                        playersDispatch(SetMatchCount(id, matchCount - 1));
-                        playersDispatch(SetRating(id, rating));
-                      }
-                    )
+                        switch (players->Map.String.get(id)) {
+                        | Some(player) =>
+                          playersDispatch(
+                            SetPlayer({
+                              ...player,
+                              matchCount: player.matchCount - 1,
+                              rating,
+                            }),
+                          )
+                        /* Don't try to set dummy or deleted players */
+                        | None => ()
+                        }
+                      )
+                      //   if (id !== Player.dummy_id) {
+                      //     /* Don't try to set the dummy */
+                      //     let matchCount = getPlayer(id).matchCount;
+                      //     playersDispatch(SetMatchCount(id, matchCount - 1));
+                      //     playersDispatch(SetRating(id, rating));
+                      //   }
                };
              })
         };

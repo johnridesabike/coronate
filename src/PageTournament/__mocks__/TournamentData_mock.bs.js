@@ -3,10 +3,11 @@
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
-import * as Data$Coronate from "../../Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
+import * as Data_Match$Coronate from "../../Data/Data_Match.bs.js";
+import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
 import * as TournamentDataReducers$Coronate from "../TournamentDataReducers.bs.js";
 
 function log2(num) {
@@ -53,9 +54,8 @@ function TournamentData_Mock(Props) {
               return tourney[/* playerIds */4].includes(id);
             })));
   var players = match$1[0];
-  var partial_arg = Data$Coronate.Player[/* getPlayerMaybe */7];
   var getPlayer = function (param) {
-    return partial_arg(players, param);
+    return Data_Player$Coronate.getPlayerMaybe(players, param);
   };
   var activePlayers = Belt_MapString.reduce(players, Belt_MapString.empty, (function (acc, key, player) {
           if (tourney[/* playerIds */4].includes(key)) {
@@ -67,7 +67,7 @@ function TournamentData_Mock(Props) {
   var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
   var isItOver = roundList.length >= roundCount;
   var match$2 = roundList.length === 0;
-  var isNewRoundReady = match$2 ? true : Data$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
+  var isNewRoundReady = match$2 ? true : Data_Match$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
   return Curry._1(children, /* record */[
               /* activePlayers */activePlayers,
               /* getPlayer */getPlayer,

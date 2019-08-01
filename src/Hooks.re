@@ -110,3 +110,63 @@ let useLoadingCursorUntil = isLoaded => {
     [|isLoaded|],
   );
 };
+/*
+   Experimental. I was trying to make a hook that will convert one useReducer's
+   output into a variant that looks like `'state => Loading | Loaded('state)`
+   so that asyncronous data can be handled more gracefully. Because this puts
+   one state inside another state, it produces problems where `useEffect` won't
+   be able to detect updates to the "actual" state, only the "loading" state.
+
+   My current way of handling async data is to use placeholder (usually empty)
+   data that gets replaced once new data loads, and the loading status is
+   handled seperately. This is arguably less type-safe, but seems to work well
+   with the rest of React's hooks.
+
+   The `Loading('state)` idiom only seems to be effective when the `'state`
+   data doesn't change unless it's through another asyncronous update.
+   Unfotunately, this app currently is designed to load state, manipulate it,
+   and then save it back asyncronously. 
+
+   There may be a better way of doing this. In fact, I may want to drop the
+   `useEffect` save strategy in favor of manually saving. The `useEffect` has
+   its own limitations, especially when it comes to deleting DB entries. (It
+   just deletes any entries that aren't in the state, assuming they were once
+   loaded and then deleted.)
+
+ module Async = {
+   type t('a) =
+     | Loading
+     | Loaded('a)
+     | Error(string);
+
+   type status =
+     | IsLoading
+     | IsLoaded
+     | IsError(string);
+
+   type action =
+     | SetIsLoading
+     | SetSuccess
+     | SetError(string);
+
+   let reducer = (_, action) => action;
+
+   let useAsyncStatus = () => {
+     React.useReducer(reducer, IsLoading);
+   };
+
+   let mapWithDefault = (state, default, fn) =>
+     switch (state) {
+     | Loading
+     | Error(_) => default
+     | Loaded(state) => fn(state)
+     };
+
+   let getWithDefault = (state, default) =>
+     switch (state) {
+     | Loading
+     | Error(_) => default
+     | Loaded(state) => state
+     };
+ };
+  */

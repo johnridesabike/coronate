@@ -69,7 +69,11 @@ let make = (~children, ~tourneyId) => {
     Js.Array.(
       roundList |> length === 0
         ? true
-        : isRoundComplete(roundList, activePlayers, (roundList |> length) - 1)
+        : Data.Match.isRoundComplete(
+            roundList,
+            activePlayers,
+            (roundList |> length) - 1,
+          )
     );
   children({
     activePlayers,

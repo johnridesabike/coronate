@@ -76,7 +76,12 @@ let make = (~tournament) => {
     let year = Js.Float.fromString(rawYear);
     let month = Js.Float.fromString(rawMonth) -. 1.0;
     let date = Js.Float.fromString(rawDay);
-    tourneyDispatch(SetDate(Js.Date.makeWithYMD(~year, ~month, ~date, ())));
+    tourneyDispatch(
+      SetTournament({
+        ...tourney,
+        date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
+      }),
+    );
   };
 
   <div className="content-area">
@@ -94,7 +99,10 @@ let make = (~tournament) => {
            value={tourney.name}
            onChange={event =>
              tourneyDispatch(
-               SetName(event->ReactEvent.Form.currentTarget##value),
+               SetTournament({
+                 ...tourney,
+                 name: event->ReactEvent.Form.currentTarget##value,
+               }),
              )
            }
          />

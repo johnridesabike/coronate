@@ -1,85 +1,12 @@
 open Belt;
 open Data;
 
-let scoreByeMatch = (byeValue, match) =>
-  switch (Player.(isDummyId(match.Match.whiteId), isDummyId(match.blackId))) {
-  | (true, false) => {
-      ...match,
-      result: ByeValue.resultForPlayerColor(byeValue, Match.Result.Black),
-    }
-  | (false, true) => {
-      ...match,
-      result: ByeValue.resultForPlayerColor(byeValue, Match.Result.White),
-    }
-  | (false, false) /* lol */
-  | (true, true) => match
-  };
-
-let autoPair = (~pairData, ~byeValue, ~playerMap, ~tourney) => {
-  /* the pairData includes any players who were already matched. We need to
-     only include the specified players. */
-  let filteredData =
-    pairData->Map.String.reduce(Map.String.empty, (acc, key, datum) =>
-      if (playerMap->Map.String.has(key)) {
-        acc->Map.String.set(key, datum);
-      } else {
-        acc;
-      }
-    );
-  let (pairdataNoByes, byePlayerData) =
-    Pairing.setByePlayer(
-      tourney.Tournament.byeQueue,
-      Player.dummy_id,
-      filteredData,
-    );
-  let pairs = Pairing.pairPlayers(pairdataNoByes);
-  let pairsWithBye =
-    switch (byePlayerData) {
-    | Some(player) =>
-      pairs |> Js.Array.concat([|(player.id, Player.dummy_id)|])
-    | None => pairs
-    };
-  let getPlayer = Player.getPlayerMaybe(playerMap);
-  let newMatchList =
-    pairsWithBye
-    |> Js.Array.map(((whiteId, blackId)) =>
-         Match.{
-           id: Utils.nanoid(),
-           whiteOrigRating: getPlayer(whiteId).rating,
-           blackOrigRating: getPlayer(blackId).rating,
-           whiteNewRating: getPlayer(whiteId).rating,
-           blackNewRating: getPlayer(blackId).rating,
-           whiteId,
-           blackId,
-           result: Match.Result.NotSet,
-         }
-       );
-  newMatchList |> Js.Array.map(scoreByeMatch(byeValue));
-};
-
-let manualPair = ((white, black), byeValue) => {
-  Match.{
-    id: Utils.nanoid(),
-    result: Match.Result.NotSet,
-    whiteId: white.Player.id,
-    blackId: black.Player.id,
-    whiteOrigRating: white.rating,
-    blackOrigRating: black.rating,
-    whiteNewRating: white.rating,
-    blackNewRating: black.rating,
-  }
-  |> scoreByeMatch(byeValue);
-};
-
 type actionTournament =
   | AddRound
   | DelLastRound
   | AddTieBreak(int)
   | DelTieBreak(int)
   | MoveTieBreak(int, int)
-  | SetTourneyPlayers(array(id))
-  | SetByeQueue(array(id))
-  | SetName(string)
   | AutoPair(
       ByeValue.t,
       int,
@@ -88,10 +15,9 @@ type actionTournament =
       Tournament.t,
     )
   | ManualPair(ByeValue.t, (Player.t, Player.t), int)
-  | SetDate(Js.Date.t)
-  | SetMatchResult(id, (int, int), Match.Result.t, int)
-  | DelMatch(id, int)
-  | SwapColors(id, int)
+  | SetMatchResult(string, (int, int), Match.Result.t, int)
+  | DelMatch(string, int)
+  | SwapColors(string, int)
   | MoveMatch(int, int, int)
   | UpdateByeScores(ByeValue.t)
   | SetTournament(Tournament.t);
@@ -119,9 +45,6 @@ let tournamentReducer = (state, action) => {
       ...state,
       tieBreaks: state.tieBreaks->Utils.Array.swap(oldIndex, newIndex),
     }
-  | SetTourneyPlayers(playerIds) => {...state, playerIds}
-  | SetByeQueue(byeQueue) => {...state, byeQueue}
-  | SetName(name) => {...state, name}
   | AutoPair(byeValue, roundId, pairData, playerMap, tourney) =>
     /* I don't actually know if this copy is necessary */
     let roundList = state.roundList |> Js.Array.copy;
@@ -129,7 +52,14 @@ let tournamentReducer = (state, action) => {
       roundList->unsafe_set(
         roundId,
         roundList->unsafe_get(roundId)
-        |> concat(autoPair(~pairData, ~byeValue, ~tourney, ~playerMap)),
+        |> concat(
+             Match.autoPair(
+               ~pairData,
+               ~byeValue,
+               ~byeQueue=tourney.byeQueue,
+               ~playerMap,
+             ),
+           ),
       )
     );
     {...state, roundList};
@@ -140,11 +70,10 @@ let tournamentReducer = (state, action) => {
       roundList->unsafe_set(
         roundId,
         roundList->unsafe_get(roundId)
-        |> concat([|manualPair((white, black), byeValue)|]),
+        |> concat([|Match.manualPair((white, black), byeValue)|]),
       )
     );
     {...state, roundList};
-  | SetDate(date) => {...state, date}
   | SetMatchResult(
       matchId,
       (whiteNewRating, blackNewRating),
@@ -236,7 +165,7 @@ let tournamentReducer = (state, action) => {
       Js.Array.(
         state.roundList
         |> map(round =>
-             round |> map(match => match |> scoreByeMatch(newValue))
+             round |> map(match => match |> Match.scoreByeMatch(newValue))
            )
       );
     {...state, roundList};
@@ -246,24 +175,15 @@ let tournamentReducer = (state, action) => {
 
 type actionPlayer =
   | SetPlayer(Player.t)
-  | DelPlayer(id)
-  | SetMatchCount(id, int)
-  | SetRating(id, int)
+  | DelPlayer(string)
   | SetPlayers(Map.String.t(Player.t));
 
 let playersReducer = (state, action) => {
   Map.String.(
     switch (action) {
     | SetPlayer(player) => state->set(player.id, player)
-    | DelPlayer(id) =>
-      /*You should delete all avoid-pairs with the id too.*/
-      state->remove(id)
-    | SetMatchCount(id, matchCount) =>
-      let player = state->getExn(id);
-      state->set(id, Player.{...player, matchCount});
-    | SetRating(id, rating) =>
-      let player = state->getExn(id);
-      state->set(id, Player.{...player, rating});
+    /*You should delete all avoid-pairs with the id too.*/
+    | DelPlayer(id) => state->remove(id)
     | SetPlayers(state) => state
     }
   );

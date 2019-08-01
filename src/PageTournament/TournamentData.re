@@ -118,7 +118,7 @@ let make = (~children, ~tourneyId) => {
         /* Include players who have played matches but left the tournament,
            as well as players who are registered but havne't played yet. */
         let allTheIds =
-          rounds2Matches(~roundList, ())
+          Data.Match.rounds2Matches(~roundList, ())
           |> getAllPlayerIdsFromMatches
           |> Js.Array.concat(playerIds);
         /* If there are no ids, update the player state and exit early.*/
@@ -217,7 +217,11 @@ let make = (~children, ~tourneyId) => {
     Js.Array.(
       roundList |> length === 0
         ? true
-        : isRoundComplete(roundList, activePlayers, (roundList |> length) - 1)
+        : Data.Match.isRoundComplete(
+            roundList,
+            activePlayers,
+            (roundList |> length) - 1,
+          )
     );
   switch (loadStatus) {
   | TourneyAndPlayersAreLoaded =>

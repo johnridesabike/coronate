@@ -43,8 +43,8 @@ module ScoreTable = {
     let roundList = tourney.roundList;
     let tieBreakNames = Scoring.getTieBreakNames(tieBreaks);
     let standingTree =
-      Data.rounds2Matches(~roundList, ())
-      |> Data.Converters.matches2ScoreData
+      Match.rounds2Matches(~roundList, ())
+      |> Converters.matches2ScoreData
       |> Scoring.createStandingList(tieBreaks)
       |> Js.Array.filter(standing =>
            !Data.Player.isDummyId(standing.Scoring.id)
@@ -363,7 +363,7 @@ module Crosstable = {
     let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
     let {Data.Tournament.tieBreaks, Data.Tournament.roundList} = tourney;
     let scoreData =
-      Data.rounds2Matches(~roundList, ()) |> Data.Converters.matches2ScoreData;
+      Match.rounds2Matches(~roundList, ()) |> Data.Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(tieBreaks, scoreData);
 
     let getXScore = (player1Id, player2Id) =>

@@ -25,10 +25,10 @@ let genericDbReducer = (state, action) => {
 };
 
 type actionConfig =
-  | AddAvoidPair(Data.AvoidPairs.pair)
-  | DelAvoidPair(Data.AvoidPairs.pair)
+  | AddAvoidPair(Data.Config.AvoidPairs.pair)
+  | DelAvoidPair(Data.Config.AvoidPairs.pair)
   | DelAvoidSingle(string)
-  | SetAvoidPairs(Data.AvoidPairs.t)
+  | SetAvoidPairs(Data.Config.AvoidPairs.t)
   | SetByeValue(Data.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
@@ -45,7 +45,7 @@ let configReducer = (state, action) => {
       ...state,
       avoidPairs:
         state.avoidPairs
-        ->Set.reduce(Data.AvoidPairs.make(), (acc, (p1, p2)) =>
+        ->Set.reduce(Data.Config.AvoidPairs.make(), (acc, (p1, p2)) =>
             if (p1 === id || p2 === id) {
               acc;
             } else {

@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
-import * as Data$Coronate from "../Data.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../DemoData.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
+import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 
 var configData_000 = /* avoidPairs */Belt_Set.mergeMany(TestData$Coronate.config[/* avoidPairs */0], Belt_Set.toArray(DemoData$Coronate.config[/* avoidPairs */0]));
 
@@ -56,7 +56,7 @@ function configReducer(state, action) {
     case 2 : 
         var id = action[0];
         return /* record */[
-                /* avoidPairs */Belt_Set.reduce(state[/* avoidPairs */0], Data$Coronate.AvoidPairs[/* make */1](/* () */0), (function (acc, param) {
+                /* avoidPairs */Belt_Set.reduce(state[/* avoidPairs */0], Data_Config$Coronate.AvoidPairs[/* make */1](/* () */0), (function (acc, param) {
                         var p2 = param[1];
                         var p1 = param[0];
                         if (p1 === id || p2 === id) {

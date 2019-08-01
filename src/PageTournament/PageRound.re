@@ -148,19 +148,27 @@ module MatchRow = {
             )
           };
         let (whiteNewRating, blackNewRating) = newRatings;
-        playersDispatch(SetRating(white.id, whiteNewRating));
-        playersDispatch(SetRating(black.id, blackNewRating));
+        playersDispatch(SetPlayer({...white, rating: whiteNewRating}));
+        playersDispatch(SetPlayer({...black, rating: blackNewRating}));
         switch (match.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | NotSet =>
-          playersDispatch(SetMatchCount(white.id, white.matchCount + 1));
-          playersDispatch(SetMatchCount(black.id, black.matchCount + 1));
+          playersDispatch(
+            SetPlayer({...white, matchCount: white.matchCount + 1}),
+          );
+          playersDispatch(
+            SetPlayer({...black, matchCount: black.matchCount + 1}),
+          );
         /* If the result is being un-scored, decrement the matchCounts */
         | WhiteWon
         | BlackWon
         | Draw when result === NotSet =>
-          playersDispatch(SetMatchCount(white.id, white.matchCount - 1));
-          playersDispatch(SetMatchCount(black.id, black.matchCount - 1));
+          playersDispatch(
+            SetPlayer({...white, matchCount: white.matchCount - 1}),
+          );
+          playersDispatch(
+            SetPlayer({...black, matchCount: black.matchCount - 1}),
+          );
         | WhiteWon
         | BlackWon
         | Draw => ()
@@ -436,8 +444,13 @@ module Round = {
                 on the dispatch. */
              | None => ()
              | Some(player) =>
-               playersDispatch(SetMatchCount(id, player.matchCount - 1));
-               playersDispatch(SetRating(id, rating));
+               playersDispatch(
+                 SetPlayer({
+                   ...player,
+                   rating,
+                   matchCount: player.matchCount - 1,
+                 }),
+               )
              }
            );
       };

@@ -37,7 +37,8 @@ module WithRoundData =
     /* matches2ScoreData is relatively expensive*/
     let scoreData =
       React.useMemo1(
-        () => Converters.matches2ScoreData(rounds2Matches(~roundList, ())),
+        () =>
+          Converters.matches2ScoreData(Match.rounds2Matches(~roundList, ())),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds
@@ -45,7 +46,8 @@ module WithRoundData =
        Should this be memoized? */
     let unmatched =
       roundId === (roundList |> Js.Array.length) - 1
-        ? getUnmatched(roundList, activePlayers, roundId) : Map.String.empty;
+        ? Match.getUnmatched(roundList, activePlayers, roundId)
+        : Map.String.empty;
     let unmatchedCount = Map.String.size(unmatched);
     /* make a new list so as not to affect auto-pairing*/
     let unmatchedWithDummy =
@@ -116,7 +118,7 @@ module WithScoreInfo =
       };
     let avoidMap =
       avoidPairs->Option.mapWithDefault(Map.String.empty, x =>
-        x->Set.reduce(Map.String.empty, Data.AvoidPairs.reduceToMap)
+        x->Set.reduce(Map.String.empty, Config.AvoidPairs.reduceToMap)
       );
     let avoidList =
       switch (avoidMap->Map.String.get(player.id)) {

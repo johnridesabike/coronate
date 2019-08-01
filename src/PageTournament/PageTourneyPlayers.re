@@ -11,15 +11,19 @@ module Selecting = {
       let id = event->ReactEvent.Form.target##value;
       if (event->ReactEvent.Form.target##checked) {
         tourneyDispatch(
-          SetTourneyPlayers(
-            tourney.Tournament.playerIds |> Js.Array.concat([|id|]),
+          SetTournament(
+            Tournament.{
+              ...tourney,
+              playerIds: tourney.playerIds |> Js.Array.concat([|id|]),
+            },
           ),
         );
       } else {
         tourneyDispatch(
-          SetTourneyPlayers(
-            tourney.playerIds |> Js.Array.filter(pId => pId !== id),
-          ),
+          SetTournament({
+            ...tourney,
+            playerIds: tourney.playerIds |> Js.Array.filter(pId => pId !== id),
+          }),
         );
       };
     };
@@ -30,14 +34,19 @@ module Selecting = {
           className="button-micro"
           onClick={_ =>
             tourneyDispatch(
-              SetTourneyPlayers(players |> Map.String.keysToArray),
+              SetTournament({
+                ...tourney,
+                playerIds: players |> Map.String.keysToArray,
+              }),
             )
           }>
           {React.string("Select all")}
         </button>
         <button
           className="button-micro"
-          onClick={_ => tourneyDispatch(SetTourneyPlayers([||]))}>
+          onClick={_ =>
+            tourneyDispatch(SetTournament({...tourney, playerIds: [||]}))
+          }>
           {React.string("Select none")}
         </button>
       </div>
@@ -100,7 +109,7 @@ let hasHadBye = (matchList, playerId) => {
 
 module PlayerList = {
   [@react.component]
-  let make = (~players, ~tourneyDispatch, ~byeQueue) => {
+  let make = (~players, ~tourney, ~tourneyDispatch, ~byeQueue) => {
     <>
       {players
        |> Map.String.valuesToArray
@@ -116,7 +125,10 @@ module PlayerList = {
                   disabled={byeQueue |> Js.Array.includes(p.id)}
                   onClick={_ =>
                     tourneyDispatch(
-                      SetByeQueue(byeQueue |> Js.Array.concat([|p.id|])),
+                      SetTournament({
+                        ...tourney,
+                        byeQueue: byeQueue |> Js.Array.concat([|p.id|]),
+                      }),
                     )
                   }>
                   {React.string("Bye signup")}
@@ -139,7 +151,7 @@ let make = (~tournament) => {
   let {Tournament.playerIds, Tournament.roundList, Tournament.byeQueue} = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() => playerIds |> Js.Array.length === 0);
-  let matches = rounds2Matches(~roundList, ());
+  let matches = Match.rounds2Matches(~roundList, ());
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
@@ -158,7 +170,12 @@ let make = (~tournament) => {
             </tr>
           </thead>
           <tbody className="content">
-            <PlayerList byeQueue tourneyDispatch players=activePlayers />
+            <PlayerList
+              byeQueue
+              tourneyDispatch
+              tourney
+              players=activePlayers
+            />
           </tbody>
         </table>
       </Utils.Panel>
@@ -190,9 +207,11 @@ let make = (~tournament) => {
                     className="button-micro"
                     onClick={_ =>
                       tourneyDispatch(
-                        SetByeQueue(
-                          byeQueue |> Js.Array.filter(id => pId !== id),
-                        ),
+                        SetTournament({
+                          ...tourney,
+                          byeQueue:
+                            byeQueue |> Js.Array.filter(id => pId !== id),
+                        }),
                       )
                     }>
                     {React.string("Remove")}
