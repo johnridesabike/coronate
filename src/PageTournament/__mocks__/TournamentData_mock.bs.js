@@ -6,8 +6,8 @@ import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
-import * as Data_Match$Coronate from "../../Data/Data_Match.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
+import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.bs.js";
 
 function log2(num) {
   return Math.log(num) / Math.log(2.0);
@@ -59,7 +59,7 @@ function playersReducer(state, action) {
   }
 }
 
-function TournamentData_Mock(Props) {
+function TournamentData_mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
@@ -82,7 +82,7 @@ function TournamentData_Mock(Props) {
   var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
   var isItOver = roundList.length >= roundCount;
   var match$2 = roundList.length === 0;
-  var isNewRoundReady = match$2 ? true : Data_Match$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
+  var isNewRoundReady = match$2 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
   return Curry._1(children, /* record */[
               /* activePlayers */activePlayers,
               /* getPlayer */getPlayer,
@@ -96,7 +96,7 @@ function TournamentData_Mock(Props) {
             ]);
 }
 
-var make = TournamentData_Mock;
+var make = TournamentData_mock;
 
 export {
   log2 ,

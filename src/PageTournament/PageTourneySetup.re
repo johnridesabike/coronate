@@ -31,6 +31,7 @@ type inputs =
 [@react.component]
 let make = (~tournament) => {
   let {TournamentData.tourney, setTourney} = tournament;
+  let {Tournament.name, date, roundList} = tourney;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);
@@ -58,11 +59,7 @@ let make = (~tournament) => {
   let changeToOne = _ => {
     setTourney({
       ...tourney,
-      roundList:
-        Match.updateByeScores(
-          ~newValue=ByeValue.Full,
-          ~roundList=tourney.roundList,
-        ),
+      roundList: Match.updateByeScores(~newValue=ByeValue.Full, ~roundList),
     });
     Utils.alert("Bye scores updated to 1.");
   };
@@ -71,10 +68,7 @@ let make = (~tournament) => {
     setTourney({
       ...tourney,
       roundList:
-        Match.updateByeScores(
-          ~newValue=Data.ByeValue.Half,
-          ~roundList=tourney.roundList,
-        ),
+        Match.updateByeScores(~newValue=ByeValue.Half, ~roundList),
     });
     Utils.alert({js|Bye scores updated to ½.|js});
   };
@@ -107,7 +101,7 @@ let make = (~tournament) => {
            style={ReactDOMRe.Style.make(~textAlign="left", ())}
            ref={nameInput->ReactDOMRe.Ref.domRef}
            type_="text"
-           value={tourney.name}
+           value=name
            onChange={event =>
              setTourney({
                ...tourney,
@@ -124,9 +118,7 @@ let make = (~tournament) => {
      | Date
      | NotEditing =>
        <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
-         <span className="inputPlaceholder">
-           {React.string(tourney.name)}
-         </span>
+         <span className="inputPlaceholder"> {React.string(name)} </span>
          {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
            <Icons.Edit />
@@ -144,7 +136,7 @@ let make = (~tournament) => {
            className="caption-30"
            type_="date"
            ref={dateInput->ReactDOMRe.Ref.domRef}
-           value={makeDateInput(tourney.date)}
+           value={makeDateInput(date)}
            onChange=updateDate
          />
          {React.string(" ")}
@@ -156,7 +148,7 @@ let make = (~tournament) => {
      | Name
      | NotEditing =>
        <p className="caption-30">
-         <Utils.DateFormat date={tourney.date} />
+         <Utils.DateFormat date />
          {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Date)}>
            <Icons.Edit />

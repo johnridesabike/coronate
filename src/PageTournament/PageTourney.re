@@ -7,7 +7,7 @@ module Footer = {
   [@react.component]
   let make = (~tournament) => {
     let {roundCount, tourney, isItOver, isNewRoundReady} = tournament;
-    let roundList = tourney.roundList;
+    let {Tournament.roundList} = tourney;
     let (tooltipText, tooltipKind) =
       switch (isNewRoundReady, isItOver) {
       | (true, false) => (
@@ -30,9 +30,9 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Rounds: ")}
-          {roundList |> Js.Array.length |> string_of_int |> React.string}
+          {roundList |> Js.Array.length |> Js.Int.toString |> React.string}
           <small> {React.string(" out of ")} </small>
-          {roundCount |> string_of_int |> React.string}
+          {roundCount |> Js.Int.toString |> React.string}
         </label>
         <hr className="win__footer-divider" />
         <Utils.Notification
@@ -70,23 +70,26 @@ module Sidebar = {
       playersDispatch,
       setTourney,
     } = tournament;
-    let roundList = tourney.roundList;
-    let isComplete = Match.isRoundComplete(roundList, activePlayers);
+    let {Tournament.roundList} = tourney;
+    let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers);
     let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
       event->ReactEvent.Mouse.preventDefault;
       let confirmText =
         "All rounds have completed. Are you sure you want to begin a new "
         ++ "one?";
-      if (isItOver) {
-        if (Utils.confirm(confirmText)) {
-          setTourney({
-            ...tourney,
-            roundList: Match.addRound(roundList),
-          });
+      let confirmed =
+        if (isItOver) {
+          if (Utils.confirm(confirmText)) {
+            true;
+          } else {
+            false;
+          };
+        } else {
+          true;
         };
-      } else {
-        setTourney({...tourney, roundList: Match.addRound(roundList)});
+      if (confirmed) {
+        setTourney({...tourney, roundList: Rounds.addRound(roundList)});
       };
     };
 
@@ -96,7 +99,8 @@ module Sidebar = {
         ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */
-        switch (Utils.Array.last(roundList)) {
+        let lastRoundId = Rounds.getLastKey(roundList);
+        switch (roundList->Rounds.get(lastRoundId)) {
         | None => ()
         | Some(round) =>
           round
@@ -141,15 +145,12 @@ module Sidebar = {
                };
              })
         };
-        setTourney({
-          ...tourney,
-          roundList: Match.delLastRound(roundList),
-        });
-        if (Js.Array.length(roundList) === 1) {
+        setTourney({...tourney, roundList: Rounds.delLastRound(roundList)});
+        if (Js.Array.length(roundList) === 0) {
           /* Automatically remake round 1.*/
           setTourney({
             ...tourney,
-            roundList: Match.addRound(roundList),
+            roundList: Rounds.addRound(roundList),
           });
         };
       };
@@ -216,12 +217,12 @@ module Sidebar = {
         <ul className="center-on-close">
           {roundList
            |> Js.Array.mapi((_, id) =>
-                <li key={id |> string_of_int}>
+                <li key={Js.Int.toString(id)}>
                   <HashLink
-                    to_={basePath ++ "/round/" ++ string_of_int(id)}
+                    to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
                     onDragStart=noDraggy>
-                    {id + 1 |> string_of_int |> React.string}
-                    {id |> isComplete
+                    {id + 1 |> Js.Int.toString |> React.string}
+                    {isRoundComplete(id)
                        ? <span
                            className={Cn.make([
                              "sidebar__hide-on-close",
@@ -260,7 +261,7 @@ module Sidebar = {
         </li>
         <li style={ReactDOMRe.Style.make(~textAlign="center", ())}>
           <button
-            disabled={roundList |> Js.Array.length === 0}
+            disabled={Js.Array.length(roundList) === 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>

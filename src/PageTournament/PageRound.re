@@ -79,6 +79,7 @@ module MatchRow = {
       getPlayer,
       playersDispatch,
     } = tournament;
+    let {Tournament.roundList} = tourney;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
     let whitePlayer = getPlayer(match.Match.whiteId);
     let blackPlayer = getPlayer(match.blackId);
@@ -179,7 +180,7 @@ module MatchRow = {
               ~matchId=match.id,
               ~result,
               ~roundId,
-              ~roundList=tourney.roundList,
+              ~roundList,
               ~newRatings,
             ),
         });
@@ -195,11 +196,9 @@ module MatchRow = {
       className={Cn.make([
         className,
         selectedMatch->Option.mapWithDefault("", x =>
-          x
-          ->Js.Nullable.toOption
-          ->Option.mapWithDefault("", id =>
-              match.id === id ? "selected" : "buttons-on-hover"
-            )
+          x->Option.mapWithDefault("", id =>
+            match.id === id ? "selected" : "buttons-on-hover"
+          )
         ),
       ])}>
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
@@ -245,102 +244,94 @@ module MatchRow = {
           </option>
         </select>
       </td>
-      {isCompact
-         ? React.null
-         : <td className={Cn.make([Style.controls, "data__input"])}>
-             {selectedMatch->Option.mapWithDefault(React.null, x =>
-                x
-                ->Js.Nullable.toOption
-                ->Option.mapWithDefault(true, id => id !== match.id)
-                  ? <button
-                      className="button-ghost"
-                      title="Edit match"
-                      onClick={_ =>
-                        setSelectedMatch->Option.mapWithDefault((), x =>
-                          x(_ => Js.Nullable.return(match.id))
-                        )
-                      }>
-                      <Icons.Circle />
-                      <Utils.VisuallyHidden>
-                        {[|"Edit match for", whiteName, "versus", blackName|]
-                         |> Js.Array.joinWith(" ")
-                         |> React.string}
-                      </Utils.VisuallyHidden>
-                    </button>
-                  : <button
-                      className="button-ghost button-pressed"
-                      title="End editing match"
-                      onClick={_ =>
-                        setSelectedMatch->Option.mapWithDefault((), x =>
-                          x(_ => Js.Nullable.null)
-                        )
-                      }>
-                      <Icons.CheckCircle />
-                    </button>
-              )}
-             <button
-               className="button-ghost"
-               title="Open match information."
-               onClick={_ => setIsModalOpen(_ => true)}>
-               <Icons.Info />
-               <Utils.VisuallyHidden>
-                 {[|
-                    "View information for match:",
-                    whiteName,
-                    "versus",
-                    blackName,
-                  |]
-                  |> Js.Array.joinWith(" ")
-                  |> React.string}
-               </Utils.VisuallyHidden>
-             </button>
-             {switch (scoreData) {
-              | None => React.null
-              | Some(scoreData) =>
-                <Utils.Dialog
-                  isOpen=isModalOpen
-                  onDismiss={_ => setIsModalOpen(_ => false)}>
-                  <button
-                    className="button-micro button-primary"
-                    onClick={_ => setIsModalOpen(_ => false)}>
-                    {React.string("close")}
-                  </button>
-                  <p> {React.string(tourney.name)} </p>
-                  <p>
-                    {[|
-                       "Round ",
-                       Js.Int.toString(roundId + 1),
-                       " match ",
-                       Js.Int.toString(pos + 1),
-                     |]
+      {switch (isCompact, setSelectedMatch) {
+       | (false, None)
+       | (true, _) => React.null
+       | (false, Some(setSelectedMatch)) =>
+         <td className={Cn.make([Style.controls, "data__input"])}>
+           {selectedMatch->Option.mapWithDefault(true, x =>
+              x->Option.mapWithDefault(true, id => id !== match.id)
+            )
+              ? <button
+                  className="button-ghost"
+                  title="Edit match"
+                  onClick={_ => setSelectedMatch(_ => Some(match.id))}>
+                  <Icons.Circle />
+                  <Utils.VisuallyHidden>
+                    {[|"Edit match for", whiteName, "versus", blackName|]
                      |> Js.Array.joinWith(" ")
                      |> React.string}
-                  </p>
-                  <Utils.PanelContainer>
-                    <Utils.Panel>
-                      <PlayerMatchInfo
-                        player={getPlayer(match.whiteId)}
-                        origRating={match.whiteOrigRating}
-                        newRating={Some(match.whiteNewRating)}
-                        getPlayer
-                        scoreData
-                        players
-                      />
-                    </Utils.Panel>
-                    <Utils.Panel>
-                      <PlayerMatchInfo
-                        player={getPlayer(match.blackId)}
-                        origRating={match.blackOrigRating}
-                        newRating={Some(match.blackNewRating)}
-                        getPlayer
-                        scoreData
-                        players
-                      />
-                    </Utils.Panel>
-                  </Utils.PanelContainer>
-                </Utils.Dialog>
-              }}
-           </td>}
+                  </Utils.VisuallyHidden>
+                </button>
+              : <button
+                  className="button-ghost button-pressed"
+                  title="End editing match"
+                  onClick={_ => setSelectedMatch(_ => None)}>
+                  <Icons.CheckCircle />
+                </button>}
+           <button
+             className="button-ghost"
+             title="Open match information."
+             onClick={_ => setIsModalOpen(_ => true)}>
+             <Icons.Info />
+             <Utils.VisuallyHidden>
+               {[|
+                  "View information for match:",
+                  whiteName,
+                  "versus",
+                  blackName,
+                |]
+                |> Js.Array.joinWith(" ")
+                |> React.string}
+             </Utils.VisuallyHidden>
+           </button>
+           {switch (scoreData) {
+            | None => React.null
+            | Some(scoreData) =>
+              <Utils.Dialog
+                isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
+                <button
+                  className="button-micro button-primary"
+                  onClick={_ => setIsModalOpen(_ => false)}>
+                  {React.string("close")}
+                </button>
+                <p> {React.string(tourney.name)} </p>
+                <p>
+                  {[|
+                     "Round ",
+                     Js.Int.toString(roundId + 1),
+                     " match ",
+                     Js.Int.toString(pos + 1),
+                   |]
+                   |> Js.Array.joinWith(" ")
+                   |> React.string}
+                </p>
+                <Utils.PanelContainer>
+                  <Utils.Panel>
+                    <PlayerMatchInfo
+                      player={getPlayer(match.whiteId)}
+                      origRating={match.whiteOrigRating}
+                      newRating={Some(match.whiteNewRating)}
+                      getPlayer
+                      scoreData
+                      players
+                    />
+                  </Utils.Panel>
+                  <Utils.Panel>
+                    <PlayerMatchInfo
+                      player={getPlayer(match.blackId)}
+                      origRating={match.blackOrigRating}
+                      newRating={Some(match.blackNewRating)}
+                      getPlayer
+                      scoreData
+                      players
+                    />
+                  </Utils.Panel>
+                </Utils.PanelContainer>
+              </Utils.Dialog>
+            }}
+         </td>
+       }}
     </tr>;
   };
 };
@@ -351,15 +342,14 @@ module RoundTable = {
       (
         ~isCompact=false,
         ~roundId,
+        ~matches,
         ~selectedMatch=?,
         ~setSelectedMatch=?,
         ~tournament,
         ~scoreData=?,
       ) => {
-    let tourney = tournament.tourney;
-    let matchList = tourney.roundList->Array.getUnsafe(roundId);
     <table className=Style.table>
-      {matchList |> Js.Array.length === 0
+      {Js.Array.length(matches) === 0
          ? React.null
          : <>
              <caption className={isCompact ? "title-30" : "title-40"}>
@@ -401,7 +391,7 @@ module RoundTable = {
              </thead>
            </>}
       <tbody className="content">
-        {matchList
+        {matches
          |> Js.Array.mapi((match: Match.t, pos) =>
               <MatchRow
                 key={match.id}
@@ -429,12 +419,11 @@ module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
     let {TournamentData.tourney, players, setTourney, playersDispatch} = tournament;
-    let matchList = tourney.roundList->Array.get(roundId);
-    let (selectedMatch, setSelectedMatch) =
-      React.useState(() => Js.Nullable.null);
+    let {Tournament.roundList} = tourney;
+    let (selectedMatch, setSelectedMatch) = React.useState(() => None);
 
-    let unMatch = (matchId, matchList) => {
-      let match = findById(matchId, matchList);
+    let unMatch = (matchId, round) => {
+      let match = round |> findById(matchId);
       if (match.result !== NotSet) {
         /* checks if the match has been scored yet & resets the players'
            records */
@@ -457,16 +446,13 @@ module Round = {
              }
            );
       };
-      /* I don't actually know if this copy is necessary */
-      let roundList = tourney.roundList |> Js.Array.copy;
-      roundList->Array.set(
-        roundId,
-        roundList->Array.getExn(roundId)
-        |> Js.Array.filter((match: Match.t) => match.id !== matchId),
-      )
-      |> ignore;
-      setTourney({...tourney, roundList});
-      setSelectedMatch(_ => Js.Nullable.null);
+      let newRound =
+        round |> Js.Array.filter((match: Match.t) => match.id !== matchId);
+      setTourney({
+        ...tourney,
+        roundList: roundList->Rounds.set(roundId, newRound),
+      });
+      setSelectedMatch(_ => None);
     };
 
     let swapColors = matchId => {
@@ -477,35 +463,26 @@ module Round = {
       });
     };
 
-    let moveMatch = (matchId, direction, matchList) => {
-      let oldIndex =
-        matchList |> Js.Array.indexOf(findById(matchId, matchList));
+    let moveMatch = (matchId, direction, round) => {
+      let oldIndex = round |> Js.Array.indexOf(findById(matchId, round));
       let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
-      /* I don't actually know if this copy is necessary */
-      let roundList = tourney.roundList |> Js.Array.copy;
-      roundList->Array.set(
-        roundId,
-        roundList
-        ->Array.getExn(roundId)
-        ->Utils.Array.swap(oldIndex, newIndex),
-      )
-      |> ignore;
-      setTourney({...tourney, roundList});
+      let newRound = round->Utils.Array.swap(oldIndex, newIndex);
+      setTourney({
+        ...tourney,
+        roundList: roundList->Rounds.set(roundId, newRound),
+      });
     };
 
-    switch (matchList) {
+    switch (tourney.roundList->Rounds.get(roundId)) {
     | None => <Pages.NotFound />
-    | Some(matchList) =>
+    | Some(matches) =>
       <div className="content-area">
         <div className="toolbar">
           <button
             className="button-micro"
-            disabled={selectedMatch === Js.Nullable.null}
+            disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Js.Nullable.toOption
-              ->Option.map(x => unMatch(x, matchList))
-              ->ignore
+              selectedMatch->Option.map(x => unMatch(x, matches))->ignore
             }>
             <Icons.Trash />
             {React.string(" Unmatch")}
@@ -513,12 +490,9 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === Js.Nullable.null}
+            disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Js.Nullable.toOption
-              ->Option.map(x => swapColors(x))
-              ->ignore
+              selectedMatch->Option.map(x => swapColors(x))->ignore
             }>
             <Icons.Repeat />
             {React.string(" Swap colors")}
@@ -526,11 +500,10 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === Js.Nullable.null}
+            disabled={selectedMatch === None}
             onClick={_ =>
               selectedMatch
-              ->Js.Nullable.toOption
-              ->Option.map(x => moveMatch(x, -1, matchList))
+              ->Option.map(x => moveMatch(x, -1, matches))
               ->ignore
             }>
             <Icons.ArrowUp />
@@ -539,18 +512,15 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === Js.Nullable.null}
+            disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Js.Nullable.toOption
-              ->Option.map(x => moveMatch(x, 1, matchList))
-              ->ignore
+              selectedMatch->Option.map(x => moveMatch(x, 1, matches))->ignore
             }>
             <Icons.ArrowDown />
             {React.string(" Move down")}
           </button>
         </div>
-        {matchList |> Js.Array.length === 0
+        {Js.Array.length(matches) === 0
            ? <p> {React.string("No players matched yet.")} </p> : React.null}
         <RoundTable
           roundId
@@ -558,6 +528,7 @@ module Round = {
           setSelectedMatch
           tournament
           scoreData
+          matches
         />
       </div>
     };

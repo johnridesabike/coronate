@@ -166,8 +166,10 @@ module Stage = {
         ~setTourney,
         ~byeValue,
         ~tourney,
+        ~round,
       ) => {
     let (white, black) = stagedPlayers;
+    let {Tournament.roundList} = tourney;
     let stagedPlayersOption = Js.Nullable.(white->toOption, black->toOption);
     let (whiteOpt, blackOpt) = stagedPlayersOption;
     let noneAreSelected =
@@ -209,18 +211,17 @@ module Stage = {
     let match = _ => {
       switch (stagedPlayersOption) {
       | (Some(white), Some(black)) =>
-        let roundList =
-          Match.addMatches(
-            tourney.Tournament.roundList,
-            roundId,
-            [|
-              Match.manualPair(
-                (getPlayer(white), getPlayer(black)),
-                byeValue,
-              ),
-            |],
-          );
-        setTourney({...tourney, roundList});
+        let newRound =
+          round->Rounds.Round.addMatches([|
+            Match.manualPair(
+              (getPlayer(white), getPlayer(black)),
+              byeValue,
+            ),
+          |]);
+        setTourney({
+          ...tourney,
+          roundList: roundList->Rounds.set(roundId, newRound),
+        });
         setStagedPlayers(_ => (Js.Nullable.null, Js.Nullable.null));
       | (None, None)
       | (Some(_), None)
@@ -354,6 +355,8 @@ let make =
   let avoidPairs = config.avoidPairs;
   let byeValue = config.byeValue;
   let {TournamentData.tourney, activePlayers, players, getPlayer, setTourney} = tournament;
+  let {Tournament.roundList, byeQueue} = tourney;
+  let round = roundList->Rounds.get(roundId);
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
   let pairData =
@@ -387,86 +390,91 @@ let make =
     },
     (unmatchedWithDummy, p1, p2, setStagedPlayers),
   );
-  let autoPair = _ => {
-    /* I don't actually know if this copy is necessary */
-    let roundList =
-      Match.addMatches(
-        tourney.roundList,
-        roundId,
+  let autoPair = round => {
+    let newRound =
+      round->Rounds.Round.addMatches(
         Match.autoPair(
           ~pairData,
           ~byeValue=config.byeValue,
-          ~byeQueue=tourney.byeQueue,
+          ~byeQueue,
           ~playerMap=unmatched,
         ),
       );
-    setTourney({...tourney, roundList});
+    setTourney({
+      ...tourney,
+      roundList: roundList->Rounds.set(roundId, newRound),
+    });
   };
-  <div
-    className="content-area"
-    style={ReactDOMRe.Style.make(~width="720px", ())}>
-    <div className="toolbar">
-      <button
-        className="button-primary"
-        disabled={unmatchedCount === 0}
-        onClick=autoPair>
-        {React.string("Auto-pair unmatched players")}
-      </button>
-      {React.string(" ")}
-      <button onClick={_ => setIsModalOpen(_ => true)}>
-        {React.string("Add or remove players from the roster.")}
-      </button>
+  switch (round) {
+  | None => <div> {React.string("No round available.")} </div>
+  | Some(round) =>
+    <div
+      className="content-area"
+      style={ReactDOMRe.Style.make(~width="720px", ())}>
+      <div className="toolbar">
+        <button
+          className="button-primary"
+          disabled={unmatchedCount === 0}
+          onClick={_ => autoPair(round)}>
+          {React.string("Auto-pair unmatched players")}
+        </button>
+        {React.string(" ")}
+        <button onClick={_ => setIsModalOpen(_ => true)}>
+          {React.string("Add or remove players from the roster.")}
+        </button>
+      </div>
+      <Utils.PanelContainer>
+        <Utils.Panel>
+          <SelectList
+            setStagedPlayers
+            stagedPlayers
+            unmatched=unmatchedWithDummy
+            pairData
+          />
+        </Utils.Panel>
+        <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
+          <Stage
+            roundId
+            setStagedPlayers
+            stagedPlayers
+            pairData
+            setTourney
+            getPlayer
+            byeValue
+            tourney
+            round
+          />
+          <Utils.PanelContainer>
+            {[|p1, p2|]
+             |> Js.Array.map(id =>
+                  switch (Js.Nullable.toOption(id)) {
+                  | None => React.null
+                  | Some(playerId) =>
+                    <Utils.Panel key=playerId>
+                      <PlayerInfo
+                        player={getPlayer(playerId)}
+                        scoreData
+                        players
+                        avoidPairs
+                        origRating={getPlayer(playerId).rating}
+                        newRating=None
+                        getPlayer
+                      />
+                    </Utils.Panel>
+                  }
+                )
+             |> React.array}
+          </Utils.PanelContainer>
+        </Utils.Panel>
+      </Utils.PanelContainer>
+      <Utils.Dialog
+        isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
+        <button
+          className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
+          {React.string("Done")}
+        </button>
+        <PageTourneyPlayers.Selecting tourney setTourney />
+      </Utils.Dialog>
     </div>
-    <Utils.PanelContainer>
-      <Utils.Panel>
-        <SelectList
-          setStagedPlayers
-          stagedPlayers
-          unmatched=unmatchedWithDummy
-          pairData
-        />
-      </Utils.Panel>
-      <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
-        <Stage
-          roundId
-          setStagedPlayers
-          stagedPlayers
-          pairData
-          setTourney
-          getPlayer
-          byeValue
-          tourney
-        />
-        <Utils.PanelContainer>
-          {[|p1, p2|]
-           |> Js.Array.map(id =>
-                switch (Js.Nullable.toOption(id)) {
-                | None => React.null
-                | Some(playerId) =>
-                  <Utils.Panel key=playerId>
-                    <PlayerInfo
-                      player={getPlayer(playerId)}
-                      scoreData
-                      players
-                      avoidPairs
-                      origRating={getPlayer(playerId).rating}
-                      newRating=None
-                      getPlayer
-                    />
-                  </Utils.Panel>
-                }
-              )
-           |> React.array}
-        </Utils.PanelContainer>
-      </Utils.Panel>
-    </Utils.PanelContainer>
-    <Utils.Dialog
-      isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
-      <button
-        className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
-        {React.string("Done")}
-      </button>
-      <PageTourneyPlayers.Selecting tourney setTourney />
-    </Utils.Dialog>
-  </div>;
+  };
 };

@@ -38,16 +38,24 @@ module WithRoundData =
     let scoreData =
       React.useMemo1(
         () =>
-          Converters.matches2ScoreData(Match.rounds2Matches(~roundList, ())),
+          Converters.matches2ScoreData(
+            Rounds.rounds2Matches(~roundList, ()),
+          ),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds
        don't get to add new players.
        Should this be memoized? */
+    let round = roundList->Rounds.get(roundId);
+    let isThisTheLastRound = roundId === Rounds.getLastKey(roundList);
     let unmatched =
-      roundId === (roundList |> Js.Array.length) - 1
-        ? Match.getUnmatched(roundList, activePlayers, roundId)
-        : Map.String.empty;
+      switch (round, isThisTheLastRound) {
+      | (Some(round), true) =>
+        let matched = Rounds.Round.getMatched(round);
+        activePlayers->Map.String.removeMany(matched);
+      | (None, _)
+      | (Some(_), false) => Map.String.empty
+      };
     let unmatchedCount = Map.String.size(unmatched);
     /* make a new list so as not to affect auto-pairing*/
     let unmatchedWithDummy =

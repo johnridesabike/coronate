@@ -39,11 +39,10 @@ module Style = {
 module ScoreTable = {
   [@react.component]
   let make = (~isCompact=false, ~tourney, ~getPlayer, ~title) => {
-    let tieBreaks = tourney.Tournament.tieBreaks;
-    let roundList = tourney.roundList;
+    let {Tournament.tieBreaks, roundList} = tourney;
     let tieBreakNames = Scoring.getTieBreakNames(tieBreaks);
     let standingTree =
-      Match.rounds2Matches(~roundList, ())
+      Rounds.rounds2Matches(~roundList, ())
       |> Converters.matches2ScoreData
       |> Scoring.createStandingList(tieBreaks)
       |> Js.Array.filter(standing =>
@@ -374,7 +373,7 @@ module Crosstable = {
     let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
     let {Data.Tournament.tieBreaks, Data.Tournament.roundList} = tourney;
     let scoreData =
-      Match.rounds2Matches(~roundList, ())
+      Rounds.rounds2Matches(~roundList, ())
       |> Data.Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(tieBreaks, scoreData);
 

@@ -25,7 +25,8 @@
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(reason-react|@[a-z\\-]+/bs-[a-z\\-]+|re-classnames|bs-[a-z\\-]+)|@aantron/repromise/)'",
     "test:coverage": "npm run test -- --coverage",
     "re:build": "bsb -make-world -clean-world",
-    "re:watch": "bsb -make-world -clean-world -w"
+    "re:watch": "bsb -make-world -clean-world -w",
+    "re:clean": "bsb -clean-world"
   },
   "dependencies": {
     "@aantron/repromise": "^0.6.1",

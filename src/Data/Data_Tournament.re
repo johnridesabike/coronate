@@ -6,7 +6,7 @@ type t = {
   id: string,
   name: string,
   playerIds: array(string),
-  roundList: array(array(Data_Match.t)),
+  roundList: Data_Rounds.t,
   tieBreaks: array(int),
 };
 /*
@@ -21,7 +21,7 @@ let decode = json =>
     id: json |> field("id", string),
     name: json |> field("name", string),
     playerIds: json |> field("playerIds", array(string)),
-    roundList: json |> field("roundList", array(array(Data_Match.decode))),
+    roundList: json |> field("roundList", Data_Rounds.decode),
     tieBreaks: json |> field("tieBreaks", array(int)),
   };
 let encode = data =>
@@ -32,7 +32,7 @@ let encode = data =>
       ("id", data.id |> string),
       ("name", data.name |> string),
       ("playerIds", data.playerIds |> stringArray),
-      ("roundList", data.roundList |> array(array(Data_Match.encode))),
+      ("roundList", data.roundList |> Data_Rounds.encode),
       ("tieBreaks", data.tieBreaks |> array(int)),
     ])
   );

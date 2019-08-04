@@ -142,7 +142,7 @@ let make = (~tournament) => {
   let {Tournament.playerIds, Tournament.roundList, Tournament.byeQueue} = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() => playerIds |> Js.Array.length === 0);
-  let matches = Match.rounds2Matches(~roundList, ());
+  let matches = Rounds.rounds2Matches(~roundList, ());
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
