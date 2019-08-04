@@ -20,12 +20,11 @@ module Array = {
   let swap = (arr, idx1, idx2) => {
     switch (arr->Array.get(idx1), arr->Array.get(idx2)) {
     | (Some(item1), Some(item2)) =>
-      arr->Array.set(idx1, item2) |> ignore;
-      arr->Array.set(idx2, item1) |> ignore;
+      arr->Array.set(idx1, item2)->ignore;
+      arr->Array.set(idx2, item1)->ignore;
       arr;
-    | (None, None)
-    | (Some(_), None)
-    | (None, Some(_)) => arr
+    | (None, _)
+    | (_, None) => arr
     };
   };
 };
@@ -352,8 +351,8 @@ Numeral.registerFormat(
       stringedWhole ++ fraction;
     },
     "regexps": {
-      "format": [%re "/(1\/2)/"],
-      "unformat": [%re "/(1\/2)/"],
+      "format": [%re "/(1\\/2)/"],
+      "unformat": [%re "/(1\\/2)/"],
     },
     /* This doesn't do anything currently */
     "unformat": value => Js.Float.fromString(value),

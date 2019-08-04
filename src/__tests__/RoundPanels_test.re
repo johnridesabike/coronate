@@ -22,7 +22,7 @@ describe("Tabs auto-change correctly.", () => {
       </BattleForGothamCityRound>,
     );
   let selectTab =
-    page |> getByText(~matcher=`RegExp([%bs.re "/unmatched players \(/i"]));
+    page |> getByText(~matcher=`RegExp([%bs.re "/unmatched players \\(/i"]));
   let matchesTab =
     page |> getByText(~matcher=`RegExp([%bs.re "/^matches$/i"]));
 

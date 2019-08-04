@@ -1,4 +1,22 @@
 open Belt;
+module ByeValue = {
+  type t =
+    | Full
+    | Half;
+  let toFloat = data =>
+    switch (data) {
+    | Full => 1.0
+    | Half => 0.5
+    };
+  let fromFloat = json =>
+    switch (json) {
+    | 1.0 => Full
+    | 0.5 => Half
+    | _ => Full
+    };
+  let encode = data => data |> toFloat |> Json.Encode.float;
+  let decode = json => json |> Json.Decode.float |> fromFloat;
+};
 module AvoidPairs = {
   module T =
     Id.MakeComparable({
@@ -22,6 +40,7 @@ module AvoidPairs = {
   type t = Set.t(T.t, T.identity);
   type pair = T.t;
   let make = () => Set.make(~id=(module T));
+  let fromArray = Set.fromArray(~id=(module T));
   let decode = json =>
     Json.Decode.(json |> array(pair(string, string)))
     ->Set.fromArray(~id=(module T));
@@ -48,20 +67,20 @@ module AvoidPairs = {
 
 type t = {
   avoidPairs: AvoidPairs.t,
-  byeValue: Data_ByeValue.t,
+  byeValue: ByeValue.t,
   lastBackup: Js.Date.t,
 };
 let decode = json =>
   Json.Decode.{
     avoidPairs: json |> field("avoidPairs", AvoidPairs.decode),
-    byeValue: json |> field("byeValue", Data_ByeValue.decode),
+    byeValue: json |> field("byeValue", ByeValue.decode),
     lastBackup: json |> field("lastBackup", date),
   };
 let encode = data =>
   Json.Encode.(
     object_([
       ("avoidPairs", data.avoidPairs |> AvoidPairs.encode),
-      ("byeValue", data.byeValue |> Data_ByeValue.encode),
+      ("byeValue", data.byeValue |> ByeValue.encode),
       ("lastBackup", data.lastBackup |> date),
     ])
   );

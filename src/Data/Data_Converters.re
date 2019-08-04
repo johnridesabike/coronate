@@ -1,10 +1,8 @@
 open Belt;
-
 /*
   This module is designed to convert types from the `Data` module to types to
-  be used in the `Pairing` and `Scoring` module.
+  be used in the `Pairing` and `Scoring` modules.
  */
-
 let makeScoreData =
     (
       ~existingData,

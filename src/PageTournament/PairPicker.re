@@ -13,8 +13,6 @@ module SelectList = {
   [@react.component]
   let make = (~pairData, ~stagedPlayers, ~setStagedPlayers, ~unmatched) => {
     let (p1, p2) = stagedPlayers;
-    let stagePlayersOption = Js.Nullable.(p1->toOption, p2->toOption);
-
     let initialTable =
       unmatched->Map.String.valuesToArray
       |> Js.Array.map(player => {player, ideal: 0.0});
@@ -24,10 +22,10 @@ module SelectList = {
         ~column=sortByName,
         ~isDescending=false,
       );
-    let isNullSelected = [|p1, p2|] |> Js.Array.includes(Js.Nullable.null);
+    let isNullSelected = [|p1, p2|] |> Js.Array.includes(None);
     let isOnePlayerSelected = p1 !== p2 && isNullSelected;
     let isPlayerSelectable = id => {
-      switch (stagePlayersOption) {
+      switch (stagedPlayers) {
       | (Some(_), Some(_)) => false
       | (Some(p1), None) => p1 !== id
       | (None, Some(p2)) => p2 !== id
@@ -39,7 +37,7 @@ module SelectList = {
       () => {
         let calcIdealOrNot = player => {
           let selectedId =
-            switch (stagePlayersOption) {
+            switch (stagedPlayers) {
             | (Some(id), None) => Some(id)
             | (None, Some(id)) => Some(id)
             | (None, None)
@@ -72,21 +70,14 @@ module SelectList = {
         sortedDispatch(Hooks.SetTable(table));
         None;
       },
-      (unmatched, pairData, sortedDispatch, stagePlayersOption),
+      (unmatched, pairData, sortedDispatch, stagedPlayers),
     );
     /* only use unmatched players if this is the last round. */
     let selectPlayer = id => {
-      switch (stagePlayersOption) {
-      | (None, Some(p2)) =>
-        setStagedPlayers(_ =>
-          (Js.Nullable.return(id), Js.Nullable.return(p2))
-        )
-      | (Some(p1), None) =>
-        setStagedPlayers(_ =>
-          (Js.Nullable.return(p1), Js.Nullable.return(id))
-        )
-      | (None, None) =>
-        setStagedPlayers(_ => (Js.Nullable.return(id), Js.Nullable.null))
+      switch (stagedPlayers) {
+      | (None, Some(p2)) => setStagedPlayers(_ => (Some(id), Some(p2)))
+      | (Some(p1), None) => setStagedPlayers(_ => (Some(p1), Some(id)))
+      | (None, None) => setStagedPlayers(_ => (Some(id), None))
       | (Some(_), Some(_)) => ()
       };
     };
@@ -170,24 +161,22 @@ module Stage = {
       ) => {
     let (white, black) = stagedPlayers;
     let {Tournament.roundList} = tourney;
-    let stagedPlayersOption = Js.Nullable.(white->toOption, black->toOption);
-    let (whiteOpt, blackOpt) = stagedPlayersOption;
     let noneAreSelected =
-      switch (stagedPlayersOption) {
+      switch (stagedPlayers) {
       | (None, None) => true
       | (Some(_), Some(_))
       | (Some(_), None)
       | (None, Some(_)) => false
       };
     let twoAreSelected =
-      switch (stagedPlayersOption) {
+      switch (stagedPlayers) {
       | (Some(_), Some(_)) => true
       | (None, None)
       | (Some(_), None)
       | (None, Some(_)) => false
       };
     let whiteName =
-      switch (whiteOpt) {
+      switch (white) {
       | None => ""
       | Some(player) =>
         getPlayer(player).Player.firstName
@@ -195,7 +184,7 @@ module Stage = {
         ++ getPlayer(player).lastName
       };
     let blackName =
-      switch (blackOpt) {
+      switch (black) {
       | None => ""
       | Some(player) =>
         getPlayer(player).firstName ++ " " ++ getPlayer(player).lastName
@@ -203,13 +192,13 @@ module Stage = {
 
     let unstage = color => {
       switch (color) {
-      | White => setStagedPlayers(((_, p2)) => (Js.Nullable.null, p2))
-      | Black => setStagedPlayers(((p1, _)) => (p1, Js.Nullable.null))
+      | White => setStagedPlayers(((_, p2)) => (None, p2))
+      | Black => setStagedPlayers(((p1, _)) => (p1, None))
       };
     };
 
     let match = _ => {
-      switch (stagedPlayersOption) {
+      switch (stagedPlayers) {
       | (Some(white), Some(black)) =>
         let newRound =
           round->Rounds.Round.addMatches([|
@@ -218,11 +207,11 @@ module Stage = {
               byeValue,
             ),
           |]);
-        setTourney({
-          ...tourney,
-          roundList: roundList->Rounds.set(roundId, newRound),
-        });
-        setStagedPlayers(_ => (Js.Nullable.null, Js.Nullable.null));
+        switch (roundList->Rounds.set(roundId, newRound)) {
+        | Some(roundList) => setTourney({...tourney, roundList})
+        | None => ()
+        };
+        setStagedPlayers(_ => (None, None));
       | (None, None)
       | (Some(_), None)
       | (None, Some(_)) => ()
@@ -230,7 +219,7 @@ module Stage = {
     };
 
     let matchIdeal = {
-      switch (stagedPlayersOption) {
+      switch (stagedPlayers) {
       | (Some(p1), Some(p2)) =>
         switch (Map.String.(pairData->get(p1), pairData->get(p2))) {
         | (Some(p1Data), Some(p2Data)) =>
@@ -251,7 +240,7 @@ module Stage = {
       <div className="content">
         <p>
           {React.string("White: ")}
-          {switch (whiteOpt) {
+          {switch (white) {
            | Some(_) =>
              <>
                {React.string(whiteName ++ " ")}
@@ -268,7 +257,7 @@ module Stage = {
         </p>
         <p>
           {React.string("Black: ")}
-          {switch (blackOpt) {
+          {switch (black) {
            | Some(_) =>
              <>
                {React.string(blackName ++ " ")}
@@ -348,8 +337,7 @@ let make =
       ~unmatchedCount,
       ~unmatchedWithDummy,
     ) => {
-  let (stagedPlayers, setStagedPlayers) =
-    React.useState(() => (Js.Nullable.null, Js.Nullable.null));
+  let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None));
   let (p1, p2) = stagedPlayers;
   let (config, _) = Db.useConfig();
   let avoidPairs = config.avoidPairs;
@@ -370,19 +358,19 @@ let make =
   /* Clean staged players if they were removed from the tournament */
   React.useEffect4(
     () => {
-      switch (p1->Js.Nullable.toOption) {
+      switch (p1) {
       | None => ()
       | Some(p1) =>
         switch (unmatchedWithDummy->Map.String.get(p1)) {
-        | None => setStagedPlayers(((_, p2)) => (Js.Nullable.null, p2))
+        | None => setStagedPlayers(((_, p2)) => (None, p2))
         | Some(_) => ()
         }
       };
-      switch (p2->Js.Nullable.toOption) {
+      switch (p2) {
       | None => ()
       | Some(p2) =>
         switch (unmatchedWithDummy->Map.String.get(p2)) {
-        | None => setStagedPlayers(((p1, _)) => (p1, Js.Nullable.null))
+        | None => setStagedPlayers(((p1, _)) => (p1, None))
         | Some(_) => ()
         }
       };
@@ -400,10 +388,10 @@ let make =
           ~playerMap=unmatched,
         ),
       );
-    setTourney({
-      ...tourney,
-      roundList: roundList->Rounds.set(roundId, newRound),
-    });
+    switch (roundList->Rounds.set(roundId, newRound)) {
+    | Some(roundList) => setTourney({...tourney, roundList})
+    | None => ()
+    };
   };
   switch (round) {
   | None => <div> {React.string("No round available.")} </div>
@@ -447,7 +435,7 @@ let make =
           <Utils.PanelContainer>
             {[|p1, p2|]
              |> Js.Array.map(id =>
-                  switch (Js.Nullable.toOption(id)) {
+                  switch (id) {
                   | None => React.null
                   | Some(playerId) =>
                     <Utils.Panel key=playerId>

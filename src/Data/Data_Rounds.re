@@ -2,7 +2,8 @@
    The round structure is currently just nested arrays. Because arrays are
    awkward to manipulate, the functions are consolidated here. In the future,
    I may replace the arrays with a different data type, so hopefully it will be
-   simple to rewrite this module if necessary (versus rewriting every component).
+   simple to rewrite this module if necessary (versus rewriting every
+   component).
  */
 open Belt;
 module Round = {
@@ -20,6 +21,14 @@ module Round = {
       acc->Array.concat([|whiteId, blackId|])
     );
   };
+  let getMatchById = (round: t, id) => round->Array.getBy(x => x.id === id);
+  let removeMatchById = (round: t, id) => round->Array.keep(x => x.id !== id);
+  let setMatch = (round: t, match) => {
+    round
+    ->Array.getIndexBy(({id}) => id === match.Data_Match.id)
+    ->Option.map(index => round->Array.set(index, match))
+    ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None);
+  };
 };
 
 type t = array(Round.t);
@@ -28,11 +37,16 @@ let encode = data => data |> Json.Encode.(array(Round.encode));
 let decode = json => json |> Json.Decode.(array(Round.decode));
 
 let getLastKey = (rounds: t) => Array.length(rounds) - 1;
-let get = (rounds: t, key) => rounds->Array.get(key);
+let get = (rounds: t, key): option(Round.t) => rounds->Array.get(key);
 let set = (rounds: t, key, round) => {
-  rounds->Array.setExn(key, round)
-  rounds;
+  let wasSuccessful = rounds->Array.set(key, round);
+  wasSuccessful ? Some(rounds) : None;
 };
+let setMatch = (rounds: t, key, match): option(t) =>
+  rounds
+  ->get(key)
+  ->Option.flatMap(__x => Round.setMatch(__x, match))
+  ->Option.flatMap(set(rounds, key));
 
 /*
  This flattens a list of rounds to a list of matches.
@@ -67,7 +81,10 @@ let isRoundComplete = (roundList, players, roundId) =>
   | None => true
   };
 
-let addRound = roundList => roundList |> Js.Array.concat([|[||]|]);
+let addRound = (roundList: t): t => roundList |> Js.Array.concat([|[||]|]);
 
-let delLastRound = roundList =>
+let delLastRound = (roundList: t): t =>
   roundList |> Js.Array.slice(~start=0, ~end_=-1);
+
+let updateByeScores = (rounds: t, newValue): t =>
+  rounds |> Js.Array.map(Js.Array.map(Data_Match.scoreByeMatch(newValue)));

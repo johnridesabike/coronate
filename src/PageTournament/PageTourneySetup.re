@@ -1,10 +1,10 @@
+open Utils.Router;
+open Data;
+open Belt;
 /* Why are dates so complicated?!?
    Note to future self & other maintainers: getDate() begins at 1, and
    getMonth() begins at 0. An HTML date input requires that the month begins at
    1 and the JS Date() object requires that the month begins at 0. */
-open Utils.Router;
-open Data;
-open Belt;
 let makeDateInput = date => {
   open Js.Date;
   let year = date |> getFullYear |> Js.Float.toString;
@@ -40,15 +40,16 @@ let make = (~tournament) => {
       myref
       ->React.Ref.current
       ->Js.Nullable.toOption
-      ->Option.map(x => x->Element.unsafeAsHtmlElement->HtmlElement.focus)
+      ->Option.flatMap(Element.asHtmlElement)
+      ->Option.map(HtmlElement.focus)
       ->ignore
     );
 
   React.useEffect1(
     () => {
       switch (editing) {
-      | Name => nameInput->focusRef
-      | Date => dateInput->focusRef
+      | Name => focusRef(nameInput)
+      | Date => focusRef(dateInput)
       | NotEditing => ()
       };
       None;
@@ -59,7 +60,7 @@ let make = (~tournament) => {
   let changeToOne = _ => {
     setTourney({
       ...tourney,
-      roundList: Match.updateByeScores(~newValue=ByeValue.Full, ~roundList),
+      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
     });
     Utils.alert("Bye scores updated to 1.");
   };
@@ -67,8 +68,7 @@ let make = (~tournament) => {
   let changeToOneHalf = _ => {
     setTourney({
       ...tourney,
-      roundList:
-        Match.updateByeScores(~newValue=ByeValue.Half, ~roundList),
+      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
     });
     Utils.alert({js|Bye scores updated to ½.|js});
   };
@@ -99,7 +99,7 @@ let make = (~tournament) => {
          <input
            className="display-20"
            style={ReactDOMRe.Style.make(~textAlign="left", ())}
-           ref={nameInput->ReactDOMRe.Ref.domRef}
+           ref={ReactDOMRe.Ref.domRef(nameInput)}
            type_="text"
            value=name
            onChange={event =>
@@ -135,7 +135,7 @@ let make = (~tournament) => {
          <input
            className="caption-30"
            type_="date"
-           ref={dateInput->ReactDOMRe.Ref.domRef}
+           ref={ReactDOMRe.Ref.domRef(dateInput)}
            value={makeDateInput(date)}
            onChange=updateDate
          />

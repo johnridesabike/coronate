@@ -49,5 +49,8 @@
     "refmt": 3,
     "ignored-dirs": [
         "node_modules"
-    ]
+    ],
+    "warnings": {
+        "number": "-105"
+    }
 }

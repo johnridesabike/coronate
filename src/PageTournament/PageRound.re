@@ -66,7 +66,8 @@ module MatchRow = {
         ~pos,
         ~match,
         ~roundId,
-        ~selectedMatch,
+        /* Default to `None` so there aren't nested `option`s */
+        ~selectedMatch=None,
         ~setSelectedMatch,
         ~scoreData,
         ~tournament,
@@ -173,17 +174,11 @@ module MatchRow = {
         | BlackWon
         | Draw => ()
         };
-        setTourney({
-          ...tourney,
-          roundList:
-            Match.setResult(
-              ~matchId=match.id,
-              ~result,
-              ~roundId,
-              ~roundList,
-              ~newRatings,
-            ),
-        });
+        let newMatch = {...match, result, whiteNewRating, blackNewRating};
+        roundList
+        ->Rounds.setMatch(roundId, newMatch)
+        ->Option.map(roundList => setTourney({...tourney, roundList}))
+        ->ignore;
       };
     };
     let setMatchResultBlur = event => {
@@ -195,10 +190,8 @@ module MatchRow = {
     <tr
       className={Cn.make([
         className,
-        selectedMatch->Option.mapWithDefault("", x =>
-          x->Option.mapWithDefault("", id =>
-            match.id === id ? "selected" : "buttons-on-hover"
-          )
+        selectedMatch->Option.mapWithDefault("", id =>
+          match.id === id ? "selected" : "buttons-on-hover"
         ),
       ])}>
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
@@ -249,9 +242,7 @@ module MatchRow = {
        | (true, _) => React.null
        | (false, Some(setSelectedMatch)) =>
          <td className={Cn.make([Style.controls, "data__input"])}>
-           {selectedMatch->Option.mapWithDefault(true, x =>
-              x->Option.mapWithDefault(true, id => id !== match.id)
-            )
+           {selectedMatch->Option.mapWithDefault(true, id => id !== match.id)
               ? <button
                   className="button-ghost"
                   title="Edit match"
@@ -343,7 +334,8 @@ module RoundTable = {
         ~isCompact=false,
         ~roundId,
         ~matches,
-        ~selectedMatch=?,
+        /* Default to `None` so there aren't nested `option`s */
+        ~selectedMatch=None,
         ~setSelectedMatch=?,
         ~tournament,
         ~scoreData=?,
@@ -412,9 +404,6 @@ module RoundTable = {
   };
 };
 
-let findById = (id, list) =>
-  (list |> Js.Array.filter((x: Match.t) => x.id === id))->Array.getUnsafe(0);
-
 module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
@@ -423,10 +412,10 @@ module Round = {
     let (selectedMatch, setSelectedMatch) = React.useState(() => None);
 
     let unMatch = (matchId, round) => {
-      let match = round |> findById(matchId);
-      if (match.result !== NotSet) {
-        /* checks if the match has been scored yet & resets the players'
-           records */
+      switch (round->Rounds.Round.getMatchById(matchId)) {
+      /* checks if the match has been scored yet & resets the players'
+         records */
+      | Some(match) when match.result !== NotSet =>
         [|
           (match.whiteId, match.whiteOrigRating),
           (match.blackId, match.blackOrigRating),
@@ -444,33 +433,42 @@ module Round = {
                  ),
                )
              }
-           );
+           )
+      | None
+      | Some(_) => ()
       };
-      let newRound =
-        round |> Js.Array.filter((match: Match.t) => match.id !== matchId);
-      setTourney({
-        ...tourney,
-        roundList: roundList->Rounds.set(roundId, newRound),
-      });
+      let newRound = round->Rounds.Round.removeMatchById(matchId);
+      switch (roundList->Rounds.set(roundId, newRound)) {
+      | Some(roundList) => setTourney({...tourney, roundList})
+      | None => ()
+      };
       setSelectedMatch(_ => None);
     };
 
-    let swapColors = matchId => {
-      setTourney({
-        ...tourney,
-        roundList:
-          Match.swapColors(~matchId, ~roundId, ~roundList=tourney.roundList),
-      });
+    let swapColors = (matchId, round) => {
+      switch (round->Rounds.Round.getMatchById(matchId)) {
+      | Some(match) =>
+        let newMatch = Match.swapColors(match);
+        roundList
+        ->Rounds.setMatch(roundId, newMatch)
+        ->Option.map(roundList => setTourney({...tourney, roundList}))
+        ->ignore;
+      | None => ()
+      };
     };
 
     let moveMatch = (matchId, direction, round) => {
-      let oldIndex = round |> Js.Array.indexOf(findById(matchId, round));
-      let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
-      let newRound = round->Utils.Array.swap(oldIndex, newIndex);
-      setTourney({
-        ...tourney,
-        roundList: roundList->Rounds.set(roundId, newRound),
-      });
+      switch (round->Rounds.Round.getMatchById(matchId)) {
+      | None => ()
+      | Some(match) =>
+        let oldIndex = round |> Js.Array.indexOf(match);
+        let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
+        let newRound = round->Utils.Array.swap(oldIndex, newIndex);
+        switch (roundList->Rounds.set(roundId, newRound)) {
+        | Some(roundList) => setTourney({...tourney, roundList})
+        | None => ()
+        };
+      };
     };
 
     switch (tourney.roundList->Rounds.get(roundId)) {
@@ -492,7 +490,9 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(x => swapColors(x))->ignore
+              selectedMatch
+              ->Option.map(__x => swapColors(__x, matches))
+              ->ignore
             }>
             <Icons.Repeat />
             {React.string(" Swap colors")}

@@ -279,9 +279,9 @@ let make = (~children, ~className) => {
       Webapi.Dom.(
         document
         ->Document.asHtmlDocument
-        ->Option.map(x => x->HtmlDocument.setTitle(formatTitle(title)))
-      )
-      |> ignore;
+        ->Option.map(__x => HtmlDocument.setTitle(__x, formatTitle(title)))
+        ->ignore
+      );
       None;
     },
     [|title|],

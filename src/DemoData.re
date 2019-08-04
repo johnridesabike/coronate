@@ -4,14 +4,11 @@ let config =
   Config.{
     byeValue: ByeValue.Full,
     avoidPairs:
-      Set.fromArray(
-        [|
-          ("BarbaraGordon_cL6SpI2", "JamesGordon_1ts9xICT3"),
-          ("Joker_v0z2416fpAZ9o2c", "HarleyQuinn_-10-02VPH"),
-          ("HelenaWayne_fE6O0DJcE", "BruceWayne_lv_ZsUHTU9"),
-        |],
-        ~id=(module AvoidPairs.T),
-      ),
+      AvoidPairs.fromArray([|
+        ("BarbaraGordon_cL6SpI2", "JamesGordon_1ts9xICT3"),
+        ("Joker_v0z2416fpAZ9o2c", "HarleyQuinn_-10-02VPH"),
+        ("HelenaWayne_fE6O0DJcE", "BruceWayne_lv_ZsUHTU9"),
+      |]),
     lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
   };
 

@@ -1,3 +1,4 @@
+open Belt;
 module Result = {
   type t =
     | WhiteWon
@@ -77,7 +78,7 @@ let encode = data =>
 
 let byeResultForPlayerColor = (byeValue, color) =>
   switch (byeValue) {
-  | Data_ByeValue.Half => Result.Draw
+  | Data_Config.ByeValue.Half => Result.Draw
   | Full =>
     switch (color) {
     | Result.White => WhiteWon
@@ -103,7 +104,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   /* the pairData includes any players who were already matched. We need to
      only include the specified players. */
   let filteredData =
-    Belt.Map.String.(
+    Map.String.(
       pairData->reduce(empty, (acc, key, datum) =>
         if (playerMap->has(key)) {
           acc->set(key, datum);
@@ -153,76 +154,25 @@ let manualPair = ((white, black), byeValue) => {
   |> scoreByeMatch(byeValue);
 };
 
-let setResult = (~matchId, ~result, ~roundId, ~roundList, ~newRatings) => {
-  /* This is a lot of nested values, but right now I'm not sure what the
-     easier way of doing this is*/
-  /* I don't actually know if this copy is necessary */
-  let (whiteNewRating, blackNewRating) = newRatings;
-  let roundList = Js.Array.copy(roundList);
-  Js.Array.(
-    roundList->unsafe_set(roundId, roundList->unsafe_get(roundId) |> copy)
-  );
-  let matchIndex =
-    Js.Array.(
-      roundList->unsafe_get(roundId)
-      |> findIndex(match => match.id === matchId)
-    );
-  let match = Belt.Array.(roundList->getExn(roundId)->getExn(matchIndex));
-  Belt.Array.(
-    roundList
-    ->getExn(roundId)
-    ->set(matchIndex, {...match, result, whiteNewRating, blackNewRating})
-    |> ignore
-  );
-  roundList;
-};
-
-let swapColors = (~matchId, ~roundId, ~roundList) => {
-  /* I don't actually know if this copy is necessary */
-  let roundList = roundList |> Js.Array.copy;
-  Js.Array.(
-    roundList->unsafe_set(roundId, roundList->unsafe_get(roundId) |> copy)
-  );
-  let matchIndex =
-    Js.Array.(
-      roundList->unsafe_get(roundId)
-      |> findIndex(match => match.id === matchId)
-    );
-  let oldMatch =
-    Js.Array.(roundList->unsafe_get(roundId)->unsafe_get(matchIndex));
+let swapColors = match => {
   let result =
     Result.(
-      switch (oldMatch.result) {
+      switch (match.result) {
       | WhiteWon => BlackWon
       | BlackWon => WhiteWon
       | Draw => Draw
       | NotSet => NotSet
       }
     );
-  /* This just reverses the values */
-  Belt.Array.(
-    roundList
-    ->getExn(roundId)
-    ->set(
-        matchIndex,
-        {
-          ...oldMatch,
-          result,
-          whiteId: oldMatch.blackId,
-          blackId: oldMatch.whiteId,
-          whiteOrigRating: oldMatch.blackOrigRating,
-          blackOrigRating: oldMatch.whiteOrigRating,
-          whiteNewRating: oldMatch.blackNewRating,
-          blackNewRating: oldMatch.whiteNewRating,
-        },
-      )
-    |> ignore
-  );
-  roundList;
+  /* This just "reverses" the values. */
+  {
+    ...match,
+    result,
+    whiteId: match.blackId,
+    blackId: match.whiteId,
+    whiteOrigRating: match.blackOrigRating,
+    blackOrigRating: match.whiteOrigRating,
+    whiteNewRating: match.blackNewRating,
+    blackNewRating: match.whiteNewRating,
+  };
 };
-
-let updateByeScores = (~newValue, ~roundList) =>
-  Js.Array.(
-    roundList
-    |> map(round => round |> map(match => match |> scoreByeMatch(newValue)))
-  );

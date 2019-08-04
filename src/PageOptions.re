@@ -1,4 +1,5 @@
 open Belt;
+open Data;
 [@bs.val] external node_env: string = "process.env.NODE_ENV";
 
 let getDateForFile = () => {
@@ -6,8 +7,8 @@ let getDateForFile = () => {
   Numeral.(
     [|
       date |> Js.Date.getFullYear |> Js.Float.toString,
-      ((date |> Js.Date.getMonth) +. 1.0)->make->format("00"),
-      ((date |> Js.Date.getDay) +. 1.0)->make->format("00"),
+      (Js.Date.getMonth(date) +. 1.0)->make->format("00"),
+      (Js.Date.getDay(date) +. 1.0)->make->format("00"),
     |]
     |> Js.Array.joinWith("-")
   );
@@ -174,20 +175,20 @@ let make = () => {
         <label className="monospace body-30">
           {React.string("1 ")}
           <input
-            checked={config.byeValue === Data.ByeValue.Full}
+            checked={config.byeValue === Config.ByeValue.Full}
             type_="radio"
             onChange={_ =>
-              configDispatch(Db.SetByeValue(Data.ByeValue.Full))
+              configDispatch(Db.SetByeValue(Config.ByeValue.Full))
             }
           />
         </label>
         <label className="monospace body-30">
           {React.string({j|½ |j})}
           <input
-            checked={config.byeValue === Data.ByeValue.Half}
+            checked={config.byeValue === Config.ByeValue.Half}
             type_="radio"
             onChange={_ =>
-              configDispatch(Db.SetByeValue(Data.ByeValue.Half))
+              configDispatch(Db.SetByeValue(Config.ByeValue.Half))
             }
           />
         </label>

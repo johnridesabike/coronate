@@ -141,7 +141,7 @@ type actionConfig =
   | DelAvoidPair(Data.Config.AvoidPairs.pair)
   | DelAvoidSingle(string)
   | SetAvoidPairs(Data.Config.AvoidPairs.t)
-  | SetByeValue(Data.ByeValue.t)
+  | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
