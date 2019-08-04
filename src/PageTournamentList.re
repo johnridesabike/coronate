@@ -57,7 +57,7 @@ let make = () => {
   };
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
-    if (Utils.confirm(message)) {
+    if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
       dispatch(Db.DelItem(id));
     };
   };

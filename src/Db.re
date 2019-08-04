@@ -32,7 +32,7 @@ module Tournaments =
   );
 
 let loadDemoDB = _: unit => {
-  let _: unit = [%bs.raw "document.body.style = \"wait\""];
+  let _: unit = [%bs.raw {|document.body.style.cursor = "wait"|}];
   /* TODO: waiting for Future to implement `all` */
   Js.Promise.all3((
     ConfigDb.setItems(DemoData.config)->FutureJs.toPromise,
@@ -40,12 +40,12 @@ let loadDemoDB = _: unit => {
     Tournaments.setItems(DemoData.tournaments)->FutureJs.toPromise,
   ))
   |> Js.Promise.then_(_ => {
-       let _: unit = [%bs.raw "document.body.style = \"auto\""];
-       Utils.alert("Demo data loaded!");
+       let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
+       Webapi.(Dom.window |> Dom.Window.alert("Demo data loaded!"));
        Js.Promise.resolve();
      })
   |> Js.Promise.catch(_ => {
-       let _: unit = [%bs.raw "document.body.style = \"auto\""];
+       let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
        Js.Promise.resolve();
      })
   |> ignore;
@@ -82,7 +82,7 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
         /* Even if there was an error, we'll clear the database. This means a
            corrupt database will get wiped. In the future, we may need to
            replace this with more elegant error recovery. */
-        | Error () =>
+        | Error(_) =>
           Externals.LocalForage.clear() |> ignore;
           setIsLoaded(_ => true);
         | Ok(results) =>

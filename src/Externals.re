@@ -16,9 +16,6 @@ module EloRank = {
 /*******************************************************************************
   Browser stuff
  ******************************************************************************/
-[@bs.val] [@bs.scope "window"] external alert: string => unit = "alert";
-[@bs.val] [@bs.scope "window"] external confirm: string => bool = "confirm";
-
 module FileReader = {
   type t;
   [@bs.new] external make: unit => t = "FileReader";
@@ -41,6 +38,10 @@ module LocalForage = {
   type config = {
     name: string,
     storeName: string,
+  };
+  let errorHandler = error => {
+    Js.Console.error(error);
+    Js.String.make(error);
   };
   module type Data = {
     type t;
@@ -99,18 +100,14 @@ module LocalForage = {
       );
     let getItem = key =>
       getItem(store, key)
-      ->FutureJs.fromPromise(Js.Console.error)
-      ->Future.map(value =>
-          switch (value) {
-          | Ok(value) =>
-            switch (value->Js.Nullable.toOption->Option.map(Data.decode)) {
-            | Some(value) => Ok(Some(value))
-            | None => Ok(None)
-            | exception x =>
-              Js.Console.error(x);
-              Error(None);
-            }
-          | Error(value) => Error(Some(value))
+      ->FutureJs.fromPromise(errorHandler)
+      ->Future.flatMapOk(value =>
+          switch (value->Js.Nullable.toOption->Option.map(Data.decode)) {
+          | Some(value) => Future.value(Ok(Some(value)))
+          | None => Future.value(Ok(None))
+          | exception x =>
+            Js.Console.error(x);
+            Future.value(Error(Js.String.make(x)));
           }
         );
     let setItem = (key, value) => setItem(store, key, Data.encode(value));
@@ -122,23 +119,23 @@ module LocalForage = {
       ->Map.String.map(Data.decode);
     let getItems = keys =>
       getItems_dict(store, keys)
-      ->FutureJs.fromPromise(Js.Console.error)
+      ->FutureJs.fromPromise(errorHandler)
       ->Future.flatMapOk(items =>
           switch (parseItems(items)) {
           | exception x =>
             Js.Console.error(x);
-            Future.value(Error());
+            Future.value(Error(Js.String.make(x)));
           | x => Future.value(Ok(x))
           }
         );
     let getAllItems = () =>
       getAllItems_dict(store)
-      ->FutureJs.fromPromise(Js.Console.error)
+      ->FutureJs.fromPromise(errorHandler)
       ->Future.flatMapOk(items =>
           switch (parseItems(items)) {
           | exception x =>
             Js.Console.error(x);
-            Future.value(Error());
+            Future.value(Error(Js.String.make(x)));
           | x => Future.value(Ok(x))
           }
         );
@@ -148,7 +145,7 @@ module LocalForage = {
       ->Map.String.toArray
       ->Js.Dict.fromArray
       ->setItems_dict(store, _)
-      ->FutureJs.fromPromise(Js.Console.error);
+      ->FutureJs.fromPromise(errorHandler);
     };
     let removeItems = removeItems(store);
   };
@@ -177,18 +174,18 @@ module LocalForage = {
       );
     let getItems = () =>
       getAllItems_json(store)
-      ->FutureJs.fromPromise(Js.Console.error)
+      ->FutureJs.fromPromise(errorHandler)
       ->Future.flatMapOk(items =>
           switch (Data.decode(items)) {
           | exception x =>
             Js.Console.error(x);
-            Future.value(Error());
+            Future.value(Error(Js.String.make(x)));
           | x => Future.value(Ok(x))
           }
         );
     let setItems = items => {
       setItems_json(store, Data.encode(items))
-      ->FutureJs.fromPromise(Js.Console.error);
+      ->FutureJs.fromPromise(errorHandler);
     };
   };
 

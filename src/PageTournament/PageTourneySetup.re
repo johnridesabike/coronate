@@ -62,7 +62,7 @@ let make = (~tournament) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
     });
-    Utils.alert("Bye scores updated to 1.");
+    Webapi.(Dom.window |> Dom.Window.alert("Bye scores updated to 1."));
   };
 
   let changeToOneHalf = _ => {
@@ -70,7 +70,9 @@ let make = (~tournament) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
     });
-    Utils.alert({js|Bye scores updated to ½.|js});
+    Webapi.(
+      Dom.window |> Dom.Window.alert({js|Bye scores updated to ½.|js})
+    );
   };
 
   let updateDate = event => {

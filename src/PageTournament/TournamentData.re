@@ -114,7 +114,6 @@ let make = (~children, ~tourneyId) => {
           }
         )
       |> ignore;
-
       Some(() => didCancel := true);
     },
     [|tourneyId|],

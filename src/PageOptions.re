@@ -15,10 +15,8 @@ let getDateForFile = () => {
 };
 
 let invalidAlert = () => {
-  Utils.alert(
-    "That data is invalid! A more helpful error message could not be "
-    ++ "written yet.",
-  );
+  let message = "That data is invalid! A more helpful error message could not be written yet.";
+  Webapi.(Dom.window |> Dom.Window.alert(message));
 };
 
 let dictToMap = dict => dict |> Js.Dict.entries |> Map.String.fromArray;
@@ -108,7 +106,7 @@ let make = () => {
     configDispatch(Db.SetState(config));
     playersDispatch(Db.SetState(players));
 
-    Utils.alert("Data loaded.");
+    Webapi.(Dom.window |> Dom.Window.alert("Data loaded."));
   };
   let handleText = event => {
     event |> ReactEvent.Form.preventDefault;

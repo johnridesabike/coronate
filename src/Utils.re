@@ -1,9 +1,7 @@
 module Tabs = Externals.ReachTabs;
 module VisuallyHidden = Externals.VisuallyHidden;
 module Dialog = Externals.Dialog;
-let alert = Externals.alert;
 let nanoid = Externals.nanoid;
-let confirm = Externals.confirm;
 
 let github_url = "https://github.com/johnridesabike/coronate";
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";

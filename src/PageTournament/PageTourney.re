@@ -80,7 +80,7 @@ module Sidebar = {
         ++ "one?";
       let confirmed =
         if (isItOver) {
-          if (Utils.confirm(confirmText)) {
+          if (Webapi.(Dom.window |> Dom.Window.confirm(confirmText))) {
             true;
           } else {
             false;
@@ -95,7 +95,8 @@ module Sidebar = {
 
     let delLastRound = event => {
       event->ReactEvent.Mouse.preventDefault;
-      if (Utils.confirm("Are you sure you want to delete the last round?")) {
+      let message = "Are you sure you want to delete the last round?";
+      if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
         ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */

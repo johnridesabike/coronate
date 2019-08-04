@@ -115,7 +115,7 @@ module PlayerList = {
             "?",
           |]
           |> Js.Array.joinWith("");
-        if (Utils.confirm(message)) {
+        if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
           playersDispatch(Db.DelItem(id));
           configDispatch(Db.DelAvoidSingle(id));
         };
