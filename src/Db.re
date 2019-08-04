@@ -33,18 +33,20 @@ module Tournaments =
 
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw "document.body.style = \"wait\""];
-  Repromise.all3(
-    ConfigDb.setItems(DemoData.config),
-    Players.setItems(DemoData.players),
-    Tournaments.setItems(DemoData.tournaments),
-  )
-  |> Repromise.map(_ => {
+  /* TODO: waiting for Future to implement `all` */
+  Js.Promise.all3((
+    ConfigDb.setItems(DemoData.config)->FutureJs.toPromise,
+    Players.setItems(DemoData.players)->FutureJs.toPromise,
+    Tournaments.setItems(DemoData.tournaments)->FutureJs.toPromise,
+  ))
+  |> Js.Promise.then_(_ => {
        let _: unit = [%bs.raw "document.body.style = \"auto\""];
        Utils.alert("Demo data loaded!");
+       Js.Promise.resolve();
      })
-  |> Repromise.Rejectable.catch(_ => {
+  |> Js.Promise.catch(_ => {
        let _: unit = [%bs.raw "document.body.style = \"auto\""];
-       Repromise.resolved();
+       Js.Promise.resolve();
      })
   |> ignore;
 };
@@ -74,20 +76,20 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     getAllItems()
-    |> Repromise.map(results =>
-         switch (results) {
-         | _ when didCancel^ => ()
-         /* Even if there was an error, we'll clear the database. This means a
-            corrupt database will get wiped. In the future, we may need to
-            replace this with more elegant error recovery. */
-         | Error(_) =>
-           Externals.LocalForage.clear() |> ignore;
-           setIsLoaded(_ => true);
-         | Ok(results) =>
-           dispatch(SetState(results));
-           setIsLoaded(_ => true);
-         }
-       )
+    ->Future.map(results =>
+        switch (results) {
+        | _ when didCancel^ => ()
+        /* Even if there was an error, we'll clear the database. This means a
+           corrupt database will get wiped. In the future, we may need to
+           replace this with more elegant error recovery. */
+        | Error () =>
+          Externals.LocalForage.clear() |> ignore;
+          setIsLoaded(_ => true);
+        | Ok(results) =>
+          dispatch(SetState(results));
+          setIsLoaded(_ => true);
+        }
+      )
     |> ignore;
     Some(() => didCancel := false);
   });
@@ -98,20 +100,18 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
     () => {
       if (isLoaded) {
         setItems(items)
-        |> Repromise.map(() =>
-             getKeys()
-             |> Repromise.map(keys => {
-                  let stateKeys = Map.String.keysToArray(items);
-                  let deleted =
-                    Js.Array.(
-                      keys |> filter(x => !(stateKeys |> includes(x)))
-                    );
-                  if (Js.Array.length(deleted) > 0) {
-                    removeItems(deleted) |> ignore;
-                  };
-                })
-             |> ignore
-           )
+        ->Future.mapOk(() =>
+            getKeys()
+            ->Future.mapOk(keys => {
+                let stateKeys = Map.String.keysToArray(items);
+                let deleted =
+                  Js.Array.(keys |> filter(x => !(stateKeys |> includes(x))));
+                if (Js.Array.length(deleted) > 0) {
+                  removeItems(deleted) |> ignore;
+                };
+              })
+            |> ignore
+          )
         |> ignore;
       };
       None;
@@ -180,18 +180,18 @@ let useConfig = () => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     ConfigDb.getItems()
-    |> Repromise.map(values =>
-         switch (values) {
-         | _ when didCancel^ => ()
-         | Error(_) =>
-           /* Again, if the database was corrupt, then wipe it. */
-           Externals.LocalForage.clear() |> ignore;
-           setIsLoaded(_ => true);
-         | Ok(values) =>
-           dispatch(SetState(values));
-           setIsLoaded(_ => true);
-         }
-       )
+    ->Future.map(values =>
+        switch (values) {
+        | _ when didCancel^ => ()
+        | Error(_) =>
+          /* Again, if the database was corrupt, then wipe it. */
+          Externals.LocalForage.clear() |> ignore;
+          setIsLoaded(_ => true);
+        | Ok(values) =>
+          dispatch(SetState(values));
+          setIsLoaded(_ => true);
+        }
+      )
     |> ignore;
     Some(() => didCancel := true);
   });

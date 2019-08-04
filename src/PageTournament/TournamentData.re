@@ -104,15 +104,15 @@ let make = (~children, ~tourneyId) => {
     () => {
       let didCancel = ref(false);
       Db.Tournaments.getItem(tourneyId)
-      |> Repromise.map(value =>
-           switch (value) {
-           | None => setLoadStatus(_ => Error)
-           | Some(_) when didCancel^ => ()
-           | Some(value) =>
-             setTourney(value);
-             setLoadStatus(_ => TourneyIsLoaded);
-           }
-         )
+      ->Future.mapOk(value =>
+          switch (value) {
+          | None => setLoadStatus(_ => Error)
+          | Some(_) when didCancel^ => ()
+          | Some(value) =>
+            setTourney(value);
+            setLoadStatus(_ => TourneyIsLoaded);
+          }
+        )
       |> ignore;
 
       Some(() => didCancel := true);
@@ -121,6 +121,16 @@ let make = (~children, ~tourneyId) => {
   );
   /*
    Hydrate players from DB.
+   TODO: This is probably overly-complicated because it tries to auto-magically
+   only load the players necessary for this tournament. I wrote it a long time
+   ago when I didn't know what I was doing. Performance-wise, this doesn't gain
+   us anything unless our DB has a LOT of players, in which case the rest of our
+   code isn't optimized for that anyway. However, the players in the DB *can*
+   change after the tournament is loaded (via the player-select) screen, so it
+   does need a mechanism to re-hydrate the players when necessary. Ideally, I
+   don't think we should be relying on magical `useEffect` callbacks to do our
+   DB queries for us.
+   TLDR: this needs to be rewritten, but for now it "works."
    */
   React.useEffect4(
     () => {
@@ -148,29 +158,29 @@ let make = (~children, ~tourneyId) => {
           setLoadStatus(_ => TourneyAndPlayersAreLoaded);
         } else {
           Db.Players.getItems(allTheIds)
-          |> Repromise.map(values =>
-               switch (values) {
-               | Result.Error(_) => setLoadStatus(_ => Error)
-               | Ok(_) when didCancel^ => ()
-               | Ok(values) =>
-                 /* This safeguards against trying to fetch dummy IDs or IDs
-                    from deleted players. If we updated without this condition,
-                    then this `useEffect` would trigger an infinite loop and a
-                    memoryleak. */
-                 let newIds =
-                   values->Map.String.keysToArray->Set.String.fromArray;
-                 let oldIds =
-                   players->Map.String.keysToArray->Set.String.fromArray;
-                 let changedPlayers =
-                   Set.String.(
-                     union(diff(newIds, oldIds), diff(newIds, oldIds))->size
-                   );
-                 if (changedPlayers !== 0) {
-                   playersDispatch(SetAll(values));
-                   setLoadStatus(_ => TourneyAndPlayersAreLoaded);
-                 };
-               }
-             )
+          ->Future.map(values =>
+              switch (values) {
+              | Result.Error(_) => setLoadStatus(_ => Error)
+              | Ok(_) when didCancel^ => ()
+              | Ok(values) =>
+                /* This safeguards against trying to fetch dummy IDs or IDs
+                   from deleted players. If we updated without this condition,
+                   then this `useEffect` would trigger an infinite loop and a
+                   memoryleak. */
+                let newIds =
+                  values->Map.String.keysToArray->Set.String.fromArray;
+                let oldIds =
+                  players->Map.String.keysToArray->Set.String.fromArray;
+                let changedPlayers =
+                  Set.String.(
+                    union(diff(newIds, oldIds), diff(newIds, oldIds))->size
+                  );
+                if (changedPlayers !== 0) {
+                  playersDispatch(SetAll(values));
+                  setLoadStatus(_ => TourneyAndPlayersAreLoaded);
+                };
+              }
+            )
           |> ignore;
         };
       };

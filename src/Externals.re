@@ -53,47 +53,32 @@ module LocalForage = {
      getting info */
   [@bs.send] external configGet: t => config = "config";
   [@bs.send]
-  external setItem:
-    (t, string, Js.Json.t) => Repromise.Rejectable.t(unit, exn) =
-    "setItem";
+  external setItem: (t, string, Js.Json.t) => Js.Promise.t(unit) = "setItem";
   [@bs.send]
-  external getItem:
-    (t, string) => Repromise.Rejectable.t(Js.Nullable.t(Js.Json.t), exn) =
+  external getItem: (t, string) => Js.Promise.t(Js.Nullable.t(Js.Json.t)) =
     "getItem";
-  [@bs.send]
-  external keys: t => Repromise.Rejectable.t(Js.Array.t(string), exn) =
-    "keys";
-  [@bs.send]
-  external clear_: t => Repromise.Rejectable.t(unit, exn) = "clear";
+  [@bs.send] external keys: t => Js.Promise.t(Js.Array.t(string)) = "keys";
+  [@bs.send] external clear_: t => Js.Promise.t(unit) = "clear";
   /* THIS CLEARS EVERY SINGLE ITEM IN EVERY STORE. */
   let clear = () =>
-    clear_(localForage)
-    |> Repromise.Rejectable.catch(error => {
-         Js.Console.error(error);
-         Repromise.resolved();
-       });
+    clear_(localForage)->FutureJs.fromPromise(Js.Console.error);
   /* Plugin methods */
   [@bs.send]
   external getItems_dict:
-    (t, array(string)) => Repromise.Rejectable.t(Js.Dict.t(Js.Json.t), exn) =
+    (t, array(string)) => Js.Promise.t(Js.Dict.t(Js.Json.t)) =
     "getItems";
   [@bs.send]
-  external getAllItems_dict:
-    t => Repromise.Rejectable.t(Js.Dict.t(Js.Json.t), exn) =
+  external getAllItems_dict: t => Js.Promise.t(Js.Dict.t(Js.Json.t)) =
     "getItems";
   [@bs.send]
-  external getAllItems_json: t => Repromise.Rejectable.t(Js.Json.t, exn) =
-    "getItems";
+  external getAllItems_json: t => Js.Promise.t(Js.Json.t) = "getItems";
   [@bs.send]
-  external setItems_dict:
-    (t, Js.Dict.t(Js.Json.t)) => Repromise.Rejectable.t(unit, exn) =
+  external setItems_dict: (t, Js.Dict.t(Js.Json.t)) => Js.Promise.t(unit) =
     "setItems";
   [@bs.send]
-  external setItems_json: (t, Js.Json.t) => Repromise.Rejectable.t(unit, exn) =
-    "setItems";
+  external setItems_json: (t, Js.Json.t) => Js.Promise.t(unit) = "setItems";
   [@bs.send]
-  external removeItems:
-    (t, array(string)) => Repromise.Rejectable.t(unit, exn) =
+  external removeItems: (t, array(string)) => Js.Promise.t(unit) =
     "removeItems";
   /*
      Map is a functor that can take any module that has an `encode` function,
@@ -114,65 +99,56 @@ module LocalForage = {
       );
     let getItem = key =>
       getItem(store, key)
-      |> Repromise.Rejectable.andThen(value =>
-           switch (value->Js.Nullable.toOption->Option.map(Data.decode)) {
-           | Some(value) => Repromise.Rejectable.resolved(Some(value))
-           | None => Repromise.Rejectable.resolved(None)
-           | exception x => Repromise.Rejectable.rejected(x)
-           }
-         )
-      |> Repromise.Rejectable.catch(error => {
-           Js.Console.error(error);
-           Repromise.resolved(None);
-         });
+      ->FutureJs.fromPromise(Js.Console.error)
+      ->Future.map(value =>
+          switch (value) {
+          | Ok(value) =>
+            switch (value->Js.Nullable.toOption->Option.map(Data.decode)) {
+            | Some(value) => Ok(Some(value))
+            | None => Ok(None)
+            | exception x =>
+              Js.Console.error(x);
+              Error(None);
+            }
+          | Error(value) => Error(Some(value))
+          }
+        );
     let setItem = (key, value) => setItem(store, key, Data.encode(value));
-    let getKeys = () =>
-      keys(store)
-      |> Repromise.Rejectable.catch(error => {
-           Js.Console.error(error);
-           Repromise.resolved([||]);
-         });
+    let getKeys = () => keys(store)->FutureJs.fromPromise(Js.Console.error);
     let parseItems = items =>
       items
       ->Js.Dict.entries
       ->Map.String.fromArray
       ->Map.String.map(Data.decode);
-    let handleError_map = error => {
-      Js.Console.error2(
-        "Couldn't load database:",
-        store |> configGet |> storeNameGet,
-      );
-      Js.Console.error(error);
-      Repromise.resolved(Error(Map.String.empty));
-    };
     let getItems = keys =>
       getItems_dict(store, keys)
-      |> Repromise.Rejectable.andThen(items =>
-           switch (parseItems(items)) {
-           | exception x => Repromise.Rejectable.rejected(x)
-           | x => Repromise.Rejectable.resolved(Ok(x))
-           }
-         )
-      |> Repromise.Rejectable.catch(handleError_map);
+      ->FutureJs.fromPromise(Js.Console.error)
+      ->Future.flatMapOk(items =>
+          switch (parseItems(items)) {
+          | exception x =>
+            Js.Console.error(x);
+            Future.value(Error());
+          | x => Future.value(Ok(x))
+          }
+        );
     let getAllItems = () =>
       getAllItems_dict(store)
-      |> Repromise.Rejectable.andThen(items =>
-           switch (parseItems(items)) {
-           | exception x => Repromise.Rejectable.rejected(x)
-           | x => Repromise.Rejectable.resolved(Ok(x))
-           }
-         )
-      |> Repromise.Rejectable.catch(handleError_map);
+      ->FutureJs.fromPromise(Js.Console.error)
+      ->Future.flatMapOk(items =>
+          switch (parseItems(items)) {
+          | exception x =>
+            Js.Console.error(x);
+            Future.value(Error());
+          | x => Future.value(Ok(x))
+          }
+        );
     let setItems = items => {
       items /* this part should probably have better error handling */
       ->Map.String.map(Data.encode)
       ->Map.String.toArray
       ->Js.Dict.fromArray
-      |> setItems_dict(store)
-      |> Repromise.Rejectable.catch(error => {
-           Js.Console.error(error);
-           Repromise.resolved();
-         });
+      ->setItems_dict(store, _)
+      ->FutureJs.fromPromise(Js.Console.error);
     };
     let removeItems = removeItems(store);
   };
@@ -201,23 +177,18 @@ module LocalForage = {
       );
     let getItems = () =>
       getAllItems_json(store)
-      |> Repromise.Rejectable.andThen(items =>
-           switch (Data.decode(items)) {
-           | exception x => Repromise.Rejectable.rejected(x)
-           | x => Repromise.Rejectable.resolved(Ok(x))
-           }
-         )
-      |> Repromise.Rejectable.catch(error => {
-           Js.Console.error(error);
-           Repromise.resolved(Error(default));
-         });
+      ->FutureJs.fromPromise(Js.Console.error)
+      ->Future.flatMapOk(items =>
+          switch (Data.decode(items)) {
+          | exception x =>
+            Js.Console.error(x);
+            Future.value(Error());
+          | x => Future.value(Ok(x))
+          }
+        );
     let setItems = items => {
       setItems_json(store, Data.encode(items))
-      |> Repromise.Rejectable.map(x => Ok(x))
-      |> Repromise.Rejectable.catch(error => {
-           Js.Console.error(error);
-           Repromise.resolved(Error());
-         });
+      ->FutureJs.fromPromise(Js.Console.error);
     };
   };
 

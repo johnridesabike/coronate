@@ -16,7 +16,7 @@ external getSystemPreferences: remote => systemPreferences =
 external getUserDefault: (systemPreferences, string, string) => string =
   "getUserDefault";
 [@bs.send]
-external openExternal: (shell, string) => Repromise.t(unit) = "openExternal";
+external openExternal: (shell, string) => Js.Promise.t(unit) = "openExternal";
 [@bs.send] external getCurrentWindow: remote => window = "getCurrentWindow";
 [@bs.send] external setFullScreen: (window, bool) => unit = "setFullScreen";
 [@bs.send] external unmaximize: window => unit = "unmaximize";
