@@ -26,7 +26,7 @@ module Round = {
   let setMatch = (round: t, match) => {
     round
     ->Array.getIndexBy(({id}) => id === match.Data_Match.id)
-    ->Option.map(index => round->Array.set(index, match))
+    ->Option.map(Array.set(round, _, match))
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None);
   };
 };

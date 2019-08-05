@@ -139,7 +139,7 @@ module WithScoreInfo =
       oppResultsEntries
       |> Js.Array.map(((opId, result)) =>
            <li key=opId>
-             {[|
+             {[
                 getPlayer(opId).Player.firstName,
                 getPlayer(opId).lastName,
                 "-",
@@ -149,8 +149,8 @@ module WithScoreInfo =
                 | 0.5 => "Draw"
                 | _ => "Draw"
                 },
-              |]
-              |> Js.Array.joinWith(" ")
+              ]
+              |> String.concat(" ")
               |> React.string}
            </li>
          )

@@ -9,8 +9,8 @@ open Electron;
 let global_title = "Coronate";
 
 let formatTitle = title => {
-  title |> Js.String.length === 0
-    ? global_title : title ++ " - " ++ global_title;
+  Js.String.length(title) === 0
+    ? global_title : [title, global_title] |> String.concat(" - ");
 };
 
 type windowState = {
@@ -92,14 +92,14 @@ module About = {
         </h1>
         <p>
           {React.string(
-             [|
+             [
                "Copyright ",
                Utils.Entities.copy,
                " 2019 John",
                Utils.Entities.nbsp,
                "Jackson",
-             |]
-             |> Js.Array.joinWith(""),
+             ]
+             |> String.concat(""),
            )}
         </p>
         <p> {React.string("Coronate is free software.")} </p>

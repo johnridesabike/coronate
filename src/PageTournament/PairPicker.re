@@ -117,8 +117,8 @@ module SelectList = {
                       onClick={_ => selectPlayer(player.id)}>
                       <Icons.UserPlus />
                       <Utils.VisuallyHidden>
-                        {[|"Add", player.firstName, player.lastName|]
-                         |> Js.Array.joinWith(" ")
+                        {["Add", player.firstName, player.lastName]
+                         |> String.concat(" ")
                          |> React.string}
                       </Utils.VisuallyHidden>
                     </button>

@@ -89,11 +89,9 @@ module MatchRow = {
       |> Js.Array.includes(Data.Player.dummy_id);
 
     let whiteName =
-      [|whitePlayer.firstName, whitePlayer.lastName|]
-      |> Js.Array.joinWith(" ");
+      [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
     let blackName =
-      [|blackPlayer.firstName, blackPlayer.lastName|]
-      |> Js.Array.joinWith(" ");
+      [blackPlayer.firstName, blackPlayer.lastName] |> String.concat(" ");
 
     let resultDisplay = playerColor => {
       let won =
@@ -249,8 +247,8 @@ module MatchRow = {
                   onClick={_ => setSelectedMatch(_ => Some(match.id))}>
                   <Icons.Circle />
                   <Utils.VisuallyHidden>
-                    {[|"Edit match for", whiteName, "versus", blackName|]
-                     |> Js.Array.joinWith(" ")
+                    {["Edit match for", whiteName, "versus", blackName]
+                     |> String.concat(" ")
                      |> React.string}
                   </Utils.VisuallyHidden>
                 </button>
@@ -266,13 +264,13 @@ module MatchRow = {
              onClick={_ => setIsModalOpen(_ => true)}>
              <Icons.Info />
              <Utils.VisuallyHidden>
-               {[|
+               {[
                   "View information for match:",
                   whiteName,
                   "versus",
                   blackName,
-                |]
-                |> Js.Array.joinWith(" ")
+                ]
+                |> String.concat(" ")
                 |> React.string}
              </Utils.VisuallyHidden>
            </button>
@@ -288,13 +286,13 @@ module MatchRow = {
                 </button>
                 <p> {React.string(tourney.name)} </p>
                 <p>
-                  {[|
-                     "Round ",
+                  {[
+                     "Round",
                      Js.Int.toString(roundId + 1),
-                     " match ",
+                     "match",
                      Js.Int.toString(pos + 1),
-                   |]
-                   |> Js.Array.joinWith(" ")
+                   ]
+                   |> String.concat(" ")
                    |> React.string}
                 </p>
                 <Utils.PanelContainer>
@@ -480,7 +478,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(x => unMatch(x, matches))->ignore
+              selectedMatch->Option.map(unMatch(_, matches))->ignore
             }>
             <Icons.Trash />
             {React.string(" Unmatch")}
@@ -490,9 +488,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Option.map(__x => swapColors(__x, matches))
-              ->ignore
+              selectedMatch->Option.map(swapColors(_, matches))->ignore
             }>
             <Icons.Repeat />
             {React.string(" Swap colors")}
@@ -502,9 +498,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Option.map(x => moveMatch(x, -1, matches))
-              ->ignore
+              selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore
             }>
             <Icons.ArrowUp />
             {React.string(" Move up")}
@@ -514,7 +508,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(x => moveMatch(x, 1, matches))->ignore
+              selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore
             }>
             <Icons.ArrowDown />
             {React.string(" Move down")}
@@ -572,12 +566,12 @@ module PageRound =
             </Tab>
             <Tab disabled={unmatchedCount === 0}>
               <Icons.Users />
-              {[|
+              {[
                  " Unmatched players (",
                  unmatchedCount |> Js.Int.toString,
                  ")",
-               |]
-               |> Js.Array.joinWith("")
+               ]
+               |> String.concat("")
                |> React.string}
             </Tab>
           </TabList>

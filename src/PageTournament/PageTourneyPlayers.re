@@ -60,8 +60,8 @@ module Selecting = {
                   <td>
                     <Utils.VisuallyHidden>
                       <label htmlFor={"select-" ++ p.id}>
-                        {[|"Select", p.firstName, p.lastName|]
-                         |> Js.Array.joinWith(" ")
+                        {["Select", p.firstName, p.lastName]
+                         |> String.concat(" ")
                          |> React.string}
                       </label>
                     </Utils.VisuallyHidden>
@@ -188,11 +188,11 @@ let make = (~tournament) => {
                     "buttons-on-hover",
                     "disabled"->Cn.ifTrue(hasHadBye(matches, pId)),
                   ])}>
-                  {[|
+                  {[
                      activePlayers->Map.String.getExn(pId).firstName,
                      activePlayers->Map.String.getExn(pId).lastName,
-                   |]
-                   |> Js.Array.joinWith(" ")
+                   ]
+                   |> String.concat(" ")
                    |> React.string}
                   <button
                     className="button-micro"

@@ -107,14 +107,16 @@ module PlayerList = {
       | None => ()
       | Some(player) =>
         let message =
-          [|
-            "Are you sure you want to delete ",
-            player.firstName,
-            " ",
-            player.lastName,
-            "?",
-          |]
-          |> Js.Array.joinWith("");
+          String.concat(
+            "",
+            [
+              "Are you sure you want to delete ",
+              player.firstName,
+              " ",
+              player.lastName,
+              "?",
+            ],
+          );
         if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
           playersDispatch(Db.DelItem(id));
           configDispatch(Db.DelAvoidSingle(id));
@@ -163,8 +165,8 @@ module PlayerList = {
                 <tr key={p.id} className="buttons-on-hover">
                   <td className="table__player">
                     <HashLink to_={"/players/" ++ p.id}>
-                      {[|p.firstName, p.lastName|]
-                       |> Js.Array.joinWith(" ")
+                      {[p.firstName, p.lastName]
+                       |> String.concat(" ")
                        |> React.string}
                     </HashLink>
                   </td>
@@ -180,8 +182,8 @@ module PlayerList = {
                       onClick={event => delPlayer(event, p.id)}>
                       <Icons.Trash />
                       <Utils.VisuallyHidden>
-                        {[|"Delete", p.firstName, p.lastName|]
-                         |> Js.Array.joinWith(" ")
+                        {["Delete", p.firstName, p.lastName]
+                         |> String.concat(" ")
                          |> React.string}
                       </Utils.VisuallyHidden>
                     </button>
@@ -215,7 +217,7 @@ module Profile = {
       ) => {
     let playerId = player.id;
     let playerName =
-      [|player.firstName, player.lastName|] |> Js.Array.joinWith(" ");
+      [player.firstName, player.lastName] |> String.concat(" ");
     let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect2(
       () => {
@@ -341,22 +343,22 @@ module Profile = {
              {React.string(players->getPlayerMaybe(pId).lastName)}
              <button
                ariaLabel={
-                 [|
+                 [
                    "Remove",
                    players->getPlayerMaybe(pId).firstName,
                    players->getPlayerMaybe(pId).lastName,
                    "from avoid list.",
-                 |]
-                 |> Js.Array.joinWith(" ")
+                 ]
+                 |> String.concat(" ")
                }
                title={
-                 [|
+                 [
                    "Remove",
                    players->getPlayerMaybe(pId).firstName,
                    players->getPlayerMaybe(pId).lastName,
                    "from avoid list.",
-                 |]
-                 |> Js.Array.joinWith(" ")
+                 ]
+                 |> String.concat(" ")
                }
                className="danger button-ghost"
                onClick={_ =>

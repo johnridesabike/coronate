@@ -15,12 +15,10 @@ let makeDateInput = date => {
     rawMonth < 9.0
       ? "0" ++ Js.Float.toString(rawMonth +. 1.0)
       : Js.Float.toString(rawMonth +. 1.0);
-
   let day =
     rawDate < 10.0
       ? "0" ++ Js.Float.toString(rawDate) : Js.Float.toString(rawDate);
-
-  [|year, month, day|] |> Js.Array.joinWith("-");
+  [year, month, day] |> String.concat("-");
 };
 
 type inputs =
