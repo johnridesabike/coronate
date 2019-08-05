@@ -2,7 +2,7 @@ open Data;
 
 [@react.component]
 let make = (~tournament) => {
-  let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
+  let {LoadTournament.tourney, getPlayer} = tournament;
   let {Tournament.roundList} = tourney;
   let lastRoundId = Rounds.getLastKey(tourney.roundList);
   let lastRound = roundList->Rounds.get(lastRoundId);

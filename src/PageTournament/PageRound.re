@@ -1,5 +1,4 @@
 open Belt;
-open TournamentData;
 open Data;
 
 module Style = {
@@ -74,7 +73,7 @@ module MatchRow = {
         ~className="",
       ) => {
     let {
-      TournamentData.tourney,
+      LoadTournament.tourney,
       setTourney,
       players,
       getPlayer,
@@ -127,15 +126,15 @@ module MatchRow = {
     };
 
     let setMatchResult = jsResultCode => {
-      let result = Match.Result.fromString(jsResultCode);
+      let newResult = Match.Result.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
-      if (match.result !== result) {
+      if (match.result !== newResult) {
         let white = players->Map.String.getExn(match.whiteId);
         let black = players->Map.String.getExn(match.blackId);
-        let newWhiteScore = result->Match.Result.(toFloat(White));
-        let newBlackScore = result->Match.Result.(toFloat(Black));
-        let newRatings =
-          switch (result) {
+        let newWhiteScore = newResult->Match.Result.(toFloat(White));
+        let newBlackScore = newResult->Match.Result.(toFloat(Black));
+        let (whiteNewRating, blackNewRating) =
+          switch (newResult) {
           | NotSet => (match.whiteOrigRating, match.blackOrigRating)
           | BlackWon
           | WhiteWon
@@ -146,7 +145,6 @@ module MatchRow = {
               (newWhiteScore, newBlackScore),
             )
           };
-        let (whiteNewRating, blackNewRating) = newRatings;
         playersDispatch(Set(white.id, {...white, rating: whiteNewRating}));
         playersDispatch(Set(black.id, {...black, rating: blackNewRating}));
         switch (match.result) {
@@ -161,7 +159,7 @@ module MatchRow = {
         /* If the result is being un-scored, decrement the matchCounts */
         | WhiteWon
         | BlackWon
-        | Draw when result === NotSet =>
+        | Draw when newResult === NotSet =>
           playersDispatch(
             Set(white.id, {...white, matchCount: white.matchCount - 1}),
           );
@@ -172,7 +170,12 @@ module MatchRow = {
         | BlackWon
         | Draw => ()
         };
-        let newMatch = {...match, result, whiteNewRating, blackNewRating};
+        let newMatch = {
+          ...match,
+          result: newResult,
+          whiteNewRating,
+          blackNewRating,
+        };
         roundList
         ->Rounds.setMatch(roundId, newMatch)
         ->Option.map(roundList => setTourney({...tourney, roundList}))
@@ -405,7 +408,7 @@ module RoundTable = {
 module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
-    let {TournamentData.tourney, players, setTourney, playersDispatch} = tournament;
+    let {LoadTournament.tourney, players, setTourney, playersDispatch} = tournament;
     let {Tournament.roundList} = tourney;
     let (selectedMatch, setSelectedMatch) = React.useState(() => None);
 
@@ -478,7 +481,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(unMatch(_, matches))->ignore
+              selectedMatch->Option.map(__x => unMatch(__x, matches))->ignore
             }>
             <Icons.Trash />
             {React.string(" Unmatch")}
@@ -488,7 +491,9 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(swapColors(_, matches))->ignore
+              selectedMatch
+              ->Option.map(__x => swapColors(__x, matches))
+              ->ignore
             }>
             <Icons.Repeat />
             {React.string(" Swap colors")}
@@ -498,7 +503,9 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore
+              selectedMatch
+              ->Option.map(__x => moveMatch(__x, -1, matches))
+              ->ignore
             }>
             <Icons.ArrowUp />
             {React.string(" Move up")}
@@ -508,7 +515,9 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore
+              selectedMatch
+              ->Option.map(__x => moveMatch(__x, 1, matches))
+              ->ignore
             }>
             <Icons.ArrowDown />
             {React.string(" Move down")}

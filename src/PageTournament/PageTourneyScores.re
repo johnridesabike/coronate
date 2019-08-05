@@ -350,7 +350,7 @@ module SelectTieBreaks = {
 
 [@react.component]
 let make = (~tournament) => {
-  let {TournamentData.getPlayer, tourney, setTourney} = tournament;
+  let {LoadTournament.getPlayer, tourney, setTourney} = tournament;
   Utils.Tabs.(
     <Tabs>
       <TabList>
@@ -370,11 +370,10 @@ let make = (~tournament) => {
 module Crosstable = {
   [@react.component]
   let make = (~tournament) => {
-    let {TournamentData.tourney, TournamentData.getPlayer} = tournament;
-    let {Data.Tournament.tieBreaks, Data.Tournament.roundList} = tourney;
+    let {LoadTournament.tourney, getPlayer} = tournament;
+    let {Tournament.tieBreaks, roundList} = tourney;
     let scoreData =
-      Rounds.rounds2Matches(~roundList, ())
-      |> Data.Converters.matches2ScoreData;
+      Rounds.rounds2Matches(~roundList, ()) |> Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(tieBreaks, scoreData);
 
     let getXScore = (player1Id, player2Id) =>

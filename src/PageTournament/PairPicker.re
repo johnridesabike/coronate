@@ -342,7 +342,14 @@ let make =
   let (config, _) = Db.useConfig();
   let avoidPairs = config.avoidPairs;
   let byeValue = config.byeValue;
-  let {TournamentData.tourney, activePlayers, players, getPlayer, setTourney} = tournament;
+  let {
+    LoadTournament.tourney,
+    activePlayers,
+    players,
+    getPlayer,
+    setTourney,
+    playersDispatch,
+  } = tournament;
   let {Tournament.roundList, byeQueue} = tourney;
   let round = roundList->Rounds.get(roundId);
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
@@ -461,7 +468,12 @@ let make =
           className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
           {React.string("Done")}
         </button>
-        <PageTourneyPlayers.Selecting tourney setTourney />
+        <PageTourneyPlayers.Selecting
+          tourney
+          setTourney
+          players
+          playersDispatch
+        />
       </Utils.Dialog>
     </div>
   };

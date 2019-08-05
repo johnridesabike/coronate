@@ -10,17 +10,15 @@ let tournamentData =
 let playerData = players->Map.String.merge(DemoData.players, (_, _, a) => a);
 
 /* copied from Db */
-type actionDb('a) =
-  | DelItem(string)
-  | SetItem(string, 'a)
-  | SetState(Map.String.t('a));
-type genericReducer('a) =
-  (Map.String.t('a), actionDb('a)) => Map.String.t('a);
+type action('a) =
+  | Del(string)
+  | Set(string, 'a)
+  | SetAll(Map.String.t('a));
 let genericDbReducer = (state, action) => {
   switch (action) {
-  | SetItem(id, item) => state->Map.String.set(id, item)
-  | DelItem(id) => state->Map.String.remove(id)
-  | SetState(state) => state
+  | Set(id, item) => state->Map.String.set(id, item)
+  | Del(id) => state->Map.String.remove(id)
+  | SetAll(state) => state
   };
 };
 

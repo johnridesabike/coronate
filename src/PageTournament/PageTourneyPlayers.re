@@ -3,9 +3,7 @@ open Data;
 
 module Selecting = {
   [@react.component]
-  let make = (~tourney, ~setTourney) => {
-    let (players, allPlayersDispatch) = Db.useAllPlayers();
-
+  let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
     let togglePlayer = event => {
       let id = event->ReactEvent.Form.target##value;
       if (event->ReactEvent.Form.target##checked) {
@@ -30,7 +28,7 @@ module Selecting = {
           onClick={_ =>
             setTourney({
               ...tourney,
-              playerIds: players |> Map.String.keysToArray,
+              playerIds: Map.String.keysToArray(players),
             })
           }>
           {React.string("Select all")}
@@ -78,7 +76,7 @@ module Selecting = {
            |> React.array}
         </tbody>
       </table>
-      <PagePlayers.NewPlayerForm dispatch=allPlayersDispatch />
+      <PagePlayers.NewPlayerForm dispatch=playersDispatch />
     </div>;
   };
 };
@@ -135,11 +133,13 @@ module PlayerList = {
 [@react.component]
 let make = (~tournament) => {
   let {
-    TournamentData.tourney,
-    TournamentData.setTourney,
-    TournamentData.activePlayers,
+    LoadTournament.tourney,
+    setTourney,
+    players,
+    activePlayers,
+    playersDispatch,
   } = tournament;
-  let {Tournament.playerIds, Tournament.roundList, Tournament.byeQueue} = tourney;
+  let {Tournament.playerIds, roundList, byeQueue} = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() => playerIds |> Js.Array.length === 0);
   let matches = Rounds.rounds2Matches(~roundList, ());
@@ -161,12 +161,7 @@ let make = (~tournament) => {
             </tr>
           </thead>
           <tbody className="content">
-            <PlayerList
-              byeQueue
-              setTourney
-              tourney
-              players=activePlayers
-            />
+            <PlayerList byeQueue setTourney tourney players=activePlayers />
           </tbody>
         </table>
       </Utils.Panel>
@@ -217,7 +212,7 @@ let make = (~tournament) => {
           onClick={_ => setIsSelecting(_ => false)}>
           {React.string("Done")}
         </button>
-        <Selecting tourney setTourney />
+        <Selecting tourney setTourney players playersDispatch />
       </Utils.Dialog>
     </Utils.PanelContainer>
   </div>;

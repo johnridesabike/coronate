@@ -9,9 +9,9 @@ open FireEvent;
 module BattleForGothamCityRound = {
   [@react.component]
   let make = (~children) =>
-    <TournamentData tourneyId="tvAdS4YbSOznrBgrg0ITA">
+    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA">
       children
-    </TournamentData>;
+    </LoadTournament>;
 };
 
 describe("Tabs auto-change correctly.", () => {

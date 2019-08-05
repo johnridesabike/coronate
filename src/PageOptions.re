@@ -66,8 +66,8 @@ external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
 let make = () => {
-  let (tournaments, tourneysDispatch) = Db.useAllTournaments();
-  let (players, playersDispatch) = Db.useAllPlayers();
+  let (tournaments, tourneysDispatch, _) = Db.useAllTournaments();
+  let (players, playersDispatch, _) = Db.useAllPlayers();
   let (text, setText) = React.useState(() => "");
   let (config, configDispatch) = Db.useConfig();
   let (_, windowDispatch) = Window.useWindowContext();
@@ -100,9 +100,9 @@ let make = () => {
   );
 
   let loadData = (~tournaments, ~players, ~config) => {
-    tourneysDispatch(Db.SetState(tournaments));
+    tourneysDispatch(Db.SetAll(tournaments));
     configDispatch(Db.SetState(config));
-    playersDispatch(Db.SetState(players));
+    playersDispatch(Db.SetAll(players));
 
     Webapi.(Dom.window |> Dom.Window.alert("Data loaded."));
   };

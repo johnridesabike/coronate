@@ -1,6 +1,6 @@
 open Belt;
 open Utils.Router;
-open TournamentData;
+open LoadTournament;
 open Data;
 
 module Footer = {
@@ -281,7 +281,7 @@ let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 
 [@react.component]
 let make = (~tourneyId, ~hashPath) => {
-  <TournamentData tourneyId>
+  <LoadTournament tourneyId>
     {tournament =>
        <Window.Body
          footerFunc={footerFunc(tournament)}
@@ -297,5 +297,5 @@ let make = (~tourneyId, ~hashPath) => {
           | _ => <Pages.NotFound />
           }}
        </Window.Body>}
-  </TournamentData>;
+  </LoadTournament>;
 };

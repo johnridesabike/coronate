@@ -7,7 +7,7 @@ let nameSort = Hooks.GetString(x => x.name);
 
 [@react.component]
 let make = () => {
-  let (tourneys, dispatch) = Db.useAllTournaments();
+  let (tourneys, dispatch, _) = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
       ~table=tourneys->Map.String.valuesToArray,
@@ -39,7 +39,7 @@ let make = () => {
     ReactEvent.Form.preventDefault(event);
     let id = Utils.nanoid();
     dispatch(
-      Db.SetItem(
+      Db.Set(
         id,
         {
           byeQueue: [||],
@@ -58,7 +58,7 @@ let make = () => {
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
     if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
-      dispatch(Db.DelItem(id));
+      dispatch(Db.Del(id));
     };
   };
   <Window.Body>

@@ -22,7 +22,7 @@ module NewPlayerForm = {
       setRating(defaultRating);
       let id = Utils.nanoid();
       dispatch(
-        Db.SetItem(
+        Db.Set(
           id,
           {
             firstName,
@@ -118,7 +118,7 @@ module PlayerList = {
             ],
           );
         if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
-          playersDispatch(Db.DelItem(id));
+          playersDispatch(Db.Del(id));
           configDispatch(Db.DelAvoidSingle(id));
         };
       };
@@ -261,7 +261,7 @@ module Profile = {
       let matchCount = target##matchCount##value->int_of_string;
       let rating = target##rating##value->int_of_string;
       playersDispatch(
-        Db.SetItem(
+        Db.Set(
           playerId,
           {
             firstName,
@@ -401,7 +401,7 @@ module Profile = {
 
 [@react.component]
 let make = (~id=?) => {
-  let (players, playersDispatch) = Db.useAllPlayers();
+  let (players, playersDispatch, _) = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
       ~table=players->Map.String.valuesToArray,

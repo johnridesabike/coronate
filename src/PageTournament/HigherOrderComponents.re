@@ -16,7 +16,7 @@ module WithRoundData =
            let make:
              (
                ~roundId: int,
-               ~tournament: TournamentData.t,
+               ~tournament: LoadTournament.t,
                ~activePlayersCount: int,
                ~scoreData: Map.String.t(Scoring.t),
                ~unmatched: Map.String.t(Player.t),
@@ -28,11 +28,7 @@ module WithRoundData =
        ) => {
   [@react.component]
   let make = (~roundId, ~tournament) => {
-    let {
-      TournamentData.tourney,
-      TournamentData.activePlayers,
-      TournamentData.getPlayer,
-    } = tournament;
+    let {LoadTournament.tourney, activePlayers, getPlayer} = tournament;
     let {Tournament.roundList} = tourney;
     /* matches2ScoreData is relatively expensive*/
     let scoreData =

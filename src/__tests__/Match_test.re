@@ -9,9 +9,9 @@ afterEach(cleanup);
 module BattleForGothamCity = {
   [@react.component]
   let make = (~children) =>
-    <TournamentData tourneyId="tvAdS4YbSOznrBgrg0ITA">
+    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA">
       children
-    </TournamentData>;
+    </LoadTournament>;
 };
 
 Skip.test("Ratings are updated correctly after a match.", () => {

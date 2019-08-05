@@ -1,5 +1,4 @@
 open Belt;
-open Result;
 
 /*******************************************************************************
  * Initialize the databases
@@ -53,15 +52,15 @@ let loadDemoDB = _: unit => {
 /*******************************************************************************
  * Generic database hooks
  ******************************************************************************/
-type actionDb('a) =
-  | DelItem(string)
-  | SetItem(string, 'a)
-  | SetState(Map.String.t('a));
+type action('a) =
+  | Del(string)
+  | Set(string, 'a)
+  | SetAll(Map.String.t('a));
 let genericDbReducer = (state, action) => {
   switch (action) {
-  | SetItem(id, item) => state->Map.String.set(id, item)
-  | DelItem(id) => state->Map.String.remove(id)
-  | SetState(state) => state
+  | Set(id, item) => state->Map.String.set(id, item)
+  | Del(id) => state->Map.String.remove(id)
+  | SetAll(state) => state
   };
 };
 
@@ -76,21 +75,22 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     getAllItems()
-    ->Future.map(results =>
-        switch (results) {
-        | _ when didCancel^ => ()
-        /* Even if there was an error, we'll clear the database. This means a
-           corrupt database will get wiped. In the future, we may need to
-           replace this with more elegant error recovery. */
-        | Error(_) =>
-          Externals.LocalForage.clear() |> ignore;
-          setIsLoaded(_ => true);
-        | Ok(results) =>
-          dispatch(SetState(results));
+    ->Future.tapOk(results =>
+        if (! didCancel^) {
+          dispatch(SetAll(results));
           setIsLoaded(_ => true);
         }
       )
-    |> ignore;
+    ->Future.tapError(_ =>
+        if (! didCancel^) {
+          /* Even if there was an error, we'll clear the database. This means a
+             corrupt database will get wiped. In the future, we may need to
+             replace this with more elegant error recovery. */
+          Externals.LocalForage.clear()->ignore;
+          setIsLoaded(_ => true);
+        }
+      )
+    ->ignore;
     Some(() => didCancel := false);
   });
   /*
@@ -100,25 +100,28 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
     () => {
       if (isLoaded) {
         setItems(items)
-        ->Future.mapOk(() =>
+        /* TODO: This will delete any DB keys that aren't present in the
+           state, with the assumption that the state must have intentionally
+           removed them. This probably needs to be replaced */
+        ->Future.tapOk(() =>
             getKeys()
-            ->Future.mapOk(keys => {
+            ->Future.tapOk(keys => {
                 let stateKeys = Map.String.keysToArray(items);
                 let deleted =
                   Js.Array.(keys |> filter(x => !(stateKeys |> includes(x))));
                 if (Js.Array.length(deleted) > 0) {
-                  removeItems(deleted) |> ignore;
+                  removeItems(deleted)->ignore;
                 };
               })
-            |> ignore
+            ->ignore
           )
-        |> ignore;
+        ->ignore;
       };
       None;
     },
     (items, isLoaded),
   );
-  (items, dispatch);
+  (items, dispatch, isLoaded);
 };
 
 let useAllPlayers =
@@ -180,19 +183,19 @@ let useConfig = () => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     ConfigDb.getItems()
-    ->Future.map(values =>
-        switch (values) {
-        | _ when didCancel^ => ()
-        | Error(_) =>
-          /* Again, if the database was corrupt, then wipe it. */
-          Externals.LocalForage.clear() |> ignore;
-          setIsLoaded(_ => true);
-        | Ok(values) =>
+    ->Future.tapOk(values =>
+        if (! didCancel^) {
           dispatch(SetState(values));
           setIsLoaded(_ => true);
         }
       )
-    |> ignore;
+    ->Future.tapError(_ =>
+        if (! didCancel^) {
+          Externals.LocalForage.clear() |> ignore;
+          setIsLoaded(_ => true);
+        }
+      )
+    ->ignore;
     Some(() => didCancel := true);
   });
   /*
@@ -201,7 +204,7 @@ let useConfig = () => {
   React.useEffect2(
     () => {
       if (isLoaded) {
-        ConfigDb.setItems(config) |> ignore;
+        ConfigDb.setItems(config)->ignore;
       };
       None;
     },
