@@ -210,7 +210,7 @@ let tournaments =
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
         id: "Bye_Round_Tourney____",
-        playerIds: [|
+        playerIds: [
           "Joel_Robinson________",
           "Crow_T_Robot_________",
           "Tom_Servo____________",
@@ -218,7 +218,7 @@ let tournaments =
           "Cambot_______________",
           "Newbie_McNewberson___",
           "Grandy_McMaster______",
-        |],
+        ],
         roundList: [|[||]|],
         tieBreaks: [|0, 1, 2, 3|],
         name: "Bye Round Tourney",
@@ -230,7 +230,7 @@ let tournaments =
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
         id: "Bye_Round_Tourney_2__",
-        playerIds: [|
+        playerIds: [
           "Joel_Robinson________",
           "Crow_T_Robot_________",
           "Tom_Servo____________",
@@ -238,7 +238,7 @@ let tournaments =
           "Cambot_______________",
           "Newbie_McNewberson___",
           "Grandy_McMaster______",
-        |],
+        ],
         roundList: [|
           [|
             {
@@ -293,11 +293,11 @@ let tournaments =
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-17T23:00:29.603Z"),
         id: "Bye_Tourney_3________",
-        playerIds: [|
+        playerIds: [
           "Kinga_Forrester______",
           "Newbie_McNewberson___",
           "Jonah_Heston_________",
-        |],
+        ],
         roundList: [|
           [|
             {
@@ -376,7 +376,7 @@ let tournaments =
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-14T11:40:34.407Z"),
         id: "Simple_Pairing_______",
-        playerIds: [|
+        playerIds: [
           "Newbie_McNewberson___",
           "Grandy_McMaster______",
           "Joel_Robinson________",
@@ -385,7 +385,7 @@ let tournaments =
           "Crow_T_Robot_________",
           "Tom_Servo____________",
           "Gypsy________________",
-        |],
+        ],
         roundList: [|
           [|
             {
@@ -441,7 +441,7 @@ let tournaments =
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-14T14:18:06.686Z"),
         id: "Pairing_With_Draws___",
-        playerIds: [|
+        playerIds: [
           "Newbie_McNewberson___",
           "Grandy_McMaster______",
           "Joel_Robinson________",
@@ -450,7 +450,7 @@ let tournaments =
           "Crow_T_Robot_________",
           "Tom_Servo____________",
           "Gypsy________________",
-        |],
+        ],
         roundList: [|
           [|
             {

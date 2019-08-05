@@ -235,7 +235,7 @@ let tournaments =
         name: "Wayne Manor Open",
         tieBreaks: [|0, 1, 2, 3|],
         byeQueue: [||],
-        playerIds: [|
+        playerIds: [
           "BruceWayne_lv_ZsUHTU9",
           "DickGrayson_1C2rCokHH",
           "AlfredPennyworth_y4dW",
@@ -245,7 +245,7 @@ let tournaments =
           "JasonTodd_fc9CeOa-Luw",
           "JamesGordon_1ts9xICT3",
           "HelenaWayne_fE6O0DJcE",
-        |],
+        ],
         roundList: [|
           [|
             {
@@ -466,7 +466,7 @@ let tournaments =
         name: "The Battle for Gotham City",
         tieBreaks: [|0, 1, 2, 3|],
         byeQueue: [||],
-        playerIds: [|
+        playerIds: [
           "BruceWayne_lv_ZsUHTU9",
           "DickGrayson_1C2rCokHH",
           "AlfredPennyworth_y4dW",
@@ -485,7 +485,7 @@ let tournaments =
           "EdwardNigma_j80JfWOZq",
           "JonathanCrane_R4Q8tVW",
           "HarveyDent_0eYIiP_Ij5",
-        |],
+        ],
         roundList: [|
           [|
             {

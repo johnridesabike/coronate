@@ -4,19 +4,15 @@ open Data;
 module Selecting = {
   [@react.component]
   let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
+    let {Tournament.playerIds} = tourney;
     let togglePlayer = event => {
       let id = event->ReactEvent.Form.target##value;
       if (event->ReactEvent.Form.target##checked) {
-        setTourney(
-          Tournament.{
-            ...tourney,
-            playerIds: tourney.playerIds |> Js.Array.concat([|id|]),
-          },
-        );
+        setTourney(Tournament.{...tourney, playerIds: [id, ...playerIds]});
       } else {
         setTourney({
           ...tourney,
-          playerIds: tourney.playerIds |> Js.Array.filter(pId => pId !== id),
+          playerIds: playerIds->List.keep(pId => pId !== id),
         });
       };
     };
@@ -28,14 +24,14 @@ module Selecting = {
           onClick={_ =>
             setTourney({
               ...tourney,
-              playerIds: Map.String.keysToArray(players),
+              playerIds: players->Map.String.keysToArray->List.fromArray,
             })
           }>
           {React.string("Select all")}
         </button>
         <button
           className="button-micro"
-          onClick={_ => setTourney({...tourney, playerIds: [||]})}>
+          onClick={_ => setTourney({...tourney, playerIds: []})}>
           {React.string("Select none")}
         </button>
       </div>
@@ -51,23 +47,23 @@ module Selecting = {
         <tbody>
           {players
            |> Map.String.valuesToArray
-           |> Js.Array.map(p =>
-                <tr key={p.Player.id}>
-                  <td> {React.string(p.firstName)} </td>
-                  <td> {React.string(p.lastName)} </td>
+           |> Js.Array.map(({Player.id, firstName, lastName}) =>
+                <tr key=id>
+                  <td> {React.string(firstName)} </td>
+                  <td> {React.string(lastName)} </td>
                   <td>
                     <Utils.VisuallyHidden>
-                      <label htmlFor={"select-" ++ p.id}>
-                        {["Select", p.firstName, p.lastName]
+                      <label htmlFor={"select-" ++ id}>
+                        {["Select", firstName, lastName]
                          |> String.concat(" ")
                          |> React.string}
                       </label>
                     </Utils.VisuallyHidden>
                     <input
-                      checked={tourney.playerIds |> Js.Array.includes(p.id)}
+                      checked={playerIds->List.has(id, (===))}
                       type_="checkbox"
-                      value={p.id}
-                      id={"select-" ++ p.id}
+                      value=id
+                      id={"select-" ++ id}
                       onChange=togglePlayer
                     />
                   </td>
@@ -81,9 +77,9 @@ module Selecting = {
   };
 };
 
-let hasHadBye = (matchList, playerId) => {
+let hasHadBye = (matches, playerId) => {
   Js.Array.(
-    matchList
+    matches
     |> filter((match: Match.t) =>
          [|match.whiteId, match.blackId|] |> includes(playerId)
        )
@@ -141,7 +137,12 @@ let make = (~tournament) => {
   } = tournament;
   let {Tournament.playerIds, roundList, byeQueue} = tourney;
   let (isSelecting, setIsSelecting) =
-    React.useState(() => playerIds |> Js.Array.length === 0);
+    React.useState(() =>
+      switch (playerIds) {
+      | [] => true
+      | _ => false
+      }
+    );
   let matches = Rounds.rounds2Matches(~roundList, ());
   <div className="content-area">
     <div className="toolbar">
@@ -189,6 +190,7 @@ let make = (~tournament) => {
                    ]
                    |> String.concat(" ")
                    |> React.string}
+                  {React.string(" ")}
                   <button
                     className="button-micro"
                     onClick={_ =>

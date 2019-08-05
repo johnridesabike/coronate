@@ -59,27 +59,20 @@ let make = (~children, ~tourneyId) => {
       tournamentReducer,
       tournamentData->Map.String.getExn(tourneyId),
     );
+  let {Tournament.playerIds} = tourney;
   let roundList = tourney.roundList;
   let (players, playersDispatch) =
     React.useReducer(
       playersReducer,
       playerData->Map.String.keep((id, _) =>
-        tourney.playerIds |> Js.Array.includes(id)
+        tourney.playerIds->List.has(id, (===))
       ),
     );
   let getPlayer = Player.getPlayerMaybe(players);
   /* `players` includes players in past matches who may have left
      `activePlayers` is only players to be matched in future matches. */
   let activePlayers =
-    Map.String.(
-      players->reduce(empty, (acc, key, player) =>
-        if (tourney.playerIds |> Js.Array.includes(key)) {
-          acc->set(key, player);
-        } else {
-          acc;
-        }
-      )
-    );
+    players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
 
   let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
   let isItOver = roundList |> Array.length >= roundCount;

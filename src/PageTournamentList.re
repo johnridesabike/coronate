@@ -46,7 +46,7 @@ let make = () => {
           date: Js.Date.make(),
           id,
           name: newTourneyName,
-          playerIds: [||],
+          playerIds: [],
           roundList: [||],
           tieBreaks: [|0, 1, 2|],
         },

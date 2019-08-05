@@ -3,6 +3,7 @@
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
+import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
@@ -64,20 +65,21 @@ function TournamentData_mock(Props) {
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
   var tourney = match[0];
+  var playerIds = tourney[/* playerIds */4];
   var roundList = tourney[/* roundList */5];
   var match$1 = React.useReducer(playersReducer, Belt_MapString.keep(playerData, (function (id, param) {
-              return tourney[/* playerIds */4].includes(id);
+              return Belt_List.has(tourney[/* playerIds */4], id, (function (prim, prim$1) {
+                            return prim === prim$1;
+                          }));
             })));
   var players = match$1[0];
   var getPlayer = function (param) {
     return Data_Player$Coronate.getPlayerMaybe(players, param);
   };
-  var activePlayers = Belt_MapString.reduce(players, Belt_MapString.empty, (function (acc, key, player) {
-          if (tourney[/* playerIds */4].includes(key)) {
-            return Belt_MapString.set(acc, key, player);
-          } else {
-            return acc;
-          }
+  var activePlayers = Belt_MapString.keep(players, (function (id, param) {
+          return Belt_List.has(playerIds, id, (function (prim, prim$1) {
+                        return prim === prim$1;
+                      }));
         }));
   var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
   var isItOver = roundList.length >= roundCount;

@@ -9,7 +9,7 @@ let loadPairData = tourneyId => {
   let roundList = tournament.roundList;
   let players =
     TestData.players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
-      if (playerIds |> Js.Array.includes(key)) {
+      if (playerIds->List.has(key, (===))) {
         acc->Map.String.set(key, player);
       } else {
         acc;

@@ -5,7 +5,7 @@ type t = {
   date: Js.Date.t,
   id: string,
   name: string,
-  playerIds: array(string),
+  playerIds: list(string),
   roundList: Data_Rounds.t,
   tieBreaks: array(int),
 };
@@ -20,18 +20,18 @@ let decode = json =>
     date: json |> field("date", oneOf([date, unsafe_date])),
     id: json |> field("id", string),
     name: json |> field("name", string),
-    playerIds: json |> field("playerIds", array(string)),
+    playerIds: json |> field("playerIds", list(string)),
     roundList: json |> field("roundList", Data_Rounds.decode),
     tieBreaks: json |> field("tieBreaks", array(int)),
   };
 let encode = data =>
   Json.Encode.(
     object_([
-      ("byeQueue", data.byeQueue |> stringArray),
+      ("byeQueue", data.byeQueue |> array(string)),
       ("date", data.date |> date),
       ("id", data.id |> string),
       ("name", data.name |> string),
-      ("playerIds", data.playerIds |> stringArray),
+      ("playerIds", data.playerIds |> list(string)),
       ("roundList", data.roundList |> Data_Rounds.encode),
       ("tieBreaks", data.tieBreaks |> array(int)),
     ])
