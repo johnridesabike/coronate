@@ -64,7 +64,7 @@
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.3",
-    "gh-pages": "^2.1.0",
+    "gh-pages": "^2.0.1",
     "react-scripts": "3.0.1",
     "stylelint": "^10.1.0",
     "stylelint-config-standard": "^18.3.0",
