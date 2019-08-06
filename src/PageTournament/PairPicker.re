@@ -14,7 +14,8 @@ module SelectList = {
   let make = (~pairData, ~stagedPlayers, ~setStagedPlayers, ~unmatched) => {
     let (p1, p2) = stagedPlayers;
     let initialTable =
-      unmatched->Map.String.valuesToArray
+      unmatched
+      |> Map.String.valuesToArray
       |> Js.Array.map(player => {player, ideal: 0.0});
     let (sorted, sortedDispatch) =
       Hooks.useSortedTable(
@@ -22,7 +23,7 @@ module SelectList = {
         ~column=sortByName,
         ~isDescending=false,
       );
-    let isNullSelected = [|p1, p2|] |> Js.Array.includes(None);
+    let isNullSelected = p1 === None || p2 === None;
     let isOnePlayerSelected = p1 !== p2 && isNullSelected;
     let isPlayerSelectable = id => {
       switch (stagedPlayers) {
@@ -340,8 +341,7 @@ let make =
   let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None));
   let (p1, p2) = stagedPlayers;
   let (config, _) = Db.useConfig();
-  let avoidPairs = config.avoidPairs;
-  let byeValue = config.byeValue;
+  let {Config.avoidPairs, byeValue} = config;
   let {
     LoadTournament.tourney,
     activePlayers,
@@ -388,12 +388,8 @@ let make =
   let autoPair = round => {
     let newRound =
       round->Rounds.Round.addMatches(
-        Match.autoPair(
-          ~pairData,
-          ~byeValue=config.byeValue,
-          ~byeQueue,
-          ~playerMap=unmatched,
-        ),
+        Match.autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)
+        ->List.toArray,
       );
     switch (roundList->Rounds.set(roundId, newRound)) {
     | Some(roundList) => setTourney({...tourney, roundList})

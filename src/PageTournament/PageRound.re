@@ -84,8 +84,7 @@ module MatchRow = {
     let whitePlayer = getPlayer(match.Match.whiteId);
     let blackPlayer = getPlayer(match.blackId);
     let isDummyRound =
-      [|match.whiteId, match.blackId|]
-      |> Js.Array.includes(Data.Player.dummy_id);
+      match.whiteId === Player.dummy_id || match.blackId === Player.dummy_id;
 
     let whiteName =
       [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
@@ -417,24 +416,24 @@ module Round = {
       /* checks if the match has been scored yet & resets the players'
          records */
       | Some(match) when match.result !== NotSet =>
-        [|
+        [
           (match.whiteId, match.whiteOrigRating),
           (match.blackId, match.blackOrigRating),
-        |]
-        |> Js.Array.forEach(((id, rating)) =>
-             switch (players->Map.String.get(id)) {
-             /* If there was a dummy player or a deleted player then bail
-                on the dispatch. */
-             | None => ()
-             | Some(player) =>
-               playersDispatch(
-                 Set(
-                   player.id,
-                   {...player, rating, matchCount: player.matchCount - 1},
-                 ),
-               )
-             }
-           )
+        ]
+        ->List.forEach(((id, rating)) =>
+            switch (players->Map.String.get(id)) {
+            /* If there was a dummy player or a deleted player then bail
+               on the dispatch. */
+            | None => ()
+            | Some(player) =>
+              playersDispatch(
+                Set(
+                  player.id,
+                  {...player, rating, matchCount: player.matchCount - 1},
+                ),
+              )
+            }
+          )
       | None
       | Some(_) => ()
       };

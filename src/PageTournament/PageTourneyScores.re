@@ -43,12 +43,10 @@ module ScoreTable = {
     let tieBreakNames = Scoring.getTieBreakNames(tieBreaks);
     let standingTree =
       Rounds.rounds2Matches(~roundList, ())
-      |> Converters.matches2ScoreData
-      |> Scoring.createStandingList(tieBreaks)
-      |> Js.Array.filter(standing =>
-           !Data.Player.isDummyId(standing.Scoring.id)
-         )
-      |> Scoring.createStandingTree;
+      ->Converters.matches2ScoreData
+      ->Scoring.createStandingList(tieBreaks)
+      ->List.keep(standing => !Data.Player.isDummyId(standing.Scoring.id))
+      ->Scoring.createStandingTree;
     <table
       className={Cn.make([Style.table, Style.compact->Cn.ifTrue(isCompact)])}>
       <caption
@@ -79,88 +77,86 @@ module ScoreTable = {
       </thead>
       <tbody>
         {standingTree
-         |> Js.Array.mapi((standingsFlat, rank) =>
-              standingsFlat
-              |> Js.Array.mapi((standing: Scoring.standing, i) =>
-                   <tr key={standing.id} className=Style.row>
-                     {i === 0
-                        /* Only display the rank once */
-                        ? <th
-                            className={Cn.make([
-                              "table__number",
-                              Style.number,
-                              Style.rank,
-                              Style.rowTh,
-                            ])}
-                            rowSpan={standingsFlat |> Js.Array.length}
-                            scope="row">
-                            {rank + 1 |> string_of_int |> React.string}
-                          </th>
-                        : React.null}
-                     /* use <td> if it's compact.*/
-                     {isCompact
-                        ? <td
-                            className={Cn.make([
-                              Style.rowTd,
-                              Style.playerName,
-                            ])}>
-                            {React.string(
-                               getPlayer(standing.id).Player.firstName,
-                             )}
-                            {React.string(Utils.Entities.nbsp)}
-                            {React.string(getPlayer(standing.id).lastName)}
-                          </td>  /* Use the name as a header if not compact. */
-                        : <th
-                            className={Cn.make([
-                              Style.rowTh,
-                              Style.playerName,
-                            ])}
-                            /*dataTestid={rank |>string_of_int}*/
-                            scope="row">
-                            {React.string(getPlayer(standing.id).firstName)}
-                            {React.string(Utils.Entities.nbsp)}
-                            {React.string(getPlayer(standing.id).lastName)}
-                          </th>}
-                     <td
-                       className={Cn.make([
-                         Style.number,
-                         Style.rowTd,
-                         "table__number",
-                       ])}>
-                       /*dataTestid={dashify(
-                           getPlayer(standing.id).firstName
-                           + getPlayer(standing.id).lastName
-                           + " score",
-                         )}*/
+         ->List.toArray
+         ->Array.reverse
+         ->Array.mapWithIndex((rank, standingsFlat) =>
+             standingsFlat
+             ->List.toArray
+             ->Array.reverse
+             ->Array.mapWithIndex((i, standing: Scoring.standing) =>
+                 <tr key={standing.id} className=Style.row>
+                   {i === 0
+                      /* Only display the rank once */
+                      ? <th
+                          className={Cn.make([
+                            "table__number",
+                            Style.number,
+                            Style.rank,
+                            Style.rowTh,
+                          ])}
+                          rowSpan={List.size(standingsFlat)}
+                          scope="row">
+                          {rank + 1 |> string_of_int |> React.string}
+                        </th>
+                      : React.null}
+                   /* It just uses <td> if it's compact.*/
+                   {isCompact
+                      ? <td
+                          className={Cn.make([Style.rowTd, Style.playerName])}>
+                          {React.string(
+                             getPlayer(standing.id).Player.firstName,
+                           )}
+                          {React.string(Utils.Entities.nbsp)}
+                          {React.string(getPlayer(standing.id).lastName)}
+                        </td>  /* Use the name as a header if not compact. */
+                      : <th
+                          className={Cn.make([Style.rowTh, Style.playerName])}
+                          /*dataTestid={rank |>string_of_int}*/
+                          scope="row">
+                          {React.string(getPlayer(standing.id).firstName)}
+                          {React.string(Utils.Entities.nbsp)}
+                          {React.string(getPlayer(standing.id).lastName)}
+                        </th>}
+                   <td
+                     className={Cn.make([
+                       Style.number,
+                       Style.rowTd,
+                       "table__number",
+                     ])}>
+                     /*dataTestid={dashify(
+                         getPlayer(standing.id).firstName
+                         + getPlayer(standing.id).lastName
+                         + " score",
+                       )}*/
 
-                         Numeral.(standing.score->make->format("1/2"))
-                         ->React.string
-                       </td>
-                     {isCompact
-                        ? React.null
-                        : standing.tieBreaks
-                          |> Js.Array.mapi((score, j) =>
-                               <td
-                                 key={j |> string_of_int}
-                                 className={Cn.make([
-                                   Style.rowTd,
-                                   "table__number",
-                                 ])}>
-                                 /*dataTestid={dashify(
-                                     getPlayer(standing.id).firstName
-                                     + getPlayer(standing.id).lastName
-                                     + tieBreakNames[j],
-                                   )}*/
+                       Numeral.(standing.score->make->format("1/2"))
+                       ->React.string
+                     </td>
+                   {isCompact
+                      ? React.null
+                      : standing.tieBreaks
+                        |> Js.Array.mapi((score, j) =>
+                             <td
+                               key={j |> string_of_int}
+                               className={Cn.make([
+                                 Style.rowTd,
+                                 "table__number",
+                               ])}>
+                               /*dataTestid={dashify(
+                                   getPlayer(standing.id).firstName
+                                   + getPlayer(standing.id).lastName
+                                   + tieBreakNames[j],
+                                 )}*/
 
-                                   Numeral.(score->make->format("1/2"))
-                                   ->React.string
-                                 </td>
-                             )
-                          |> React.array}
-                   </tr>
-                 )
-              |> React.array
-            )
+                                 Numeral.(score->make->format("1/2"))
+                                 ->React.string
+                               </td>
+                           )
+                        |> React.array}
+                 </tr>
+               )
+             |> React.array
+           )
          |> React.array}
       </tbody>
     </table>;
@@ -374,7 +370,7 @@ module Crosstable = {
     let {Tournament.tieBreaks, roundList} = tourney;
     let scoreData =
       Rounds.rounds2Matches(~roundList, ()) |> Converters.matches2ScoreData;
-    let standings = Scoring.createStandingList(tieBreaks, scoreData);
+    let standings = Scoring.createStandingList(scoreData, tieBreaks);
 
     let getXScore = (player1Id, player2Id) =>
       if (player1Id === player2Id) {
@@ -419,11 +415,12 @@ module Crosstable = {
           <th> {React.string("Name")} </th>
           /* Display a rank as a shorthand for each player. */
           {standings
-           |> Js.Array.mapi((_, rank) =>
-                <th key={rank |> string_of_int}>
-                  {rank + 1 |> string_of_int |> React.string}
-                </th>
-              )
+           ->List.toArray
+           ->Array.mapWithIndex((rank, _) =>
+               <th key={rank |> string_of_int}>
+                 {rank + 1 |> string_of_int |> React.string}
+               </th>
+             )
            |> React.array}
           <th> {React.string("Score")} </th>
           <th colSpan=2> {React.string("Rating")} </th>
@@ -431,38 +428,39 @@ module Crosstable = {
       </thead>
       <tbody>
         {standings
-         |> Js.Array.mapi((standing: Scoring.standing, index) =>
-              <tr key={index |> string_of_int} className=Style.row>
-                <th
-                  className={Cn.make([Style.rowTh, Style.rank])} scope="col">
-                  {index + 1 |> string_of_int |> React.string}
-                </th>
-                <th
-                  className={Cn.make([Style.rowTh, Style.playerName])}
-                  scope="row">
-                  {React.string(getPlayer(standing.id).firstName)}
-                  {React.string(Utils.Entities.nbsp)}
-                  {React.string(getPlayer(standing.id).lastName)}
-                </th>
-                /* Output a cell for each other player */
-                {standings
-                 |> Js.Array.mapi((opponent: Scoring.standing, index2) =>
-                      <td
-                        key={index2 |> string_of_int}
-                        className={Cn.make([Style.rowTd, "table__number"])}>
-                        {getXScore(standing.id, opponent.id)}
-                      </td>
-                    )
-                 |> React.array}
-                /* Output their score and rating change */
-                <td className={Cn.make([Style.rowTd, "table__number"])}>
-                  {Numeral.make(standing.score)
-                   ->Numeral.format("1/2")
-                   ->React.string}
-                </td>
-                {getRatingChangeTds(standing.id)}
-              </tr>
-            )
+         ->List.toArray
+         ->Array.mapWithIndex((index, standing: Scoring.standing) =>
+             <tr key={index |> string_of_int} className=Style.row>
+               <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
+                 {index + 1 |> string_of_int |> React.string}
+               </th>
+               <th
+                 className={Cn.make([Style.rowTh, Style.playerName])}
+                 scope="row">
+                 {React.string(getPlayer(standing.id).firstName)}
+                 {React.string(Utils.Entities.nbsp)}
+                 {React.string(getPlayer(standing.id).lastName)}
+               </th>
+               /* Output a cell for each other player */
+               {standings
+                ->List.toArray
+                ->Array.mapWithIndex((index2, opponent: Scoring.standing) =>
+                    <td
+                      key={index2 |> string_of_int}
+                      className={Cn.make([Style.rowTd, "table__number"])}>
+                      {getXScore(standing.id, opponent.id)}
+                    </td>
+                  )
+                |> React.array}
+               /* Output their score and rating change */
+               <td className={Cn.make([Style.rowTd, "table__number"])}>
+                 {Numeral.make(standing.score)
+                  ->Numeral.format("1/2")
+                  ->React.string}
+               </td>
+               {getRatingChangeTds(standing.id)}
+             </tr>
+           )
          |> React.array}
       </tbody>
     </table>;

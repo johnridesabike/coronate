@@ -236,22 +236,35 @@ module Profile = {
       };
     let unavoided =
       players
-      |> Map.String.keysToArray
-      |> Js.Array.filter(id =>
-           !singAvoidList->List.has(id, (===)) && id !== playerId
-         );
-
+      ->Map.String.keysToArray
+      ->List.fromArray
+      ->List.keep(id =>
+          !singAvoidList->List.has(id, (===)) && id !== playerId
+        );
     let (selectedAvoider, setSelectedAvoider) =
-      React.useState(() => unavoided->Array.getExn(0));
+      React.useState(() =>
+        switch (unavoided) {
+        | [id, ..._] => Some(id)
+        | [] => None
+        }
+      );
     let avoidAdd = event => {
       event->ReactEvent.Form.preventDefault;
-      configDispatch(Db.AddAvoidPair((playerId, selectedAvoider)));
-      /* Reset the selected avoider to the first on the list, but check to
-         make sure they weren't they weren't the first. */
-      let newSelected =
-        unavoided->Array.getExn(0) !== selectedAvoider
-          ? unavoided->Array.getExn(0) : unavoided->Array.getExn(1);
-      setSelectedAvoider(_ => newSelected);
+      switch (selectedAvoider) {
+      | None => ()
+      | Some(selectedAvoider) =>
+        configDispatch(Db.AddAvoidPair((playerId, selectedAvoider)));
+        /* Reset the selected avoider to the first on the list, but check to
+           make sure they weren't they weren't the first. */
+        let newSelected =
+          switch (unavoided) {
+          | [id, ..._] when id !== selectedAvoider => Some(id)
+          | [_, id, ..._] => Some(id)
+          | [_]
+          | [] => None
+          };
+        setSelectedAvoider(_ => newSelected);
+      };
     };
     let handleChange = event => {
       event->ReactEvent.Form.preventDefault;
@@ -377,23 +390,27 @@ module Profile = {
         <label htmlFor="avoid-select">
           {React.string("Select a new player to avoid.")}
         </label>
-        <select
-          id="avoid-select"
-          onBlur=handleAvoidBlur
-          onChange=handleAvoidChange
-          value=selectedAvoider>
-          {unavoided
-           |> Js.Array.map(pId =>
-                <option key=pId value=pId>
-                  {React.string(players->getPlayerMaybe(pId).firstName)}
-                  {React.string(" ")}
-                  {React.string(players->getPlayerMaybe(pId).lastName)}
-                </option>
-              )
-           |> ReasonReact.array}
-        </select>
-        {React.string(" ")}
-        <input className="button-micro" type_="submit" value="Add" />
+        {switch (selectedAvoider) {
+         | Some(selectedAvoider) =>
+           <>
+             <select
+               id="avoid-select"
+               onBlur=handleAvoidBlur
+               onChange=handleAvoidChange
+               value=selectedAvoider>
+               {unavoided->Utils.List.toReactArray(pId =>
+                  <option key=pId value=pId>
+                    {React.string(players->getPlayerMaybe(pId).firstName)}
+                    {React.string(" ")}
+                    {React.string(players->getPlayerMaybe(pId).lastName)}
+                  </option>
+                )}
+             </select>
+             {React.string(" ")}
+             <input className="button-micro" type_="submit" value="Add" />
+           </>
+         | None => React.string("No players are available to avoid.")
+         }}
       </form>
     </div>;
   };

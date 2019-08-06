@@ -53,9 +53,10 @@ let getOpponentScores = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => [||]
   | Some(player) =>
-    player.opponentResults->Map.String.keysToArray
-    |> Js.Array.filter(isNotDummy(scoreDict))
-    |> Js.Array.map(getPlayerScore(scoreDict))
+    player.opponentResults
+    ->Map.String.keysToArray
+    ->Array.keep(isNotDummy(scoreDict))
+    ->Array.map(getPlayerScore(scoreDict))
   };
 };
 
@@ -93,10 +94,11 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
   | Some(person) =>
-    person.opponentResults->Map.String.keysToArray
-    |> Js.Array.filter(isNotDummy(scoreDict))
-    |> Js.Array.map(getCumulativeScore(scoreDict))
-    |> Utils.Array.sumF
+    person.opponentResults
+    ->Map.String.keysToArray
+    ->Array.keep(isNotDummy(scoreDict))
+    ->Array.map(getCumulativeScore(scoreDict))
+    ->Utils.Array.sumF
   };
 };
 
@@ -183,74 +185,64 @@ let standingsSorter = (a, b) => {
  which lists the score associated with each method. The order of these
  coresponds to the order of the method names in the second list.
  */
-let createStandingList = (methods, scoreData) => {
+let createStandingList = (scoreData: Map.String.t(t), methods) => {
   let selectedTieBreakFuncs =
     methods |> Js.Array.map(i => tieBreakMethods->Array.getExn(i).func);
-  let standings =
-    scoreData->Map.String.keysToArray
-    |> Js.Array.map(id =>
-         {
-           id,
-           score: getPlayerScore(scoreData, id),
-           tieBreaks:
-             selectedTieBreakFuncs |> Js.Array.map(fn => fn(scoreData, id)),
-         }
-       );
-  SortArray.stableSortBy(standings, standingsSorter);
+  scoreData
+  ->Map.String.reduce([], (acc, id, data) =>
+      [
+        {
+          id,
+          score: Utils.List.sumF(data.results),
+          tieBreaks:
+            selectedTieBreakFuncs |> Js.Array.map(fn => fn(scoreData, id)),
+        },
+        ...acc,
+      ]
+    )
+  /* The `reverse` just ensures that ties are sorted according to their original
+     order (alphabetically by name) and not reversed. It has no practical
+     purpose and should probably be replaced with a more robust sorting option
+     */
+  ->List.reverse
+  ->List.sort(standingsSorter);
 };
 
-let areScoresEqual = (standing1, standing2) => {
-  let equalScores = standing1.score !== standing2.score;
-  equalScores
-    ? false
-    : !(
-        standing1.tieBreaks
-        |> Js.Array.reducei(
-             (acc, value, i) =>
-               acc->Js.Array.concat([|
-                 value !== standing2.tieBreaks->Array.getExn(i),
-               |]),
-             [||],
-           )
-        |> Js.Array.includes(true)
-      );
-};
+let areScoresEqual = (standing1, standing2) =>
+  if (standing1.score !== standing2.score) {
+    false;
+  } else {
+    !
+      standing1.tieBreaks
+      ->Array.reduceWithIndex([], (acc, value, i) =>
+          [value !== standing2.tieBreaks->Array.getExn(i), ...acc]
+        )
+      ->List.has(true, (===)); /* NOT */
+  };
 
 /*
  Groups the standings by score, see USCF tie-break rules from § 34.
  example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
  first, Pete is 2nd, Bob is 3rd.
  */
-let createStandingTree = standingList => {
-  standingList
-  |> Js.Array.reducei(
-       (acc, standing, i) => {
-         let isNewRank = {
-           i === 0
-             /* Always make a new rank for the first player */
-             ? true
-             /* Make a new rank if the scores aren't equal */
-             : !areScoresEqual(standing, standingList->Array.getExn(i - 1));
-         };
-         isNewRank
-           /* If this player doesn't have the same score, create a new
-              branch of the tree. */
-           ? acc |> Js.Array.concat([|[|standing|]|])
-           /* If this player has the same score as the last, append it
-              to the last branch. */
-           : {
-             let lastIndex = Js.Array.length(acc) - 1;
-             acc->Array.set(
-               lastIndex,
-               acc->Array.getExn(lastIndex) |> Js.Array.concat([|standing|]),
-             )
-             |> ignore;
-             acc;
-           };
-       },
-       [||],
-     );
-};
+let createStandingTree = (standingList: list(standing)) =>
+  standingList->List.reduce([], (acc, standing) =>
+    switch (acc) {
+    /* Always make a new rank for the first player */
+    | [] => [[standing]]
+    | [lastRank, ...pastRanks] =>
+      switch (lastRank) {
+      | [] => [[standing], ...acc]
+      | [lastStanding, ..._] =>
+        /* Make a new rank if the scores aren't equal */
+        if (!areScoresEqual(lastStanding, standing)) {
+          [[standing], lastRank, ...pastRanks];
+        } else {
+          [[standing, ...lastRank], ...pastRanks];
+        }
+      }
+    }
+  );
 
 module Ratings = {
   let getKFactor = matchCount => {

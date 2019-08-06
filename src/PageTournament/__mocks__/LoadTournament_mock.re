@@ -75,7 +75,7 @@ let make = (~children, ~tourneyId) => {
     players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
 
   let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
-  let isItOver = roundList |> Array.length >= roundCount;
+  let isItOver = Array.length(roundList) >= roundCount;
   let isNewRoundReady =
     Js.Array.(
       roundList |> length === 0

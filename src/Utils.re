@@ -30,9 +30,14 @@ module Array = {
 module List = {
   open Belt;
   let sumF = list => List.reduce(list, 0.0, (+.));
-  let toReactArray = (list, fn) => {
+  let toReactArrayReverse = (list, fn) => {
     let result = [||];
     List.forEach(list, item => result |> Js.Array.unshift(fn(item)));
+    React.array(result);
+  };
+  let toReactArray = (list, fn) => {
+    let result = [||];
+    List.forEach(list, item => result |> Js.Array.push(fn(item)));
     React.array(result);
   };
 };

@@ -46,12 +46,12 @@ let differentDueColor = priority(4.0);
 /* This is useful for dividing against a calculated priority, to inspect how
    "compatible" two players may be. */
 let maxPriority =
-  Utils.Array.sumF([|
+  Utils.List.sumF([
     differentHalf(true, 1.0),
     differentDueColor(true),
     sameScores(1.0),
     avoidMeetingTwice(true),
-  |]);
+  ]);
 
 /* Given two `PairingData` objects, this assigns a number for how much they
    should be matched. The number gets fed to the `blossom` algorithm. */
@@ -75,12 +75,12 @@ let calcPairIdeal = (player1, player2) =>
     let isDiffHalf =
       player1.isUpperHalf !== player2.isUpperHalf
       && player1.score === player2.score;
-    Utils.Array.sumF([|
+    Utils.List.sumF([
       differentDueColor(isDiffDueColor),
       sameScores(scoreDiff),
       differentHalf(isDiffHalf, halfDiff),
       avoidMeetingTwice(!metBefore && !mustAvoid),
-    |]);
+    ]);
   };
 
 let descendingScore = Utils.descend(x => x.score);
@@ -132,8 +132,11 @@ let sortByScoreThenRating = (data1, data2) =>
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !p.opponents->List.has(dummyId, (===));
   if (Map.String.size(data) mod 2 === 0) {
-    /* if the list is even, just return it. */
-    (data, None);
+    (
+      /* if the list is even, just return it. */
+      data,
+      None,
+    );
   } else {
     let dataList =
       data
@@ -235,22 +238,21 @@ let pairPlayers = pairData => {
          )[0][2];
          Blossom returns a lot of redundant matches. Check that this matchup
          wasn't already added. */
-      let matched = acc |> Js.Array.map(((player, _)) => player);
-      if (!(matched |> Js.Array.includes(p1))
-          && !(matched |> Js.Array.includes(p2))) {
-        acc |> Js.Array.concat([|(p1, p2)|]);
+      let matched = acc->List.map(((player, _)) => player);
+      if (!matched->List.has(p1, (===)) && !matched->List.has(p2, (===))) {
+        [(p1, p2), ...acc];
       } else {
         acc;
       };
     };
   playerArray
-  |> Js.Array.reducei(pairIdealReducer, [||])
+  ->Array.reduceWithIndex([||], pairIdealReducer)
   /* Feed all of the potential matches to Edmonds-blossom and let the
      algorithm work its magic. This returns an array where each index is the
      ID of one player and each value is the ID of the matched player. */
-  |> Externals.blossom
+  ->Externals.blossom
   /* Translate those IDs into actual pairs of player Ids. */
-  |> Js.Array.reducei(blossom2Pairs, [||])
-  |> Js.Array.sortInPlaceWith(sortByNetScoreThenRating)
-  |> Js.Array.map(assignColorsForPair);
+  ->Array.reduceWithIndex([], blossom2Pairs)
+  ->List.sort(sortByNetScoreThenRating)
+  ->List.map(assignColorsForPair);
 };

@@ -104,40 +104,29 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   /* the pairData includes any players who were already matched. We need to
      only include the specified players. */
   let filteredData =
-    Map.String.(
-      pairData->reduce(empty, (acc, key, datum) =>
-        if (playerMap->has(key)) {
-          acc->set(key, datum);
-        } else {
-          acc;
-        }
-      )
-    );
+    pairData->Map.String.(keep((id, _) => playerMap->has(id)));
   let (pairdataNoByes, byePlayerData) =
     Pairing.setByePlayer(byeQueue, Data_Player.dummy_id, filteredData);
   let pairs = Pairing.pairPlayers(pairdataNoByes);
   let pairsWithBye =
     switch (byePlayerData) {
-    | Some(player) =>
-      pairs |> Js.Array.concat([|(player.id, Data_Player.dummy_id)|])
+    | Some(player) => [(player.id, Data_Player.dummy_id), ...pairs]
     | None => pairs
     };
   let getPlayer = Data_Player.getPlayerMaybe(playerMap);
-  let newMatchList =
-    pairsWithBye
-    |> Js.Array.map(((whiteId, blackId)) =>
-         {
-           id: Utils.nanoid(),
-           whiteOrigRating: getPlayer(whiteId).rating,
-           blackOrigRating: getPlayer(blackId).rating,
-           whiteNewRating: getPlayer(whiteId).rating,
-           blackNewRating: getPlayer(blackId).rating,
-           whiteId,
-           blackId,
-           result: Result.NotSet,
-         }
-       );
-  newMatchList |> Js.Array.map(scoreByeMatch(byeValue));
+  pairsWithBye->List.map(((whiteId, blackId)) =>
+    {
+      id: Utils.nanoid(),
+      whiteOrigRating: getPlayer(whiteId).rating,
+      blackOrigRating: getPlayer(blackId).rating,
+      whiteNewRating: getPlayer(whiteId).rating,
+      blackNewRating: getPlayer(blackId).rating,
+      whiteId,
+      blackId,
+      result: Result.NotSet,
+    }
+    |> scoreByeMatch(byeValue)
+  );
 };
 
 let manualPair = ((white, black), byeValue) => {

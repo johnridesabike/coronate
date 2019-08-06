@@ -1,20 +1,28 @@
 open Belt;
+
+/*
+  Begin the sortable table hook.
+*/
 type getter('a) =
   | GetString('a => string)
   | GetInt('a => int)
   | GetFloat('a => float)
   | GetDate('a => Js.Date.t);
 
+/*
+  Arrays or lists? I'm using arrays because this data only exists to be rendered
+  in React. 
+*/
 type tableState('a) = {
   isDescending: bool,
   column: getter('a),
-  table: Js.Array.t('a),
+  table: array('a),
 };
 
 type actionTable('a) =
   | SetIsDescending(bool)
   | SetColumn(getter('a))
-  | SetTable(Js.Array.t('a))
+  | SetTable(array('a))
   | SortWithoutUpdating;
 
 let sortedTableReducer = (state, action) => {

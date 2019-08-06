@@ -60,7 +60,7 @@ function playersReducer(state, action) {
   }
 }
 
-function TournamentData_mock(Props) {
+function LoadTournament_mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
@@ -98,7 +98,7 @@ function TournamentData_mock(Props) {
             ]);
 }
 
-var make = TournamentData_mock;
+var make = LoadTournament_mock;
 
 export {
   log2 ,

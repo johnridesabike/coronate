@@ -152,7 +152,7 @@ module WithScoreInfo =
          )
       |> React.array;
     let avoidListHtml =
-      avoidList->Utils.List.toReactArray(pId =>
+      avoidList->Utils.List.toReactArrayReverse(pId =>
         switch (players->Map.String.get(pId)) {
         /*  don't show players not in this tourney*/
         | None => React.null

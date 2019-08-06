@@ -1,1 +1,0 @@
-export * from "./TournamentData_Mock.bs";

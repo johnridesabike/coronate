@@ -53,7 +53,7 @@ let makeScoreData =
   };
 };
 
-let matches2ScoreData = matchList => {
+let matches2ScoreData = (matchList: array(Data_Match.t)) => {
   matchList
   |> Js.Array.reduce(
        (acc, match) =>

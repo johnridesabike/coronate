@@ -109,12 +109,12 @@ test("Players are paired correctly in a simple scenario.", () => {
   // });
   let matches = Pairing.pairPlayers(pairData);
   expect(matches)
-  |> ExpectJs.toEqual([|
+  |> ExpectJs.toEqual([
        ("Grandy_McMaster______", "Gypsy________________"),
        ("Dr_Clayton_Forrester_", "Newbie_McNewberson___"),
        ("Joel_Robinson________", "Crow_T_Robot_________"),
        ("Tom_Servo____________", "TVs_Frank____________"),
-     |]);
+     ]);
 });
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData("Pairing_With_Draws___");
@@ -161,10 +161,10 @@ test("Players are paired correctly after a draw.", () => {
   // });
   let matches = Pairing.pairPlayers(pairData);
   expect(matches)
-  |> toEqual([|
+  |> toEqual([
        ("Grandy_McMaster______", "Gypsy________________"),
        ("Dr_Clayton_Forrester_", "Newbie_McNewberson___"),
        ("Tom_Servo____________", "TVs_Frank____________"),
        ("Joel_Robinson________", "Crow_T_Robot_________"),
-     |]);
+     ]);
 });
