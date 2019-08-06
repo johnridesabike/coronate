@@ -233,7 +233,12 @@ let tournaments =
         date: Js.Date.fromString("2019-05-22T12:14:47.670Z"),
         id: "CaouTNel9k70jUJ0h6SYM",
         name: "Wayne Manor Open",
-        tieBreaks: [|0, 1, 2, 3|],
+        tieBreaks: [|
+          Scoring.Median,
+          Solkoff,
+          Cumulative,
+          CumulativeOfOpposition,
+        |],
         byeQueue: [||],
         playerIds: [
           "BruceWayne_lv_ZsUHTU9",
@@ -464,7 +469,12 @@ let tournaments =
         date: Js.Date.fromString("2019-05-29T12:15:20.593Z"),
         id: "tvAdS4YbSOznrBgrg0ITA",
         name: "The Battle for Gotham City",
-        tieBreaks: [|0, 1, 2, 3|],
+        tieBreaks: [|
+          Scoring.Median,
+          Solkoff,
+          Cumulative,
+          CumulativeOfOpposition,
+        |],
         byeQueue: [||],
         playerIds: [
           "BruceWayne_lv_ZsUHTU9",

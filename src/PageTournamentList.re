@@ -48,7 +48,12 @@ let make = () => {
           name: newTourneyName,
           playerIds: [],
           roundList: [||],
-          tieBreaks: [|0, 1, 2|],
+          tieBreaks: [|
+            Scoring.Median,
+            Solkoff,
+            Cumulative,
+            CumulativeOfOpposition,
+          |],
         },
       ),
     );

@@ -16,7 +16,7 @@ let emptyTourney = {
   roundList: [||],
   date: Js.Date.fromFloat(0.0),
   id: Utils.nanoid(),
-  tieBreaks: [|1|],
+  tieBreaks: [|Scoring.Median|],
   byeQueue: [||],
 };
 

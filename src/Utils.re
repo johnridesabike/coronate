@@ -35,9 +35,25 @@ module List = {
     List.forEach(list, item => result |> Js.Array.unshift(fn(item)));
     React.array(result);
   };
+  let toReactArrayReverseWithIndex = (list, fn) => {
+    let result = [||];
+    list
+    ->List.reverse
+    ->List.forEachWithIndex((i, item) =>
+        result |> Js.Array.push(fn(i, item))
+      );
+    React.array(result);
+  };
   let toReactArray = (list, fn) => {
     let result = [||];
     List.forEach(list, item => result |> Js.Array.push(fn(item)));
+    React.array(result);
+  };
+  let toReactArrayWithIndex = (list, fn) => {
+    let result = [||];
+    List.forEachWithIndex(list, (i, item) =>
+      result |> Js.Array.push(fn(i, item))
+    );
     React.array(result);
   };
 };

@@ -35,6 +35,22 @@ type t = {
   resultsNoByes: list(float),
 };
 
+/*
+ This is useful for cases where the regular factory functions return empty
+ results because a player hasn't been added yet.
+ */
+let createBlankScoreData = id => {
+  colorScores: [],
+  colors: [],
+  id,
+  isDummy: false,
+  opponentResults: Map.String.empty,
+  ratings: [],
+  firstRating: 0,
+  results: [],
+  resultsNoByes: [],
+};
+
 let isNotDummy = (scoreDict, oppId) => {
   switch (scoreDict->Map.String.get(oppId)) {
   | None => true
@@ -51,24 +67,32 @@ let getPlayerScore = (scoreDict, id) => {
 
 let getOpponentScores = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
-  | None => [||]
+  | None => []
   | Some(player) =>
     player.opponentResults
-    ->Map.String.keysToArray
-    ->Array.keep(isNotDummy(scoreDict))
-    ->Array.map(getPlayerScore(scoreDict))
+    ->Map.String.reduce([], (acc, oppId, _) =>
+        if (isNotDummy(scoreDict, oppId)) {
+          [getPlayerScore(scoreDict, oppId), ...acc];
+        } else {
+          acc;
+        }
+      )
   };
 };
 
 /* USCF § 34E1 */
 let getMedianScore = (scoreDict, id) =>
-  getOpponentScores(scoreDict, id)->SortArray.stableSortBy(compare)
-  |> Js.Array.slice(~start=1, ~end_=-1)
-  |> Utils.Array.sumF;
+  scoreDict
+  ->getOpponentScores(id)
+  ->List.sort(compare)
+  ->List.tail
+  ->Option.mapWithDefault([], List.reverse)
+  ->List.tail
+  ->Option.mapWithDefault(0.0, Utils.List.sumF);
 
 /* USCF § 34E2.*/
 let getSolkoffScore = (scoreDict, id) =>
-  getOpponentScores(scoreDict, id) |> Utils.Array.sumF;
+  getOpponentScores(scoreDict, id)->Utils.List.sumF;
 
 /* turn the regular score list into a "running" score list */
 let runningReducer = (acc, score) => {
@@ -95,10 +119,15 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
   | None => 0.0
   | Some(person) =>
     person.opponentResults
-    ->Map.String.keysToArray
-    ->Array.keep(isNotDummy(scoreDict))
-    ->Array.map(getCumulativeScore(scoreDict))
-    ->Utils.Array.sumF
+    ->Map.String.reduce([], (acc, key, _) =>
+        if (isNotDummy(scoreDict, key)) {
+          [key, ...acc];
+        } else {
+          acc;
+        }
+      )
+    ->List.map(getCumulativeScore(scoreDict))
+    ->Utils.List.sumF
   };
 };
 
@@ -110,70 +139,59 @@ let getColorBalanceScore = (scoreDict, id) => {
   };
 };
 
-type tieBreakData = {
-  func: (Map.String.t(t), string) => float,
-  id: int,
-  name: string,
-};
-
-let tieBreakMethods = [|
-  {func: getMedianScore, id: 0, name: "Median"},
-  {func: getSolkoffScore, id: 1, name: "Solkoff"},
-  {func: getCumulativeScore, id: 2, name: "Cumulative score"},
-  {
-    func: getCumulativeOfOpponentScore,
-    id: 3,
-    name: "Cumulative of opposition",
-  },
-  {func: getColorBalanceScore, id: 4, name: "Most black"},
-|];
-
-let getNamefromIndex = index => tieBreakMethods->Array.getExn(index).name;
-let getTieBreakNames = idList => Js.Array.map(getNamefromIndex, idList);
-
 /*
- This is useful for cases where the regular factory functions return empty
- results because a player hasn't been added yet.
+   These types are used in various parts of the rest of the app. They map to:
+   - What tiebreak function to use.
+   - What tiebreak value has been computed for a player.
+   - What human-language name to display for the tiebreak.
+   - How to encode or decode a reference to a tiebreak for JS.
+   Since they're responsible for a lot of work, I'll leave that work for mapping
+   functions and keep these types opaque.
  */
-let createBlankScoreData = id => {
-  colorScores: [],
-  colors: [],
-  id,
-  isDummy: false,
-  opponentResults: Map.String.empty,
-  ratings: [],
-  firstRating: 0,
-  results: [],
-  resultsNoByes: [],
-};
+type tieBreak =
+  | Median
+  | Solkoff
+  | Cumulative
+  | CumulativeOfOpposition
+  | MostBlack;
+
+let mapTieBreak = tieBreak =>
+  switch (tieBreak) {
+  | Median => getMedianScore
+  | Solkoff => getSolkoffScore
+  | Cumulative => getCumulativeScore
+  | CumulativeOfOpposition => getCumulativeOfOpponentScore
+  | MostBlack => getColorBalanceScore
+  };
 
 type standing = {
   id: string,
   score: float,
-  tieBreaks: array(float),
+  tieBreaks: list((tieBreak, float)),
 };
 
-let standingsSorter = (a, b) => {
+let standingsSorter = (tieBreaks, a, b) => {
   let result = ref(0);
   let tieBreakIndex = ref(0);
   let break = ref(false);
   while (result^ === 0 && ! break^) {
-    switch (compare(b.score, a.score)) {
-    | 0 =>
-      switch (
-        b.tieBreaks->Array.get(tieBreakIndex^),
-        a.tieBreaks->Array.get(tieBreakIndex^),
-      ) {
-      | (Some(tb_b), Some(tb_a)) =>
-        switch (compare(tb_b, tb_a)) {
-        | 0 => tieBreakIndex := tieBreakIndex^ + 1
-        | x => result := x
+    switch (tieBreaks->Array.get(tieBreakIndex^)) {
+    | None => break := true
+    | Some(tieBreak) =>
+      let getTieBreak = List.getAssoc(_, tieBreak, (===));
+      switch (compare(b.score, a.score)) {
+      | 0 =>
+        switch (getTieBreak(b.tieBreaks), getTieBreak(a.tieBreaks)) {
+        | (Some(tb_b), Some(tb_a)) =>
+          switch (compare(tb_b, tb_a)) {
+          | 0 => tieBreakIndex := tieBreakIndex^ + 1
+          | x => result := x
+          }
+        | (None, _)
+        | (_, None) => break := true
         }
-      | (None, Some(_))
-      | (Some(_), None)
-      | (None, None) => break := true
-      }
-    | x => result := x
+      | x => result := x
+      };
     };
   };
   result^;
@@ -185,9 +203,11 @@ let standingsSorter = (a, b) => {
  which lists the score associated with each method. The order of these
  coresponds to the order of the method names in the second list.
  */
-let createStandingList = (scoreData: Map.String.t(t), methods) => {
+let createStandingList = (scoreData, methods) => {
   let selectedTieBreakFuncs =
-    methods |> Js.Array.map(i => tieBreakMethods->Array.getExn(i).func);
+    methods
+    ->List.fromArray
+    ->List.map(tbType => (tbType, mapTieBreak(tbType)));
   scoreData
   ->Map.String.reduce([], (acc, id, data) =>
       [
@@ -195,7 +215,9 @@ let createStandingList = (scoreData: Map.String.t(t), methods) => {
           id,
           score: Utils.List.sumF(data.results),
           tieBreaks:
-            selectedTieBreakFuncs |> Js.Array.map(fn => fn(scoreData, id)),
+            selectedTieBreakFuncs->List.map(((tbType, fn)) =>
+              (tbType, fn(scoreData, id))
+            ),
         },
         ...acc,
       ]
@@ -205,7 +227,7 @@ let createStandingList = (scoreData: Map.String.t(t), methods) => {
      purpose and should probably be replaced with a more robust sorting option
      */
   ->List.reverse
-  ->List.sort(standingsSorter);
+  ->List.sort(standingsSorter(methods));
 };
 
 let areScoresEqual = (standing1, standing2) =>
@@ -214,8 +236,11 @@ let areScoresEqual = (standing1, standing2) =>
   } else {
     !
       standing1.tieBreaks
-      ->Array.reduceWithIndex([], (acc, value, i) =>
-          [value !== standing2.tieBreaks->Array.getExn(i), ...acc]
+      ->List.reduce([], (acc, (id, value)) =>
+          switch (standing2.tieBreaks->List.getAssoc(id, (===))) {
+          | Some(value2) => [value !== value2, ...acc]
+          | None => acc
+          }
         )
       ->List.has(true, (===)); /* NOT */
   };
