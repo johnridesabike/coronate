@@ -65,10 +65,10 @@ function LoadTournament_mock(Props) {
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
   var tourney = match[0];
-  var playerIds = tourney[/* playerIds */4];
-  var roundList = tourney[/* roundList */5];
+  var playerIds = tourney[/* playerIds */3];
+  var roundList = tourney[/* roundList */6];
   var match$1 = React.useReducer(playersReducer, Belt_MapString.keep(playerData, (function (id, param) {
-              return Belt_List.has(tourney[/* playerIds */4], id, (function (prim, prim$1) {
+              return Belt_List.has(tourney[/* playerIds */3], id, (function (prim, prim$1) {
                             return prim === prim$1;
                           }));
             })));

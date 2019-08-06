@@ -36,6 +36,22 @@ type t = {
 };
 
 /*
+   These types are used in various parts of the rest of the app. They map to:
+   - What tiebreak function to use.
+   - What tiebreak value has been computed for a player.
+   - What human-language name to display for the tiebreak.
+   - How to encode or decode a reference to a tiebreak for JS.
+   Since they're responsible for a lot of work, I'll leave that work for mapping
+   functions and keep these types opaque.
+ */
+type tieBreak =
+  | Median
+  | Solkoff
+  | Cumulative
+  | CumulativeOfOpposition
+  | MostBlack;
+
+/*
  This is useful for cases where the regular factory functions return empty
  results because a player hasn't been added yet.
  */
@@ -61,22 +77,21 @@ let isNotDummy = (scoreDict, oppId) => {
 let getPlayerScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(player) => Utils.List.sumF(player.results)
+  | Some({results}) => Utils.List.sumF(results)
   };
 };
 
 let getOpponentScores = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => []
-  | Some(player) =>
-    player.opponentResults
-    ->Map.String.reduce([], (acc, oppId, _) =>
-        if (isNotDummy(scoreDict, oppId)) {
-          [getPlayerScore(scoreDict, oppId), ...acc];
-        } else {
-          acc;
-        }
-      )
+  | Some({opponentResults}) =>
+    opponentResults->Map.String.reduce([], (acc, oppId, _) =>
+      if (isNotDummy(scoreDict, oppId)) {
+        [getPlayerScore(scoreDict, oppId), ...acc];
+      } else {
+        acc;
+      }
+    )
   };
 };
 
@@ -92,7 +107,7 @@ let getMedianScore = (scoreDict, id) =>
 
 /* USCF § 34E2.*/
 let getSolkoffScore = (scoreDict, id) =>
-  getOpponentScores(scoreDict, id)->Utils.List.sumF;
+  scoreDict->getOpponentScores(id)->Utils.List.sumF;
 
 /* turn the regular score list into a "running" score list */
 let runningReducer = (acc, score) => {
@@ -108,8 +123,8 @@ let runningReducer = (acc, score) => {
 let getCumulativeScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) =>
-    person.resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
+  | Some({resultsNoByes}) =>
+    resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
   };
 };
 
@@ -117,8 +132,8 @@ let getCumulativeScore = (scoreDict, id) => {
 let getCumulativeOfOpponentScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) =>
-    person.opponentResults
+  | Some({opponentResults}) =>
+    opponentResults
     ->Map.String.reduce([], (acc, key, _) =>
         if (isNotDummy(scoreDict, key)) {
           [key, ...acc];
@@ -135,25 +150,9 @@ let getCumulativeOfOpponentScore = (scoreDict, id) => {
 let getColorBalanceScore = (scoreDict, id) => {
   switch (scoreDict->Map.String.get(id)) {
   | None => 0.0
-  | Some(person) => Utils.List.sumF(person.colorScores)
+  | Some({colorScores}) => Utils.List.sumF(colorScores)
   };
 };
-
-/*
-   These types are used in various parts of the rest of the app. They map to:
-   - What tiebreak function to use.
-   - What tiebreak value has been computed for a player.
-   - What human-language name to display for the tiebreak.
-   - How to encode or decode a reference to a tiebreak for JS.
-   Since they're responsible for a lot of work, I'll leave that work for mapping
-   functions and keep these types opaque.
- */
-type tieBreak =
-  | Median
-  | Solkoff
-  | Cumulative
-  | CumulativeOfOpposition
-  | MostBlack;
 
 let mapTieBreak = tieBreak =>
   switch (tieBreak) {
