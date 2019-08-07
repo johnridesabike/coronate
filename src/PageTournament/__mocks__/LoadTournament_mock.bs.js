@@ -4,6 +4,7 @@ import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
+import * as Db$Coronate from "../../Db.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
@@ -48,16 +49,8 @@ function tournamentReducer(param, action) {
   return action;
 }
 
-function playersReducer(state, action) {
-  switch (action.tag | 0) {
-    case 0 : 
-        return Belt_MapString.set(state, action[0], action[1]);
-    case 1 : 
-        return Belt_MapString.remove(state, action[0]);
-    case 2 : 
-        return action[0];
-    
-  }
+function isLoadedDone(status) {
+  return status !== 0;
 }
 
 function LoadTournament_mock(Props) {
@@ -65,17 +58,10 @@ function LoadTournament_mock(Props) {
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
   var tourney = match[0];
-  var playerIds = tourney[/* playerIds */3];
   var roundList = tourney[/* roundList */6];
-  var match$1 = React.useReducer(playersReducer, Belt_MapString.keep(playerData, (function (id, param) {
-              return Belt_List.has(tourney[/* playerIds */3], id, (function (prim, prim$1) {
-                            return prim === prim$1;
-                          }));
-            })));
+  var playerIds = tourney[/* playerIds */3];
+  var match$1 = Db$Coronate.useAllPlayers(/* () */0);
   var players = match$1[0];
-  var getPlayer = function (param) {
-    return Data_Player$Coronate.getPlayerMaybe(players, param);
-  };
   var activePlayers = Belt_MapString.keep(players, (function (id, param) {
           return Belt_List.has(playerIds, id, (function (prim, prim$1) {
                         return prim === prim$1;
@@ -87,7 +73,9 @@ function LoadTournament_mock(Props) {
   var isNewRoundReady = match$2 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
   return Curry._1(children, /* record */[
               /* activePlayers */activePlayers,
-              /* getPlayer */getPlayer,
+              /* getPlayer */(function (param) {
+                  return Data_Player$Coronate.getPlayerMaybe(players, param);
+                }),
               /* isItOver */isItOver,
               /* isNewRoundReady */isNewRoundReady,
               /* players */players,
@@ -107,7 +95,7 @@ export {
   playerData ,
   calcNumOfRounds ,
   tournamentReducer ,
-  playersReducer ,
+  isLoadedDone ,
   make ,
   
 }
