@@ -62,13 +62,10 @@ let calcPairIdeal = (player1, player2) =>
     let metBefore = player1.opponents->List.has(player2.id, (===));
     let mustAvoid = player1.avoidIds->List.has(player2.id, (===));
     let isDiffDueColor =
-      switch (player1.colors) {
-      | [] => true
-      | [lastColor1, ..._] =>
-        switch (player2.colors) {
-        | [] => true
-        | [lastColor2, ..._] => lastColor1 !== lastColor2
-        }
+      switch (player1.colors, player2.colors) {
+      | (_, [])
+      | ([], _) => true
+      | ([color1, ..._], [color2, ..._]) => color1 !== color2
       };
     let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0;
     let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1);
@@ -94,28 +91,29 @@ let splitInHalf = arr => {
   );
 };
 
-/* for each object sent to this, it determines whether or not it's in the
-   "upper half" of it's score group.
+/* This determines what "half" each player is in: upper half or lower half. It
+   also determines their "position" within each half.
    USCF § 29C1 */
 let setUpperHalves = data => {
   let dataList = data->Map.String.valuesToArray;
-  dataList->Array.reduce(
-    Map.String.empty,
-    (acc, playerData) => {
-      let (upperHalfIds, lowerHalfIds) =
-        (dataList |> Js.Array.filter(p2 => p2.score === playerData.score))
-        ->SortArray.stableSortBy(descendingRating)
-        |> Js.Array.map(p => p.id)
-        |> splitInHalf;
-      let isUpperHalf = upperHalfIds |> Js.Array.includes(playerData.id);
-      let halfPos =
-        isUpperHalf
-          ? upperHalfIds |> Js.Array.indexOf(playerData.id)
-          : lowerHalfIds |> Js.Array.indexOf(playerData.id);
-      let newPlayerData = {...playerData, halfPos, isUpperHalf};
-      acc->Map.String.set(playerData.id, newPlayerData);
-    },
-  );
+  data->Map.String.map(playerData => {
+    let (upperHalfIds, lowerHalfIds) =
+      dataList
+      ->Array.keep(({score}) => score === playerData.score)
+      ->SortArray.stableSortBy(descendingRating)
+      ->splitInHalf;
+    /* We need to know what position in each half the player occupies. We're
+       uisng array indices to identify these.*/
+    let getIndex = Array.getIndexBy(_, x => x === playerData);
+    let (halfPos, isUpperHalf) =
+      switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
+      | (Some(index), Some(_)) /* This shouldn't happen. */
+      | (Some(index), None) => (index, true)
+      | (None, Some(index)) => (index, false)
+      | (None, None) => (0, false) /* This shouldn't happen. */
+      };
+    {...playerData, halfPos, isUpperHalf};
+  });
 };
 
 let sortByScoreThenRating = (data1, data2) =>
@@ -131,12 +129,9 @@ let sortByScoreThenRating = (data1, data2) =>
    players are paired. */
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !p.opponents->List.has(dummyId, (===));
+  /* if the list is even, just return it. */
   if (Map.String.size(data) mod 2 === 0) {
-    (
-      /* if the list is even, just return it. */
-      data,
-      None,
-    );
+    (data, None);
   } else {
     let dataList =
       data
@@ -220,17 +215,18 @@ let pairPlayers = pairData => {
          );
     accArr |> Js.Array.concat(playerMatches);
   };
-  let blossom2Pairs = (acc, p1Index, p2Index) =>
+  let blossom2Pairs = (acc, p1Index, p2Index) => {
+    /* Translate the indices into ID strings */
+    let p1Id = playerIdArray->Array.get(p1Index);
+    let p2Id = playerIdArray->Array.get(p2Index);
+    switch (p1Id, p2Id) {
     /* Filter out unmatched players. Blossom will automatically include
        their missing IDs in its results. */
-    if (p1Index === (-1)) {
-      acc;
-    } else {
-      /* Translate the indices into ID strings */
-      let p1 =
-        pairData->Map.String.getExn(playerIdArray->Array.getExn(p1Index));
-      let p2 =
-        pairData->Map.String.getExn(playerIdArray->Array.getExn(p2Index));
+    | (None, _)
+    | (_, None) => acc
+    | (Some(p1Id), Some(p2Id)) =>
+      let p1 = pairData->Map.String.getExn(p1Id);
+      let p2 = pairData->Map.String.getExn(p2Id);
       /* In the future, we may store the ideal for debugging. Because it
          rarely serves a purpose, we're not including it now.
          const ideal = potentialMatches.filter(
@@ -239,12 +235,14 @@ let pairPlayers = pairData => {
          Blossom returns a lot of redundant matches. Check that this matchup
          wasn't already added. */
       let matched = acc->List.map(((player, _)) => player);
-      if (!matched->List.has(p1, (===)) && !matched->List.has(p2, (===))) {
+      let matchedHasId = List.has(matched, _, (===));
+      if (!matchedHasId(p1) && !matchedHasId(p2)) {
         [(p1, p2), ...acc];
       } else {
         acc;
       };
     };
+  };
   playerArray
   ->Array.reduceWithIndex([||], pairIdealReducer)
   /* Feed all of the potential matches to Edmonds-blossom and let the

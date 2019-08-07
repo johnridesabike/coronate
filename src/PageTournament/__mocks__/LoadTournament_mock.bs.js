@@ -49,10 +49,6 @@ function tournamentReducer(param, action) {
   return action;
 }
 
-function isLoadedDone(status) {
-  return status !== 0;
-}
-
 function LoadTournament_mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
@@ -95,7 +91,6 @@ export {
   playerData ,
   calcNumOfRounds ,
   tournamentReducer ,
-  isLoadedDone ,
   make ,
   
 }

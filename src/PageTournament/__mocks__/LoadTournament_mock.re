@@ -35,18 +35,6 @@ type t = {
   setTourney: Tournament.t => unit,
 };
 
-type loadStatus =
-  | NotLoaded
-  | Loaded
-  | Error;
-
-let isLoadedDone = status =>
-  switch (status) {
-  | NotLoaded => false
-  | Loaded
-  | Error => true
-  };
-
 [@react.component]
 let make = (~children, ~tourneyId) => {
   let (tourney, setTourney) =

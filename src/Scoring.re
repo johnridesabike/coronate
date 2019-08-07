@@ -13,9 +13,7 @@ module Color = {
     | White => Black
     | Black => White
     };
-  /*
-    This is used for calculating the "most black" tiebreak.
-   */
+  /* This is used for calculating the "most black" tiebreak. */
   let toScore = color =>
     switch (color) {
     | White => (-1.0)
@@ -67,27 +65,27 @@ let createBlankScoreData = id => {
   resultsNoByes: [],
 };
 
-let isNotDummy = (scoreDict, oppId) => {
-  switch (scoreDict->Map.String.get(oppId)) {
+let isNotDummy = (scores, oppId) => {
+  switch (scores->Map.String.get(oppId)) {
   | None => true
   | Some(opponent) => !opponent.isDummy
   };
 };
 
-let getPlayerScore = (scoreDict, id) => {
-  switch (scoreDict->Map.String.get(id)) {
+let getPlayerScore = (scores, id) => {
+  switch (scores->Map.String.get(id)) {
   | None => 0.0
   | Some({results}) => Utils.List.sumF(results)
   };
 };
 
-let getOpponentScores = (scoreDict, id) => {
-  switch (scoreDict->Map.String.get(id)) {
+let getOpponentScores = (scores, id) => {
+  switch (scores->Map.String.get(id)) {
   | None => []
   | Some({opponentResults}) =>
     opponentResults->Map.String.reduce([], (acc, oppId, _) =>
-      if (isNotDummy(scoreDict, oppId)) {
-        [getPlayerScore(scoreDict, oppId), ...acc];
+      if (isNotDummy(scores, oppId)) {
+        [getPlayerScore(scores, oppId), ...acc];
       } else {
         acc;
       }
@@ -96,8 +94,8 @@ let getOpponentScores = (scoreDict, id) => {
 };
 
 /* USCF § 34E1 */
-let getMedianScore = (scoreDict, id) =>
-  scoreDict
+let getMedianScore = (scores, id) =>
+  scores
   ->getOpponentScores(id)
   ->List.sort(compare)
   ->List.tail
@@ -106,22 +104,19 @@ let getMedianScore = (scoreDict, id) =>
   ->Option.mapWithDefault(0.0, Utils.List.sumF);
 
 /* USCF § 34E2.*/
-let getSolkoffScore = (scoreDict, id) =>
-  scoreDict->getOpponentScores(id)->Utils.List.sumF;
+let getSolkoffScore = (scores, id) =>
+  scores->getOpponentScores(id)->Utils.List.sumF;
 
 /* turn the regular score list into a "running" score list */
-let runningReducer = (acc, score) => {
-  let lastScore =
-    switch (acc) {
-    | [last, ..._] => last
-    | [] => 0.0
-    };
-  [lastScore +. score, ...acc];
-};
+let runningReducer = (acc, score) =>
+  switch (acc) {
+  | [last, ...rest] => [last +. score, last, ...rest]
+  | [] => [score]
+  };
 
 /* USCF § 34E3.*/
-let getCumulativeScore = (scoreDict, id) => {
-  switch (scoreDict->Map.String.get(id)) {
+let getCumulativeScore = (scores, id) => {
+  switch (scores->Map.String.get(id)) {
   | None => 0.0
   | Some({resultsNoByes}) =>
     resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
@@ -129,26 +124,26 @@ let getCumulativeScore = (scoreDict, id) => {
 };
 
 /* USCF § 34E4.*/
-let getCumulativeOfOpponentScore = (scoreDict, id) => {
-  switch (scoreDict->Map.String.get(id)) {
+let getCumulativeOfOpponentScore = (scores, id) => {
+  switch (scores->Map.String.get(id)) {
   | None => 0.0
   | Some({opponentResults}) =>
     opponentResults
     ->Map.String.reduce([], (acc, key, _) =>
-        if (isNotDummy(scoreDict, key)) {
+        if (isNotDummy(scores, key)) {
           [key, ...acc];
         } else {
           acc;
         }
       )
-    ->List.map(getCumulativeScore(scoreDict))
+    ->List.map(getCumulativeScore(scores))
     ->Utils.List.sumF
   };
 };
 
 /* USCF § 34E6. */
-let getColorBalanceScore = (scoreDict, id) => {
-  switch (scoreDict->Map.String.get(id)) {
+let getColorBalanceScore = (scores, id) => {
+  switch (scores->Map.String.get(id)) {
   | None => 0.0
   | Some({colorScores}) => Utils.List.sumF(colorScores)
   };
@@ -169,6 +164,12 @@ type standing = {
   tieBreaks: list((tieBreak, float)),
 };
 
+/*
+   `a` and `b` have a list of tiebreak results. `tieBreaks` is an array of what
+   tiebreak results to sort by, and in what order. It is expected that `a` and
+   `b` will have a result for every item in `tieBreaks`.
+ */
+
 let standingsSorter = (tieBreaks, a, b) => {
   let result = ref(0);
   let tieBreakIndex = ref(0);
@@ -187,7 +188,7 @@ let standingsSorter = (tieBreaks, a, b) => {
           | x => result := x
           }
         | (None, _)
-        | (_, None) => break := true
+        | (_, None) => () /* Nothing happens. Should there be an error? */
         }
       | x => result := x
       };
@@ -202,21 +203,19 @@ let standingsSorter = (tieBreaks, a, b) => {
  which lists the score associated with each method. The order of these
  coresponds to the order of the method names in the second list.
  */
-let createStandingList = (scoreData, methods) => {
-  let selectedTieBreakFuncs =
+let createStandingList = (scores, methods) => {
+  let funcList =
     methods
     ->List.fromArray
     ->List.map(tbType => (tbType, mapTieBreak(tbType)));
-  scoreData
+  scores
   ->Map.String.reduce([], (acc, id, data) =>
       [
         {
           id,
           score: Utils.List.sumF(data.results),
           tieBreaks:
-            selectedTieBreakFuncs->List.map(((tbType, fn)) =>
-              (tbType, fn(scoreData, id))
-            ),
+            funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
         },
         ...acc,
       ]
@@ -233,15 +232,15 @@ let areScoresEqual = (standing1, standing2) =>
   if (standing1.score !== standing2.score) {
     false;
   } else {
-    !
+    let comparisons =
       standing1.tieBreaks
       ->List.reduce([], (acc, (id, value)) =>
           switch (standing2.tieBreaks->List.getAssoc(id, (===))) {
           | Some(value2) => [value !== value2, ...acc]
           | None => acc
           }
-        )
-      ->List.has(true, (===)); /* NOT */
+        );
+    !comparisons->List.has(true, (===));
   };
 
 /*

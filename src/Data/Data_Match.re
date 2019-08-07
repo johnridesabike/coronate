@@ -1,4 +1,5 @@
 open Belt;
+/* Not to be confused with `Belt.Result` */
 module Result = {
   type t =
     | WhiteWon
@@ -110,7 +111,13 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   let pairs = Pairing.pairPlayers(pairdataNoByes);
   let pairsWithBye =
     switch (byePlayerData) {
-    | Some(player) => [(player.id, Data_Player.dummy_id), ...pairs]
+    | Some(player) =>
+      /* These two reverses ensure that the bye match is added at the end, not
+         the beginning */
+      pairs
+      ->List.reverse
+      ->List.add((player.id, Data_Player.dummy_id))
+      ->List.reverse
     | None => pairs
     };
   let getPlayer = Data_Player.getPlayerMaybe(playerMap);
