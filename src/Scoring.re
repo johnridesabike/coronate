@@ -169,34 +169,62 @@ type standing = {
    tiebreak results to sort by, and in what order. It is expected that `a` and
    `b` will have a result for every item in `tieBreaks`.
  */
-
-let standingsSorter = (tieBreaks, a, b) => {
-  let result = ref(0);
-  let tieBreakIndex = ref(0);
-  let break = ref(false);
-  while (result^ === 0 && ! break^) {
-    switch (tieBreaks->Array.get(tieBreakIndex^)) {
-    | None => break := true
+let standingsSorter = (tieBreaks: array(tieBreak), a: standing, b: standing) => {
+  let rec tieBreaksCompare = (index: int) => {
+    switch (tieBreaks->Array.get(index)) {
+    | None => 0
     | Some(tieBreak) =>
       let getTieBreak = List.getAssoc(_, tieBreak, (===));
-      switch (compare(b.score, a.score)) {
-      | 0 =>
-        switch (getTieBreak(b.tieBreaks), getTieBreak(a.tieBreaks)) {
-        | (Some(tb_b), Some(tb_a)) =>
-          switch (compare(tb_b, tb_a)) {
-          | 0 => tieBreakIndex := tieBreakIndex^ + 1
-          | x => result := x
-          }
-        | (None, _)
-        | (_, None) => () /* Nothing happens. Should there be an error? */
+      switch (getTieBreak(a.tieBreaks), getTieBreak(b.tieBreaks)) {
+      | (None, _)
+      | (_, None) => tieBreaksCompare(index + 1)
+      | (Some(tb_a), Some(tb_b)) =>
+        /* a and b are switched for ascending order */
+        switch (compare(tb_b, tb_a)) {
+        | 0 => tieBreaksCompare(index + 1)
+        | x => x
         }
-      | x => result := x
       };
     };
   };
-  result^;
+  /* a and b are switched for ascending order */
+  switch (compare(b.score, a.score)) {
+  | 0 => tieBreaksCompare(0)
+  | x => x
+  };
 };
 
+/*
+   This is not used but is being preserved for reference purposes.
+ */
+/*
+ let standingsSorter_old = (tieBreaks, a, b) => {
+   let result = ref(0);
+   let tieBreakIndex = ref(0);
+   let break = ref(false);
+   while (result^ === 0 && ! break^) {
+     switch (tieBreaks->Array.get(tieBreakIndex^)) {
+     | None => break := true
+     | Some(tieBreak) =>
+       let getTieBreak = List.getAssoc(_, tieBreak, (===));
+       switch (compare(b.score, a.score)) {
+       | 0 =>
+         switch (getTieBreak(b.tieBreaks), getTieBreak(a.tieBreaks)) {
+         | (Some(tb_b), Some(tb_a)) =>
+           switch (compare(tb_b, tb_a)) {
+           | 0 => tieBreakIndex := tieBreakIndex^ + 1
+           | x => result := x
+           }
+         | (None, _)
+         | (_, None) => () /* Nothing happens. Should there be an error? */
+         }
+       | x => result := x
+       };
+     };
+   };
+   result^;
+ };
+  */
 /*
  Sort the standings by score, see USCF tie-break rules from § 34.
  Returns the list of the standings. Each standing has a `tieBreaks` property
