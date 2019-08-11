@@ -158,19 +158,19 @@ let mapTieBreak = tieBreak =>
   | MostBlack => getColorBalanceScore
   };
 
-type standing = {
+type scores = {
   id: string,
   score: float,
   tieBreaks: list((tieBreak, float)),
 };
 
 /*
-   `a` and `b` have a list of tiebreak results. `tieBreaks` is an array of what
+   `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
    tiebreak results to sort by, and in what order. It is expected that `a` and
    `b` will have a result for every item in `tieBreaks`.
  */
-let standingsSorter = (tieBreaks: list(tieBreak), a: standing, b: standing) => {
-  let rec tieBreaksCompare = (tieBreaks) => {
+let standingsSorter = (tieBreaks: list(tieBreak), a: scores, b: scores) => {
+  let rec tieBreaksCompare = tieBreaks => {
     switch (tieBreaks) {
     | [] => 0
     | [tieBreak, ...rest] =>
@@ -195,10 +195,10 @@ let standingsSorter = (tieBreaks: list(tieBreak), a: standing, b: standing) => {
 };
 
 /*
-   This is not used but is being preserved for reference purposes.
+   This is not used. It is preserved for reference purposes.
  */
 /*
- let standingsSorter_old = (tieBreaks, a, b) => {
+ let standingsSorter_old = (tieBreaks: array(tieBreak), a: scores, b: scores) => {
    let result = ref(0);
    let tieBreakIndex = ref(0);
    let break = ref(false);
@@ -223,8 +223,8 @@ let standingsSorter = (tieBreaks: list(tieBreak), a: standing, b: standing) => {
      };
    };
    result^;
- };
-  */
+ }; */
+
 /*
  Sort the standings by score, see USCF tie-break rules from § 34.
  Returns the list of the standings. Each standing has a `tieBreaks` property
@@ -276,7 +276,7 @@ let areScoresEqual = (standing1, standing2) =>
  example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
  first, Pete is 2nd, Bob is 3rd.
  */
-let createStandingTree = (standingList: list(standing)) =>
+let createStandingTree = (standingList: list(scores)) =>
   standingList->List.reduce([], (acc, standing) =>
     switch (acc) {
     /* Always make a new rank for the first player */
