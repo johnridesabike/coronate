@@ -40,13 +40,15 @@ let encodeOptions = data =>
       ("config", data.config |> Data.Config.encode),
       (
         "players",
-        data.players->Map.String.map(Data.Player.encode) |> mapToDict |> dict,
+        data.players->Map.String.map(Data.Player.encode)
+        |> mapToDict
+        |> jsonDict,
       ),
       (
         "tournaments",
         data.tournaments->Map.String.map(Data.Tournament.encode)
         |> mapToDict
-        |> dict,
+        |> jsonDict,
       ),
     ])
   );
