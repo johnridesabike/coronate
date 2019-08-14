@@ -1,6 +1,6 @@
 {
   "name": "coronate",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1",
   "description": "A chess tournament manager",
   "author": "John Jackson",
   "license": "AGPL-3.0-or-later",
@@ -48,7 +48,7 @@
     "photon-colors": "^3.3.2",
     "re-classnames": "^4.0.0",
     "react-feather": "^2.0.3",
-    "reason-future": "^2.4.0",
+    "reason-future": "^2.5.0",
     "reason-react": "^0.7.0",
     "simple-icons": "^1.13.0",
     "typeface-fira-sans": "0.0.75"
@@ -60,17 +60,17 @@
     "bs-platform": "^5.0.6",
     "bs-react-testing-library": "^0.6.0",
     "concurrently": "^4.1.1",
-    "electron": "^6.0.1",
+    "electron": "^6.0.2",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.3",
     "gh-pages": "^2.1.1",
-    "react-scripts": "3.1.0",
+    "jest": "^24.8.0",
+    "react-scripts": "3.1.1",
     "stylelint": "^10.1.0",
     "stylelint-config-standard": "^18.3.0",
     "typescript": "^3.5.3",
-    "wait-on": "^3.3.0",
-    "jest": "^24.8.0"
+    "wait-on": "^3.3.0"
   },
   "eslintConfig": {
     "extends": "react-app"
