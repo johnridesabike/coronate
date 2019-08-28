@@ -1,7 +1,6 @@
 open Data;
 open Belt;
 open Tournament;
-module LocalForage = Externals.LocalForage;
 
 let log2 = num => log(num) /. log(2.0);
 
