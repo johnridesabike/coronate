@@ -136,6 +136,9 @@ module MSWindowsControls = {
         width(`px(46)),
         height(`percent(100.0)),
         borderRadius(`zero),
+        backgroundColor(`transparent),
+        width(`px(46)),
+        minWidth(`px(46)),
         focus([
           borderStyle(`none),
           unsafe("boxShadow", "none"),
@@ -153,7 +156,7 @@ module MSWindowsControls = {
     let window = electron->getRemote->getCurrentWindow;
     <div className=Style.container>
       <button
-        className={Cn.make([Style.button, "button-ghost"])}
+        className={Cn.make([Style.button, "button-ghost1"])}
         onClick={_ => minimize(window)}>
         <Icons.Minimize className=Style.svg />
       </button>
@@ -161,25 +164,20 @@ module MSWindowsControls = {
        | (true, true)
        | (true, false) =>
          <button
-           className={Cn.make([Style.button, "button-ghost"])}
-           onClick={_ => window->setFullScreen(false)}>
+           className=Style.button onClick={_ => window->setFullScreen(false)}>
            <Icons.Unfullscreen className=Style.svg />
          </button>
        | (false, true) =>
-         <button
-           className={Cn.make([Style.button, "button-ghost"])}
-           onClick={_ => unmaximize(window)}>
+         <button className=Style.button onClick={_ => unmaximize(window)}>
            <Icons.Restore className=Style.svg />
          </button>
        | (false, false) =>
-         <button
-           className={Cn.make([Style.button, "button-ghost"])}
-           onClick={_ => maximize(window)}>
+         <button className=Style.button onClick={_ => maximize(window)}>
            <Icons.Maximize className=Style.svg />
          </button>
        }}
       <button
-        className={Cn.make([Style.button, Style.close, "button-ghost"])}
+        className={Cn.make([Style.button, Style.close])}
         onClick={_ => close(window)}>
         <Icons.Close className=Style.svg />
       </button>
