@@ -1,3 +1,5 @@
+/*
+/* Use this in the window footer to indicate unstable releases. */
 module CautionFooter = {
   module Styles = {
     open Css;
@@ -50,6 +52,7 @@ module CautionFooter = {
       </p>
     </aside>;
 };
+*/
 
 module Splash = {
   module Style = {
@@ -94,7 +97,7 @@ module Splash = {
   };
   [@react.component]
   let make = () => {
-    <Window.Body footerFunc={() => <CautionFooter />}>
+    <Window.Body>
       <div className=Style.container>
         <aside className=Style.hint>
           <ol>
