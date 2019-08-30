@@ -354,26 +354,28 @@ module Router = {
  */
 Numeral.registerFormat(
   "fraction",
-  {
-    "format": (value, _format, _roundingFunction) => {
-      let whole = floor(value);
-      let remainder = value -. whole;
-      let fraction =
-        switch (remainder) {
-        | 0.25 => {js|¼|js}
-        | 0.5 => {js|½|js}
-        | 0.75 => {js|¾|js}
-        | _ => ""
-        };
-      let stringedWhole =
-        whole === 0.0 && fraction !== "" ? "" : Js.Float.toString(whole);
-      stringedWhole ++ fraction;
-    },
-    "regexps": {
-      "format": [%re "/(1\\/2)/"],
-      "unformat": [%re "/(1\\/2)/"],
-    },
+  Numeral.makeFormat(
+    ~formatFn=
+      (value, _format, _roundingFunction) => {
+        let whole = floor(value);
+        let remainder = value -. whole;
+        let fraction =
+          switch (remainder) {
+          | 0.25 => {js|¼|js}
+          | 0.5 => {js|½|js}
+          | 0.75 => {js|¾|js}
+          | _ => ""
+          };
+        let stringedWhole =
+          whole === 0.0 && fraction !== "" ? "" : Js.Float.toString(whole);
+        stringedWhole ++ fraction;
+      },
+    ~regexps=
+      Numeral.makeRegExps(
+        ~format=[%re "/(1\\/2)/"],
+        ~unformat=[%re "/(1\\/2)/"],
+      ),
     /* This doesn't do anything currently */
-    "unformat": value => Js.Float.fromString(value),
-  },
+    ~unformatFn=value => Js.Float.fromString(value),
+  ),
 );

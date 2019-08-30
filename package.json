@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@glennsl/bs-json": "^5.0.0",
-    "@johnridesabike/bs-numeral": "^1.0.5",
+    "@johnridesabike/bs-numeral": "^2.0.0",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
