@@ -91,7 +91,7 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
         }
       )
     ->ignore;
-    Some(() => didCancel := false);
+    Some(() => didCancel := true);
   });
   /*
     Save items to the database.
