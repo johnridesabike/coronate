@@ -2,7 +2,11 @@
   "name": "coronate",
   "version": "1.0.0-beta.1",
   "description": "A chess tournament manager",
-  "author": "John Jackson",
+  "author": {
+    "name": "John Jackson",
+    "email": "johnbicyclejackson@icloud.com",
+    "url": "https://johnridesa.bike/"
+  },
   "license": "AGPL-3.0-or-later",
   "private": true,
   "homepage": ".",
@@ -10,6 +14,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/coronate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johnridesabike/coronate/issues",
+    "email": "johnbicyclejackson@icloud.com"
   },
   "scripts": {
     "build": "npm run re:build && react-scripts build",
