@@ -141,7 +141,7 @@ module MSWindowsControls = {
         minWidth(`px(46)),
         focus([
           borderStyle(`none),
-          unsafe("boxShadow", "none"),
+          boxShadow(`none),
           outlineStyle(`none),
         ]),
         /* a hack to get around specficity */
