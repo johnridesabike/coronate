@@ -11,12 +11,12 @@ let defaultRating = _ => 1200;
 
 module NewPlayerForm = {
   [@react.component]
-  let make = (~dispatch) => {
+  let make = (~dispatch, ~addPlayerCallback=?) => {
     let (firstName, setFirstName) = React.useState(defaultFirstName);
     let (lastName, setLastName) = React.useState(defaultLastName);
     let (rating, setRating) = React.useState(defaultRating);
     let handleSubmit = event => {
-      event->ReactEvent.Form.preventDefault;
+      ReactEvent.Form.preventDefault(event);
       setFirstName(defaultFirstName);
       setLastName(defaultLastName);
       setRating(defaultRating);
@@ -34,6 +34,10 @@ module NewPlayerForm = {
           },
         ),
       );
+      switch (addPlayerCallback) {
+      | None => ()
+      | Some(fn) => fn(id)
+      };
     };
 
     let updateField = event => {

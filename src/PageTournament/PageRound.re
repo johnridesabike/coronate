@@ -144,8 +144,8 @@ module MatchRow = {
               (newWhiteScore, newBlackScore),
             )
           };
-        playersDispatch(Set(white.id, {...white, rating: whiteNewRating}));
-        playersDispatch(Set(black.id, {...black, rating: blackNewRating}));
+        let white = {...white, rating: whiteNewRating};
+        let black = {...black, rating: blackNewRating};
         switch (match.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | NotSet =>
@@ -165,9 +165,12 @@ module MatchRow = {
           playersDispatch(
             Set(black.id, {...black, matchCount: black.matchCount - 1}),
           );
+        /* Simply update the players with new ratings. */
         | WhiteWon
         | BlackWon
-        | Draw => ()
+        | Draw =>
+          playersDispatch(Set(white.id, white));
+          playersDispatch(Set(black.id, black));
         };
         let newMatch = {
           ...match,

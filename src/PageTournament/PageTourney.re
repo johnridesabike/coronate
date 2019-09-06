@@ -6,7 +6,7 @@ open Data;
 module Footer = {
   [@react.component]
   let make = (~tournament) => {
-    let {roundCount, tourney, isItOver, isNewRoundReady} = tournament;
+    let {roundCount, tourney, isItOver, isNewRoundReady, activePlayers} = tournament;
     let {Tournament.roundList} = tourney;
     let (tooltipText, tooltipKind) =
       switch (isNewRoundReady, isItOver) {
@@ -49,6 +49,13 @@ module Footer = {
           )}>
           {React.string(tooltipText)}
         </Utils.Notification>
+        <hr className="win__footer-divider" />
+        <label
+          className="win__footer-block"
+          style={Style.make(~display="inline-block", ())}>
+          {React.string("Registered players: ")}
+          {activePlayers |> Map.String.size |> Js.Int.toString |> React.string}
+        </label>
       </>
     );
   };
@@ -74,7 +81,7 @@ module Sidebar = {
     let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers);
     let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
-      event->ReactEvent.Mouse.preventDefault;
+      ReactEvent.Mouse.preventDefault(event);
       let confirmText =
         "All rounds have completed. Are you sure you want to begin a new "
         ++ "one?";
@@ -94,7 +101,7 @@ module Sidebar = {
     };
 
     let delLastRound = event => {
-      event->ReactEvent.Mouse.preventDefault;
+      ReactEvent.Mouse.preventDefault(event);
       let message = "Are you sure you want to delete the last round?";
       if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
         ReasonReactRouter.push("#/tourneys/" ++ tourney.id);

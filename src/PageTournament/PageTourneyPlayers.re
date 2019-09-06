@@ -8,7 +8,7 @@ module Selecting = {
     let togglePlayer = event => {
       let id = event->ReactEvent.Form.target##value;
       if (event->ReactEvent.Form.target##checked) {
-        setTourney(Tournament.{...tourney, playerIds: [id, ...playerIds]});
+        setTourney({...tourney, playerIds: [id, ...playerIds]});
       } else {
         setTourney({
           ...tourney,
@@ -72,7 +72,12 @@ module Selecting = {
            |> React.array}
         </tbody>
       </table>
-      <PagePlayers.NewPlayerForm dispatch=playersDispatch />
+      <PagePlayers.NewPlayerForm
+        dispatch=playersDispatch
+        addPlayerCallback={id =>
+          setTourney({...tourney, playerIds: [id, ...playerIds]})
+        }
+      />
     </div>;
   };
 };
