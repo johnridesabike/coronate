@@ -58,13 +58,13 @@ type action('a) =
   | SetAll(Map.String.t('a));
 let genericDbReducer = (state, action) => {
   switch (action) {
-  | Set(id, item) => state->Map.String.set(id, item)
-  | Del(id) => state->Map.String.remove(id)
+  | Set(id, item) => Map.String.set(state, id, item)
+  | Del(id) => Map.String.remove(state, id)
   | SetAll(state) => state
   };
 };
 
-let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
+let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
   let (items, dispatch) =
     React.useReducer(genericDbReducer, Map.String.empty);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
@@ -124,14 +124,16 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys, ()) => {
   (items, dispatch, isLoaded);
 };
 
-let useAllPlayers =
+/* I'm not sure if there's an easier way to do this or not (e.g. with
+   first-class modules).*/
+let useAllPlayers = () =>
   useAllDb(
     ~getAllItems=Players.getAllItems,
     ~setItems=Players.setItems,
     ~removeItems=Players.removeItems,
     ~getKeys=Players.getKeys,
   );
-let useAllTournaments =
+let useAllTournaments = () =>
   useAllDb(
     ~getAllItems=Tournaments.getAllItems,
     ~setItems=Tournaments.setItems,
@@ -151,22 +153,22 @@ type actionConfig =
 let configReducer = (state, action) => {
   switch (action) {
   | AddAvoidPair(pair) =>
-    Data.Config.{...state, avoidPairs: state.avoidPairs->Set.add(pair)}
+    Data.Config.{...state, avoidPairs: Set.add(state.avoidPairs, pair)}
   | DelAvoidPair(pair) => {
       ...state,
-      avoidPairs: state.avoidPairs->Set.remove(pair),
+      avoidPairs: Set.remove(state.avoidPairs, pair),
     }
   | DelAvoidSingle(id) => {
       ...state,
       avoidPairs:
-        state.avoidPairs
-        ->Set.reduce(Data.Config.AvoidPairs.make(), (acc, (p1, p2)) =>
-            if (p1 === id || p2 === id) {
-              acc;
-            } else {
-              acc->Set.add((p1, p2));
-            }
-          ),
+        Set.reduce(
+          state.avoidPairs, Data.Config.AvoidPairs.empty, (acc, (p1, p2)) =>
+          if (p1 === id || p2 === id) {
+            acc;
+          } else {
+            Set.add(acc, (p1, p2));
+          }
+        ),
     }
   | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
   | SetByeValue(byeValue) => {...state, byeValue}

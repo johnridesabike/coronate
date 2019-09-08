@@ -43,7 +43,7 @@ let configReducer = (state, action) => {
       ...state,
       avoidPairs:
         state.avoidPairs
-        ->Set.reduce(Data.Config.AvoidPairs.make(), (acc, (p1, p2)) =>
+        ->Set.reduce(Data.Config.AvoidPairs.empty, (acc, (p1, p2)) =>
             if (p1 === id || p2 === id) {
               acc;
             } else {

@@ -39,7 +39,7 @@ module AvoidPairs = {
     });
   type t = Set.t(T.t, T.identity);
   type pair = T.t;
-  let make = () => Set.make(~id=(module T));
+  let empty = Set.make(~id=(module T));
   let fromArray = Set.fromArray(~id=(module T));
   let decode = json =>
     Json.Decode.(json |> array(pair(string, string)))
@@ -86,6 +86,6 @@ let encode = data =>
   );
 let defaults = {
   byeValue: Full,
-  avoidPairs: AvoidPairs.make(),
+  avoidPairs: AvoidPairs.empty,
   lastBackup: Js.Date.fromFloat(0.0),
 };

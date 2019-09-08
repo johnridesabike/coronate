@@ -56,7 +56,7 @@ function configReducer(state, action) {
     case 2 : 
         var id = action[0];
         return /* record */[
-                /* avoidPairs */Belt_Set.reduce(state[/* avoidPairs */0], Data_Config$Coronate.AvoidPairs[/* make */1](/* () */0), (function (acc, param) {
+                /* avoidPairs */Belt_Set.reduce(state[/* avoidPairs */0], Data_Config$Coronate.AvoidPairs[/* empty */1], (function (acc, param) {
                         var p2 = param[1];
                         var p1 = param[0];
                         if (p1 === id || p2 === id) {
