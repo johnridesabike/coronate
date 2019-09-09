@@ -121,8 +121,6 @@ let useAllDb = store => {
   (items, dispatch, isLoaded);
 };
 
-/* I'm not sure if there's an easier way to do this or not (e.g. with
-   first-class modules).*/
 let useAllPlayers = () => useAllDb(players);
 let useAllTournaments = () => useAllDb(tournaments);
 
