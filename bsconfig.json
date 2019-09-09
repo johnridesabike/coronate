@@ -37,7 +37,8 @@
         "@johnridesabike/bs-numeral",
         "@glennsl/bs-json",
         "bs-intl",
-        "reason-future"
+        "reason-future",
+        "@johnridesabike/bs-localforage"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

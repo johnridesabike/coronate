@@ -84,7 +84,7 @@ let encode = data =>
       ("lastBackup", data.lastBackup |> date),
     ])
   );
-let defaults = {
+let default = {
   byeValue: Full,
   avoidPairs: AvoidPairs.empty,
   lastBackup: Js.Date.fromFloat(0.0),

@@ -72,7 +72,8 @@ let make = (~children, ~tourneyId) => {
   React.useEffect1(
     () => {
       let didCancel = ref(false);
-      Db.Tournaments.getItem(tourneyId)
+      Db.tournaments
+      ->LocalForage.Map.getItem(~key=tourneyId)
       ->Future.tapOk(value =>
           switch (value) {
           | _ when didCancel^ => ()
@@ -106,7 +107,9 @@ let make = (~children, ~tourneyId) => {
            is really necessary. At some point it fixed a weird bug.
          */
         // if (tourneyId === tourney.id) {
-        Db.Tournaments.setItem(tourneyId, tourney)->ignore
+        Db.tournaments
+        ->LocalForage.Map.setItem(~key=tourneyId, ~v=tourney)
+        ->ignore
       // }
       };
       None;

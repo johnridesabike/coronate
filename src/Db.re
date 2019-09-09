@@ -3,40 +3,36 @@ open Belt;
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
-let database_name = "Coronate";
-module ConfigDb =
-  Externals.LocalForage.Object(
-    Data.Config,
-    {
-      let name = database_name;
-      let storeName = "Options";
-      let default = Data.Config.defaults;
-    },
+let localForageConfig = LocalForage.LocalForageJs.config(~name="Coronate");
+let configDb =
+  LocalForage.Record.make(
+    localForageConfig(~storeName="Options", ()),
+    (module Data.Config),
   );
-module Players =
-  Externals.LocalForage.Map(
-    Data.Player,
-    {
-      let name = database_name;
-      let storeName = "Players";
-    },
+let players =
+  LocalForage.Map.make(
+    localForageConfig(~storeName="Players", ()),
+    (module Data.Player),
   );
-module Tournaments =
-  Externals.LocalForage.Map(
-    Data.Tournament,
-    {
-      let name = database_name;
-      let storeName = "Tournaments";
-    },
+let tournaments =
+  LocalForage.Map.make(
+    localForageConfig(~storeName="Tournaments", ()),
+    (module Data.Tournament),
   );
 
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw {|document.body.style.cursor = "wait"|}];
   /* TODO: waiting for Future to implement `all` */
   Js.Promise.all3((
-    ConfigDb.setItems(DemoData.config)->FutureJs.toPromise,
-    Players.setItems(DemoData.players)->FutureJs.toPromise,
-    Tournaments.setItems(DemoData.tournaments)->FutureJs.toPromise,
+    configDb
+    ->LocalForage.Record.set(~items=DemoData.config)
+    ->FutureJs.toPromise,
+    players
+    ->LocalForage.Map.setItems(~items=DemoData.players)
+    ->FutureJs.toPromise,
+    tournaments
+    ->LocalForage.Map.setItems(~items=DemoData.tournaments)
+    ->FutureJs.toPromise,
   ))
   |> Js.Promise.then_(_ => {
        let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
@@ -64,7 +60,7 @@ let genericDbReducer = (state, action) => {
   };
 };
 
-let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
+let useAllDb = store => {
   let (items, dispatch) =
     React.useReducer(genericDbReducer, Map.String.empty);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
@@ -74,7 +70,7 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
    */
   React.useEffect0(() => {
     let didCancel = ref(false);
-    getAllItems()
+    LocalForage.Map.getAllItems(store)
     ->Future.tapOk(results =>
         if (! didCancel^) {
           dispatch(SetAll(results));
@@ -86,7 +82,7 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
           /* Even if there was an error, we'll clear the database. This means a
              corrupt database will get wiped. In the future, we may need to
              replace this with more elegant error recovery. */
-          Externals.LocalForage.clear()->ignore;
+          LocalForage.LocalForageJs.clear()->ignore;
           setIsLoaded(_ => true);
         }
       )
@@ -99,18 +95,19 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
   React.useEffect2(
     () => {
       if (isLoaded) {
-        setItems(items)
+        store
+        ->LocalForage.Map.setItems(~items)
         /* TODO: This will delete any DB keys that aren't present in the
            state, with the assumption that the state must have intentionally
            removed them. This probably needs to be replaced */
         ->Future.tapOk(() =>
-            getKeys()
+            LocalForage.Map.getKeys(store)
             ->Future.tapOk(keys => {
                 let stateKeys = Map.String.keysToArray(items);
                 let deleted =
                   Js.Array.(keys |> filter(x => !(stateKeys |> includes(x))));
                 if (Js.Array.length(deleted) > 0) {
-                  removeItems(deleted)->ignore;
+                  store->LocalForage.Map.removeItems(~items=deleted)->ignore;
                 };
               })
             ->ignore
@@ -126,20 +123,8 @@ let useAllDb = (~getAllItems, ~setItems, ~removeItems, ~getKeys) => {
 
 /* I'm not sure if there's an easier way to do this or not (e.g. with
    first-class modules).*/
-let useAllPlayers = () =>
-  useAllDb(
-    ~getAllItems=Players.getAllItems,
-    ~setItems=Players.setItems,
-    ~removeItems=Players.removeItems,
-    ~getKeys=Players.getKeys,
-  );
-let useAllTournaments = () =>
-  useAllDb(
-    ~getAllItems=Tournaments.getAllItems,
-    ~setItems=Tournaments.setItems,
-    ~removeItems=Tournaments.removeItems,
-    ~getKeys=Tournaments.getKeys,
-  );
+let useAllPlayers = () => useAllDb(players);
+let useAllTournaments = () => useAllDb(tournaments);
 
 type actionConfig =
   | AddAvoidPair(Data.Config.AvoidPairs.pair)
@@ -177,14 +162,15 @@ let configReducer = (state, action) => {
   };
 };
 let useConfig = () => {
-  let (config, dispatch) = React.useReducer(configReducer, ConfigDb.default);
+  let (config, dispatch) =
+    React.useReducer(configReducer, Data.Config.default);
   let (isLoaded, setIsLoaded) = React.useState(() => false);
   /*
      Load items from the database.
    */
   React.useEffect0(() => {
     let didCancel = ref(false);
-    ConfigDb.getItems()
+    LocalForage.Record.get(configDb)
     ->Future.tapOk(values =>
         if (! didCancel^) {
           dispatch(SetState(values));
@@ -193,7 +179,7 @@ let useConfig = () => {
       )
     ->Future.tapError(_ =>
         if (! didCancel^) {
-          Externals.LocalForage.clear() |> ignore;
+          LocalForage.LocalForageJs.clear() |> ignore;
           setIsLoaded(_ => true);
         }
       )
@@ -206,7 +192,7 @@ let useConfig = () => {
   React.useEffect2(
     () => {
       if (isLoaded) {
-        ConfigDb.setItems(config)->ignore;
+        LocalForage.Record.set(configDb, ~items=config)->ignore;
       };
       None;
     },
