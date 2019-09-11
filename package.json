@@ -1,6 +1,6 @@
 {
   "name": "coronate",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "A chess tournament manager",
   "author": {
     "name": "John Jackson",
@@ -37,7 +37,7 @@
     "re:clean": "bsb -clean-world"
   },
   "dependencies": {
-    "@glennsl/bs-json": "^5.0.0",
+    "@glennsl/bs-json": "^5.0.1",
     "@johnridesabike/bs-localforage": "^1.0.0-alpha.2",
     "@johnridesabike/bs-numeral": "^2.0.0",
     "@reach/dialog": "^0.2.9",
@@ -53,13 +53,13 @@
     "localforage-getitems": "^1.4.2",
     "localforage-removeitems": "^1.4.0",
     "localforage-setitems": "^1.4.0",
-    "nanoid": "^2.1.0",
+    "nanoid": "^2.1.1",
     "photon-colors": "^3.3.2",
     "re-classnames": "^4.0.0",
     "react-feather": "^2.0.3",
     "reason-future": "^2.5.0",
     "reason-react": "^0.7.0",
-    "simple-icons": "^1.14.0",
+    "simple-icons": "^1.15.0",
     "typeface-fira-sans": "0.0.75"
   },
   "devDependencies": {
@@ -69,7 +69,7 @@
     "bs-platform": "^5.0.6",
     "bs-react-testing-library": "^0.6.0",
     "concurrently": "^4.1.2",
-    "electron": "^6.0.7",
+    "electron": "^6.0.8",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.3",
@@ -78,7 +78,7 @@
     "react-scripts": "3.1.1",
     "stylelint": "^10.1.0",
     "stylelint-config-standard": "^18.3.0",
-    "typescript": "^3.6.2",
+    "typescript": "^3.6.3",
     "wait-on": "^3.3.0"
   },
   "eslintConfig": {
