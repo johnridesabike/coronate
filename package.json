@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@glennsl/bs-json": "^5.0.1",
-    "@johnridesabike/bs-localforage": "^1.0.0-alpha.2",
+    "@johnridesabike/bs-localforage": "^1.0.0-alpha.4",
     "@johnridesabike/bs-numeral": "^2.0.0",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",

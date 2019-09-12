@@ -1,5 +1,14 @@
 open Belt;
 
+let futureFromPromise =
+  FutureJs.fromPromise(
+    _,
+    error => {
+      Js.Console.error(error);
+      Js.String.make(error);
+    },
+  );
+
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
@@ -24,15 +33,9 @@ let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw {|document.body.style.cursor = "wait"|}];
   /* TODO: waiting for Future to implement `all` */
   Js.Promise.all3((
-    configDb
-    ->LocalForage.Record.set(~items=DemoData.config)
-    ->FutureJs.toPromise,
-    players
-    ->LocalForage.Map.setItems(~items=DemoData.players)
-    ->FutureJs.toPromise,
-    tournaments
-    ->LocalForage.Map.setItems(~items=DemoData.tournaments)
-    ->FutureJs.toPromise,
+    configDb->LocalForage.Record.set(~items=DemoData.config),
+    players->LocalForage.Map.setItems(~items=DemoData.players),
+    tournaments->LocalForage.Map.setItems(~items=DemoData.tournaments),
   ))
   |> Js.Promise.then_(_ => {
        let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
@@ -71,6 +74,7 @@ let useAllDb = store => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     LocalForage.Map.getAllItems(store)
+    ->futureFromPromise
     ->Future.tapOk(results =>
         if (! didCancel^) {
           dispatch(SetAll(results));
@@ -97,11 +101,13 @@ let useAllDb = store => {
       if (isLoaded) {
         store
         ->LocalForage.Map.setItems(~items)
+        ->futureFromPromise
         /* TODO: This will delete any DB keys that aren't present in the
            state, with the assumption that the state must have intentionally
            removed them. This probably needs to be replaced */
         ->Future.tapOk(() =>
             LocalForage.Map.getKeys(store)
+            ->futureFromPromise
             ->Future.tapOk(keys => {
                 let stateKeys = Map.String.keysToArray(items);
                 let deleted =
@@ -169,6 +175,7 @@ let useConfig = () => {
   React.useEffect0(() => {
     let didCancel = ref(false);
     LocalForage.Record.get(configDb)
+    ->futureFromPromise
     ->Future.tapOk(values =>
         if (! didCancel^) {
           dispatch(SetState(values));

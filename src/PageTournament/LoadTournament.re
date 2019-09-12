@@ -74,6 +74,7 @@ let make = (~children, ~tourneyId) => {
       let didCancel = ref(false);
       Db.tournaments
       ->LocalForage.Map.getItem(~key=tourneyId)
+      ->Db.futureFromPromise
       ->Future.tapOk(value =>
           switch (value) {
           | _ when didCancel^ => ()
