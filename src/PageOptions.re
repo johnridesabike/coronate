@@ -14,7 +14,7 @@ let getDateForFile = () => {
 
 let invalidAlert = () => {
   let message = "That data is invalid! A more helpful error message could not be written yet.";
-  Webapi.(Dom.window |> Dom.Window.alert(message));
+  Webapi.(Dom.Window.alert(message, Dom.window));
 };
 
 let dictToMap = dict => dict |> Js.Dict.entries |> Map.String.fromArray;
@@ -40,13 +40,13 @@ let encodeOptions = data =>
       ("config", data.config |> Data.Config.encode),
       (
         "players",
-        data.players->Map.String.map(Data.Player.encode)
+        Map.String.map(data.players, Data.Player.encode)
         |> mapToDict
         |> jsonDict,
       ),
       (
         "tournaments",
-        data.tournaments->Map.String.map(Data.Tournament.encode)
+        Map.String.map(data.tournaments, Data.Tournament.encode)
         |> mapToDict
         |> jsonDict,
       ),
@@ -93,7 +93,7 @@ let make = () => {
     |> Js.Global.encodeURIComponent;
   React.useEffect2(
     () => {
-      let encoded = exportData |> encodeOptions;
+      let encoded = encodeOptions(exportData);
       let json = stringify(encoded, Js.null, 4);
       setText(_ => json);
       None;
@@ -109,11 +109,11 @@ let make = () => {
     Webapi.(Dom.window |> Dom.Window.alert("Data loaded."));
   };
   let handleText = event => {
-    event |> ReactEvent.Form.preventDefault;
-    switch (text |> Json.parse) {
+    ReactEvent.Form.preventDefault(event);
+    switch (Json.parse(text)) {
     | None => invalidAlert()
     | Some(rawJson) =>
-      switch (rawJson |> decodeOptions) {
+      switch (decodeOptions(rawJson)) {
       | exception (Json.Decode.DecodeError(_)) => invalidAlert()
       | {config, players, tournaments} =>
         loadData(~tournaments, ~players, ~config)
@@ -122,29 +122,30 @@ let make = () => {
   };
   let handleFile = event => {
     module FileReader = Externals.FileReader;
-    event |> ReactEvent.Form.preventDefault;
+    ReactEvent.Form.preventDefault(event);
     let reader = FileReader.make();
     let onload = ev => {
       let data = ev##target##result;
-      switch (data |> Json.parse) {
+      switch (Json.parse(data)) {
       | None => invalidAlert()
       | Some(rawJson) =>
-        switch (rawJson |> decodeOptions) {
+        switch (decodeOptions(rawJson)) {
         | exception (Json.Decode.DecodeError(_)) => invalidAlert()
         | {config, players, tournaments} =>
           loadData(~tournaments, ~players, ~config)
         }
       };
     };
-    reader->FileReader.setOnLoad(onload);
-    reader->FileReader.readAsText(
-      event->ReactEvent.Form.currentTarget##files->Array.getExn(0),
+    FileReader.setOnLoad(reader, onload);
+    FileReader.readAsText(
+      reader,
+      ReactEvent.Form.currentTarget(event)##files->Array.getExn(0),
     );
     /* so the filename won't linger onscreen */
-    event->ReactEvent.Form.currentTarget##value #= "";
+    ReactEvent.Form.currentTarget(event)##value #= "";
   };
   let reloadDemoData = event => {
-    event |> ReactEvent.Mouse.preventDefault;
+    ReactEvent.Mouse.preventDefault(event);
     loadData(
       ~tournaments=DemoData.tournaments,
       ~players=DemoData.players,
@@ -152,7 +153,7 @@ let make = () => {
     );
   };
   let loadTestData = event => {
-    event |> ReactEvent.Mouse.preventDefault;
+    ReactEvent.Mouse.preventDefault(event);
     loadData(
       ~tournaments=TestData.tournaments,
       ~players=TestData.players,

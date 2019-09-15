@@ -131,7 +131,7 @@ module SimpleIcon = (IconData: {let icon: simpleIcon;}) => {
         ~width="24",
         ~className="",
         ~style=ReactDOMRe.Style.make(),
-        ~ariaLabel=IconData.icon->titleGet ++ " Icon",
+        ~ariaLabel=(IconData.icon |> titleGet) ++ " Icon",
         ~ariaHidden=false,
       ) =>
     <svg
@@ -141,13 +141,13 @@ module SimpleIcon = (IconData: {let icon: simpleIcon;}) => {
       width
       className
       style=ReactDOMRe.Style.(
-        make(~fill="#" ++ IconData.icon->hexGet, ())->combine(style)
+        make(~fill="#" ++ (IconData.icon |> hexGet), ()) |> combine(style)
       )
       ariaLabel
       ariaHidden>
-      <path d={IconData.icon->pathGet} />
+      <path d={IconData.icon |> pathGet} />
     </svg>;
-  make->React.setDisplayName(IconData.icon->titleGet);
+  React.setDisplayName(make, IconData.icon |> titleGet);
 };
 
 module Reason =

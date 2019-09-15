@@ -139,11 +139,7 @@ module MSWindowsControls = {
         backgroundColor(`transparent),
         width(`px(46)),
         minWidth(`px(46)),
-        focus([
-          borderStyle(`none),
-          boxShadow(`none),
-          outlineStyle(`none),
-        ]),
+        focus([borderStyle(`none), boxShadow(`none), outlineStyle(`none)]),
         /* a hack to get around specficity */
         selector(" svg", [display(`inline)]),
       ]);
@@ -153,7 +149,7 @@ module MSWindowsControls = {
   };
   [@react.component]
   let make = (~state, ~electron) => {
-    let window = electron->getRemote->getCurrentWindow;
+    let window = electron |> getRemote |> getCurrentWindow;
     <div className=Style.container>
       <button
         className={Cn.make([Style.button, "button-ghost1"])}
@@ -164,7 +160,7 @@ module MSWindowsControls = {
        | (true, true)
        | (true, false) =>
          <button
-           className=Style.button onClick={_ => window->setFullScreen(false)}>
+           className=Style.button onClick={_ => setFullScreen(window, false)}>
            <Icons.Unfullscreen className=Style.svg />
          </button>
        | (false, true) =>
@@ -195,8 +191,8 @@ module TitleBar = {
   let toolbarClasses =
     Cn.make([
       Style.button,
-      "macos-button-toolbar"->Cn.ifTrue(isElectronMac),
-      "button-ghost"->Cn.ifTrue(!isElectronMac),
+      Cn.ifTrue("macos-button-toolbar", isElectronMac),
+      Cn.ifTrue("button-ghost", !isElectronMac),
     ]);
   [@react.component]
   let make = (~state, ~dispatch) => {
@@ -204,8 +200,10 @@ module TitleBar = {
       className={Cn.make([
         "app__header",
         "double-click-control",
-        "traffic-light-padding"
-        ->Cn.ifTrue(isElectronMac && !state.isFullScreen),
+        Cn.ifTrue(
+          "traffic-light-padding",
+          isElectronMac && !state.isFullScreen,
+        ),
       ])}
       onDoubleClick=macOSDoubleClick>
       <div>
@@ -247,7 +245,7 @@ module TitleBar = {
         className={Cn.make([
           "body-20",
           "double-click-control",
-          "disabled"->Cn.ifTrue(state.isBlur),
+          Cn.ifTrue("disabled", state.isBlur),
         ])}
         style={ReactDOMRe.Style.make(
           ~left="0",
@@ -277,7 +275,7 @@ let make = (~children, ~className) => {
       Webapi.Dom.(
         document
         ->Document.asHtmlDocument
-        ->Option.map(__x => HtmlDocument.setTitle(__x, formatTitle(title)))
+        ->Option.map(HtmlDocument.setTitle(_, formatTitle(title)))
         ->ignore
       );
       None;
@@ -287,30 +285,30 @@ let make = (~children, ~className) => {
   React.useEffect1(
     () =>
       ifElectron(electron => {
-        let win = electron->getRemote->getCurrentWindow;
+        let win = electron |> getRemote |> getCurrentWindow;
         /* This will ensure that stale event listeners aren't persisted.
            That typically won't be relevant to production builds, but
            in a dev environment, where the page reloads frequently,
            stale listeners will accumulate. Note that this can cause
            side effects if other listeners are added elsewhere. */
         let unregisterListeners = () => {
-          win->removeAllListeners("enter-full-screen");
-          win->removeAllListeners("leave-full-screen");
-          win->removeAllListeners("blur");
-          win->removeAllListeners("focus");
-          win->removeAllListeners("maximize");
-          win->removeAllListeners("unmaximize");
+          removeAllListeners(win, `EnterFullScreen);
+          removeAllListeners(win, `LeaveFullScreen);
+          removeAllListeners(win, `Blur);
+          removeAllListeners(win, `Focus);
+          removeAllListeners(win, `Maximize);
+          removeAllListeners(win, `Unmaximize);
         };
         unregisterListeners();
-        win->on("enter-full-screen", () => dispatch(SetFullScreen(true)));
-        win->on("leave-full-screen", () => dispatch(SetFullScreen(false)));
-        win->on("maximize", () => dispatch(SetMaximized(true)));
-        win->on("unmaximize", () => dispatch(SetMaximized(false)));
-        win->on("blur", () => dispatch(SetBlur(true)));
-        win->on("focus", () => dispatch(SetBlur(false)));
-        dispatch(SetBlur(!win->isFocused));
-        dispatch(SetFullScreen(win->isFullScreen));
-        dispatch(SetMaximized(win->isMaximized));
+        on(win, `EnterFullScreen, () => dispatch(SetFullScreen(true)));
+        on(win, `LeaveFullScreen, () => dispatch(SetFullScreen(false)));
+        on(win, `Maximize, () => dispatch(SetMaximized(true)));
+        on(win, `Unmaximize, () => dispatch(SetMaximized(false)));
+        on(win, `Blur, () => dispatch(SetBlur(true)));
+        on(win, `Focus, () => dispatch(SetBlur(false)));
+        dispatch(SetBlur(!isFocused(win)));
+        dispatch(SetFullScreen(isFullScreen(win)));
+        dispatch(SetMaximized(isMaximized(win)));
         /* I don't think this ever really fires, but can it hurt? */
         unregisterListeners;
       }),

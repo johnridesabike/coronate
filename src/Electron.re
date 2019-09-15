@@ -27,8 +27,36 @@ external openExternal: (shell, string) => Js.Promise.t(unit) = "openExternal";
 [@bs.send] external isFullScreen: window => bool = "isFullScreen";
 [@bs.send] external isMaximized: window => bool = "isMaximized";
 [@bs.send]
-external removeAllListeners: (window, string) => unit = "removeAllListeners";
-[@bs.send] external on: (window, string, unit => unit) => unit = "on";
+external removeAllListeners:
+  (
+    window,
+    [@bs.string] [
+      | [@bs.as "enter-full-screen"] `EnterFullScreen
+      | [@bs.as "leave-full-screen"] `LeaveFullScreen
+      | [@bs.as "blur"] `Blur
+      | [@bs.as "focus"] `Focus
+      | [@bs.as "maximize"] `Maximize
+      | [@bs.as "unmaximize"] `Unmaximize
+    ]
+  ) =>
+  unit =
+  "removeAllListeners";
+[@bs.send]
+external on:
+  (
+    window,
+    [@bs.string] [
+      | [@bs.as "enter-full-screen"] `EnterFullScreen
+      | [@bs.as "leave-full-screen"] `LeaveFullScreen
+      | [@bs.as "blur"] `Blur
+      | [@bs.as "focus"] `Focus
+      | [@bs.as "maximize"] `Maximize
+      | [@bs.as "unmaximize"] `Unmaximize
+    ],
+    unit => unit
+  ) =>
+  unit =
+  "on";
 
 [@bs.scope "window"] [@bs.val]
 external windowRequire: Js.Nullable.t(string => Js.Nullable.t(t)) =

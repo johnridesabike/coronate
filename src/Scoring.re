@@ -66,24 +66,24 @@ let createBlankScoreData = id => {
 };
 
 let isNotDummy = (scores, oppId) => {
-  switch (scores->Map.String.get(oppId)) {
+  switch (Map.String.get(scores, oppId)) {
   | None => true
   | Some(opponent) => !opponent.isDummy
   };
 };
 
 let getPlayerScore = (scores, id) => {
-  switch (scores->Map.String.get(id)) {
+  switch (Map.String.get(scores, id)) {
   | None => 0.0
   | Some({results}) => Utils.List.sumF(results)
   };
 };
 
 let getOpponentScores = (scores, id) => {
-  switch (scores->Map.String.get(id)) {
+  switch (Map.String.get(scores, id)) {
   | None => []
   | Some({opponentResults}) =>
-    opponentResults->Map.String.reduce([], (acc, oppId, _) =>
+    Map.String.reduce(opponentResults, [], (acc, oppId, _) =>
       if (isNotDummy(scores, oppId)) {
         [getPlayerScore(scores, oppId), ...acc];
       } else {
@@ -116,7 +116,7 @@ let runningReducer = (acc, score) =>
 
 /* USCF § 34E3.*/
 let getCumulativeScore = (scores, id) => {
-  switch (scores->Map.String.get(id)) {
+  switch (Map.String.get(scores, id)) {
   | None => 0.0
   | Some({resultsNoByes}) =>
     resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
@@ -125,17 +125,16 @@ let getCumulativeScore = (scores, id) => {
 
 /* USCF § 34E4.*/
 let getCumulativeOfOpponentScore = (scores, id) => {
-  switch (scores->Map.String.get(id)) {
+  switch (Map.String.get(scores, id)) {
   | None => 0.0
   | Some({opponentResults}) =>
-    opponentResults
-    ->Map.String.reduce([], (acc, key, _) =>
-        if (isNotDummy(scores, key)) {
-          [key, ...acc];
-        } else {
-          acc;
-        }
-      )
+    Map.String.reduce(opponentResults, [], (acc, key, _) =>
+      if (isNotDummy(scores, key)) {
+        [key, ...acc];
+      } else {
+        acc;
+      }
+    )
     ->List.map(getCumulativeScore(scores))
     ->Utils.List.sumF
   };
@@ -143,7 +142,7 @@ let getCumulativeOfOpponentScore = (scores, id) => {
 
 /* USCF § 34E6. */
 let getColorBalanceScore = (scores, id) => {
-  switch (scores->Map.String.get(id)) {
+  switch (Map.String.get(scores, id)) {
   | None => 0.0
   | Some({colorScores}) => Utils.List.sumF(colorScores)
   };
@@ -236,18 +235,17 @@ let createStandingList = (scores, methods) => {
     methods
     ->List.fromArray
     ->List.map(tbType => (tbType, mapTieBreak(tbType)));
-  scores
-  ->Map.String.reduce([], (acc, id, data) =>
-      [
-        {
-          id,
-          score: Utils.List.sumF(data.results),
-          tieBreaks:
-            funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
-        },
-        ...acc,
-      ]
-    )
+  Map.String.reduce(scores, [], (acc, id, data) =>
+    [
+      {
+        id,
+        score: Utils.List.sumF(data.results),
+        tieBreaks:
+          funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
+      },
+      ...acc,
+    ]
+  )
   /* The `reverse` just ensures that ties are sorted according to their original
      order (alphabetically by name) and not reversed. It has no practical
      purpose and should probably be replaced with a more robust sorting option
@@ -261,14 +259,13 @@ let areScoresEqual = (standing1, standing2) =>
     false;
   } else {
     let comparisons =
-      standing1.tieBreaks
-      ->List.reduce([], (acc, (id, value)) =>
-          switch (standing2.tieBreaks->List.getAssoc(id, (===))) {
-          | Some(value2) => [value !== value2, ...acc]
-          | None => acc
-          }
-        );
-    !comparisons->List.has(true, (===));
+      List.reduce(standing1.tieBreaks, [], (acc, (id, value)) =>
+        switch (List.getAssoc(standing2.tieBreaks, id, (===))) {
+        | Some(value2) => [value !== value2, ...acc]
+        | None => acc
+        }
+      );
+    !List.has(comparisons, true, (===));
   };
 
 /*
@@ -277,7 +274,7 @@ let areScoresEqual = (standing1, standing2) =>
  first, Pete is 2nd, Bob is 3rd.
  */
 let createStandingTree = (standingList: list(scores)) =>
-  standingList->List.reduce([], (acc, standing) =>
+  List.reduce(standingList, [], (acc, standing) =>
     switch (acc) {
     /* Always make a new rank for the first player */
     | [] => [[standing]]
@@ -312,19 +309,17 @@ module Ratings = {
         (whiteMatchCount, blackMatchCount),
         (whiteResult, blackResult),
       ) => {
-    let whiteElo = getKFactor(whiteMatchCount)->EloRank.make;
-    let blackElo = getKFactor(blackMatchCount)->EloRank.make;
-    let (whiteScoreExpected, blackScoreExpected) = (
-      whiteElo->EloRank.getExpected(whiteRating, blackRating),
-      blackElo->EloRank.getExpected(blackRating, whiteRating),
+    let whiteElo = whiteMatchCount |> getKFactor |> EloRank.make;
+    let blackElo = blackMatchCount |> getKFactor |> EloRank.make;
+    let (whiteExpected, blackExpected) = (
+      EloRank.getExpected(whiteElo, whiteRating, blackRating),
+      EloRank.getExpected(blackElo, blackRating, whiteRating),
     );
     (
-      whiteElo
-      ->EloRank.updateRating(whiteScoreExpected, whiteResult, whiteRating)
-      ->keepAboveFloor,
-      blackElo
-      ->EloRank.updateRating(blackScoreExpected, blackResult, blackRating)
-      ->keepAboveFloor,
+      EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)
+      |> keepAboveFloor,
+      EloRank.updateRating(blackElo, blackExpected, blackResult, blackRating)
+      |> keepAboveFloor,
     );
   };
 };

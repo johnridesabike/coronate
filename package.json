@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@glennsl/bs-json": "^5.0.1",
-    "@johnridesabike/bs-localforage": "^1.0.0-alpha.4",
+    "@johnridesabike/bs-localforage": "^1.0.0-alpha.5",
     "@johnridesabike/bs-numeral": "^2.0.0",
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",
@@ -69,7 +69,7 @@
     "bs-platform": "^5.0.6",
     "bs-react-testing-library": "^0.6.0",
     "concurrently": "^4.1.2",
-    "electron": "^6.0.8",
+    "electron": "^6.0.9",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint-plugin-react": "^7.14.3",

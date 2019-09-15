@@ -1,4 +1,5 @@
-[%raw {|require("./styles")|}];
+%raw
+{|import "./styles"|};
 
 module App = {
   [@react.component]

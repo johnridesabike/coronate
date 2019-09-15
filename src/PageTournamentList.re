@@ -10,7 +10,7 @@ let make = () => {
   let (tourneys, dispatch, _) = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=tourneys->Map.String.valuesToArray,
+      ~table=Map.String.valuesToArray(tourneys),
       ~column=dateSort,
       ~isDescending=true,
     );
@@ -26,14 +26,14 @@ let make = () => {
   );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(tourneys->Map.String.valuesToArray));
+      sortDispatch(Hooks.SetTable(Map.String.valuesToArray(tourneys)));
       None;
     },
     (tourneys, sortDispatch),
   );
 
   let updateNewName = event => {
-    setNewTourneyName(event->ReactEvent.Form.currentTarget##value);
+    setNewTourneyName(ReactEvent.Form.currentTarget(event)##value);
   };
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
@@ -62,7 +62,7 @@ let make = () => {
   };
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
-    if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
+    if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
       dispatch(Db.Del(id));
     };
   };
