@@ -230,9 +230,7 @@ module Profile = {
       },
       (windowDispatch, playerName),
     );
-    let avoidMap =
-      config.avoidPairs
-      ->Set.reduce(Map.String.empty, Data.Config.AvoidPairs.reduceToMap);
+    let avoidMap = Data.Config.AvoidPairs.toMap(config.avoidPairs);
     let singAvoidList =
       switch (avoidMap->Map.String.get(playerId)) {
       | None => []

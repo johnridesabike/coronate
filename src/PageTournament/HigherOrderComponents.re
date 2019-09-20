@@ -1,8 +1,6 @@
-/*
-  Some components live in different parts of the app and require different
-  markup but share the same underlying logic and data. Use these modules to
-  compose them.
- */
+/* Some components live in different parts of the app and require different
+   markup but share the same underlying logic and data. Use these modules to
+   compose them. */
 open Belt;
 open Data;
 
@@ -42,13 +40,13 @@ module WithRoundData =
     /* Only calculate unmatched players for the latest round. Old rounds
        don't get to add new players.
        Should this be memoized? */
-    let round = roundList->Rounds.get(roundId);
+    let round = Rounds.get(roundList, roundId);
     let isThisTheLastRound = roundId === Rounds.getLastKey(roundList);
     let unmatched =
       switch (round, isThisTheLastRound) {
       | (Some(round), true) =>
         let matched = Rounds.Round.getMatched(round);
-        activePlayers->Map.String.removeMany(matched);
+        Map.String.removeMany(activePlayers, matched);
       | (None, _)
       | (Some(_), false) => Map.String.empty
       };
@@ -56,7 +54,8 @@ module WithRoundData =
     /* make a new list so as not to affect auto-pairing*/
     let unmatchedWithDummy =
       unmatchedCount mod 2 !== 0
-        ? unmatched->Map.String.set(
+        ? Map.String.set(
+            unmatched,
             Player.dummy_id,
             getPlayer(Player.dummy_id),
           )
@@ -109,11 +108,11 @@ module WithScoreInfo =
         ~newRating,
       ) => {
     let {Scoring.colorScores, opponentResults, results} =
-      switch (scoreData->Map.String.get(player.Player.id)) {
+      switch (Map.String.get(scoreData, player.Player.id)) {
       | Some(data) => data
       | None => Scoring.createBlankScoreData(player.id)
       };
-    let hasBye = opponentResults->Map.String.has(Player.dummy_id);
+    let hasBye = Map.String.has(opponentResults, Player.dummy_id);
     let colorBalance =
       switch (Utils.List.sumF(colorScores)) {
       | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)
@@ -121,18 +120,19 @@ module WithScoreInfo =
       | _ => "Even"
       };
     let avoidMap =
-      avoidPairs->Option.mapWithDefault(Map.String.empty, x =>
-        x->Set.reduce(Map.String.empty, Config.AvoidPairs.reduceToMap)
+      Option.mapWithDefault(
+        avoidPairs,
+        Map.String.empty,
+        Config.AvoidPairs.toMap,
       );
     let avoidList =
-      switch (avoidMap->Map.String.get(player.id)) {
+      switch (Map.String.get(avoidMap, player.id)) {
       | None => []
       | Some(avoidList) => avoidList
       };
     let score = Utils.List.sumF(results);
-    let oppResultsEntries = Map.String.toArray(opponentResults);
     let opponentResults =
-      oppResultsEntries
+      Map.String.toArray(opponentResults)
       |> Js.Array.map(((opId, result)) =>
            <li key=opId>
              {[
@@ -152,16 +152,12 @@ module WithScoreInfo =
          )
       |> React.array;
     let avoidListHtml =
-      avoidList->Utils.List.toReactArrayReverse(pId =>
-        switch (players->Map.String.get(pId)) {
+      Utils.List.toReactArrayReverse(avoidList, pId =>
+        switch (Map.String.get(players, pId)) {
         /*  don't show players not in this tourney*/
         | None => React.null
-        | Some(_) =>
-          <li key=pId>
-            {React.string(
-               getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName,
-             )}
-          </li>
+        | Some({Player.firstName, lastName}) =>
+          <li key=pId> {React.string(firstName ++ " " ++ lastName)} </li>
         }
       );
     let rating =

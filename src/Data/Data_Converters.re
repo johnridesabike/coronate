@@ -95,11 +95,7 @@ let matches2ScoreData = (matchList: array(Data_Match.t)) => {
 };
 
 let createPairingData = (playerData, avoidPairs, scoreMap) => {
-  let avoidMap =
-    avoidPairs->Set.reduce(
-      Map.String.empty,
-      Data_Config.AvoidPairs.reduceToMap,
-    );
+  let avoidMap = Data_Config.AvoidPairs.toMap(avoidPairs);
   playerData->Map.String.reduce(
     Map.String.empty,
     (acc, key, data) => {

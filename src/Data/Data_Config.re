@@ -26,14 +26,14 @@ module AvoidPairs = {
         let x = compare(b, d);
         let y = compare(a, d);
         let z = compare(b, c);
-        switch (w + x + y + z) {
-        /*
-         Sometimes adding them returns 0 even if they're not equivalent.
-         (e.g.: 1, -1, 1, -1) So we're just turning 0 into 1.
-         There's probably a prettier way to pattern-match it, but this works.
-         */
-        | 0 when w !== 0 && x !== 0 && y !== 0 && z !== 0 => 1
-        | x => x
+        switch (w, x, y, z) {
+        /* Sometimes adding them returns 0 even if they're not equivalent.
+           There might be a better way to pattern-match this, but this works. */
+        | (1, (-1), 1, (-1))
+        | (1, (-1), (-1), 1) => 1
+        | ((-1), 1, 1, (-1))
+        | ((-1), 1, (-1), 1) => (-1)
+        | (w, x, y, z) => w + x + y + z
         };
       };
     });
@@ -43,26 +43,27 @@ module AvoidPairs = {
   let fromArray = Set.fromArray(~id=(module T));
   let decode = json =>
     Json.Decode.(json |> array(pair(string, string)))
-    ->Set.fromArray(~id=(module T));
+    |> Set.fromArray(~id=(module T));
   let encode = data =>
     Set.toArray(data) |> Json.Encode.(array(pair(string, string)));
   /*
-   Flatten the `[[id1, id2], [id1, id3]]` structure into an easy-to-read
+   Flatten the `(id1, id2), (id1, id3)` structure into an easy-to-access
    `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
    */
-  let reduceToMap = (acc, (id1, id2)) => {
+  let toMapReducer = (acc, (id1, id2)) => {
     let newList1 =
-      switch (acc->Map.String.get(id1)) {
+      switch (Map.String.get(acc, id1)) {
       | None => [id2]
       | Some(currentList) => [id2, ...currentList]
       };
     let newList2 =
-      switch (acc->Map.String.get(id2)) {
+      switch (Map.String.get(acc, id2)) {
       | None => [id1]
       | Some(currentList) => [id1, ...currentList]
       };
     acc->Map.String.set(id1, newList1)->Map.String.set(id2, newList2);
   };
+  let toMap = Set.reduce(_, Map.String.empty, toMapReducer);
 };
 
 type t = {
