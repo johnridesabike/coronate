@@ -22,10 +22,10 @@ module AvoidPairs = {
     Id.MakeComparable({
       type t = (string, string);
       let cmp = ((a, b), (c, d)) => {
-        let w = compare(a, c);
-        let x = compare(b, d);
-        let y = compare(a, d);
-        let z = compare(b, c);
+        let w = String.compare(a, c);
+        let x = String.compare(b, d);
+        let y = String.compare(a, d);
+        let z = String.compare(b, c);
         switch (w, x, y, z) {
         /* Sometimes adding them returns 0 even if they're not equivalent.
            There might be a better way to pattern-match this, but this works. */
@@ -86,7 +86,7 @@ let encode = data =>
     ])
   );
 let default = {
-  byeValue: Full,
+  byeValue: ByeValue.Full,
   avoidPairs: AvoidPairs.empty,
   lastBackup: Js.Date.fromFloat(0.0),
 };
