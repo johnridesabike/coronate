@@ -50,6 +50,10 @@ module Circle = {
   [@bs.module "react-feather"] [@react.component]
   external make: unit => React.element = "Circle";
 };
+module Clock = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "Clock";
+};
 module Download = {
   [@bs.module "react-feather"] [@react.component]
   external make: unit => React.element = "Download";

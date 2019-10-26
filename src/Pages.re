@@ -1,58 +1,59 @@
+open Belt;
 /*
-/* Use this in the window footer to indicate unstable releases. */
-module CautionFooter = {
-  module Styles = {
-    open Css;
-    open Utils.PhotonColors;
-    let container =
-      style([
-        width(`percent(100.0)),
-        backgroundRepeat(`repeat),
-        display(`flex),
-        flexDirection(`column),
-        justifyContent(`center),
-        textAlign(`center),
-        alignItems(`center),
-        backgroundImage(`url(Utils.WebpackAssets.caution)),
-      ]);
-    let text =
-      style([
-        padding(`px(4)),
-        backgroundColor(ink_90),
-        color(grey_10),
-        borderRadius(`px(4)),
-      ]);
-    let link =
-      style([
-        color(teal_50),
-        visited([color(teal_50)]),
-        active([color(teal_60)]),
-        focus([color(teal_60)]),
-        hover([color(teal_60)]),
-      ]);
-  };
+ /* Use this in the window footer to indicate unstable releases. */
+ module CautionFooter = {
+   module Styles = {
+     open Css;
+     open Utils.PhotonColors;
+     let container =
+       style([
+         width(`percent(100.0)),
+         backgroundRepeat(`repeat),
+         display(`flex),
+         flexDirection(`column),
+         justifyContent(`center),
+         textAlign(`center),
+         alignItems(`center),
+         backgroundImage(`url(Utils.WebpackAssets.caution)),
+       ]);
+     let text =
+       style([
+         padding(`px(4)),
+         backgroundColor(ink_90),
+         color(grey_10),
+         borderRadius(`px(4)),
+       ]);
+     let link =
+       style([
+         color(teal_50),
+         visited([color(teal_50)]),
+         active([color(teal_60)]),
+         focus([color(teal_60)]),
+         hover([color(teal_60)]),
+       ]);
+   };
 
-  [@react.component]
-  let make = () =>
-    <aside className={Cn.make([Styles.container, "body-20"])}>
-      <p className=Styles.text>
-        {React.string({j|⚠️|j})}
-        {React.string(
-           " This is beta software. Want to help make it better? Check out the ",
-         )}
-        <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
-        {React.string(Utils.Entities.nbsp)}
-        <a
-          className=Styles.link
-          href=Utils.github_url
-          onClick=Electron.openInBrowser>
-          {React.string("Git repository")}
-        </a>
-        {React.string(".")}
-      </p>
-    </aside>;
-};
-*/
+   [@react.component]
+   let make = () =>
+     <aside className={Cn.make([Styles.container, "body-20"])}>
+       <p className=Styles.text>
+         {React.string({j|⚠️|j})}
+         {React.string(
+            " This is beta software. Want to help make it better? Check out the ",
+          )}
+         <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
+         {React.string(Utils.Entities.nbsp)}
+         <a
+           className=Styles.link
+           href=Utils.github_url
+           onClick=Electron.openInBrowser>
+           {React.string("Git repository")}
+         </a>
+         {React.string(".")}
+       </p>
+     </aside>;
+ };
+ */
 
 module Splash = {
   module Style = {
@@ -196,6 +197,137 @@ module Splash = {
             </p>
           </div>
         </footer>
+      </div>
+    </Window.Body>;
+  };
+};
+
+let log2 = num => log(num) /. log(2.0);
+
+module TimeCalculator = {
+  [@react.component]
+  let make = () => {
+    let minPlayers = 1;
+    let minBreakTime = 0;
+    let minTotalTime = 0.5;
+    let (players, setPlayers) = React.useState(() => 2);
+    let (breakTime, setBreakTime) = React.useState(() => 5);
+    let (totalTime, setTotalTime) = React.useState(() => 4.0);
+    let updateFloat = (dispatch, minimum, event) => {
+      ReactEvent.Form.preventDefault(event);
+      let value =
+        ReactEvent.Form.currentTarget(event)##value
+        ->Float.fromString
+        ->Option.getWithDefault(minimum);
+      let safeValue = value < minimum ? minimum : value;
+      dispatch(_ => safeValue);
+    };
+    let updateInt = (dispatch, minimum, event) => {
+      ReactEvent.Form.preventDefault(event);
+      let value =
+        ReactEvent.Form.currentTarget(event)##value
+        ->Int.fromString
+        ->Option.getWithDefault(minimum);
+      let safeValue = value < minimum ? minimum : value;
+      dispatch(_ => safeValue);
+    };
+    <Window.Body>
+      <div className="content-area">
+        <h1> {React.string("Time calculator")} </h1>
+        <p className="caption-30">
+          {React.string @@
+           "Estimate the time requirements for planning your tournament."}
+        </p>
+        <form>
+          <table style={ReactDOMRe.Style.make(~margin="0", ())}>
+            <tbody>
+              <tr>
+                <td>
+                  <label htmlFor="playercount">
+                    {React.string("Player count ")}
+                  </label>
+                </td>
+                <td>
+                  <input
+                    id="playercount"
+                    type_="number"
+                    value={Js.Int.toString(players)}
+                    onChange={updateInt(setPlayers, minPlayers)}
+                    min=minPlayers
+                    style={ReactDOMRe.Style.make(~width="40px", ())}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td> <label> {React.string("Round count")} </label> </td>
+                <td>
+                  {players
+                   |> float_of_int
+                   |> log2
+                   |> ceil
+                   |> Js.Float.toString
+                   |> React.string}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label htmlFor="breakTime">
+                    {React.string("Breaks between rounds ")}
+                  </label>
+                </td>
+                <td>
+                  <input
+                    id="breakTime"
+                    type_="number"
+                    value={Js.Int.toString(breakTime)}
+                    onChange={updateInt(setBreakTime, minBreakTime)}
+                    step=5.0
+                    min=minBreakTime
+                    style={ReactDOMRe.Style.make(~width="40px", ())}
+                  />
+                  {React.string(" minutes")}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label htmlFor="totalTime">
+                    {React.string("Total time available ")}
+                  </label>
+                </td>
+                <td>
+                  <input
+                    id="totalTime"
+                    type_="number"
+                    value={Js.Float.toString(totalTime)}
+                    onChange={updateFloat(setTotalTime, minTotalTime)}
+                    step=0.5
+                    min={Float.toInt(minTotalTime)}
+                    style={ReactDOMRe.Style.make(~width="40px", ())}
+                  />
+                  {React.string(" hours")}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+        <p>
+          <span className="caption-30">
+            {React.string("Maximum time control: ")}
+          </span>
+          <span className="title-20">
+            {(
+               totalTime
+               *. 60.0
+               /. (players |> float_of_int |> log2 |> ceil)
+               -. float_of_int(breakTime)
+             )
+             /. 2.0
+             |> ceil
+             |> Js.Float.toString
+             |> React.string}
+            {React.string(" minutes")}
+          </span>
+        </p>
       </div>
     </Window.Body>;
   };

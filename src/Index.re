@@ -15,6 +15,7 @@ module App = {
            <PageTourney tourneyId hashPath />
          | ["players"] => <PagePlayers />
          | ["players", ...id] => <PagePlayers id />
+         | ["timecalc"] => <Pages.TimeCalculator />
          | ["options"] => <PageOptions />
          | _ => <Window.Body> <Pages.NotFound /> </Window.Body>
          }}

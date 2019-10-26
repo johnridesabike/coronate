@@ -275,7 +275,7 @@ let make = (~children, ~className) => {
       Webapi.Dom.(
         document
         ->Document.asHtmlDocument
-        ->Option.map(HtmlDocument.setTitle(_, formatTitle(title)))
+        ->Option.map(__x => HtmlDocument.setTitle(__x, formatTitle(title)))
         ->ignore
       );
       None;
@@ -367,6 +367,14 @@ module DefaultSidebar = {
             <Icons.Settings />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Options")}
+            </span>
+          </HashLink>
+        </li>
+        <li>
+          <HashLink to_="/timecalc" onDragStart=noDraggy>
+            <Icons.Clock />
+            <span className="sidebar__hide-on-close">
+              {React.string(Utils.Entities.nbsp ++ "Time calculator")}
             </span>
           </HashLink>
         </li>
