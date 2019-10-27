@@ -283,7 +283,8 @@ module MatchRow = {
             | None => React.null
             | Some(scoreData) =>
               <Utils.Dialog
-                isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
+                isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}
+                ariaLabel="Match information">
                 <button
                   className="button-micro button-primary"
                   onClick={_ => setIsModalOpen(_ => false)}>

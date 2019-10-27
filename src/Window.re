@@ -329,7 +329,8 @@ let make = (~children, ~className) => {
     <Utils.Dialog
       isOpen={state.isDialogOpen}
       onDismiss={() => dispatch(SetDialog(false))}
-      style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}>
+      style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}
+      ariaLabel="About Coronate">
       <button
         className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
         {React.string("Close")}

@@ -124,7 +124,8 @@ let make = () => {
              </tbody>
            </table>}
       <Utils.Dialog
-        isOpen=isDialogOpen onDismiss={() => setIsDialogOpen(_ => false)}>
+        isOpen=isDialogOpen onDismiss={() => setIsDialogOpen(_ => false)}
+        ariaLabel="Create new tournament">
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
           {React.string("Close")}

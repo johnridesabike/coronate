@@ -243,7 +243,7 @@ module TimeCalculator = {
         <h1> {React.string("Time calculator")} </h1>
         <p className="caption-30">
           {React.string @@
-           "Estimate the time requirements for planning your tournament."}
+           "Estimate the time requirements for planning your Swiss-style tournament."}
         </p>
         <form>
           <table style={ReactDOMRe.Style.make(~margin="0", ())}>
@@ -339,11 +339,11 @@ module TimeCalculator = {
             <strong className="monospace">
               {totalTime |> Js.Float.toString |> React.string}
             </strong>
-            {React.string({j| × 60 ÷ log₂(|j})}
+            {React.string({j| × 60 ÷ ⌈log₂(|j})}
             <strong className="monospace">
               {players |> Js.Int.toString |> React.string}
             </strong>
-            {React.string(")) - ")}
+            {React.string({j|)⌉) - |j})}
             <strong className="monospace">
               {breakTime |> Js.Int.toString |> React.string}
             </strong>

@@ -459,7 +459,8 @@ let make =
         </Utils.Panel>
       </Utils.PanelContainer>
       <Utils.Dialog
-        isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}>
+        isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}
+        ariaLabel="Select players">
         <button
           className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
           {React.string("Done")}

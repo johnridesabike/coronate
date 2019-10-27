@@ -213,7 +213,8 @@ let make = (~tournament) => {
         </ol>
       </Utils.Panel>
       <Utils.Dialog
-        isOpen=isSelecting onDismiss={() => setIsSelecting(_ => false)}>
+        isOpen=isSelecting onDismiss={() => setIsSelecting(_ => false)}
+        ariaLabel="Select players">
         <button
           className="button-micro button-primary"
           onClick={_ => setIsSelecting(_ => false)}>

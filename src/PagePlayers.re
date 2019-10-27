@@ -198,7 +198,8 @@ module PlayerList = {
         </tbody>
       </table>
       <Utils.Dialog
-        isOpen=isDialogOpen onDismiss={_ => setIsDialogOpen(_ => false)}>
+        isOpen=isDialogOpen onDismiss={_ => setIsDialogOpen(_ => false)}
+        ariaLabel="New player form">
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
           {React.string("Close")}

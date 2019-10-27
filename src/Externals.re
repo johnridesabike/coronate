@@ -37,16 +37,39 @@ module VisuallyHidden = {
   external make: (~children: React.element) => React.element = "default";
 };
 module Dialog = {
-  [@bs.module "@reach/dialog"] [@react.component]
+  /* This binding is awkward to account for Reason's inability to directly use
+     aria-* properties with components. The second make function fixes it for
+     us. I don't know if there's a better way of doing this. */
+  [@bs.module "@reach/dialog"]
   external make:
-    (
-      ~isOpen: bool,
-      ~onDismiss: unit => unit,
-      ~children: React.element,
-      ~style: ReactDOMRe.Style.t=?
-    ) =>
-    React.element =
+    React.component({
+      .
+      "isOpen": bool,
+      "onDismiss": unit => unit,
+      "children": React.element,
+      "style": ReactDOMRe.Style.t,
+      "aria-label": string,
+    }) =
     "Dialog";
+  [@react.component]
+  let make =
+      (
+        ~isOpen,
+        ~onDismiss,
+        ~ariaLabel,
+        ~children,
+        ~style=ReactDOMRe.Style.make(),
+      ) =>
+    React.createElement(
+      make,
+      {
+        "isOpen": isOpen,
+        "onDismiss": onDismiss,
+        "style": style,
+        "aria-label": ariaLabel,
+        "children": children,
+      },
+    );
 };
 
 module ReachTabs = {
