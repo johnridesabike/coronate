@@ -204,33 +204,40 @@ module Splash = {
 
 let log2 = num => log(num) /. log(2.0);
 
+let fixNumber = num =>
+  if (num < 0.0 || num === infinity || num === neg_infinity) {
+    0.0;
+  } else {
+    num;
+  };
+
 module TimeCalculator = {
+  let updateFloat = (dispatch, minimum, event) => {
+    ReactEvent.Form.preventDefault(event);
+    let value =
+      ReactEvent.Form.currentTarget(event)##value
+      ->Float.fromString
+      ->Option.getWithDefault(minimum);
+    let safeValue = value < minimum ? minimum : value;
+    dispatch(_ => safeValue);
+  };
+  let updateInt = (dispatch, minimum, event) => {
+    ReactEvent.Form.preventDefault(event);
+    let value =
+      ReactEvent.Form.currentTarget(event)##value
+      ->Int.fromString
+      ->Option.getWithDefault(minimum);
+    let safeValue = value < minimum ? minimum : value;
+    dispatch(_ => safeValue);
+  };
   [@react.component]
   let make = () => {
-    let minPlayers = 1;
+    let minPlayers = 0;
     let minBreakTime = 0;
     let minTotalTime = 0.5;
     let (players, setPlayers) = React.useState(() => 2);
     let (breakTime, setBreakTime) = React.useState(() => 5);
     let (totalTime, setTotalTime) = React.useState(() => 4.0);
-    let updateFloat = (dispatch, minimum, event) => {
-      ReactEvent.Form.preventDefault(event);
-      let value =
-        ReactEvent.Form.currentTarget(event)##value
-        ->Float.fromString
-        ->Option.getWithDefault(minimum);
-      let safeValue = value < minimum ? minimum : value;
-      dispatch(_ => safeValue);
-    };
-    let updateInt = (dispatch, minimum, event) => {
-      ReactEvent.Form.preventDefault(event);
-      let value =
-        ReactEvent.Form.currentTarget(event)##value
-        ->Int.fromString
-        ->Option.getWithDefault(minimum);
-      let safeValue = value < minimum ? minimum : value;
-      dispatch(_ => safeValue);
-    };
     <Window.Body>
       <div className="content-area">
         <h1> {React.string("Time calculator")} </h1>
@@ -243,13 +250,13 @@ module TimeCalculator = {
             <tbody>
               <tr>
                 <td>
-                  <label htmlFor="playercount">
+                  <label htmlFor="playerCount">
                     {React.string("Player count ")}
                   </label>
                 </td>
                 <td>
                   <input
-                    id="playercount"
+                    id="playerCount"
                     type_="number"
                     value={Js.Int.toString(players)}
                     onChange={updateInt(setPlayers, minPlayers)}
@@ -265,6 +272,7 @@ module TimeCalculator = {
                    |> float_of_int
                    |> log2
                    |> ceil
+                   |> fixNumber
                    |> Js.Float.toString
                    |> React.string}
                 </td>
@@ -310,10 +318,8 @@ module TimeCalculator = {
             </tbody>
           </table>
         </form>
+        <p className="title-20"> {React.string("Maximum time control: ")} </p>
         <p>
-          <span className="caption-30">
-            {React.string("Maximum time control: ")}
-          </span>
           <span className="title-20">
             {(
                totalTime
@@ -323,9 +329,25 @@ module TimeCalculator = {
              )
              /. 2.0
              |> ceil
+             |> fixNumber
              |> Js.Float.toString
              |> React.string}
             {React.string(" minutes")}
+          </span>
+          <span className="caption-30">
+            {React.string(" = ((")}
+            <strong className="monospace">
+              {totalTime |> Js.Float.toString |> React.string}
+            </strong>
+            {React.string({j| × 60 ÷ log₂(|j})}
+            <strong className="monospace">
+              {players |> Js.Int.toString |> React.string}
+            </strong>
+            {React.string(")) - ")}
+            <strong className="monospace">
+              {breakTime |> Js.Int.toString |> React.string}
+            </strong>
+            {React.string({j|) ÷ 2|j})}
           </span>
         </p>
       </div>
