@@ -82,7 +82,14 @@
     "wait-on": "^3.3.0"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app"
+    ],
+    "rules": {
+      "default-case": "off",
+      "no-unused-vars": "off",
+      "react-hooks/exhaustive-deps": "off"
+    }
   },
   "browserslist": [
     ">0.2%",
