@@ -114,6 +114,7 @@ Linux builds have not been tested.
 ## ⛏️ Built Using
 
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime
+- [Create React App](https://create-react-app.dev) - Build and development configuration
 - [ReasonML](https://reasonml.github.io) - most of the code
 - [ReasonReact](https://reasonml.github.io/reason-react/) - interface
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage

@@ -41,23 +41,14 @@ module Dialog = {
      aria-* properties with components. The second make function fixes it for
      us. I don't know if there's a better way of doing this. */
   [@bs.module "@reach/dialog"]
-  external make:
-    React.component({
-      .
-      "isOpen": bool,
-      "onDismiss": unit => unit,
-      "children": React.element,
-      "style": ReactDOMRe.Style.t,
-      "aria-label": string,
-    }) =
-    "Dialog";
+  external make: React.component(Js.t({..})) = "Dialog";
   [@react.component]
   let make =
       (
-        ~isOpen,
-        ~onDismiss,
-        ~ariaLabel,
-        ~children,
+        ~isOpen: bool,
+        ~onDismiss: unit => unit,
+        ~ariaLabel: string,
+        ~children: React.element,
         ~style=ReactDOMRe.Style.make(),
       ) =>
     React.createElement(
