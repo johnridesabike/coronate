@@ -53,14 +53,14 @@ type tieBreak =
  This is useful for cases where the regular factory functions return empty
  results because a player hasn't been added yet.
  */
-let createBlankScoreData = id => {
+let createBlankScoreData = (~firstRating=0, id) => {
   colorScores: [],
   colors: [],
   id,
   isDummy: false,
   opponentResults: Map.String.empty,
   ratings: [],
-  firstRating: 0,
+  firstRating,
   results: [],
   resultsNoByes: [],
 };

@@ -1,8 +1,6 @@
 open Belt;
-/*
-  This module is designed to convert types from the `Data` module to types to
-  be used in the `Pairing` and `Scoring` modules.
- */
+/* This module is designed to convert types from the `Data` module to types to
+   be used in the `Pairing` and `Scoring` modules.*/
 let makeScoreData =
     (
       ~existingData,
@@ -14,99 +12,84 @@ let makeScoreData =
       ~color,
     ) => {
   let oldData = {
-    switch (existingData->Map.String.get(playerId)) {
-    | None => Scoring.createBlankScoreData(playerId)
+    switch (Map.String.get(existingData, playerId)) {
+    | None => Scoring.createBlankScoreData(~firstRating=origRating, playerId)
     | Some(data) => data
     };
   };
-  /*
-   The ratings will always begin with the `origRating` of the  first match
-   they were in.
-   */
-  let (newRatings, firstRating) =
-    switch (oldData.ratings) {
-    | [] => ([newRating], origRating)
-    | ratings => ([newRating, ...ratings], origRating)
-    };
   let newResultsNoByes = {
     Data_Player.isDummyId(oppId)
       ? oldData.resultsNoByes : [result, ...oldData.resultsNoByes];
   };
   let oldOppResults = oldData.opponentResults;
   let oppResult = {
-    switch (oldOppResults->Map.String.get(oppId)) {
+    switch (Map.String.get(oldOppResults, oppId)) {
     | None => result
     | Some(x) => x +. result
     };
   };
-  let newOpponentResults = oldOppResults->Map.String.set(oppId, oppResult);
-  Scoring.{
+  {
+    ...oldData,
     results: [result, ...oldData.results],
     resultsNoByes: newResultsNoByes,
     colors: [color, ...oldData.colors],
-    colorScores: [Color.toScore(color), ...oldData.colorScores],
-    opponentResults: newOpponentResults,
-    ratings: newRatings,
-    firstRating,
+    colorScores: [Scoring.Color.toScore(color), ...oldData.colorScores],
+    opponentResults: Map.String.set(oldOppResults, oppId, oppResult),
+    ratings: [newRating, ...oldData.ratings],
     isDummy: Data_Player.isDummyId(playerId),
-    id: playerId,
   };
 };
 
 let matches2ScoreData = (matchList: array(Data_Match.t)) => {
-  matchList
-  |> Js.Array.reduce(
-       (acc, match) =>
-         Data_Match.(
-           switch (match.result) {
-           | NotSet => acc
-           | WhiteWon
-           | BlackWon
-           | Draw =>
-             let whiteData =
-               makeScoreData(
-                 ~existingData=acc,
-                 ~playerId=match.whiteId,
-                 ~origRating=match.whiteOrigRating,
-                 ~newRating=match.whiteNewRating,
-                 ~result=match.result->Data_Match.Result.(toFloat(White)),
-                 ~oppId=match.blackId,
-                 ~color=Scoring.Color.White,
-               );
-             let blackData =
-               makeScoreData(
-                 ~existingData=acc,
-                 ~playerId=match.blackId,
-                 ~origRating=match.blackOrigRating,
-                 ~newRating=match.blackNewRating,
-                 ~result=match.result->Data_Match.Result.(toFloat(Black)),
-                 ~oppId=match.whiteId,
-                 ~color=Scoring.Color.Black,
-               );
-             Map.String.(
-               acc
-               ->set(match.whiteId, whiteData)
-               ->set(match.blackId, blackData)
-             );
-           }
-         ),
-       Map.String.empty,
-     );
+  Array.reduce(matchList, Map.String.empty, (acc, match) =>
+    Data_Match.(
+      switch (match.result) {
+      | NotSet => acc
+      | WhiteWon
+      | BlackWon
+      | Draw =>
+        let whiteData =
+          makeScoreData(
+            ~existingData=acc,
+            ~playerId=match.whiteId,
+            ~origRating=match.whiteOrigRating,
+            ~newRating=match.whiteNewRating,
+            ~result=Data_Match.Result.toFloat(match.result, White),
+            ~oppId=match.blackId,
+            ~color=Scoring.Color.White,
+          );
+        let blackData =
+          makeScoreData(
+            ~existingData=acc,
+            ~playerId=match.blackId,
+            ~origRating=match.blackOrigRating,
+            ~newRating=match.blackNewRating,
+            ~result=Data_Match.Result.toFloat(match.result, Black),
+            ~oppId=match.whiteId,
+            ~color=Scoring.Color.Black,
+          );
+        acc
+        ->Map.String.set(match.whiteId, whiteData)
+        ->Map.String.set(match.blackId, blackData);
+      }
+    )
+  );
 };
 
 let createPairingData = (playerData, avoidPairs, scoreMap) => {
   let avoidMap = Data_Config.AvoidPairs.toMap(avoidPairs);
-  playerData->Map.String.reduce(
+  Map.String.reduce(
+    playerData,
     Map.String.empty,
     (acc, key, data) => {
       let playerStats = {
-        switch (scoreMap->Map.String.get(key)) {
+        switch (Map.String.get(scoreMap, key)) {
         | None => Scoring.createBlankScoreData(key)
         | Some(x) => x
         };
       };
       let newAvoidIds = {
-        switch (avoidMap->Map.String.get(key)) {
+        switch (Map.String.get(avoidMap, key)) {
         | None => []
         | Some(x) => x
         };
@@ -126,9 +109,9 @@ let createPairingData = (playerData, avoidPairs, scoreMap) => {
             ->Map.String.keysToArray
             ->List.fromArray,
           rating: data.rating,
-          score: playerStats.results->Utils.List.sumF,
+          score: Utils.List.sumF(playerStats.results),
         };
-      acc->Map.String.set(key, newData);
+      Map.String.set(acc, key, newData);
     },
   );
 };

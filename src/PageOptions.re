@@ -7,7 +7,7 @@ let getDateForFile = () => {
   [
     date |> Js.Date.getFullYear |> Js.Float.toString,
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
-    (Js.Date.getDay(date) +. 1.0)->Numeral.make->Numeral.format("00"),
+    Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
   ]
   |> String.concat("-");
 };

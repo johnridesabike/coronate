@@ -11,7 +11,7 @@ Coronate is a free alternative to pricey professional tournament software. Anyon
 
 <p align="center"><a href="https://johnridesa.bike/coronate/">👉 Click here for a live demo ♟</a></p>
 
-[Read more about how to use the app here](https://johnridesa.bike/software/coronate/). It's mostly version 1.0 feature-complete, but it is definitely still in beta.
+[Read more about how to use the app here](https://johnridesa.bike/software/coronate/).
 
 ![Round screenshot](./screenshot-round.png)
 ![Scoring screenshot](./screenshot-score-detail.png)

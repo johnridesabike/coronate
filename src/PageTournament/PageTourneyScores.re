@@ -354,6 +354,43 @@ let make = (~tournament) => {
 };
 
 module Crosstable = {
+  let getXScore = (scoreData, player1Id, player2Id) =>
+    if (player1Id === player2Id) {
+      <Icons.X className="disabled" />;
+    } else {
+      switch (Map.String.get(scoreData, player1Id)) {
+      | None => React.null
+      | Some(scoreData) =>
+        switch (Map.String.get(scoreData.Scoring.opponentResults, player2Id)) {
+        | None => React.null
+        | Some(result) =>
+          Numeral.make(result)->Numeral.format("1/2")->React.string
+        }
+      };
+    };
+
+  let getRatingChangeTds = (scoreData, playerId) => {
+    let firstRating =
+      scoreData->Map.String.getExn(playerId).Scoring.firstRating;
+    let lastRating =
+      switch (Map.String.getExn(scoreData, playerId).ratings) {
+      | [] => firstRating
+      | [rating, ..._] => rating
+      };
+    let change =
+      float_of_int(lastRating - firstRating)
+      ->Numeral.make
+      ->Numeral.format("+0");
+    <>
+      <td className={Cn.make([Style.rowTd, "table__number"])}>
+        {lastRating |> Js.Int.toString |> React.string}
+      </td>
+      <td className={Cn.make([Style.rowTd, "table__number body-10"])}>
+        {React.string(change)}
+      </td>
+    </>;
+  };
+
   [@react.component]
   let make = (~tournament) => {
     let {LoadTournament.tourney, getPlayer} = tournament;
@@ -362,41 +399,6 @@ module Crosstable = {
       Rounds.rounds2Matches(~roundList, ()) |> Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(scoreData, tieBreaks);
 
-    let getXScore = (player1Id, player2Id) =>
-      if (player1Id === player2Id) {
-        <Icons.X className="disabled" />;
-      } else {
-        switch (scoreData->Map.String.get(player1Id)) {
-        | None => React.null
-        | Some(scoreData) =>
-          switch (scoreData.opponentResults->Map.String.get(player2Id)) {
-          | None => React.null
-          | Some(result) =>
-            Numeral.make(result)->Numeral.format("1/2")->React.string
-          }
-        };
-      };
-
-    let getRatingChangeTds = playerId => {
-      let firstRating =
-        scoreData->Map.String.getExn(playerId).firstRating->float_of_int;
-      let lastRating =
-        switch (scoreData->Map.String.getExn(playerId).ratings) {
-        | [] => firstRating
-        | [rating, ..._] => rating->float_of_int
-        };
-      let change =
-        Numeral.make(lastRating -. firstRating)->Numeral.format("+0");
-      <>
-        <td className={Cn.make([Style.rowTd, "table__number"])}>
-          {lastRating |> Js.Float.toString |> React.string}
-        </td>
-        <td className={Cn.make([Style.rowTd, "table__number body-10"])}>
-          {React.string(change)}
-        </td>
-      </>;
-    };
-
     <table className=Style.table>
       <caption> {React.string("Crosstable")} </caption>
       <thead>
@@ -404,8 +406,8 @@ module Crosstable = {
           <th> {React.string("#")} </th>
           <th> {React.string("Name")} </th>
           /* Display a rank as a shorthand for each player. */
-          {standings->Utils.List.toReactArrayWithIndex((rank, _) =>
-             <th key={rank |> string_of_int}>
+          {Utils.List.toReactArrayWithIndex(standings, (rank, _) =>
+             <th key={string_of_int(rank)}>
                {rank + 1 |> string_of_int |> React.string}
              </th>
            )}
@@ -414,8 +416,8 @@ module Crosstable = {
         </tr>
       </thead>
       <tbody>
-        {standings->Utils.List.toReactArrayWithIndex((index, standing) =>
-           <tr key={index |> string_of_int} className=Style.row>
+        {Utils.List.toReactArrayWithIndex(standings, (index, standing) =>
+           <tr key={string_of_int(index)} className=Style.row>
              <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
                {index + 1 |> string_of_int |> React.string}
              </th>
@@ -427,11 +429,11 @@ module Crosstable = {
                {React.string(getPlayer(standing.id).lastName)}
              </th>
              /* Output a cell for each other player */
-             {standings->Utils.List.toReactArrayWithIndex((index2, opponent) =>
+             {Utils.List.toReactArrayWithIndex(standings, (index2, opponent) =>
                 <td
-                  key={index2 |> string_of_int}
+                  key={string_of_int(index2)}
                   className={Cn.make([Style.rowTd, "table__number"])}>
-                  {getXScore(standing.id, opponent.id)}
+                  {getXScore(scoreData, standing.id, opponent.id)}
                 </td>
               )}
              /* Output their score and rating change */
@@ -440,11 +442,10 @@ module Crosstable = {
                 ->Numeral.format("1/2")
                 ->React.string}
              </td>
-             {getRatingChangeTds(standing.id)}
+             {getRatingChangeTds(scoreData, standing.id)}
            </tr>
          )}
       </tbody>
     </table>;
-    /* Output a row for each player */
   };
 };
