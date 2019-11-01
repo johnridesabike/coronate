@@ -67,6 +67,8 @@ let useWindowContext = () => {
 };
 
 module About = {
+  [@bs.val]
+  external version: option(string) = "process.env.REACT_APP_VERSION";
   [@react.component]
   let make = () => {
     <article
@@ -90,6 +92,11 @@ module About = {
           style={ReactDOMRe.Style.make(~textAlign="left", ())}>
           {React.string("Coronate")}
         </h1>
+        {switch (version) {
+         | Some(version) =>
+           <p> {React.string("Version ")} {React.string(version)} </p>
+         | None => React.null
+         }}
         <p>
           {React.string(
              [
