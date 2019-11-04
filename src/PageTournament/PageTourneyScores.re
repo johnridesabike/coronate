@@ -378,9 +378,7 @@ module Crosstable = {
       | [rating, ..._] => rating
       };
     let change =
-      float_of_int(lastRating - firstRating)
-      ->Numeral.make
-      ->Numeral.format("+0");
+      Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0");
     <>
       <td className={Cn.make([Style.rowTd, "table__number"])}>
         {lastRating |> Js.Int.toString |> React.string}

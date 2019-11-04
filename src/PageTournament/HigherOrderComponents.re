@@ -168,8 +168,7 @@ module WithScoreInfo =
          | Some(newRating) =>
            <span>
              {React.string(" (")}
-             {float_of_int(newRating - origRating)
-              ->Numeral.make
+             {Numeral.fromInt(newRating - origRating)
               ->Numeral.format("+0")
               ->React.string}
              {React.string(")")}
