@@ -4,6 +4,7 @@ import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
+import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Db$Coronate from "../../Db.bs.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
@@ -37,7 +38,7 @@ var playerData = Belt_MapString.merge(TestData$Coronate.players, DemoData$Corona
 
 function calcNumOfRounds(playerCount) {
   var roundCount = Math.ceil(log2(playerCount));
-  var match = roundCount !== Number.NEGATIVE_INFINITY;
+  var match = roundCount !== Pervasives.neg_infinity;
   if (match) {
     return roundCount | 0;
   } else {
