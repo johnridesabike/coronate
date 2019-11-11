@@ -269,7 +269,7 @@ module TimeCalculator = {
                 <td> <label> {React.string("Round count")} </label> </td>
                 <td>
                   {players
-                   ->float_of_int
+                   ->Js.Int.toFloat
                    ->log2
                    ->ceil
                    ->fixNumber

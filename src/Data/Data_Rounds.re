@@ -8,13 +8,16 @@
 open Belt;
 module Round = {
   type t = array(Data_Match.t);
+  external fromArray: array(Data_Match.t) => t = "%identity";
+  external toArray: t => array(Data_Match.t) = "%identity";
+  let empty = [||];
 
   let encode = Json.Encode.array(Data_Match.encode);
   let decode = Json.Decode.array(Data_Match.decode);
 
-  let addMatches = (round, ~matches) => {
-    Array.concat(round, matches);
-  };
+  let size = Js.Array2.length;
+
+  let addMatches = Array.concat;
   /* flatten all of the ids from the matches to one list.*/
   let getMatched = (round: t) => {
     Array.reduce(round, [||], (acc, {Data_Match.whiteId, blackId}) =>
@@ -29,15 +32,31 @@ module Round = {
     ->Option.map(__x => round[__x] = match)
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None);
   };
+
+  let moveMatch = (round, matchId, direction) => {
+    switch (getMatchById(round, matchId)) {
+    | None => None
+    | Some(match) =>
+      let oldIndex = Js.Array2.indexOf(round, match);
+      let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
+      Some(Utils.Array.swap(round, oldIndex, newIndex));
+    };
+  };
 };
 
 type t = array(Round.t);
 
+external fromArray: array(Round.t) => t = "%identity";
+external toArray: t => array(Round.t) = "%identity";
+let empty: t = [|[||]|];
+
 let encode = Json.Encode.array(Round.encode);
 let decode = Json.Decode.array(Round.decode);
 
+let size = Js.Array2.length;
+
 let getLastKey = (rounds: t) => Array.length(rounds) - 1;
-let get = Array.get;
+let get = (rounds, id) => rounds[id];
 let set = (rounds: t, key, round) => {
   let wasSuccessful = rounds[key] = round;
   wasSuccessful ? Some(rounds) : None;
@@ -45,7 +64,7 @@ let set = (rounds: t, key, round) => {
 let setMatch = (rounds: t, key, match): option(t) =>
   rounds
   ->get(key)
-  ->Option.flatMap(Round.setMatch(_, match))
+  ->Option.flatMap(__x => Round.setMatch(__x, match))
   ->Option.flatMap(set(rounds, key));
 
 /*

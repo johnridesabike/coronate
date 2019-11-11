@@ -1,4 +1,8 @@
-## General API
+## General
+- [ ] Saving and loading user data is fragile and subject to memory leaks. The current implementation is quick-and-dirty and "works" fine, but needs to be more robust.
+  - [ ] Promises inside `useEffect` hooks need to be refactored to avoid memory leaks.
+  - [ ] Data storage options beyond local browser storage should be explored. 
+  - [ ] Currently, the code probably doesn't scale well with large amounts of data.
 
 [See the pairing & scoring TODO document.](https://github.com/johnridesabike/coronate/tree/master/src/TODO_Pairing_Scoring.md)
 

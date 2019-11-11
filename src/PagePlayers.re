@@ -164,38 +164,34 @@ module PlayerList = {
           </tr>
         </thead>
         <tbody className="content">
-          {sorted.table
-           ->Js.Array2.map(p =>
-               <tr key={p.id} className="buttons-on-hover">
-                 <td className="table__player">
-                   <HashLink to_={"/players/" ++ p.id}>
-                     {String.concat(" ", [p.firstName, p.lastName])
+          {Array.map(sorted.table, p =>
+             <tr key={p.id} className="buttons-on-hover">
+               <td className="table__player">
+                 <HashLink to_={"/players/" ++ p.id}>
+                   {String.concat(" ", [p.firstName, p.lastName])
+                    ->React.string}
+                 </HashLink>
+               </td>
+               <td className="table__number">
+                 {p.rating->string_of_int->React.string}
+               </td>
+               <td className="table__number">
+                 {p.matchCount->string_of_int->React.string}
+               </td>
+               <td>
+                 <button
+                   className="danger button-ghost"
+                   onClick={event => delPlayer(event, p.id)}>
+                   <Icons.Trash />
+                   <Utils.VisuallyHidden>
+                     {String.concat(" ", ["Delete", p.firstName, p.lastName])
                       ->React.string}
-                   </HashLink>
-                 </td>
-                 <td className="table__number">
-                   {p.rating->string_of_int->React.string}
-                 </td>
-                 <td className="table__number">
-                   {p.matchCount->string_of_int->React.string}
-                 </td>
-                 <td>
-                   <button
-                     className="danger button-ghost"
-                     onClick={event => delPlayer(event, p.id)}>
-                     <Icons.Trash />
-                     <Utils.VisuallyHidden>
-                       {String.concat(
-                          " ",
-                          ["Delete", p.firstName, p.lastName],
-                        )
-                        ->React.string}
-                     </Utils.VisuallyHidden>
-                   </button>
-                 </td>
-               </tr>
-             )
-           ->ReasonReact.array}
+                   </Utils.VisuallyHidden>
+                 </button>
+               </td>
+             </tr>
+           )
+           ->React.array}
         </tbody>
       </table>
       <Utils.Dialog

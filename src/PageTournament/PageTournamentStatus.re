@@ -5,7 +5,7 @@ let make = (~tournament) => {
   let {LoadTournament.tourney, getPlayer} = tournament;
   let {Tournament.roundList} = tourney;
   let lastRoundId = Rounds.getLastKey(tourney.roundList);
-  let lastRound = roundList->Rounds.get(lastRoundId);
+  let lastRound = Rounds.get(roundList, lastRoundId);
   <>
     <h2 style={ReactDOMRe.Style.make(~textAlign="center", ())}>
       {React.string("Tournament status")}
@@ -16,7 +16,7 @@ let make = (~tournament) => {
         {switch (lastRound) {
          | None => <p> {React.string("No rounds played yet.")} </p>
          | Some(matches) =>
-           if (Js.Array.length(matches) === 0) {
+           if (Rounds.Round.size(matches) === 0) {
              <p>
                {React.string(
                   "Matched players in the current round will be shown here.",
@@ -27,7 +27,7 @@ let make = (~tournament) => {
                roundId=lastRoundId
                tournament
                isCompact=true
-               matches
+               matches=Rounds.Round.toArray(matches)
              />;
            }
          }}

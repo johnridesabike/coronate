@@ -117,7 +117,7 @@ module PlayerList = {
                    setTourney(
                      Tournament.{
                        ...tourney,
-                       byeQueue: Js.Array2.concat(byeQueue, [|p.id|]),
+                       byeQueue: Array.concat(byeQueue, [|p.id|]),
                      },
                    )
                  }>

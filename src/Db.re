@@ -38,7 +38,7 @@ let loadDemoDB = _: unit => {
   ))
   |> Js.Promise.then_(_ => {
        let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
-       Webapi.(Dom.window |> Dom.Window.alert("Demo data loaded!"));
+       Utils.alert("Demo data loaded!");
        Js.Promise.resolve();
      })
   |> Js.Promise.catch(_ => {

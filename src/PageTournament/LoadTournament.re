@@ -12,7 +12,7 @@ let calcNumOfRounds = playerCount => {
 let emptyTourney = {
   name: "",
   playerIds: [],
-  roundList: [||],
+  roundList: Rounds.empty,
   date: Js.Date.fromFloat(0.0),
   id: Utils.nanoid(),
   tieBreaks: [|Scoring.Median|],
@@ -123,17 +123,16 @@ let make = (~children, ~tourneyId) => {
     let activePlayers =
       players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
     let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
-    let isItOver = Array.length(roundList) >= roundCount;
+    let isItOver = Rounds.size(roundList) >= roundCount;
     let isNewRoundReady =
-      Js.Array.(
-        length(roundList) === 0
-          ? true
-          : Rounds.isRoundComplete(
-              roundList,
-              activePlayers,
-              length(roundList) - 1,
-            )
-      );
+      Rounds.size(roundList) === 0
+        ? true
+        : Rounds.isRoundComplete(
+            roundList,
+            activePlayers,
+            Rounds.size(roundList) - 1,
+          );
+
     children({
       activePlayers,
       getPlayer: Player.getPlayerMaybe(players),

@@ -65,9 +65,9 @@ function LoadTournament_mock(Props) {
                       }));
         }));
   var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
-  var isItOver = roundList.length >= roundCount;
-  var match$2 = roundList.length === 0;
-  var isNewRoundReady = match$2 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, roundList.length - 1 | 0);
+  var isItOver = Data_Rounds$Coronate.size(roundList) >= roundCount;
+  var match$2 = Data_Rounds$Coronate.size(roundList) === 0;
+  var isNewRoundReady = match$2 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, Data_Rounds$Coronate.size(roundList) - 1 | 0);
   return Curry._1(children, /* record */[
               /* activePlayers */activePlayers,
               /* getPlayer */(function (param) {

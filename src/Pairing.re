@@ -80,8 +80,8 @@ let calcPairIdeal = (player1, player2) =>
     ]);
   };
 
-let descendingScore = Utils.descend(x => x.score);
-let descendingRating = Utils.descend(x => x.rating);
+let descendingScore = Utils.descend(compare, x => x.score);
+let descendingRating = Utils.descend(compare, x => x.rating);
 
 let splitInHalf = arr => {
   let midpoint = Js.Array.length(arr) / 2;

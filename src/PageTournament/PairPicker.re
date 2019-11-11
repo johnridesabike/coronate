@@ -202,15 +202,16 @@ module Stage = {
       switch (stagedPlayers) {
       | (Some(white), Some(black)) =>
         let newRound =
-          round->Rounds.Round.addMatches(
-            ~matches=[|
+          Rounds.Round.addMatches(
+            round,
+            [|
               Match.manualPair(
                 (getPlayer(white), getPlayer(black)),
                 byeValue,
               ),
             |],
           );
-        switch (roundList->Rounds.set(roundId, newRound)) {
+        switch (Rounds.set(roundList, roundId, newRound)) {
         | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
         };
@@ -388,17 +389,12 @@ let make =
   );
   let autoPair = round => {
     let newRound =
-      round->Rounds.Round.addMatches(
-        ~matches=
-          Match.autoPair(
-            ~pairData,
-            ~byeValue,
-            ~byeQueue,
-            ~playerMap=unmatched,
-          )
-          ->List.toArray,
+      Rounds.Round.addMatches(
+        round,
+        Match.autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)
+        ->List.toArray,
       );
-    switch (roundList->Rounds.set(roundId, newRound)) {
+    switch (Rounds.set(roundList, roundId, newRound)) {
     | Some(roundList) => setTourney({...tourney, roundList})
     | None => ()
     };

@@ -185,15 +185,15 @@ module MatchRow = {
       };
     };
     let setMatchResultBlur = event => {
-      setMatchResult(event->ReactEvent.Focus.target##value);
+      setMatchResult(ReactEvent.Focus.target(event)##value);
     };
     let setMatchResultChange = event => {
-      setMatchResult(event->ReactEvent.Form.target##value);
+      setMatchResult(ReactEvent.Form.target(event)##value);
     };
     <tr
       className={Cn.make([
         className,
-        selectedMatch->Option.mapWithDefault("", id =>
+        Option.mapWithDefault(selectedMatch, "", id =>
           match.id === id ? "selected" : "buttons-on-hover"
         ),
       ])}>
@@ -462,20 +462,17 @@ module Round = {
     };
 
     let moveMatch = (matchId, direction, round) => {
-      switch (round->Rounds.Round.getMatchById(matchId)) {
+      switch (Rounds.Round.moveMatch(round, matchId, direction)) {
       | None => ()
-      | Some(match) =>
-        let oldIndex = Js.Array2.indexOf(round, match);
-        let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
-        let newRound = Utils.Array.swap(round, oldIndex, newIndex);
-        switch (roundList->Rounds.set(roundId, newRound)) {
+      | Some(newRound) =>
+        switch (Rounds.set(roundList, roundId, newRound)) {
         | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
         };
       };
     };
 
-    switch (tourney.roundList->Rounds.get(roundId)) {
+    switch (Rounds.get(tourney.roundList, roundId)) {
     | None => <Pages.NotFound />
     | Some(matches) =>
       <div className="content-area">
@@ -526,7 +523,7 @@ module Round = {
             {React.string(" Move down")}
           </button>
         </div>
-        {Js.Array.length(matches) === 0
+        {Rounds.Round.size(matches) === 0
            ? <p> {React.string("No players matched yet.")} </p> : React.null}
         <RoundTable
           roundId
@@ -534,7 +531,7 @@ module Round = {
           setSelectedMatch
           tournament
           scoreData
-          matches
+          matches=Rounds.Round.toArray(matches)
         />
       </div>
     };

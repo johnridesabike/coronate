@@ -59,17 +59,16 @@ external on:
   "on";
 
 [@bs.scope "window"] [@bs.val]
-external windowRequire: Js.Nullable.t(string => Js.Nullable.t(t)) =
-  "require";
+external windowRequire: option(string => option(t)) = "require";
 
-let electron_ =
-  switch (Js.Nullable.toOption(windowRequire)) {
-  | Some(require) => require("electron")->Js.Nullable.toOption
+let electron =
+  switch (windowRequire) {
+  | Some(require) => require("electron")
   | None => None
   };
 
 let ifElectron = fn => {
-  switch (electron_) {
+  switch (electron) {
   | Some(electron) => Some(fn(electron))
   | None => None
   };
@@ -80,8 +79,8 @@ let currentWindow =
 
 let openInBrowser = event => {
   ifElectron(electron => {
-    event->ReactEvent.Mouse.preventDefault;
-    electron->getShell->openExternal(event->ReactEvent.Mouse.target##href);
+    ReactEvent.Mouse.preventDefault(event);
+    electron->getShell->openExternal(ReactEvent.Mouse.target(event)##href);
   })
   ->ignore;
 };
@@ -99,7 +98,7 @@ let toggleMaximize = window =>
  */
 let macOSDoubleClick = event => {
   ifElectron(electron => {
-    let target = event->ReactEvent.Mouse.target;
+    let target = ReactEvent.Mouse.target(event);
     /* sometimes `className` isn't a string.*/
     if (target##className##includes) {
       /* We don't want double-clicking buttons to (un)maximize. */
@@ -111,8 +110,8 @@ let macOSDoubleClick = event => {
           ->getUserDefault("AppleActionOnDoubleClick", "string");
         let window = electron->getRemote->getCurrentWindow;
         switch (doubleClickAction) {
-        | "Minimize" => window->minimize
-        | "Maximize" => window->toggleMaximize
+        | "Minimize" => minimize(window)
+        | "Maximize" => toggleMaximize(window)
         | _ => ()
         };
       };
@@ -126,9 +125,9 @@ let isWin = Js.String2.includes(appVersion, "Windows");
 let isMac = Js.String2.includes(appVersion, "Mac");
 
 let isElectron =
-  switch (ifElectron(_ => true)) {
+  switch (electron) {
   | None => false
-  | Some(x) => x
+  | Some(_) => true
   };
 
 type os =
@@ -143,10 +142,9 @@ module IfElectron = {
       | Windows => isWin
       | Mac => isMac
       };
-    switch (electron_) {
-    | Some(electron) =>
-      isThisTheRightOs ? children(electron) : ReasonReact.null
-    | None => ReasonReact.null
+    switch (electron) {
+    | Some(electron) => isThisTheRightOs ? children(electron) : React.null
+    | None => React.null
     };
   };
 };

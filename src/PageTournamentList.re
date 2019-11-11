@@ -47,7 +47,7 @@ let make = () => {
           id,
           name: newTourneyName,
           playerIds: [],
-          roundList: [||],
+          roundList: Data.Rounds.empty,
           tieBreaks: [|
             Scoring.Median,
             Solkoff,

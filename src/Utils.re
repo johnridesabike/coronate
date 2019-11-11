@@ -7,16 +7,21 @@ let github_url = "https://github.com/johnridesabike/coronate";
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
 let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
 
-let ascend = (getter, a, b) => compare(getter(a), getter(b));
-let descend = (getter, a, b) => compare(getter(b), getter(a));
+/* Pass a `cmp` function to avoid polymorphic compare warnings & errors. */
+type direction('data, 'field) =
+  (('field, 'field) => int, 'data => 'field, 'data, 'data) => int;
+let ascend: direction('data, 'field) =
+  (cmp, getter, a, b) => cmp(getter(a), getter(b));
+let descend: direction('data, 'field) =
+  (cmp, getter, a, b) => cmp(getter(b), getter(a));
 
 module Array = {
   open Belt;
-  let last = arr => arr->Array.get(Js.Array.length(arr) - 1);
-  let sum = arr => Js.Array.reduce((+), 0, arr);
-  let sumF = arr => Js.Array.reduce((+.), 0.0, arr);
+  let last = arr => arr[Js.Array2.length(arr) - 1];
+  let sum = Array.reduce(_, 0, (+));
+  let sumF = Array.reduce(_, 0.0, (+.));
   let swap = (arr, idx1, idx2) => {
-    switch (arr->Array.get(idx1), arr->Array.get(idx2)) {
+    switch (arr[idx1], arr[idx2]) {
     | (Some(item1), Some(item2)) =>
       arr->Array.set(idx1, item2)->ignore;
       arr->Array.set(idx2, item1)->ignore;
@@ -58,9 +63,12 @@ module List = {
   };
 };
 
+let alert = Webapi.Dom.Window.alert(_, Webapi.Dom.window);
+
 module WebpackAssets = {
-  let logo: string = [%bs.raw {| require("./assets/icon-min.svg") |}];
-  let caution: string = [%bs.raw {| require("./assets/caution.svg") |}];
+  [@bs.val] external require: string => string = "require";
+  let logo = require("./assets/icon-min.svg");
+  let caution = require("./assets/caution.svg");
 };
 
 module Entities = {

@@ -30,7 +30,7 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Rounds: ")}
-          {roundList->Js.Array2.length->Js.Int.toString->React.string}
+          {roundList->Rounds.size->Js.Int.toString->React.string}
           <small> {React.string(" out of ")} </small>
           {roundCount->Js.Int.toString->React.string}
         </label>
@@ -111,9 +111,9 @@ module Sidebar = {
         switch (roundList->Rounds.get(lastRoundId)) {
         | None => ()
         | Some(round) =>
-          Array.forEach(
-            round,
-            match => {
+          round
+          ->Rounds.Round.toArray
+          ->Array.forEach(match => {
               let {
                 Match.result,
                 whiteId,
@@ -140,11 +140,10 @@ module Sidebar = {
                     }
                   )
               };
-            },
-          )
+            })
         };
         setTourney({...tourney, roundList: Rounds.delLastRound(roundList)});
-        if (Js.Array.length(roundList) === 0) {
+        if (Rounds.size(roundList) === 0) {
           /* Automatically remake round 1.*/
           setTourney({
             ...tourney,
@@ -213,32 +212,34 @@ module Sidebar = {
           {React.string("Rounds")}
         </h5>
         <ul className="center-on-close">
-          {Array.mapWithIndex(roundList, (id, _) =>
-             <li key={Js.Int.toString(id)}>
-               <HashLink
-                 to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
-                 onDragStart=noDraggy>
-                 {Js.Int.toString(id + 1)->React.string}
-                 {isRoundComplete(id)
-                    ? <span
-                        className={Cn.make([
-                          "sidebar__hide-on-close",
-                          "caption-20",
-                        ])}>
-                        {React.string(" Complete ")}
-                        <Icons.Check />
-                      </span>
-                    : <span
-                        className={Cn.make([
-                          "sidebar__hide-on-close",
-                          "caption-20",
-                        ])}>
-                        {React.string(" Not complete ")}
-                        <Icons.Alert />
-                      </span>}
-               </HashLink>
-             </li>
-           )
+          {roundList
+           ->Rounds.toArray
+           ->Array.mapWithIndex((id, _) =>
+               <li key={Js.Int.toString(id)}>
+                 <HashLink
+                   to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
+                   onDragStart=noDraggy>
+                   {Js.Int.toString(id + 1)->React.string}
+                   {isRoundComplete(id)
+                      ? <span
+                          className={Cn.make([
+                            "sidebar__hide-on-close",
+                            "caption-20",
+                          ])}>
+                          {React.string(" Complete ")}
+                          <Icons.Check />
+                        </span>
+                      : <span
+                          className={Cn.make([
+                            "sidebar__hide-on-close",
+                            "caption-20",
+                          ])}>
+                          {React.string(" Not complete ")}
+                          <Icons.Alert />
+                        </span>}
+                 </HashLink>
+               </li>
+             )
            ->React.array}
         </ul>
       </nav>
@@ -258,7 +259,7 @@ module Sidebar = {
         </li>
         <li style={ReactDOMRe.Style.make(~textAlign="center", ())}>
           <button
-            disabled={Js.Array.length(roundList) === 0}
+            disabled={Rounds.size(roundList) === 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>

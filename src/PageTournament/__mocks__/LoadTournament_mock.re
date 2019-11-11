@@ -43,7 +43,7 @@ let make = (~children, ~tourneyId) => {
   let (tourney, setTourney) =
     React.useReducer(
       tournamentReducer,
-      tournamentData->Map.String.getExn(tourneyId),
+      Map.String.getExn(tournamentData, tourneyId),
     );
   let {Tournament.playerIds, roundList} = tourney;
   let (players, playersDispatch, _) = Db.useAllPlayers();
@@ -51,17 +51,16 @@ let make = (~children, ~tourneyId) => {
   let activePlayers =
     players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
   let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
-  let isItOver = Array.length(roundList) >= roundCount;
+  let isItOver = Data.Rounds.size(roundList) >= roundCount;
   let isNewRoundReady =
-    Js.Array.(
-      length(roundList) === 0
-        ? true
-        : Rounds.isRoundComplete(
-            roundList,
-            activePlayers,
-            length(roundList) - 1,
-          )
-    );
+    Data.Rounds.size(roundList) === 0
+      ? true
+      : Rounds.isRoundComplete(
+          roundList,
+          activePlayers,
+          Data.Rounds.size(roundList) - 1,
+        );
+
   children({
     activePlayers,
     getPlayer: Player.getPlayerMaybe(players),

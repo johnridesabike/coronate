@@ -414,7 +414,7 @@ module Body = {
       {switch (footerFunc) {
        | Some(footer) =>
          <footer className={Cn.make(["win__footer"])}> {footer()} </footer>
-       | None => ReasonReact.null
+       | None => React.null
        }}
     </div>;
   };
