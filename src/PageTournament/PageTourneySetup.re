@@ -7,9 +7,9 @@ open Belt;
    1 and the JS Date() object requires that the month begins at 0. */
 let makeDateInput = date => {
   open Js.Date;
-  let year = date |> getFullYear |> Js.Float.toString;
-  let rawMonth = date |> getMonth;
-  let rawDate = date |> getDate;
+  let year = date->getFullYear->Js.Float.toString;
+  let rawMonth = date->getMonth;
+  let rawDate = date->getDate;
   /* The date input requires a 2-digit month and day.*/
   let month =
     rawMonth < 9.0
@@ -18,7 +18,7 @@ let makeDateInput = date => {
   let day =
     rawDate < 10.0
       ? "0" ++ Js.Float.toString(rawDate) : Js.Float.toString(rawDate);
-  [year, month, day] |> String.concat("-");
+  [year, month, day]->String.concat("-", _);
 };
 
 type inputs =
@@ -60,7 +60,7 @@ let make = (~tournament) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
     });
-    Webapi.(Dom.window |> Dom.Window.alert("Bye scores updated to 1."));
+    Webapi.(Dom.Window.alert("Bye scores updated to 1.", Dom.window));
   };
 
   let changeToOneHalf = _ => {
@@ -68,15 +68,13 @@ let make = (~tournament) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
     });
-    Webapi.(
-      Dom.window |> Dom.Window.alert({js|Bye scores updated to ½.|js})
-    );
+    Webapi.(Dom.Window.alert({js|Bye scores updated to ½.|js}, Dom.window));
   };
 
   let updateDate = event => {
     let rawDate = ReactEvent.Form.currentTarget(event)##value;
     let (rawYear, rawMonth, rawDay) =
-      switch (rawDate |> Js.String.split("-")) {
+      switch (Js.String2.split(rawDate, "-")) {
       | [|year, month, day|] => (year, month, day)
       | _ => ("2000", "01", "01") /* this was chosen randomly*/
       };

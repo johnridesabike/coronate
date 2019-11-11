@@ -10,7 +10,7 @@ let global_title = "Coronate";
 
 let formatTitle = title => {
   Js.String.length(title) === 0
-    ? global_title : [title, global_title] |> String.concat(" - ");
+    ? global_title : [title, global_title]->String.concat(" - ", _);
 };
 
 type windowState = {
@@ -106,7 +106,7 @@ module About = {
                Utils.Entities.nbsp,
                "Jackson",
              ]
-             |> String.concat(""),
+             ->String.concat("", _),
            )}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
@@ -156,7 +156,7 @@ module MSWindowsControls = {
   };
   [@react.component]
   let make = (~state, ~electron) => {
-    let window = electron |> getRemote |> getCurrentWindow;
+    let window = electron->getRemote->getCurrentWindow;
     <div className=Style.container>
       <button
         className={Cn.make([Style.button, "button-ghost1"])}
@@ -292,7 +292,7 @@ let make = (~children, ~className) => {
   React.useEffect1(
     () =>
       ifElectron(electron => {
-        let win = electron |> getRemote |> getCurrentWindow;
+        let win = electron->getRemote->getCurrentWindow;
         /* This will ensure that stale event listeners aren't persisted.
            That typically won't be relevant to production builds, but
            in a dev environment, where the page reloads frequently,

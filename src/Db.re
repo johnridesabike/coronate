@@ -31,11 +31,10 @@ let tournaments =
 
 let loadDemoDB = _: unit => {
   let _: unit = [%bs.raw {|document.body.style.cursor = "wait"|}];
-  /* TODO: waiting for Future to implement `all` */
   Js.Promise.all3((
-    configDb->LocalForage.Record.set(~items=DemoData.config),
-    players->LocalForage.Map.setItems(~items=DemoData.players),
-    tournaments->LocalForage.Map.setItems(~items=DemoData.tournaments),
+    LocalForage.Record.set(configDb, ~items=DemoData.config),
+    LocalForage.Map.setItems(players, ~items=DemoData.players),
+    LocalForage.Map.setItems(tournaments, ~items=DemoData.tournaments),
   ))
   |> Js.Promise.then_(_ => {
        let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
@@ -86,7 +85,7 @@ let useAllDb = store => {
           /* Even if there was an error, we'll clear the database. This means a
              corrupt database will get wiped. In the future, we may need to
              replace this with more elegant error recovery. */
-          LocalForage.LocalForageJs.clear()->ignore;
+          ()->LocalForage.LocalForageJs.clear->ignore;
           setIsLoaded(_ => true);
         }
       )
@@ -111,9 +110,9 @@ let useAllDb = store => {
             ->Future.tapOk(keys => {
                 let stateKeys = Map.String.keysToArray(items);
                 let deleted =
-                  Js.Array.(keys |> filter(x => !(stateKeys |> includes(x))));
-                if (Js.Array.length(deleted) > 0) {
-                  store->LocalForage.Map.removeItems(~items=deleted)->ignore;
+                  Js.Array2.(filter(keys, x => !includes(stateKeys, x)));
+                if (Array.size(deleted) > 0) {
+                  LocalForage.Map.removeItems(store, ~items=deleted)->ignore;
                 };
               })
             ->ignore
@@ -184,7 +183,7 @@ let useConfig = () => {
       )
     ->Future.tapError(_ =>
         if (! didCancel^) {
-          LocalForage.LocalForageJs.clear() |> ignore;
+          ()->LocalForage.LocalForageJs.clear->ignore;
           setIsLoaded(_ => true);
         }
       )

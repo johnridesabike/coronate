@@ -32,7 +32,7 @@ module List = {
   let sumF = list => List.reduce(list, 0.0, (+.));
   let toReactArrayReverse = (list, fn) => {
     let result = [||];
-    List.forEach(list, item => result |> Js.Array.unshift(fn(item)));
+    List.forEach(list, item => Js.Array2.unshift(result, fn(item)));
     React.array(result);
   };
   let toReactArrayReverseWithIndex = (list, fn) => {
@@ -40,19 +40,19 @@ module List = {
     list
     ->List.reverse
     ->List.forEachWithIndex((i, item) =>
-        result |> Js.Array.push(fn(i, item))
+        Js.Array2.push(result, fn(i, item))
       );
     React.array(result);
   };
   let toReactArray = (list, fn) => {
     let result = [||];
-    List.forEach(list, item => result |> Js.Array.push(fn(item)));
+    List.forEach(list, item => Js.Array2.push(result, fn(item)));
     React.array(result);
   };
   let toReactArrayWithIndex = (list, fn) => {
     let result = [||];
     List.forEachWithIndex(list, (i, item) =>
-      result |> Js.Array.push(fn(i, item))
+      Js.Array2.push(result, fn(i, item))
     );
     React.array(result);
   };
@@ -309,7 +309,7 @@ module Notification = {
 module Router = {
   let hashPath = hashString => {
     let path =
-      switch (hashString |> Js.String.split("/") |> Belt.List.fromArray) {
+      switch (hashString->Js.String2.split("/")->Belt.List.fromArray) {
       /* The first item is always an empty string, so we're removing it */
       | [_, ...rest] => rest
       | list => list

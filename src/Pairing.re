@@ -209,14 +209,14 @@ let pairPlayers = pairData => {
     /* slice out players who have already computed, plus the current one */
     let playerMatches =
       Array.sliceToEnd(playerArray, index + 1)
-      |> Js.Array.map(player2 =>
-           (
-             playerIdArray |> Js.Array.indexOf(player1.id),
-             playerIdArray |> Js.Array.indexOf(player2.id),
-             calcPairIdeal(player1, player2),
-           )
-         );
-    accArr |> Js.Array.concat(playerMatches);
+      ->Array.map(player2 =>
+          (
+            Js.Array2.indexOf(playerIdArray, player1.id),
+            Js.Array2.indexOf(playerIdArray, player2.id),
+            calcPairIdeal(player1, player2),
+          )
+        );
+    Array.concat(accArr, playerMatches);
   };
   let blossom2Pairs = (acc, p1Index, p2Index) => {
     /* Translate the indices into ID strings */

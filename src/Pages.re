@@ -269,12 +269,12 @@ module TimeCalculator = {
                 <td> <label> {React.string("Round count")} </label> </td>
                 <td>
                   {players
-                   |> float_of_int
-                   |> log2
-                   |> ceil
-                   |> fixNumber
-                   |> Js.Float.toString
-                   |> React.string}
+                   ->float_of_int
+                   ->log2
+                   ->ceil
+                   ->fixNumber
+                   ->Js.Float.toString
+                   ->React.string}
                 </td>
               </tr>
               <tr>
@@ -322,30 +322,32 @@ module TimeCalculator = {
         <p>
           <span className="title-20">
             {(
-               totalTime
-               *. 60.0
-               /. (players |> float_of_int |> log2 |> ceil)
-               -. float_of_int(breakTime)
+               (
+                 totalTime
+                 *. 60.0
+                 /. players->float_of_int->log2->ceil
+                 -. float_of_int(breakTime)
+               )
+               /. 2.0
              )
-             /. 2.0
-             |> ceil
-             |> fixNumber
-             |> Js.Float.toString
-             |> React.string}
+             ->ceil
+             ->fixNumber
+             ->Js.Float.toString
+             ->React.string}
             {React.string(" minutes")}
           </span>
           <span className="caption-30">
             {React.string(" = ((")}
             <strong className="monospace">
-              {totalTime |> Js.Float.toString |> React.string}
+              {totalTime->Js.Float.toString->React.string}
             </strong>
             {React.string({j| × 60 ÷ ⌈log₂(|j})}
             <strong className="monospace">
-              {players |> Js.Int.toString |> React.string}
+              {players->Js.Int.toString->React.string}
             </strong>
             {React.string({j|)⌉) - |j})}
             <strong className="monospace">
-              {breakTime |> Js.Int.toString |> React.string}
+              {breakTime->Js.Int.toString->React.string}
             </strong>
             {React.string({j|) ÷ 2|j})}
           </span>

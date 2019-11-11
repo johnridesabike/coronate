@@ -14,8 +14,8 @@ module ByeValue = {
     | 0.5 => Half
     | _ => Full
     };
-  let encode = data => data |> toFloat |> Json.Encode.float;
-  let decode = json => json |> Json.Decode.float |> fromFloat;
+  let encode = data => data->toFloat->Json.Encode.float;
+  let decode = json => json->Json.Decode.float->fromFloat;
 };
 module AvoidPairs = {
   module T =
@@ -42,8 +42,7 @@ module AvoidPairs = {
   let empty = Set.make(~id=(module T));
   let fromArray = Set.fromArray(~id=(module T));
   let decode = json =>
-    Json.Decode.(json |> array(pair(string, string)))
-    |> Set.fromArray(~id=(module T));
+    Json.Decode.(json |> array(pair(string, string)))->fromArray;
   let encode = data =>
     Set.toArray(data) |> Json.Encode.(array(pair(string, string)));
   /*

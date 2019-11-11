@@ -40,9 +40,9 @@ module ScoreTable = {
   [@react.component]
   let make = (~isCompact=false, ~tourney, ~getPlayer, ~title) => {
     let {Tournament.tieBreaks, roundList} = tourney;
-    let tieBreakNames = tieBreaks |> Js.Array.map(Tournament.mapTieBreakName);
+    let tieBreakNames = Array.map(tieBreaks, Tournament.mapTieBreakName);
     let standingTree =
-      Rounds.rounds2Matches(~roundList, ())
+      Rounds.rounds2Matches(roundList, ())
       ->Converters.matches2ScoreData
       ->Scoring.createStandingList(tieBreaks)
       ->List.keep(standing => !Data.Player.isDummyId(standing.Scoring.id))
@@ -63,16 +63,12 @@ module ScoreTable = {
           <th className="title-10" scope="col"> {React.string("Score")} </th>
           {isCompact
              ? React.null
-             : tieBreakNames
-               |> Js.Array.mapi((name, i) =>
-                    <th
-                      key={i |> string_of_int}
-                      className="title-10"
-                      scope="col">
-                      {React.string(name)}
-                    </th>
-                  )
-               |> React.array}
+             : Array.mapWithIndex(tieBreakNames, (i, name) =>
+                 <th key={string_of_int(i)} className="title-10" scope="col">
+                   {React.string(name)}
+                 </th>
+               )
+               ->React.array}
         </tr>
       </thead>
       <tbody>
@@ -92,7 +88,7 @@ module ScoreTable = {
                       ])}
                       rowSpan={List.size(standingsFlat)}
                       scope="row">
-                      {rank + 1 |> string_of_int |> React.string}
+                      {string_of_int(rank + 1)->React.string}
                     </th>
                   : React.null}
                /* It just uses <td> if it's compact.*/
@@ -164,18 +160,19 @@ module SelectTieBreaks = {
       };
 
     let toggleTb = id =>
-      if (tieBreaks |> Js.Array.includes(defaultId(id))) {
+      if (Js.Array2.includes(tieBreaks, defaultId(id))) {
         setTourney({
           ...tourney,
           tieBreaks:
-            tourney.tieBreaks
-            |> Js.Array.filter(tbId => defaultId(id) !== tbId),
+            Js.Array2.filter(tourney.tieBreaks, tbId =>
+              defaultId(id) !== tbId
+            ),
         });
         setSelectedTb(_ => None);
       } else {
         setTourney({
           ...tourney,
-          tieBreaks: tourney.tieBreaks |> Js.Array.concat([|defaultId(id)|]),
+          tieBreaks: Js.Array2.concat(tourney.tieBreaks, [|defaultId(id)|]),
         });
       };
 
@@ -183,11 +180,11 @@ module SelectTieBreaks = {
       switch (selectedTb) {
       | None => ()
       | Some(selectedTb) =>
-        let index = tieBreaks |> Js.Array.indexOf(selectedTb);
+        let index = Js.Array2.indexOf(tieBreaks, selectedTb);
         setTourney({
           ...tourney,
           tieBreaks:
-            tourney.tieBreaks->Utils.Array.swap(index, index + direction),
+            Utils.Array.swap(tourney.tieBreaks, index, index + direction),
         });
       };
     };
@@ -240,43 +237,42 @@ module SelectTieBreaks = {
             </tr>
           </thead>
           <tbody className="content">
-            {tieBreaks
-             |> Js.Array.map(tieBreak =>
-                  <tr
-                    key={Tournament.tieBreakToString(tieBreak)}
-                    className={Cn.make([
-                      "selected"->Cn.ifTrue(selectedTb === Some(tieBreak)),
-                    ])}>
-                    <td>
-                      {Tournament.mapTieBreakName(tieBreak) |> React.string}
-                    </td>
-                    <td style={ReactDOMRe.Style.make(~width="48px", ())}>
-                      <button
-                        className="button-micro"
-                        disabled={
-                          selectedTb !== None && selectedTb !== Some(tieBreak)
-                        }
-                        onClick={_ =>
-                          switch (selectedTb) {
-                          | None => setSelectedTb(_ => Some(tieBreak))
-                          | Some(selectedTb) =>
-                            selectedTb === tieBreak
-                              ? setSelectedTb(_ => None)
-                              : setSelectedTb(_ => Some(tieBreak))
-                          }
-                        }>
-                        {React.string(
-                           switch (selectedTb) {
-                           | None => "Edit"
-                           | Some(selectedTb) =>
-                             selectedTb === tieBreak ? "Done" : "Edit"
-                           },
-                         )}
-                      </button>
-                    </td>
-                  </tr>
-                )
-             |> React.array}
+            {Array.map(tieBreaks, tieBreak =>
+               <tr
+                 key={Tournament.tieBreakToString(tieBreak)}
+                 className={Cn.make([
+                   "selected"->Cn.ifTrue(selectedTb === Some(tieBreak)),
+                 ])}>
+                 <td>
+                   {Tournament.mapTieBreakName(tieBreak)->React.string}
+                 </td>
+                 <td style={ReactDOMRe.Style.make(~width="48px", ())}>
+                   <button
+                     className="button-micro"
+                     disabled={
+                       selectedTb !== None && selectedTb !== Some(tieBreak)
+                     }
+                     onClick={_ =>
+                       switch (selectedTb) {
+                       | None => setSelectedTb(_ => Some(tieBreak))
+                       | Some(selectedTb) =>
+                         selectedTb === tieBreak
+                           ? setSelectedTb(_ => None)
+                           : setSelectedTb(_ => Some(tieBreak))
+                       }
+                     }>
+                     {React.string(
+                        switch (selectedTb) {
+                        | None => "Edit"
+                        | Some(selectedTb) =>
+                          selectedTb === tieBreak ? "Done" : "Edit"
+                        },
+                      )}
+                   </button>
+                 </td>
+               </tr>
+             )
+             ->React.array}
           </tbody>
         </table>
       </Utils.Panel>
@@ -304,29 +300,29 @@ module SelectTieBreaks = {
                CumulativeOfOpposition,
                MostBlack,
              |]
-             |> Js.Array.map(tieBreak =>
-                  <tr key={Tournament.tieBreakToString(tieBreak)}>
-                    <td>
-                      <span
-                        className={
-                          tieBreaks |> Js.Array.includes(tieBreak)
-                            ? "disabled" : "enabled"
-                        }>
-                        {tieBreak |> Tournament.mapTieBreakName |> React.string}
-                      </span>
-                    </td>
-                    <td>
-                      {tieBreaks |> Js.Array.includes(tieBreak)
-                         ? React.null
-                         : <button
-                             className="button-micro"
-                             onClick={_ => toggleTb(Some(tieBreak))}>
-                             {React.string("Add")}
-                           </button>}
-                    </td>
-                  </tr>
-                )
-             |> React.array}
+             ->Array.map(tieBreak =>
+                 <tr key={Tournament.tieBreakToString(tieBreak)}>
+                   <td>
+                     <span
+                       className={
+                         Js.Array2.includes(tieBreaks, tieBreak)
+                           ? "disabled" : "enabled"
+                       }>
+                       {tieBreak->Tournament.mapTieBreakName->React.string}
+                     </span>
+                   </td>
+                   <td>
+                     {Js.Array2.includes(tieBreaks, tieBreak)
+                        ? React.null
+                        : <button
+                            className="button-micro"
+                            onClick={_ => toggleTb(Some(tieBreak))}>
+                            {React.string("Add")}
+                          </button>}
+                   </td>
+                 </tr>
+               )
+             ->React.array}
           </tbody>
         </table>
       </Utils.Panel>
@@ -381,7 +377,7 @@ module Crosstable = {
       Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0");
     <>
       <td className={Cn.make([Style.rowTd, "table__number"])}>
-        {lastRating |> Js.Int.toString |> React.string}
+        {lastRating->Js.Int.toString->React.string}
       </td>
       <td className={Cn.make([Style.rowTd, "table__number body-10"])}>
         {React.string(change)}
@@ -394,7 +390,7 @@ module Crosstable = {
     let {LoadTournament.tourney, getPlayer} = tournament;
     let {Tournament.tieBreaks, roundList} = tourney;
     let scoreData =
-      Rounds.rounds2Matches(~roundList, ()) |> Converters.matches2ScoreData;
+      Rounds.rounds2Matches(roundList, ())->Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(scoreData, tieBreaks);
 
     <table className=Style.table>
@@ -406,7 +402,7 @@ module Crosstable = {
           /* Display a rank as a shorthand for each player. */
           {Utils.List.toReactArrayWithIndex(standings, (rank, _) =>
              <th key={string_of_int(rank)}>
-               {rank + 1 |> string_of_int |> React.string}
+               {string_of_int(rank + 1)->React.string}
              </th>
            )}
           <th> {React.string("Score")} </th>
@@ -417,7 +413,7 @@ module Crosstable = {
         {Utils.List.toReactArrayWithIndex(standings, (index, standing) =>
            <tr key={string_of_int(index)} className=Style.row>
              <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
-               {index + 1 |> string_of_int |> React.string}
+               {string_of_int(index + 1)->React.string}
              </th>
              <th
                className={Cn.make([Style.rowTh, Style.playerName])}

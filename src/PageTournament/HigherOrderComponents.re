@@ -32,9 +32,7 @@ module WithRoundData =
     let scoreData =
       React.useMemo1(
         () =>
-          Converters.matches2ScoreData(
-            Rounds.rounds2Matches(~roundList, ()),
-          ),
+          Converters.matches2ScoreData(Rounds.rounds2Matches(roundList, ())),
         [|roundList|],
       );
     /* Only calculate unmatched players for the latest round. Old rounds
@@ -115,8 +113,8 @@ module WithScoreInfo =
     let hasBye = Map.String.has(opponentResults, Player.dummy_id);
     let colorBalance =
       switch (Utils.List.sumF(colorScores)) {
-      | x when x < 0.0 => "White +" ++ (x |> abs_float |> Js.Float.toString)
-      | x when x > 0.0 => "Black +" ++ (x |> Js.Float.toString)
+      | x when x < 0.0 => "White +" ++ x->abs_float->Js.Float.toString
+      | x when x > 0.0 => "Black +" ++ x->Js.Float.toString
       | _ => "Even"
       };
     let avoidMap =
@@ -132,25 +130,26 @@ module WithScoreInfo =
       };
     let score = Utils.List.sumF(results);
     let opponentResults =
-      Map.String.toArray(opponentResults)
-      |> Js.Array.map(((opId, result)) =>
-           <li key=opId>
-             {[
-                getPlayer(opId).Player.firstName,
-                getPlayer(opId).lastName,
-                "-",
-                switch (result) {
-                | 0.0 => "Lost"
-                | 1.0 => "Won"
-                | 0.5 => "Draw"
-                | _ => "Draw"
-                },
-              ]
-              |> String.concat(" ")
-              |> React.string}
-           </li>
-         )
-      |> React.array;
+      opponentResults
+      ->Map.String.toArray
+      ->Array.map(((opId, result)) =>
+          <li key=opId>
+            {[
+               getPlayer(opId).Player.firstName,
+               getPlayer(opId).lastName,
+               "-",
+               switch (result) {
+               | 0.0 => "Lost"
+               | 1.0 => "Won"
+               | 0.5 => "Draw"
+               | _ => "Draw"
+               },
+             ]
+             ->String.concat(" ", _)
+             ->React.string}
+          </li>
+        )
+      ->React.array;
     let avoidListHtml =
       Utils.List.toReactArrayReverse(avoidList, pId =>
         switch (Map.String.get(players, pId)) {
@@ -162,7 +161,7 @@ module WithScoreInfo =
       );
     let rating =
       <>
-        {origRating |> Js.Int.toString |> React.string}
+        {origRating->Js.Int.toString->React.string}
         {switch (newRating) {
          | None => React.null
          | Some(newRating) =>

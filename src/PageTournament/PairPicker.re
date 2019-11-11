@@ -15,8 +15,8 @@ module SelectList = {
     let (p1, p2) = stagedPlayers;
     let initialTable =
       unmatched
-      |> Map.String.valuesToArray
-      |> Js.Array.map(player => {player, ideal: 0.0});
+      ->Map.String.valuesToArray
+      ->Array.map(player => {player, ideal: 0.0});
     let (sorted, sortedDispatch) =
       Hooks.useSortedTable(
         ~table=initialTable,
@@ -61,13 +61,13 @@ module SelectList = {
         };
         let table =
           unmatched
-          |> Map.String.valuesToArray
-          |> Js.Array.map(player =>
-               {
-                 player,
-                 ideal: calcIdealOrNot(pairData->Map.String.get(player.id)),
-               }
-             );
+          ->Map.String.valuesToArray
+          ->Array.map(player =>
+              {
+                player,
+                ideal: calcIdealOrNot(pairData->Map.String.get(player.id)),
+              }
+            );
         sortedDispatch(Hooks.SetTable(table));
         None;
       },
@@ -109,33 +109,33 @@ module SelectList = {
         </thead>
         <tbody>
           {sorted.table
-           |> Js.Array.map(({player, ideal}) =>
-                <tr key={player.id}>
-                  <td>
-                    <button
-                      className="button-ghost"
-                      disabled={!isPlayerSelectable(player.id)}
-                      onClick={_ => selectPlayer(player.id)}>
-                      <Icons.UserPlus />
-                      <Utils.VisuallyHidden>
-                        {["Add", player.firstName, player.lastName]
-                         |> String.concat(" ")
-                         |> React.string}
-                      </Utils.VisuallyHidden>
-                    </button>
-                  </td>
-                  <td>
-                    {React.string(player.firstName ++ " " ++ player.lastName)}
-                  </td>
-                  <td>
-                    {React.string(
-                       isOnePlayerSelected
-                         ? Numeral.(ideal->make->format("%")) : "-",
-                     )}
-                  </td>
-                </tr>
-              )
-           |> React.array}
+           ->Array.map(({player, ideal}) =>
+               <tr key={player.id}>
+                 <td>
+                   <button
+                     className="button-ghost"
+                     disabled={!isPlayerSelectable(player.id)}
+                     onClick={_ => selectPlayer(player.id)}>
+                     <Icons.UserPlus />
+                     <Utils.VisuallyHidden>
+                       {["Add", player.firstName, player.lastName]
+                        ->String.concat(" ", _)
+                        ->React.string}
+                     </Utils.VisuallyHidden>
+                   </button>
+                 </td>
+                 <td>
+                   {React.string(player.firstName ++ " " ++ player.lastName)}
+                 </td>
+                 <td>
+                   {React.string(
+                      isOnePlayerSelected
+                        ? Numeral.(ideal->make->format("%")) : "-",
+                    )}
+                 </td>
+               </tr>
+             )
+           ->React.array}
         </tbody>
       </table>;
     };
@@ -202,12 +202,14 @@ module Stage = {
       switch (stagedPlayers) {
       | (Some(white), Some(black)) =>
         let newRound =
-          round->Rounds.Round.addMatches([|
-            Match.manualPair(
-              (getPlayer(white), getPlayer(black)),
-              byeValue,
-            ),
-          |]);
+          round->Rounds.Round.addMatches(
+            ~matches=[|
+              Match.manualPair(
+                (getPlayer(white), getPlayer(black)),
+                byeValue,
+              ),
+            |],
+          );
         switch (roundList->Rounds.set(roundId, newRound)) {
         | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
@@ -313,7 +315,7 @@ module PlayerInfo =
         <h3> {React.string(fullName)} </h3>
         <p>
           {React.string("Score: ")}
-          {score |> Js.Float.toString |> React.string}
+          {score->Js.Float.toString->React.string}
         </p>
         <p id={"rating-" ++ player.id}> {React.string("Rating: ")} rating </p>
         <p> {React.string("Color balance: " ++ colorBalance)} </p>
@@ -357,9 +359,8 @@ let make =
   let pairData =
     React.useMemo3(
       () =>
-        scoreData
-        |> Converters.createPairingData(activePlayers, avoidPairs)
-        |> Pairing.setUpperHalves,
+        Converters.createPairingData(scoreData, activePlayers, avoidPairs)
+        ->Pairing.setUpperHalves,
       (activePlayers, avoidPairs, scoreData),
     );
   /* Clean staged players if they were removed from the tournament */
@@ -388,8 +389,14 @@ let make =
   let autoPair = round => {
     let newRound =
       round->Rounds.Round.addMatches(
-        Match.autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)
-        ->List.toArray,
+        ~matches=
+          Match.autoPair(
+            ~pairData,
+            ~byeValue,
+            ~byeQueue,
+            ~playerMap=unmatched,
+          )
+          ->List.toArray,
       );
     switch (roundList->Rounds.set(roundId, newRound)) {
     | Some(roundList) => setTourney({...tourney, roundList})
@@ -437,29 +444,30 @@ let make =
           />
           <Utils.PanelContainer>
             {[|p1, p2|]
-             |> Js.Array.map(id =>
-                  switch (id) {
-                  | None => React.null
-                  | Some(playerId) =>
-                    <Utils.Panel key=playerId>
-                      <PlayerInfo
-                        player={getPlayer(playerId)}
-                        scoreData
-                        players
-                        avoidPairs
-                        origRating={getPlayer(playerId).rating}
-                        newRating=None
-                        getPlayer
-                      />
-                    </Utils.Panel>
-                  }
-                )
-             |> React.array}
+             ->Array.map(id =>
+                 switch (id) {
+                 | None => React.null
+                 | Some(playerId) =>
+                   <Utils.Panel key=playerId>
+                     <PlayerInfo
+                       player={getPlayer(playerId)}
+                       scoreData
+                       players
+                       avoidPairs
+                       origRating={getPlayer(playerId).rating}
+                       newRating=None
+                       getPlayer
+                     />
+                   </Utils.Panel>
+                 }
+               )
+             ->React.array}
           </Utils.PanelContainer>
         </Utils.Panel>
       </Utils.PanelContainer>
       <Utils.Dialog
-        isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}
+        isOpen=isModalOpen
+        onDismiss={_ => setIsModalOpen(_ => false)}
         ariaLabel="Select players">
         <button
           className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>

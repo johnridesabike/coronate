@@ -39,8 +39,8 @@ module Result = {
     | "draw" => Draw
     | _ => NotSet
     };
-  let encode = data => data |> toString |> Json.Encode.string;
-  let decode = json => json |> Json.Decode.string |> fromString;
+  let encode = data => data->toString->Json.Encode.string;
+  let decode = json => json->Json.Decode.string->fromString;
 };
 type t = {
   id: string,
@@ -87,7 +87,7 @@ let byeResultForPlayerColor = (byeValue, color) =>
     }
   };
 
-let scoreByeMatch = (byeValue, match) =>
+let scoreByeMatch = (match, byeValue) =>
   switch (Data_Player.(isDummyId(match.whiteId), isDummyId(match.blackId))) {
   | (true, false) => {
       ...match,
@@ -132,7 +132,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
       blackId,
       result: Result.NotSet,
     }
-    |> scoreByeMatch(byeValue)
+    ->scoreByeMatch(byeValue)
   );
 };
 
@@ -147,7 +147,7 @@ let manualPair = ((white, black), byeValue) => {
     whiteNewRating: white.rating,
     blackNewRating: black.rating,
   }
-  |> scoreByeMatch(byeValue);
+  ->scoreByeMatch(byeValue);
 };
 
 let swapColors = match => {

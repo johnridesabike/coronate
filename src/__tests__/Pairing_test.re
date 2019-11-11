@@ -4,20 +4,20 @@ open Expect;
 open Data.Converters;
 
 let loadPairData = tourneyId => {
-  let tournament = TestData.tournaments->Belt.Map.String.getExn(tourneyId);
-  let playerIds = tournament.playerIds;
-  let roundList = tournament.roundList;
+  let tournament = Belt.Map.String.getExn(TestData.tournaments, tourneyId);
+  let {Data.Tournament.playerIds, roundList} = tournament;
   let players =
-    TestData.players->Map.String.reduce(Map.String.empty, (acc, key, player) =>
-      if (playerIds->List.has(key, (===))) {
-        acc->Map.String.set(key, player);
+    Map.String.reduce(TestData.players, Map.String.empty, (acc, key, player) =>
+      if (List.has(playerIds, key, (===))) {
+        Map.String.set(acc, key, player);
       } else {
         acc;
       }
     );
-  Data.Rounds.rounds2Matches(~roundList, ())->matches2ScoreData
-  |> createPairingData(players, TestData.config.avoidPairs)
-  |> Pairing.setUpperHalves;
+  Data.Rounds.rounds2Matches(roundList, ())
+  ->matches2ScoreData
+  ->createPairingData(players, TestData.config.avoidPairs)
+  ->Pairing.setUpperHalves;
 };
 
 test("Players have 0 priority of pairing themselves.", () => {
@@ -25,7 +25,7 @@ test("Players have 0 priority of pairing themselves.", () => {
   // realistic. Something nutty must happen for 0 priority pairings to get
   // picked.
   let pairData = loadPairData("Bye_Round_Tourney____");
-  let newb = pairData->Map.String.getExn("Newbie_McNewberson___");
+  let newb = Map.String.getExn(pairData, "Newbie_McNewberson___");
   let ideal = Pairing.calcPairIdeal(newb, newb);
   expect(ideal) |> toBe(0.0);
 });
@@ -35,7 +35,9 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   let (pairData, byedPlayer) =
     Pairing.setByePlayer([||], Data.Player.dummy_id, dataPreBye);
   test("The lowest-ranking player is removed after bye selection.", () =>
-    expect(pairData->Map.String.keysToArray)
+    pairData
+    |> Map.String.keysToArray
+    |> expect
     |> not
     |> toContain("Newbie_McNewberson___")
   );

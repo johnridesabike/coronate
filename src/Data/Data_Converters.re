@@ -76,14 +76,14 @@ let matches2ScoreData = (matchList: array(Data_Match.t)) => {
   );
 };
 
-let createPairingData = (playerData, avoidPairs, scoreMap) => {
+let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.AvoidPairs.toMap(avoidPairs);
   Map.String.reduce(
     playerData,
     Map.String.empty,
     (acc, key, data) => {
       let playerStats = {
-        switch (Map.String.get(scoreMap, key)) {
+        switch (Map.String.get(scoreData, key)) {
         | None => Scoring.createBlankScoreData(key)
         | Some(x) => x
         };

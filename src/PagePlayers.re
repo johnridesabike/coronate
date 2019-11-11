@@ -41,9 +41,9 @@ module NewPlayerForm = {
     };
 
     let updateField = event => {
-      event->ReactEvent.Form.preventDefault;
-      let name = event->ReactEvent.Form.currentTarget##name;
-      let value = event->ReactEvent.Form.currentTarget##value;
+      ReactEvent.Form.preventDefault(event);
+      let name = ReactEvent.Form.currentTarget(event)##name;
+      let value = ReactEvent.Form.currentTarget(event)##value;
       switch (name) {
       | "firstName" => setFirstName(_ => value)
       | "lastName" => setLastName(_ => value)
@@ -80,7 +80,7 @@ module NewPlayerForm = {
           <input
             name="rating"
             type_="number"
-            value={rating->string_of_int}
+            value={string_of_int(rating)}
             required=true
             onChange=updateField
           />
@@ -106,7 +106,7 @@ module PlayerList = {
     );
     let delPlayer = (event, id) => {
       ReactEvent.Mouse.preventDefault(event);
-      let playerOpt = players->Map.String.get(id);
+      let playerOpt = Map.String.get(players, id);
       switch (playerOpt) {
       | None => ()
       | Some(player) =>
@@ -121,7 +121,7 @@ module PlayerList = {
               "?",
             ],
           );
-        if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
+        if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
           playersDispatch(Db.Del(id));
           configDispatch(Db.DelAvoidSingle(id));
         };
@@ -165,40 +165,42 @@ module PlayerList = {
         </thead>
         <tbody className="content">
           {sorted.table
-           |> Js.Array.map(p =>
-                <tr key={p.id} className="buttons-on-hover">
-                  <td className="table__player">
-                    <HashLink to_={"/players/" ++ p.id}>
-                      {[p.firstName, p.lastName]
-                       |> String.concat(" ")
-                       |> React.string}
-                    </HashLink>
-                  </td>
-                  <td className="table__number">
-                    {p.rating->string_of_int->React.string}
-                  </td>
-                  <td className="table__number">
-                    {p.matchCount->string_of_int->React.string}
-                  </td>
-                  <td>
-                    <button
-                      className="danger button-ghost"
-                      onClick={event => delPlayer(event, p.id)}>
-                      <Icons.Trash />
-                      <Utils.VisuallyHidden>
-                        {["Delete", p.firstName, p.lastName]
-                         |> String.concat(" ")
-                         |> React.string}
-                      </Utils.VisuallyHidden>
-                    </button>
-                  </td>
-                </tr>
-              )
-           |> ReasonReact.array}
+           ->Js.Array2.map(p =>
+               <tr key={p.id} className="buttons-on-hover">
+                 <td className="table__player">
+                   <HashLink to_={"/players/" ++ p.id}>
+                     {String.concat(" ", [p.firstName, p.lastName])
+                      ->React.string}
+                   </HashLink>
+                 </td>
+                 <td className="table__number">
+                   {p.rating->string_of_int->React.string}
+                 </td>
+                 <td className="table__number">
+                   {p.matchCount->string_of_int->React.string}
+                 </td>
+                 <td>
+                   <button
+                     className="danger button-ghost"
+                     onClick={event => delPlayer(event, p.id)}>
+                     <Icons.Trash />
+                     <Utils.VisuallyHidden>
+                       {String.concat(
+                          " ",
+                          ["Delete", p.firstName, p.lastName],
+                        )
+                        ->React.string}
+                     </Utils.VisuallyHidden>
+                   </button>
+                 </td>
+               </tr>
+             )
+           ->ReasonReact.array}
         </tbody>
       </table>
       <Utils.Dialog
-        isOpen=isDialogOpen onDismiss={_ => setIsDialogOpen(_ => false)}
+        isOpen=isDialogOpen
+        onDismiss={_ => setIsDialogOpen(_ => false)}
         ariaLabel="New player form">
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
@@ -221,8 +223,7 @@ module Profile = {
         ~configDispatch,
       ) => {
     let playerId = player.id;
-    let playerName =
-      [player.firstName, player.lastName] |> String.concat(" ");
+    let playerName = String.concat(" ", [player.firstName, player.lastName]);
     let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect2(
       () => {
@@ -233,7 +234,7 @@ module Profile = {
     );
     let avoidMap = Data.Config.AvoidPairs.toMap(config.avoidPairs);
     let singAvoidList =
-      switch (avoidMap->Map.String.get(playerId)) {
+      switch (Map.String.get(avoidMap, playerId)) {
       | None => []
       | Some(x) => x
       };
@@ -252,7 +253,7 @@ module Profile = {
         }
       );
     let avoidAdd = event => {
-      event->ReactEvent.Form.preventDefault;
+      ReactEvent.Form.preventDefault(event);
       switch (selectedAvoider) {
       | None => ()
       | Some(selectedAvoider) =>
@@ -270,12 +271,12 @@ module Profile = {
       };
     };
     let handleChange = event => {
-      event->ReactEvent.Form.preventDefault;
-      let target = event->ReactEvent.Form.currentTarget;
+      ReactEvent.Form.preventDefault(event);
+      let target = ReactEvent.Form.currentTarget(event);
       let firstName = target##firstName##value;
       let lastName = target##lastName##value;
-      let matchCount = target##matchCount##value->int_of_string;
-      let rating = target##rating##value->int_of_string;
+      let matchCount = int_of_string(target##matchCount##value);
+      let rating = int_of_string(target##rating##value);
       playersDispatch(
         Db.Set(
           playerId,
@@ -291,11 +292,11 @@ module Profile = {
       );
     };
     let handleAvoidChange = event => {
-      let id = event->ReactEvent.Form.currentTarget##value;
+      let id = ReactEvent.Form.currentTarget(event)##value;
       setSelectedAvoider(_ => id);
     };
     let handleAvoidBlur = event => {
-      let id = event->ReactEvent.Focus.currentTarget##value;
+      let id = ReactEvent.Focus.currentTarget(event)##value;
       setSelectedAvoider(_ => id);
     };
     <div
@@ -324,7 +325,7 @@ module Profile = {
             {React.string("Matches played")}
           </label>
           <input
-            defaultValue={player.matchCount->string_of_int}
+            defaultValue={string_of_int(player.matchCount)}
             name="matchCount"
             type_="number"
           />
@@ -332,7 +333,7 @@ module Profile = {
         <p>
           <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
-            defaultValue={player.rating->string_of_int}
+            defaultValue={string_of_int(player.rating)}
             name="rating"
             type_="number"
           />
@@ -354,28 +355,28 @@ module Profile = {
       <ul>
         {singAvoidList->Utils.List.toReactArray(pId =>
            <li key=pId>
-             {React.string(players->getPlayerMaybe(pId).firstName)}
+             {React.string(getPlayerMaybe(players, pId).firstName)}
              {React.string(" ")}
-             {React.string(players->getPlayerMaybe(pId).lastName)}
+             {React.string(getPlayerMaybe(players, pId).lastName)}
              <button
-               ariaLabel={
+               ariaLabel={String.concat(
+                 " ",
                  [
                    "Remove",
-                   players->getPlayerMaybe(pId).firstName,
-                   players->getPlayerMaybe(pId).lastName,
+                   getPlayerMaybe(players, pId).firstName,
+                   getPlayerMaybe(players, pId).lastName,
                    "from avoid list.",
-                 ]
-                 |> String.concat(" ")
-               }
-               title={
+                 ],
+               )}
+               title={String.concat(
+                 " ",
                  [
                    "Remove",
-                   players->getPlayerMaybe(pId).firstName,
-                   players->getPlayerMaybe(pId).lastName,
+                   getPlayerMaybe(players, pId).firstName,
+                   getPlayerMaybe(players, pId).lastName,
                    "from avoid list.",
-                 ]
-                 |> String.concat(" ")
-               }
+                 ],
+               )}
                className="danger button-ghost"
                onClick={_ =>
                  configDispatch(Db.DelAvoidPair((playerId, pId)))
@@ -401,11 +402,11 @@ module Profile = {
                onBlur=handleAvoidBlur
                onChange=handleAvoidChange
                value=selectedAvoider>
-               {unavoided->Utils.List.toReactArray(pId =>
+               {Utils.List.toReactArray(unavoided, pId =>
                   <option key=pId value=pId>
-                    {React.string(players->getPlayerMaybe(pId).firstName)}
+                    {React.string(getPlayerMaybe(players, pId).firstName)}
                     {React.string(" ")}
-                    {React.string(players->getPlayerMaybe(pId).lastName)}
+                    {React.string(getPlayerMaybe(players, pId).lastName)}
                   </option>
                 )}
              </select>
@@ -424,13 +425,13 @@ let make = (~id=?) => {
   let (players, playersDispatch, _) = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=players->Map.String.valuesToArray,
+      ~table=Map.String.valuesToArray(players),
       ~column=sortName,
       ~isDescending=false,
     );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(players->Map.String.valuesToArray));
+      sortDispatch(Hooks.SetTable(Map.String.valuesToArray(players)));
       None;
     },
     (players, sortDispatch),
@@ -447,7 +448,7 @@ let make = (~id=?) => {
          configDispatch
        />
      | Some([id]) =>
-       switch (players->Map.String.get(id)) {
+       switch (Map.String.get(players, id)) {
        | None => <div> {React.string("Loading...")} </div>
        | Some(player) =>
          <Profile player players playersDispatch config configDispatch />

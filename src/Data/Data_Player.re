@@ -20,8 +20,8 @@ module Type = {
     | "missing" => Missing
     | _ => Person
     };
-  let encode = data => data |> toString |> Json.Encode.string;
-  let decode = data => data |> Json.Decode.string |> fromString;
+  let encode = data => data->toString->Json.Encode.string;
+  let decode = data => data->Json.Decode.string->fromString;
 };
 
 type t = {
@@ -92,5 +92,5 @@ let getPlayerMaybe = (playerMap, id) =>
   if (id === dummy_id) {
     dummyPlayer;
   } else {
-    playerMap->Map.String.getWithDefault(id, makeMissingPlayer(id));
+    Map.String.getWithDefault(playerMap, id, makeMissingPlayer(id));
   };

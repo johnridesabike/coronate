@@ -30,9 +30,9 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Rounds: ")}
-          {roundList |> Js.Array.length |> Js.Int.toString |> React.string}
+          {roundList->Js.Array2.length->Js.Int.toString->React.string}
           <small> {React.string(" out of ")} </small>
-          {roundCount |> Js.Int.toString |> React.string}
+          {roundCount->Js.Int.toString->React.string}
         </label>
         <hr className="win__footer-divider" />
         <Utils.Notification
@@ -54,7 +54,7 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Registered players: ")}
-          {activePlayers |> Map.String.size |> Js.Int.toString |> React.string}
+          {activePlayers->Map.String.size->Js.Int.toString->React.string}
         </label>
       </>
     );
@@ -87,7 +87,7 @@ module Sidebar = {
         ++ "one?";
       let confirmed =
         if (isItOver) {
-          if (Webapi.(Dom.window |> Dom.Window.confirm(confirmText))) {
+          if (Webapi.(Dom.Window.confirm(confirmText, Dom.window))) {
             true;
           } else {
             false;
@@ -103,7 +103,7 @@ module Sidebar = {
     let delLastRound = event => {
       ReactEvent.Mouse.preventDefault(event);
       let message = "Are you sure you want to delete the last round?";
-      if (Webapi.(Dom.window |> Dom.Window.confirm(message))) {
+      if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
         ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */
@@ -111,35 +111,37 @@ module Sidebar = {
         switch (roundList->Rounds.get(lastRoundId)) {
         | None => ()
         | Some(round) =>
-          round
-          |> Js.Array.forEach(match => {
-               let {
-                 Match.result,
-                 whiteId,
-                 blackId,
-                 whiteOrigRating,
-                 blackOrigRating,
-               } = match;
-               /* Don't change players who haven't scored.*/
-               switch (result) {
-               | NotSet => ()
-               | BlackWon
-               | Draw
-               | WhiteWon =>
-                 [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]
-                 ->List.forEach(((id, rating)) =>
-                     switch (players->Map.String.get(id)) {
-                     | Some(player) =>
-                       let matchCount = player.matchCount - 1;
-                       playersDispatch(
-                         Set(player.id, {...player, matchCount, rating}),
-                       );
-                     /* Don't try to set dummy or deleted players */
-                     | None => ()
-                     }
-                   )
-               };
-             })
+          Array.forEach(
+            round,
+            match => {
+              let {
+                Match.result,
+                whiteId,
+                blackId,
+                whiteOrigRating,
+                blackOrigRating,
+              } = match;
+              /* Don't change players who haven't scored.*/
+              switch (result) {
+              | NotSet => ()
+              | BlackWon
+              | Draw
+              | WhiteWon =>
+                [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]
+                ->List.forEach(((id, rating)) =>
+                    switch (players->Map.String.get(id)) {
+                    | Some(player) =>
+                      let matchCount = player.matchCount - 1;
+                      playersDispatch(
+                        Set(player.id, {...player, matchCount, rating}),
+                      );
+                    /* Don't try to set dummy or deleted players */
+                    | None => ()
+                    }
+                  )
+              };
+            },
+          )
         };
         setTourney({...tourney, roundList: Rounds.delLastRound(roundList)});
         if (Js.Array.length(roundList) === 0) {
@@ -211,34 +213,33 @@ module Sidebar = {
           {React.string("Rounds")}
         </h5>
         <ul className="center-on-close">
-          {roundList
-           |> Js.Array.mapi((_, id) =>
-                <li key={Js.Int.toString(id)}>
-                  <HashLink
-                    to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
-                    onDragStart=noDraggy>
-                    {id + 1 |> Js.Int.toString |> React.string}
-                    {isRoundComplete(id)
-                       ? <span
-                           className={Cn.make([
-                             "sidebar__hide-on-close",
-                             "caption-20",
-                           ])}>
-                           {React.string(" Complete ")}
-                           <Icons.Check />
-                         </span>
-                       : <span
-                           className={Cn.make([
-                             "sidebar__hide-on-close",
-                             "caption-20",
-                           ])}>
-                           {React.string(" Not complete ")}
-                           <Icons.Alert />
-                         </span>}
-                  </HashLink>
-                </li>
-              )
-           |> React.array}
+          {Array.mapWithIndex(roundList, (id, _) =>
+             <li key={Js.Int.toString(id)}>
+               <HashLink
+                 to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
+                 onDragStart=noDraggy>
+                 {Js.Int.toString(id + 1)->React.string}
+                 {isRoundComplete(id)
+                    ? <span
+                        className={Cn.make([
+                          "sidebar__hide-on-close",
+                          "caption-20",
+                        ])}>
+                        {React.string(" Complete ")}
+                        <Icons.Check />
+                      </span>
+                    : <span
+                        className={Cn.make([
+                          "sidebar__hide-on-close",
+                          "caption-20",
+                        ])}>
+                        {React.string(" Not complete ")}
+                        <Icons.Alert />
+                      </span>}
+               </HashLink>
+             </li>
+           )
+           ->React.array}
         </ul>
       </nav>
       <hr />
@@ -288,7 +289,7 @@ let make = (~tourneyId, ~hashPath) => {
           | ["setup"] => <PageTourneySetup tournament />
           | ["status"] => <PageTournamentStatus tournament />
           | ["round", roundId] =>
-            <PageRound tournament roundId={roundId |> int_of_string} />
+            <PageRound tournament roundId={int_of_string(roundId)} />
           | _ => <Pages.NotFound />
           }}
        </Window.Body>}

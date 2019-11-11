@@ -6,8 +6,8 @@ module Selecting = {
   let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
     let {Tournament.playerIds} = tourney;
     let togglePlayer = event => {
-      let id = event->ReactEvent.Form.target##value;
-      if (event->ReactEvent.Form.target##checked) {
+      let id = ReactEvent.Form.target(event)##value;
+      if (ReactEvent.Form.target(event)##checked) {
         setTourney({...tourney, playerIds: [id, ...playerIds]});
       } else {
         setTourney({
@@ -46,30 +46,30 @@ module Selecting = {
         </thead>
         <tbody>
           {players
-           |> Map.String.valuesToArray
-           |> Js.Array.map(({Player.id, firstName, lastName}) =>
-                <tr key=id>
-                  <td> {React.string(firstName)} </td>
-                  <td> {React.string(lastName)} </td>
-                  <td>
-                    <Utils.VisuallyHidden>
-                      <label htmlFor={"select-" ++ id}>
-                        {["Select", firstName, lastName]
-                         |> String.concat(" ")
-                         |> React.string}
-                      </label>
-                    </Utils.VisuallyHidden>
-                    <input
-                      checked={playerIds->List.has(id, (===))}
-                      type_="checkbox"
-                      value=id
-                      id={"select-" ++ id}
-                      onChange=togglePlayer
-                    />
-                  </td>
-                </tr>
-              )
-           |> React.array}
+           ->Map.String.valuesToArray
+           ->Array.map(({Player.id, firstName, lastName}) =>
+               <tr key=id>
+                 <td> {React.string(firstName)} </td>
+                 <td> {React.string(lastName)} </td>
+                 <td>
+                   <Utils.VisuallyHidden>
+                     <label htmlFor={"select-" ++ id}>
+                       {["Select", firstName, lastName]
+                        ->String.concat(" ", _)
+                        ->React.string}
+                     </label>
+                   </Utils.VisuallyHidden>
+                   <input
+                     checked={playerIds->List.has(id, (===))}
+                     type_="checkbox"
+                     value=id
+                     id={"select-" ++ id}
+                     onChange=togglePlayer
+                   />
+                 </td>
+               </tr>
+             )
+           ->React.array}
         </tbody>
       </table>
       <PagePlayers.NewPlayerForm
@@ -83,17 +83,17 @@ module Selecting = {
 };
 
 let hasHadBye = (matches, playerId) => {
-  Js.Array.(
+  Js.Array2.(
     matches
-    |> filter((match: Match.t) =>
-         [|match.whiteId, match.blackId|] |> includes(playerId)
-       )
-    |> reduce(
-         (acc, match: Match.t) =>
-           acc |> concat([|match.whiteId, match.blackId|]),
-         [||],
-       )
-    |> includes(Data.Player.dummy_id)
+    ->filter((match: Match.t) =>
+        includes([|match.whiteId, match.blackId|], playerId)
+      )
+    ->reduce(
+        (acc, match: Match.t) =>
+          concat(acc, [|match.whiteId, match.blackId|]),
+        [||],
+      )
+    ->includes(Data.Player.dummy_id)
   );
 };
 
@@ -102,31 +102,31 @@ module PlayerList = {
   let make = (~players, ~tourney, ~setTourney, ~byeQueue) => {
     <>
       {players
-       |> Map.String.valuesToArray
-       |> Js.Array.map(p =>
-            <tr
-              key={p.Player.id}
-              className={Cn.make([Player.Type.toString(p.type_), "player"])}>
-              <td> {React.string(p.firstName)} </td>
-              <td> {React.string(p.lastName)} </td>
-              <td>
-                <button
-                  className="button-micro"
-                  disabled={byeQueue |> Js.Array.includes(p.id)}
-                  onClick={_ =>
-                    setTourney(
-                      Tournament.{
-                        ...tourney,
-                        byeQueue: byeQueue |> Js.Array.concat([|p.id|]),
-                      },
-                    )
-                  }>
-                  {React.string("Bye signup")}
-                </button>
-              </td>
-            </tr>
-          )
-       |> React.array}
+       ->Map.String.valuesToArray
+       ->Array.map(p =>
+           <tr
+             key={p.Player.id}
+             className={Cn.make([Player.Type.toString(p.type_), "player"])}>
+             <td> {React.string(p.firstName)} </td>
+             <td> {React.string(p.lastName)} </td>
+             <td>
+               <button
+                 className="button-micro"
+                 disabled={Js.Array2.includes(byeQueue, p.id)}
+                 onClick={_ =>
+                   setTourney(
+                     Tournament.{
+                       ...tourney,
+                       byeQueue: Js.Array2.concat(byeQueue, [|p.id|]),
+                     },
+                   )
+                 }>
+                 {React.string("Bye signup")}
+               </button>
+             </td>
+           </tr>
+         )
+       ->React.array}
     </>;
   };
 };
@@ -148,7 +148,7 @@ let make = (~tournament) => {
       | _ => false
       }
     );
-  let matches = Rounds.rounds2Matches(~roundList, ());
+  let matches = Rounds.rounds2Matches(roundList, ());
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
@@ -181,39 +181,38 @@ let make = (~tournament) => {
            React.null;
          }}
         <ol>
-          {byeQueue
-           |> Js.Array.map(pId =>
-                <li
-                  key=pId
-                  className={Cn.make([
-                    "buttons-on-hover",
-                    "disabled"->Cn.ifTrue(hasHadBye(matches, pId)),
-                  ])}>
-                  {[
-                     activePlayers->Map.String.getExn(pId).firstName,
-                     activePlayers->Map.String.getExn(pId).lastName,
-                   ]
-                   |> String.concat(" ")
-                   |> React.string}
-                  {React.string(" ")}
-                  <button
-                    className="button-micro"
-                    onClick={_ =>
-                      setTourney({
-                        ...tourney,
-                        byeQueue:
-                          byeQueue |> Js.Array.filter(id => pId !== id),
-                      })
-                    }>
-                    {React.string("Remove")}
-                  </button>
-                </li>
-              )
-           |> React.array}
+          {Array.map(byeQueue, pId =>
+             <li
+               key=pId
+               className={Cn.make([
+                 "buttons-on-hover",
+                 "disabled"->Cn.ifTrue(hasHadBye(matches, pId)),
+               ])}>
+               {[
+                  activePlayers->Map.String.getExn(pId).firstName,
+                  activePlayers->Map.String.getExn(pId).lastName,
+                ]
+                ->String.concat(" ", _)
+                ->React.string}
+               {React.string(" ")}
+               <button
+                 className="button-micro"
+                 onClick={_ =>
+                   setTourney({
+                     ...tourney,
+                     byeQueue: Js.Array2.filter(byeQueue, id => pId !== id),
+                   })
+                 }>
+                 {React.string("Remove")}
+               </button>
+             </li>
+           )
+           ->React.array}
         </ol>
       </Utils.Panel>
       <Utils.Dialog
-        isOpen=isSelecting onDismiss={() => setIsSelecting(_ => false)}
+        isOpen=isSelecting
+        onDismiss={() => setIsSelecting(_ => false)}
         ariaLabel="Select players">
         <button
           className="button-micro button-primary"

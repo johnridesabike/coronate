@@ -309,17 +309,17 @@ module Ratings = {
         (whiteMatchCount, blackMatchCount),
         (whiteResult, blackResult),
       ) => {
-    let whiteElo = whiteMatchCount |> getKFactor |> EloRank.make;
-    let blackElo = blackMatchCount |> getKFactor |> EloRank.make;
+    let whiteElo = whiteMatchCount->getKFactor->EloRank.make;
+    let blackElo = blackMatchCount->getKFactor->EloRank.make;
     let (whiteExpected, blackExpected) = (
       EloRank.getExpected(whiteElo, whiteRating, blackRating),
       EloRank.getExpected(blackElo, blackRating, whiteRating),
     );
     (
       EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)
-      |> keepAboveFloor,
+      ->keepAboveFloor,
       EloRank.updateRating(blackElo, blackExpected, blackResult, blackRating)
-      |> keepAboveFloor,
+      ->keepAboveFloor,
     );
   };
 };

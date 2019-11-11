@@ -5,7 +5,7 @@ open Tournament;
 let log2 = num => log(num) /. log(2.0);
 
 let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount |> float_of_int |> log2 |> ceil;
+  let roundCount = playerCount->float_of_int->log2->ceil;
   roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
 };
 

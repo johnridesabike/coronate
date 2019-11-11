@@ -10,14 +10,17 @@ open TestData;
 let configData = {
   ...config,
   avoidPairs:
-    config.avoidPairs->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
+    Set.mergeMany(
+      config.avoidPairs,
+      Set.toArray(DemoData.config.avoidPairs),
+    ),
 };
 let tournamentData =
-  tournaments->Map.String.merge(DemoData.tournaments, (_, _, a) => a);
-let playerData = players->Map.String.merge(DemoData.players, (_, _, a) => a);
+  Map.String.merge(tournaments, DemoData.tournaments, (_, _, a) => a);
+let playerData = Map.String.merge(players, DemoData.players, (_, _, a) => a);
 
 let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount |> float_of_int |> log2 |> ceil;
+  let roundCount = playerCount->float_of_int->log2->ceil;
   roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
 };
 

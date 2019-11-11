@@ -42,7 +42,7 @@ module PlayerMatchInfo =
       <dl className="player-card">
         <h3> {React.string(fullName)} </h3>
         <dt> {React.string("Score")} </dt>
-        <dd> {score |> Js.Float.toString |> React.string} </dd>
+        <dd> {score->Js.Float.toString->React.string} </dd>
         <dt> {React.string("Rating")} </dt>
         <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
         <dt> {React.string("Color balance")} </dt>
@@ -87,9 +87,9 @@ module MatchRow = {
       match.whiteId === Player.dummy_id || match.blackId === Player.dummy_id;
 
     let whiteName =
-      [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
+      [whitePlayer.firstName, whitePlayer.lastName]->String.concat(" ", _);
     let blackName =
-      [blackPlayer.firstName, blackPlayer.lastName] |> String.concat(" ");
+      [blackPlayer.firstName, blackPlayer.lastName]->String.concat(" ", _);
 
     let resultDisplay = playerColor => {
       let won =
@@ -198,7 +198,7 @@ module MatchRow = {
         ),
       ])}>
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
-        {pos + 1 |> string_of_int |> React.string}
+        {string_of_int(pos + 1)->React.string}
       </th>
       <td className=Style.playerResult> {resultDisplay(White)} </td>
       <td
@@ -253,8 +253,8 @@ module MatchRow = {
                   <Icons.Circle />
                   <Utils.VisuallyHidden>
                     {["Edit match for", whiteName, "versus", blackName]
-                     |> String.concat(" ")
-                     |> React.string}
+                     ->String.concat(" ", _)
+                     ->React.string}
                   </Utils.VisuallyHidden>
                 </button>
               : <button
@@ -275,15 +275,16 @@ module MatchRow = {
                   "versus",
                   blackName,
                 ]
-                |> String.concat(" ")
-                |> React.string}
+                ->String.concat(" ", _)
+                ->React.string}
              </Utils.VisuallyHidden>
            </button>
            {switch (scoreData) {
             | None => React.null
             | Some(scoreData) =>
               <Utils.Dialog
-                isOpen=isModalOpen onDismiss={_ => setIsModalOpen(_ => false)}
+                isOpen=isModalOpen
+                onDismiss={_ => setIsModalOpen(_ => false)}
                 ariaLabel="Match information">
                 <button
                   className="button-micro button-primary"
@@ -298,8 +299,8 @@ module MatchRow = {
                      "match",
                      Js.Int.toString(pos + 1),
                    ]
-                   |> String.concat(" ")
-                   |> React.string}
+                   ->String.concat(" ", _)
+                   ->React.string}
                 </p>
                 <Utils.PanelContainer>
                   <Utils.Panel>
@@ -350,7 +351,7 @@ module RoundTable = {
          : <>
              <caption className={isCompact ? "title-30" : "title-40"}>
                {React.string("Round ")}
-               {roundId + 1 |> Js.Int.toString |> React.string}
+               {Js.Int.toString(roundId + 1)->React.string}
              </caption>
              <thead>
                <tr>
@@ -387,22 +388,21 @@ module RoundTable = {
              </thead>
            </>}
       <tbody className="content">
-        {matches
-         |> Js.Array.mapi((match: Match.t, pos) =>
-              <MatchRow
-                key={match.id}
-                isCompact
-                match
-                pos
-                roundId
-                selectedMatch
-                setSelectedMatch
-                scoreData
-                tournament
-                className=Style.td
-              />
-            )
-         |> React.array}
+        {Array.mapWithIndex(matches, (pos, match: Match.t) =>
+           <MatchRow
+             key={match.id}
+             isCompact
+             match
+             pos
+             roundId
+             selectedMatch
+             setSelectedMatch
+             scoreData
+             tournament
+             className=Style.td
+           />
+         )
+         ->React.array}
       </tbody>
     </table>;
   };
@@ -465,9 +465,9 @@ module Round = {
       switch (round->Rounds.Round.getMatchById(matchId)) {
       | None => ()
       | Some(match) =>
-        let oldIndex = round |> Js.Array.indexOf(match);
+        let oldIndex = Js.Array2.indexOf(round, match);
         let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0;
-        let newRound = round->Utils.Array.swap(oldIndex, newIndex);
+        let newRound = Utils.Array.swap(round, oldIndex, newIndex);
         switch (roundList->Rounds.set(roundId, newRound)) {
         | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
@@ -578,13 +578,9 @@ module PageRound =
             </Tab>
             <Tab disabled={unmatchedCount === 0}>
               <Icons.Users />
-              {[
-                 " Unmatched players (",
-                 unmatchedCount |> Js.Int.toString,
-                 ")",
-               ]
-               |> String.concat("")
-               |> React.string}
+              {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
+               ->String.concat("", _)
+               ->React.string}
             </Tab>
           </TabList>
           <TabPanels>

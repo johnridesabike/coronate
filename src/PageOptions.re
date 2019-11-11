@@ -5,11 +5,11 @@ open Data;
 let getDateForFile = () => {
   let date = Js.Date.make();
   [
-    date |> Js.Date.getFullYear |> Js.Float.toString,
+    date->Js.Date.getFullYear->Js.Float.toString,
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
     Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
   ]
-  |> String.concat("-");
+  ->String.concat("-", _);
 };
 
 let invalidAlert = () => {
@@ -17,8 +17,8 @@ let invalidAlert = () => {
   Webapi.(Dom.Window.alert(message, Dom.window));
 };
 
-let dictToMap = dict => dict |> Js.Dict.entries |> Map.String.fromArray;
-let mapToDict = map => map |> Map.String.toArray |> Js.Dict.fromArray;
+let dictToMap = dict => dict->Js.Dict.entries->Map.String.fromArray;
+let mapToDict = map => map->Map.String.toArray->Js.Dict.fromArray;
 
 type input_data = {
   config: Data.Config.t,
@@ -37,18 +37,16 @@ let decodeOptions = json =>
 let encodeOptions = data =>
   Json.Encode.(
     object_([
-      ("config", data.config |> Data.Config.encode),
+      ("config", Data.Config.encode(data.config)),
       (
         "players",
-        Map.String.map(data.players, Data.Player.encode)
-        |> mapToDict
-        |> jsonDict,
+        Map.String.map(data.players, Data.Player.encode)->mapToDict->jsonDict,
       ),
       (
         "tournaments",
         Map.String.map(data.tournaments, Data.Tournament.encode)
-        |> mapToDict
-        |> jsonDict,
+        ->mapToDict
+        ->jsonDict,
       ),
     ])
   );
@@ -87,10 +85,7 @@ let make = () => {
       (config, tournaments, players),
     );
   let exportDataURI =
-    exportData
-    |> encodeOptions
-    |> Json.stringify
-    |> Js.Global.encodeURIComponent;
+    exportData->encodeOptions->Json.stringify->Js.Global.encodeURIComponent;
   React.useEffect2(
     () => {
       let encoded = encodeOptions(exportData);
@@ -106,7 +101,7 @@ let make = () => {
     configDispatch(Db.SetState(config));
     playersDispatch(Db.SetAll(players));
 
-    Webapi.(Dom.window |> Dom.Window.alert("Data loaded."));
+    Webapi.(Dom.Window.alert("Data loaded.", Dom.window));
   };
   let handleText = event => {
     ReactEvent.Form.preventDefault(event);

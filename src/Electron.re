@@ -64,7 +64,7 @@ external windowRequire: Js.Nullable.t(string => Js.Nullable.t(t)) =
 
 let electron_ =
   switch (Js.Nullable.toOption(windowRequire)) {
-  | Some(require) => require("electron") |> Js.Nullable.toOption
+  | Some(require) => require("electron")->Js.Nullable.toOption
   | None => None
   };
 
@@ -83,7 +83,7 @@ let openInBrowser = event => {
     event->ReactEvent.Mouse.preventDefault;
     electron->getShell->openExternal(event->ReactEvent.Mouse.target##href);
   })
-  |> ignore;
+  ->ignore;
 };
 
 let toggleMaximize = window =>
@@ -103,7 +103,7 @@ let macOSDoubleClick = event => {
     /* sometimes `className` isn't a string.*/
     if (target##className##includes) {
       /* We don't want double-clicking buttons to (un)maximize. */
-      if (target##className |> Js.String.includes("double-click-control")) {
+      if (Js.String2.includes(target##className, "double-click-control")) {
         let doubleClickAction =
           electron
           ->getRemote
@@ -118,12 +118,12 @@ let macOSDoubleClick = event => {
       };
     };
   })
-  |> ignore;
+  ->ignore;
 };
 
 [@bs.scope "navigator"] [@bs.val] external appVersion: string = "appVersion";
-let isWin = appVersion |> Js.String.includes("Windows");
-let isMac = appVersion |> Js.String.includes("Mac");
+let isWin = Js.String2.includes(appVersion, "Windows");
+let isMac = Js.String2.includes(appVersion, "Mac");
 
 let isElectron =
   switch (ifElectron(_ => true)) {

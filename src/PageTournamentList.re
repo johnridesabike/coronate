@@ -100,31 +100,31 @@ let make = () => {
                </tr>
              </thead>
              <tbody className="content">
-               {sorted.table
-                |> Js.Array.map(t =>
-                     <tr key={t.id} className="buttons-on-hover">
-                       <td>
-                         <HashLink to_={"/tourneys/" ++ t.id}>
-                           {React.string(t.name)}
-                         </HashLink>
-                       </td>
-                       <td> <Utils.DateFormat date={t.date} /> </td>
-                       <td>
-                         <button
-                           ariaLabel={"Delete " ++ t.name}
-                           className="danger button-ghost"
-                           title={"Delete " ++ t.name}
-                           onClick={_ => deleteTournament(t.id, t.name)}>
-                           <Icons.Trash />
-                         </button>
-                       </td>
-                     </tr>
-                   )
-                |> ReasonReact.array}
+               {Array.map(sorted.table, t =>
+                  <tr key={t.id} className="buttons-on-hover">
+                    <td>
+                      <HashLink to_={"/tourneys/" ++ t.id}>
+                        {React.string(t.name)}
+                      </HashLink>
+                    </td>
+                    <td> <Utils.DateFormat date={t.date} /> </td>
+                    <td>
+                      <button
+                        ariaLabel={"Delete " ++ t.name}
+                        className="danger button-ghost"
+                        title={"Delete " ++ t.name}
+                        onClick={_ => deleteTournament(t.id, t.name)}>
+                        <Icons.Trash />
+                      </button>
+                    </td>
+                  </tr>
+                )
+                ->React.array}
              </tbody>
            </table>}
       <Utils.Dialog
-        isOpen=isDialogOpen onDismiss={() => setIsDialogOpen(_ => false)}
+        isOpen=isDialogOpen
+        onDismiss={() => setIsDialogOpen(_ => false)}
         ariaLabel="Create new tournament">
         <button
           className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>

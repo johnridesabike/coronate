@@ -36,13 +36,12 @@ let sortedTableReducer = (state, action) => {
   let direction = newState.isDescending ? Utils.descend : Utils.ascend;
   let sortFunc =
     switch (newState.column) {
-    | GetString(func) =>
-      (str => str |> func |> Js.String.toLowerCase) |> direction
-    | GetInt(func) => func |> direction
-    | GetFloat(func) => func |> direction
-    | GetDate(func) => func |> direction
+    | GetString(func) => direction(str => str->func->Js.String2.toLowerCase)
+    | GetInt(func) => direction(func)
+    | GetFloat(func) => direction(func)
+    | GetDate(func) => direction(func)
     };
-  let table = newState.table->SortArray.stableSortBy(sortFunc);
+  let table = SortArray.stableSortBy(newState.table, sortFunc);
   {...newState, table};
 };
 

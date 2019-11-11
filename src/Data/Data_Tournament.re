@@ -41,8 +41,8 @@ let tieBreakFromString = json =>
   | _ => Median
   };
 
-let encodeTieBreak = data => data |> tieBreakToString |> Json.Encode.string;
-let decodeTieBreak = json => json |> Json.Decode.string |> tieBreakFromString;
+let encodeTieBreak = data => data->tieBreakToString->Json.Encode.string;
+let decodeTieBreak = json => json->Json.Decode.string->tieBreakFromString;
 /*
  LocalForage/IndexedDB sometimes automatically parses the date for us
  already, and I'm not sure how to propertly handle it.
