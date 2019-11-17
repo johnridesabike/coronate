@@ -6,10 +6,12 @@ open FireEvent;
 
 /* afterEach(cleanup); */
 
+let windowDispatch = _ => ();
+
 module BattleForGothamCityRound = {
   [@react.component]
   let make = (~children) =>
-    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA">
+    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA" windowDispatch>
       children
     </LoadTournament>;
 };

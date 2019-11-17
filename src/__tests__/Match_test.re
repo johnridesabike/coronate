@@ -6,10 +6,20 @@ open FireEvent;
 
 afterEach(cleanup);
 
+let windowDispatch = _ => ();
+
 module BattleForGothamCity = {
   [@react.component]
   let make = (~children) =>
-    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA">
+    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA" windowDispatch>
+      children
+    </LoadTournament>;
+};
+
+module SimplePairing = {
+  [@react.component]
+  let make = (~children) =>
+    <LoadTournament tourneyId="Simple_Pairing_______" windowDispatch>
       children
     </LoadTournament>;
 };
@@ -17,13 +27,15 @@ module BattleForGothamCity = {
 Skip.test("Ratings are updated correctly after a match.", () => {
   let page =
     render(
-      <BattleForGothamCity>
-        {t => <PageRound tournament=t roundId=1 />}
-      </BattleForGothamCity>,
+      <SimplePairing>
+        {tournament => <PageRound tournament roundId=1 />}
+      </SimplePairing>,
     );
-  page |> getByText(~matcher=`RegExp([%bs.re "/add bruce wayne/i"])) |> click;
   page
-  |> getByText(~matcher=`RegExp([%bs.re "/add dick grayson/i"]))
+  |> getByText(~matcher=`RegExp([%bs.re "/add newbie mcnewberson/i"]))
+  |> click;
+  page
+  |> getByText(~matcher=`RegExp([%bs.re "/add grandy mcmaster/i"]))
   |> click;
   page |> getByText(~matcher=`RegExp([%bs.re "/match selected/i"])) |> click;
   page
@@ -38,14 +50,14 @@ Skip.test("Ratings are updated correctly after a match.", () => {
        ~matcher=
          `RegExp(
            [%bs.re
-             "/view information for match: bruce wayne versus dick grayson/i"
+             "/view information for match: newbie mcnewberson versus grandy mcmaster/i"
            ],
          ),
      )
   |> click;
   /* TODO for some reason, this query doesn't work */
   page
-  |> getByLabelText(~matcher=`RegExp([%bs.re "/rating for Bruce Wayne/i"]))
+  |> getByTestId("rating-Newbie_McNewberson___")
   |> expect
   |> toHaveTextContent("1998 (+33)");
 });

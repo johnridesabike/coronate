@@ -277,8 +277,8 @@ module Sidebar = {
 let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 
 [@react.component]
-let make = (~tourneyId, ~hashPath) => {
-  <LoadTournament tourneyId>
+let make = (~tourneyId, ~hashPath, ~windowDispatch) => {
+  <LoadTournament tourneyId windowDispatch>
     {tournament =>
        <Window.Body
          footerFunc={footerFunc(tournament)}

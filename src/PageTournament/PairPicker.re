@@ -119,8 +119,8 @@ module SelectList = {
                      <Icons.UserPlus />
                      <Utils.VisuallyHidden>
                        {["Add", player.firstName, player.lastName]
-                        ->String.concat(" ", _)
-                        ->React.string}
+                        |> String.concat(" ")
+                        |> React.string}
                      </Utils.VisuallyHidden>
                    </button>
                  </td>

@@ -5,9 +5,18 @@ let configData = {
   avoidPairs:
     config.avoidPairs->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
 };
+
+let merger = (_key, a, b) => {
+  switch (a, b) {
+  | (Some(a), _) => Some(a)
+  | (_, Some(b)) => Some(b)
+  | (None, None) => None
+  };
+};
+
 let tournamentData =
-  tournaments->Map.String.merge(DemoData.tournaments, (_, _, a) => a);
-let playerData = players->Map.String.merge(DemoData.players, (_, _, a) => a);
+  Map.String.merge(tournaments, DemoData.tournaments, merger);
+let playerData = Map.String.merge(players, DemoData.players, merger);
 
 /* copied from Db */
 type action('a) =

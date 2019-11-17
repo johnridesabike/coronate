@@ -6,20 +6,22 @@ module App = {
   let make = () => {
     let url = ReasonReact.Router.useUrl();
     <Window className="app">
-      <main className="app__main">
-        {switch (Utils.Router.hashPath(url.hash)) {
-         | [""] => <Pages.Splash />
-         | ["tourneys"] => <PageTournamentList />
-         | ["tourneys", tourneyId] => <PageTourney tourneyId hashPath=[""] />
-         | ["tourneys", tourneyId, ...hashPath] =>
-           <PageTourney tourneyId hashPath />
-         | ["players"] => <PagePlayers />
-         | ["players", ...id] => <PagePlayers id />
-         | ["timecalc"] => <Pages.TimeCalculator />
-         | ["options"] => <PageOptions />
-         | _ => <Window.Body> <Pages.NotFound /> </Window.Body>
-         }}
-      </main>
+      {windowDispatch =>
+         <main className="app__main">
+           {switch (Utils.Router.hashPath(url.hash)) {
+            | [""] => <Pages.Splash />
+            | ["tourneys"] => <PageTournamentList windowDispatch />
+            | ["tourneys", tourneyId] =>
+              <PageTourney tourneyId hashPath=[""] windowDispatch />
+            | ["tourneys", tourneyId, ...hashPath] =>
+              <PageTourney tourneyId hashPath windowDispatch />
+            | ["players"] => <PagePlayers windowDispatch />
+            | ["players", id] => <PagePlayers id windowDispatch />
+            | ["timecalc"] => <Pages.TimeCalculator />
+            | ["options"] => <PageOptions windowDispatch />
+            | _ => <Window.Body> <Pages.NotFound /> </Window.Body>
+            }}
+         </main>}
     </Window>;
   };
 };

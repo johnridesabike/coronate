@@ -6,7 +6,7 @@ let dateSort = Hooks.GetDate(x => x.date);
 let nameSort = Hooks.GetString(x => x.name);
 
 [@react.component]
-let make = () => {
+let make = (~windowDispatch) => {
   let (tourneys, dispatch, _) = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -16,7 +16,6 @@ let make = () => {
     );
   let (newTourneyName, setNewTourneyName) = React.useState(() => "");
   let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
-  let (_, windowDispatch) = Window.useWindowContext();
   React.useEffect1(
     () => {
       windowDispatch(Window.SetTitle("Tournament list"));

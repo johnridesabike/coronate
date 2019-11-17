@@ -2,7 +2,6 @@
    This contains all of the logic and components that make up the window,
    including titlebar, default sidebar, and layout.
  */
-open Belt;
 open Utils.Router;
 open Electron;
 
@@ -10,7 +9,7 @@ let global_title = "Coronate";
 
 let formatTitle = title => {
   Js.String.length(title) === 0
-    ? global_title : [title, global_title]->String.concat(" - ", _);
+    ? global_title : String.concat(" - ", [title, global_title]);
 };
 
 type windowState = {
@@ -41,31 +40,40 @@ type action =
 
 let windowReducer = (state, action) => {
   switch (action) {
-  | SetBlur(value) => {...state, isBlur: value}
-  | SetTitle(value) => {...state, title: value}
-  | SetDialog(value) => {...state, isDialogOpen: value}
-  | SetFullScreen(value) => {...state, isFullScreen: value}
-  | SetMaximized(value) => {...state, isMaximized: value}
-  | SetSidebar(value) => {...state, isSidebarOpen: value}
+  | SetBlur(isBlur) => {...state, isBlur}
+  | SetTitle(title) =>
+    Webapi.Dom.(
+      document
+      ->Document.unsafeAsHtmlDocument
+      ->HtmlDocument.setTitle(formatTitle(title))
+      ->ignore
+    );
+    {...state, title};
+  | SetDialog(isDialogOpen) => {...state, isDialogOpen}
+  | SetFullScreen(isFullScreen) => {...state, isFullScreen}
+  | SetMaximized(isMaximized) => {...state, isMaximized}
+  | SetSidebar(isSidebarOpen) => {...state, isSidebarOpen}
   };
 };
+/* I'm keeping this code for reference but I've depreciated Context in favor of
+   plain ol' props. */
+/*
+ module Context = {
+   let initialState = (initialWinState, (_: action) => ());
+   let windowContext = React.createContext(initialState);
+   module Provider = {
+     let makeProps = (~value, ~children, ()) => {
+       "value": value,
+       "children": children,
+     };
+     let make = React.Context.provider(windowContext);
+   };
+ };
 
-module Context = {
-  let initialState = (initialWinState, (_: action) => ());
-  let windowContext = React.createContext(initialState);
-  module Provider = {
-    let makeProps = (~value, ~children, ()) => {
-      "value": value,
-      "children": children,
-    };
-    let make = React.Context.provider(windowContext);
-  };
-};
-
-let useWindowContext = () => {
-  React.useContext(Context.windowContext);
-};
-
+ let useWindowContext = () => {
+   React.useContext(Context.windowContext);
+ };
+ */
 module About = {
   [@bs.val]
   external version: option(string) = "process.env.REACT_APP_VERSION";
@@ -93,21 +101,19 @@ module About = {
           {React.string("Coronate")}
         </h1>
         {switch (version) {
-         | Some(version) =>
-           <p> {React.string("Version ")} {React.string(version)} </p>
+         | Some(version) => <p> {React.string("Version " ++ version)} </p>
          | None => React.null
          }}
         <p>
-          {React.string(
-             [
-               "Copyright ",
-               Utils.Entities.copy,
-               " 2019 John",
-               Utils.Entities.nbsp,
-               "Jackson",
-             ]
-             ->String.concat("", _),
-           )}
+          {[
+             "Copyright ",
+             Utils.Entities.copy,
+             " 2019 John",
+             Utils.Entities.nbsp,
+             "Jackson",
+           ]
+           |> String.concat("")
+           |> React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
@@ -155,7 +161,7 @@ module MSWindowsControls = {
     let close = style([hover([backgroundColor(red_50)])]);
   };
   [@react.component]
-  let make = (~state, ~electron) => {
+  let make = (~isFullScreen, ~isMaximized, ~electron) => {
     let window = electron->getRemote->getCurrentWindow;
     <div className=Style.container>
       <button
@@ -163,7 +169,7 @@ module MSWindowsControls = {
         onClick={_ => minimize(window)}>
         <Icons.Minimize className=Style.svg />
       </button>
-      {switch (state.isFullScreen, state.isMaximized) {
+      {switch (isFullScreen, isMaximized) {
        | (true, true)
        | (true, false) =>
          <button
@@ -202,15 +208,20 @@ module TitleBar = {
       Cn.ifTrue("button-ghost", !isElectronMac),
     ]);
   [@react.component]
-  let make = (~state, ~dispatch) => {
+  let make =
+      (
+        ~isBlur,
+        ~isFullScreen,
+        ~isMaximized,
+        ~isSidebarOpen,
+        ~title,
+        ~dispatch,
+      ) => {
     <header
       className={Cn.make([
         "app__header",
         "double-click-control",
-        Cn.ifTrue(
-          "traffic-light-padding",
-          isElectronMac && !state.isFullScreen,
-        ),
+        Cn.ifTrue("traffic-light-padding", isElectronMac && !isFullScreen),
       ])}
       onDoubleClick=macOSDoubleClick>
       <div>
@@ -234,7 +245,7 @@ module TitleBar = {
         </IfElectron>
         <button
           className=toolbarClasses
-          onClick={_ => dispatch(SetSidebar(!state.isSidebarOpen))}>
+          onClick={_ => dispatch(SetSidebar(!isSidebarOpen))}>
           <Icons.Sidebar />
           <Utils.VisuallyHidden>
             {React.string("Toggle sidebar")}
@@ -252,7 +263,7 @@ module TitleBar = {
         className={Cn.make([
           "body-20",
           "double-click-control",
-          Cn.ifTrue("disabled", state.isBlur),
+          Cn.ifTrue("disabled", isBlur),
         ])}
         style={ReactDOMRe.Style.make(
           ~left="0",
@@ -264,10 +275,10 @@ module TitleBar = {
           ~width="50%",
           (),
         )}>
-        {React.string(formatTitle(state.title))}
+        {title->formatTitle->React.string}
       </div>
       <IfElectron os=Windows>
-        {electron => <MSWindowsControls electron state />}
+        {electron => <MSWindowsControls electron isFullScreen isMaximized />}
       </IfElectron>
     </header>;
   };
@@ -276,65 +287,51 @@ module TitleBar = {
 [@react.component]
 let make = (~children, ~className) => {
   let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
-  let title = state.title;
-  React.useEffect1(
-    () => {
-      Webapi.Dom.(
-        document
-        ->Document.asHtmlDocument
-        ->Option.map(__x => HtmlDocument.setTitle(__x, formatTitle(title)))
-        ->ignore
-      );
-      None;
-    },
-    [|title|],
-  );
-  React.useEffect1(
-    () =>
-      ifElectron(electron => {
-        let win = electron->getRemote->getCurrentWindow;
-        /* This will ensure that stale event listeners aren't persisted.
-           That typically won't be relevant to production builds, but
-           in a dev environment, where the page reloads frequently,
-           stale listeners will accumulate. Note that this can cause
-           side effects if other listeners are added elsewhere. */
-        let unregisterListeners = () => {
-          removeAllListeners(win, `EnterFullScreen);
-          removeAllListeners(win, `LeaveFullScreen);
-          removeAllListeners(win, `Blur);
-          removeAllListeners(win, `Focus);
-          removeAllListeners(win, `Maximize);
-          removeAllListeners(win, `Unmaximize);
-        };
-        unregisterListeners();
-        on(win, `EnterFullScreen, () => dispatch(SetFullScreen(true)));
-        on(win, `LeaveFullScreen, () => dispatch(SetFullScreen(false)));
-        on(win, `Maximize, () => dispatch(SetMaximized(true)));
-        on(win, `Unmaximize, () => dispatch(SetMaximized(false)));
-        on(win, `Blur, () => dispatch(SetBlur(true)));
-        on(win, `Focus, () => dispatch(SetBlur(false)));
-        dispatch(SetBlur(!isFocused(win)));
-        dispatch(SetFullScreen(isFullScreen(win)));
-        dispatch(SetMaximized(isMaximized(win)));
-        /* I don't think this ever really fires, but can it hurt? */
-        unregisterListeners;
-      }),
-    [|dispatch|],
+  let {isBlur, isSidebarOpen, isDialogOpen, isFullScreen, title, isMaximized} = state;
+  React.useEffect0(() =>
+    ifElectron(electron => {
+      let win = electron->getRemote->getCurrentWindow;
+      /* This will ensure that stale event listeners aren't persisted.
+         That typically won't be relevant to production builds, but
+         in a dev environment, where the page reloads frequently,
+         stale listeners will accumulate. Note that this can cause
+         side effects if other listeners are added elsewhere. */
+      let unregisterListeners = () => {
+        removeAllListeners(win, `EnterFullScreen);
+        removeAllListeners(win, `LeaveFullScreen);
+        removeAllListeners(win, `Blur);
+        removeAllListeners(win, `Focus);
+        removeAllListeners(win, `Maximize);
+        removeAllListeners(win, `Unmaximize);
+      };
+      unregisterListeners();
+      on(win, `EnterFullScreen, () => dispatch(SetFullScreen(true)));
+      on(win, `LeaveFullScreen, () => dispatch(SetFullScreen(false)));
+      on(win, `Maximize, () => dispatch(SetMaximized(true)));
+      on(win, `Unmaximize, () => dispatch(SetMaximized(false)));
+      on(win, `Blur, () => dispatch(SetBlur(true)));
+      on(win, `Focus, () => dispatch(SetBlur(false)));
+      dispatch(SetBlur(!isFocused(win)));
+      dispatch(SetFullScreen(Electron.isFullScreen(win)));
+      dispatch(SetMaximized(Electron.isMaximized(win)));
+      /* I don't think this ever really fires, but can it hurt? */
+      unregisterListeners;
+    })
   );
   <div
     className={Cn.make([
       className,
-      "open-sidebar"->Cn.ifTrue(state.isSidebarOpen),
-      "closed-sidebar"->Cn.ifTrue(!state.isSidebarOpen),
-      "window-blur"->Cn.ifTrue(state.isBlur),
+      "open-sidebar"->Cn.ifTrue(isSidebarOpen),
+      "closed-sidebar"->Cn.ifTrue(!isSidebarOpen),
+      "window-blur"->Cn.ifTrue(isBlur),
       "isWindows"->Cn.ifTrue(isWin),
       "isMacOS"->Cn.ifTrue(isMac),
       "isElectron"->Cn.ifTrue(isElectron),
     ])}>
-    <TitleBar state dispatch />
-    <Context.Provider value=(state, dispatch)> children </Context.Provider>
+    <TitleBar isBlur isFullScreen isMaximized isSidebarOpen title dispatch />
+    {children(dispatch)}
     <Utils.Dialog
-      isOpen={state.isDialogOpen}
+      isOpen=isDialogOpen
       onDismiss={() => dispatch(SetDialog(false))}
       style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}
       ariaLabel="About Coronate">

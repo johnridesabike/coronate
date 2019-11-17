@@ -46,7 +46,7 @@ let isLoadedDone = status =>
   };
 
 [@react.component]
-let make = (~children, ~tourneyId) => {
+let make = (~children, ~tourneyId, ~windowDispatch) => {
   let (tourney, setTourney) =
     React.useReducer(tournamentReducer, emptyTourney);
   let {Tournament.name, playerIds, roundList} = tourney;
@@ -55,7 +55,6 @@ let make = (~children, ~tourneyId) => {
   Hooks.useLoadingCursorUntil(
     isLoadedDone(tourneyLoaded) && arePlayersLoaded,
   );
-  let (_, windowDispatch) = Window.useWindowContext();
   /*
    Set the document title.
    */

@@ -145,8 +145,8 @@ module WithScoreInfo =
                | _ => "Draw"
                },
              ]
-             ->String.concat(" ", _)
-             ->React.string}
+             |> String.concat(" ")
+             |> React.string}
           </li>
         )
       ->React.array;

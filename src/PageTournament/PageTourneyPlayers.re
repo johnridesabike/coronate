@@ -55,8 +55,8 @@ module Selecting = {
                    <Utils.VisuallyHidden>
                      <label htmlFor={"select-" ++ id}>
                        {["Select", firstName, lastName]
-                        ->String.concat(" ", _)
-                        ->React.string}
+                        |> String.concat(" ")
+                        |> React.string}
                      </label>
                    </Utils.VisuallyHidden>
                    <input
@@ -192,8 +192,8 @@ let make = (~tournament) => {
                   activePlayers->Map.String.getExn(pId).firstName,
                   activePlayers->Map.String.getExn(pId).lastName,
                 ]
-                ->String.concat(" ", _)
-                ->React.string}
+                |> String.concat(" ")
+                |> React.string}
                {React.string(" ")}
                <button
                  className="button-micro"

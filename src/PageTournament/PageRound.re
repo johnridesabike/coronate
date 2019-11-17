@@ -44,7 +44,9 @@ module PlayerMatchInfo =
         <dt> {React.string("Score")} </dt>
         <dd> {score->Js.Float.toString->React.string} </dd>
         <dt> {React.string("Rating")} </dt>
-        <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
+        <Utils.TestId testId={"rating-" ++ player.id}>
+          <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
+        </Utils.TestId>
         <dt> {React.string("Color balance")} </dt>
         <dd> {React.string(colorBalance)} </dd>
         <dt> {React.string("Has had a bye round")} </dt>
@@ -87,9 +89,9 @@ module MatchRow = {
       match.whiteId === Player.dummy_id || match.blackId === Player.dummy_id;
 
     let whiteName =
-      [whitePlayer.firstName, whitePlayer.lastName]->String.concat(" ", _);
+      [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
     let blackName =
-      [blackPlayer.firstName, blackPlayer.lastName]->String.concat(" ", _);
+      [blackPlayer.firstName, blackPlayer.lastName] |> String.concat(" ");
 
     let resultDisplay = playerColor => {
       let won =
@@ -253,8 +255,8 @@ module MatchRow = {
                   <Icons.Circle />
                   <Utils.VisuallyHidden>
                     {["Edit match for", whiteName, "versus", blackName]
-                     ->String.concat(" ", _)
-                     ->React.string}
+                     |> String.concat(" ")
+                     |> React.string}
                   </Utils.VisuallyHidden>
                 </button>
               : <button
@@ -275,8 +277,8 @@ module MatchRow = {
                   "versus",
                   blackName,
                 ]
-                ->String.concat(" ", _)
-                ->React.string}
+                |> String.concat(" ")
+                |> React.string}
              </Utils.VisuallyHidden>
            </button>
            {switch (scoreData) {
@@ -299,8 +301,8 @@ module MatchRow = {
                      "match",
                      Js.Int.toString(pos + 1),
                    ]
-                   ->String.concat(" ", _)
-                   ->React.string}
+                   |> String.concat(" ")
+                   |> React.string}
                 </p>
                 <Utils.PanelContainer>
                   <Utils.Panel>
@@ -468,7 +470,7 @@ module Round = {
         switch (Rounds.set(roundList, roundId, newRound)) {
         | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
-        };
+        }
       };
     };
 
@@ -531,7 +533,7 @@ module Round = {
           setSelectedMatch
           tournament
           scoreData
-          matches=Rounds.Round.toArray(matches)
+          matches={Rounds.Round.toArray(matches)}
         />
       </div>
     };
@@ -576,8 +578,8 @@ module PageRound =
             <Tab disabled={unmatchedCount === 0}>
               <Icons.Users />
               {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
-               ->String.concat("", _)
-               ->React.string}
+               |> String.concat("")
+               |> React.string}
             </Tab>
           </TabList>
           <TabPanels>

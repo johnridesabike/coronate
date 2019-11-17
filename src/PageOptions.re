@@ -9,7 +9,7 @@ let getDateForFile = () => {
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
     Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
   ]
-  ->String.concat("-", _);
+  |> String.concat("-");
 };
 
 let invalidAlert = () => {
@@ -66,12 +66,11 @@ module LastBackupDate = {
 external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
-let make = () => {
+let make = (~windowDispatch) => {
   let (tournaments, tourneysDispatch, _) = Db.useAllTournaments();
   let (players, playersDispatch, _) = Db.useAllPlayers();
   let (text, setText) = React.useState(() => "");
   let (config, configDispatch) = Db.useConfig();
-  let (_, windowDispatch) = Window.useWindowContext();
   React.useEffect1(
     () => {
       windowDispatch(Window.SetTitle("Options"));

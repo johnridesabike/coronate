@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
+import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
 import * as DemoData$Coronate from "../DemoData.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
@@ -19,13 +20,19 @@ var configData = /* record */[
   configData_002
 ];
 
-var tournamentData = Belt_MapString.merge(TestData$Coronate.tournaments, DemoData$Coronate.tournaments, (function (param, param$1, a) {
-        return a;
-      }));
+function merger(_key, a, b) {
+  if (a !== undefined) {
+    return Caml_option.some(Caml_option.valFromOption(a));
+  } else if (b !== undefined) {
+    return Caml_option.some(Caml_option.valFromOption(b));
+  } else {
+    return ;
+  }
+}
 
-var playerData = Belt_MapString.merge(TestData$Coronate.players, DemoData$Coronate.players, (function (param, param$1, a) {
-        return a;
-      }));
+var tournamentData = Belt_MapString.merge(TestData$Coronate.tournaments, DemoData$Coronate.tournaments, merger);
+
+var playerData = Belt_MapString.merge(TestData$Coronate.players, DemoData$Coronate.players, merger);
 
 function genericDbReducer(state, action) {
   switch (action.tag | 0) {
@@ -113,6 +120,7 @@ function useConfig(param) {
 
 export {
   configData ,
+  merger ,
   tournamentData ,
   playerData ,
   genericDbReducer ,

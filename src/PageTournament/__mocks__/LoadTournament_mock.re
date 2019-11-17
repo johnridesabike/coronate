@@ -15,9 +15,18 @@ let configData = {
       Set.toArray(DemoData.config.avoidPairs),
     ),
 };
+
+let merger = (_key, a, b) => {
+  switch (a, b) {
+  | (Some(a), _) => Some(a)
+  | (_, Some(b)) => Some(b)
+  | (None, None) => None
+  };
+};
+
 let tournamentData =
-  Map.String.merge(tournaments, DemoData.tournaments, (_, _, a) => a);
-let playerData = Map.String.merge(players, DemoData.players, (_, _, a) => a);
+  Map.String.merge(tournaments, DemoData.tournaments, merger);
+let playerData = Map.String.merge(players, DemoData.players, merger);
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
@@ -49,7 +58,7 @@ let make = (~children, ~tourneyId) => {
   let (players, playersDispatch, _) = Db.useAllPlayers();
   /* `activePlayers` is only players to be matched in future matches. */
   let activePlayers =
-    players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
+    Map.String.keep(players, (id, _) => playerIds->List.has(id, (===)));
   let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
   let isItOver = Data.Rounds.size(roundList) >= roundCount;
   let isNewRoundReady =

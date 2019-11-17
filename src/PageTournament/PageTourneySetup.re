@@ -18,7 +18,7 @@ let makeDateInput = date => {
   let day =
     rawDate < 10.0
       ? "0" ++ Js.Float.toString(rawDate) : Js.Float.toString(rawDate);
-  [year, month, day]->String.concat("-", _);
+  String.concat("-", [year, month, day]);
 };
 
 type inputs =

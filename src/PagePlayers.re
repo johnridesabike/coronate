@@ -94,9 +94,15 @@ module NewPlayerForm = {
 module PlayerList = {
   [@react.component]
   let make =
-      (~sorted, ~sortDispatch, ~players, ~playersDispatch, ~configDispatch) => {
+      (
+        ~sorted,
+        ~sortDispatch,
+        ~players,
+        ~playersDispatch,
+        ~configDispatch,
+        ~windowDispatch,
+      ) => {
     let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
-    let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect1(
       () => {
         windowDispatch(Window.SetTitle("Players"));
@@ -217,10 +223,10 @@ module Profile = {
         ~playersDispatch,
         ~config: Data.Config.t,
         ~configDispatch,
+        ~windowDispatch,
       ) => {
     let playerId = player.id;
     let playerName = String.concat(" ", [player.firstName, player.lastName]);
-    let (_, windowDispatch) = Window.useWindowContext();
     React.useEffect2(
       () => {
         windowDispatch(Window.SetTitle("Profile for " ++ playerName));
@@ -417,7 +423,7 @@ module Profile = {
 };
 
 [@react.component]
-let make = (~id=?) => {
+let make = (~id=?, ~windowDispatch) => {
   let (players, playersDispatch, _) = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -442,14 +448,21 @@ let make = (~id=?) => {
          players
          playersDispatch
          configDispatch
+         windowDispatch
        />
-     | Some([id]) =>
+     | Some(id) =>
        switch (Map.String.get(players, id)) {
        | None => <div> {React.string("Loading...")} </div>
        | Some(player) =>
-         <Profile player players playersDispatch config configDispatch />
+         <Profile
+           player
+           players
+           playersDispatch
+           config
+           configDispatch
+           windowDispatch
+         />
        }
-     | _ => <Pages.NotFound />
      }}
   </Window.Body>;
 };

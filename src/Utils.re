@@ -357,6 +357,13 @@ module Router = {
   };
 };
 
+module TestId = {
+  /* https://twitter.com/fakenickels/status/1189887257030930433 */
+  [@react.component]
+  let make = (~children, ~testId) =>
+    ReasonReact.cloneElement(children, ~props={"data-testid": testId}, [||]);
+};
+
 /*
    Side effects
  */
