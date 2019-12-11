@@ -12,7 +12,8 @@ let futureFromPromise =
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
-let localForageConfig = LocalForage.LocalForageJs.config(~name="Coronate");
+let localForageConfig =
+  LocalForage.LocalForageJs.Config.make(~name="Coronate");
 let configDb =
   LocalForage.Record.make(
     localForageConfig(~storeName="Options", ()),

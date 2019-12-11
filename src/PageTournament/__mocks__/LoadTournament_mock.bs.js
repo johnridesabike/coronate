@@ -17,17 +17,17 @@ function log2(num) {
   return Math.log(num) / Math.log(2.0);
 }
 
-var configData_000 = /* avoidPairs */Belt_Set.mergeMany(TestData$Coronate.config[/* avoidPairs */0], Belt_Set.toArray(DemoData$Coronate.config[/* avoidPairs */0]));
+var configData_avoidPairs = Belt_Set.mergeMany(TestData$Coronate.config.avoidPairs, Belt_Set.toArray(DemoData$Coronate.config.avoidPairs));
 
-var configData_001 = /* byeValue */TestData$Coronate.config[/* byeValue */1];
+var configData_byeValue = TestData$Coronate.config.byeValue;
 
-var configData_002 = /* lastBackup */TestData$Coronate.config[/* lastBackup */2];
+var configData_lastBackup = TestData$Coronate.config.lastBackup;
 
-var configData = /* record */[
-  configData_000,
-  configData_001,
-  configData_002
-];
+var configData = {
+  avoidPairs: configData_avoidPairs,
+  byeValue: configData_byeValue,
+  lastBackup: configData_lastBackup
+};
 
 function merger(_key, a, b) {
   if (a !== undefined) {
@@ -62,8 +62,8 @@ function LoadTournament_mock(Props) {
   var tourneyId = Props.tourneyId;
   var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
   var tourney = match[0];
-  var roundList = tourney[/* roundList */6];
-  var playerIds = tourney[/* playerIds */3];
+  var roundList = tourney.roundList;
+  var playerIds = tourney.playerIds;
   var match$1 = Db$Coronate.useAllPlayers(/* () */0);
   var players = match$1[0];
   var activePlayers = Belt_MapString.keep(players, (function (id, param) {
@@ -75,19 +75,19 @@ function LoadTournament_mock(Props) {
   var isItOver = Data_Rounds$Coronate.size(roundList) >= roundCount;
   var match$2 = Data_Rounds$Coronate.size(roundList) === 0;
   var isNewRoundReady = match$2 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, Data_Rounds$Coronate.size(roundList) - 1 | 0);
-  return Curry._1(children, /* record */[
-              /* activePlayers */activePlayers,
-              /* getPlayer */(function (param) {
+  return Curry._1(children, {
+              activePlayers: activePlayers,
+              getPlayer: (function (param) {
                   return Data_Player$Coronate.getPlayerMaybe(players, param);
                 }),
-              /* isItOver */isItOver,
-              /* isNewRoundReady */isNewRoundReady,
-              /* players */players,
-              /* playersDispatch */match$1[1],
-              /* roundCount */roundCount,
-              /* tourney */tourney,
-              /* setTourney */match[1]
-            ]);
+              isItOver: isItOver,
+              isNewRoundReady: isNewRoundReady,
+              players: players,
+              playersDispatch: match$1[1],
+              roundCount: roundCount,
+              tourney: tourney,
+              setTourney: match[1]
+            });
 }
 
 var make = LoadTournament_mock;

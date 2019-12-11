@@ -65,7 +65,7 @@ module MatchRow = {
       (
         ~isCompact=false,
         ~pos,
-        ~match,
+        ~m,
         ~roundId,
         /* Default to `None` so there aren't nested `option`s */
         ~selectedMatch=None,
@@ -83,10 +83,10 @@ module MatchRow = {
     } = tournament;
     let {Tournament.roundList} = tourney;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
-    let whitePlayer = getPlayer(match.Match.whiteId);
-    let blackPlayer = getPlayer(match.blackId);
+    let whitePlayer = getPlayer(m.Match.whiteId);
+    let blackPlayer = getPlayer(m.blackId);
     let isDummyRound =
-      match.whiteId === Player.dummy_id || match.blackId === Player.dummy_id;
+      m.whiteId === Player.dummy_id || m.blackId === Player.dummy_id;
 
     let whiteName =
       [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
@@ -100,7 +100,7 @@ module MatchRow = {
         />;
       let lost =
         <Utils.VisuallyHidden> {React.string("Lost")} </Utils.VisuallyHidden>;
-      switch (match.result) {
+      switch (m.result) {
       | NotSet =>
         <Utils.VisuallyHidden>
           {React.string("Not set")}
@@ -129,26 +129,26 @@ module MatchRow = {
     let setMatchResult = jsResultCode => {
       let newResult = Match.Result.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
-      if (match.result !== newResult) {
-        let white = players->Map.String.getExn(match.whiteId);
-        let black = players->Map.String.getExn(match.blackId);
+      if (m.result !== newResult) {
+        let white = players->Map.String.getExn(m.whiteId);
+        let black = players->Map.String.getExn(m.blackId);
         let newWhiteScore = newResult->Match.Result.(toFloat(White));
         let newBlackScore = newResult->Match.Result.(toFloat(Black));
         let (whiteNewRating, blackNewRating) =
           switch (newResult) {
-          | NotSet => (match.whiteOrigRating, match.blackOrigRating)
+          | NotSet => (m.whiteOrigRating, m.blackOrigRating)
           | BlackWon
           | WhiteWon
           | Draw =>
             Scoring.Ratings.calcNewRatings(
-              (match.whiteOrigRating, match.blackOrigRating),
+              (m.whiteOrigRating, m.blackOrigRating),
               (white.matchCount, black.matchCount),
               (newWhiteScore, newBlackScore),
             )
           };
         let white = {...white, rating: whiteNewRating};
         let black = {...black, rating: blackNewRating};
-        switch (match.result) {
+        switch (m.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | NotSet =>
           playersDispatch(
@@ -175,7 +175,7 @@ module MatchRow = {
           playersDispatch(Set(black.id, black));
         };
         let newMatch = {
-          ...match,
+          ...m,
           result: newResult,
           whiteNewRating,
           blackNewRating,
@@ -196,7 +196,7 @@ module MatchRow = {
       className={Cn.make([
         className,
         Option.mapWithDefault(selectedMatch, "", id =>
-          match.id === id ? "selected" : "buttons-on-hover"
+          m.id === id ? "selected" : "buttons-on-hover"
         ),
       ])}>
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
@@ -225,7 +225,7 @@ module MatchRow = {
         <select
           className=Style.winnerSelect
           disabled=isDummyRound
-          value={Match.Result.toString(match.result)}
+          value={Match.Result.toString(m.result)}
           onBlur=setMatchResultBlur
           onChange=setMatchResultChange>
           <option value={Match.Result.toString(NotSet)}>
@@ -247,11 +247,11 @@ module MatchRow = {
        | (true, _) => React.null
        | (false, Some(setSelectedMatch)) =>
          <td className={Cn.make([Style.controls, "data__input"])}>
-           {selectedMatch->Option.mapWithDefault(true, id => id !== match.id)
+           {selectedMatch->Option.mapWithDefault(true, id => id !== m.id)
               ? <button
                   className="button-ghost"
                   title="Edit match"
-                  onClick={_ => setSelectedMatch(_ => Some(match.id))}>
+                  onClick={_ => setSelectedMatch(_ => Some(m.id))}>
                   <Icons.Circle />
                   <Utils.VisuallyHidden>
                     {["Edit match for", whiteName, "versus", blackName]
@@ -307,9 +307,9 @@ module MatchRow = {
                 <Utils.PanelContainer>
                   <Utils.Panel>
                     <PlayerMatchInfo
-                      player={getPlayer(match.whiteId)}
-                      origRating={match.whiteOrigRating}
-                      newRating={Some(match.whiteNewRating)}
+                      player={getPlayer(m.whiteId)}
+                      origRating={m.whiteOrigRating}
+                      newRating={Some(m.whiteNewRating)}
                       getPlayer
                       scoreData
                       players
@@ -317,9 +317,9 @@ module MatchRow = {
                   </Utils.Panel>
                   <Utils.Panel>
                     <PlayerMatchInfo
-                      player={getPlayer(match.blackId)}
-                      origRating={match.blackOrigRating}
-                      newRating={Some(match.blackNewRating)}
+                      player={getPlayer(m.blackId)}
+                      origRating={m.blackOrigRating}
+                      newRating={Some(m.blackNewRating)}
                       getPlayer
                       scoreData
                       players
@@ -390,11 +390,11 @@ module RoundTable = {
              </thead>
            </>}
       <tbody className="content">
-        {Array.mapWithIndex(matches, (pos, match: Match.t) =>
+        {Array.mapWithIndex(matches, (pos, m: Match.t) =>
            <MatchRow
-             key={match.id}
+             key={m.id}
              isCompact
-             match
+             m
              pos
              roundId
              selectedMatch

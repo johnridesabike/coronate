@@ -369,7 +369,7 @@ module TestId = {
  */
 Numeral.registerFormat(
   "fraction",
-  Numeral.makeFormat(
+  Numeral.Format.make(
     ~formatFn=
       (value, _format, _roundingFunction) => {
         let whole = floor(value);
@@ -386,7 +386,7 @@ Numeral.registerFormat(
         stringedWhole ++ fraction;
       },
     ~regexps=
-      Numeral.makeRegExps(
+      Numeral.RegExps.make(
         ~format=[%re "/(1\\/2)/"],
         ~unformat=[%re "/(1\\/2)/"],
       ),

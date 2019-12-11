@@ -8,17 +8,17 @@ import * as DemoData$Coronate from "../DemoData.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 
-var configData_000 = /* avoidPairs */Belt_Set.mergeMany(TestData$Coronate.config[/* avoidPairs */0], Belt_Set.toArray(DemoData$Coronate.config[/* avoidPairs */0]));
+var configData_avoidPairs = Belt_Set.mergeMany(TestData$Coronate.config.avoidPairs, Belt_Set.toArray(DemoData$Coronate.config.avoidPairs));
 
-var configData_001 = /* byeValue */TestData$Coronate.config[/* byeValue */1];
+var configData_byeValue = TestData$Coronate.config.byeValue;
 
-var configData_002 = /* lastBackup */TestData$Coronate.config[/* lastBackup */2];
+var configData_lastBackup = TestData$Coronate.config.lastBackup;
 
-var configData = /* record */[
-  configData_000,
-  configData_001,
-  configData_002
-];
+var configData = {
+  avoidPairs: configData_avoidPairs,
+  byeValue: configData_byeValue,
+  lastBackup: configData_lastBackup
+};
 
 function merger(_key, a, b) {
   if (a !== undefined) {
@@ -49,21 +49,21 @@ function genericDbReducer(state, action) {
 function configReducer(state, action) {
   switch (action.tag | 0) {
     case /* AddAvoidPair */0 :
-        return /* record */[
-                /* avoidPairs */Belt_Set.add(state[/* avoidPairs */0], action[0]),
-                /* byeValue */state[/* byeValue */1],
-                /* lastBackup */state[/* lastBackup */2]
-              ];
+        return {
+                avoidPairs: Belt_Set.add(state.avoidPairs, action[0]),
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup
+              };
     case /* DelAvoidPair */1 :
-        return /* record */[
-                /* avoidPairs */Belt_Set.remove(state[/* avoidPairs */0], action[0]),
-                /* byeValue */state[/* byeValue */1],
-                /* lastBackup */state[/* lastBackup */2]
-              ];
+        return {
+                avoidPairs: Belt_Set.remove(state.avoidPairs, action[0]),
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup
+              };
     case /* DelAvoidSingle */2 :
         var id = action[0];
-        return /* record */[
-                /* avoidPairs */Belt_Set.reduce(state[/* avoidPairs */0], Data_Config$Coronate.AvoidPairs.empty, (function (acc, param) {
+        return {
+                avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Config$Coronate.AvoidPairs.empty, (function (acc, param) {
                         var p2 = param[1];
                         var p1 = param[0];
                         if (p1 === id || p2 === id) {
@@ -75,29 +75,29 @@ function configReducer(state, action) {
                                     ]);
                         }
                       })),
-                /* byeValue */state[/* byeValue */1],
-                /* lastBackup */state[/* lastBackup */2]
-              ];
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup
+              };
     case /* SetAvoidPairs */3 :
-        return /* record */[
-                /* avoidPairs */action[0],
-                /* byeValue */state[/* byeValue */1],
-                /* lastBackup */state[/* lastBackup */2]
-              ];
+        return {
+                avoidPairs: action[0],
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup
+              };
     case /* SetByeValue */4 :
-        return /* record */[
-                /* avoidPairs */state[/* avoidPairs */0],
-                /* byeValue */action[0],
-                /* lastBackup */state[/* lastBackup */2]
-              ];
+        return {
+                avoidPairs: state.avoidPairs,
+                byeValue: action[0],
+                lastBackup: state.lastBackup
+              };
     case /* SetState */5 :
         return action[0];
     case /* SetLastBackup */6 :
-        return /* record */[
-                /* avoidPairs */state[/* avoidPairs */0],
-                /* byeValue */state[/* byeValue */1],
-                /* lastBackup */action[0]
-              ];
+        return {
+                avoidPairs: state.avoidPairs,
+                byeValue: state.byeValue,
+                lastBackup: action[0]
+              };
     
   }
 }
