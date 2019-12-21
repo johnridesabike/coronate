@@ -6,8 +6,8 @@ open Data;
 module Footer = {
   [@react.component]
   let make = (~tournament) => {
-    let {roundCount, tourney, isItOver, isNewRoundReady, activePlayers} = tournament;
-    let {Tournament.roundList} = tourney;
+    let {roundCount, tourney, isItOver, isNewRoundReady, activePlayers, _} = tournament;
+    let Tournament.{roundList, _} = tourney;
     let (tooltipText, tooltipKind) =
       switch (isNewRoundReady, isItOver) {
       | (true, false) => (
@@ -76,8 +76,10 @@ module Sidebar = {
       players,
       playersDispatch,
       setTourney,
+      _,
     } = tournament;
-    let {Tournament.roundList} = tourney;
+    open Tournament;
+    let {roundList, _} = tourney;
     let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers);
     let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
@@ -114,26 +116,30 @@ module Sidebar = {
           round
           ->Rounds.Round.toArray
           ->Array.forEach(match => {
-              let {
-                Match.result,
-                whiteId,
-                blackId,
-                whiteOrigRating,
-                blackOrigRating,
-              } = match;
+              let Match.{
+                    result,
+                    whiteId,
+                    blackId,
+                    whiteOrigRating,
+                    blackOrigRating,
+                    _,
+                  } = match;
               /* Don't change players who haven't scored.*/
               switch (result) {
-              | NotSet => ()
-              | BlackWon
-              | Draw
-              | WhiteWon =>
+              | Match.Result.NotSet => ()
+              | Match.Result.BlackWon
+              | Match.Result.Draw
+              | Match.Result.WhiteWon =>
                 [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]
                 ->List.forEach(((id, rating)) =>
                     switch (players->Map.String.get(id)) {
                     | Some(player) =>
-                      let matchCount = player.matchCount - 1;
+                      let matchCount = player.Player.matchCount - 1;
                       playersDispatch(
-                        Set(player.id, {...player, matchCount, rating}),
+                        Db.Set(
+                          player.Player.id,
+                          Player.{...player, matchCount, rating},
+                        ),
                       );
                     /* Don't try to set dummy or deleted players */
                     | None => ()

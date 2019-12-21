@@ -87,26 +87,30 @@ module MakeDateTimeFormat = (M: {let formatter: Intl.DateTimeFormat.t;}) => {
 module DateFormat =
   MakeDateTimeFormat({
     let formatter =
-      Intl.DateTimeFormat.make(
-        ~locales=[|"en-US"|],
-        ~day=TwoDigit,
-        ~month=Short,
-        ~year=Numeric,
-        (),
+      Intl.DateTimeFormat.(
+        make(
+          ~locales=[|"en-US"|],
+          ~day=TwoDigit,
+          ~month=Short,
+          ~year=Numeric,
+          (),
+        )
       );
   });
 
 module DateTimeFormat =
   MakeDateTimeFormat({
     let formatter =
-      Intl.DateTimeFormat.make(
-        ~locales=[|"en-US"|],
-        ~day=TwoDigit,
-        ~month=Short,
-        ~year=Numeric,
-        ~hour=TwoDigit,
-        ~minute=TwoDigit,
-        (),
+      Intl.DateTimeFormat.(
+        make(
+          ~locales=[|"en-US"|],
+          ~day=TwoDigit,
+          ~month=Short,
+          ~year=Numeric,
+          ~hour=TwoDigit,
+          ~minute=TwoDigit,
+          (),
+        )
       );
   });
 
@@ -315,6 +319,7 @@ module Notification = {
 };
 
 module Router = {
+  include ReasonReact.Router;
   let hashPath = hashString => {
     let path =
       switch (hashString->Js.String2.split("/")->Belt.List.fromArray) {
@@ -331,7 +336,7 @@ module Router = {
   module HashLink = {
     [@react.component]
     let make = (~children, ~to_, ~onDragStart: ReactEvent.Mouse.t => unit=?) => {
-      let {ReasonReact.Router.hash} = ReasonReact.Router.useUrl();
+      let {hash, _} = useUrl();
       /* There's a special case for using "/" as a path */
       let isCurrent =
         switch (to_) {

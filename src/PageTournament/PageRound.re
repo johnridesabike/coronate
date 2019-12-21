@@ -38,13 +38,13 @@ module PlayerMatchInfo =
           ~opponentResults,
           ~avoidListHtml,
         ) => {
-      let fullName = player.Player.firstName ++ " " ++ player.lastName;
+      let fullName = player.Player.firstName ++ " " ++ player.Player.lastName;
       <dl className="player-card">
         <h3> {React.string(fullName)} </h3>
         <dt> {React.string("Score")} </dt>
         <dd> {score->Js.Float.toString->React.string} </dd>
         <dt> {React.string("Rating")} </dt>
-        <Utils.TestId testId={"rating-" ++ player.id}>
+        <Utils.TestId testId={"rating-" ++ player.Player.id}>
           <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
         </Utils.TestId>
         <dt> {React.string("Color balance")} </dt>
@@ -74,24 +74,29 @@ module MatchRow = {
         ~tournament,
         ~className="",
       ) => {
-    let {
-      LoadTournament.tourney,
-      setTourney,
-      players,
-      getPlayer,
-      playersDispatch,
-    } = tournament;
-    let {Tournament.roundList} = tourney;
+    open Match;
+    open Result;
+    let LoadTournament.{
+          tourney,
+          setTourney,
+          players,
+          getPlayer,
+          playersDispatch,
+          _,
+        } = tournament;
+    let {Tournament.roundList, _} = tourney;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
-    let whitePlayer = getPlayer(m.Match.whiteId);
+    let whitePlayer = getPlayer(m.whiteId);
     let blackPlayer = getPlayer(m.blackId);
     let isDummyRound =
       m.whiteId === Player.dummy_id || m.blackId === Player.dummy_id;
 
     let whiteName =
-      [whitePlayer.firstName, whitePlayer.lastName] |> String.concat(" ");
+      [whitePlayer.Player.firstName, whitePlayer.Player.lastName]
+      |> String.concat(" ");
     let blackName =
-      [blackPlayer.firstName, blackPlayer.lastName] |> String.concat(" ");
+      [blackPlayer.Player.firstName, blackPlayer.Player.lastName]
+      |> String.concat(" ");
 
     let resultDisplay = playerColor => {
       let won =
@@ -132,8 +137,8 @@ module MatchRow = {
       if (m.result !== newResult) {
         let white = players->Map.String.getExn(m.whiteId);
         let black = players->Map.String.getExn(m.blackId);
-        let newWhiteScore = newResult->Match.Result.(toFloat(White));
-        let newBlackScore = newResult->Match.Result.(toFloat(Black));
+        let newWhiteScore = newResult->(toFloat(White));
+        let newBlackScore = newResult->(toFloat(Black));
         let (whiteNewRating, blackNewRating) =
           switch (newResult) {
           | NotSet => (m.whiteOrigRating, m.blackOrigRating)
@@ -142,37 +147,49 @@ module MatchRow = {
           | Draw =>
             Scoring.Ratings.calcNewRatings(
               (m.whiteOrigRating, m.blackOrigRating),
-              (white.matchCount, black.matchCount),
+              (white.Player.matchCount, black.Player.matchCount),
               (newWhiteScore, newBlackScore),
             )
           };
-        let white = {...white, rating: whiteNewRating};
-        let black = {...black, rating: blackNewRating};
+        let white = Player.{...white, rating: whiteNewRating};
+        let black = Player.{...black, rating: blackNewRating};
         switch (m.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | NotSet =>
           playersDispatch(
-            Set(white.id, {...white, matchCount: white.matchCount + 1}),
+            Db.Set(
+              white.Player.id,
+              Player.{...white, matchCount: white.matchCount + 1},
+            ),
           );
           playersDispatch(
-            Set(black.id, {...black, matchCount: black.matchCount + 1}),
+            Db.Set(
+              black.Player.id,
+              Player.{...black, matchCount: black.matchCount + 1},
+            ),
           );
         /* If the result is being un-scored, decrement the matchCounts */
         | WhiteWon
         | BlackWon
         | Draw when newResult === NotSet =>
           playersDispatch(
-            Set(white.id, {...white, matchCount: white.matchCount - 1}),
+            Db.Set(
+              white.Player.id,
+              Player.{...white, matchCount: white.matchCount - 1},
+            ),
           );
           playersDispatch(
-            Set(black.id, {...black, matchCount: black.matchCount - 1}),
+            Db.Set(
+              black.Player.id,
+              Player.{...black, matchCount: black.matchCount - 1},
+            ),
           );
         /* Simply update the players with new ratings. */
         | WhiteWon
         | BlackWon
         | Draw =>
-          playersDispatch(Set(white.id, white));
-          playersDispatch(Set(black.id, black));
+          playersDispatch(Db.Set(white.Player.id, white));
+          playersDispatch(Db.Set(black.Player.id, black));
         };
         let newMatch = {
           ...m,
@@ -182,7 +199,9 @@ module MatchRow = {
         };
         roundList
         ->Rounds.setMatch(roundId, newMatch)
-        ->Option.map(roundList => setTourney({...tourney, roundList}))
+        ->Option.map(roundList =>
+            setTourney(Tournament.{...tourney, roundList})
+          )
         ->ignore;
       };
     };
@@ -206,7 +225,7 @@ module MatchRow = {
       <td
         className={Cn.make([
           "table__player row__player",
-          Player.Type.toString(whitePlayer.type_),
+          Player.Type.toString(whitePlayer.Player.type_),
         ])}
         id={"match-" ++ string_of_int(pos) ++ "-white"}>
         {React.string(whiteName)}
@@ -215,7 +234,7 @@ module MatchRow = {
       <td
         className={Cn.make([
           "table__player row__player",
-          Player.Type.toString(blackPlayer.type_),
+          Player.Type.toString(blackPlayer.Player.type_),
         ])}
         id={"match-" ++ string_of_int(pos) ++ "-black"}>
         {React.string(blackName)}
@@ -293,7 +312,7 @@ module MatchRow = {
                   onClick={_ => setIsModalOpen(_ => false)}>
                   {React.string("close")}
                 </button>
-                <p> {React.string(tourney.name)} </p>
+                <p> {React.string(tourney.Tournament.name)} </p>
                 <p>
                   {[
                      "Round",
@@ -392,7 +411,7 @@ module RoundTable = {
       <tbody className="content">
         {Array.mapWithIndex(matches, (pos, m: Match.t) =>
            <MatchRow
-             key={m.id}
+             key={m.Match.id}
              isCompact
              m
              pos
@@ -413,16 +432,16 @@ module RoundTable = {
 module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
-    let {LoadTournament.tourney, players, setTourney, playersDispatch} = tournament;
-    let {Tournament.roundList} = tourney;
+    let {LoadTournament.tourney, players, setTourney, playersDispatch, _} = tournament;
+    let {Tournament.roundList, _} = tourney;
     let (selectedMatch, setSelectedMatch) = React.useState(() => None);
 
     let unMatch = (matchId, round) => {
       switch (round->Rounds.Round.getMatchById(matchId)) {
       /* checks if the match has been scored yet & resets the players'
          records */
-      | Some(match) when match.result !== NotSet =>
-        [
+      | Some(match) when match.Match.result !== Match.Result.NotSet =>
+        Match.[
           (match.whiteId, match.whiteOrigRating),
           (match.blackId, match.blackOrigRating),
         ]
@@ -433,9 +452,13 @@ module Round = {
             | None => ()
             | Some(player) =>
               playersDispatch(
-                Set(
-                  player.id,
-                  {...player, rating, matchCount: player.matchCount - 1},
+                Db.Set(
+                  player.Player.id,
+                  Player.{
+                    ...player,
+                    rating,
+                    matchCount: player.matchCount - 1,
+                  },
                 ),
               )
             }
@@ -445,7 +468,7 @@ module Round = {
       };
       let newRound = round->Rounds.Round.removeMatchById(matchId);
       switch (roundList->Rounds.set(roundId, newRound)) {
-      | Some(roundList) => setTourney({...tourney, roundList})
+      | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
       | None => ()
       };
       setSelectedMatch(_ => None);
@@ -457,7 +480,9 @@ module Round = {
         let newMatch = Match.swapColors(match);
         roundList
         ->Rounds.setMatch(roundId, newMatch)
-        ->Option.map(roundList => setTourney({...tourney, roundList}))
+        ->Option.map(roundList =>
+            setTourney(Tournament.{...tourney, roundList})
+          )
         ->ignore;
       | None => ()
       };
@@ -468,13 +493,13 @@ module Round = {
       | None => ()
       | Some(newRound) =>
         switch (Rounds.set(roundList, roundId, newRound)) {
-        | Some(roundList) => setTourney({...tourney, roundList})
+        | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
         | None => ()
         }
       };
     };
 
-    switch (Rounds.get(tourney.roundList, roundId)) {
+    switch (Rounds.get(tourney.Tournament.roundList, roundId)) {
     | None => <Pages.NotFound />
     | Some(matches) =>
       <div className="content-area">

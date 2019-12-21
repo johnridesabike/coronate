@@ -140,30 +140,34 @@ type actionConfig =
   | SetLastBackup(Js.Date.t);
 
 let configReducer = (state, action) => {
-  switch (action) {
-  | AddAvoidPair(pair) =>
-    Data.Config.{...state, avoidPairs: Set.add(state.avoidPairs, pair)}
-  | DelAvoidPair(pair) => {
-      ...state,
-      avoidPairs: Set.remove(state.avoidPairs, pair),
+  Data.Config.(
+    switch (action) {
+    | AddAvoidPair(pair) => {
+        ...state,
+        avoidPairs: Set.add(state.avoidPairs, pair),
+      }
+    | DelAvoidPair(pair) => {
+        ...state,
+        avoidPairs: Set.remove(state.avoidPairs, pair),
+      }
+    | DelAvoidSingle(id) => {
+        ...state,
+        avoidPairs:
+          Set.reduce(
+            state.avoidPairs, AvoidPairs.empty, (acc, (p1, p2)) =>
+            if (p1 === id || p2 === id) {
+              acc;
+            } else {
+              Set.add(acc, (p1, p2));
+            }
+          ),
+      }
+    | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
+    | SetByeValue(byeValue) => {...state, byeValue}
+    | SetLastBackup(lastBackup) => {...state, lastBackup}
+    | SetState(state) => state
     }
-  | DelAvoidSingle(id) => {
-      ...state,
-      avoidPairs:
-        Set.reduce(
-          state.avoidPairs, Data.Config.AvoidPairs.empty, (acc, (p1, p2)) =>
-          if (p1 === id || p2 === id) {
-            acc;
-          } else {
-            Set.add(acc, (p1, p2));
-          }
-        ),
-    }
-  | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
-  | SetByeValue(byeValue) => {...state, byeValue}
-  | SetLastBackup(lastBackup) => {...state, lastBackup}
-  | SetState(state) => state
-  };
+  );
 };
 let useConfig = () => {
   let (config, dispatch) =

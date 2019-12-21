@@ -78,14 +78,18 @@ let encode = data =>
   );
 
 let byeResultForPlayerColor = (byeValue, color) =>
-  switch (byeValue) {
-  | Data_Config.ByeValue.Half => Result.Draw
-  | Full =>
-    switch (color) {
-    | Result.White => WhiteWon
-    | Black => BlackWon
-    }
-  };
+  Data_Config.ByeValue.(
+    Result.(
+      switch (byeValue) {
+      | Half => Draw
+      | Full =>
+        switch (color) {
+        | White => WhiteWon
+        | Black => BlackWon
+        }
+      }
+    )
+  );
 
 let scoreByeMatch = (match, byeValue) =>
   switch (Data_Player.(isDummyId(match.whiteId), isDummyId(match.blackId))) {
@@ -116,7 +120,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
          the beginning */
       pairs
       ->List.reverse
-      ->List.add((player.id, Data_Player.dummy_id))
+      ->List.add((player.Pairing.id, Data_Player.dummy_id))
       ->List.reverse
     | None => pairs
     };
@@ -124,10 +128,10 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   pairsWithBye->List.map(((whiteId, blackId)) =>
     {
       id: Utils.nanoid(),
-      whiteOrigRating: getPlayer(whiteId).rating,
-      blackOrigRating: getPlayer(blackId).rating,
-      whiteNewRating: getPlayer(whiteId).rating,
-      blackNewRating: getPlayer(blackId).rating,
+      whiteOrigRating: getPlayer(whiteId).Data_Player.rating,
+      blackOrigRating: getPlayer(blackId).Data_Player.rating,
+      whiteNewRating: getPlayer(whiteId).Data_Player.rating,
+      blackNewRating: getPlayer(blackId).Data_Player.rating,
       whiteId,
       blackId,
       result: Result.NotSet,
@@ -142,10 +146,10 @@ let manualPair = ((white, black), byeValue) => {
     result: Result.NotSet,
     whiteId: white.Data_Player.id,
     blackId: black.Data_Player.id,
-    whiteOrigRating: white.rating,
-    blackOrigRating: black.rating,
-    whiteNewRating: white.rating,
-    blackNewRating: black.rating,
+    whiteOrigRating: white.Data_Player.rating,
+    blackOrigRating: black.Data_Player.rating,
+    whiteNewRating: white.Data_Player.rating,
+    blackNewRating: black.Data_Player.rating,
   }
   ->scoreByeMatch(byeValue);
 };

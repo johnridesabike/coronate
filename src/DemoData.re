@@ -27,7 +27,7 @@ let players =
     ),
     (
       "DickGrayson_1C2rCokHH",
-      {
+      Player.{
         id: "DickGrayson_1C2rCokHH",
         type_: Player.Type.Person,
         firstName: "Dick",
@@ -38,7 +38,7 @@ let players =
     ),
     (
       "AlfredPennyworth_y4dW",
-      {
+      Player.{
         id: "AlfredPennyworth_y4dW",
         type_: Player.Type.Person,
         firstName: "Alfred",
@@ -49,7 +49,7 @@ let players =
     ),
     (
       "BarbaraGordon_cL6SpI2",
-      {
+      Player.{
         id: "BarbaraGordon_cL6SpI2",
         type_: Player.Type.Person,
         firstName: "Barbara",
@@ -60,7 +60,7 @@ let players =
     ),
     (
       "KateKane_klFW6gDfUOTX",
-      {
+      Player.{
         id: "KateKane_klFW6gDfUOTX",
         type_: Player.Type.Person,
         firstName: "Kate",
@@ -71,7 +71,7 @@ let players =
     ),
     (
       "SelinaKyle_rJBH-45Xoy",
-      {
+      Player.{
         id: "SelinaKyle_rJBH-45Xoy",
         type_: Player.Type.Person,
         firstName: "Selina",
@@ -82,7 +82,7 @@ let players =
     ),
     (
       "JasonTodd_fc9CeOa-Luw",
-      {
+      Player.{
         id: "JasonTodd_fc9CeOa-Luw",
         type_: Player.Type.Person,
         firstName: "Jason",
@@ -93,7 +93,7 @@ let players =
     ),
     (
       "JamesGordon_1ts9xICT3",
-      {
+      Player.{
         id: "JamesGordon_1ts9xICT3",
         type_: Player.Type.Person,
         firstName: "James",
@@ -104,7 +104,7 @@ let players =
     ),
     (
       "HelenaWayne_fE6O0DJcE",
-      {
+      Player.{
         id: "HelenaWayne_fE6O0DJcE",
         type_: Player.Type.Person,
         firstName: "Helena",
@@ -115,7 +115,7 @@ let players =
     ),
     (
       "Joker_v0z2416fpAZ9o2c",
-      {
+      Player.{
         id: "Joker_v0z2416fpAZ9o2c",
         type_: Player.Type.Person,
         firstName: "Joker",
@@ -126,7 +126,7 @@ let players =
     ),
     (
       "HarleyQuinn_-10-02VPH",
-      {
+      Player.{
         id: "HarleyQuinn_-10-02VPH",
         type_: Player.Type.Person,
         firstName: "Harley",
@@ -137,7 +137,7 @@ let players =
     ),
     (
       "VictorFries_cWaQoW014",
-      {
+      Player.{
         id: "VictorFries_cWaQoW014",
         type_: Player.Type.Person,
         firstName: "Victor",
@@ -148,7 +148,7 @@ let players =
     ),
     (
       "OswaldCobblepot_lfCro",
-      {
+      Player.{
         id: "OswaldCobblepot_lfCro",
         type_: Player.Type.Person,
         firstName: "Oswald",
@@ -159,7 +159,7 @@ let players =
     ),
     (
       "RasAlGhul_k9n8k852bHr",
-      {
+      Player.{
         id: "RasAlGhul_k9n8k852bHr",
         type_: Player.Type.Person,
         firstName: "Ra's",
@@ -170,7 +170,7 @@ let players =
     ),
     (
       "PamelaIsley_vH5vD8uPB",
-      {
+      Player.{
         id: "PamelaIsley_vH5vD8uPB",
         type_: Player.Type.Person,
         firstName: "Pamela",
@@ -181,7 +181,7 @@ let players =
     ),
     (
       "EdwardNigma_j80JfWOZq",
-      {
+      Player.{
         id: "EdwardNigma_j80JfWOZq",
         type_: Player.Type.Person,
         firstName: "Edward",
@@ -192,7 +192,7 @@ let players =
     ),
     (
       "JonathanCrane_R4Q8tVW",
-      {
+      Player.{
         id: "JonathanCrane_R4Q8tVW",
         type_: Player.Type.Person,
         firstName: "Jonathan",
@@ -203,7 +203,7 @@ let players =
     ),
     (
       "HarveyDent_0eYIiP_Ij5",
-      {
+      Player.{
         id: "HarveyDent_0eYIiP_Ij5",
         type_: Player.Type.Person,
         firstName: "Harvey",
@@ -214,7 +214,7 @@ let players =
     ),
     (
       "HugoStrange_az43f9mtS",
-      {
+      Player.{
         id: "HugoStrange_az43f9mtS",
         type_: Player.Type.Person,
         firstName: "Hugo",
@@ -233,8 +233,8 @@ let tournaments =
         date: Js.Date.fromString("2019-05-22T12:14:47.670Z"),
         id: "CaouTNel9k70jUJ0h6SYM",
         name: "Wayne Manor Open",
-        tieBreaks: [|
-          Scoring.Median,
+        tieBreaks: Scoring.[|
+          Median,
           Solkoff,
           Cumulative,
           CumulativeOfOpposition,
@@ -255,7 +255,7 @@ let tournaments =
           [|
             [|
               {
-                id: "FUASEeyES6ez_ROoT6qmU",
+                Match.id: "FUASEeyES6ez_ROoT6qmU",
                 whiteId: "JasonTodd_fc9CeOa-Luw",
                 blackId: "DickGrayson_1C2rCokHH",
                 result: Match.Result.BlackWon,
@@ -265,7 +265,7 @@ let tournaments =
                 blackNewRating: 2109,
               },
               {
-                id: "gqPyD66QMPF-pup41xsB2",
+                Match.id: "gqPyD66QMPF-pup41xsB2",
                 whiteId: "JamesGordon_1ts9xICT3",
                 blackId: "AlfredPennyworth_y4dW",
                 result: Match.Result.BlackWon,
@@ -275,7 +275,7 @@ let tournaments =
                 blackNewRating: 2260,
               },
               {
-                id: "KpS1lQSzsQWQ3VVWJyA2P",
+                Match.id: "KpS1lQSzsQWQ3VVWJyA2P",
                 whiteId: "KateKane_klFW6gDfUOTX",
                 blackId: "BarbaraGordon_cL6SpI2",
                 result: Match.Result.Draw,
@@ -285,7 +285,7 @@ let tournaments =
                 blackNewRating: 1722,
               },
               {
-                id: "OgFuy-wq8mz378EWat46u",
+                Match.id: "OgFuy-wq8mz378EWat46u",
                 whiteId: "SelinaKyle_rJBH-45Xoy",
                 blackId: "BruceWayne_lv_ZsUHTU9",
                 result: Match.Result.BlackWon,
@@ -295,7 +295,7 @@ let tournaments =
                 blackNewRating: 1887,
               },
               {
-                id: "f8Ps3GUmd0ZRsBBY8rZOp",
+                Match.id: "f8Ps3GUmd0ZRsBBY8rZOp",
                 whiteId: "HelenaWayne_fE6O0DJcE",
                 blackId: "________DUMMY________",
                 result: Match.Result.WhiteWon,
@@ -308,7 +308,7 @@ let tournaments =
             ->Rounds.Round.fromArray,
             [|
               {
-                id: "6seKrw7ehbhL766g6L2PF",
+                Match.id: "6seKrw7ehbhL766g6L2PF",
                 whiteId: "DickGrayson_1C2rCokHH",
                 blackId: "KateKane_klFW6gDfUOTX",
                 result: Match.Result.WhiteWon,
@@ -318,7 +318,7 @@ let tournaments =
                 blackNewRating: 1672,
               },
               {
-                id: "TCSjz48ZXqjamtYUFNg0B",
+                Match.id: "TCSjz48ZXqjamtYUFNg0B",
                 whiteId: "BruceWayne_lv_ZsUHTU9",
                 blackId: "HelenaWayne_fE6O0DJcE",
                 result: Match.Result.WhiteWon,
@@ -328,7 +328,7 @@ let tournaments =
                 blackNewRating: 830,
               },
               {
-                id: "zF64DEsN8sHydpDDsg37E",
+                Match.id: "zF64DEsN8sHydpDDsg37E",
                 whiteId: "AlfredPennyworth_y4dW",
                 blackId: "SelinaKyle_rJBH-45Xoy",
                 result: Match.Result.BlackWon,
@@ -338,7 +338,7 @@ let tournaments =
                 blackNewRating: 1437,
               },
               {
-                id: "qVGt1EJq9y0MmvFtumM0A",
+                Match.id: "qVGt1EJq9y0MmvFtumM0A",
                 whiteId: "BarbaraGordon_cL6SpI2",
                 blackId: "JasonTodd_fc9CeOa-Luw",
                 result: Match.Result.WhiteWon,
@@ -348,7 +348,7 @@ let tournaments =
                 blackNewRating: 1207,
               },
               {
-                id: "UhfHaRWr_-BtVo22xAuJu",
+                Match.id: "UhfHaRWr_-BtVo22xAuJu",
                 whiteId: "JamesGordon_1ts9xICT3",
                 blackId: "________DUMMY________",
                 result: Match.Result.WhiteWon,
@@ -361,7 +361,7 @@ let tournaments =
             ->Rounds.Round.fromArray,
             [|
               {
-                id: "odrOOnZJUe0YAwkfUDqUb",
+                Match.id: "odrOOnZJUe0YAwkfUDqUb",
                 whiteId: "AlfredPennyworth_y4dW",
                 blackId: "BruceWayne_lv_ZsUHTU9",
                 result: Match.Result.BlackWon,
@@ -371,7 +371,7 @@ let tournaments =
                 blackNewRating: 1990,
               },
               {
-                id: "qzCMqUwNIDAcFSAuA5yCm",
+                Match.id: "qzCMqUwNIDAcFSAuA5yCm",
                 whiteId: "HelenaWayne_fE6O0DJcE",
                 blackId: "DickGrayson_1C2rCokHH",
                 result: Match.Result.WhiteWon,
@@ -381,7 +381,7 @@ let tournaments =
                 blackNewRating: 2008,
               },
               {
-                id: "6QgVqdtcJPjfVp3UZ8S9g",
+                Match.id: "6QgVqdtcJPjfVp3UZ8S9g",
                 whiteId: "SelinaKyle_rJBH-45Xoy",
                 blackId: "BarbaraGordon_cL6SpI2",
                 result: Match.Result.WhiteWon,
@@ -391,7 +391,7 @@ let tournaments =
                 blackNewRating: 1464,
               },
               {
-                id: "as45gODKMLC5-3_UsTyx5",
+                Match.id: "as45gODKMLC5-3_UsTyx5",
                 whiteId: "KateKane_klFW6gDfUOTX",
                 blackId: "JamesGordon_1ts9xICT3",
                 result: Match.Result.BlackWon,
@@ -401,7 +401,7 @@ let tournaments =
                 blackNewRating: 1244,
               },
               {
-                id: "Pc0CWecSfeGNfvBPjyEIj",
+                Match.id: "Pc0CWecSfeGNfvBPjyEIj",
                 whiteId: "JasonTodd_fc9CeOa-Luw",
                 blackId: "________DUMMY________",
                 result: Match.Result.WhiteWon,
@@ -414,7 +414,7 @@ let tournaments =
             ->Rounds.Round.fromArray,
             [|
               {
-                id: "xj0y_Iqkb-g3MDGgmYx2-",
+                Match.id: "xj0y_Iqkb-g3MDGgmYx2-",
                 whiteId: "BruceWayne_lv_ZsUHTU9",
                 blackId: "KateKane_klFW6gDfUOTX",
                 result: Match.Result.WhiteWon,
@@ -424,7 +424,7 @@ let tournaments =
                 blackNewRating: 1534,
               },
               {
-                id: "HWYWtsyaqUkHRExM6kQrt",
+                Match.id: "HWYWtsyaqUkHRExM6kQrt",
                 whiteId: "DickGrayson_1C2rCokHH",
                 blackId: "JamesGordon_1ts9xICT3",
                 result: Match.Result.WhiteWon,
@@ -434,7 +434,7 @@ let tournaments =
                 blackNewRating: 1243,
               },
               {
-                id: "uAzHZVMC71liQZ-6fWWeD",
+                Match.id: "uAzHZVMC71liQZ-6fWWeD",
                 whiteId: "HelenaWayne_fE6O0DJcE",
                 blackId: "SelinaKyle_rJBH-45Xoy",
                 result: Match.Result.BlackWon,
@@ -444,7 +444,7 @@ let tournaments =
                 blackNewRating: 1534,
               },
               {
-                id: "_tCBn9YNIyto-vXpxm7WI",
+                Match.id: "_tCBn9YNIyto-vXpxm7WI",
                 whiteId: "JasonTodd_fc9CeOa-Luw",
                 blackId: "AlfredPennyworth_y4dW",
                 result: Match.Result.BlackWon,
@@ -454,7 +454,7 @@ let tournaments =
                 blackNewRating: 1999,
               },
               {
-                id: "L7yatE2oVKlV7LOY6-d7Y",
+                Match.id: "L7yatE2oVKlV7LOY6-d7Y",
                 whiteId: "BarbaraGordon_cL6SpI2",
                 blackId: "________DUMMY________",
                 result: Match.Result.WhiteWon,
@@ -471,12 +471,12 @@ let tournaments =
     ),
     (
       "tvAdS4YbSOznrBgrg0ITA",
-      {
+      Tournament.{
         date: Js.Date.fromString("2019-05-29T12:15:20.593Z"),
         id: "tvAdS4YbSOznrBgrg0ITA",
         name: "The Battle for Gotham City",
-        tieBreaks: [|
-          Scoring.Median,
+        tieBreaks: Scoring.[|
+          Median,
           Solkoff,
           Cumulative,
           CumulativeOfOpposition,
@@ -506,7 +506,7 @@ let tournaments =
           [|
             [|
               {
-                id: "5f8GYcR8V44NYvTN1cZle",
+                Match.id: "5f8GYcR8V44NYvTN1cZle",
                 whiteId: "EdwardNigma_j80JfWOZq",
                 blackId: "BruceWayne_lv_ZsUHTU9",
                 result: Match.Result.BlackWon,
@@ -516,7 +516,7 @@ let tournaments =
                 blackNewRating: 1998,
               },
               {
-                id: "GPTct4sL368SryTLFUu8E",
+                Match.id: "GPTct4sL368SryTLFUu8E",
                 whiteId: "JonathanCrane_R4Q8tVW",
                 blackId: "AlfredPennyworth_y4dW",
                 result: Match.Result.BlackWon,
@@ -526,7 +526,7 @@ let tournaments =
                 blackNewRating: 1999,
               },
               {
-                id: "AxtoztZ6O19nyrLfZ4YaU",
+                Match.id: "AxtoztZ6O19nyrLfZ4YaU",
                 whiteId: "HarveyDent_0eYIiP_Ij5",
                 blackId: "DickGrayson_1C2rCokHH",
                 result: Match.Result.WhiteWon,
@@ -536,7 +536,7 @@ let tournaments =
                 blackNewRating: 1909,
               },
               {
-                id: "bUM_tWQsAtPe1gqRzlXd1",
+                Match.id: "bUM_tWQsAtPe1gqRzlXd1",
                 whiteId: "RasAlGhul_k9n8k852bHr",
                 blackId: "SelinaKyle_rJBH-45Xoy",
                 result: Match.Result.Draw,
@@ -546,7 +546,7 @@ let tournaments =
                 blackNewRating: 1495,
               },
               {
-                id: "bAOVlP-M5xaPk1qofNReb",
+                Match.id: "bAOVlP-M5xaPk1qofNReb",
                 whiteId: "OswaldCobblepot_lfCro",
                 blackId: "BarbaraGordon_cL6SpI2",
                 result: Match.Result.WhiteWon,
@@ -556,7 +556,7 @@ let tournaments =
                 blackNewRating: 1345,
               },
               {
-                id: "4omlgiGSaE1BmrHdABSym",
+                Match.id: "4omlgiGSaE1BmrHdABSym",
                 whiteId: "PamelaIsley_vH5vD8uPB",
                 blackId: "KateKane_klFW6gDfUOTX",
                 result: Match.Result.BlackWon,
@@ -566,7 +566,7 @@ let tournaments =
                 blackNewRating: 1539,
               },
               {
-                id: "ysdEVYS2AyuKyOAwLLpTF",
+                Match.id: "ysdEVYS2AyuKyOAwLLpTF",
                 whiteId: "HarleyQuinn_-10-02VPH",
                 blackId: "JamesGordon_1ts9xICT3",
                 result: Match.Result.WhiteWon,
@@ -576,7 +576,7 @@ let tournaments =
                 blackNewRating: 1167,
               },
               {
-                id: "YoJ9WGokAYrmJjfxCCf87",
+                Match.id: "YoJ9WGokAYrmJjfxCCf87",
                 whiteId: "VictorFries_cWaQoW014",
                 blackId: "Joker_v0z2416fpAZ9o2c",
                 result: Match.Result.BlackWon,
@@ -586,7 +586,7 @@ let tournaments =
                 blackNewRating: 1538,
               },
               {
-                id: "Az7SBl3cs7rbwKPBI0IsU",
+                Match.id: "Az7SBl3cs7rbwKPBI0IsU",
                 whiteId: "HelenaWayne_fE6O0DJcE",
                 blackId: "JasonTodd_fc9CeOa-Luw",
                 result: Match.Result.WhiteWon,

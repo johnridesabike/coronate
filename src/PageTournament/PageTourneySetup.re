@@ -28,8 +28,8 @@ type inputs =
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.tourney, setTourney} = tournament;
-  let {Tournament.name, date, roundList} = tourney;
+  let {LoadTournament.tourney, setTourney, _} = tournament;
+  let {Tournament.name, date, roundList, _} = tourney;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);
@@ -56,7 +56,7 @@ let make = (~tournament) => {
   );
 
   let changeToOne = _ => {
-    setTourney({
+    setTourney(Tournament.{
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
     });
@@ -64,7 +64,7 @@ let make = (~tournament) => {
   };
 
   let changeToOneHalf = _ => {
-    setTourney({
+    setTourney(Tournament.{
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
     });
@@ -81,7 +81,7 @@ let make = (~tournament) => {
     let year = Js.Float.fromString(rawYear);
     let month = Js.Float.fromString(rawMonth) -. 1.0;
     let date = Js.Float.fromString(rawDay);
-    setTourney({
+    setTourney(Tournament.{
       ...tourney,
       date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
     });
@@ -101,7 +101,7 @@ let make = (~tournament) => {
            type_="text"
            value=name
            onChange={event =>
-             setTourney({
+             setTourney(Tournament.{
                ...tourney,
                name: event->ReactEvent.Form.currentTarget##value,
              })

@@ -170,7 +170,7 @@ module PlayerList = {
           </tr>
         </thead>
         <tbody className="content">
-          {Array.map(sorted.table, p =>
+          {Array.map(sorted.Hooks.table, p =>
              <tr key={p.id} className="buttons-on-hover">
                <td className="table__player">
                  <HashLink to_={"/players/" ++ p.id}>
@@ -234,7 +234,7 @@ module Profile = {
       },
       (windowDispatch, playerName),
     );
-    let avoidMap = Data.Config.AvoidPairs.toMap(config.avoidPairs);
+    let avoidMap = Data.Config.(AvoidPairs.toMap(config.avoidPairs));
     let singAvoidList =
       switch (Map.String.get(avoidMap, playerId)) {
       | None => []

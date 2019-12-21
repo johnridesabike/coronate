@@ -20,15 +20,17 @@ module Round = {
   let addMatches = Array.concat;
   /* flatten all of the ids from the matches to one list.*/
   let getMatched = (round: t) => {
-    Array.reduce(round, [||], (acc, {Data_Match.whiteId, blackId}) =>
+    Array.reduce(round, [||], (acc, {Data_Match.whiteId, blackId, _}) =>
       Array.concat(acc, [|whiteId, blackId|])
     );
   };
-  let getMatchById = (round: t, id) => Array.getBy(round, x => x.id === id);
-  let removeMatchById = (round: t, id) => Array.keep(round, x => x.id !== id);
+  let getMatchById = (round: t, id) =>
+    Array.getBy(round, x => x.Data_Match.id === id);
+  let removeMatchById = (round: t, id) =>
+    Array.keep(round, x => x.Data_Match.id !== id);
   let setMatch = (round: t, match) => {
     round
-    ->Array.getIndexBy(({id}) => id === match.Data_Match.id)
+    ->Array.getIndexBy(({Data_Match.id, _}) => id === match.Data_Match.id)
     ->Option.map(__x => round[__x] = match)
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None);
   };

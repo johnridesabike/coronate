@@ -101,7 +101,7 @@ let setUpperHalves = data => {
     playerData => {
       let (upperHalfIds, lowerHalfIds) =
         dataList
-        ->Array.keep(({score}) => score === playerData.score)
+        ->Array.keep(({score, _}) => score === playerData.score)
         ->SortArray.stableSortBy(descendingRating)
         ->splitInHalf;
       /* We need to know what position in each half the player occupies. We're

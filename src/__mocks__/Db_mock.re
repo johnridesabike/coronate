@@ -1,6 +1,6 @@
 open Belt;
 open TestData;
-let configData = {
+let configData = Data.Config.{
   ...config,
   avoidPairs:
     config.avoidPairs->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
@@ -41,6 +41,7 @@ type actionConfig =
   | SetLastBackup(Js.Date.t);
 
 let configReducer = (state, action) => {
+  open Data.Config;
   switch (action) {
   | AddAvoidPair(pair) =>
     Data.Config.{...state, avoidPairs: state.avoidPairs->Set.add(pair)}

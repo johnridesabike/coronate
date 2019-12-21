@@ -39,7 +39,7 @@ module Style = {
 module ScoreTable = {
   [@react.component]
   let make = (~isCompact=false, ~tourney, ~getPlayer, ~title) => {
-    let {Tournament.tieBreaks, roundList} = tourney;
+    let {Tournament.tieBreaks, roundList, _} = tourney;
     let tieBreakNames = Array.map(tieBreaks, Tournament.mapTieBreakName);
     let standingTree =
       Rounds.rounds2Matches(roundList, ())
@@ -76,7 +76,7 @@ module ScoreTable = {
            (rank, standingsFlat) =>
            standingsFlat->Utils.List.toReactArrayReverseWithIndex(
              (i, standing) =>
-             <tr key={standing.id} className=Style.row>
+             <tr key={standing.Scoring.id} className=Style.row>
                {i === 0
                   /* Only display the rank once */
                   ? <th
@@ -94,17 +94,25 @@ module ScoreTable = {
                /* It just uses <td> if it's compact.*/
                {isCompact
                   ? <td className={Cn.make([Style.rowTd, Style.playerName])}>
-                      {React.string(getPlayer(standing.id).Player.firstName)}
+                      {React.string(
+                         getPlayer(standing.Scoring.id).Player.firstName,
+                       )}
                       {React.string(Utils.Entities.nbsp)}
-                      {React.string(getPlayer(standing.id).lastName)}
+                      {React.string(
+                         getPlayer(standing.Scoring.id).Player.lastName,
+                       )}
                     </td>  /* Use the name as a header if not compact. */
                   : <th
                       className={Cn.make([Style.rowTh, Style.playerName])}
                       /*dataTestid={rank |>string_of_int}*/
                       scope="row">
-                      {React.string(getPlayer(standing.id).firstName)}
+                      {React.string(
+                         getPlayer(standing.Scoring.id).Player.firstName,
+                       )}
                       {React.string(Utils.Entities.nbsp)}
-                      {React.string(getPlayer(standing.id).lastName)}
+                      {React.string(
+                         getPlayer(standing.Scoring.id).Player.lastName,
+                       )}
                     </th>}
                <td
                  className={Cn.make([
@@ -118,11 +126,12 @@ module ScoreTable = {
                      + " score",
                    )}*/
 
-                   Numeral.(standing.score->make->format("1/2"))->React.string
+                   Numeral.(standing.Scoring.score->make->format("1/2"))
+                   ->React.string
                  </td>
                {isCompact
                   ? React.null
-                  : standing.tieBreaks
+                  : standing.Scoring.tieBreaks
                     ->Utils.List.toReactArray(((j, score)) =>
                         <td
                           key={Tournament.mapTieBreakName(j)}
@@ -161,19 +170,24 @@ module SelectTieBreaks = {
 
     let toggleTb = id =>
       if (Js.Array2.includes(tieBreaks, defaultId(id))) {
-        setTourney({
-          ...tourney,
-          tieBreaks:
-            Js.Array2.filter(tourney.tieBreaks, tbId =>
-              defaultId(id) !== tbId
-            ),
-        });
+        setTourney(
+          Tournament.{
+            ...tourney,
+            tieBreaks:
+              Js.Array2.filter(tourney.tieBreaks, tbId =>
+                defaultId(id) !== tbId
+              ),
+          },
+        );
         setSelectedTb(_ => None);
       } else {
-        setTourney({
-          ...tourney,
-          tieBreaks: Js.Array2.concat(tourney.tieBreaks, [|defaultId(id)|]),
-        });
+        setTourney(
+          Tournament.{
+            ...tourney,
+            tieBreaks:
+              Js.Array2.concat(tourney.tieBreaks, [|defaultId(id)|]),
+          },
+        );
       };
 
     let moveTb = direction => {
@@ -181,11 +195,13 @@ module SelectTieBreaks = {
       | None => ()
       | Some(selectedTb) =>
         let index = Js.Array2.indexOf(tieBreaks, selectedTb);
-        setTourney({
-          ...tourney,
-          tieBreaks:
-            Utils.Array.swap(tourney.tieBreaks, index, index + direction),
-        });
+        setTourney(
+          Tournament.{
+            ...tourney,
+            tieBreaks:
+              Utils.Array.swap(tourney.tieBreaks, index, index + direction),
+          },
+        );
       };
     };
 
@@ -293,13 +309,15 @@ module SelectTieBreaks = {
             </tr>
           </thead>
           <tbody className="content">
-            {[|
-               Scoring.Median,
-               Solkoff,
-               Cumulative,
-               CumulativeOfOpposition,
-               MostBlack,
-             |]
+            {Scoring.(
+               [|
+                 Median,
+                 Solkoff,
+                 Cumulative,
+                 CumulativeOfOpposition,
+                 MostBlack,
+               |]
+             )
              ->Array.map(tieBreak =>
                  <tr key={Tournament.tieBreakToString(tieBreak)}>
                    <td>
@@ -332,7 +350,7 @@ module SelectTieBreaks = {
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.getPlayer, tourney, setTourney} = tournament;
+  let {LoadTournament.getPlayer, tourney, setTourney, _} = tournament;
   Utils.Tabs.(
     <Tabs>
       <TabList>
@@ -369,7 +387,7 @@ module Crosstable = {
     let firstRating =
       scoreData->Map.String.getExn(playerId).Scoring.firstRating;
     let lastRating =
-      switch (Map.String.getExn(scoreData, playerId).ratings) {
+      switch (Map.String.getExn(scoreData, playerId).Scoring.ratings) {
       | [] => firstRating
       | [rating, ..._] => rating
       };
@@ -387,8 +405,8 @@ module Crosstable = {
 
   [@react.component]
   let make = (~tournament) => {
-    let {LoadTournament.tourney, getPlayer} = tournament;
-    let {Tournament.tieBreaks, roundList} = tourney;
+    let {LoadTournament.tourney, getPlayer, _} = tournament;
+    let {Tournament.tieBreaks, roundList, _} = tourney;
     let scoreData =
       Rounds.rounds2Matches(roundList, ())->Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(scoreData, tieBreaks);
@@ -418,25 +436,29 @@ module Crosstable = {
              <th
                className={Cn.make([Style.rowTh, Style.playerName])}
                scope="row">
-               {React.string(getPlayer(standing.id).firstName)}
+               {React.string(getPlayer(standing.Scoring.id).Player.firstName)}
                {React.string(Utils.Entities.nbsp)}
-               {React.string(getPlayer(standing.id).lastName)}
+               {React.string(getPlayer(standing.Scoring.id).Player.lastName)}
              </th>
              /* Output a cell for each other player */
              {Utils.List.toReactArrayWithIndex(standings, (index2, opponent) =>
                 <td
                   key={string_of_int(index2)}
                   className={Cn.make([Style.rowTd, "table__number"])}>
-                  {getXScore(scoreData, standing.id, opponent.id)}
+                  {getXScore(
+                     scoreData,
+                     standing.Scoring.id,
+                     opponent.Scoring.id,
+                   )}
                 </td>
               )}
              /* Output their score and rating change */
              <td className={Cn.make([Style.rowTd, "table__number"])}>
-               {Numeral.make(standing.score)
+               {Numeral.make(standing.Scoring.score)
                 ->Numeral.format("1/2")
                 ->React.string}
              </td>
-             {getRatingChangeTds(scoreData, standing.id)}
+             {getRatingChangeTds(scoreData, standing.Scoring.id)}
            </tr>
          )}
       </tbody>

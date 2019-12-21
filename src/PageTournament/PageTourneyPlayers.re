@@ -4,16 +4,18 @@ open Data;
 module Selecting = {
   [@react.component]
   let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
-    let {Tournament.playerIds} = tourney;
+    let {Tournament.playerIds, _} = tourney;
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)##value;
       if (ReactEvent.Form.target(event)##checked) {
-        setTourney({...tourney, playerIds: [id, ...playerIds]});
+        setTourney(Tournament.{...tourney, playerIds: [id, ...playerIds]});
       } else {
-        setTourney({
-          ...tourney,
-          playerIds: playerIds->List.keep(pId => pId !== id),
-        });
+        setTourney(
+          Tournament.{
+            ...tourney,
+            playerIds: playerIds->List.keep(pId => pId !== id),
+          },
+        );
       };
     };
 
@@ -22,16 +24,18 @@ module Selecting = {
         <button
           className="button-micro"
           onClick={_ =>
-            setTourney({
-              ...tourney,
-              playerIds: players->Map.String.keysToArray->List.fromArray,
-            })
+            setTourney(
+              Tournament.{
+                ...tourney,
+                playerIds: players->Map.String.keysToArray->List.fromArray,
+              },
+            )
           }>
           {React.string("Select all")}
         </button>
         <button
           className="button-micro"
-          onClick={_ => setTourney({...tourney, playerIds: []})}>
+          onClick={_ => setTourney(Tournament.{...tourney, playerIds: []})}>
           {React.string("Select none")}
         </button>
       </div>
@@ -47,7 +51,7 @@ module Selecting = {
         <tbody>
           {players
            ->Map.String.valuesToArray
-           ->Array.map(({Player.id, firstName, lastName}) =>
+           ->Array.map(({Player.id, firstName, lastName, _}) =>
                <tr key=id>
                  <td> {React.string(firstName)} </td>
                  <td> {React.string(lastName)} </td>
@@ -75,7 +79,7 @@ module Selecting = {
       <PagePlayers.NewPlayerForm
         dispatch=playersDispatch
         addPlayerCallback={id =>
-          setTourney({...tourney, playerIds: [id, ...playerIds]})
+          setTourney(Tournament.{...tourney, playerIds: [id, ...playerIds]})
         }
       />
     </div>;
@@ -86,11 +90,11 @@ let hasHadBye = (matches, playerId) => {
   Js.Array2.(
     matches
     ->filter((match: Match.t) =>
-        includes([|match.whiteId, match.blackId|], playerId)
+        includes([|match.Match.whiteId, match.Match.blackId|], playerId)
       )
     ->reduce(
         (acc, match: Match.t) =>
-          concat(acc, [|match.whiteId, match.blackId|]),
+          concat(acc, [|match.Match.whiteId, match.Match.blackId|]),
         [||],
       )
     ->includes(Data.Player.dummy_id)
@@ -106,18 +110,21 @@ module PlayerList = {
        ->Array.map(p =>
            <tr
              key={p.Player.id}
-             className={Cn.make([Player.Type.toString(p.type_), "player"])}>
-             <td> {React.string(p.firstName)} </td>
-             <td> {React.string(p.lastName)} </td>
+             className={Cn.make([
+               Player.Type.toString(p.Player.type_),
+               "player",
+             ])}>
+             <td> {React.string(p.Player.firstName)} </td>
+             <td> {React.string(p.Player.lastName)} </td>
              <td>
                <button
                  className="button-micro"
-                 disabled={Js.Array2.includes(byeQueue, p.id)}
+                 disabled={Js.Array2.includes(byeQueue, p.Player.id)}
                  onClick={_ =>
                    setTourney(
                      Tournament.{
                        ...tourney,
-                       byeQueue: Array.concat(byeQueue, [|p.id|]),
+                       byeQueue: Array.concat(byeQueue, [|p.Player.id|]),
                      },
                    )
                  }>
@@ -139,8 +146,9 @@ let make = (~tournament) => {
     players,
     activePlayers,
     playersDispatch,
+    _,
   } = tournament;
-  let {Tournament.playerIds, roundList, byeQueue} = tourney;
+  let {Tournament.playerIds, roundList, byeQueue, _} = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() =>
       switch (playerIds) {
@@ -189,8 +197,8 @@ let make = (~tournament) => {
                  "disabled"->Cn.ifTrue(hasHadBye(matches, pId)),
                ])}>
                {[
-                  activePlayers->Map.String.getExn(pId).firstName,
-                  activePlayers->Map.String.getExn(pId).lastName,
+                  activePlayers->Map.String.getExn(pId).Player.firstName,
+                  activePlayers->Map.String.getExn(pId).Player.lastName,
                 ]
                 |> String.concat(" ")
                 |> React.string}
@@ -198,10 +206,12 @@ let make = (~tournament) => {
                <button
                  className="button-micro"
                  onClick={_ =>
-                   setTourney({
-                     ...tourney,
-                     byeQueue: Js.Array2.filter(byeQueue, id => pId !== id),
-                   })
+                   setTourney(
+                     Tournament.{
+                       ...tourney,
+                       byeQueue: Js.Array2.filter(byeQueue, id => pId !== id),
+                     },
+                   )
                  }>
                  {React.string("Remove")}
                </button>

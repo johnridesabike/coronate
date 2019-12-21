@@ -11,35 +11,41 @@ type t = {
 };
 
 let mapTieBreakName = tieBreak =>
-  switch (tieBreak) {
-  | Scoring.Median => "Median"
-  | Solkoff => "Solkoff"
-  | Cumulative => "Cumulative"
-  | CumulativeOfOpposition => "Cumulative of opposition"
-  | MostBlack => "Most Black"
-  };
+  Scoring.(
+    switch (tieBreak) {
+    | Median => "Median"
+    | Solkoff => "Solkoff"
+    | Cumulative => "Cumulative"
+    | CumulativeOfOpposition => "Cumulative of opposition"
+    | MostBlack => "Most Black"
+    }
+  );
 
 /*
    Use these to pass the type to the JS side, e.g. in form values.
  */
 let tieBreakToString = data =>
-  switch (data) {
-  | Scoring.Median => "median"
-  | Solkoff => "solkoff"
-  | Cumulative => "cumulative"
-  | CumulativeOfOpposition => "cumulativeOfOpposition"
-  | MostBlack => "mostBlack"
-  };
+  Scoring.(
+    switch (data) {
+    | Median => "median"
+    | Solkoff => "solkoff"
+    | Cumulative => "cumulative"
+    | CumulativeOfOpposition => "cumulativeOfOpposition"
+    | MostBlack => "mostBlack"
+    }
+  );
 
 let tieBreakFromString = json =>
-  switch (json) {
-  | "median" => Scoring.Median
-  | "solkoff" => Solkoff
-  | "cumulative" => Cumulative
-  | "cumulativeOfOpposition" => CumulativeOfOpposition
-  | "mostBlack" => MostBlack
-  | _ => Median
-  };
+  Scoring.(
+    switch (json) {
+    | "median" => Median
+    | "solkoff" => Solkoff
+    | "cumulative" => Cumulative
+    | "cumulativeOfOpposition" => CumulativeOfOpposition
+    | "mostBlack" => MostBlack
+    | _ => Median
+    }
+  );
 
 let encodeTieBreak = data => data->tieBreakToString->Json.Encode.string;
 let decodeTieBreak = json => json->Json.Decode.string->tieBreakFromString;

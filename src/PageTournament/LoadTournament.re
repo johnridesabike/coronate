@@ -49,7 +49,7 @@ let isLoadedDone = status =>
 let make = (~children, ~tourneyId, ~windowDispatch) => {
   let (tourney, setTourney) =
     React.useReducer(tournamentReducer, emptyTourney);
-  let {Tournament.name, playerIds, roundList} = tourney;
+  let {Tournament.name, playerIds, roundList, _} = tourney;
   let (players, playersDispatch, arePlayersLoaded) = Db.useAllPlayers();
   let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded);
   Hooks.useLoadingCursorUntil(

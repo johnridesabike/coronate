@@ -8,7 +8,7 @@ module App = {
     <Window className="app">
       {windowDispatch =>
          <main className="app__main">
-           {switch (Utils.Router.hashPath(url.hash)) {
+           {switch (Utils.Router.(hashPath(url.hash))) {
             | [""] => <Pages.Splash />
             | ["tourneys"] => <PageTournamentList windowDispatch />
             | ["tourneys", tourneyId] =>

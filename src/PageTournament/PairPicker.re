@@ -6,7 +6,7 @@ type listEntry = {
   ideal: float,
 };
 
-let sortByName = Hooks.GetString(x => x.player.firstName);
+let sortByName = Hooks.GetString(x => x.player.Player.firstName);
 let sortByIdeal = Hooks.GetFloat(x => x.ideal);
 
 module SelectList = {
@@ -65,7 +65,8 @@ module SelectList = {
           ->Array.map(player =>
               {
                 player,
-                ideal: calcIdealOrNot(pairData->Map.String.get(player.id)),
+                ideal:
+                  calcIdealOrNot(pairData->Map.String.get(player.Player.id)),
               }
             );
         sortedDispatch(Hooks.SetTable(table));
@@ -108,32 +109,34 @@ module SelectList = {
           </tr>
         </thead>
         <tbody>
-          {sorted.table
+          {sorted.Hooks.table
            ->Array.map(({player, ideal}) =>
-               <tr key={player.id}>
-                 <td>
-                   <button
-                     className="button-ghost"
-                     disabled={!isPlayerSelectable(player.id)}
-                     onClick={_ => selectPlayer(player.id)}>
-                     <Icons.UserPlus />
-                     <Utils.VisuallyHidden>
-                       {["Add", player.firstName, player.lastName]
-                        |> String.concat(" ")
-                        |> React.string}
-                     </Utils.VisuallyHidden>
-                   </button>
-                 </td>
-                 <td>
-                   {React.string(player.firstName ++ " " ++ player.lastName)}
-                 </td>
-                 <td>
-                   {React.string(
-                      isOnePlayerSelected
-                        ? Numeral.(ideal->make->format("%")) : "-",
-                    )}
-                 </td>
-               </tr>
+               Player.(
+                 <tr key={player.id}>
+                   <td>
+                     <button
+                       className="button-ghost"
+                       disabled={!isPlayerSelectable(player.id)}
+                       onClick={_ => selectPlayer(player.id)}>
+                       <Icons.UserPlus />
+                       <Utils.VisuallyHidden>
+                         {["Add", player.firstName, player.lastName]
+                          |> String.concat(" ")
+                          |> React.string}
+                       </Utils.VisuallyHidden>
+                     </button>
+                   </td>
+                   <td>
+                     {React.string(player.firstName ++ " " ++ player.lastName)}
+                   </td>
+                   <td>
+                     {React.string(
+                        isOnePlayerSelected
+                          ? Numeral.(ideal->make->format("%")) : "-",
+                      )}
+                   </td>
+                 </tr>
+               )
              )
            ->React.array}
         </tbody>
@@ -160,8 +163,9 @@ module Stage = {
         ~tourney,
         ~round,
       ) => {
+    open Player;
     let (white, black) = stagedPlayers;
-    let {Tournament.roundList} = tourney;
+    let {Tournament.roundList, _} = tourney;
     let noneAreSelected =
       switch (stagedPlayers) {
       | (None, None) => true
@@ -212,7 +216,7 @@ module Stage = {
             |],
           );
         switch (Rounds.set(roundList, roundId, newRound)) {
-        | Some(roundList) => setTourney({...tourney, roundList})
+        | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
         | None => ()
         };
         setStagedPlayers(_ => (None, None));
@@ -311,7 +315,8 @@ module PlayerInfo =
           ~opponentResults,
           ~avoidListHtml,
         ) => {
-      let fullName = player.Player.firstName ++ " " ++ player.lastName;
+      open Player;
+      let fullName = player.firstName ++ " " ++ player.lastName;
       <dl className="player-card">
         <h3> {React.string(fullName)} </h3>
         <p>
@@ -344,16 +349,17 @@ let make =
   let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None));
   let (p1, p2) = stagedPlayers;
   let (config, _) = Db.useConfig();
-  let {Config.avoidPairs, byeValue} = config;
-  let {
-    LoadTournament.tourney,
-    activePlayers,
-    players,
-    getPlayer,
-    setTourney,
-    playersDispatch,
-  } = tournament;
-  let {Tournament.roundList, byeQueue} = tourney;
+  let {Config.avoidPairs, byeValue, _} = config;
+  let LoadTournament.{
+        tourney,
+        activePlayers,
+        players,
+        getPlayer,
+        setTourney,
+        playersDispatch,
+        _,
+      } = tournament;
+  let {Tournament.roundList, byeQueue, _} = tourney;
   let round = roundList->Rounds.get(roundId);
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
@@ -395,7 +401,7 @@ let make =
         ->List.toArray,
       );
     switch (Rounds.set(roundList, roundId, newRound)) {
-    | Some(roundList) => setTourney({...tourney, roundList})
+    | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
     | None => ()
     };
   };
@@ -450,7 +456,7 @@ let make =
                        scoreData
                        players
                        avoidPairs
-                       origRating={getPlayer(playerId).rating}
+                       origRating={getPlayer(playerId).Player.rating}
                        newRating=None
                        getPlayer
                      />

@@ -75,14 +75,14 @@ let isNotDummy = (scores, oppId) => {
 let getPlayerScore = (scores, id) => {
   switch (Map.String.get(scores, id)) {
   | None => 0.0
-  | Some({results}) => Utils.List.sumF(results)
+  | Some({results, _}) => Utils.List.sumF(results)
   };
 };
 
 let getOpponentScores = (scores, id) => {
   switch (Map.String.get(scores, id)) {
   | None => []
-  | Some({opponentResults}) =>
+  | Some({opponentResults, _}) =>
     Map.String.reduce(opponentResults, [], (acc, oppId, _) =>
       if (isNotDummy(scores, oppId)) {
         [getPlayerScore(scores, oppId), ...acc];
@@ -118,7 +118,7 @@ let runningReducer = (acc, score) =>
 let getCumulativeScore = (scores, id) => {
   switch (Map.String.get(scores, id)) {
   | None => 0.0
-  | Some({resultsNoByes}) =>
+  | Some({resultsNoByes, _}) =>
     resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
   };
 };
@@ -127,7 +127,7 @@ let getCumulativeScore = (scores, id) => {
 let getCumulativeOfOpponentScore = (scores, id) => {
   switch (Map.String.get(scores, id)) {
   | None => 0.0
-  | Some({opponentResults}) =>
+  | Some({opponentResults, _}) =>
     Map.String.reduce(opponentResults, [], (acc, key, _) =>
       if (isNotDummy(scores, key)) {
         [key, ...acc];
@@ -144,7 +144,7 @@ let getCumulativeOfOpponentScore = (scores, id) => {
 let getColorBalanceScore = (scores, id) => {
   switch (Map.String.get(scores, id)) {
   | None => 0.0
-  | Some({colorScores}) => Utils.List.sumF(colorScores)
+  | Some({colorScores, _}) => Utils.List.sumF(colorScores)
   };
 };
 

@@ -7,7 +7,7 @@ let log2 = num => log(num) /. log(2.0);
   tests can keep working.
  */
 open TestData;
-let configData = {
+let configData = Data.Config.{
   ...config,
   avoidPairs:
     Set.mergeMany(
@@ -54,7 +54,7 @@ let make = (~children, ~tourneyId) => {
       tournamentReducer,
       Map.String.getExn(tournamentData, tourneyId),
     );
-  let {Tournament.playerIds, roundList} = tourney;
+  let {Tournament.playerIds, roundList, _} = tourney;
   let (players, playersDispatch, _) = Db.useAllPlayers();
   /* `activePlayers` is only players to be matched in future matches. */
   let activePlayers =

@@ -5,7 +5,7 @@ open Data.Converters;
 
 let loadPairData = tourneyId => {
   let tournament = Belt.Map.String.getExn(TestData.tournaments, tourneyId);
-  let {Data.Tournament.playerIds, roundList} = tournament;
+  let {Data.Tournament.playerIds, roundList, _} = tournament;
   let players =
     Map.String.reduce(TestData.players, Map.String.empty, (acc, key, player) =>
       if (List.has(playerIds, key, (===))) {
@@ -16,7 +16,7 @@ let loadPairData = tourneyId => {
     );
   Data.Rounds.rounds2Matches(roundList, ())
   ->matches2ScoreData
-  ->createPairingData(players, TestData.config.avoidPairs)
+  ->createPairingData(players, TestData.config.Data.Config.avoidPairs)
   ->Pairing.setUpperHalves;
 };
 
@@ -44,7 +44,7 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   test("The lowest-ranking player is returned", () =>
     switch (byedPlayer) {
     | None => assert(false)
-    | Some(player) => expect(player.id) |> toBe("Newbie_McNewberson___")
+    | Some(player) => expect(player.Pairing.id) |> toBe("Newbie_McNewberson___")
     }
   );
 });
@@ -57,7 +57,7 @@ test("The bye signup queue works", () => {
     Pairing.setByePlayer(byeQueue, Data.Player.dummy_id, dataPreBye);
   switch (byedPlayer) {
   | None => assert(false)
-  | Some(player) => expect(player.id) |> toBe("Joel_Robinson________")
+  | Some(player) => expect(player.Pairing.id) |> toBe("Joel_Robinson________")
   };
 });
 test(
@@ -68,7 +68,7 @@ test(
       Pairing.setByePlayer([||], Data.Player.dummy_id, dataPreBye);
     switch (byedPlayer) {
     | None => assert(false)
-    | Some(player) => expect(player.id) |> toBe("Newbie_McNewberson___")
+    | Some(player) => expect(player.Pairing.id) |> toBe("Newbie_McNewberson___")
     };
   },
 );

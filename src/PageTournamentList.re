@@ -47,12 +47,8 @@ let make = (~windowDispatch) => {
           name: newTourneyName,
           playerIds: [],
           roundList: Data.Rounds.empty,
-          tieBreaks: [|
-            Scoring.Median,
-            Solkoff,
-            Cumulative,
-            CumulativeOfOpposition,
-          |],
+          tieBreaks:
+            Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         },
       ),
     );
@@ -99,7 +95,7 @@ let make = (~windowDispatch) => {
                </tr>
              </thead>
              <tbody className="content">
-               {Array.map(sorted.table, t =>
+               {Array.map(sorted.Hooks.table, t =>
                   <tr key={t.id} className="buttons-on-hover">
                     <td>
                       <HashLink to_={"/tourneys/" ++ t.id}>

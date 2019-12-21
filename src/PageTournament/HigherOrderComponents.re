@@ -26,8 +26,8 @@ module WithRoundData =
        ) => {
   [@react.component]
   let make = (~roundId, ~tournament) => {
-    let {LoadTournament.tourney, activePlayers, getPlayer} = tournament;
-    let {Tournament.roundList} = tourney;
+    let {LoadTournament.tourney, activePlayers, getPlayer, _} = tournament;
+    let {Tournament.roundList, _} = tourney;
     /* matches2ScoreData is relatively expensive*/
     let scoreData =
       React.useMemo1(
@@ -105,10 +105,10 @@ module WithScoreInfo =
         ~origRating,
         ~newRating,
       ) => {
-    let {Scoring.colorScores, opponentResults, results} =
+    let {Scoring.colorScores, opponentResults, results, _} =
       switch (Map.String.get(scoreData, player.Player.id)) {
       | Some(data) => data
-      | None => Scoring.createBlankScoreData(player.id)
+      | None => Scoring.createBlankScoreData(player.Player.id)
       };
     let hasBye = Map.String.has(opponentResults, Player.dummy_id);
     let colorBalance =
@@ -124,7 +124,7 @@ module WithScoreInfo =
         Config.AvoidPairs.toMap,
       );
     let avoidList =
-      switch (Map.String.get(avoidMap, player.id)) {
+      switch (Map.String.get(avoidMap, player.Player.id)) {
       | None => []
       | Some(avoidList) => avoidList
       };
@@ -136,7 +136,7 @@ module WithScoreInfo =
           <li key=opId>
             {[
                getPlayer(opId).Player.firstName,
-               getPlayer(opId).lastName,
+               getPlayer(opId).Player.lastName,
                "-",
                switch (result) {
                | 0.0 => "Lost"
@@ -155,7 +155,7 @@ module WithScoreInfo =
         switch (Map.String.get(players, pId)) {
         /*  don't show players not in this tourney*/
         | None => React.null
-        | Some({Player.firstName, lastName}) =>
+        | Some({Player.firstName, lastName, _}) =>
           <li key=pId> {React.string(firstName ++ " " ++ lastName)} </li>
         }
       );

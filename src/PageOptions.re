@@ -168,7 +168,7 @@ let make = (~windowDispatch) => {
         <label className="monospace body-30">
           {React.string("1 ")}
           <input
-            checked={config.byeValue === Config.ByeValue.Full}
+            checked={config.Config.byeValue === Config.ByeValue.Full}
             type_="radio"
             onChange={_ =>
               configDispatch(Db.SetByeValue(Config.ByeValue.Full))
@@ -178,7 +178,7 @@ let make = (~windowDispatch) => {
         <label className="monospace body-30">
           {React.string({j|½ |j})}
           <input
-            checked={config.byeValue === Config.ByeValue.Half}
+            checked={config.Config.byeValue === Config.ByeValue.Half}
             type_="radio"
             onChange={_ =>
               configDispatch(Db.SetByeValue(Config.ByeValue.Half))
@@ -189,7 +189,7 @@ let make = (~windowDispatch) => {
       <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">
         {React.string("Last export: ")}
-        <LastBackupDate date={config.lastBackup} />
+        <LastBackupDate date={config.Config.lastBackup} />
       </p>
       <p>
         <a

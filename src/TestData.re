@@ -27,7 +27,7 @@ let players =
     ),
     (
       "Crow_T_Robot_________",
-      {
+      Player.{
         id: "Crow_T_Robot_________",
         matchCount: 5,
         rating: 1700,
@@ -38,7 +38,7 @@ let players =
     ),
     (
       "Dr_Clayton_Forrester_",
-      {
+      Player.{
         id: "Dr_Clayton_Forrester_",
         matchCount: 40,
         rating: 2100,
@@ -49,7 +49,7 @@ let players =
     ),
     (
       "Grandy_McMaster______",
-      {
+      Player.{
         id: "Grandy_McMaster______",
         matchCount: 100,
         rating: 2600,
@@ -60,7 +60,7 @@ let players =
     ),
     (
       "Gypsy________________",
-      {
+      Player.{
         id: "Gypsy________________",
         matchCount: 15,
         rating: 1600,
@@ -71,7 +71,7 @@ let players =
     ),
     (
       "Joel_Robinson________",
-      {
+      Player.{
         id: "Joel_Robinson________",
         matchCount: 70,
         rating: 2400,
@@ -82,7 +82,7 @@ let players =
     ),
     (
       "Jonah_Heston_________",
-      {
+      Player.{
         id: "Jonah_Heston_________",
         matchCount: 50,
         rating: 2200,
@@ -93,7 +93,7 @@ let players =
     ),
     (
       "Kinga_Forrester______",
-      {
+      Player.{
         id: "Kinga_Forrester______",
         matchCount: 20,
         rating: 1900,
@@ -104,7 +104,7 @@ let players =
     ),
     (
       "Larry_Erhardt________",
-      {
+      Player.{
         id: "Larry_Erhardt________",
         matchCount: 45,
         rating: 1300,
@@ -115,7 +115,7 @@ let players =
     ),
     (
       "Mike_Nelson__________",
-      {
+      Player.{
         id: "Mike_Nelson__________",
         matchCount: 60,
         rating: 2300,
@@ -126,7 +126,7 @@ let players =
     ),
     (
       "Newbie_McNewberson___",
-      {
+      Player.{
         id: "Newbie_McNewberson___",
         matchCount: 0,
         rating: 800,
@@ -137,7 +137,7 @@ let players =
     ),
     (
       "Observer_Brain_Guy___",
-      {
+      Player.{
         id: "Observer_Brain_Guy___",
         matchCount: 55,
         rating: 1200,
@@ -148,7 +148,7 @@ let players =
     ),
     (
       "Pearl_Forrester______",
-      {
+      Player.{
         id: "Pearl_Forrester______",
         matchCount: 30,
         rating: 2000,
@@ -159,7 +159,7 @@ let players =
     ),
     (
       "Professor_Bobo_______",
-      {
+      Player.{
         id: "Professor_Bobo_______",
         matchCount: 75,
         rating: 1000,
@@ -170,7 +170,7 @@ let players =
     ),
     (
       "TVs_Frank____________",
-      {
+      Player.{
         id: "TVs_Frank____________",
         matchCount: 35,
         rating: 1400,
@@ -181,7 +181,7 @@ let players =
     ),
     (
       "TVs_Son_of_TVs_Frank_",
-      {
+      Player.{
         id: "TVs_Son_of_TVs_Frank_",
         matchCount: 65,
         rating: 1100,
@@ -192,7 +192,7 @@ let players =
     ),
     (
       "Tom_Servo____________",
-      {
+      Player.{
         id: "Tom_Servo____________",
         matchCount: 10,
         rating: 1800,
@@ -220,18 +220,14 @@ let tournaments =
           "Grandy_McMaster______",
         ],
         roundList: Rounds.empty,
-        tieBreaks: [|
-          Scoring.Median,
-          Solkoff,
-          Cumulative,
-          CumulativeOfOpposition,
-        |],
+        tieBreaks:
+          Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         name: "Bye Round Tourney",
       },
     ),
     (
       "Bye_Round_Tourney_2__",
-      {
+      Tournament.{
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
         id: "Bye_Round_Tourney_2__",
@@ -248,7 +244,7 @@ let tournaments =
           [|
             [|
               {
-                id: "xTXxZHB0sTt__xIAg45fm",
+                Match.id: "xTXxZHB0sTt__xIAg45fm",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 2592,
                 blackNewRating: 1833,
@@ -258,7 +254,7 @@ let tournaments =
                 blackId: "Crow_T_Robot_________",
               },
               {
-                id: "zQcf9RWXK7iuU6ibPzrhU",
+                Match.id: "zQcf9RWXK7iuU6ibPzrhU",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 2400,
                 blackNewRating: 1600,
@@ -268,7 +264,7 @@ let tournaments =
                 blackId: "Gypsy________________",
               },
               {
-                id: "Vw_X0c7O4vshrYEO-oSzR",
+                Match.id: "Vw_X0c7O4vshrYEO-oSzR",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1738,
                 blackNewRating: 1526,
@@ -278,7 +274,7 @@ let tournaments =
                 blackId: "Cambot_______________",
               },
               {
-                id: "iSDujOVkOTrcLv_KJmd7s",
+                Match.id: "iSDujOVkOTrcLv_KJmd7s",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 800,
                 blackNewRating: 0,
@@ -291,18 +287,14 @@ let tournaments =
             ->Rounds.Round.fromArray,
           |]
           ->Rounds.fromArray,
-        tieBreaks: [|
-          Scoring.Median,
-          Solkoff,
-          Cumulative,
-          CumulativeOfOpposition,
-        |],
+        tieBreaks:
+          Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         name: "Bye Round Tourney 2",
       },
     ),
     (
       "Bye_Tourney_3________",
-      {
+      Tournament.{
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-17T23:00:29.603Z"),
         id: "Bye_Tourney_3________",
@@ -315,7 +307,7 @@ let tournaments =
           [|
             [|
               {
-                id: "KkFr4B7FDqiHRWmACgApf",
+                Match.id: "KkFr4B7FDqiHRWmACgApf",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1894,
                 blackNewRating: 2202,
@@ -325,7 +317,7 @@ let tournaments =
                 blackId: "Jonah_Heston_________",
               },
               {
-                id: "R_BTsGSziwgyvFZM3yc5u",
+                Match.id: "R_BTsGSziwgyvFZM3yc5u",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 793,
                 blackNewRating: 0,
@@ -338,7 +330,7 @@ let tournaments =
             ->Rounds.Round.fromArray,
             [|
               {
-                id: "rcyCfpZU6olav5kdVac44",
+                Match.id: "rcyCfpZU6olav5kdVac44",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 2187,
                 blackNewRating: 953,
@@ -348,7 +340,7 @@ let tournaments =
                 blackId: "Newbie_McNewberson___",
               },
               {
-                id: "Nc0Om5fEuwSuzFls9wmME",
+                Match.id: "Nc0Om5fEuwSuzFls9wmME",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 1894,
                 blackNewRating: 0,
@@ -361,7 +353,7 @@ let tournaments =
             ->Rounds.Round.fromArray,
             [|
               {
-                id: "uawjKwbiA38RP8pA--tlw",
+                Match.id: "uawjKwbiA38RP8pA--tlw",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 952,
                 blackNewRating: 1894,
@@ -371,7 +363,7 @@ let tournaments =
                 blackId: "Kinga_Forrester______",
               },
               {
-                id: "-kwIDxjPhWVRbqxtRZ26_",
+                Match.id: "-kwIDxjPhWVRbqxtRZ26_",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 2187,
                 blackNewRating: 0,
@@ -384,18 +376,14 @@ let tournaments =
             ->Rounds.Round.fromArray,
           |]
           ->Rounds.fromArray,
-        tieBreaks: [|
-          Scoring.Median,
-          Solkoff,
-          Cumulative,
-          CumulativeOfOpposition,
-        |],
+        tieBreaks:
+          Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         name: "Bye Tourney 3",
       },
     ),
     (
       "Simple_Pairing_______",
-      {
+      Tournament.{
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-14T11:40:34.407Z"),
         id: "Simple_Pairing_______",
@@ -413,7 +401,7 @@ let tournaments =
           [|
             [|
               {
-                id: "KdLva8hWqYHdaU9KnFTe2",
+                Match.id: "KdLva8hWqYHdaU9KnFTe2",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1699,
                 blackNewRating: 2600,
@@ -423,7 +411,7 @@ let tournaments =
                 blackId: "Grandy_McMaster______",
               },
               {
-                id: "WDPFsNF1yADs4qofFwCY0",
+                Match.id: "WDPFsNF1yADs4qofFwCY0",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 1650,
                 blackNewRating: 2389,
@@ -433,7 +421,7 @@ let tournaments =
                 blackId: "Joel_Robinson________",
               },
               {
-                id: "R5sXfTOJw5vrJ4IytAjSi",
+                Match.id: "R5sXfTOJw5vrJ4IytAjSi",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1400,
                 blackNewRating: 2100,
@@ -443,7 +431,7 @@ let tournaments =
                 blackId: "Dr_Clayton_Forrester_",
               },
               {
-                id: "2YOsn_JJFnaUMhRBAc9KY",
+                Match.id: "2YOsn_JJFnaUMhRBAc9KY",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 1597,
                 blackNewRating: 1728,
@@ -457,18 +445,14 @@ let tournaments =
             Rounds.Round.empty,
           |]
           ->Rounds.fromArray,
-        tieBreaks: [|
-          Scoring.Median,
-          Solkoff,
-          Cumulative,
-          CumulativeOfOpposition,
-        |],
+        tieBreaks:
+          Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         name: "Simple Pairing",
       },
     ),
     (
       "Pairing_With_Draws___",
-      {
+      Tournament.{
         byeQueue: [||],
         date: Js.Date.fromString("2019-06-14T14:18:06.686Z"),
         id: "Pairing_With_Draws___",
@@ -486,7 +470,7 @@ let tournaments =
           [|
             [|
               {
-                id: "ryWXwvFGwBKQqGBbMYeps",
+                Match.id: "ryWXwvFGwBKQqGBbMYeps",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1699,
                 blackNewRating: 2600,
@@ -496,7 +480,7 @@ let tournaments =
                 blackId: "Grandy_McMaster______",
               },
               {
-                id: "2KKVbi0AfNxfJAJobTgP5",
+                Match.id: "2KKVbi0AfNxfJAJobTgP5",
                 result: Match.Result.WhiteWon,
                 whiteNewRating: 1650,
                 blackNewRating: 2389,
@@ -506,7 +490,7 @@ let tournaments =
                 blackId: "Joel_Robinson________",
               },
               {
-                id: "zdlBHBAqgV2qabn2oBa2a",
+                Match.id: "zdlBHBAqgV2qabn2oBa2a",
                 result: Match.Result.BlackWon,
                 whiteNewRating: 1400,
                 blackNewRating: 2100,
@@ -516,7 +500,7 @@ let tournaments =
                 blackId: "Dr_Clayton_Forrester_",
               },
               {
-                id: "8fGxU3tLpd8GibuSQr9-Y",
+                Match.id: "8fGxU3tLpd8GibuSQr9-Y",
                 result: Match.Result.Draw,
                 whiteNewRating: 1197,
                 blackNewRating: 1764,
@@ -530,12 +514,8 @@ let tournaments =
             Rounds.Round.empty,
           |]
           ->Rounds.fromArray,
-        tieBreaks: [|
-          Scoring.Median,
-          Solkoff,
-          Cumulative,
-          CumulativeOfOpposition,
-        |],
+        tieBreaks:
+          Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
         name: "Pairing with draws",
       },
     ),

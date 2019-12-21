@@ -2,9 +2,9 @@ open Data;
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.tourney, getPlayer} = tournament;
-  let {Tournament.roundList} = tourney;
-  let lastRoundId = Rounds.getLastKey(tourney.roundList);
+  let {LoadTournament.tourney, getPlayer, _} = tournament;
+  let {Tournament.roundList, _} = tourney;
+  let lastRoundId = Rounds.getLastKey(tourney.Tournament.roundList);
   let lastRound = Rounds.get(roundList, lastRoundId);
   <>
     <h2 style={ReactDOMRe.Style.make(~textAlign="center", ())}>
