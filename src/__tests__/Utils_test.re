@@ -15,7 +15,7 @@ test("Date format component works", () =>
 
 test("Date + time format component works", () =>
   render(<DateTimeFormat date />)
-  ->getByText(~matcher=`Str("Jan 01, 2000, 8:55 AM"))
+  ->getByText(~matcher=`Str("Jan 01, 2000, 08:55 AM"))
   ->expect
   ->toBeInTheDocument
 );
