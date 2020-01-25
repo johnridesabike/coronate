@@ -154,3 +154,57 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
     <Window.Body> {React.string("Loading...")} </Window.Body>
   };
 };
+
+/* I extracted this logic to its own module so it could be easily
+   reused (e.g. in testing). It may have also made the whole component tree more
+   complicated. */
+type roundData = {
+  activePlayersCount: int,
+  scoreData: Map.String.t(Scoring.t),
+  unmatched: Map.String.t(Data.Player.t),
+  unmatchedCount: int,
+  unmatchedWithDummy: Map.String.t(Data.Player.t),
+};
+let useRoundData = (roundId: int, tournament: t) => {
+  let {tourney, activePlayers, getPlayer, _} = tournament;
+  let {Tournament.roundList, _} = tourney;
+  /* matches2ScoreData is relatively expensive*/
+  let scoreData =
+    React.useMemo1(
+      () =>
+        Converters.matches2ScoreData(Rounds.rounds2Matches(roundList, ())),
+      [|roundList|],
+    );
+  /* Only calculate unmatched players for the latest round. Old rounds
+     don't get to add new players.
+     Should this be memoized? */
+  let round = Rounds.get(roundList, roundId);
+  let isThisTheLastRound = roundId === Rounds.getLastKey(roundList);
+  let unmatched =
+    switch (round, isThisTheLastRound) {
+    | (Some(round), true) =>
+      let matched = Rounds.Round.getMatched(round);
+      Map.String.removeMany(activePlayers, matched);
+    | (None, _)
+    | (Some(_), false) => Map.String.empty
+    };
+  let unmatchedCount = Map.String.size(unmatched);
+  /* make a new list so as not to affect auto-pairing*/
+  let unmatchedWithDummy =
+    unmatchedCount mod 2 !== 0
+      ? Map.String.set(
+          unmatched,
+          Player.dummy_id,
+          getPlayer(Player.dummy_id),
+        )
+      : unmatched;
+  let activePlayersCount = Map.String.size(activePlayers);
+  {
+    activePlayersCount,
+    scoreData,
+    unmatched,
+    unmatchedCount,
+    unmatchedWithDummy,
+  };
+};
+

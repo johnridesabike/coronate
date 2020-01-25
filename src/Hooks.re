@@ -115,3 +115,110 @@ let useLoadingCursorUntil = isLoaded => {
     [|isLoaded|],
   );
 };
+
+/*
+   For the two components that use this, their logic is basically the same but
+   their markup is slightly different. We may want to just merge them into one
+   component instead of managing two similar components and one higher-order
+   component.
+ */
+type scoreInfo = {
+  player: Data.Player.t,
+  hasBye: bool,
+  colorBalance: string,
+  score: float,
+  rating: React.element,
+  opponentResults: React.element,
+  avoidListHtml: React.element,
+};
+let useScoreInfo =
+    (
+      ~player,
+      ~scoreData,
+      ~avoidPairs=?,
+      ~getPlayer,
+      ~players,
+      ~origRating,
+      ~newRating,
+      ()
+    ) => {
+  open Data;
+  let {Scoring.colorScores, opponentResults, results, _} =
+    switch (Map.String.get(scoreData, player.Player.id)) {
+    | Some(data) => data
+    | None => Scoring.createBlankScoreData(player.Player.id)
+    };
+  let hasBye = Map.String.has(opponentResults, Player.dummy_id);
+  let colorBalance =
+    switch (Utils.List.sumF(colorScores)) {
+    | x when x < 0.0 => "White +" ++ x->abs_float->Js.Float.toString
+    | x when x > 0.0 => "Black +" ++ x->Js.Float.toString
+    | _ => "Even"
+    };
+  let avoidMap =
+    Option.mapWithDefault(
+      avoidPairs,
+      Map.String.empty,
+      Config.AvoidPairs.toMap,
+    );
+  let avoidList =
+    switch (Map.String.get(avoidMap, player.Player.id)) {
+    | None => []
+    | Some(avoidList) => avoidList
+    };
+  let score = Utils.List.sumF(results);
+  let opponentResults =
+    opponentResults
+    ->Map.String.toArray
+    ->Array.map(((opId, result)) =>
+        <li key=opId>
+          {[
+             getPlayer(opId).Player.firstName,
+             getPlayer(opId).Player.lastName,
+             "-",
+             switch (result) {
+             | 0.0 => "Lost"
+             | 1.0 => "Won"
+             | 0.5 => "Draw"
+             | _ => "Draw"
+             },
+           ]
+           |> String.concat(" ")
+           |> React.string}
+        </li>
+      )
+    ->React.array;
+  let avoidListHtml =
+    Utils.List.toReactArrayReverse(avoidList, pId =>
+      switch (Map.String.get(players, pId)) {
+      /*  don't show players not in this tourney*/
+      | None => React.null
+      | Some({Player.firstName, lastName, _}) =>
+        <li key=pId> {React.string(firstName ++ " " ++ lastName)} </li>
+      }
+    );
+  let rating =
+    <>
+      {origRating->Js.Int.toString->React.string}
+      {switch (newRating) {
+       | None => React.null
+       | Some(newRating) =>
+         <span>
+           {React.string(" (")}
+           {Numeral.fromInt(newRating - origRating)
+            ->Numeral.format("+0")
+            ->React.string}
+           {React.string(")")}
+         </span>
+       }}
+    </>;
+  {
+    player,
+    hasBye,
+    colorBalance,
+    score,
+    rating,
+    opponentResults,
+    avoidListHtml,
+  };
+};

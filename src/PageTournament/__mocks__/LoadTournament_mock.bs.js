@@ -12,6 +12,7 @@ import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
 import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.bs.js";
+import * as Data_Converters$Coronate from "../../Data/Data_Converters.bs.js";
 
 function log2(num) {
   return Math.log(num) / Math.log(2.0);
@@ -90,6 +91,34 @@ function LoadTournament_mock(Props) {
             });
 }
 
+function useRoundData(roundId, tournament) {
+  var roundList = tournament.tourney.roundList;
+  var activePlayers = tournament.activePlayers;
+  var scoreData = React.useMemo((function () {
+          return Data_Converters$Coronate.matches2ScoreData(Data_Rounds$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+        }), /* array */[roundList]);
+  var round = Data_Rounds$Coronate.get(roundList, roundId);
+  var isThisTheLastRound = roundId === Data_Rounds$Coronate.getLastKey(roundList);
+  var unmatched;
+  if (round !== undefined && isThisTheLastRound) {
+    var matched = Data_Rounds$Coronate.Round.getMatched(Caml_option.valFromOption(round));
+    unmatched = Belt_MapString.removeMany(activePlayers, matched);
+  } else {
+    unmatched = Belt_MapString.empty;
+  }
+  var unmatchedCount = Belt_MapString.size(unmatched);
+  var match = unmatchedCount % 2 !== 0;
+  var unmatchedWithDummy = match ? Belt_MapString.set(unmatched, Data_Player$Coronate.dummy_id, Curry._1(tournament.getPlayer, Data_Player$Coronate.dummy_id)) : unmatched;
+  var activePlayersCount = Belt_MapString.size(activePlayers);
+  return {
+          activePlayersCount: activePlayersCount,
+          scoreData: scoreData,
+          unmatched: unmatched,
+          unmatchedCount: unmatchedCount,
+          unmatchedWithDummy: unmatchedWithDummy
+        };
+}
+
 var make = LoadTournament_mock;
 
 export {
@@ -101,6 +130,7 @@ export {
   calcNumOfRounds ,
   tournamentReducer ,
   make ,
+  useRoundData ,
   
 }
 /* configData Not a pure module */

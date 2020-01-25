@@ -302,39 +302,58 @@ module Stage = {
   };
 };
 
-module PlayerInfo =
-  HigherOrderComponents.WithScoreInfo({
-    [@react.component]
-    let make =
-        (
-          ~hasBye,
-          ~colorBalance,
-          ~player,
-          ~score,
-          ~rating,
-          ~opponentResults,
-          ~avoidListHtml,
-        ) => {
-      open Player;
-      let fullName = player.firstName ++ " " ++ player.lastName;
-      <dl className="player-card">
-        <h3> {React.string(fullName)} </h3>
-        <p>
-          {React.string("Score: ")}
-          {score->Js.Float.toString->React.string}
-        </p>
-        <p id={"rating-" ++ player.id}> {React.string("Rating: ")} rating </p>
-        <p> {React.string("Color balance: " ++ colorBalance)} </p>
-        <p>
-          {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
-        </p>
-        <p> {React.string("Opponent history:")} </p>
-        <ol> opponentResults </ol>
-        <p> {React.string("Players to avoid:")} </p>
-        avoidListHtml
-      </dl>;
-    };
-  });
+module PlayerInfo = {
+  [@react.component]
+  let make =
+      (
+        ~player,
+        ~scoreData,
+        ~players,
+        ~avoidPairs,
+        ~origRating,
+        ~newRating,
+        ~getPlayer,
+      ) => {
+    open Player;
+    let {
+      Hooks.player,
+      hasBye,
+      colorBalance,
+      score,
+      rating,
+      opponentResults,
+      avoidListHtml,
+    } =
+      Hooks.useScoreInfo(
+        ~player,
+        ~scoreData,
+        ~getPlayer,
+        ~players,
+        ~origRating,
+        ~newRating,
+        ~avoidPairs,
+        (),
+      );
+
+    let fullName = player.firstName ++ " " ++ player.lastName;
+    <dl className="player-card">
+      <h3> {React.string(fullName)} </h3>
+      <p>
+        {React.string("Score: ")}
+        {score->Js.Float.toString->React.string}
+      </p>
+      <p id={"rating-" ++ player.id}> {React.string("Rating: ")} rating </p>
+      <p> {React.string("Color balance: " ++ colorBalance)} </p>
+      <p>
+        {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
+      </p>
+      <p> {React.string("Opponent history:")} </p>
+      <ol> opponentResults </ol>
+      <p> {React.string("Players to avoid:")} </p>
+      avoidListHtml
+    </dl>;
+  };
+};
 
 [@react.component]
 let make =

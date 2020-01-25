@@ -25,39 +25,48 @@ module Style = {
   let playerResult = style([width(`px(32)), textAlign(`center)]);
 };
 
-module PlayerMatchInfo =
-  HigherOrderComponents.WithScoreInfo({
-    [@react.component]
-    let make =
-        (
-          ~hasBye,
-          ~colorBalance,
-          ~player,
-          ~score,
-          ~rating,
-          ~opponentResults,
-          ~avoidListHtml,
-        ) => {
-      let fullName = player.Player.firstName ++ " " ++ player.Player.lastName;
-      <dl className="player-card">
-        <h3> {React.string(fullName)} </h3>
-        <dt> {React.string("Score")} </dt>
-        <dd> {score->Js.Float.toString->React.string} </dd>
-        <dt> {React.string("Rating")} </dt>
-        <Utils.TestId testId={"rating-" ++ player.Player.id}>
-          <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
-        </Utils.TestId>
-        <dt> {React.string("Color balance")} </dt>
-        <dd> {React.string(colorBalance)} </dd>
-        <dt> {React.string("Has had a bye round")} </dt>
-        <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
-        <dt> {React.string("Opponent history")} </dt>
-        <dd> <ol> opponentResults </ol> </dd>
-        <p> {React.string("Players to avoid:")} </p>
-        avoidListHtml
-      </dl>;
-    };
-  });
+module PlayerMatchInfo = {
+  [@react.component]
+  let make =
+      (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
+    let {
+      Hooks.player,
+      hasBye,
+      colorBalance,
+      score,
+      rating,
+      opponentResults,
+      avoidListHtml,
+    } =
+      Hooks.useScoreInfo(
+        ~player,
+        ~scoreData,
+        ~getPlayer,
+        ~players,
+        ~origRating,
+        ~newRating,
+        (),
+      );
+    let fullName = player.Player.firstName ++ " " ++ player.Player.lastName;
+    <dl className="player-card">
+      <h3> {React.string(fullName)} </h3>
+      <dt> {React.string("Score")} </dt>
+      <dd> {score->Js.Float.toString->React.string} </dd>
+      <dt> {React.string("Rating")} </dt>
+      <Utils.TestId testId={"rating-" ++ player.Player.id}>
+        <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
+      </Utils.TestId>
+      <dt> {React.string("Color balance")} </dt>
+      <dd> {React.string(colorBalance)} </dd>
+      <dt> {React.string("Has had a bye round")} </dt>
+      <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
+      <dt> {React.string("Opponent history")} </dt>
+      <dd> <ol> opponentResults </ol> </dd>
+      <p> {React.string("Players to avoid:")} </p>
+      avoidListHtml
+    </dl>;
+  };
+};
 
 module MatchRow = {
   [@react.component]
@@ -565,69 +574,67 @@ module Round = {
   };
 };
 
-module PageRound =
-  HigherOrderComponents.WithRoundData({
-    [@react.component]
-    let make =
-        (
-          ~roundId,
-          ~tournament,
-          ~activePlayersCount,
-          ~scoreData,
-          ~unmatched,
-          ~unmatchedCount,
-          ~unmatchedWithDummy,
-        ) => {
-      let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
-      let (openTab, setOpenTab) = React.useState(() => initialTab);
-      /* Auto-switch the tab */
-      React.useEffect3(
-        () => {
-          if (unmatchedCount === activePlayersCount) {
-            setOpenTab(_ => 1);
-          };
-          if (unmatchedCount === 0) {
-            setOpenTab(_ => 0);
-          };
-          None;
-        },
-        (unmatchedCount, activePlayersCount, setOpenTab),
-      );
-      Utils.Tabs.(
-        <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
-          <TabList>
-            <Tab disabled={unmatchedCount === activePlayersCount}>
-              <Icons.List />
-              {React.string(" Matches")}
-            </Tab>
-            <Tab disabled={unmatchedCount === 0}>
-              <Icons.Users />
-              {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
-               |> String.concat("")
-               |> React.string}
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
-            <TabPanel>
-              <div>
-                {unmatchedCount !== 0
-                   ? <PairPicker
-                       roundId
-                       tournament
-                       unmatched
-                       unmatchedWithDummy
-                       unmatchedCount
-                       scoreData
-                     />
-                   : React.null}
-              </div>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      );
-    };
-  });
+module PageRound = {
+  [@react.component]
+  let make = (~roundId, ~tournament) => {
+    let {
+      LoadTournament.activePlayersCount,
+      scoreData,
+      unmatched,
+      unmatchedCount,
+      unmatchedWithDummy,
+    } =
+      LoadTournament.useRoundData(roundId, tournament);
+    let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
+    let (openTab, setOpenTab) = React.useState(() => initialTab);
+    /* Auto-switch the tab */
+    React.useEffect3(
+      () => {
+        if (unmatchedCount === activePlayersCount) {
+          setOpenTab(_ => 1);
+        };
+        if (unmatchedCount === 0) {
+          setOpenTab(_ => 0);
+        };
+        None;
+      },
+      (unmatchedCount, activePlayersCount, setOpenTab),
+    );
+    Utils.Tabs.(
+      <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
+        <TabList>
+          <Tab disabled={unmatchedCount === activePlayersCount}>
+            <Icons.List />
+            {React.string(" Matches")}
+          </Tab>
+          <Tab disabled={unmatchedCount === 0}>
+            <Icons.Users />
+            {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
+             |> String.concat("")
+             |> React.string}
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
+          <TabPanel>
+            <div>
+              {unmatchedCount !== 0
+                 ? <PairPicker
+                     roundId
+                     tournament
+                     unmatched
+                     unmatchedWithDummy
+                     unmatchedCount
+                     scoreData
+                   />
+                 : React.null}
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    );
+  };
+};
 
 [@react.component]
 let make = (~roundId, ~tournament) => <PageRound roundId tournament />;

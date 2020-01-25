@@ -46,7 +46,6 @@ let windowReducer = (state, action) => {
       document
       ->Document.unsafeAsHtmlDocument
       ->HtmlDocument.setTitle(formatTitle(title))
-      ->ignore
     );
     {...state, title};
   | SetDialog(isDialogOpen) => {...state, isDialogOpen}
