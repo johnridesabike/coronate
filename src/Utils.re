@@ -335,7 +335,8 @@ module Router = {
 
   module HashLink = {
     [@react.component]
-    let make = (~children, ~to_, ~onDragStart: ReactEvent.Mouse.t => unit=?) => {
+    let make =
+        (~children, ~to_, ~onDragStart: option(ReactEvent.Mouse.t => unit)=?) => {
       let {hash, _} = useUrl();
       /* There's a special case for using "/" as a path */
       let isCurrent =

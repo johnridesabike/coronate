@@ -37,49 +37,49 @@
     "re:clean": "bsb -clean-world"
   },
   "dependencies": {
-    "@glennsl/bs-json": "^5.0.1",
+    "@glennsl/bs-json": "^5.0.2",
     "@johnridesabike/bs-localforage": "^1.0.0-alpha.7",
     "@johnridesabike/bs-numeral": "^3.0.0",
-    "@reach/dialog": "^0.7.0",
-    "@reach/tabs": "^0.7.0",
-    "@reach/visually-hidden": "^0.7.0",
+    "@reach/dialog": "^0.8.4",
+    "@reach/tabs": "^0.8.4",
+    "@reach/visually-hidden": "^0.8.2",
     "bs-css": "^11.0.0",
     "bs-intl": "^1.1.0",
-    "bs-webapi": "^0.15.6",
-    "edmonds-blossom": "^1.0.0",
+    "bs-webapi": "^0.15.7",
     "electron-is-dev": "^1.1.0",
-    "elo-rank": "^1.0.3",
+    "elo-rank": "^1.0.4",
     "localforage": "^1.7.3",
     "localforage-getitems": "^1.4.2",
     "localforage-removeitems": "^1.4.0",
     "localforage-setitems": "^1.4.0",
-    "nanoid": "^2.1.8",
+    "nanoid": "^2.1.11",
     "photon-colors": "^3.3.2",
+    "re-blossom": "^1.0.1",
     "re-classnames": "^4.1.0",
     "react-feather": "^2.0.3",
     "reason-future": "^2.5.0",
     "reason-react": "^0.7.0",
-    "simple-icons": "^2.1.0",
+    "simple-icons": "^2.5.0",
     "typeface-fira-sans": "0.0.75"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.9",
     "bs-dom-testing-library": "^0.5.1",
     "bs-jest-dom": "^2.0.1",
-    "bs-platform": "^7.0.1",
+    "bs-platform": "^7.1.1",
     "bs-react-testing-library": "^0.6.0",
-    "concurrently": "^5.0.2",
-    "electron": "^7.1.7",
-    "electron-builder": "^22.1.0",
+    "concurrently": "^5.1.0",
+    "electron": "^8.0.1",
+    "electron-builder": "^22.3.2",
     "electron-devtools-installer": "^2.2.4",
-    "eslint-plugin-react": "^7.17.0",
-    "gh-pages": "^2.1.1",
+    "eslint-plugin-react": "^7.18.3",
+    "gh-pages": "^2.2.0",
     "jest": "^24.9.0",
-    "react-scripts": "^3.3.0",
-    "stylelint": "^12.0.1",
-    "stylelint-config-standard": "^19.0.0",
-    "typescript": "^3.7.4",
-    "wait-on": "^3.3.0"
+    "react-scripts": "^3.4.0",
+    "stylelint": "^13.2.0",
+    "stylelint-config-standard": "^20.0.0",
+    "typescript": "^3.7.5",
+    "wait-on": "^4.0.0"
   },
   "eslintConfig": {
     "extends": [
@@ -99,13 +99,13 @@
   ],
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!(reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-classnames|bs-[a-z\\-]+)/)"
+      "node_modules/(?!(reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-classnames|re-blossom|bs-[a-z\\-]+)/)"
     ]
   },
   "build": {
     "appId": "bike.johnridesa.coronate",
     "productName": "Coronate",
-    "copyright": "Copyright © 2019 ${author}",
+    "copyright": "Copyright © 2020 ${author}",
     "mac": {
       "category": "public.app-category.productivity"
     },

@@ -199,61 +199,92 @@ let sortByNetScoreThenRating = (pair1, pair2) =>
 /* Create pairings according to the rules specified in USCF § 27, § 28,
     and § 29. This is a work in progress and does not account for all of the
    rules yet. */
+/*
+ let pairPlayers_old = pairData => {
+   /* Because `blossom()` has to use numbers that correspond to array indices,
+      we'll use `playerIdArray` as our source for that. */
+   let playerIdArray = Map.String.keysToArray(pairData);
+   let playerArray = Map.String.valuesToArray(pairData);
+   /* Turn the data into blossom-compatible input. */
+   let pairIdealReducer = (accArr, player1, index) => {
+     /* slice out players who have already computed, plus the current one */
+     let playerMatches =
+       Array.sliceToEnd(playerArray, index + 1)
+       ->Array.map(player2 =>
+           (
+             Js.Array2.indexOf(playerIdArray, player1.id),
+             Js.Array2.indexOf(playerIdArray, player2.id),
+             calcPairIdeal(player1, player2),
+           )
+         );
+     Array.concat(accArr, playerMatches);
+   };
+   let blossom2Pairs = (acc, p1Index, p2Index) => {
+     /* Translate the indices into ID strings */
+     let p1Id = playerIdArray[p1Index];
+     let p2Id = playerIdArray[p2Index];
+     switch (p1Id, p2Id) {
+     /* Filter out unmatched players. Blossom will automatically include
+        their missing IDs in its results. */
+     | (None, _)
+     | (_, None) => acc
+     | (Some(p1Id), Some(p2Id)) =>
+       let p1 = Map.String.getExn(pairData, p1Id);
+       let p2 = Map.String.getExn(pairData, p2Id);
+       /* In the future, we may store the ideal for debugging. Because it
+          rarely serves a purpose, we're not including it now.
+          const ideal = potentialMatches.filter(
+              (pair) => pair[0] === p1Id && pair[1] === p2Id
+          )[0][2];
+          Blossom returns a lot of redundant matches. Check that this matchup
+          wasn't already added. */
+       let matched = List.map(acc, ((player, _)) => player);
+       let matchedHasId = List.has(matched, _, (===));
+       if (!matchedHasId(p1) && !matchedHasId(p2)) {
+         [(p1, p2), ...acc];
+       } else {
+         acc;
+       };
+     };
+   };
+   playerArray
+   ->Array.reduceWithIndex([||], pairIdealReducer)
+   /* Feed all of the potential matches to Edmonds-blossom and let the
+      algorithm work its magic. This returns an array where each index is the
+      ID of one player and each value is the ID of the matched player. */
+   ->Externals.blossom
+   /* Translate those IDs into actual pairs of player Ids. */
+   ->Array.reduceWithIndex([], blossom2Pairs)
+   ->List.sort(sortByNetScoreThenRating)
+   ->List.map(assignColorsForPair);
+ };
+ */
+
+let pairEq = ((a, b), (c, d)) => a === c && b === d || b === c && a === d;
+
 let pairPlayers = pairData => {
-  /* Because `blossom()` has to use numbers that correspond to array indices,
-     we'll use `playerIdArray` as our source for that. */
-  let playerIdArray = Map.String.keysToArray(pairData);
-  let playerArray = Map.String.valuesToArray(pairData);
-  /* Turn the data into blossom-compatible input. */
-  let pairIdealReducer = (accArr, player1, index) => {
-    /* slice out players who have already computed, plus the current one */
-    let playerMatches =
-      Array.sliceToEnd(playerArray, index + 1)
-      ->Array.map(player2 =>
-          (
-            Js.Array2.indexOf(playerIdArray, player1.id),
-            Js.Array2.indexOf(playerIdArray, player2.id),
-            calcPairIdeal(player1, player2),
-          )
-        );
-    Array.concat(accArr, playerMatches);
-  };
-  let blossom2Pairs = (acc, p1Index, p2Index) => {
-    /* Translate the indices into ID strings */
-    let p1Id = playerIdArray[p1Index];
-    let p2Id = playerIdArray[p2Index];
-    switch (p1Id, p2Id) {
-    /* Filter out unmatched players. Blossom will automatically include
-       their missing IDs in its results. */
-    | (None, _)
-    | (_, None) => acc
-    | (Some(p1Id), Some(p2Id)) =>
-      let p1 = Map.String.getExn(pairData, p1Id);
-      let p2 = Map.String.getExn(pairData, p2Id);
-      /* In the future, we may store the ideal for debugging. Because it
-         rarely serves a purpose, we're not including it now.
-         const ideal = potentialMatches.filter(
-             (pair) => pair[0] === p1Id && pair[1] === p2Id
-         )[0][2];
-         Blossom returns a lot of redundant matches. Check that this matchup
-         wasn't already added. */
-      let matched = List.map(acc, ((player, _)) => player);
-      let matchedHasId = List.has(matched, _, (===));
-      if (!matchedHasId(p1) && !matchedHasId(p2)) {
-        [(p1, p2), ...acc];
-      } else {
-        acc;
-      };
-    };
-  };
-  playerArray
-  ->Array.reduceWithIndex([||], pairIdealReducer)
-  /* Feed all of the potential matches to Edmonds-blossom and let the
-     algorithm work its magic. This returns an array where each index is the
-     ID of one player and each value is the ID of the matched player. */
-  ->Externals.blossom
-  /* Translate those IDs into actual pairs of player Ids. */
-  ->Array.reduceWithIndex([], blossom2Pairs)
+  /* This is not optimized for performance, but in practice that hasn't been a
+     problem yet. */
+  Map.String.reduce(pairData, [], (acc, p1Id, p1) => {
+    Map.String.reduce(pairData, acc, (acc2, p2Id, p2) =>
+      [(p1Id, p2Id, calcPairIdeal(p1, p2)), ...acc2]
+    )
+  })
+  /* Feed all of the potential matches to the Blossom algorithim and let the
+     algorithm work its magic. */
+  ->Blossom.Match.String.make
+  /* Blossom returns redundant pair data. This filters them out. */
+  ->Blossom.Match.reduce(~init=[], ~f=(acc, p1, p2) =>
+      List.has(acc, (p1, p2), pairEq) ? acc : [(p1, p2), ...acc]
+    )
+  /* Convert the ids back to their pairing data */
+  ->List.keepMap(((p1, p2)) =>
+      switch (Map.String.(get(pairData, p1), get(pairData, p2))) {
+      | (Some(p1), Some(p2)) => Some((p1, p2))
+      | _ => None
+      }
+    )
   ->List.sort(sortByNetScoreThenRating)
+  /* assign colors and also convert them back to their id strings */
   ->List.map(assignColorsForPair);
 };

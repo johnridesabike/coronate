@@ -38,7 +38,8 @@
         "@glennsl/bs-json",
         "bs-intl",
         "reason-future",
-        "@johnridesabike/bs-localforage"
+        "@johnridesabike/bs-localforage",
+        "re-blossom"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",

@@ -142,7 +142,7 @@ module Splash = {
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
             <p>
               {React.string(
-                 "Copyright " ++ Utils.Entities.copy ++ " 2019 John Jackson.",
+                 "Copyright " ++ Utils.Entities.copy ++ " 2020 John Jackson.",
                )}
             </p>
             <p>

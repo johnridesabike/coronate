@@ -84,7 +84,6 @@ module MatchRow = {
         ~className="",
       ) => {
     open Match;
-    open Result;
     let LoadTournament.{
           tourney,
           setTourney,
@@ -115,11 +114,11 @@ module MatchRow = {
       let lost =
         <Utils.VisuallyHidden> {React.string("Lost")} </Utils.VisuallyHidden>;
       switch (m.result) {
-      | NotSet =>
+      | Match.Result.NotSet =>
         <Utils.VisuallyHidden>
           {React.string("Not set")}
         </Utils.VisuallyHidden>
-      | Draw =>
+      | Match.Result.Draw =>
         /* TODO: find a better icon for draws.*/
         <span
           ariaLabel="Draw"
@@ -127,15 +126,15 @@ module MatchRow = {
           style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
           {React.string({js|🤝|js})}
         </span>
-      | BlackWon =>
+      | Match.Result.BlackWon =>
         switch (playerColor) {
         | Match.Result.White => lost
-        | Black => won
+        | Match.Result.Black => won
         }
-      | WhiteWon =>
+      | Match.Result.WhiteWon =>
         switch (playerColor) {
-        | White => won
-        | Black => lost
+        | Match.Result.White => won
+        | Match.Result.Black => lost
         }
       };
     };
@@ -146,14 +145,12 @@ module MatchRow = {
       if (m.result !== newResult) {
         let white = players->Map.String.getExn(m.whiteId);
         let black = players->Map.String.getExn(m.blackId);
-        let newWhiteScore = newResult->(toFloat(White));
-        let newBlackScore = newResult->(toFloat(Black));
+        let newWhiteScore = newResult->Match.Result.(toFloat(White));
+        let newBlackScore = newResult->Match.Result.(toFloat(Black));
         let (whiteNewRating, blackNewRating) =
           switch (newResult) {
-          | NotSet => (m.whiteOrigRating, m.blackOrigRating)
-          | BlackWon
-          | WhiteWon
-          | Draw =>
+          | Match.Result.NotSet => (m.whiteOrigRating, m.blackOrigRating)
+          | Match.Result.(BlackWon | WhiteWon | Draw) =>
             Scoring.Ratings.calcNewRatings(
               (m.whiteOrigRating, m.blackOrigRating),
               (white.Player.matchCount, black.Player.matchCount),
@@ -164,7 +161,7 @@ module MatchRow = {
         let black = Player.{...black, rating: blackNewRating};
         switch (m.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
-        | NotSet =>
+        | Match.Result.NotSet =>
           playersDispatch(
             Db.Set(
               white.Player.id,
@@ -178,9 +175,8 @@ module MatchRow = {
             ),
           );
         /* If the result is being un-scored, decrement the matchCounts */
-        | WhiteWon
-        | BlackWon
-        | Draw when newResult === NotSet =>
+        | Match.Result.(WhiteWon | BlackWon | Draw)
+            when newResult === Match.Result.NotSet =>
           playersDispatch(
             Db.Set(
               white.Player.id,
@@ -194,9 +190,7 @@ module MatchRow = {
             ),
           );
         /* Simply update the players with new ratings. */
-        | WhiteWon
-        | BlackWon
-        | Draw =>
+        | Match.Result.(WhiteWon | BlackWon | Draw) =>
           playersDispatch(Db.Set(white.Player.id, white));
           playersDispatch(Db.Set(black.Player.id, black));
         };
@@ -230,7 +224,9 @@ module MatchRow = {
       <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>
-      <td className=Style.playerResult> {resultDisplay(White)} </td>
+      <td className=Style.playerResult>
+        {resultDisplay(Match.Result.White)}
+      </td>
       <td
         className={Cn.make([
           "table__player row__player",
@@ -239,7 +235,9 @@ module MatchRow = {
         id={"match-" ++ string_of_int(pos) ++ "-white"}>
         {React.string(whiteName)}
       </td>
-      <td className=Style.playerResult> {resultDisplay(Black)} </td>
+      <td className=Style.playerResult>
+        {resultDisplay(Match.Result.Black)}
+      </td>
       <td
         className={Cn.make([
           "table__player row__player",
@@ -256,16 +254,16 @@ module MatchRow = {
           value={Match.Result.toString(m.result)}
           onBlur=setMatchResultBlur
           onChange=setMatchResultChange>
-          <option value={Match.Result.toString(NotSet)}>
+          <option value=Match.Result.(toString(NotSet))>
             {React.string("Select winner")}
           </option>
-          <option value={Match.Result.toString(WhiteWon)}>
+          <option value=Match.Result.(toString(WhiteWon))>
             {React.string("White won")}
           </option>
-          <option value={Match.Result.toString(BlackWon)}>
+          <option value=Match.Result.(toString(BlackWon))>
             {React.string("Black won")}
           </option>
-          <option value={Match.Result.toString(Draw)}>
+          <option value=Match.Result.(toString(Draw))>
             {React.string("Draw")}
           </option>
         </select>
@@ -517,7 +515,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch->Option.map(__x => unMatch(__x, matches))->ignore
+              selectedMatch->Option.map(unMatch(_, matches))->ignore
             }>
             <Icons.Trash />
             {React.string(" Unmatch")}
@@ -527,9 +525,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Option.map(__x => swapColors(__x, matches))
-              ->ignore
+              selectedMatch->Option.map(swapColors(_, matches))->ignore
             }>
             <Icons.Repeat />
             {React.string(" Swap colors")}
@@ -539,9 +535,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Option.map(__x => moveMatch(__x, -1, matches))
-              ->ignore
+              selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore
             }>
             <Icons.ArrowUp />
             {React.string(" Move up")}
@@ -551,9 +545,7 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch === None}
             onClick={_ =>
-              selectedMatch
-              ->Option.map(__x => moveMatch(__x, 1, matches))
-              ->ignore
+              selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore
             }>
             <Icons.ArrowDown />
             {React.string(" Move down")}

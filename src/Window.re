@@ -107,7 +107,7 @@ module About = {
           {[
              "Copyright ",
              Utils.Entities.copy,
-             " 2019 John",
+             " 2020 John",
              Utils.Entities.nbsp,
              "Jackson",
            ]

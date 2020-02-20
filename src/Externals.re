@@ -2,8 +2,6 @@
   Misc. utilities
  ******************************************************************************/
 [@bs.module "nanoid"] external nanoid: unit => string = "default";
-[@bs.module "edmonds-blossom"]
-external blossom: array((int, int, float)) => array(int) = "default";
 
 module EloRank = {
   type t;
