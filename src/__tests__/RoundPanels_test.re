@@ -68,7 +68,7 @@ describe("Tabs auto-change correctly.", () => {
     page |> getByText(~matcher=`RegExp([%bs.re "/^unmatch$/i"])) |> click;
     matchesTab |> expect |> toHaveAttribute("aria-selected", ~value="true");
   });
-  test("The tab selection changes when all players have been unmatched", () => {
+  Skip.test("The tab selection changes when all players have been unmatched", () => {
     page
     |> getByText(
          ~matcher=
@@ -82,7 +82,7 @@ describe("Tabs auto-change correctly.", () => {
     page |> getByText(~matcher=`RegExp([%bs.re "/^unmatch$/i"])) |> click;
     selectTab |> expect |> toHaveAttribute("aria-selected", ~value="false");
   });
-  test("The tab selection changes when all players have been paired", () => {
+  Skip.test("The tab selection changes when all players have been paired", () => {
     page
     |> getByText(
          ~matcher=`RegExp([%bs.re "/^auto-pair unmatched players$/i"]),

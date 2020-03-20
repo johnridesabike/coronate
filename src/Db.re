@@ -12,8 +12,7 @@ let futureFromPromise =
 /*******************************************************************************
  * Initialize the databases
  ******************************************************************************/
-let localForageConfig =
-  LocalForage.LocalForageJs.Config.make(~name="Coronate");
+let localForageConfig = LocalForage.Config.make(~name="Coronate");
 let configDb =
   LocalForage.Record.make(
     localForageConfig(~storeName="Options", ()),
@@ -81,11 +80,12 @@ let useAllDb = store => {
           setIsLoaded(_ => true);
         }
       )
-    ->Future.tapError(_ =>
+    ->Future.tapError(error =>
         if (! didCancel^) {
           /* Even if there was an error, we'll clear the database. This means a
              corrupt database will get wiped. In the future, we may need to
              replace this with more elegant error recovery. */
+          Js.Console.error(error);
           ()->LocalForage.LocalForageJs.clear->ignore;
           setIsLoaded(_ => true);
         }
@@ -153,8 +153,7 @@ let configReducer = (state, action) => {
     | DelAvoidSingle(id) => {
         ...state,
         avoidPairs:
-          Set.reduce(
-            state.avoidPairs, AvoidPairs.empty, (acc, (p1, p2)) =>
+          Set.reduce(state.avoidPairs, AvoidPairs.empty, (acc, (p1, p2)) =>
             if (p1 === id || p2 === id) {
               acc;
             } else {
@@ -189,6 +188,7 @@ let useConfig = () => {
     ->Future.tapError(_ =>
         if (! didCancel^) {
           ()->LocalForage.LocalForageJs.clear->ignore;
+          dispatch(SetState(Data.Config.default));
           setIsLoaded(_ => true);
         }
       )

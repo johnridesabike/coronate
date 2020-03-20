@@ -34,6 +34,7 @@
         "re-classnames",
         "bs-webapi",
         "bs-css",
+        "bs-css-emotion",
         "@johnridesabike/bs-numeral",
         "@glennsl/bs-json",
         "bs-intl",
