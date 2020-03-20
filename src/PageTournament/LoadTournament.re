@@ -207,4 +207,3 @@ let useRoundData = (roundId: int, tournament: t) => {
     unmatchedWithDummy,
   };
 };
-

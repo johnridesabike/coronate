@@ -102,7 +102,7 @@ function useRoundData(roundId, tournament) {
     var matched = Data_Rounds$Coronate.Round.getMatched(Caml_option.valFromOption(round));
     unmatched = Belt_MapString.removeMany(activePlayers, matched);
   } else {
-    unmatched = Belt_MapString.empty;
+    unmatched = null;
   }
   var unmatchedCount = Belt_MapString.size(unmatched);
   var unmatchedWithDummy = unmatchedCount % 2 !== 0 ? Belt_MapString.set(unmatched, Data_Player$Coronate.dummy_id, Curry._1(tournament.getPlayer, Data_Player$Coronate.dummy_id)) : unmatched;
