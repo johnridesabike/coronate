@@ -61,3 +61,4 @@ gulp.task("build-electron-icons", function () {
         src.resize(256).toFile("../assets/icons/256x256.png").catch(log)
     ]);
 });
+
