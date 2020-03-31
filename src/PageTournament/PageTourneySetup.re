@@ -1,10 +1,13 @@
-open Utils.Router;
-open Data;
 open Belt;
-/* Why are dates so complicated?!?
-   Note to future self & other maintainers: getDate() begins at 1, and
-   getMonth() begins at 0. An HTML date input requires that the month begins at
-   1 and the JS Date() object requires that the month begins at 0. */
+open Router;
+open Data;
+
+/**
+ * Why are dates so complicated?
+ * Note to future self & other maintainers: getDate() begins at 1, and
+ * getMonth() begins at 0. An HTML date input requires that the month begins at
+ * 1 and the JS Date() object requires that the month begins at 0.
+ */
 let makeDateInput = date => {
   open Js.Date;
   let year = date->getFullYear->Js.Float.toString;
@@ -18,7 +21,7 @@ let makeDateInput = date => {
   let day =
     rawDate < 10.0
       ? "0" ++ Js.Float.toString(rawDate) : Js.Float.toString(rawDate);
-  String.concat("-", [year, month, day]);
+  Utils.String.concat([year, month, day], ~sep="-");
 };
 
 type inputs =
@@ -28,8 +31,8 @@ type inputs =
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.tourney, setTourney, _} = tournament;
-  let {Tournament.name, date, roundList, _} = tourney;
+  let LoadTournament.{tourney, setTourney, _} = tournament;
+  let Tournament.{name, date, roundList, _} = tourney;
   let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);
@@ -56,35 +59,41 @@ let make = (~tournament) => {
   );
 
   let changeToOne = _ => {
-    setTourney(Tournament.{
-      ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
-    });
+    setTourney(
+      Tournament.{
+        ...tourney,
+        roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
+      },
+    );
     Utils.alert("Bye scores updated to 1.");
   };
 
   let changeToOneHalf = _ => {
-    setTourney(Tournament.{
-      ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
-    });
+    setTourney(
+      Tournament.{
+        ...tourney,
+        roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
+      },
+    );
     Utils.alert({js|Bye scores updated to ½.|js});
   };
 
   let updateDate = event => {
     let rawDate = ReactEvent.Form.currentTarget(event)##value;
     let (rawYear, rawMonth, rawDay) =
-      switch (Js.String2.split(rawDate, "-")) {
+      switch (Utils.String.split(rawDate, ~on="-")) {
       | [|year, month, day|] => (year, month, day)
       | _ => ("2000", "01", "01") /* this was chosen randomly*/
       };
     let year = Js.Float.fromString(rawYear);
     let month = Js.Float.fromString(rawMonth) -. 1.0;
     let date = Js.Float.fromString(rawDay);
-    setTourney(Tournament.{
-      ...tourney,
-      date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
-    });
+    setTourney(
+      Tournament.{
+        ...tourney,
+        date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
+      },
+    );
   };
 
   <div className="content-area">
@@ -101,10 +110,12 @@ let make = (~tournament) => {
            type_="text"
            value=name
            onChange={event =>
-             setTourney(Tournament.{
-               ...tourney,
-               name: event->ReactEvent.Form.currentTarget##value,
-             })
+             setTourney(
+               Tournament.{
+                 ...tourney,
+                 name: event->ReactEvent.Form.currentTarget##value,
+               },
+             )
            }
          />
          {React.string(" ")}
@@ -120,9 +131,9 @@ let make = (~tournament) => {
          {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
            <Icons.Edit />
-           <Utils.VisuallyHidden>
+           <Externals.VisuallyHidden>
              {React.string("Edit name")}
-           </Utils.VisuallyHidden>
+           </Externals.VisuallyHidden>
          </button>
        </h1>
      }}
@@ -150,9 +161,9 @@ let make = (~tournament) => {
          {React.string(" ")}
          <button className="button-ghost" onClick={_ => setEditing(_ => Date)}>
            <Icons.Edit />
-           <Utils.VisuallyHidden>
+           <Externals.VisuallyHidden>
              {React.string("Edit date")}
-           </Utils.VisuallyHidden>
+           </Externals.VisuallyHidden>
          </button>
        </p>
      }}
@@ -170,7 +181,7 @@ let make = (~tournament) => {
           scored in this tournament. To change the default bye value in
           future matches, go to the ",
        )}
-      <HashLink to_="/options"> {React.string("app options")} </HashLink>
+      <HashLink to_=Options> {React.string("app options")} </HashLink>
       {React.string(".")}
     </p>
   </div>;

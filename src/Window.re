@@ -1,16 +1,16 @@
-/*
-   This contains all of the logic and components that make up the window,
-   including titlebar, default sidebar, and layout.
+/**
+ * This contains all of the logic and components that make up the window,
+ * including titlebar, default sidebar, and layout.
  */
-open Utils.Router;
-open Electron;
+open Router;
+module ElectronJs = Externals.Electron;
 
 let global_title = "Coronate";
 
-let formatTitle = title => {
-  Js.String.length(title) === 0
-    ? global_title : String.concat(" - ", [title, global_title]);
-};
+let formatTitle =
+  fun
+  | "" => global_title
+  | title => Utils.String.concat([title, global_title], ~sep=" - ");
 
 type windowState = {
   isBlur: bool,
@@ -54,26 +54,9 @@ let windowReducer = (state, action) => {
   | SetSidebar(isSidebarOpen) => {...state, isSidebarOpen}
   };
 };
-/* I'm keeping this code for reference but I've depreciated Context in favor of
-   plain ol' props. */
-/*
- module Context = {
-   let initialState = (initialWinState, (_: action) => ());
-   let windowContext = React.createContext(initialState);
-   module Provider = {
-     let makeProps = (~value, ~children, ()) => {
-       "value": value,
-       "children": children,
-     };
-     let make = React.Context.provider(windowContext);
-   };
- };
 
- let useWindowContext = () => {
-   React.useContext(Context.windowContext);
- };
- */
 module About = {
+  open Electron;
   [@bs.val]
   external version: option(string) = "process.env.REACT_APP_VERSION";
   [@react.component]
@@ -111,17 +94,17 @@ module About = {
              Utils.Entities.nbsp,
              "Jackson",
            ]
-           |> String.concat("")
-           |> React.string}
+           ->Utils.String.concat(~sep="")
+           ->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
-          <a href=Utils.github_url onClick=openInBrowser>
+          <a href=Utils.github_url onClick=Event.openInBrowser>
             {React.string("Source code is available")}
           </a>
           <br />
           {React.string(" under the ")}
-          <a href=Utils.license_url onClick=openInBrowser>
+          <a href=Utils.license_url onClick=Event.openInBrowser>
             {React.string("AGPL v3.0 license")}
           </a>
           {React.string(".")}
@@ -159,9 +142,13 @@ module MSWindowsControls = {
       style([display(`inline), unsafe("shapeRendering", "crispEdges")]);
     let close = style([hover([backgroundColor(red_50)])]);
   };
+
+  open ElectronJs.Window;
+
   [@react.component]
   let make = (~isFullScreen, ~isMaximized, ~electron) => {
-    let window = electron->getRemote->getCurrentWindow;
+    let window =
+      electron->ElectronJs.getRemote->ElectronJs.Remote.getCurrentWindow;
     <div className=Style.container>
       <button
         className={Cn.make([Style.button, "button-ghost1"])}
@@ -199,7 +186,12 @@ module TitleBar = {
     open Utils.PhotonColors;
     let button = style([color(grey_90)]);
   };
-  let isElectronMac = isMac && isElectron;
+  let isElectronMac =
+    switch (Electron.os, Electron.electron) {
+    | (Electron.Mac, Some(_)) => true
+    | (Electron.Mac, None)
+    | (Electron.(Windows | Other), _) => false
+    };
   let toolbarClasses =
     Cn.make([
       Style.button,
@@ -222,9 +214,9 @@ module TitleBar = {
         "double-click-control",
         Cn.ifTrue("traffic-light-padding", isElectronMac && !isFullScreen),
       ])}
-      onDoubleClick=macOSDoubleClick>
+      onDoubleClick=Electron.Event.macOSDoubleClick>
       <div>
-        <IfElectron os=Windows>
+        <Electron.IfElectron os=Electron.Windows>
           {_ =>
              <span
                style={ReactDOMRe.Style.make(
@@ -241,21 +233,21 @@ module TitleBar = {
                  width="16"
                />
              </span>}
-        </IfElectron>
+        </Electron.IfElectron>
         <button
           className=toolbarClasses
           onClick={_ => dispatch(SetSidebar(!isSidebarOpen))}>
           <Icons.Sidebar />
-          <Utils.VisuallyHidden>
+          <Externals.VisuallyHidden>
             {React.string("Toggle sidebar")}
-          </Utils.VisuallyHidden>
+          </Externals.VisuallyHidden>
         </button>
         <button
           className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
           <Icons.Help />
-          <Utils.VisuallyHidden>
+          <Externals.VisuallyHidden>
             {React.string("About Coronate")}
-          </Utils.VisuallyHidden>
+          </Externals.VisuallyHidden>
         </button>
       </div>
       <div
@@ -276,9 +268,9 @@ module TitleBar = {
         )}>
         {title->formatTitle->React.string}
       </div>
-      <IfElectron os=Windows>
+      <Electron.IfElectron os=Electron.Windows>
         {electron => <MSWindowsControls electron isFullScreen isMaximized />}
-      </IfElectron>
+      </Electron.IfElectron>
     </header>;
   };
 };
@@ -288,13 +280,15 @@ let make = (~children, ~className) => {
   let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
   let {isBlur, isSidebarOpen, isDialogOpen, isFullScreen, title, isMaximized} = state;
   React.useEffect0(() =>
-    ifElectron(electron => {
-      let win = electron->getRemote->getCurrentWindow;
+    Electron.ifElectron(electron => {
+      let win =
+        electron->ElectronJs.getRemote->ElectronJs.Remote.getCurrentWindow;
       /* This will ensure that stale event listeners aren't persisted.
          That typically won't be relevant to production builds, but
          in a dev environment, where the page reloads frequently,
          stale listeners will accumulate. Note that this can cause
          side effects if other listeners are added elsewhere. */
+      open ElectronJs.Window;
       let unregisterListeners = () => {
         removeAllListeners(win, `EnterFullScreen);
         removeAllListeners(win, `LeaveFullScreen);
@@ -311,8 +305,8 @@ let make = (~children, ~className) => {
       on(win, `Blur, () => dispatch(SetBlur(true)));
       on(win, `Focus, () => dispatch(SetBlur(false)));
       dispatch(SetBlur(!isFocused(win)));
-      dispatch(SetFullScreen(Electron.isFullScreen(win)));
-      dispatch(SetMaximized(Electron.isMaximized(win)));
+      dispatch(SetFullScreen(ElectronJs.Window.isFullScreen(win)));
+      dispatch(SetMaximized(ElectronJs.Window.isMaximized(win)));
       /* I don't think this ever really fires, but can it hurt? */
       unregisterListeners;
     })
@@ -323,13 +317,16 @@ let make = (~children, ~className) => {
       "open-sidebar"->Cn.ifTrue(isSidebarOpen),
       "closed-sidebar"->Cn.ifTrue(!isSidebarOpen),
       "window-blur"->Cn.ifTrue(isBlur),
-      "isWindows"->Cn.ifTrue(isWin),
-      "isMacOS"->Cn.ifTrue(isMac),
-      "isElectron"->Cn.ifTrue(isElectron),
+      switch (Electron.os) {
+      | Electron.Windows => "isWindows"
+      | Electron.Mac => "isMacOS"
+      | Electron.Other => ""
+      },
+      "isElectron"->Cn.ifSome(Electron.electron),
     ])}>
     <TitleBar isBlur isFullScreen isMaximized isSidebarOpen title dispatch />
     {children(dispatch)}
-    <Utils.Dialog
+    <Externals.Dialog
       isOpen=isDialogOpen
       onDismiss={() => dispatch(SetDialog(false))}
       style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}
@@ -339,7 +336,7 @@ let make = (~children, ~className) => {
         {React.string("Close")}
       </button>
       <About />
-    </Utils.Dialog>
+    </Externals.Dialog>
   </div>;
 };
 
@@ -351,7 +348,7 @@ module DefaultSidebar = {
     <nav>
       <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
         <li>
-          <HashLink to_="/tourneys" onDragStart=noDraggy>
+          <HashLink to_=TournamentList onDragStart=noDraggy>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Tournaments")}
@@ -359,7 +356,7 @@ module DefaultSidebar = {
           </HashLink>
         </li>
         <li>
-          <HashLink to_="/players" onDragStart=noDraggy>
+          <HashLink to_=PlayerList onDragStart=noDraggy>
             <Icons.Users />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Players")}
@@ -367,7 +364,7 @@ module DefaultSidebar = {
           </HashLink>
         </li>
         <li>
-          <HashLink to_="/options" onDragStart=noDraggy>
+          <HashLink to_=Options onDragStart=noDraggy>
             <Icons.Settings />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Options")}
@@ -375,7 +372,7 @@ module DefaultSidebar = {
           </HashLink>
         </li>
         <li>
-          <HashLink to_="/timecalc" onDragStart=noDraggy>
+          <HashLink to_=TimeCalculator onDragStart=noDraggy>
             <Icons.Clock />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Time calculator")}
@@ -383,7 +380,7 @@ module DefaultSidebar = {
           </HashLink>
         </li>
         <li>
-          <HashLink to_="/" onDragStart=noDraggy>
+          <HashLink to_=Index onDragStart=noDraggy>
             <Icons.Help />
             <span className="sidebar__hide-on-close">
               {React.string(Utils.Entities.nbsp ++ "Info")}

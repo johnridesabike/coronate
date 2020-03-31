@@ -7,14 +7,15 @@ let log2 = num => log(num) /. log(2.0);
   tests can keep working.
  */
 open TestData;
-let configData = Data.Config.{
-  ...config,
-  avoidPairs:
-    Set.mergeMany(
-      config.avoidPairs,
-      Set.toArray(DemoData.config.avoidPairs),
-    ),
-};
+let configData =
+  Data.Config.{
+    ...config,
+    avoidPairs:
+      Set.mergeMany(
+        config.avoidPairs,
+        Set.toArray(DemoData.config.avoidPairs),
+      ),
+  };
 
 let merger = (_key, a, b) => {
   switch (a, b) {
@@ -25,8 +26,10 @@ let merger = (_key, a, b) => {
 };
 
 let tournamentData =
-  Map.String.merge(tournaments, DemoData.tournaments, merger);
-let playerData = Map.String.merge(players, DemoData.players, merger);
+  Array.concat(tournaments, DemoData.tournaments)
+  ->Data.Id.Map.fromStringArray;
+let playerData =
+  Array.concat(players, DemoData.players)->Data.Id.Map.fromStringArray;
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
@@ -36,11 +39,11 @@ let calcNumOfRounds = playerCount => {
 let tournamentReducer = (_, action) => action;
 
 type t = {
-  activePlayers: Map.String.t(Player.t),
-  getPlayer: string => Player.t,
+  activePlayers: Data.Id.Map.t(Player.t),
+  getPlayer: Data.Id.t => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
-  players: Map.String.t(Player.t),
+  players: Data.Id.Map.t(Player.t),
   playersDispatch: Db.action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
@@ -52,14 +55,14 @@ let make = (~children, ~tourneyId) => {
   let (tourney, setTourney) =
     React.useReducer(
       tournamentReducer,
-      Map.String.getExn(tournamentData, tourneyId),
+      Map.getExn(tournamentData, tourneyId),
     );
-  let {Tournament.playerIds, roundList, _} = tourney;
-  let (players, playersDispatch, _) = Db.useAllPlayers();
+  let Tournament.{playerIds, roundList, _} = tourney;
+  let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
   /* `activePlayers` is only players to be matched in future matches. */
   let activePlayers =
-    Map.String.keep(players, (id, _) => playerIds->List.has(id, (===)));
-  let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
+    Map.keep(players, (id, _) => playerIds->List.has(id, (===)));
+  let roundCount = activePlayers->Map.size->calcNumOfRounds;
   let isItOver = Data.Rounds.size(roundList) >= roundCount;
   let isNewRoundReady =
     Data.Rounds.size(roundList) === 0
@@ -72,7 +75,7 @@ let make = (~children, ~tourneyId) => {
 
   children({
     activePlayers,
-    getPlayer: Player.getPlayerMaybe(players),
+    getPlayer: Player.getMaybe(players),
     isItOver,
     isNewRoundReady,
     players,
@@ -85,14 +88,14 @@ let make = (~children, ~tourneyId) => {
 
 type roundData = {
   activePlayersCount: int,
-  scoreData: Map.String.t(Scoring.t),
-  unmatched: Map.String.t(Data.Player.t),
+  scoreData: Data.Id.Map.t(Scoring.t),
+  unmatched: Data.Id.Map.t(Data.Player.t),
   unmatchedCount: int,
-  unmatchedWithDummy: Map.String.t(Data.Player.t),
+  unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
 };
 let useRoundData = (roundId: int, tournament: t) => {
   let {tourney, activePlayers, getPlayer, _} = tournament;
-  let {Tournament.roundList, _} = tourney;
+  let Tournament.{roundList, _} = tourney;
   /* matches2ScoreData is relatively expensive*/
   let scoreData =
     React.useMemo1(
@@ -109,21 +112,17 @@ let useRoundData = (roundId: int, tournament: t) => {
     switch (round, isThisTheLastRound) {
     | (Some(round), true) =>
       let matched = Rounds.Round.getMatched(round);
-      Map.String.removeMany(activePlayers, matched);
+      Map.removeMany(activePlayers, matched);
     | (None, _)
-    | (Some(_), false) => Map.String.empty
+    | (Some(_), false) => Data.Id.Map.make()
     };
-  let unmatchedCount = Map.String.size(unmatched);
+  let unmatchedCount = Map.size(unmatched);
   /* make a new list so as not to affect auto-pairing*/
   let unmatchedWithDummy =
     unmatchedCount mod 2 !== 0
-      ? Map.String.set(
-          unmatched,
-          Player.dummy_id,
-          getPlayer(Player.dummy_id),
-        )
+      ? Map.set(unmatched, Data.Id.dummy, getPlayer(Data.Id.dummy))
       : unmatched;
-  let activePlayersCount = Map.String.size(activePlayers);
+  let activePlayersCount = Map.size(activePlayers);
   {
     activePlayersCount,
     scoreData,
@@ -132,4 +131,3 @@ let useRoundData = (roundId: int, tournament: t) => {
     unmatchedWithDummy,
   };
 };
-

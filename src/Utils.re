@@ -1,30 +1,29 @@
-module Tabs = Externals.ReachTabs;
-module VisuallyHidden = Externals.VisuallyHidden;
-module Dialog = Externals.Dialog;
-let nanoid = Externals.nanoid;
+open Belt;
 
 let github_url = "https://github.com/johnridesabike/coronate";
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE";
 let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
 
-/* Pass a `cmp` function to avoid polymorphic compare warnings & errors. */
+/* Pass a `compare` function to avoid polymorphic compare errors. */
 type direction('data, 'field) =
   (('field, 'field) => int, 'data => 'field, 'data, 'data) => int;
-let ascend: direction('data, 'field) =
-  (cmp, getter, a, b) => cmp(getter(a), getter(b));
-let descend: direction('data, 'field) =
-  (cmp, getter, a, b) => cmp(getter(b), getter(a));
+let ascend = (cmp, getter, a, b) => cmp(getter(a), getter(b));
+let descend = (cmp, getter, a, b) => cmp(getter(b), getter(a));
 
 module Array = {
-  open Belt;
-  let last = arr => arr[Js.Array2.length(arr) - 1];
-  let sum = Array.reduce(_, 0, (+));
-  let sumF = Array.reduce(_, 0.0, (+.));
+  type t('a) = array('a);
+
+  // let last = arr => arr[Array.size(arr) - 1];
+
+  // let sum = Array.reduce(_, 0, (+));
+
+  // let sumF = Array.reduce(_, 0.0, (+.));
+
   let swap = (arr, idx1, idx2) => {
     switch (arr[idx1], arr[idx2]) {
     | (Some(item1), Some(item2)) =>
-      arr->Array.set(idx1, item2)->ignore;
-      arr->Array.set(idx2, item1)->ignore;
+      (arr[idx1] = item2)->ignore;
+      (arr[idx2] = item1)->ignore;
       arr;
     | (None, _)
     | (_, None) => arr
@@ -33,34 +32,29 @@ module Array = {
 };
 
 module List = {
-  open Belt;
-  let sumF = list => List.reduce(list, 0.0, (+.));
-  let toReactArrayReverse = (list, fn) => {
-    let result = [||];
-    List.forEach(list, item => Js.Array2.unshift(result, fn(item)));
-    React.array(result);
+  open Belt.List;
+
+  type t('a) = list('a);
+
+  let sumF = list => reduce(list, 0.0, (+.));
+};
+
+module String = {
+  include Js.String2;
+
+  let concat = (l, ~sep) => {
+    let rec loop = (acc, l) =>
+      switch (l) {
+      | [s] => s ++ acc
+      | [s, ...l] => loop(sep ++ s ++ acc, l)
+      | [] => acc
+      };
+    loop("", Belt.List.reverse(l));
   };
-  let toReactArrayReverseWithIndex = (list, fn) => {
-    let result = [||];
-    list
-    ->List.reverse
-    ->List.forEachWithIndex((i, item) =>
-        Js.Array2.push(result, fn(i, item))
-      );
-    React.array(result);
-  };
-  let toReactArray = (list, fn) => {
-    let result = [||];
-    List.forEach(list, item => Js.Array2.push(result, fn(item)));
-    React.array(result);
-  };
-  let toReactArrayWithIndex = (list, fn) => {
-    let result = [||];
-    List.forEachWithIndex(list, (i, item) =>
-      Js.Array2.push(result, fn(i, item))
-    );
-    React.array(result);
-  };
+
+  let includes = (s, ~substr) => Js.String2.includes(s, substr);
+
+  let split = (s, ~on) => Js.String2.split(s, on);
 };
 
 let alert = Webapi.Dom.Window.alert(_, Webapi.Dom.window);
@@ -307,7 +301,7 @@ module Notification = {
       switch (kind) {
       | Success => (<Icons.Check />, Style.success)
       | Warning => (<Icons.Alert />, Style.warning)
-      | Error => (<Icons.X />, Style.error)
+      | Error => (<Icons.Alert />, Style.error)
       | Generic => (<Icons.Info />, "")
       };
     <div
@@ -318,51 +312,6 @@ module Notification = {
   };
 };
 
-module Router = {
-  include ReasonReact.Router;
-  let hashPath = hashString => {
-    let path =
-      switch (hashString->Js.String2.split("/")->Belt.List.fromArray) {
-      /* The first item is always an empty string, so we're removing it */
-      | [_, ...rest] => rest
-      | list => list
-      };
-    switch (path) {
-    | [] => [""]
-    | list => list
-    };
-  };
-
-  module HashLink = {
-    [@react.component]
-    let make =
-        (~children, ~to_, ~onDragStart: option(ReactEvent.Mouse.t => unit)=?) => {
-      let {hash, _} = useUrl();
-      /* There's a special case for using "/" as a path */
-      let isCurrent =
-        switch (to_) {
-        | "/" => hash === "" || hash === to_
-        | _ => hash === to_
-        };
-      let ariaCurrent = isCurrent ? "true" : "false";
-      /*
-         Reason hasn't implemented the aria-current attribute yet, we have to
-         define it ourselves!
-       */
-      ReactDOMRe.createElement(
-        "a",
-        ~props=
-          ReactDOMRe.objToDOMProps({
-            "aria-current": ariaCurrent,
-            "href": "#" ++ to_,
-            "onDragStart": onDragStart,
-          }),
-        [|children|],
-      );
-    };
-  };
-};
-
 module TestId = {
   /* https://twitter.com/fakenickels/status/1189887257030930433 */
   [@react.component]
@@ -370,8 +319,8 @@ module TestId = {
     ReasonReact.cloneElement(children, ~props={"data-testid": testId}, [||]);
 };
 
-/*
-   Side effects
+/**
+ * Side effects
  */
 Numeral.registerFormat(
   "fraction",

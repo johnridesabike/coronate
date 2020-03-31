@@ -1,5 +1,5 @@
-open Data;
 open Belt;
+open Data;
 open Tournament;
 
 let log2 = num => log(num) /. log(2.0);
@@ -14,19 +14,19 @@ let emptyTourney = {
   playerIds: [],
   roundList: Rounds.empty,
   date: Js.Date.fromFloat(0.0),
-  id: Utils.nanoid(),
-  tieBreaks: [|Scoring.Median|],
+  id: Data.Id.random(),
+  tieBreaks: [|Scoring.TieBreak.Median|],
   byeQueue: [||],
 };
 
 let tournamentReducer = (_, action) => action;
 
 type t = {
-  activePlayers: Map.String.t(Player.t),
-  getPlayer: string => Player.t,
+  activePlayers: Data.Id.Map.t(Player.t),
+  getPlayer: Data.Id.t => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
-  players: Map.String.t(Player.t),
+  players: Data.Id.Map.t(Player.t),
   playersDispatch: Db.action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
@@ -38,25 +38,26 @@ type loadStatus =
   | Loaded
   | Error;
 
-let isLoadedDone = status =>
-  switch (status) {
+let isLoadedDone =
+  fun
   | NotLoaded => false
   | Loaded
-  | Error => true
-  };
+  | Error => true;
 
 [@react.component]
 let make = (~children, ~tourneyId, ~windowDispatch) => {
+  let tourneyId = Data.Id.toString(tourneyId);
   let (tourney, setTourney) =
     React.useReducer(tournamentReducer, emptyTourney);
-  let {Tournament.name, playerIds, roundList, _} = tourney;
-  let (players, playersDispatch, arePlayersLoaded) = Db.useAllPlayers();
+  let Tournament.{name, playerIds, roundList, _} = tourney;
+  let Db.{items: players, dispatch: playersDispatch, loaded: arePlayersLoaded} =
+    Db.useAllPlayers();
   let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded);
   Hooks.useLoadingCursorUntil(
     isLoadedDone(tourneyLoaded) && arePlayersLoaded,
   );
-  /*
-   Set the document title.
+  /**
+   * Set the document title.
    */
   React.useEffect2(
     () => {
@@ -65,16 +66,17 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
     },
     (name, windowDispatch),
   );
-  /*
-   Initialize the tournament from the database.
+  /**
+   * Initialize the tournament from the database.
    */
   React.useEffect1(
     () => {
       let didCancel = ref(false);
       Db.tournaments
       ->LocalForage.Map.getItem(~key=tourneyId)
-      ->Db.futureFromPromise
-      ->Future.tapOk(value =>
+      ->Promise.Js.fromBsPromise
+      ->Promise.Js.toResult
+      ->Promise.tapOk(value =>
           switch (value) {
           | _ when didCancel^ => ()
           | None => setTourneyLoaded(_ => Error)
@@ -83,18 +85,17 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
             setTourneyLoaded(_ => Loaded);
           }
         )
-      ->Future.tapError(_ =>
+      ->Promise.getError(_ =>
           if (! didCancel^) {
             setTourneyLoaded(_ => Error);
           }
-        )
-      ->ignore;
+        );
       Some(() => didCancel := true);
     },
     [|tourneyId|],
   );
-  /*
-   Save tourney to DB.
+  /**
+   * Save the tournament to DB.
    */
   React.useEffect3(
     () => {
@@ -102,15 +103,18 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
       | NotLoaded
       | Error => ()
       | Loaded =>
-        /*
-           If the tournament wasn't loaded then the id won't match. IDK if this
-           is really necessary. At some point it fixed a weird bug.
+        /**
+         * If the tournament wasn't loaded then the id won't match. IDK why this
+         * is necessary. If you remove this and someone enters the URL for a
+         * nonexistant tournament, then you can corrupt the database.
          */
-        // if (tourneyId === tourney.id) {
-        Db.tournaments
-        ->LocalForage.Map.setItem(~key=tourneyId, ~v=tourney)
-        ->ignore
-      // }
+        (
+          if (Data.Id.fromString(tourneyId) === tourney.Tournament.id) {
+            Db.tournaments
+            ->LocalForage.Map.setItem(~key=tourneyId, ~v=tourney)
+            ->ignore;
+          }
+        )
       };
       None;
     },
@@ -120,8 +124,8 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
     let activePlayers =
-      players->Map.String.keep((id, _) => playerIds->List.has(id, (===)));
-    let roundCount = activePlayers->Map.String.size->calcNumOfRounds;
+      players->Map.keep((id, _) => playerIds->List.has(id, (===)));
+    let roundCount = activePlayers->Map.size->calcNumOfRounds;
     let isItOver = Rounds.size(roundList) >= roundCount;
     let isNewRoundReady =
       Rounds.size(roundList) === 0
@@ -134,7 +138,7 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
 
     children({
       activePlayers,
-      getPlayer: Player.getPlayerMaybe(players),
+      getPlayer: Player.getMaybe(players),
       isItOver,
       isNewRoundReady,
       players,
@@ -155,19 +159,17 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
   };
 };
 
-/* I extracted this logic to its own module so it could be easily
-   reused (e.g. in testing). It may have also made the whole component tree more
-   complicated. */
 type roundData = {
   activePlayersCount: int,
-  scoreData: Map.String.t(Scoring.t),
-  unmatched: Map.String.t(Data.Player.t),
+  scoreData: Data.Id.Map.t(Scoring.t),
+  unmatched: Data.Id.Map.t(Data.Player.t),
   unmatchedCount: int,
-  unmatchedWithDummy: Map.String.t(Data.Player.t),
+  unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
 };
+
 let useRoundData = (roundId: int, tournament: t) => {
   let {tourney, activePlayers, getPlayer, _} = tournament;
-  let {Tournament.roundList, _} = tourney;
+  let Tournament.{roundList, _} = tourney;
   /* matches2ScoreData is relatively expensive*/
   let scoreData =
     React.useMemo1(
@@ -184,21 +186,17 @@ let useRoundData = (roundId: int, tournament: t) => {
     switch (round, isThisTheLastRound) {
     | (Some(round), true) =>
       let matched = Rounds.Round.getMatched(round);
-      Map.String.removeMany(activePlayers, matched);
+      Map.removeMany(activePlayers, matched);
     | (None, _)
-    | (Some(_), false) => Map.String.empty
+    | (Some(_), false) => Data.Id.Map.make()
     };
-  let unmatchedCount = Map.String.size(unmatched);
+  let unmatchedCount = Map.size(unmatched);
   /* make a new list so as not to affect auto-pairing*/
   let unmatchedWithDummy =
     unmatchedCount mod 2 !== 0
-      ? Map.String.set(
-          unmatched,
-          Player.dummy_id,
-          getPlayer(Player.dummy_id),
-        )
+      ? Map.set(unmatched, Data.Id.dummy, getPlayer(Data.Id.dummy))
       : unmatched;
-  let activePlayersCount = Map.String.size(activePlayers);
+  let activePlayersCount = Map.size(activePlayers);
   {
     activePlayersCount,
     scoreData,

@@ -1,16 +1,13 @@
-/*
-   This handles all of the logic for calculating pairings. It requires data
-   taken from past tournament scores and player ratings.
- */
 open Belt;
+
 type t = {
-  id: string,
-  avoidIds: list(string),
+  id: Data_Id.t,
+  avoidIds: list(Data_Id.t),
   colorScores: list(float),
   colors: list(Scoring.Color.t),
   halfPos: int,
   isUpperHalf: bool,
-  opponents: list(string),
+  opponents: list(Data_Id.t),
   rating: int,
   score: float,
 };
@@ -20,31 +17,37 @@ let divisiblePriority = (dividend, divisor) => dividend /. divisor;
 
 /* The following values probably need to be tweaked a lot. */
 
-/* The weight given to avoid players meeting twice. This same weight is given to
-   avoid matching players on each other's "avoid" list.
-   This is the highest priority. (USCF § 27A1) */
+/**
+ * The weight given to avoid players meeting twice. This same weight is given to
+ * avoid matching players on each other's "avoid" list.
+ * This is the highest priority. (USCF § 27A1)
+ */
 let avoidMeetingTwice = priority(32.0);
 
-/* The weight given to match players with equal scores. This gets divided
-   against the difference between each players' scores, plus one. For example,
-   players with scores `1` and `3` would have this priority divided by `3`.
-   Players with scores `0` and `3` would have this priority divided by `4`.
-   Players with equal scores would divide it by `1`, leaving it unchanged.
-   (USCF § 27A2) */
+/**
+ * The weight given to match players with equal scores. This gets divided
+ * against the difference between each players' scores, plus one. For example,
+ * players with scores `1` and `3` would have this priority divided by `3`.
+ * Players with scores `0` and `3` would have this priority divided by `4`.
+ * Players with equal scores would divide it by `1`, leaving it unchanged.
+ * (USCF § 27A2)
+ */
 let sameScores = divisiblePriority(16.0);
 
-/* The weight given to match players in lower versus upper halves. This is only
-   applied to players being matched within the same score group. (USCF § 27A3) */
+/**
+ * The weight given to match players in lower versus upper halves. This is only
+ * applied to players being matched within the same score group. (USCF § 27A3)
+ */
 let halfPosition = divisiblePriority(8.0);
 let sameHalfPriority = _ => 0.0;
 let differentHalf = isDiffHalf => isDiffHalf ? halfPosition : sameHalfPriority;
 
-/* The weight given to match players with opposite due colors.
-   (USCF § 27A4 and § 27A5) */
+/**
+ * The weight given to match players with opposite due colors.
+ * (USCF § 27A4 and § 27A5)
+ */
 let differentDueColor = priority(4.0);
 
-/* This is useful for dividing against a calculated priority, to inspect how
-   "compatible" two players may be. */
 let maxPriority =
   Utils.List.sumF([
     differentHalf(true, 1.0),
@@ -53,8 +56,6 @@ let maxPriority =
     avoidMeetingTwice(true),
   ]);
 
-/* Given two `PairingData` objects, this assigns a number for how much they
-   should be matched. The number gets fed to the `blossom` algorithm. */
 let calcPairIdeal = (player1, player2) =>
   if (player1.id === player2.id) {
     0.0;
@@ -80,7 +81,7 @@ let calcPairIdeal = (player1, player2) =>
     ]);
   };
 
-let descendingScore = Utils.descend(compare, x => x.score);
+//let descendingScore = Utils.descend(compare, x => x.score);
 let descendingRating = Utils.descend(compare, x => x.rating);
 
 let splitInHalf = arr => {
@@ -91,18 +92,15 @@ let splitInHalf = arr => {
   );
 };
 
-/* This determines what "half" each player is in: upper half or lower half. It
-   also determines their "position" within each half.
-   USCF § 29C1 */
 let setUpperHalves = data => {
-  let dataList = Map.String.valuesToArray(data);
-  Map.String.map(
+  let dataList = Map.valuesToArray(data);
+  Map.map(
     data,
     playerData => {
       let (upperHalfIds, lowerHalfIds) =
         dataList
         ->Array.keep(({score, _}) => score === playerData.score)
-        ->SortArray.stableSortBy(descendingRating)
+        ->Belt.SortArray.stableSortBy(descendingRating)
         ->splitInHalf;
       /* We need to know what position in each half the player occupies. We're
          uisng array indices to identify these.*/
@@ -125,20 +123,15 @@ let sortByScoreThenRating = (data1, data2) =>
   | x => x
   };
 
-/* This this returns a tuple of two objects: The modified array of player data
-   without the player assigned a bye, and the player assigned a bye.
-   If no player is assigned a bye, the second object is `null`.
-   After calling this, be sure to add the bye round after the non-bye'd
-   players are paired. */
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !List.has(p.opponents, dummyId, (===));
   /* if the list is even, just return it. */
-  if (Map.String.size(data) mod 2 === 0) {
+  if (Map.size(data) mod 2 === 0) {
     (data, None);
   } else {
     let dataList =
       data
-      ->Map.String.valuesToArray
+      ->Map.valuesToArray
       ->List.fromArray
       ->List.keep(hasNotHadBye)
       ->List.sort(sortByScoreThenRating);
@@ -149,7 +142,7 @@ let setByePlayer = (byeQueue, dummyId, data) => {
       switch (nextByeSignups) {
       /* Assign the bye to the next person who signed up. */
       | [id, ..._] =>
-        switch (data->Map.String.get(id)) {
+        switch (data->Map.get(id)) {
         | Some(x) => x
         | None => dataList->List.getExn(0)
         }
@@ -163,19 +156,18 @@ let setByePlayer = (byeQueue, dummyId, data) => {
            round previously, then just pick the last player. */
         | [] =>
           data
-          ->Map.String.valuesToArray
+          ->Map.valuesToArray
           ->List.fromArray
           ->List.sort(sortByScoreThenRating)
           ->List.getExn(0)
         }
       };
-    let dataWithoutBye = Map.String.remove(data, dataForNextBye.id);
+    let dataWithoutBye = Map.remove(data, dataForNextBye.id);
     (dataWithoutBye, Some(dataForNextBye));
   };
 };
 
-let assignColorsForPair = pair => {
-  let (player1, player2) = pair;
+let assignColorsForPair = ((player1, player2)) => {
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
@@ -196,9 +188,6 @@ let sortByNetScoreThenRating = (pair1, pair2) =>
   | x => x
   };
 
-/* Create pairings according to the rules specified in USCF § 27, § 28,
-    and § 29. This is a work in progress and does not account for all of the
-   rules yet. */
 /*
  let pairPlayers_old = pairData => {
    /* Because `blossom()` has to use numbers that correspond to array indices,
@@ -265,9 +254,16 @@ let pairEq = ((a, b), (c, d)) => a === c && b === d || b === c && a === d;
 let pairPlayers = pairData => {
   /* This is not optimized for performance, but in practice that hasn't been a
      problem yet. */
-  Map.String.reduce(pairData, [], (acc, p1Id, p1) => {
-    Map.String.reduce(pairData, acc, (acc2, p2Id, p2) =>
-      [(p1Id, p2Id, calcPairIdeal(p1, p2)), ...acc2]
+  Map.reduce(pairData, [], (acc, p1Id, p1) => {
+    Map.reduce(pairData, acc, (acc2, p2Id, p2) =>
+      [
+        (
+          Data_Id.toString(p1Id),
+          Data_Id.toString(p2Id),
+          calcPairIdeal(p1, p2),
+        ),
+        ...acc2,
+      ]
     )
   })
   /* Feed all of the potential matches to the Blossom algorithim and let the
@@ -278,12 +274,14 @@ let pairPlayers = pairData => {
       List.has(acc, (p1, p2), pairEq) ? acc : [(p1, p2), ...acc]
     )
   /* Convert the ids back to their pairing data */
-  ->List.keepMap(((p1, p2)) =>
-      switch (Map.String.(get(pairData, p1), get(pairData, p2))) {
+  ->List.keepMap(((p1, p2)) => {
+      let p1 = Data_Id.fromString(p1);
+      let p2 = Data_Id.fromString(p2);
+      switch (Map.(get(pairData, p1), get(pairData, p2))) {
       | (Some(p1), Some(p2)) => Some((p1, p2))
       | _ => None
-      }
-    )
+      };
+    })
   ->List.sort(sortByNetScoreThenRating)
   /* assign colors and also convert them back to their id strings */
   ->List.map(assignColorsForPair);

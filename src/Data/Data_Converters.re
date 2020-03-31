@@ -1,6 +1,10 @@
 open Belt;
-/* This module is designed to convert types from the `Data` module to types to
-   be used in the `Pairing` and `Scoring` modules.*/
+
+/**
+ * This module is designed to convert types from the `Data` module to types to
+ * be used in the `Pairing` and `Scoring` modules.
+ */
+
 let makeScoreData =
     (
       ~existingData,
@@ -12,38 +16,42 @@ let makeScoreData =
       ~color,
     ) => {
   let oldData = {
-    switch (Map.String.get(existingData, playerId)) {
+    switch (Map.get(existingData, playerId)) {
     | None => Scoring.createBlankScoreData(~firstRating=origRating, playerId)
     | Some(data) => data
     };
   };
+
   let newResultsNoByes = {
     Scoring.(
-      Data_Player.isDummyId(oppId)
+      Data_Id.isDummy(oppId)
         ? oldData.resultsNoByes : [result, ...oldData.resultsNoByes]
     );
   };
+
   let oldOppResults = oldData.Scoring.opponentResults;
+
   let oppResult = {
-    switch (Map.String.get(oldOppResults, oppId)) {
+    switch (Map.get(oldOppResults, oppId)) {
     | None => result
     | Some(x) => x +. result
     };
   };
+
   Scoring.{
     ...oldData,
     results: [result, ...oldData.results],
     resultsNoByes: newResultsNoByes,
     colors: [color, ...oldData.colors],
     colorScores: [Scoring.Color.toScore(color), ...oldData.colorScores],
-    opponentResults: Map.String.set(oldOppResults, oppId, oppResult),
+    opponentResults: Map.set(oldOppResults, oppId, oppResult),
     ratings: [newRating, ...oldData.ratings],
-    isDummy: Data_Player.isDummyId(playerId),
+    isDummy: Data_Id.isDummy(playerId),
   };
 };
 
 let matches2ScoreData = (matchList: array(Data_Match.t)) => {
-  Array.reduce(matchList, Map.String.empty, (acc, match) =>
+  Array.reduce(matchList, Data_Id.Map.make(), (acc, match) =>
     Data_Match.(
       switch (match.result) {
       | Data_Match.Result.NotSet => acc
@@ -79,8 +87,8 @@ let matches2ScoreData = (matchList: array(Data_Match.t)) => {
             ~color=Scoring.Color.Black,
           );
         acc
-        ->Map.String.set(match.whiteId, whiteData)
-        ->Map.String.set(match.blackId, blackData);
+        ->Map.set(match.whiteId, whiteData)
+        ->Map.set(match.blackId, blackData);
       }
     )
   );
@@ -88,18 +96,18 @@ let matches2ScoreData = (matchList: array(Data_Match.t)) => {
 
 let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.AvoidPairs.toMap(avoidPairs);
-  Map.String.reduce(
+  Map.reduce(
     playerData,
-    Map.String.empty,
+    Data_Id.Map.make(),
     (acc, key, data) => {
       let playerStats = {
-        switch (Map.String.get(scoreData, key)) {
+        switch (Map.get(scoreData, key)) {
         | None => Scoring.createBlankScoreData(key)
         | Some(x) => x
         };
       };
       let newAvoidIds = {
-        switch (Map.String.get(avoidMap, key)) {
+        switch (Map.get(avoidMap, key)) {
         | None => []
         | Some(x) => x
         };
@@ -116,12 +124,12 @@ let createPairingData = (scoreData, playerData, avoidPairs) => {
           isUpperHalf: false,
           opponents:
             playerStats.Scoring.opponentResults
-            ->Map.String.keysToArray
+            ->Map.keysToArray
             ->List.fromArray,
           rating: data.Data_Player.rating,
           score: Utils.List.sumF(playerStats.Scoring.results),
         };
-      Map.String.set(acc, key, newData);
+      Map.set(acc, key, newData);
     },
   );
 };

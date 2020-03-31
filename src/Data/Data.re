@@ -4,3 +4,4 @@ module Rounds = Data_Rounds;
 module Tournament = Data_Tournament;
 module Config = Data_Config;
 module Converters = Data_Converters;
+module Id = Data_Id;

@@ -1,16 +1,17 @@
 open Belt;
-open Utils.Router;
+open Router;
 open Data.Tournament;
+
 /* These can't be definined inline or the comparisons don't work. */
 let dateSort = Hooks.GetDate(x => x.date);
 let nameSort = Hooks.GetString(x => x.name);
 
 [@react.component]
 let make = (~windowDispatch) => {
-  let (tourneys, dispatch, _) = Db.useAllTournaments();
+  let Db.{items: tourneys, dispatch, _} = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=Map.String.valuesToArray(tourneys),
+      ~table=Map.valuesToArray(tourneys),
       ~column=dateSort,
       ~isDescending=true,
     );
@@ -25,7 +26,7 @@ let make = (~windowDispatch) => {
   );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(Map.String.valuesToArray(tourneys)));
+      sortDispatch(Hooks.SetTable(Map.valuesToArray(tourneys)));
       None;
     },
     (tourneys, sortDispatch),
@@ -36,7 +37,7 @@ let make = (~windowDispatch) => {
   };
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
-    let id = Utils.nanoid();
+    let id = Data.Id.random();
     dispatch(
       Db.Set(
         id,
@@ -48,7 +49,9 @@ let make = (~windowDispatch) => {
           playerIds: [],
           roundList: Data.Rounds.empty,
           tieBreaks:
-            Scoring.([|Median, Solkoff, Cumulative, CumulativeOfOpposition|]),
+            Scoring.TieBreak.(
+              [|Median, Solkoff, Cumulative, CumulativeOfOpposition|]
+            ),
         },
       ),
     );
@@ -69,7 +72,7 @@ let make = (~windowDispatch) => {
           {React.string(" Add tournament")}
         </button>
       </div>
-      {Map.String.isEmpty(tourneys)
+      {Map.isEmpty(tourneys)
          ? <p> {React.string("No tournaments are added yet.")} </p>
          : <table>
              <caption> {React.string("Tournament list")} </caption>
@@ -88,17 +91,18 @@ let make = (~windowDispatch) => {
                    </Hooks.SortButton>
                  </th>
                  <th>
-                   <Utils.VisuallyHidden>
+                   <Externals.VisuallyHidden>
                      {React.string("Controls")}
-                   </Utils.VisuallyHidden>
+                   </Externals.VisuallyHidden>
                  </th>
                </tr>
              </thead>
              <tbody className="content">
                {Array.map(sorted.Hooks.table, t =>
-                  <tr key={t.id} className="buttons-on-hover">
+                  <tr
+                    key={t.id->Data.Id.toString} className="buttons-on-hover">
                     <td>
-                      <HashLink to_={"/tourneys/" ++ t.id}>
+                      <HashLink to_={Tournament(t.id, Tourney.Players)}>
                         {React.string(t.name)}
                       </HashLink>
                     </td>
@@ -117,7 +121,7 @@ let make = (~windowDispatch) => {
                 ->React.array}
              </tbody>
            </table>}
-      <Utils.Dialog
+      <Externals.Dialog
         isOpen=isDialogOpen
         onDismiss={() => setIsDialogOpen(_ => false)}
         ariaLabel="Create new tournament">
@@ -142,7 +146,7 @@ let make = (~windowDispatch) => {
             <input className="button-primary" type_="submit" value="Create" />
           </fieldset>
         </form>
-      </Utils.Dialog>
+      </Externals.Dialog>
     </div>
   </Window.Body>;
 };

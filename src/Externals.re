@@ -1,15 +1,7 @@
 /*******************************************************************************
   Misc. utilities
  ******************************************************************************/
-[@bs.module "nanoid"] external nanoid: unit => string = "default";
-
-module EloRank = {
-  type t;
-  [@bs.new] [@bs.module "elo-rank"] external make: int => t = "default";
-  [@bs.send] external getExpected: (t, int, int) => int = "getExpected";
-  [@bs.send]
-  external updateRating: (t, int, float, int) => int = "updateRating";
-};
+[@bs.module "nanoid"] external nanoid: unit => string = "nanoid";
 
 /*******************************************************************************
   Browser stuff
@@ -89,4 +81,77 @@ module ReachTabs = {
     [@bs.module "@reach/tabs"] [@react.component]
     external make: (~children: React.element) => React.element = "TabPanel";
   };
+};
+
+module Electron = {
+  type t;
+
+  module Shell = {
+    type t;
+    [@bs.send]
+    external openExternal: (t, string) => Js.Promise.t(unit) = "openExternal";
+  };
+
+  module Window = {
+    [@bs.scope "window"] [@bs.val]
+    external require: option(string => option(t)) = "require";
+
+    type t;
+    [@bs.send] external setFullScreen: (t, bool) => unit = "setFullScreen";
+    [@bs.send] external unmaximize: t => unit = "unmaximize";
+    [@bs.send] external maximize: t => unit = "maximize";
+    [@bs.send] external minimize: t => unit = "minimize";
+    [@bs.send] external close: t => unit = "close";
+    [@bs.send] external isFocused: t => bool = "isFocused";
+    [@bs.send] external isFullScreen: t => bool = "isFullScreen";
+    [@bs.send] external isMaximized: t => bool = "isMaximized";
+    [@bs.send]
+    external removeAllListeners:
+      (
+        t,
+        [@bs.string] [
+          | [@bs.as "enter-full-screen"] `EnterFullScreen
+          | [@bs.as "leave-full-screen"] `LeaveFullScreen
+          | [@bs.as "blur"] `Blur
+          | [@bs.as "focus"] `Focus
+          | [@bs.as "maximize"] `Maximize
+          | [@bs.as "unmaximize"] `Unmaximize
+        ]
+      ) =>
+      unit =
+      "removeAllListeners";
+    [@bs.send]
+    external on:
+      (
+        t,
+        [@bs.string] [
+          | [@bs.as "enter-full-screen"] `EnterFullScreen
+          | [@bs.as "leave-full-screen"] `LeaveFullScreen
+          | [@bs.as "blur"] `Blur
+          | [@bs.as "focus"] `Focus
+          | [@bs.as "maximize"] `Maximize
+          | [@bs.as "unmaximize"] `Unmaximize
+        ],
+        unit => unit
+      ) =>
+      unit =
+      "on";
+  };
+
+  module SystemPreferences = {
+    type t;
+    [@bs.send]
+    external getUserDefault: (t, string, string) => string = "getUserDefault";
+  };
+
+  module Remote = {
+    type t;
+    [@bs.get]
+    external getSystemPreferences: t => SystemPreferences.t =
+      "systemPreferences";
+    [@bs.send] external getCurrentWindow: t => Window.t = "getCurrentWindow";
+  };
+
+  [@bs.get] external getShell: t => Shell.t = "shell";
+  [@bs.get] external getRemote: t => Remote.t = "remote";
 };

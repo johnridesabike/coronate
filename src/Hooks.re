@@ -1,7 +1,7 @@
 open Belt;
 
-/*
-   Begin the sortable table hook.
+/**
+ * Begin the sortable table hook.
  */
 type getter('a) =
   | GetString('a => string)
@@ -9,9 +9,9 @@ type getter('a) =
   | GetFloat('a => float)
   | GetDate('a => Js.Date.t);
 
-/*
-   Arrays or lists? I'm using arrays because this data only exists to be rendered
-   in React.
+/**
+ * Arrays or lists? I'm using arrays because this data only exists to be
+ * rendered in React.
  */
 type tableState('a) = {
   isDescending: bool,
@@ -37,12 +37,12 @@ let sortedTableReducer = (state, action) => {
   let sortFunc =
     switch (newState.column) {
     | GetString(func) =>
-      direction(compare, str => str->func->Js.String2.toLowerCase)
+      direction(compare, str => str->func->Utils.String.toLowerCase)
     | GetInt(func) => direction(compare, func)
     | GetFloat(func) => direction(compare, func)
     | GetDate(func) => direction(compare, date => date->func->Js.Date.getTime)
     };
-  let table = SortArray.stableSortBy(newState.table, sortFunc);
+  let table = Belt.SortArray.stableSortBy(newState.table, sortFunc);
   {...newState, table};
 };
 
@@ -88,15 +88,15 @@ module SortButton = {
       {data.isDescending
          ? <span style=chevronStyle>
              <Icons.ChevronUp />
-             <Utils.VisuallyHidden>
+             <Externals.VisuallyHidden>
                {React.string("Sort ascending.")}
-             </Utils.VisuallyHidden>
+             </Externals.VisuallyHidden>
            </span>
          : <span style=chevronStyle>
              <Icons.ChevronDown />
-             <Utils.VisuallyHidden>
+             <Externals.VisuallyHidden>
                {React.string("Sort descending.")}
-             </Utils.VisuallyHidden>
+             </Externals.VisuallyHidden>
            </span>}
     </button>;
   };
@@ -116,11 +116,11 @@ let useLoadingCursorUntil = isLoaded => {
   );
 };
 
-/*
-   For the two components that use this, their logic is basically the same but
-   their markup is slightly different. We may want to just merge them into one
-   component instead of managing two similar components and one higher-order
-   component.
+/**
+ * For the two components that use this, their logic is basically the same but
+ * their markup is slightly different. We may want to just merge them into one
+ * component instead of managing two similar components and one higher-order
+ * component.
  */
 type scoreInfo = {
   player: Data.Player.t,
@@ -131,6 +131,7 @@ type scoreInfo = {
   opponentResults: React.element,
   avoidListHtml: React.element,
 };
+
 let useScoreInfo =
     (
       ~player,
@@ -140,15 +141,15 @@ let useScoreInfo =
       ~players,
       ~origRating,
       ~newRating,
-      ()
+      (),
     ) => {
   open Data;
   let {Scoring.colorScores, opponentResults, results, _} =
-    switch (Map.String.get(scoreData, player.Player.id)) {
+    switch (Map.get(scoreData, player.Player.id)) {
     | Some(data) => data
     | None => Scoring.createBlankScoreData(player.Player.id)
     };
-  let hasBye = Map.String.has(opponentResults, Player.dummy_id);
+  let hasBye = Map.has(opponentResults, Data.Id.dummy);
   let colorBalance =
     switch (Utils.List.sumF(colorScores)) {
     | x when x < 0.0 => "White +" ++ x->abs_float->Js.Float.toString
@@ -158,20 +159,20 @@ let useScoreInfo =
   let avoidMap =
     Option.mapWithDefault(
       avoidPairs,
-      Map.String.empty,
+      Data.Id.Map.make(),
       Config.AvoidPairs.toMap,
     );
   let avoidList =
-    switch (Map.String.get(avoidMap, player.Player.id)) {
+    switch (Map.get(avoidMap, player.Player.id)) {
     | None => []
     | Some(avoidList) => avoidList
     };
   let score = Utils.List.sumF(results);
   let opponentResults =
     opponentResults
-    ->Map.String.toArray
+    ->Map.toArray
     ->Array.map(((opId, result)) =>
-        <li key=opId>
+        <li key={Data.Id.toString(opId)}>
           {[
              getPlayer(opId).Player.firstName,
              getPlayer(opId).Player.lastName,
@@ -183,20 +184,26 @@ let useScoreInfo =
              | _ => "Draw"
              },
            ]
-           |> String.concat(" ")
-           |> React.string}
+           ->Utils.String.concat(~sep=" ")
+           ->React.string}
         </li>
       )
     ->React.array;
   let avoidListHtml =
-    Utils.List.toReactArrayReverse(avoidList, pId =>
-      switch (Map.String.get(players, pId)) {
-      /*  don't show players not in this tourney*/
-      | None => React.null
-      | Some({Player.firstName, lastName, _}) =>
-        <li key=pId> {React.string(firstName ++ " " ++ lastName)} </li>
-      }
-    );
+    avoidList
+    ->List.map(pId =>
+        switch (Map.get(players, pId)) {
+        /*  don't show players not in this tourney*/
+        | None => React.null
+        | Some({Player.firstName, lastName, _}) =>
+          <li key={Data.Id.toString(pId)}>
+            {React.string(firstName ++ " " ++ lastName)}
+          </li>
+        }
+      )
+    ->List.toArray
+    ->Array.reverse
+    ->React.array;
   let rating =
     <>
       {origRating->Js.Int.toString->React.string}

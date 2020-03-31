@@ -2,12 +2,14 @@
 
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
+import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
+import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Db$Coronate from "../../Db.bs.js";
-import * as Belt_MapString from "bs-platform/lib/es6/belt_MapString.js";
+import * as Data_Id$Coronate from "../../Data/Data_Id.bs.js";
 import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
@@ -40,9 +42,9 @@ function merger(_key, a, b) {
   }
 }
 
-var tournamentData = Belt_MapString.merge(TestData$Coronate.tournaments, DemoData$Coronate.tournaments, merger);
+var tournamentData = Data_Id$Coronate.$$Map.fromStringArray(Belt_Array.concat(TestData$Coronate.tournaments, DemoData$Coronate.tournaments));
 
-var playerData = Belt_MapString.merge(TestData$Coronate.players, DemoData$Coronate.players, merger);
+var playerData = Data_Id$Coronate.$$Map.fromStringArray(Belt_Array.concat(TestData$Coronate.players, DemoData$Coronate.players));
 
 function calcNumOfRounds(playerCount) {
   var roundCount = Math.ceil(log2(playerCount));
@@ -60,29 +62,29 @@ function tournamentReducer(param, action) {
 function LoadTournament_mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
-  var match = React.useReducer(tournamentReducer, Belt_MapString.getExn(tournamentData, tourneyId));
+  var match = React.useReducer(tournamentReducer, Belt_Map.getExn(tournamentData, tourneyId));
   var tourney = match[0];
   var roundList = tourney.roundList;
   var playerIds = tourney.playerIds;
   var match$1 = Db$Coronate.useAllPlayers(/* () */0);
-  var players = match$1[0];
-  var activePlayers = Belt_MapString.keep(players, (function (id, param) {
+  var players = match$1.items;
+  var activePlayers = Belt_Map.keep(players, (function (id, param) {
           return Belt_List.has(playerIds, id, (function (prim, prim$1) {
                         return prim === prim$1;
                       }));
         }));
-  var roundCount = calcNumOfRounds(Belt_MapString.size(activePlayers));
+  var roundCount = calcNumOfRounds(Belt_Map.size(activePlayers));
   var isItOver = Data_Rounds$Coronate.size(roundList) >= roundCount;
   var isNewRoundReady = Data_Rounds$Coronate.size(roundList) === 0 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, Data_Rounds$Coronate.size(roundList) - 1 | 0);
   return Curry._1(children, {
               activePlayers: activePlayers,
               getPlayer: (function (param) {
-                  return Data_Player$Coronate.getPlayerMaybe(players, param);
+                  return Data_Player$Coronate.getMaybe(players, param);
                 }),
               isItOver: isItOver,
               isNewRoundReady: isNewRoundReady,
               players: players,
-              playersDispatch: match$1[1],
+              playersDispatch: match$1.dispatch,
               roundCount: roundCount,
               tourney: tourney,
               setTourney: match[1]
@@ -100,13 +102,13 @@ function useRoundData(roundId, tournament) {
   var unmatched;
   if (round !== undefined && isThisTheLastRound) {
     var matched = Data_Rounds$Coronate.Round.getMatched(Caml_option.valFromOption(round));
-    unmatched = Belt_MapString.removeMany(activePlayers, matched);
+    unmatched = Belt_Map.removeMany(activePlayers, matched);
   } else {
-    unmatched = null;
+    unmatched = Data_Id$Coronate.$$Map.make(/* () */0);
   }
-  var unmatchedCount = Belt_MapString.size(unmatched);
-  var unmatchedWithDummy = unmatchedCount % 2 !== 0 ? Belt_MapString.set(unmatched, Data_Player$Coronate.dummy_id, Curry._1(tournament.getPlayer, Data_Player$Coronate.dummy_id)) : unmatched;
-  var activePlayersCount = Belt_MapString.size(activePlayers);
+  var unmatchedCount = Belt_Map.size(unmatched);
+  var unmatchedWithDummy = unmatchedCount % 2 !== 0 ? Belt_Map.set(unmatched, Data_Id$Coronate.dummy, Curry._1(tournament.getPlayer, Data_Id$Coronate.dummy)) : unmatched;
+  var activePlayersCount = Belt_Map.size(activePlayers);
   return {
           activePlayersCount: activePlayersCount,
           scoreData: scoreData,

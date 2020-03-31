@@ -4,6 +4,8 @@ open ReactTestingLibrary;
 open JestDom;
 open FireEvent;
 
+let id = Data.Id.fromString;
+
 afterEach(cleanup);
 
 let windowDispatch = _ => ();
@@ -11,7 +13,7 @@ let windowDispatch = _ => ();
 module BattleForGothamCity = {
   [@react.component]
   let make = (~children) =>
-    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA" windowDispatch>
+    <LoadTournament tourneyId={id("tvAdS4YbSOznrBgrg0ITA")} windowDispatch>
       children
     </LoadTournament>;
 };
@@ -19,7 +21,7 @@ module BattleForGothamCity = {
 module SimplePairing = {
   [@react.component]
   let make = (~children) =>
-    <LoadTournament tourneyId="Simple_Pairing_______" windowDispatch>
+    <LoadTournament tourneyId=TestData.simplePairing windowDispatch>
       children
     </LoadTournament>;
 };

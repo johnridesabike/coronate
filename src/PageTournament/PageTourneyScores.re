@@ -39,13 +39,13 @@ module Style = {
 module ScoreTable = {
   [@react.component]
   let make = (~isCompact=false, ~tourney, ~getPlayer, ~title) => {
-    let {Tournament.tieBreaks, roundList, _} = tourney;
-    let tieBreakNames = Array.map(tieBreaks, Tournament.mapTieBreakName);
+    let Tournament.{tieBreaks, roundList, _} = tourney;
+    let tieBreakNames = Array.map(tieBreaks, Scoring.TieBreak.toPrettyString);
     let standingTree =
       Rounds.rounds2Matches(roundList, ())
       ->Converters.matches2ScoreData
       ->Scoring.createStandingList(tieBreaks)
-      ->List.keep(standing => !Data.Player.isDummyId(standing.Scoring.id))
+      ->List.keep(standing => !Data.Id.isDummy(standing.Scoring.id))
       ->Scoring.createStandingTree;
     <table
       className={Cn.make([Style.table, Style.compact->Cn.ifTrue(isCompact)])}>
@@ -72,82 +72,97 @@ module ScoreTable = {
         </tr>
       </thead>
       <tbody>
-        {standingTree->Utils.List.toReactArrayReverseWithIndex(
-           (rank, standingsFlat) =>
-           standingsFlat->Utils.List.toReactArrayReverseWithIndex(
-             (i, standing) =>
-             <tr key={standing.Scoring.id} className=Style.row>
-               {i === 0
-                  /* Only display the rank once */
-                  ? <th
-                      className={Cn.make([
-                        "table__number",
-                        Style.number,
-                        Style.rank,
-                        Style.rowTh,
-                      ])}
-                      rowSpan={List.size(standingsFlat)}
-                      scope="row">
-                      {string_of_int(rank + 1)->React.string}
-                    </th>
-                  : React.null}
-               /* It just uses <td> if it's compact.*/
-               {isCompact
-                  ? <td className={Cn.make([Style.rowTd, Style.playerName])}>
-                      {React.string(
-                         getPlayer(standing.Scoring.id).Player.firstName,
-                       )}
-                      {React.string(Utils.Entities.nbsp)}
-                      {React.string(
-                         getPlayer(standing.Scoring.id).Player.lastName,
-                       )}
-                    </td>  /* Use the name as a header if not compact. */
-                  : <th
-                      className={Cn.make([Style.rowTh, Style.playerName])}
-                      /*dataTestid={rank |>string_of_int}*/
-                      scope="row">
-                      {React.string(
-                         getPlayer(standing.Scoring.id).Player.firstName,
-                       )}
-                      {React.string(Utils.Entities.nbsp)}
-                      {React.string(
-                         getPlayer(standing.Scoring.id).Player.lastName,
-                       )}
-                    </th>}
-               <td
-                 className={Cn.make([
-                   Style.number,
-                   Style.rowTd,
-                   "table__number",
-                 ])}>
-                 /*dataTestid={dashify(
-                     getPlayer(standing.id).firstName
-                     + getPlayer(standing.id).lastName
-                     + " score",
-                   )}*/
+        {standingTree
+         ->List.toArray
+         ->Array.reverse
+         ->Array.mapWithIndex((rank, standingsFlat) =>
+             standingsFlat
+             ->List.toArray
+             ->Array.reverse
+             ->Array.mapWithIndex((i, standing) =>
+                 <tr
+                   key={standing.Scoring.id->Data.Id.toString}
+                   className=Style.row>
+                   {i === 0
+                      /* Only display the rank once */
+                      ? <th
+                          className={Cn.make([
+                            "table__number",
+                            Style.number,
+                            Style.rank,
+                            Style.rowTh,
+                          ])}
+                          rowSpan={List.size(standingsFlat)}
+                          scope="row">
+                          {string_of_int(rank + 1)->React.string}
+                        </th>
+                      : React.null}
+                   /* It just uses <td> if it's compact.*/
+                   {isCompact
+                      ? <td
+                          className={Cn.make([Style.rowTd, Style.playerName])}>
+                          {React.string(
+                             getPlayer(standing.Scoring.id).Player.firstName,
+                           )}
+                          {React.string(Utils.Entities.nbsp)}
+                          {React.string(
+                             getPlayer(standing.Scoring.id).Player.lastName,
+                           )}
+                        </td>  /* Use the name as a header if not compact. */
+                      : <th
+                          className={Cn.make([Style.rowTh, Style.playerName])}
+                          /*dataTestid={rank |>string_of_int}*/
+                          scope="row">
+                          {React.string(
+                             getPlayer(standing.Scoring.id).Player.firstName,
+                           )}
+                          {React.string(Utils.Entities.nbsp)}
+                          {React.string(
+                             getPlayer(standing.Scoring.id).Player.lastName,
+                           )}
+                        </th>}
+                   <td
+                     className={Cn.make([
+                       Style.number,
+                       Style.rowTd,
+                       "table__number",
+                     ])}>
+                     /*dataTestid={dashify(
+                         getPlayer(standing.id).firstName
+                         + getPlayer(standing.id).lastName
+                         + " score",
+                       )}*/
 
-                   Numeral.(standing.Scoring.score->make->format("1/2"))
-                   ->React.string
-                 </td>
-               {isCompact
-                  ? React.null
-                  : standing.Scoring.tieBreaks
-                    ->Utils.List.toReactArray(((j, score)) =>
-                        <td
-                          key={Tournament.mapTieBreakName(j)}
-                          className={Cn.make([Style.rowTd, "table__number"])}>
-                          /*dataTestid={dashify(
-                              getPlayer(standing.id).firstName
-                              + getPlayer(standing.id).lastName
-                              + tieBreakNames[j],
-                            )}*/
+                       Numeral.(standing.Scoring.score->make->format("1/2"))
+                       ->React.string
+                     </td>
+                   {isCompact
+                      ? React.null
+                      : standing.Scoring.tieBreaks
+                        ->List.toArray
+                        ->Array.map(((j, score)) =>
+                            <td
+                              key={Scoring.TieBreak.toString(j)}
+                              className={Cn.make([
+                                Style.rowTd,
+                                "table__number",
+                              ])}>
+                              /*dataTestid={dashify(
+                                  getPlayer(standing.id).firstName
+                                  + getPlayer(standing.id).lastName
+                                  + tieBreakNames[j],
+                                )}*/
 
-                            Numeral.(score->make->format("1/2"))->React.string
-                          </td>
-                      )}
-             </tr>
+                                Numeral.(score->make->format("1/2"))
+                                ->React.string
+                              </td>
+                          )
+                        ->React.array}
+                 </tr>
+               )
+             ->React.array
            )
-         )}
+         ->React.array}
       </tbody>
     </table>;
   };
@@ -164,7 +179,7 @@ module SelectTieBreaks = {
       | None =>
         switch (selectedTb) {
         | Some(x) => x
-        | None => Scoring.Median /* This should never happen.*/
+        | None => Scoring.TieBreak.Median /* This should never happen.*/
         }
       };
 
@@ -246,21 +261,21 @@ module SelectTieBreaks = {
             <tr>
               <th> {React.string("Name")} </th>
               <th>
-                <Utils.VisuallyHidden>
+                <Externals.VisuallyHidden>
                   {React.string("Controls")}
-                </Utils.VisuallyHidden>
+                </Externals.VisuallyHidden>
               </th>
             </tr>
           </thead>
           <tbody className="content">
             {Array.map(tieBreaks, tieBreak =>
                <tr
-                 key={Tournament.tieBreakToString(tieBreak)}
+                 key={Scoring.TieBreak.toString(tieBreak)}
                  className={Cn.make([
                    "selected"->Cn.ifTrue(selectedTb === Some(tieBreak)),
                  ])}>
                  <td>
-                   {Tournament.mapTieBreakName(tieBreak)->React.string}
+                   {Scoring.TieBreak.toPrettyString(tieBreak)->React.string}
                  </td>
                  <td style={ReactDOMRe.Style.make(~width="48px", ())}>
                    <button
@@ -302,14 +317,14 @@ module SelectTieBreaks = {
             <tr>
               <th> {React.string("Name")} </th>
               <th>
-                <Utils.VisuallyHidden>
+                <Externals.VisuallyHidden>
                   {React.string("Controls")}
-                </Utils.VisuallyHidden>
+                </Externals.VisuallyHidden>
               </th>
             </tr>
           </thead>
           <tbody className="content">
-            {Scoring.(
+            {Scoring.TieBreak.(
                [|
                  Median,
                  Solkoff,
@@ -319,14 +334,14 @@ module SelectTieBreaks = {
                |]
              )
              ->Array.map(tieBreak =>
-                 <tr key={Tournament.tieBreakToString(tieBreak)}>
+                 <tr key={Scoring.TieBreak.toString(tieBreak)}>
                    <td>
                      <span
                        className={
                          Js.Array2.includes(tieBreaks, tieBreak)
                            ? "disabled" : "enabled"
                        }>
-                       {tieBreak->Tournament.mapTieBreakName->React.string}
+                       {tieBreak->Scoring.TieBreak.toPrettyString->React.string}
                      </span>
                    </td>
                    <td>
@@ -350,8 +365,8 @@ module SelectTieBreaks = {
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.getPlayer, tourney, setTourney, _} = tournament;
-  Utils.Tabs.(
+  let LoadTournament.{getPlayer, tourney, setTourney, _} = tournament;
+  Externals.ReachTabs.(
     <Tabs>
       <TabList>
         <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
@@ -372,10 +387,10 @@ module Crosstable = {
     if (player1Id === player2Id) {
       <Icons.X className="disabled" />;
     } else {
-      switch (Map.String.get(scoreData, player1Id)) {
+      switch (Map.get(scoreData, player1Id)) {
       | None => React.null
       | Some(scoreData) =>
-        switch (Map.String.get(scoreData.Scoring.opponentResults, player2Id)) {
+        switch (Map.get(scoreData.Scoring.opponentResults, player2Id)) {
         | None => React.null
         | Some(result) =>
           Numeral.make(result)->Numeral.format("1/2")->React.string
@@ -384,10 +399,9 @@ module Crosstable = {
     };
 
   let getRatingChangeTds = (scoreData, playerId) => {
-    let firstRating =
-      scoreData->Map.String.getExn(playerId).Scoring.firstRating;
+    let firstRating = scoreData->Map.getExn(playerId).Scoring.firstRating;
     let lastRating =
-      switch (Map.String.getExn(scoreData, playerId).Scoring.ratings) {
+      switch (Map.getExn(scoreData, playerId).Scoring.ratings) {
       | [] => firstRating
       | [rating, ..._] => rating
       };
@@ -405,8 +419,8 @@ module Crosstable = {
 
   [@react.component]
   let make = (~tournament) => {
-    let {LoadTournament.tourney, getPlayer, _} = tournament;
-    let {Tournament.tieBreaks, roundList, _} = tourney;
+    let LoadTournament.{tourney, getPlayer, _} = tournament;
+    let Tournament.{tieBreaks, roundList, _} = tourney;
     let scoreData =
       Rounds.rounds2Matches(roundList, ())->Converters.matches2ScoreData;
     let standings = Scoring.createStandingList(scoreData, tieBreaks);
@@ -418,49 +432,62 @@ module Crosstable = {
           <th> {React.string("#")} </th>
           <th> {React.string("Name")} </th>
           /* Display a rank as a shorthand for each player. */
-          {Utils.List.toReactArrayWithIndex(standings, (rank, _) =>
-             <th key={string_of_int(rank)}>
-               {string_of_int(rank + 1)->React.string}
-             </th>
-           )}
+          {standings
+           ->List.toArray
+           ->Array.mapWithIndex((rank, _) =>
+               <th key={string_of_int(rank)}>
+                 {string_of_int(rank + 1)->React.string}
+               </th>
+             )
+           ->React.array}
           <th> {React.string("Score")} </th>
           <th colSpan=2> {React.string("Rating")} </th>
         </tr>
       </thead>
       <tbody>
-        {Utils.List.toReactArrayWithIndex(standings, (index, standing) =>
-           <tr key={string_of_int(index)} className=Style.row>
-             <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
-               {string_of_int(index + 1)->React.string}
-             </th>
-             <th
-               className={Cn.make([Style.rowTh, Style.playerName])}
-               scope="row">
-               {React.string(getPlayer(standing.Scoring.id).Player.firstName)}
-               {React.string(Utils.Entities.nbsp)}
-               {React.string(getPlayer(standing.Scoring.id).Player.lastName)}
-             </th>
-             /* Output a cell for each other player */
-             {Utils.List.toReactArrayWithIndex(standings, (index2, opponent) =>
-                <td
-                  key={string_of_int(index2)}
-                  className={Cn.make([Style.rowTd, "table__number"])}>
-                  {getXScore(
-                     scoreData,
-                     standing.Scoring.id,
-                     opponent.Scoring.id,
-                   )}
-                </td>
-              )}
-             /* Output their score and rating change */
-             <td className={Cn.make([Style.rowTd, "table__number"])}>
-               {Numeral.make(standing.Scoring.score)
-                ->Numeral.format("1/2")
-                ->React.string}
-             </td>
-             {getRatingChangeTds(scoreData, standing.Scoring.id)}
-           </tr>
-         )}
+        {standings
+         ->List.toArray
+         ->Array.mapWithIndex((index, standing) =>
+             <tr key={string_of_int(index)} className=Style.row>
+               <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
+                 {string_of_int(index + 1)->React.string}
+               </th>
+               <th
+                 className={Cn.make([Style.rowTh, Style.playerName])}
+                 scope="row">
+                 {React.string(
+                    getPlayer(standing.Scoring.id).Player.firstName,
+                  )}
+                 {React.string(Utils.Entities.nbsp)}
+                 {React.string(
+                    getPlayer(standing.Scoring.id).Player.lastName,
+                  )}
+               </th>
+               /* Output a cell for each other player */
+               {standings
+                ->List.toArray
+                ->Array.mapWithIndex((index2, opponent) =>
+                    <td
+                      key={string_of_int(index2)}
+                      className={Cn.make([Style.rowTd, "table__number"])}>
+                      {getXScore(
+                         scoreData,
+                         standing.Scoring.id,
+                         opponent.Scoring.id,
+                       )}
+                    </td>
+                  )
+                ->React.array}
+               /* Output their score and rating change */
+               <td className={Cn.make([Style.rowTd, "table__number"])}>
+                 {Numeral.make(standing.Scoring.score)
+                  ->Numeral.format("1/2")
+                  ->React.string}
+               </td>
+               {getRatingChangeTds(scoreData, standing.Scoring.id)}
+             </tr>
+           )
+         ->React.array}
       </tbody>
     </table>;
   };

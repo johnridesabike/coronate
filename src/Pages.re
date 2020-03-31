@@ -1,59 +1,4 @@
 open Belt;
-/*
- /* Use this in the window footer to indicate unstable releases. */
- module CautionFooter = {
-   module Styles = {
-     open Css;
-     open Utils.PhotonColors;
-     let container =
-       style([
-         width(`percent(100.0)),
-         backgroundRepeat(`repeat),
-         display(`flex),
-         flexDirection(`column),
-         justifyContent(`center),
-         textAlign(`center),
-         alignItems(`center),
-         backgroundImage(`url(Utils.WebpackAssets.caution)),
-       ]);
-     let text =
-       style([
-         padding(`px(4)),
-         backgroundColor(ink_90),
-         color(grey_10),
-         borderRadius(`px(4)),
-       ]);
-     let link =
-       style([
-         color(teal_50),
-         visited([color(teal_50)]),
-         active([color(teal_60)]),
-         focus([color(teal_60)]),
-         hover([color(teal_60)]),
-       ]);
-   };
-
-   [@react.component]
-   let make = () =>
-     <aside className={Cn.make([Styles.container, "body-20"])}>
-       <p className=Styles.text>
-         {React.string({j|⚠️|j})}
-         {React.string(
-            " This is beta software. Want to help make it better? Check out the ",
-          )}
-         <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
-         {React.string(Utils.Entities.nbsp)}
-         <a
-           className=Styles.link
-           href=Utils.github_url
-           onClick=Electron.openInBrowser>
-           {React.string("Git repository")}
-         </a>
-         {React.string(".")}
-       </p>
-     </aside>;
- };
- */
 
 module Splash = {
   module Style = {
@@ -151,14 +96,14 @@ module Splash = {
               <a
                 className=Style.footerLink
                 href=Utils.github_url
-                onClick=Electron.openInBrowser>
+                onClick=Electron.Event.openInBrowser>
                 {React.string("Source code is available")}
               </a>
               {React.string(" under the ")}
               <a
                 className=Style.footerLink
                 href=Utils.license_url
-                onClick=Electron.openInBrowser>
+                onClick=Electron.Event.openInBrowser>
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
@@ -169,7 +114,7 @@ module Splash = {
               <a
                 className=Style.footerLink
                 href=Utils.issues_url
-                onClick=Electron.openInBrowser>
+                onClick=Electron.Event.openInBrowser>
                 {React.string("Suggestions and bug reports are welcome.")}
               </a>
             </p>
@@ -178,14 +123,14 @@ module Splash = {
               <a
                 className=Style.footerLink
                 href="https://reasonml.github.io/"
-                onClick=Electron.openInBrowser>
+                onClick=Electron.Event.openInBrowser>
                 {React.string("Reason")}
               </a>
               {React.string(" & ")}
               <a
                 className=Style.footerLink
                 href="https://reasonml.github.io/reason-react/"
-                onClick=Electron.openInBrowser>
+                onClick=Electron.Event.openInBrowser>
                 {React.string("ReasonReact")}
               </a>
               {React.string(". ")}
@@ -221,6 +166,7 @@ module TimeCalculator = {
     let safeValue = value < minimum ? minimum : value;
     dispatch(_ => safeValue);
   };
+
   let updateInt = (dispatch, minimum, event) => {
     ReactEvent.Form.preventDefault(event);
     let value =
@@ -230,6 +176,7 @@ module TimeCalculator = {
     let safeValue = value < minimum ? minimum : value;
     dispatch(_ => safeValue);
   };
+
   [@react.component]
   let make = () => {
     let minPlayers = 0;
@@ -362,3 +309,59 @@ module NotFound = {
   let make = () =>
     <p className="content-area"> {React.string("Page not found.")} </p>;
 };
+
+/*
+ /* Use this in the window footer to indicate unstable releases. */
+ module CautionFooter = {
+   module Styles = {
+     open Css;
+     open Utils.PhotonColors;
+     let container =
+       style([
+         width(`percent(100.0)),
+         backgroundRepeat(`repeat),
+         display(`flex),
+         flexDirection(`column),
+         justifyContent(`center),
+         textAlign(`center),
+         alignItems(`center),
+         backgroundImage(`url(Utils.WebpackAssets.caution)),
+       ]);
+     let text =
+       style([
+         padding(`px(4)),
+         backgroundColor(ink_90),
+         color(grey_10),
+         borderRadius(`px(4)),
+       ]);
+     let link =
+       style([
+         color(teal_50),
+         visited([color(teal_50)]),
+         active([color(teal_60)]),
+         focus([color(teal_60)]),
+         hover([color(teal_60)]),
+       ]);
+   };
+
+   [@react.component]
+   let make = () =>
+     <aside className={Cn.make([Styles.container, "body-20"])}>
+       <p className=Styles.text>
+         {React.string({j|⚠️|j})}
+         {React.string(
+            " This is beta software. Want to help make it better? Check out the ",
+          )}
+         <span role="img" ariaHidden=true> {React.string({j| 👉 |j})} </span>
+         {React.string(Utils.Entities.nbsp)}
+         <a
+           className=Styles.link
+           href=Utils.github_url
+           onClick=Electron.openInBrowser>
+           {React.string("Git repository")}
+         </a>
+         {React.string(".")}
+       </p>
+     </aside>;
+ };
+ */

@@ -38,23 +38,25 @@
         "@johnridesabike/bs-numeral",
         "@glennsl/bs-json",
         "bs-intl",
-        "reason-future",
         "@johnridesabike/bs-localforage",
-        "re-blossom"
+        "re-blossom",
+        "reason-promise",
+        "re-formality"
     ],
     "bs-dev-dependencies": [
         "@glennsl/bs-jest",
         "bs-react-testing-library",
-        "bs-dom-testing-library",
         "bs-jest-dom"
     ],
-    "ppx-flags": [],
+    "ppx-flags": [
+        "re-formality/ppx"
+    ],
     "refmt": 3,
     "ignored-dirs": [
         "node_modules"
     ],
     "warnings": {
-        "number": "+A-48",
-        "error": "+A-3-44-102-42"
+        "number": "+A-48-42",
+        "error": "+A-3-44-102"
     }
 }

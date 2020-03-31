@@ -1,6 +1,41 @@
 open Belt;
 open Data;
 
+let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
+  /* the pairData includes any players who were already matched. We need to
+     only include the specified players. */
+  let filteredData =
+    pairData->Belt.Map.(keep((id, _) => playerMap->has(id)));
+  let (pairdataNoByes, byePlayerData) =
+    Pairing.setByePlayer(byeQueue, Data.Id.dummy, filteredData);
+  let pairs = Pairing.pairPlayers(pairdataNoByes);
+  let pairsWithBye =
+    switch (byePlayerData) {
+    | Some(player) =>
+      /* These two reverses ensure that the bye match is added at the end, not
+         the beginning */
+      pairs
+      ->List.reverse
+      ->List.add((player.Pairing.id, Data.Id.dummy))
+      ->List.reverse
+    | None => pairs
+    };
+  let getPlayer = Data.Player.getMaybe(playerMap);
+  pairsWithBye->List.map(((whiteId, blackId)) =>
+    Data.Match.{
+      id: Data.Id.random(),
+      whiteOrigRating: getPlayer(whiteId).Data.Player.rating,
+      blackOrigRating: getPlayer(blackId).Data.Player.rating,
+      whiteNewRating: getPlayer(whiteId).Data.Player.rating,
+      blackNewRating: getPlayer(blackId).Data.Player.rating,
+      whiteId,
+      blackId,
+      result: Data.Match.Result.NotSet,
+    }
+    ->Data.Match.scoreByeMatch(~byeValue)
+  );
+};
+
 type listEntry = {
   player: Player.t,
   ideal: float,
@@ -14,9 +49,7 @@ module SelectList = {
   let make = (~pairData, ~stagedPlayers, ~setStagedPlayers, ~unmatched) => {
     let (p1, p2) = stagedPlayers;
     let initialTable =
-      unmatched
-      ->Map.String.valuesToArray
-      ->Array.map(player => {player, ideal: 0.0});
+      unmatched->Map.valuesToArray->Array.map(player => {player, ideal: 0.0});
     let (sorted, sortedDispatch) =
       Hooks.useSortedTable(
         ~table=initialTable,
@@ -47,7 +80,7 @@ module SelectList = {
           switch (selectedId) {
           | None => 0.0
           | Some(id) =>
-            switch (pairData->Map.String.get(id)) {
+            switch (pairData->Map.get(id)) {
             | None => 0.0 /* It's a bye player */
             | Some(selectedPlayer) =>
               switch (player) {
@@ -61,12 +94,11 @@ module SelectList = {
         };
         let table =
           unmatched
-          ->Map.String.valuesToArray
+          ->Map.valuesToArray
           ->Array.map(player =>
               {
                 player,
-                ideal:
-                  calcIdealOrNot(pairData->Map.String.get(player.Player.id)),
+                ideal: calcIdealOrNot(pairData->Map.get(player.Player.id)),
               }
             );
         sortedDispatch(Hooks.SetTable(table));
@@ -83,16 +115,16 @@ module SelectList = {
       | (Some(_), Some(_)) => ()
       };
     };
-    if (Map.String.size(unmatched) === 0) {
+    if (Map.size(unmatched) === 0) {
       React.null;
     } else {
       <table className="content">
         <thead>
           <tr>
             <th>
-              <Utils.VisuallyHidden>
+              <Externals.VisuallyHidden>
                 {React.string("Controls")}
-              </Utils.VisuallyHidden>
+              </Externals.VisuallyHidden>
             </th>
             <th>
               <Hooks.SortButton
@@ -112,18 +144,18 @@ module SelectList = {
           {sorted.Hooks.table
            ->Array.map(({player, ideal}) =>
                Player.(
-                 <tr key={player.id}>
+                 <tr key={player.id->Data.Id.toString}>
                    <td>
                      <button
                        className="button-ghost"
                        disabled={!isPlayerSelectable(player.id)}
                        onClick={_ => selectPlayer(player.id)}>
                        <Icons.UserPlus />
-                       <Utils.VisuallyHidden>
+                       <Externals.VisuallyHidden>
                          {["Add", player.firstName, player.lastName]
-                          |> String.concat(" ")
-                          |> React.string}
-                       </Utils.VisuallyHidden>
+                          ->Utils.String.concat(~sep=" ")
+                          ->React.string}
+                       </Externals.VisuallyHidden>
                      </button>
                    </td>
                    <td>
@@ -165,7 +197,7 @@ module Stage = {
       ) => {
     open Player;
     let (white, black) = stagedPlayers;
-    let {Tournament.roundList, _} = tourney;
+    let Tournament.{roundList, _} = tourney;
     let noneAreSelected =
       switch (stagedPlayers) {
       | (None, None) => true
@@ -229,7 +261,7 @@ module Stage = {
     let matchIdeal = {
       switch (stagedPlayers) {
       | (Some(p1), Some(p2)) =>
-        switch (Map.String.(pairData->get(p1), pairData->get(p2))) {
+        switch (Map.(pairData->get(p1), pairData->get(p2))) {
         | (Some(p1Data), Some(p2Data)) =>
           let ideal = Pairing.calcPairIdeal(p1Data, p2Data);
           Numeral.((ideal /. Pairing.maxPriority)->make->format("%"));
@@ -342,7 +374,10 @@ module PlayerInfo = {
         {React.string("Score: ")}
         {score->Js.Float.toString->React.string}
       </p>
-      <p id={"rating-" ++ player.id}> {React.string("Rating: ")} rating </p>
+      <p id={"rating-" ++ player.id->Data.Id.toString}>
+        {React.string("Rating: ")}
+        rating
+      </p>
       <p> {React.string("Color balance: " ++ colorBalance)} </p>
       <p>
         {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
@@ -367,8 +402,7 @@ let make =
     ) => {
   let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None));
   let (p1, p2) = stagedPlayers;
-  let (config, _) = Db.useConfig();
-  let {Config.avoidPairs, byeValue, _} = config;
+  let (Config.{avoidPairs, byeValue, _}, _) = Db.useConfig();
   let LoadTournament.{
         tourney,
         activePlayers,
@@ -378,7 +412,7 @@ let make =
         playersDispatch,
         _,
       } = tournament;
-  let {Tournament.roundList, byeQueue, _} = tourney;
+  let Tournament.{roundList, byeQueue, _} = tourney;
   let round = roundList->Rounds.get(roundId);
   let (isModalOpen, setIsModalOpen) = React.useState(() => false);
   /* `createPairingData` is relatively expensive */
@@ -395,7 +429,7 @@ let make =
       switch (p1) {
       | None => ()
       | Some(p1) =>
-        switch (unmatchedWithDummy->Map.String.get(p1)) {
+        switch (unmatchedWithDummy->Map.get(p1)) {
         | None => setStagedPlayers(((_, p2)) => (None, p2))
         | Some(_) => ()
         }
@@ -403,7 +437,7 @@ let make =
       switch (p2) {
       | None => ()
       | Some(p2) =>
-        switch (unmatchedWithDummy->Map.String.get(p2)) {
+        switch (unmatchedWithDummy->Map.get(p2)) {
         | None => setStagedPlayers(((p1, _)) => (p1, None))
         | Some(_) => ()
         }
@@ -416,7 +450,7 @@ let make =
     let newRound =
       Rounds.Round.addMatches(
         round,
-        Match.autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)
+        autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)
         ->List.toArray,
       );
     switch (Rounds.set(roundList, roundId, newRound)) {
@@ -469,7 +503,7 @@ let make =
                  switch (id) {
                  | None => React.null
                  | Some(playerId) =>
-                   <Utils.Panel key=playerId>
+                   <Utils.Panel key={playerId->Data.Id.toString}>
                      <PlayerInfo
                        player={getPlayer(playerId)}
                        scoreData
@@ -486,7 +520,7 @@ let make =
           </Utils.PanelContainer>
         </Utils.Panel>
       </Utils.PanelContainer>
-      <Utils.Dialog
+      <Externals.Dialog
         isOpen=isModalOpen
         onDismiss={_ => setIsModalOpen(_ => false)}
         ariaLabel="Select players">
@@ -500,7 +534,7 @@ let make =
           players
           playersDispatch
         />
-      </Utils.Dialog>
+      </Externals.Dialog>
     </div>
   };
 };

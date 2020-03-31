@@ -1,10 +1,10 @@
-open Belt;
 open Data;
+open Belt;
 
 module Selecting = {
   [@react.component]
   let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
-    let {Tournament.playerIds, _} = tourney;
+    let Tournament.{playerIds, _} = tourney;
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)##value;
       if (ReactEvent.Form.target(event)##checked) {
@@ -27,7 +27,7 @@ module Selecting = {
             setTourney(
               Tournament.{
                 ...tourney,
-                playerIds: players->Map.String.keysToArray->List.fromArray,
+                playerIds: players->Map.keysToArray->List.fromArray,
               },
             )
           }>
@@ -50,24 +50,24 @@ module Selecting = {
         </thead>
         <tbody>
           {players
-           ->Map.String.valuesToArray
+           ->Map.valuesToArray
            ->Array.map(({Player.id, firstName, lastName, _}) =>
-               <tr key=id>
+               <tr key={id->Data.Id.toString}>
                  <td> {React.string(firstName)} </td>
                  <td> {React.string(lastName)} </td>
                  <td>
-                   <Utils.VisuallyHidden>
-                     <label htmlFor={"select-" ++ id}>
+                   <Externals.VisuallyHidden>
+                     <label htmlFor={"select-" ++ id->Data.Id.toString}>
                        {["Select", firstName, lastName]
-                        |> String.concat(" ")
-                        |> React.string}
+                        ->Utils.String.concat(~sep=" ")
+                        ->React.string}
                      </label>
-                   </Utils.VisuallyHidden>
+                   </Externals.VisuallyHidden>
                    <input
                      checked={playerIds->List.has(id, (===))}
                      type_="checkbox"
-                     value=id
-                     id={"select-" ++ id}
+                     value={id->Data.Id.toString}
+                     id={"select-" ++ id->Data.Id.toString}
                      onChange=togglePlayer
                    />
                  </td>
@@ -97,7 +97,7 @@ let hasHadBye = (matches, playerId) => {
           concat(acc, [|match.Match.whiteId, match.Match.blackId|]),
         [||],
       )
-    ->includes(Data.Player.dummy_id)
+    ->includes(Data.Id.dummy)
   );
 };
 
@@ -106,10 +106,10 @@ module PlayerList = {
   let make = (~players, ~tourney, ~setTourney, ~byeQueue) => {
     <>
       {players
-       ->Map.String.valuesToArray
+       ->Map.valuesToArray
        ->Array.map(p =>
            <tr
-             key={p.Player.id}
+             key={p.Player.id->Data.Id.toString}
              className={Cn.make([
                Player.Type.toString(p.Player.type_),
                "player",
@@ -140,15 +140,15 @@ module PlayerList = {
 
 [@react.component]
 let make = (~tournament) => {
-  let {
-    LoadTournament.tourney,
-    setTourney,
-    players,
-    activePlayers,
-    playersDispatch,
-    _,
-  } = tournament;
-  let {Tournament.playerIds, roundList, byeQueue, _} = tourney;
+  let LoadTournament.{
+        tourney,
+        setTourney,
+        players,
+        activePlayers,
+        playersDispatch,
+        _,
+      } = tournament;
+  let Tournament.{playerIds, roundList, byeQueue, _} = tourney;
   let (isSelecting, setIsSelecting) =
     React.useState(() =>
       switch (playerIds) {
@@ -191,17 +191,17 @@ let make = (~tournament) => {
         <ol>
           {Array.map(byeQueue, pId =>
              <li
-               key=pId
+               key={pId->Data.Id.toString}
                className={Cn.make([
                  "buttons-on-hover",
                  "disabled"->Cn.ifTrue(hasHadBye(matches, pId)),
                ])}>
                {[
-                  activePlayers->Map.String.getExn(pId).Player.firstName,
-                  activePlayers->Map.String.getExn(pId).Player.lastName,
+                  activePlayers->Map.getExn(pId).Player.firstName,
+                  activePlayers->Map.getExn(pId).Player.lastName,
                 ]
-                |> String.concat(" ")
-                |> React.string}
+                ->Utils.String.concat(~sep=" ")
+                ->React.string}
                {React.string(" ")}
                <button
                  className="button-micro"
@@ -220,7 +220,7 @@ let make = (~tournament) => {
            ->React.array}
         </ol>
       </Utils.Panel>
-      <Utils.Dialog
+      <Externals.Dialog
         isOpen=isSelecting
         onDismiss={() => setIsSelecting(_ => false)}
         ariaLabel="Select players">
@@ -230,7 +230,7 @@ let make = (~tournament) => {
           {React.string("Done")}
         </button>
         <Selecting tourney setTourney players playersDispatch />
-      </Utils.Dialog>
+      </Externals.Dialog>
     </Utils.PanelContainer>
   </div>;
 };

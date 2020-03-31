@@ -4,6 +4,8 @@ open ReactTestingLibrary;
 open JestDom;
 open FireEvent;
 
+let id = Data.Id.fromString;
+
 /* afterEach(cleanup); */
 
 let windowDispatch = _ => ();
@@ -11,7 +13,7 @@ let windowDispatch = _ => ();
 module BattleForGothamCityRound = {
   [@react.component]
   let make = (~children) =>
-    <LoadTournament tourneyId="tvAdS4YbSOznrBgrg0ITA" windowDispatch>
+    <LoadTournament tourneyId={id("tvAdS4YbSOznrBgrg0ITA")} windowDispatch>
       children
     </LoadTournament>;
 };
@@ -31,6 +33,7 @@ describe("Tabs auto-change correctly.", () => {
   test("When no players are matched, it defaults to the pair-picker", () =>
     selectTab |> expect |> toHaveAttribute("aria-selected", ~value="true")
   );
+
   test(
     "Tab doesn't change focus if there are still players to be matched.", () => {
     page
@@ -44,6 +47,7 @@ describe("Tabs auto-change correctly.", () => {
     |> click;
     selectTab |> expect |> toHaveAttribute("aria-selected", ~value="true");
   });
+
   test(
     "The tab selection doesn't change if there are still matched players", () => {
     page
@@ -68,7 +72,9 @@ describe("Tabs auto-change correctly.", () => {
     page |> getByText(~matcher=`RegExp([%bs.re "/^unmatch$/i"])) |> click;
     matchesTab |> expect |> toHaveAttribute("aria-selected", ~value="true");
   });
-  Skip.test("The tab selection changes when all players have been unmatched", () => {
+
+  Skip.test(
+    "The tab selection changes when all players have been unmatched", () => {
     page
     |> getByText(
          ~matcher=
@@ -82,6 +88,7 @@ describe("Tabs auto-change correctly.", () => {
     page |> getByText(~matcher=`RegExp([%bs.re "/^unmatch$/i"])) |> click;
     selectTab |> expect |> toHaveAttribute("aria-selected", ~value="false");
   });
+
   Skip.test("The tab selection changes when all players have been paired", () => {
     page
     |> getByText(

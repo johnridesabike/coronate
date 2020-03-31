@@ -1,64 +1,80 @@
-/*
-   This handles all of the score tiebreak logic. Not all of the USCF methods
-   are implemented yet, just the most common ones.
- */
 open Belt;
 
 module Color = {
   type t =
     | White
     | Black;
-  let opposite = color =>
-    switch (color) {
+
+  let opposite =
+    fun
     | White => Black
-    | Black => White
-    };
-  /* This is used for calculating the "most black" tiebreak. */
-  let toScore = color =>
-    switch (color) {
+    | Black => White;
+
+  let toScore =
+    fun
     | White => (-1.0)
-    | Black => 1.0
-    };
+    | Black => 1.0;
 };
 
 type t = {
   colorScores: list(float),
   colors: list(Color.t), /* This is used to create pairing data*/
-  id: string,
+  id: Data_Id.t,
   isDummy: bool,
-  opponentResults: Map.String.t(float),
+  opponentResults: Data_Id.Map.t(float),
   ratings: list(int),
   firstRating: int,
   results: list(float),
   resultsNoByes: list(float),
 };
 
-/*
-   These types are used in various parts of the rest of the app. They map to:
-   - What tiebreak function to use.
-   - What tiebreak value has been computed for a player.
-   - What human-language name to display for the tiebreak.
-   - How to encode or decode a reference to a tiebreak for JS.
-   Since they're responsible for a lot of work, I'll leave that work for mapping
-   functions and keep these types opaque.
- */
-type tieBreak =
-  | Median
-  | Solkoff
-  | Cumulative
-  | CumulativeOfOpposition
-  | MostBlack;
+module TieBreak = {
+  type t =
+    | Median
+    | Solkoff
+    | Cumulative
+    | CumulativeOfOpposition
+    | MostBlack;
 
-/*
- This is useful for cases where the regular factory functions return empty
- results because a player hasn't been added yet.
- */
+  let toString = data =>
+    switch (data) {
+    | Median => "median"
+    | Solkoff => "solkoff"
+    | Cumulative => "cumulative"
+    | CumulativeOfOpposition => "cumulativeOfOpposition"
+    | MostBlack => "mostBlack"
+    };
+
+  let toPrettyString = tieBreak =>
+    switch (tieBreak) {
+    | Median => "Median"
+    | Solkoff => "Solkoff"
+    | Cumulative => "Cumulative"
+    | CumulativeOfOpposition => "Cumulative of opposition"
+    | MostBlack => "Most Black"
+    };
+
+  let fromString = json =>
+    switch (json) {
+    | "median" => Median
+    | "solkoff" => Solkoff
+    | "cumulative" => Cumulative
+    | "cumulativeOfOpposition" => CumulativeOfOpposition
+    | "mostBlack" => MostBlack
+    | _ => Median
+    };
+
+  let encode = data => data->toString->Json.Encode.string;
+
+  let decode = json => json->Json.Decode.string->fromString;
+};
+
 let createBlankScoreData = (~firstRating=0, id) => {
   colorScores: [],
   colors: [],
   id,
   isDummy: false,
-  opponentResults: Map.String.empty,
+  opponentResults: Data_Id.Map.make(),
   ratings: [],
   firstRating,
   results: [],
@@ -66,24 +82,24 @@ let createBlankScoreData = (~firstRating=0, id) => {
 };
 
 let isNotDummy = (scores, oppId) => {
-  switch (Map.String.get(scores, oppId)) {
+  switch (Map.get(scores, oppId)) {
   | None => true
   | Some(opponent) => !opponent.isDummy
   };
 };
 
 let getPlayerScore = (scores, id) => {
-  switch (Map.String.get(scores, id)) {
+  switch (Map.get(scores, id)) {
   | None => 0.0
   | Some({results, _}) => Utils.List.sumF(results)
   };
 };
 
 let getOpponentScores = (scores, id) => {
-  switch (Map.String.get(scores, id)) {
+  switch (Map.get(scores, id)) {
   | None => []
   | Some({opponentResults, _}) =>
-    Map.String.reduce(opponentResults, [], (acc, oppId, _) =>
+    Map.reduce(opponentResults, [], (acc, oppId, _) =>
       if (isNotDummy(scores, oppId)) {
         [getPlayerScore(scores, oppId), ...acc];
       } else {
@@ -93,7 +109,9 @@ let getOpponentScores = (scores, id) => {
   };
 };
 
-/* USCF § 34E1 */
+/**
+ * USCF § 34E1
+ */
 let getMedianScore = (scores, id) =>
   scores
   ->getOpponentScores(id)
@@ -103,32 +121,40 @@ let getMedianScore = (scores, id) =>
   ->List.tail
   ->Option.mapWithDefault(0.0, Utils.List.sumF);
 
-/* USCF § 34E2.*/
+/**
+ * USCF § 34E2.
+ */
 let getSolkoffScore = (scores, id) =>
   scores->getOpponentScores(id)->Utils.List.sumF;
 
-/* turn the regular score list into a "running" score list */
+/**
+ * Turn the regular score list into a "running" score list.
+ */
 let runningReducer = (acc, score) =>
   switch (acc) {
   | [last, ...rest] => [last +. score, last, ...rest]
   | [] => [score]
   };
 
-/* USCF § 34E3.*/
+/**
+ * USCF § 34E3.
+ */
 let getCumulativeScore = (scores, id) => {
-  switch (Map.String.get(scores, id)) {
+  switch (Map.get(scores, id)) {
   | None => 0.0
   | Some({resultsNoByes, _}) =>
     resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
   };
 };
 
-/* USCF § 34E4.*/
+/**
+ * USCF § 34E4.
+ */
 let getCumulativeOfOpponentScore = (scores, id) => {
-  switch (Map.String.get(scores, id)) {
+  switch (Map.get(scores, id)) {
   | None => 0.0
   | Some({opponentResults, _}) =>
-    Map.String.reduce(opponentResults, [], (acc, key, _) =>
+    Map.reduce(opponentResults, [], (acc, key, _) =>
       if (isNotDummy(scores, key)) {
         [key, ...acc];
       } else {
@@ -140,35 +166,36 @@ let getCumulativeOfOpponentScore = (scores, id) => {
   };
 };
 
-/* USCF § 34E6. */
+/**
+ * USCF § 34E6.
+ */
 let getColorBalanceScore = (scores, id) => {
-  switch (Map.String.get(scores, id)) {
+  switch (Map.get(scores, id)) {
   | None => 0.0
   | Some({colorScores, _}) => Utils.List.sumF(colorScores)
   };
 };
 
-let mapTieBreak = tieBreak =>
-  switch (tieBreak) {
-  | Median => getMedianScore
-  | Solkoff => getSolkoffScore
-  | Cumulative => getCumulativeScore
-  | CumulativeOfOpposition => getCumulativeOfOpponentScore
-  | MostBlack => getColorBalanceScore
-  };
+let mapTieBreak =
+  fun
+  | TieBreak.Median => getMedianScore
+  | TieBreak.Solkoff => getSolkoffScore
+  | TieBreak.Cumulative => getCumulativeScore
+  | TieBreak.CumulativeOfOpposition => getCumulativeOfOpponentScore
+  | TieBreak.MostBlack => getColorBalanceScore;
 
 type scores = {
-  id: string,
+  id: Data_Id.t,
   score: float,
-  tieBreaks: list((tieBreak, float)),
+  tieBreaks: list((TieBreak.t, float)),
 };
 
-/*
-   `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
-   tiebreak results to sort by, and in what order. It is expected that `a` and
-   `b` will have a result for every item in `tieBreaks`.
+/**
+ * `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
+ * tiebreak results to sort by, and in what order. It is expected that `a` and
+ *`b` will have a result for every item in `tieBreaks`.
  */
-let standingsSorter = (tieBreaks: list(tieBreak), a: scores, b: scores) => {
+let standingsSorter = (tieBreaks, a, b) => {
   let rec tieBreaksCompare = tieBreaks => {
     switch (tieBreaks) {
     | [] => 0
@@ -224,18 +251,12 @@ let standingsSorter = (tieBreaks: list(tieBreak), a: scores, b: scores) => {
    result^;
  }; */
 
-/*
- Sort the standings by score, see USCF tie-break rules from § 34.
- Returns the list of the standings. Each standing has a `tieBreaks` property
- which lists the score associated with each method. The order of these
- coresponds to the order of the method names in the second list.
- */
 let createStandingList = (scores, methods) => {
   let funcList =
     methods
     ->List.fromArray
     ->List.map(tbType => (tbType, mapTieBreak(tbType)));
-  Map.String.reduce(scores, [], (acc, id, data) =>
+  Map.reduce(scores, [], (acc, id, data) =>
     [
       {
         id,
@@ -268,11 +289,6 @@ let areScoresEqual = (standing1, standing2) =>
     !List.has(comparisons, true, (===));
   };
 
-/*
- Groups the standings by score, see USCF tie-break rules from § 34.
- example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
- first, Pete is 2nd, Bob is 3rd.
- */
 let createStandingTree = (standingList: list(scores)) =>
   List.reduce(standingList, [], (acc, standing) =>
     switch (acc) {
@@ -293,28 +309,43 @@ let createStandingTree = (standingList: list(scores)) =>
   );
 
 module Ratings = {
-  let getKFactor = matchCount => {
-    let ne = matchCount > 0 ? matchCount : 1;
-    800 / ne;
+  module EloRank = {
+    type t = int;
+
+    let getExpected = (a: int, b: int) =>
+      1. /. (1. +. 10. ** (Float.fromInt(b - a) /. 400.));
+
+    let updateRating = (rating, expected, actual, current) =>
+      Float.fromInt(current)
+      +. Float.fromInt(rating)
+      *. (actual -. expected)
+      |> Js.Math.round
+      |> Int.fromFloat;
+
+    let getKFactor = (~matchCount) => {
+      let ne = matchCount > 0 ? matchCount : 1;
+      800 / ne;
+    };
   };
 
   let floor = 100;
 
   let keepAboveFloor = rating => rating > floor ? rating : floor;
 
-  module EloRank = Externals.EloRank;
   let calcNewRatings =
       (
-        (whiteRating, blackRating),
-        (whiteMatchCount, blackMatchCount),
-        (whiteResult, blackResult),
+        ~whiteRating,
+        ~blackRating,
+        ~whiteMatchCount,
+        ~blackMatchCount,
+        ~result,
       ) => {
-    let whiteElo = whiteMatchCount->getKFactor->EloRank.make;
-    let blackElo = blackMatchCount->getKFactor->EloRank.make;
-    let (whiteExpected, blackExpected) = (
-      EloRank.getExpected(whiteElo, whiteRating, blackRating),
-      EloRank.getExpected(blackElo, blackRating, whiteRating),
-    );
+    let whiteElo = EloRank.getKFactor(~matchCount=whiteMatchCount);
+    let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount);
+    let whiteExpected = EloRank.getExpected(whiteRating, blackRating);
+    let blackExpected = EloRank.getExpected(blackRating, whiteRating);
+    let whiteResult = Data_Match.Result.(toFloat(result, White));
+    let blackResult = Data_Match.Result.(toFloat(result, Black));
     (
       EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)
       ->keepAboveFloor,

@@ -53,7 +53,7 @@ module PlayerMatchInfo = {
       <dt> {React.string("Score")} </dt>
       <dd> {score->Js.Float.toString->React.string} </dd>
       <dt> {React.string("Rating")} </dt>
-      <Utils.TestId testId={"rating-" ++ player.Player.id}>
+      <Utils.TestId testId={"rating-" ++ player.Player.id->Data.Id.toString}>
         <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
       </Utils.TestId>
       <dt> {React.string("Color balance")} </dt>
@@ -76,8 +76,7 @@ module MatchRow = {
         ~pos,
         ~m,
         ~roundId,
-        /* Default to `None` so there aren't nested `option`s */
-        ~selectedMatch=None,
+        ~selectedMatch=?,
         ~setSelectedMatch,
         ~scoreData,
         ~tournament,
@@ -92,19 +91,19 @@ module MatchRow = {
           playersDispatch,
           _,
         } = tournament;
-    let {Tournament.roundList, _} = tourney;
+    let Tournament.{roundList, _} = tourney;
     let (isModalOpen, setIsModalOpen) = React.useState(() => false);
     let whitePlayer = getPlayer(m.whiteId);
     let blackPlayer = getPlayer(m.blackId);
     let isDummyRound =
-      m.whiteId === Player.dummy_id || m.blackId === Player.dummy_id;
+      Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId);
 
     let whiteName =
       [whitePlayer.Player.firstName, whitePlayer.Player.lastName]
-      |> String.concat(" ");
+      ->Utils.String.concat(~sep=" ");
     let blackName =
       [blackPlayer.Player.firstName, blackPlayer.Player.lastName]
-      |> String.concat(" ");
+      ->Utils.String.concat(~sep=" ");
 
     let resultDisplay = playerColor => {
       let won =
@@ -112,12 +111,14 @@ module MatchRow = {
           className=Css.(style([color(Utils.PhotonColors.yellow_70)]))
         />;
       let lost =
-        <Utils.VisuallyHidden> {React.string("Lost")} </Utils.VisuallyHidden>;
+        <Externals.VisuallyHidden>
+          {React.string("Lost")}
+        </Externals.VisuallyHidden>;
       switch (m.result) {
       | Match.Result.NotSet =>
-        <Utils.VisuallyHidden>
+        <Externals.VisuallyHidden>
           {React.string("Not set")}
-        </Utils.VisuallyHidden>
+        </Externals.VisuallyHidden>
       | Match.Result.Draw =>
         /* TODO: find a better icon for draws.*/
         <span
@@ -143,18 +144,18 @@ module MatchRow = {
       let newResult = Match.Result.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
       if (m.result !== newResult) {
-        let white = players->Map.String.getExn(m.whiteId);
-        let black = players->Map.String.getExn(m.blackId);
-        let newWhiteScore = newResult->Match.Result.(toFloat(White));
-        let newBlackScore = newResult->Match.Result.(toFloat(Black));
+        let white = players->Map.getExn(m.whiteId);
+        let black = players->Map.getExn(m.blackId);
         let (whiteNewRating, blackNewRating) =
           switch (newResult) {
           | Match.Result.NotSet => (m.whiteOrigRating, m.blackOrigRating)
           | Match.Result.(BlackWon | WhiteWon | Draw) =>
             Scoring.Ratings.calcNewRatings(
-              (m.whiteOrigRating, m.blackOrigRating),
-              (white.Player.matchCount, black.Player.matchCount),
-              (newWhiteScore, newBlackScore),
+              ~whiteRating=m.whiteOrigRating,
+              ~blackRating=m.blackOrigRating,
+              ~whiteMatchCount=white.Player.matchCount,
+              ~blackMatchCount=black.Player.matchCount,
+              ~result=newResult,
             )
           };
         let white = Player.{...white, rating: whiteNewRating};
@@ -227,25 +228,29 @@ module MatchRow = {
       <td className=Style.playerResult>
         {resultDisplay(Match.Result.White)}
       </td>
-      <td
-        className={Cn.make([
-          "table__player row__player",
-          Player.Type.toString(whitePlayer.Player.type_),
-        ])}
-        id={"match-" ++ string_of_int(pos) ++ "-white"}>
-        {React.string(whiteName)}
-      </td>
+      <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-white"}>
+        <td
+          className={Cn.make([
+            "table__player row__player",
+            Player.Type.toString(whitePlayer.Player.type_),
+          ])}
+          id={"match-" ++ string_of_int(pos) ++ "-white"}>
+          {React.string(whiteName)}
+        </td>
+      </Utils.TestId>
       <td className=Style.playerResult>
         {resultDisplay(Match.Result.Black)}
       </td>
-      <td
-        className={Cn.make([
-          "table__player row__player",
-          Player.Type.toString(blackPlayer.Player.type_),
-        ])}
-        id={"match-" ++ string_of_int(pos) ++ "-black"}>
-        {React.string(blackName)}
-      </td>
+      <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-black"}>
+        <td
+          className={Cn.make([
+            "table__player row__player",
+            Player.Type.toString(blackPlayer.Player.type_),
+          ])}
+          id={"match-" ++ string_of_int(pos) ++ "-black"}>
+          {React.string(blackName)}
+        </td>
+      </Utils.TestId>
       <td
         className={Cn.make([Style.matchResult, "data__input row__controls"])}>
         <select
@@ -279,11 +284,11 @@ module MatchRow = {
                   title="Edit match"
                   onClick={_ => setSelectedMatch(_ => Some(m.id))}>
                   <Icons.Circle />
-                  <Utils.VisuallyHidden>
+                  <Externals.VisuallyHidden>
                     {["Edit match for", whiteName, "versus", blackName]
-                     |> String.concat(" ")
-                     |> React.string}
-                  </Utils.VisuallyHidden>
+                     ->Utils.String.concat(~sep=" ")
+                     ->React.string}
+                  </Externals.VisuallyHidden>
                 </button>
               : <button
                   className="button-ghost button-pressed"
@@ -296,21 +301,21 @@ module MatchRow = {
              title="Open match information."
              onClick={_ => setIsModalOpen(_ => true)}>
              <Icons.Info />
-             <Utils.VisuallyHidden>
+             <Externals.VisuallyHidden>
                {[
                   "View information for match:",
                   whiteName,
                   "versus",
                   blackName,
                 ]
-                |> String.concat(" ")
-                |> React.string}
-             </Utils.VisuallyHidden>
+                ->Utils.String.concat(~sep=" ")
+                ->React.string}
+             </Externals.VisuallyHidden>
            </button>
            {switch (scoreData) {
             | None => React.null
             | Some(scoreData) =>
-              <Utils.Dialog
+              <Externals.Dialog
                 isOpen=isModalOpen
                 onDismiss={_ => setIsModalOpen(_ => false)}
                 ariaLabel="Match information">
@@ -327,8 +332,8 @@ module MatchRow = {
                      "match",
                      Js.Int.toString(pos + 1),
                    ]
-                   |> String.concat(" ")
-                   |> React.string}
+                   ->Utils.String.concat(~sep=" ")
+                   ->React.string}
                 </p>
                 <Utils.PanelContainer>
                   <Utils.Panel>
@@ -352,7 +357,7 @@ module MatchRow = {
                     />
                   </Utils.Panel>
                 </Utils.PanelContainer>
-              </Utils.Dialog>
+              </Externals.Dialog>
             }}
          </td>
        }}
@@ -367,8 +372,7 @@ module RoundTable = {
         ~isCompact=false,
         ~roundId,
         ~matches,
-        /* Default to `None` so there aren't nested `option`s */
-        ~selectedMatch=None,
+        ~selectedMatch=?,
         ~setSelectedMatch=?,
         ~tournament,
         ~scoreData=?,
@@ -387,17 +391,17 @@ module RoundTable = {
                    {React.string("#")}
                  </th>
                  <th scope="col">
-                   <Utils.VisuallyHidden>
+                   <Externals.VisuallyHidden>
                      {React.string("White result")}
-                   </Utils.VisuallyHidden>
+                   </Externals.VisuallyHidden>
                  </th>
                  <th className="row__player" scope="col">
                    {React.string("White")}
                  </th>
                  <th scope="col">
-                   <Utils.VisuallyHidden>
+                   <Externals.VisuallyHidden>
                      {React.string("Black result")}
-                   </Utils.VisuallyHidden>
+                   </Externals.VisuallyHidden>
                  </th>
                  <th className="row__player" scope="col">
                    {React.string("Black")}
@@ -408,9 +412,9 @@ module RoundTable = {
                  {isCompact
                     ? React.null
                     : <th className="row__controls" scope="col">
-                        <Utils.VisuallyHidden>
+                        <Externals.VisuallyHidden>
                           {React.string("Controls")}
-                        </Utils.VisuallyHidden>
+                        </Externals.VisuallyHidden>
                       </th>}
                </tr>
              </thead>
@@ -418,12 +422,12 @@ module RoundTable = {
       <tbody className="content">
         {Array.mapWithIndex(matches, (pos, m: Match.t) =>
            <MatchRow
-             key={m.Match.id}
+             key={m.Match.id->Data.Id.toString}
              isCompact
              m
              pos
              roundId
-             selectedMatch
+             ?selectedMatch
              setSelectedMatch
              scoreData
              tournament
@@ -439,8 +443,8 @@ module RoundTable = {
 module Round = {
   [@react.component]
   let make = (~roundId, ~tournament, ~scoreData) => {
-    let {LoadTournament.tourney, players, setTourney, playersDispatch, _} = tournament;
-    let {Tournament.roundList, _} = tourney;
+    let LoadTournament.{tourney, players, setTourney, playersDispatch, _} = tournament;
+    let Tournament.{roundList, _} = tourney;
     let (selectedMatch, setSelectedMatch) = React.useState(() => None);
 
     let unMatch = (matchId, round) => {
@@ -453,7 +457,7 @@ module Round = {
           (match.blackId, match.blackOrigRating),
         ]
         ->List.forEach(((id, rating)) =>
-            switch (players->Map.String.get(id)) {
+            switch (players->Map.get(id)) {
             /* If there was a dummy player or a deleted player then bail
                on the dispatch. */
             | None => ()
@@ -555,7 +559,7 @@ module Round = {
            ? <p> {React.string("No players matched yet.")} </p> : React.null}
         <RoundTable
           roundId
-          selectedMatch
+          ?selectedMatch
           setSelectedMatch
           tournament
           scoreData
@@ -566,67 +570,62 @@ module Round = {
   };
 };
 
-module PageRound = {
-  [@react.component]
-  let make = (~roundId, ~tournament) => {
-    let {
-      LoadTournament.activePlayersCount,
-      scoreData,
-      unmatched,
-      unmatchedCount,
-      unmatchedWithDummy,
-    } =
-      LoadTournament.useRoundData(roundId, tournament);
-    let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
-    let (openTab, setOpenTab) = React.useState(() => initialTab);
-    /* Auto-switch the tab */
-    React.useEffect3(
-      () => {
-        if (unmatchedCount === activePlayersCount) {
-          setOpenTab(_ => 1);
-        };
-        if (unmatchedCount === 0) {
-          setOpenTab(_ => 0);
-        };
-        None;
-      },
-      (unmatchedCount, activePlayersCount, setOpenTab),
-    );
-    Utils.Tabs.(
-      <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
-        <TabList>
-          <Tab disabled={unmatchedCount === activePlayersCount}>
-            <Icons.List />
-            {React.string(" Matches")}
-          </Tab>
-          <Tab disabled={unmatchedCount === 0}>
-            <Icons.Users />
-            {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
-             |> String.concat("")
-             |> React.string}
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
-          <TabPanel>
-            <div>
-              {unmatchedCount !== 0
-                 ? <PairPicker
-                     roundId
-                     tournament
-                     unmatched
-                     unmatchedWithDummy
-                     unmatchedCount
-                     scoreData
-                   />
-                 : React.null}
-            </div>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    );
-  };
-};
-
 [@react.component]
-let make = (~roundId, ~tournament) => <PageRound roundId tournament />;
+let make = (~roundId, ~tournament) => {
+  let LoadTournament.{
+        activePlayersCount,
+        scoreData,
+        unmatched,
+        unmatchedCount,
+        unmatchedWithDummy,
+      } =
+    LoadTournament.useRoundData(roundId, tournament);
+  let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
+  let (openTab, setOpenTab) = React.useState(() => initialTab);
+  /* Auto-switch the tab */
+  React.useEffect3(
+    () => {
+      if (unmatchedCount === activePlayersCount) {
+        setOpenTab(_ => 1);
+      };
+      if (unmatchedCount === 0) {
+        setOpenTab(_ => 0);
+      };
+      None;
+    },
+    (unmatchedCount, activePlayersCount, setOpenTab),
+  );
+  Externals.ReachTabs.(
+    <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
+      <TabList>
+        <Tab disabled={unmatchedCount === activePlayersCount}>
+          <Icons.List />
+          {React.string(" Matches")}
+        </Tab>
+        <Tab disabled={unmatchedCount === 0}>
+          <Icons.Users />
+          {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
+           ->Utils.String.concat(~sep="")
+           ->React.string}
+        </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
+        <TabPanel>
+          <div>
+            {unmatchedCount !== 0
+               ? <PairPicker
+                   roundId
+                   tournament
+                   unmatched
+                   unmatchedWithDummy
+                   unmatchedCount
+                   scoreData
+                 />
+               : React.null}
+          </div>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+};

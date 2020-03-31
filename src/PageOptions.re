@@ -1,5 +1,6 @@
-open Belt;
 open Data;
+open Belt;
+
 [@bs.val] external node_env: string = "process.env.NODE_ENV";
 
 let getDateForFile = () => {
@@ -9,7 +10,7 @@ let getDateForFile = () => {
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
     Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
   ]
-  |> String.concat("-");
+  ->Utils.String.concat(~sep="-");
 };
 
 let invalidAlert = () => {
@@ -18,13 +19,13 @@ let invalidAlert = () => {
   );
 };
 
-let dictToMap = dict => dict->Js.Dict.entries->Map.String.fromArray;
-let mapToDict = map => map->Map.String.toArray->Js.Dict.fromArray;
+let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray;
+let mapToDict = map => map->Data.Id.Map.toStringArray->Js.Dict.fromArray;
 
 type input_data = {
   config: Data.Config.t,
-  players: Map.String.t(Data.Player.t),
-  tournaments: Map.String.t(Data.Tournament.t),
+  players: Data.Id.Map.t(Data.Player.t),
+  tournaments: Data.Id.Map.t(Data.Tournament.t),
 };
 
 let decodeOptions = json =>
@@ -41,11 +42,11 @@ let encodeOptions = data =>
       ("config", Data.Config.encode(data.config)),
       (
         "players",
-        Map.String.map(data.players, Data.Player.encode)->mapToDict->jsonDict,
+        Map.map(data.players, Data.Player.encode)->mapToDict->jsonDict,
       ),
       (
         "tournaments",
-        Map.String.map(data.tournaments, Data.Tournament.encode)
+        Map.map(data.tournaments, Data.Tournament.encode)
         ->mapToDict
         ->jsonDict,
       ),
@@ -67,8 +68,9 @@ external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
 let make = (~windowDispatch) => {
-  let (tournaments, tourneysDispatch, _) = Db.useAllTournaments();
-  let (players, playersDispatch, _) = Db.useAllPlayers();
+  let Db.{items: tournaments, dispatch: tourneysDispatch, _} =
+    Db.useAllTournaments();
+  let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
   let (text, setText) = React.useState(() => "");
   let (config, configDispatch) = Db.useConfig();
   React.useEffect1(
@@ -141,16 +143,16 @@ let make = (~windowDispatch) => {
   let reloadDemoData = event => {
     ReactEvent.Mouse.preventDefault(event);
     loadData(
-      ~tournaments=DemoData.tournaments,
-      ~players=DemoData.players,
+      ~tournaments=DemoData.tournaments->Data.Id.Map.fromStringArray,
+      ~players=DemoData.players->Data.Id.Map.fromStringArray,
       ~config=DemoData.config,
     );
   };
   let loadTestData = event => {
     ReactEvent.Mouse.preventDefault(event);
     loadData(
-      ~tournaments=TestData.tournaments,
-      ~players=TestData.players,
+      ~tournaments=TestData.tournaments->Data.Id.Map.fromStringArray,
+      ~players=TestData.players->Data.Id.Map.fromStringArray,
       ~config=TestData.config,
     );
   };

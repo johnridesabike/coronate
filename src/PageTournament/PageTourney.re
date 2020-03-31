@@ -1,5 +1,5 @@
 open Belt;
-open Utils.Router;
+open Router;
 open LoadTournament;
 open Data;
 
@@ -54,7 +54,7 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Registered players: ")}
-          {activePlayers->Map.String.size->Js.Int.toString->React.string}
+          {activePlayers->Map.size->Js.Int.toString->React.string}
         </label>
       </>
     );
@@ -81,7 +81,6 @@ module Sidebar = {
     open Tournament;
     let {roundList, _} = tourney;
     let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers);
-    let basePath = "/tourneys/" ++ tourney.id;
     let newRound = event => {
       ReactEvent.Mouse.preventDefault(event);
       let confirmText =
@@ -106,7 +105,7 @@ module Sidebar = {
       ReactEvent.Mouse.preventDefault(event);
       let message = "Are you sure you want to delete the last round?";
       if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
-        ReasonReactRouter.push("#/tourneys/" ++ tourney.id);
+        ReasonReactRouter.push("#/tourneys/" ++ tourney.id->Data.Id.toString);
         /* If a match has been scored, then reset it.
            Should this logic be somewhere else? */
         let lastRoundId = Rounds.getLastKey(roundList);
@@ -132,7 +131,7 @@ module Sidebar = {
               | Match.Result.WhiteWon =>
                 [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]
                 ->List.forEach(((id, rating)) =>
-                    switch (players->Map.String.get(id)) {
+                    switch (players->Map.get(id)) {
                     | Some(player) =>
                       let matchCount = player.Player.matchCount - 1;
                       playersDispatch(
@@ -162,7 +161,7 @@ module Sidebar = {
       <nav>
         <ul style={ReactDOMRe.Style.make(~marginTop="0", ())}>
           <li>
-            <HashLink to_="/tourneys" onDragStart=noDraggy>
+            <HashLink to_=TournamentList onDragStart=noDraggy>
               <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close">
                 {React.string(" Back")}
@@ -173,7 +172,9 @@ module Sidebar = {
         <hr />
         <ul>
           <li>
-            <HashLink to_={basePath ++ "/setup"} onDragStart=noDraggy>
+            <HashLink
+              to_={Tournament(tourney.id, Tourney.Setup)}
+              onDragStart=noDraggy>
               <Icons.Settings />
               <span className="sidebar__hide-on-close">
                 {React.string(" Setup")}
@@ -181,7 +182,9 @@ module Sidebar = {
             </HashLink>
           </li>
           <li>
-            <HashLink to_=basePath onDragStart=noDraggy>
+            <HashLink
+              to_={Tournament(tourney.id, Tourney.Players)}
+              onDragStart=noDraggy>
               <Icons.Users />
               <span className="sidebar__hide-on-close">
                 {React.string(" Players")}
@@ -189,7 +192,9 @@ module Sidebar = {
             </HashLink>
           </li>
           <li>
-            <HashLink to_={basePath ++ "/status"} onDragStart=noDraggy>
+            <HashLink
+              to_={Tournament(tourney.id, Tourney.Status)}
+              onDragStart=noDraggy>
               <Icons.Activity />
               <span className="sidebar__hide-on-close">
                 {React.string(" Status")}
@@ -197,7 +202,9 @@ module Sidebar = {
             </HashLink>
           </li>
           <li>
-            <HashLink to_={basePath ++ "/crosstable"} onDragStart=noDraggy>
+            <HashLink
+              to_={Tournament(tourney.id, Tourney.Crosstable)}
+              onDragStart=noDraggy>
               <Icons.Layers />
               <span className="sidebar__hide-on-close">
                 {React.string(" Crosstable")}
@@ -205,7 +212,9 @@ module Sidebar = {
             </HashLink>
           </li>
           <li>
-            <HashLink to_={basePath ++ "/scores"} onDragStart=noDraggy>
+            <HashLink
+              to_={Tournament(tourney.id, Tourney.Scores)}
+              onDragStart=noDraggy>
               <Icons.List />
               <span className="sidebar__hide-on-close">
                 {React.string(" Score detail")}
@@ -223,7 +232,7 @@ module Sidebar = {
            ->Array.mapWithIndex((id, _) =>
                <li key={Js.Int.toString(id)}>
                  <HashLink
-                   to_={basePath ++ "/round/" ++ Js.Int.toString(id)}
+                   to_={Tournament(tourney.id, Tourney.Round(id))}
                    onDragStart=noDraggy>
                    {Js.Int.toString(id + 1)->React.string}
                    {isRoundComplete(id)
@@ -283,21 +292,19 @@ module Sidebar = {
 let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 
 [@react.component]
-let make = (~tourneyId, ~hashPath, ~windowDispatch) => {
+let make = (~tourneyId, ~subPage, ~windowDispatch) => {
   <LoadTournament tourneyId windowDispatch>
     {tournament =>
        <Window.Body
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>
-         {switch (hashPath) {
-          | [""] => <PageTourneyPlayers tournament />
-          | ["scores"] => <PageTourneyScores tournament />
-          | ["crosstable"] => <PageTourneyScores.Crosstable tournament />
-          | ["setup"] => <PageTourneySetup tournament />
-          | ["status"] => <PageTournamentStatus tournament />
-          | ["round", roundId] =>
-            <PageRound tournament roundId={int_of_string(roundId)} />
-          | _ => <Pages.NotFound />
+         {switch (subPage) {
+          | Tourney.Players => <PageTourneyPlayers tournament />
+          | Tourney.Scores => <PageTourneyScores tournament />
+          | Tourney.Crosstable => <PageTourneyScores.Crosstable tournament />
+          | Tourney.Setup => <PageTourneySetup tournament />
+          | Tourney.Status => <PageTournamentStatus tournament />
+          | Tourney.Round(roundId) => <PageRound tournament roundId />
           }}
        </Window.Body>}
   </LoadTournament>;

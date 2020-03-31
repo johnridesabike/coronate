@@ -1,4 +1,3 @@
-open Belt;
 /* Not to be confused with `Belt.Result` */
 module Result = {
   type t =
@@ -6,9 +5,11 @@ module Result = {
     | BlackWon
     | Draw
     | NotSet;
+
   type color =
     | White
     | Black;
+
   let toFloat = (score, color) =>
     switch (score) {
     | WhiteWon =>
@@ -25,6 +26,7 @@ module Result = {
     /* This loses data, so is a one-way trip. Use with prudence! */
     | NotSet => 0.0
     };
+
   let toString = score =>
     switch (score) {
     | WhiteWon => "whiteWon"
@@ -32,6 +34,7 @@ module Result = {
     | Draw => "draw"
     | NotSet => "notSet"
     };
+
   let fromString = score =>
     switch (score) {
     | "whiteWon" => WhiteWon
@@ -39,36 +42,41 @@ module Result = {
     | "draw" => Draw
     | _ => NotSet
     };
+
   let encode = data => data->toString->Json.Encode.string;
+
   let decode = json => json->Json.Decode.string->fromString;
 };
+
 type t = {
-  id: string,
-  whiteId: string,
-  blackId: string,
+  id: Data_Id.t,
+  whiteId: Data_Id.t,
+  blackId: Data_Id.t,
   whiteNewRating: int,
   blackNewRating: int,
   whiteOrigRating: int,
   blackOrigRating: int,
   result: Result.t,
 };
+
 let decode = json =>
   Json.Decode.{
-    id: json |> field("id", string),
-    whiteId: json |> field("whiteId", string),
-    blackId: json |> field("blackId", string),
+    id: json |> field("id", Data_Id.decode),
+    whiteId: json |> field("whiteId", Data_Id.decode),
+    blackId: json |> field("blackId", Data_Id.decode),
     whiteNewRating: json |> field("whiteNewRating", int),
     blackNewRating: json |> field("blackNewRating", int),
     whiteOrigRating: json |> field("whiteOrigRating", int),
     blackOrigRating: json |> field("blackOrigRating", int),
     result: json |> field("result", Result.decode),
   };
+
 let encode = data =>
   Json.Encode.(
     object_([
-      ("id", data.id |> string),
-      ("whiteId", data.whiteId |> string),
-      ("blackId", data.blackId |> string),
+      ("id", data.id |> Data_Id.encode),
+      ("whiteId", data.whiteId |> Data_Id.encode),
+      ("blackId", data.blackId |> Data_Id.encode),
       ("whiteNewRating", data.whiteNewRating |> int),
       ("blackNewRating", data.blackNewRating |> int),
       ("whiteOrigRating", data.whiteOrigRating |> int),
@@ -91,8 +99,8 @@ let byeResultForPlayerColor = (byeValue, color) =>
     )
   );
 
-let scoreByeMatch = (match, byeValue) =>
-  switch (Data_Player.(isDummyId(match.whiteId), isDummyId(match.blackId))) {
+let scoreByeMatch = (match, ~byeValue) =>
+  switch (Data_Id.(isDummy(match.whiteId), isDummy(match.blackId))) {
   | (true, false) => {
       ...match,
       result: byeResultForPlayerColor(byeValue, Result.Black),
@@ -105,44 +113,9 @@ let scoreByeMatch = (match, byeValue) =>
   | (false, false) => match
   };
 
-let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
-  /* the pairData includes any players who were already matched. We need to
-     only include the specified players. */
-  let filteredData =
-    pairData->Map.String.(keep((id, _) => playerMap->has(id)));
-  let (pairdataNoByes, byePlayerData) =
-    Pairing.setByePlayer(byeQueue, Data_Player.dummy_id, filteredData);
-  let pairs = Pairing.pairPlayers(pairdataNoByes);
-  let pairsWithBye =
-    switch (byePlayerData) {
-    | Some(player) =>
-      /* These two reverses ensure that the bye match is added at the end, not
-         the beginning */
-      pairs
-      ->List.reverse
-      ->List.add((player.Pairing.id, Data_Player.dummy_id))
-      ->List.reverse
-    | None => pairs
-    };
-  let getPlayer = Data_Player.getPlayerMaybe(playerMap);
-  pairsWithBye->List.map(((whiteId, blackId)) =>
-    {
-      id: Utils.nanoid(),
-      whiteOrigRating: getPlayer(whiteId).Data_Player.rating,
-      blackOrigRating: getPlayer(blackId).Data_Player.rating,
-      whiteNewRating: getPlayer(whiteId).Data_Player.rating,
-      blackNewRating: getPlayer(blackId).Data_Player.rating,
-      whiteId,
-      blackId,
-      result: Result.NotSet,
-    }
-    ->scoreByeMatch(byeValue)
-  );
-};
-
 let manualPair = ((white, black), byeValue) => {
   {
-    id: Utils.nanoid(),
+    id: Data_Id.random(),
     result: Result.NotSet,
     whiteId: white.Data_Player.id,
     blackId: black.Data_Player.id,
@@ -151,7 +124,7 @@ let manualPair = ((white, black), byeValue) => {
     whiteNewRating: white.Data_Player.rating,
     blackNewRating: black.Data_Player.rating,
   }
-  ->scoreByeMatch(byeValue);
+  ->scoreByeMatch(~byeValue);
 };
 
 let swapColors = match => {

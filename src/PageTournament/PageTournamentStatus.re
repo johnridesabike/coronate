@@ -2,8 +2,8 @@ open Data;
 
 [@react.component]
 let make = (~tournament) => {
-  let {LoadTournament.tourney, getPlayer, _} = tournament;
-  let {Tournament.roundList, _} = tourney;
+  let LoadTournament.{tourney, getPlayer, _} = tournament;
+  let Tournament.{roundList, _} = tourney;
   let lastRoundId = Rounds.getLastKey(tourney.Tournament.roundList);
   let lastRound = Rounds.get(roundList, lastRoundId);
   <>
@@ -27,7 +27,7 @@ let make = (~tournament) => {
                roundId=lastRoundId
                tournament
                isCompact=true
-               matches=Rounds.Round.toArray(matches)
+               matches={Rounds.Round.toArray(matches)}
              />;
            }
          }}

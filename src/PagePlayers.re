@@ -1,58 +1,109 @@
 open Belt;
-open Data.Player;
-open Utils.Router;
-let sortName = Hooks.GetString(x => x.firstName);
-let sortRating = Hooks.GetInt(x => x.rating);
-let sortMatchCount = Hooks.GetInt(x => x.matchCount);
+open Data;
+open Router;
 
-let defaultFirstName = _ => "";
-let defaultLastName = _ => "";
-let defaultRating = _ => 1200;
+let sortName = Hooks.GetString(x => x.Player.firstName);
+let sortRating = Hooks.GetInt(x => x.Player.rating);
+let sortMatchCount = Hooks.GetInt(x => x.Player.matchCount);
+
+module Form = [%form
+  open Result;
+  type input = {
+    firstName: string,
+    lastName: string,
+    rating: string,
+    matchCount: string,
+  };
+  type output = {
+    firstName: string,
+    lastName: string,
+    rating: int,
+    matchCount: int,
+  };
+  let validators = {
+    firstName: {
+      strategy: OnFirstSuccessOrFirstBlur,
+      validate: ({firstName, _}) =>
+        switch (firstName) {
+        | "" => Error("First name is required")
+        | name => Ok(name)
+        },
+    },
+    lastName: {
+      strategy: OnFirstSuccessOrFirstBlur,
+      validate: ({lastName, _}) =>
+        switch (lastName) {
+        | "" => Error("Last name is required")
+        | name => Ok(name)
+        },
+    },
+    rating: {
+      strategy: OnFirstSuccessOrFirstBlur,
+      validate: ({rating, _}) =>
+        switch (Int.fromString(rating)) {
+        | None => Error("Rating must be a number")
+        | Some(rating) => Ok(rating)
+        },
+    },
+    matchCount: {
+      strategy: OnFirstSuccessOrFirstBlur,
+      validate: ({matchCount, _}) =>
+        switch (Int.fromString(matchCount)) {
+        | None => Error("Match count must be a number")
+        | Some(rating) => Ok(rating)
+        },
+    },
+  };
+  let initialInput: input = {
+    firstName: "",
+    lastName: "",
+    rating: "1200",
+    matchCount: "0",
+  }
+];
+
+let errorNotification =
+  fun
+  | Some(Error(e)) =>
+    <Utils.Notification kind=Utils.Error> e->React.string </Utils.Notification>
+  | Some(Ok(_))
+  | None => React.null;
 
 module NewPlayerForm = {
   [@react.component]
   let make = (~dispatch, ~addPlayerCallback=?) => {
-    let (firstName, setFirstName) = React.useState(defaultFirstName);
-    let (lastName, setLastName) = React.useState(defaultLastName);
-    let (rating, setRating) = React.useState(defaultRating);
-    let handleSubmit = event => {
-      ReactEvent.Form.preventDefault(event);
-      setFirstName(defaultFirstName);
-      setLastName(defaultLastName);
-      setRating(defaultRating);
-      let id = Utils.nanoid();
-      dispatch(
-        Db.Set(
-          id,
-          {
-            firstName,
-            lastName,
-            rating,
+    open Form;
+    let form =
+      Form.useForm(
+        ~initialInput,
+        ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
+          let id = Data.Id.random();
+          dispatch @@
+          Db.Set(
             id,
-            type_: Type.Person,
-            matchCount: 0,
-          },
-        ),
+            {
+              Player.firstName,
+              lastName,
+              rating,
+              id,
+              type_: Player.Type.Person,
+              matchCount,
+            },
+          );
+          switch (addPlayerCallback) {
+          | None => ()
+          | Some(fn) => fn(id)
+          };
+          cb.Formality.notifyOnSuccess(None);
+          cb.Formality.reset();
+        },
       );
-      switch (addPlayerCallback) {
-      | None => ()
-      | Some(fn) => fn(id)
-      };
-    };
 
-    let updateField = event => {
-      ReactEvent.Form.preventDefault(event);
-      let name = ReactEvent.Form.currentTarget(event)##name;
-      let value = ReactEvent.Form.currentTarget(event)##value;
-      switch (name) {
-      | "firstName" => setFirstName(_ => value)
-      | "lastName" => setLastName(_ => value)
-      | "rating" => setRating(_ => int_of_string(value))
-      | _ => ()
-      };
-    };
-
-    <form onSubmit=handleSubmit>
+    <form
+      onSubmit={event => {
+        ReactEvent.Form.preventDefault(event);
+        form.submit();
+      }}>
       <fieldset>
         <legend> {React.string("Register a new player")} </legend>
         <p>
@@ -60,32 +111,54 @@ module NewPlayerForm = {
           <input
             name="firstName"
             type_="text"
-            value=firstName
+            onBlur={form.blurFirstName}
+            value={form.input.firstName}
             required=true
-            onChange=updateField
+            onChange={
+              form.updateFirstName((~target, input) =>
+                {...input, firstName: target##value}
+              )
+            }
           />
         </p>
+        {errorNotification(form.firstNameResult)}
         <p>
           <label htmlFor="lastName"> {React.string("Last name")} </label>
           <input
             name="lastName"
             type_="text"
-            value=lastName
+            value={form.input.lastName}
+            onBlur={form.blurLastName}
             required=true
-            onChange=updateField
+            onChange={
+              form.updateLastName((~target, input) =>
+                {...input, lastName: target##value}
+              )
+            }
           />
         </p>
+        {errorNotification(form.lastNameResult)}
         <p>
           <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
             name="rating"
             type_="number"
-            value={string_of_int(rating)}
+            value={form.input.rating}
+            onBlur={form.blurRating}
             required=true
-            onChange=updateField
+            onChange={
+              form.updateLastName((~target, input) =>
+                {...input, lastName: target##value}
+              )
+            }
           />
         </p>
-        <p> <input type_="submit" value="Add" /> </p>
+        {errorNotification(form.ratingResult)}
+        <p>
+          <button disabled={form.submitting || !form.valid()}>
+            "Add"->React.string
+          </button>
+        </p>
       </fieldset>
     </form>;
   };
@@ -102,6 +175,7 @@ module PlayerList = {
         ~configDispatch,
         ~windowDispatch,
       ) => {
+    open Player;
     let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
     React.useEffect1(
       () => {
@@ -112,13 +186,12 @@ module PlayerList = {
     );
     let delPlayer = (event, id) => {
       ReactEvent.Mouse.preventDefault(event);
-      let playerOpt = Map.String.get(players, id);
+      let playerOpt = Map.get(players, id);
       switch (playerOpt) {
       | None => ()
       | Some(player) =>
         let message =
-          String.concat(
-            "",
+          Utils.String.concat(
             [
               "Are you sure you want to delete ",
               player.firstName,
@@ -126,6 +199,7 @@ module PlayerList = {
               player.lastName,
               "?",
             ],
+            ~sep="",
           );
         if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
           playersDispatch(Db.Del(id));
@@ -163,18 +237,18 @@ module PlayerList = {
               </Hooks.SortButton>
             </th>
             <th>
-              <Utils.VisuallyHidden>
+              <Externals.VisuallyHidden>
                 {React.string("Controls")}
-              </Utils.VisuallyHidden>
+              </Externals.VisuallyHidden>
             </th>
           </tr>
         </thead>
         <tbody className="content">
           {Array.map(sorted.Hooks.table, p =>
-             <tr key={p.id} className="buttons-on-hover">
+             <tr key={p.id->Data.Id.toString} className="buttons-on-hover">
                <td className="table__player">
-                 <HashLink to_={"/players/" ++ p.id}>
-                   {String.concat(" ", [p.firstName, p.lastName])
+                 <HashLink to_={Player(p.id)}>
+                   {Utils.String.concat([p.firstName, p.lastName], ~sep=" ")
                     ->React.string}
                  </HashLink>
                </td>
@@ -189,10 +263,13 @@ module PlayerList = {
                    className="danger button-ghost"
                    onClick={event => delPlayer(event, p.id)}>
                    <Icons.Trash />
-                   <Utils.VisuallyHidden>
-                     {String.concat(" ", ["Delete", p.firstName, p.lastName])
+                   <Externals.VisuallyHidden>
+                     {Utils.String.concat(
+                        ["Delete", p.firstName, p.lastName],
+                        ~sep=" ",
+                      )
                       ->React.string}
-                   </Utils.VisuallyHidden>
+                   </Externals.VisuallyHidden>
                  </button>
                </td>
              </tr>
@@ -200,7 +277,7 @@ module PlayerList = {
            ->React.array}
         </tbody>
       </table>
-      <Utils.Dialog
+      <Externals.Dialog
         isOpen=isDialogOpen
         onDismiss={_ => setIsDialogOpen(_ => false)}
         ariaLabel="New player form">
@@ -209,7 +286,7 @@ module PlayerList = {
           {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />
-      </Utils.Dialog>
+      </Externals.Dialog>
     </div>;
   };
 };
@@ -221,12 +298,49 @@ module Profile = {
         ~player,
         ~players,
         ~playersDispatch,
-        ~config: Data.Config.t,
+        ~config,
         ~configDispatch,
         ~windowDispatch,
       ) => {
-    let playerId = player.id;
-    let playerName = String.concat(" ", [player.firstName, player.lastName]);
+    let Player.{
+          id: playerId,
+          firstName,
+          lastName,
+          rating,
+          matchCount: initialMatchCount,
+          type_,
+        } = player;
+    open Form;
+    let form =
+      useForm(
+        ~initialInput={
+          firstName,
+          lastName,
+          rating: Int.toString(rating),
+          matchCount: Int.toString(initialMatchCount),
+        },
+        ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
+          playersDispatch @@
+          Db.Set(
+            playerId,
+            {
+              Player.firstName,
+              lastName,
+              matchCount,
+              rating,
+              id: playerId,
+              type_,
+            },
+          );
+          cb.Formality.notifyOnSuccess(None);
+          cb.Formality.reset();
+        },
+      );
+    let playerName =
+      Utils.String.concat(
+        [form.input.firstName, form.input.lastName],
+        ~sep=" ",
+      );
     React.useEffect2(
       () => {
         windowDispatch(Window.SetTitle("Profile for " ++ playerName));
@@ -236,13 +350,13 @@ module Profile = {
     );
     let avoidMap = Data.Config.(AvoidPairs.toMap(config.avoidPairs));
     let singAvoidList =
-      switch (Map.String.get(avoidMap, playerId)) {
+      switch (Map.get(avoidMap, playerId)) {
       | None => []
       | Some(x) => x
       };
     let unavoided =
       players
-      ->Map.String.keysToArray
+      ->Map.keysToArray
       ->List.fromArray
       ->List.keep(id =>
           !singAvoidList->List.has(id, (===)) && id !== playerId
@@ -272,27 +386,6 @@ module Profile = {
         setSelectedAvoider(_ => newSelected);
       };
     };
-    let handleChange = event => {
-      ReactEvent.Form.preventDefault(event);
-      let target = ReactEvent.Form.currentTarget(event);
-      let firstName = target##firstName##value;
-      let lastName = target##lastName##value;
-      let matchCount = int_of_string(target##matchCount##value);
-      let rating = int_of_string(target##rating##value);
-      playersDispatch(
-        Db.Set(
-          playerId,
-          {
-            firstName,
-            lastName,
-            matchCount,
-            rating,
-            id: playerId,
-            type_: player.type_,
-          },
-        ),
-      );
-    };
     let handleAvoidChange = event => {
       let id = ReactEvent.Form.currentTarget(event)##value;
       setSelectedAvoider(_ => id);
@@ -304,42 +397,85 @@ module Profile = {
     <div
       className="content-area"
       style={ReactDOMRe.Style.make(~width="650px", ~margin="auto", ())}>
-      <HashLink to_="/players">
+      <HashLink
+        to_=PlayerList
+        onClick={event =>
+          if (form.dirty()
+              && !Webapi.(Dom.Window.confirm("Discard changes?", Dom.window))) {
+            ReactEvent.Mouse.preventDefault(event);
+          }
+        }>
         <Icons.ChevronLeft />
         {React.string(" Back")}
       </HashLink>
       <h2> {React.string("Profile for " ++ playerName)} </h2>
-      <form onChange=handleChange onSubmit=handleChange>
+      <form
+        onSubmit={event => {
+          ReactEvent.Form.preventDefault(event);
+          form.submit();
+        }}>
         <p>
           <label htmlFor="firstName"> {React.string("First name")} </label>
           <input
-            defaultValue={player.firstName}
+            value={form.input.firstName}
+            onBlur={form.blurFirstName}
+            onChange={
+              form.updateFirstName((~target, input) =>
+                {...input, firstName: target##value}
+              )
+            }
             name="firstName"
             type_="text"
           />
         </p>
+        {errorNotification(form.firstNameResult)}
         <p>
           <label htmlFor="lastName"> {React.string("Last name")} </label>
-          <input defaultValue={player.lastName} name="lastName" type_="text" />
+          <input
+            value={form.input.lastName}
+            onBlur={form.blurLastName}
+            onChange={
+              form.updateLastName((~target, input) =>
+                {...input, lastName: target##value}
+              )
+            }
+            name="lastName"
+            type_="text"
+          />
         </p>
+        {errorNotification(form.lastNameResult)}
         <p>
           <label htmlFor="matchCount">
             {React.string("Matches played")}
           </label>
           <input
-            defaultValue={string_of_int(player.matchCount)}
+            value={form.input.matchCount}
+            onBlur={form.blurMatchCount}
+            onChange={
+              form.updateMatchCount((~target, input) =>
+                {...input, matchCount: target##value}
+              )
+            }
             name="matchCount"
             type_="number"
           />
         </p>
+        {errorNotification(form.matchCountResult)}
         <p>
           <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
-            defaultValue={string_of_int(player.rating)}
+            value={form.input.rating}
+            onBlur={form.blurRating}
+            onChange={
+              form.updateRating((~target, input) =>
+                {...input, rating: target##value}
+              )
+            }
             name="rating"
             type_="number"
           />
         </p>
+        {errorNotification(form.ratingResult)}
         <p>
           <label htmlFor="Kfactor"> {React.string("K factor")} </label>
           <input
@@ -347,46 +483,64 @@ module Profile = {
             type_="number"
             disabled=true
             value={
-              player.matchCount->Scoring.Ratings.getKFactor->string_of_int
+              switch (form.matchCountResult) {
+              | Some(Ok(matchCount)) =>
+                Scoring.Ratings.EloRank.getKFactor(~matchCount)->Int.toString
+              | Some(Error(_)) => ""
+              | None =>
+                Scoring.Ratings.EloRank.getKFactor(
+                  ~matchCount=initialMatchCount,
+                )
+                ->Int.toString
+              }
             }
             readOnly=true
           />
         </p>
+        <p>
+          <button disabled={form.submitting || !form.valid()}>
+            {form.dirty() ? "Save"->React.string : "Saved"->React.string}
+          </button>
+        </p>
       </form>
       <h3> {React.string("Players to avoid")} </h3>
       <ul>
-        {singAvoidList->Utils.List.toReactArray(pId =>
-           <li key=pId>
-             {React.string(getPlayerMaybe(players, pId).firstName)}
-             {React.string(" ")}
-             {React.string(getPlayerMaybe(players, pId).lastName)}
-             <button
-               ariaLabel={String.concat(
-                 " ",
-                 [
-                   "Remove",
-                   getPlayerMaybe(players, pId).firstName,
-                   getPlayerMaybe(players, pId).lastName,
-                   "from avoid list.",
-                 ],
-               )}
-               title={String.concat(
-                 " ",
-                 [
-                   "Remove",
-                   getPlayerMaybe(players, pId).firstName,
-                   getPlayerMaybe(players, pId).lastName,
-                   "from avoid list.",
-                 ],
-               )}
-               className="danger button-ghost"
-               onClick={_ =>
-                 configDispatch(Db.DelAvoidPair((playerId, pId)))
-               }>
-               <Icons.Trash />
-             </button>
-           </li>
-         )}
+        {singAvoidList
+         ->List.toArray
+         ->Array.reverse
+         ->Array.map(pId =>
+             <li key={pId->Data.Id.toString}>
+               {React.string(Player.getMaybe(players, pId).Player.firstName)}
+               {React.string(" ")}
+               {React.string(Player.getMaybe(players, pId).Player.lastName)}
+               <button
+                 ariaLabel={Utils.String.concat(
+                   [
+                     "Remove",
+                     Player.getMaybe(players, pId).Player.firstName,
+                     Player.getMaybe(players, pId).Player.lastName,
+                     "from avoid list.",
+                   ],
+                   ~sep=" ",
+                 )}
+                 title={Utils.String.concat(
+                   [
+                     "Remove",
+                     Player.getMaybe(players, pId).Player.firstName,
+                     Player.getMaybe(players, pId).Player.lastName,
+                     "from avoid list.",
+                   ],
+                   ~sep=" ",
+                 )}
+                 className="danger button-ghost"
+                 onClick={_ =>
+                   configDispatch(Db.DelAvoidPair((playerId, pId)))
+                 }>
+                 <Icons.Trash />
+               </button>
+             </li>
+           )
+         ->React.array}
         {switch (singAvoidList) {
          | [] => <li> {React.string("None")} </li>
          | _ => React.null
@@ -403,14 +557,23 @@ module Profile = {
                id="avoid-select"
                onBlur=handleAvoidBlur
                onChange=handleAvoidChange
-               value=selectedAvoider>
-               {Utils.List.toReactArray(unavoided, pId =>
-                  <option key=pId value=pId>
-                    {React.string(getPlayerMaybe(players, pId).firstName)}
-                    {React.string(" ")}
-                    {React.string(getPlayerMaybe(players, pId).lastName)}
-                  </option>
-                )}
+               value={selectedAvoider->Data.Id.toString}>
+               {unavoided
+                ->List.toArray
+                ->Array.map(pId =>
+                    <option
+                      key={pId->Data.Id.toString}
+                      value={pId->Data.Id.toString}>
+                      {React.string(
+                         Player.getMaybe(players, pId).Player.firstName,
+                       )}
+                      {React.string(" ")}
+                      {React.string(
+                         Player.getMaybe(players, pId).Player.lastName,
+                       )}
+                    </option>
+                  )
+                ->React.array}
              </select>
              {React.string(" ")}
              <input className="button-micro" type_="submit" value="Add" />
@@ -424,16 +587,16 @@ module Profile = {
 
 [@react.component]
 let make = (~id=?, ~windowDispatch) => {
-  let (players, playersDispatch, _) = Db.useAllPlayers();
+  let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
-      ~table=Map.String.valuesToArray(players),
+      ~table=Map.valuesToArray(players),
       ~column=sortName,
       ~isDescending=false,
     );
   React.useEffect2(
     () => {
-      sortDispatch(Hooks.SetTable(Map.String.valuesToArray(players)));
+      sortDispatch(Hooks.SetTable(Map.valuesToArray(players)));
       None;
     },
     (players, sortDispatch),
@@ -451,7 +614,7 @@ let make = (~id=?, ~windowDispatch) => {
          windowDispatch
        />
      | Some(id) =>
-       switch (Map.String.get(players, id)) {
+       switch (Map.get(players, id)) {
        | None => <div> {React.string("Loading...")} </div>
        | Some(player) =>
          <Profile

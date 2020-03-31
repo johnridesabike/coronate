@@ -1,18 +1,16 @@
-open Belt;
 module Type = {
-  /*
-    These are mainly used for CSS styling.
-   */
   type t =
     | Person
     | Dummy
     | Missing;
+
   let toString = data =>
     switch (data) {
     | Person => "person"
     | Dummy => "dummy"
     | Missing => "missing"
     };
+
   let fromString = str =>
     switch (str) {
     | "person" => Person
@@ -20,32 +18,36 @@ module Type = {
     | "missing" => Missing
     | _ => Person
     };
+
   let encode = data => data->toString->Json.Encode.string;
+
   let decode = data => data->Json.Decode.string->fromString;
 };
 
 type t = {
   firstName: string,
-  id: string,
+  id: Data_Id.t,
   lastName: string,
   matchCount: int,
   rating: int,
   type_: Type.t,
 };
+
 let decode = json =>
   Json.Decode.{
     firstName: json |> field("firstName", string),
-    id: json |> field("id", string),
+    id: json |> field("id", Data_Id.decode),
     lastName: json |> field("lastName", string),
     matchCount: json |> field("matchCount", int),
     rating: json |> field("rating", int),
     type_: json |> field("type_", Type.decode),
   };
+
 let encode = data =>
   Json.Encode.(
     object_([
       ("firstName", data.firstName |> string),
-      ("id", data.id |> string),
+      ("id", data.id |> Data_Id.encode),
       ("lastName", data.lastName |> string),
       ("matchCount", data.matchCount |> int),
       ("rating", data.rating |> int),
@@ -53,18 +55,8 @@ let encode = data =>
     ])
   );
 
-/*
-  This is used in by matches to indicate a dummy player. The `getPlayerMaybe`
-  function returns a special dummy player profile when fetching this ID.
-  This ID conforms to the NanoID regex, which currently has no purpose.
- */
-let dummy_id = "________DUMMY________";
-/* This are useful for passing to `filter()` methods.*/
-let isDummyId = playerId => playerId === dummy_id;
-
-/* This is the dummy profile that `getPlayerMaybe()` returns for bye rounds.*/
-let dummyPlayer = {
-  id: dummy_id,
+let dummy = {
+  id: Data_Id.dummy,
   firstName: "Bye",
   lastName: "Player",
   type_: Type.Dummy,
@@ -72,11 +64,11 @@ let dummyPlayer = {
   rating: 0,
 };
 
-/*
-  If `getPlayerMaybe()` can't find a profile (e.g. if it was deleted) then it
-  outputs this instead. The ID will be the same as missing player's ID.
+/**
+ * If `getMaybe` can't find a profile (e.g. if it was deleted) then it
+ * outputs this instead. The ID will be the same as missing player's ID.
  */
-let makeMissingPlayer = id => {
+let makeMissing = id => {
   id,
   firstName: "Anonymous",
   lastName: "Player",
@@ -85,12 +77,9 @@ let makeMissingPlayer = id => {
   rating: 0,
 };
 
-/* This function should always be used in components that *might* not be able to
-   display current player information. This includes bye rounds with "dummy"
-   players, or scoreboards where a player may have been deleted. */
-let getPlayerMaybe = (playerMap, id) =>
-  if (id === dummy_id) {
-    dummyPlayer;
+let getMaybe = (playerMap, id) =>
+  if (Data_Id.isDummy(id)) {
+    dummy;
   } else {
-    Map.String.getWithDefault(playerMap, id, makeMissingPlayer(id));
+    Belt.Map.getWithDefault(playerMap, id, makeMissing(id));
   };
