@@ -6,26 +6,21 @@ module Result = {
     | Draw
     | NotSet;
 
-  type color =
-    | White
-    | Black;
-
-  let toFloat = (score, color) =>
-    switch (score) {
-    | WhiteWon =>
-      switch (color) {
-      | White => 1.0
-      | Black => 0.0
-      }
-    | BlackWon =>
-      switch (color) {
-      | White => 0.0
-      | Black => 1.0
-      }
+  let toFloatWhite =
+    fun
+    | WhiteWon => 1.0
+    | BlackWon => 0.0
     | Draw => 0.5
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => 0.0
-    };
+    | NotSet => 0.0;
+
+  let toFloatBlack =
+    fun
+    | WhiteWon => 0.0
+    | BlackWon => 1.0
+    | Draw => 0.5
+    /* This loses data, so is a one-way trip. Use with prudence! */
+    | NotSet => 0.0;
 
   let toString = score =>
     switch (score) {
@@ -85,29 +80,23 @@ let encode = data =>
     ])
   );
 
-let byeResultForPlayerColor = (byeValue, color) =>
+let byeResultForPlayerColor = (byeValue, result) =>
   Data_Config.ByeValue.(
-    Result.(
-      switch (byeValue) {
-      | Half => Draw
-      | Full =>
-        switch (color) {
-        | White => WhiteWon
-        | Black => BlackWon
-        }
-      }
-    )
+    switch (byeValue) {
+    | Half => Result.Draw
+    | Full => result
+    }
   );
 
 let scoreByeMatch = (match, ~byeValue) =>
   switch (Data_Id.(isDummy(match.whiteId), isDummy(match.blackId))) {
   | (true, false) => {
       ...match,
-      result: byeResultForPlayerColor(byeValue, Result.Black),
+      result: byeResultForPlayerColor(byeValue, Result.BlackWon),
     }
   | (false, true) => {
       ...match,
-      result: byeResultForPlayerColor(byeValue, Result.White),
+      result: byeResultForPlayerColor(byeValue, Result.WhiteWon),
     }
   | (true, true) /* Two dummies?! */
   | (false, false) => match
@@ -128,7 +117,8 @@ let manualPair = ((white, black), byeValue) => {
 };
 
 let swapColors = match => {
-  let result =
+  ...match,
+  result:
     Result.(
       switch (match.result) {
       | WhiteWon => BlackWon
@@ -136,16 +126,11 @@ let swapColors = match => {
       | Draw => Draw
       | NotSet => NotSet
       }
-    );
-  /* This just "reverses" the values. */
-  {
-    ...match,
-    result,
-    whiteId: match.blackId,
-    blackId: match.whiteId,
-    whiteOrigRating: match.blackOrigRating,
-    blackOrigRating: match.whiteOrigRating,
-    whiteNewRating: match.blackNewRating,
-    blackNewRating: match.whiteNewRating,
-  };
+    ),
+  whiteId: match.blackId,
+  blackId: match.whiteId,
+  whiteOrigRating: match.blackOrigRating,
+  blackOrigRating: match.whiteOrigRating,
+  whiteNewRating: match.blackNewRating,
+  blackNewRating: match.whiteNewRating,
 };

@@ -344,8 +344,8 @@ module Ratings = {
     let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount);
     let whiteExpected = EloRank.getExpected(whiteRating, blackRating);
     let blackExpected = EloRank.getExpected(blackRating, whiteRating);
-    let whiteResult = Data_Match.Result.(toFloat(result, White));
-    let blackResult = Data_Match.Result.(toFloat(result, Black));
+    let whiteResult = Data_Match.Result.toFloatWhite(result);
+    let blackResult = Data_Match.Result.toFloatBlack(result);
     (
       EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)
       ->keepAboveFloor,

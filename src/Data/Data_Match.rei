@@ -5,11 +5,9 @@ module Result: {
     | Draw
     | NotSet;
 
-  type color =
-    | White
-    | Black;
+  let toFloatWhite: t => float;
 
-  let toFloat: (t, color) => float;
+  let toFloatBlack: t => float;
 
   let toString: t => string;
 
@@ -31,11 +29,11 @@ let decode: Js.Json.t => t;
 
 let encode: t => Js.Json.t;
 
-let byeResultForPlayerColor:
-  (Data_Config.ByeValue.t, Result.color) => Result.t;
-
 let scoreByeMatch: (t, ~byeValue: Data_Config.ByeValue.t) => t;
 
 let manualPair: ((Data_Player.t, Data_Player.t), Data_Config.ByeValue.t) => t;
 
+/**
+ * "Reverse" white and black.
+ */
 let swapColors: t => t;

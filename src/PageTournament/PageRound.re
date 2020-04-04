@@ -129,13 +129,13 @@ module MatchRow = {
         </span>
       | Match.Result.BlackWon =>
         switch (playerColor) {
-        | Match.Result.White => lost
-        | Match.Result.Black => won
+        | Scoring.Color.White => lost
+        | Scoring.Color.Black => won
         }
       | Match.Result.WhiteWon =>
         switch (playerColor) {
-        | Match.Result.White => won
-        | Match.Result.Black => lost
+        | Scoring.Color.White => won
+        | Scoring.Color.Black => lost
         }
       };
     };
@@ -226,7 +226,7 @@ module MatchRow = {
         {string_of_int(pos + 1)->React.string}
       </th>
       <td className=Style.playerResult>
-        {resultDisplay(Match.Result.White)}
+        {resultDisplay(Scoring.Color.White)}
       </td>
       <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-white"}>
         <td
@@ -239,7 +239,7 @@ module MatchRow = {
         </td>
       </Utils.TestId>
       <td className=Style.playerResult>
-        {resultDisplay(Match.Result.Black)}
+        {resultDisplay(Scoring.Color.Black)}
       </td>
       <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-black"}>
         <td

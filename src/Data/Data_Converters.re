@@ -65,11 +65,7 @@ let matches2ScoreData = matchList =>
             ~playerId=match.whiteId,
             ~origRating=match.whiteOrigRating,
             ~newRating=match.whiteNewRating,
-            ~result=
-              Data_Match.Result.toFloat(
-                match.result,
-                Data_Match.Result.White,
-              ),
+            ~result=Data_Match.Result.toFloatWhite(match.result),
             ~oppId=match.blackId,
             ~color=Data_Scoring.Color.White,
           );
@@ -79,11 +75,7 @@ let matches2ScoreData = matchList =>
             ~playerId=match.blackId,
             ~origRating=match.blackOrigRating,
             ~newRating=match.blackNewRating,
-            ~result=
-              Data_Match.Result.toFloat(
-                match.result,
-                Data_Match.Result.Black,
-              ),
+            ~result=Data_Match.Result.toFloatBlack(match.result),
             ~oppId=match.whiteId,
             ~color=Data_Scoring.Color.Black,
           );
