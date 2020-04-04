@@ -1,7 +1,7 @@
 open Jest;
 open Expect;
-open Scoring;
 open Data.Player;
+open Data.Scoring;
 
 let players = TestData.players->Data.Id.Map.fromStringArray;
 

@@ -4,7 +4,7 @@ type t = {
   date: Js.Date.t,
   playerIds: list(Data_Id.t),
   byeQueue: array(Data_Id.t),
-  tieBreaks: array(Scoring.TieBreak.t),
+  tieBreaks: array(Data_Scoring.TieBreak.t),
   roundList: Data_Rounds.t,
 };
 

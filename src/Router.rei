@@ -1,4 +1,4 @@
-module Tourney: {
+module TourneyPage: {
   type t =
     | Players
     | Scores
@@ -11,7 +11,7 @@ module Tourney: {
 type t =
   | Index
   | TournamentList
-  | Tournament(Data.Id.t, Tourney.t)
+  | Tournament(Data.Id.t, TourneyPage.t)
   | PlayerList
   | Player(Data.Id.t)
   | TimeCalculator

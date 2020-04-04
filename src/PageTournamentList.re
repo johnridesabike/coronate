@@ -49,7 +49,7 @@ let make = (~windowDispatch) => {
           playerIds: [],
           roundList: Data.Rounds.empty,
           tieBreaks:
-            Scoring.TieBreak.(
+            Data.Scoring.TieBreak.(
               [|Median, Solkoff, Cumulative, CumulativeOfOpposition|]
             ),
         },
@@ -102,7 +102,7 @@ let make = (~windowDispatch) => {
                   <tr
                     key={t.id->Data.Id.toString} className="buttons-on-hover">
                     <td>
-                      <HashLink to_={Tournament(t.id, Tourney.Players)}>
+                      <HashLink to_={Tournament(t.id, TourneyPage.Players)}>
                         {React.string(t.name)}
                       </HashLink>
                     </td>

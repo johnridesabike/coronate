@@ -5,3 +5,5 @@ module Tournament = Data_Tournament;
 module Config = Data_Config;
 module Converters = Data_Converters;
 module Id = Data_Id;
+module Pairing = Data_Pairing;
+module Scoring = Data_Scoring;

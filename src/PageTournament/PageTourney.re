@@ -173,7 +173,7 @@ module Sidebar = {
         <ul>
           <li>
             <HashLink
-              to_={Tournament(tourney.id, Tourney.Setup)}
+              to_={Tournament(tourney.id, TourneyPage.Setup)}
               onDragStart=noDraggy>
               <Icons.Settings />
               <span className="sidebar__hide-on-close">
@@ -183,7 +183,7 @@ module Sidebar = {
           </li>
           <li>
             <HashLink
-              to_={Tournament(tourney.id, Tourney.Players)}
+              to_={Tournament(tourney.id, TourneyPage.Players)}
               onDragStart=noDraggy>
               <Icons.Users />
               <span className="sidebar__hide-on-close">
@@ -193,7 +193,7 @@ module Sidebar = {
           </li>
           <li>
             <HashLink
-              to_={Tournament(tourney.id, Tourney.Status)}
+              to_={Tournament(tourney.id, TourneyPage.Status)}
               onDragStart=noDraggy>
               <Icons.Activity />
               <span className="sidebar__hide-on-close">
@@ -203,7 +203,7 @@ module Sidebar = {
           </li>
           <li>
             <HashLink
-              to_={Tournament(tourney.id, Tourney.Crosstable)}
+              to_={Tournament(tourney.id, TourneyPage.Crosstable)}
               onDragStart=noDraggy>
               <Icons.Layers />
               <span className="sidebar__hide-on-close">
@@ -213,7 +213,7 @@ module Sidebar = {
           </li>
           <li>
             <HashLink
-              to_={Tournament(tourney.id, Tourney.Scores)}
+              to_={Tournament(tourney.id, TourneyPage.Scores)}
               onDragStart=noDraggy>
               <Icons.List />
               <span className="sidebar__hide-on-close">
@@ -232,7 +232,7 @@ module Sidebar = {
            ->Array.mapWithIndex((id, _) =>
                <li key={Js.Int.toString(id)}>
                  <HashLink
-                   to_={Tournament(tourney.id, Tourney.Round(id))}
+                   to_={Tournament(tourney.id, TourneyPage.Round(id))}
                    onDragStart=noDraggy>
                    {Js.Int.toString(id + 1)->React.string}
                    {isRoundComplete(id)
@@ -299,12 +299,13 @@ let make = (~tourneyId, ~subPage, ~windowDispatch) => {
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>
          {switch (subPage) {
-          | Tourney.Players => <PageTourneyPlayers tournament />
-          | Tourney.Scores => <PageTourneyScores tournament />
-          | Tourney.Crosstable => <PageTourneyScores.Crosstable tournament />
-          | Tourney.Setup => <PageTourneySetup tournament />
-          | Tourney.Status => <PageTournamentStatus tournament />
-          | Tourney.Round(roundId) => <PageRound tournament roundId />
+          | TourneyPage.Players => <PageTourneyPlayers tournament />
+          | TourneyPage.Scores => <PageTourneyScores tournament />
+          | TourneyPage.Crosstable =>
+            <PageTourneyScores.Crosstable tournament />
+          | TourneyPage.Setup => <PageTourneySetup tournament />
+          | TourneyPage.Status => <PageTournamentStatus tournament />
+          | TourneyPage.Round(roundId) => <PageRound tournament roundId />
           }}
        </Window.Body>}
   </LoadTournament>;

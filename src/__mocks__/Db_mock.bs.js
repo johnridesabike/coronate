@@ -54,16 +54,11 @@ function configReducer(state, action) {
     case /* DelAvoidSingle */2 :
         var id = action[0];
         return {
-                avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Config$Coronate.AvoidPairs.empty, (function (acc, param) {
-                        var p2 = param[1];
-                        var p1 = param[0];
-                        if (p1 === id || p2 === id) {
+                avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Config$Coronate.Pair.$$Set.empty, (function (acc, pair) {
+                        if (Data_Config$Coronate.Pair.has(pair, id)) {
                           return acc;
                         } else {
-                          return Belt_Set.add(acc, /* tuple */[
-                                      p1,
-                                      p2
-                                    ]);
+                          return Belt_Set.add(acc, pair);
                         }
                       })),
                 byeValue: state.byeValue,

@@ -348,7 +348,7 @@ module Profile = {
       },
       (windowDispatch, playerName),
     );
-    let avoidMap = Data.Config.(AvoidPairs.toMap(config.avoidPairs));
+    let avoidMap = Data.Config.(Pair.Set.toMap(config.avoidPairs));
     let singAvoidList =
       switch (Map.get(avoidMap, playerId)) {
       | None => []
@@ -373,17 +373,21 @@ module Profile = {
       switch (selectedAvoider) {
       | None => ()
       | Some(selectedAvoider) =>
-        configDispatch(Db.AddAvoidPair((playerId, selectedAvoider)));
-        /* Reset the selected avoider to the first on the list, but check to
-           make sure they weren't they weren't the first. */
-        let newSelected =
-          switch (unavoided) {
-          | [id, ..._] when id !== selectedAvoider => Some(id)
-          | [_, id, ..._] => Some(id)
-          | [_]
-          | [] => None
-          };
-        setSelectedAvoider(_ => newSelected);
+        switch (Config.Pair.make(playerId, selectedAvoider)) {
+        | None => ()
+        | Some(pair) =>
+          configDispatch(Db.AddAvoidPair(pair));
+          /* Reset the selected avoider to the first on the list, but check to
+             make sure they weren't they weren't the first. */
+          let newSelected =
+            switch (unavoided) {
+            | [id, ..._] when id !== selectedAvoider => Some(id)
+            | [_, id, ..._] => Some(id)
+            | [_]
+            | [] => None
+            };
+          setSelectedAvoider(_ => newSelected);
+        }
       };
     };
     let handleAvoidChange = event => {
@@ -534,7 +538,10 @@ module Profile = {
                  )}
                  className="danger button-ghost"
                  onClick={_ =>
-                   configDispatch(Db.DelAvoidPair((playerId, pId)))
+                   switch (Config.Pair.make(playerId, pId)) {
+                   | None => ()
+                   | Some(pair) => configDispatch(Db.DelAvoidPair(pair))
+                   }
                  }>
                  <Icons.Trash />
                </button>

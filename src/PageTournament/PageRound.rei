@@ -8,7 +8,7 @@ module RoundTable: {
       ~selectedMatch: Data.Id.t=?,
       ~setSelectedMatch: ('a => option(Data_Id.t)) => unit=?,
       ~tournament: LoadTournament.t,
-      ~scoreData: Data.Id.Map.t(Scoring.t)=?
+      ~scoreData: Data.Id.Map.t(Data_Scoring.t)=?
     ) =>
     React.element;
 };

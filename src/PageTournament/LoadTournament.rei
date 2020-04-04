@@ -26,7 +26,7 @@ let make:
  */
 type roundData = {
   activePlayersCount: int,
-  scoreData: Data.Id.Map.t(Scoring.t),
+  scoreData: Data.Id.Map.t(Data_Scoring.t),
   unmatched: Data.Id.Map.t(Data.Player.t),
   unmatchedCount: int,
   unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),

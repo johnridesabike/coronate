@@ -20,12 +20,14 @@ let config =
   Config.{
     byeValue: ByeValue.Full,
     avoidPairs:
-      AvoidPairs.fromStringArray([|
+      [|
         ("TVs_Frank____________", "TVs_Son_of_TVs_Frank_"),
         ("Pearl_Forrester______", "Dr_Clayton_Forrester_"),
         ("Kinga_Forrester______", "Dr_Clayton_Forrester_"),
         ("Kinga_Forrester______", "Pearl_Forrester______"),
-      |]),
+      |]
+      ->Belt.Array.keepMap(((a, b)) => Pair.make(id(a), id(b)))
+      ->Pair.Set.fromArray,
     lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
   };
 let players = [|

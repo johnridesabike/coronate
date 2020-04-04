@@ -4,10 +4,9 @@ type t = {
   date: Js.Date.t,
   playerIds: list(Data_Id.t),
   byeQueue: array(Data_Id.t),
-  tieBreaks: array(Scoring.TieBreak.t),
+  tieBreaks: array(Data_Scoring.TieBreak.t),
   roundList: Data_Rounds.t,
 };
-
 
 /**
  * LocalForage/IndexedDB sometimes automatically parses the date for us
@@ -22,7 +21,8 @@ let decode = json =>
     date: json |> field("date", oneOf([date, unsafe_date])),
     playerIds: json |> field("playerIds", list(Data_Id.decode)),
     byeQueue: json |> field("byeQueue", array(Data_Id.decode)),
-    tieBreaks: json |> field("tieBreaks", array(Scoring.TieBreak.decode)),
+    tieBreaks:
+      json |> field("tieBreaks", array(Data_Scoring.TieBreak.decode)),
     roundList: json |> field("roundList", Data_Rounds.decode),
   };
 
@@ -34,7 +34,7 @@ let encode = data =>
       ("date", data.date |> date),
       ("playerIds", data.playerIds |> list(Data_Id.encode)),
       ("byeQueue", data.byeQueue |> array(Data_Id.encode)),
-      ("tieBreaks", data.tieBreaks |> array(Scoring.TieBreak.encode)),
+      ("tieBreaks", data.tieBreaks |> array(Data_Scoring.TieBreak.encode)),
       ("roundList", data.roundList |> Data_Rounds.encode),
     ])
   );

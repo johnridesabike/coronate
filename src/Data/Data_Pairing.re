@@ -4,7 +4,7 @@ type t = {
   id: Data_Id.t,
   avoidIds: list(Data_Id.t),
   colorScores: list(float),
-  colors: list(Scoring.Color.t),
+  colors: list(Data_Scoring.Color.t),
   halfPos: int,
   isUpperHalf: bool,
   opponents: list(Data_Id.t),

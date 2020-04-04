@@ -3,7 +3,7 @@ open ReasonReact.Router;
 
 let str = Data.Id.toString;
 
-module Tourney = {
+module TourneyPage = {
   type t =
     | Players
     | Scores
@@ -41,7 +41,7 @@ module Tourney = {
 type t =
   | Index
   | TournamentList
-  | Tournament(Data.Id.t, Tourney.t)
+  | Tournament(Data.Id.t, TourneyPage.t)
   | PlayerList
   | Player(Data.Id.t)
   | TimeCalculator
@@ -61,7 +61,7 @@ let fromPath =
   | ["", "options"] => Options
   | ["", "tourneys"] => TournamentList
   | ["", "tourneys", x, ...path] =>
-    switch (Tourney.fromPath(path)) {
+    switch (TourneyPage.fromPath(path)) {
     | Some(page) => Tournament(id(x), page)
     | None => NotFound
     }
@@ -76,7 +76,7 @@ let toString =
   | TimeCalculator => "/timecalc"
   | Options => "/options"
   | TournamentList => "/tourneys"
-  | Tournament(id, page) => "/tourneys/" ++ Tourney.toString(id, page);
+  | Tournament(id, page) => "/tourneys/" ++ TourneyPage.toString(id, page);
 
 let useHashUrl = () => {
   let {hash, _} = useUrl();

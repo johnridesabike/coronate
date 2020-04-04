@@ -20,7 +20,7 @@ let loadPairData = tourneyId => {
   Data.Rounds.rounds2Matches(roundList, ())
   ->matches2ScoreData
   ->createPairingData(players, TestData.config.Data.Config.avoidPairs)
-  ->Pairing.setUpperHalves;
+  ->Data.Pairing.setUpperHalves;
 };
 
 test("Players have 0 priority of pairing themselves.", () => {
@@ -29,14 +29,14 @@ test("Players have 0 priority of pairing themselves.", () => {
   // picked.
   let pairData = loadPairData(TestData.byeRoundTourney);
   let newb = Map.getExn(pairData, TestData.newbieMcNewberson);
-  let ideal = Pairing.calcPairIdeal(newb, newb);
+  let ideal = Data.Pairing.calcPairIdeal(newb, newb);
   expect(ideal) |> toBe(0.0);
 });
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney);
   let (pairData, byedPlayer) =
-    Pairing.setByePlayer([||], Data.Id.dummy, dataPreBye);
+    Data.Pairing.setByePlayer([||], Data.Id.dummy, dataPreBye);
   test("The lowest-ranking player is removed after bye selection.", () =>
     pairData
     |> Map.keysToArray
@@ -48,7 +48,7 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      expect(player.Pairing.id) |> toBe(TestData.newbieMcNewberson)
+      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
     }
   );
 });
@@ -58,11 +58,11 @@ test("The bye signup queue works", () => {
   let byeQueue = [|TestData.newbieMcNewberson, TestData.joelRobinson|];
   // Newbie McNewberson already played the first bye round
   let (_, byedPlayer) =
-    Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye);
+    Data.Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye);
   switch (byedPlayer) {
   | None => assert(false)
   | Some(player) =>
-    expect(player.Pairing.id) |> toBe(TestData.joelRobinson)
+    expect(player.Data.Pairing.id) |> toBe(TestData.joelRobinson)
   };
 });
 test(
@@ -70,17 +70,17 @@ test(
   () => {
     let dataPreBye = loadPairData(TestData.byeRoundTourney3);
     let (_, byedPlayer) =
-      Pairing.setByePlayer([||], Data.Id.dummy, dataPreBye);
+      Data.Pairing.setByePlayer([||], Data.Id.dummy, dataPreBye);
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      expect(player.Pairing.id) |> toBe(TestData.newbieMcNewberson)
+      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
     };
   },
 );
 test("Players are paired correctly in a simple scenario.", () => {
   let pairData = loadPairData(TestData.simplePairing);
-  let matches = Pairing.pairPlayers(pairData);
+  let matches = Data.Pairing.pairPlayers(pairData);
   expect(matches)
   |> ExpectJs.toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),
@@ -91,7 +91,7 @@ test("Players are paired correctly in a simple scenario.", () => {
 });
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws);
-  let matches = Pairing.pairPlayers(pairData);
+  let matches = Data.Pairing.pairPlayers(pairData);
   expect(matches)
   |> toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),

@@ -160,7 +160,7 @@ let useScoreInfo =
     Option.mapWithDefault(
       avoidPairs,
       Data.Id.Map.make(),
-      Config.AvoidPairs.toMap,
+      Config.Pair.Set.toMap,
     );
   let avoidList =
     switch (Map.get(avoidMap, player.Player.id)) {
