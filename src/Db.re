@@ -4,20 +4,23 @@ open Belt;
  * Initialize the databases
  ******************************************************************************/
 let localForageConfig = LocalForage.Config.make(~name="Coronate");
+module Config = LocalForage.Id.MakeEncodable(Data.Config);
+module Player = LocalForage.Id.MakeEncodable(Data.Player);
+module Tournament = LocalForage.Id.MakeEncodable(Data.Tournament);
 let configDb =
   LocalForage.Record.make(
     localForageConfig(~storeName="Options", ()),
-    (module Data.Config),
+    (module Config),
   );
 let players =
   LocalForage.Map.make(
     localForageConfig(~storeName="Players", ()),
-    (module Data.Player),
+    (module Player),
   );
 let tournaments =
   LocalForage.Map.make(
     localForageConfig(~storeName="Tournaments", ()),
-    (module Data.Tournament),
+    (module Tournament),
   );
 
 let loadDemoDB = _: unit => {

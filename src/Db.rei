@@ -1,6 +1,19 @@
 let loadDemoDB: unit => unit;
 
-let tournaments: LocalForage.Map.t(Data.Tournament.t);
+module Config: {
+  type t = Data.Config.t;
+  type identity;
+};
+module Tournament: {
+  type t = Data.Tournament.t;
+  type identity;
+};
+module Player: {
+  type t = Data.Player.t;
+  type identity;
+};
+
+let tournaments: LocalForage.Map.t(Data.Tournament.t, Tournament.identity);
 
 type action('a) =
   | Del(Data.Id.t)
