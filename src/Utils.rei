@@ -52,7 +52,7 @@ module DateFormat: {
 
 module DateTimeFormat: {
   [@react.component]
-  let make: (~date: Js.Date.t) => React.element;
+  let make: (~date: Js.Date.t, ~timeZone: string=?) => React.element;
 };
 
 module Panel: {

@@ -64,43 +64,65 @@ module Entities = {
   let copy = "\xA9";
 };
 
-module MakeDateTimeFormat = (M: {let formatter: Intl.DateTimeFormat.t;}) => {
+module DateFormat = {
+  let formatter =
+    Intl.DateTimeFormat.(
+      make(
+        ~locales=[|"en-US"|],
+        ~day=TwoDigit,
+        ~month=Short,
+        ~year=Numeric,
+        (),
+      )
+    );
   [@react.component]
   let make = (~date) =>
     <time dateTime={Js.Date.toISOString(date)}>
-      {M.formatter->Intl.DateTimeFormat.format(date)->React.string}
+      {formatter->Intl.DateTimeFormat.format(date)->React.string}
     </time>;
 };
 
-module DateFormat =
-  MakeDateTimeFormat({
+module DateTimeFormat = {
+  /* We only have to construct a new formatter if the timeZone is specified.
+     Right now the timeZone is just used for testing. In the future, it can be
+     passed from a configuration. It's inefficent to construct a fresh formatter
+     for every render. */
+  let formatter =
+    Intl.DateTimeFormat.(
+      make(
+        ~locales=[|"en-US"|],
+        ~day=TwoDigit,
+        ~month=Short,
+        ~year=Numeric,
+        ~hour=TwoDigit,
+        ~minute=TwoDigit,
+        (),
+      )
+    );
+  [@react.component]
+  let make = (~date, ~timeZone=?) => {
     let formatter =
-      Intl.DateTimeFormat.(
-        make(
-          ~locales=[|"en-US"|],
-          ~day=TwoDigit,
-          ~month=Short,
-          ~year=Numeric,
-          (),
+      switch (timeZone) {
+      | None => formatter
+      | Some(timeZone) =>
+        Intl.DateTimeFormat.(
+          make(
+            ~locales=[|"en-US"|],
+            ~day=TwoDigit,
+            ~month=Short,
+            ~year=Numeric,
+            ~hour=TwoDigit,
+            ~minute=TwoDigit,
+            ~timeZone,
+            (),
+          )
         )
-      );
-  });
-
-module DateTimeFormat =
-  MakeDateTimeFormat({
-    let formatter =
-      Intl.DateTimeFormat.(
-        make(
-          ~locales=[|"en-US"|],
-          ~day=TwoDigit,
-          ~month=Short,
-          ~year=Numeric,
-          ~hour=TwoDigit,
-          ~minute=TwoDigit,
-          (),
-        )
-      );
-  });
+      };
+    <time dateTime={Js.Date.toISOString(date)}>
+      {formatter->Intl.DateTimeFormat.format(date)->React.string}
+    </time>;
+  };
+};
 
 /* module PlaceHolderButton = {
      [@react.component]
