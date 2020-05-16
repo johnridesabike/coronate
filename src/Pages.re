@@ -62,7 +62,7 @@ module Splash = {
               {React.string("Start creating your tournaments!")}
             </li>
           </ol>
-          <Utils.Notification kind=Utils.Warning>
+          <Utils.Notification kind=Warning>
             {React.string("If you experience glitches or crashes,")}
             <br />
             {React.string("clear your browser cache and try again.")}
@@ -207,7 +207,7 @@ module TimeCalculator = {
                     type_="number"
                     value={Js.Int.toString(players)}
                     onChange={updateInt(setPlayers, minPlayers)}
-                    min=minPlayers
+                    min={Int.toString(minPlayers)}
                     style={ReactDOMRe.Style.make(~width="40px", ())}
                   />
                 </td>
@@ -237,7 +237,7 @@ module TimeCalculator = {
                     value={Js.Int.toString(breakTime)}
                     onChange={updateInt(setBreakTime, minBreakTime)}
                     step=5.0
-                    min=minBreakTime
+                    min={Int.toString(minBreakTime)}
                     style={ReactDOMRe.Style.make(~width="40px", ())}
                   />
                   {React.string(" minutes")}
@@ -256,7 +256,7 @@ module TimeCalculator = {
                     value={Js.Float.toString(totalTime)}
                     onChange={updateFloat(setTotalTime, minTotalTime)}
                     step=0.5
-                    min={Float.toInt(minTotalTime)}
+                    min={Float.toString(minTotalTime)}
                     style={ReactDOMRe.Style.make(~width="40px", ())}
                   />
                   {React.string(" hours")}

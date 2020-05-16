@@ -45,7 +45,7 @@ let isLoadedDone =
   | Error => true;
 
 [@react.component]
-let make = (~children, ~tourneyId, ~windowDispatch) => {
+let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   let tourneyId = Data.Id.toString(tourneyId);
   let (tourney, setTourney) =
     React.useReducer(tournamentReducer, emptyTourney);

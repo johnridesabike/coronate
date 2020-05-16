@@ -4,10 +4,10 @@ open Belt;
  * Begin the sortable table hook.
  */
 type getter('a) =
-  | GetString('a => string)
-  | GetInt('a => int)
-  | GetFloat('a => float)
-  | GetDate('a => Js.Date.t);
+  | GetString((. 'a) => string)
+  | GetInt((. 'a) => int)
+  | GetFloat((. 'a) => float)
+  | GetDate((. 'a) => Js.Date.t);
 
 /**
  * Arrays or lists? I'm using arrays because this data only exists to be
@@ -36,11 +36,12 @@ let sortedTableReducer = (state, action) => {
   let direction = newState.isDescending ? Utils.descend : Utils.ascend;
   let sortFunc =
     switch (newState.column) {
-    | GetString(func) =>
-      direction(compare, str => str->func->Utils.String.toLowerCase)
-    | GetInt(func) => direction(compare, func)
-    | GetFloat(func) => direction(compare, func)
-    | GetDate(func) => direction(compare, date => date->func->Js.Date.getTime)
+    | GetString(f) =>
+      direction(compare, (. str) => f(. str)->Utils.String.toLowerCase)
+    | GetInt(f) => direction(compare, f)
+    | GetFloat(f) => direction(compare, f)
+    | GetDate(f) =>
+      direction(compare, (. date) => f(. date)->Js.Date.getTime)
     };
   let table = Belt.SortArray.stableSortBy(newState.table, sortFunc);
   {...newState, table};

@@ -12,16 +12,16 @@ module Footer = {
       switch (isNewRoundReady, isItOver) {
       | (true, false) => (
           Utils.Entities.nbsp ++ " Ready to begin a new round.",
-          Utils.Success,
+          Utils.Notification.Success,
         )
       | (false, false)
       | (false, true) => (
           Utils.Entities.nbsp ++ "Round in progress.",
-          Utils.Generic,
+          Utils.Notification.Generic,
         )
       | (true, true) => (
           Utils.Entities.nbsp ++ " All rounds have completed.",
-          Utils.Warning,
+          Utils.Notification.Warning,
         )
       };
     ReactDOMRe.(
@@ -292,8 +292,8 @@ module Sidebar = {
 let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 
 [@react.component]
-let make = (~tourneyId, ~subPage, ~windowDispatch) => {
-  <LoadTournament tourneyId windowDispatch>
+let make = (~tourneyId, ~subPage, ~windowDispatch=?) => {
+  <LoadTournament tourneyId ?windowDispatch>
     {tournament =>
        <Window.Body
          footerFunc={footerFunc(tournament)}

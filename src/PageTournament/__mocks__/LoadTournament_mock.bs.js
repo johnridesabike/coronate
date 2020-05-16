@@ -3,14 +3,11 @@
 import * as Curry from "bs-platform/lib/es6/curry.js";
 import * as React from "react";
 import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
-import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
-import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Db$Coronate from "../../Db.bs.js";
 import * as Data_Id$Coronate from "../../Data/Data_Id.bs.js";
-import * as DemoData$Coronate from "../../DemoData.bs.js";
 import * as TestData$Coronate from "../../TestData.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
 import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.bs.js";
@@ -20,31 +17,7 @@ function log2(num) {
   return Math.log(num) / Math.log(2.0);
 }
 
-var configData_avoidPairs = Belt_Set.mergeMany(TestData$Coronate.config.avoidPairs, Belt_Set.toArray(DemoData$Coronate.config.avoidPairs));
-
-var configData_byeValue = TestData$Coronate.config.byeValue;
-
-var configData_lastBackup = TestData$Coronate.config.lastBackup;
-
-var configData = {
-  avoidPairs: configData_avoidPairs,
-  byeValue: configData_byeValue,
-  lastBackup: configData_lastBackup
-};
-
-function merger(_key, a, b) {
-  if (a !== undefined) {
-    return Caml_option.some(Caml_option.valFromOption(a));
-  } else if (b !== undefined) {
-    return Caml_option.some(Caml_option.valFromOption(b));
-  } else {
-    return ;
-  }
-}
-
-var tournamentData = Data_Id$Coronate.$$Map.fromStringArray(Belt_Array.concat(TestData$Coronate.tournaments, DemoData$Coronate.tournaments));
-
-var playerData = Data_Id$Coronate.$$Map.fromStringArray(Belt_Array.concat(TestData$Coronate.players, DemoData$Coronate.players));
+var tournamentData = Data_Id$Coronate.$$Map.fromStringArray(TestData$Coronate.tournaments);
 
 function calcNumOfRounds(playerCount) {
   var roundCount = Math.ceil(log2(playerCount));
@@ -62,11 +35,12 @@ function tournamentReducer(param, action) {
 function LoadTournament_mock(Props) {
   var children = Props.children;
   var tourneyId = Props.tourneyId;
+  Props.windowDispatch;
   var match = React.useReducer(tournamentReducer, Belt_Map.getExn(tournamentData, tourneyId));
   var tourney = match[0];
   var roundList = tourney.roundList;
   var playerIds = tourney.playerIds;
-  var match$1 = Db$Coronate.useAllPlayers(/* () */0);
+  var match$1 = Db$Coronate.useAllPlayers(undefined);
   var players = match$1.items;
   var activePlayers = Belt_Map.keep(players, (function (id, param) {
           return Belt_List.has(playerIds, id, (function (prim, prim$1) {
@@ -95,7 +69,7 @@ function useRoundData(roundId, tournament) {
   var roundList = tournament.tourney.roundList;
   var activePlayers = tournament.activePlayers;
   var scoreData = React.useMemo((function () {
-          return Data_Converters$Coronate.matches2ScoreData(Data_Rounds$Coronate.rounds2Matches(roundList, undefined, /* () */0));
+          return Data_Converters$Coronate.matches2ScoreData(Data_Rounds$Coronate.rounds2Matches(roundList, undefined, undefined));
         }), [roundList]);
   var round = Data_Rounds$Coronate.get(roundList, roundId);
   var isThisTheLastRound = roundId === Data_Rounds$Coronate.getLastKey(roundList);
@@ -104,7 +78,7 @@ function useRoundData(roundId, tournament) {
     var matched = Data_Rounds$Coronate.Round.getMatched(Caml_option.valFromOption(round));
     unmatched = Belt_Map.removeMany(activePlayers, matched);
   } else {
-    unmatched = Data_Id$Coronate.$$Map.make(/* () */0);
+    unmatched = Data_Id$Coronate.$$Map.make(undefined);
   }
   var unmatchedCount = Belt_Map.size(unmatched);
   var unmatchedWithDummy = unmatchedCount % 2 !== 0 ? Belt_Map.set(unmatched, Data_Id$Coronate.dummy, Curry._1(tournament.getPlayer, Data_Id$Coronate.dummy)) : unmatched;
@@ -121,15 +95,8 @@ function useRoundData(roundId, tournament) {
 var make = LoadTournament_mock;
 
 export {
-  log2 ,
-  configData ,
-  merger ,
-  tournamentData ,
-  playerData ,
-  calcNumOfRounds ,
-  tournamentReducer ,
   make ,
   useRoundData ,
   
 }
-/* configData Not a pure module */
+/* tournamentData Not a pure module */

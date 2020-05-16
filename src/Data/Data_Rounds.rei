@@ -1,12 +1,11 @@
 /* This interface file exists to keep the `t` types opaque from the rest of the
    code. The fact that they're arrays can lead to dangerous situations. */
 module Round: {
-
   type t;
 
-  external fromArray: array(Data_Match.t) => t = "%identity";
+  let fromArray: array(Data_Match.t) => t;
 
-  external toArray: t => array(Data_Match.t) = "%identity";
+  let toArray: t => array(Data_Match.t);
 
   let empty: t;
 
@@ -31,9 +30,9 @@ module Round: {
 
 type t;
 
-external fromArray: array(Round.t) => t = "%identity";
+let fromArray: array(Round.t) => t;
 
-external toArray: t => array(Round.t) = "%identity";
+let toArray: t => array(Round.t);
 
 let empty: t;
 

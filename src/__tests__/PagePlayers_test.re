@@ -1,12 +1,7 @@
 open Jest;
-open Expect;
 open ReactTestingLibrary;
 open JestDom;
 open FireEvent;
-
-afterEach(cleanup);
-
-let windowDispatch = _ => ();
 
 open Belt;
 
@@ -23,7 +18,6 @@ module Profile = {
       playersDispatch
       config
       configDispatch
-      windowDispatch
     />;
   };
 };

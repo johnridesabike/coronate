@@ -1,47 +1,37 @@
 open Jest;
-open Expect;
 open ReactTestingLibrary;
 open JestDom;
 open FireEvent;
 
-let id = Data.Id.fromString;
-
-/* afterEach(cleanup); */
-
-let windowDispatch = _ => ();
-
-module BattleForGothamCityRound = {
-  [@react.component]
-  let make = (~children) =>
-    <LoadTournament tourneyId={id("tvAdS4YbSOznrBgrg0ITA")} windowDispatch>
-      children
-    </LoadTournament>;
-};
-
 describe("Tabs auto-change correctly.", () => {
-  let page =
-    render(
-      <BattleForGothamCityRound>
-        {t => <PageRound tournament=t roundId=1 />}
-      </BattleForGothamCityRound>,
-    );
-  let selectTab =
-    page |> getByText(~matcher=`RegExp([%bs.re "/unmatched players \\(/i"]));
-  let matchesTab =
-    page |> getByText(~matcher=`RegExp([%bs.re "/^matches$/i"]));
-
-  test("When no players are matched, it defaults to the pair-picker", () =>
-    selectTab |> expect |> toHaveAttribute("aria-selected", ~value="true")
-  );
+  test("When no players are matched, it defaults to the pair-picker", () => {
+    let page =
+      render(
+        <LoadTournament tourneyId=TestData.simplePairing>
+          {tournament => <PageRound tournament roundId=1 />}
+        </LoadTournament>,
+      );
+    let selectTab =
+      page
+      |> getByText(~matcher=`RegExp([%bs.re "/unmatched players \\(/i"]));
+    selectTab |> expect |> toHaveAttribute("aria-selected", ~value="true");
+  });
 
   test(
     "Tab doesn't change focus if there are still players to be matched.", () => {
+    let page =
+      render(
+        <LoadTournament tourneyId=TestData.simplePairing>
+          {tournament => <PageRound tournament roundId=1 />}
+        </LoadTournament>,
+      );
+    let selectTab =
+      page
+      |> getByText(~matcher=`RegExp([%bs.re "/unmatched players \\(/i"]));
     page
-    |> getByText(~matcher=`RegExp([%bs.re "/add bruce wayne/i"]))
+    |> getByText(~matcher=`RegExp([%bs.re "/add crow t robot/i"]))
     |> click;
-    page
-    |> getByText(~matcher=`RegExp([%bs.re "/add dick grayson/i"]))
-    |> click;
+    page |> getByText(~matcher=`RegExp([%bs.re "/add tom servo/i"])) |> click;
     page
     |> getByText(~matcher=`RegExp([%bs.re "/^match selected$/i"]))
     |> click;
@@ -50,22 +40,31 @@ describe("Tabs auto-change correctly.", () => {
 
   test(
     "The tab selection doesn't change if there are still matched players", () => {
+    let page =
+      render(
+        <LoadTournament tourneyId=TestData.simplePairing>
+          {tournament => <PageRound tournament roundId=1 />}
+        </LoadTournament>,
+      );
     page
-    |> getByText(~matcher=`RegExp([%bs.re "/add alfred pennyworth/i"]))
+    |> getByText(~matcher=`RegExp([%bs.re "/add joel robinson/i"]))
     |> click;
     page
-    |> getByText(~matcher=`RegExp([%bs.re "/add barbara gordon/i"]))
+    |> getByText(~matcher=`RegExp([%bs.re "/add clayton forrester/i"]))
     |> click;
     page
     |> getByText(~matcher=`RegExp([%bs.re "/^match selected$/i"]))
     |> click;
+    let matchesTab =
+      page |> getByText(~matcher=`RegExp([%bs.re "/^matches$/i"]));
     matchesTab |> click;
-    /* expect(matchesTab).toHaveAttribute("aria-selected", "true");*/
     page
     |> getByText(
          ~matcher=
            `RegExp(
-             [%bs.re "/edit match for bruce wayne versus dick grayson/i"],
+             [%bs.re
+               "/edit match for joel robinson versus clayton forrester/i"
+             ],
            ),
        )
     |> click;
@@ -73,28 +72,43 @@ describe("Tabs auto-change correctly.", () => {
     matchesTab |> expect |> toHaveAttribute("aria-selected", ~value="true");
   });
 
-  Skip.test(
-    "The tab selection changes when all players have been unmatched", () => {
+  test("The tab selection changes when all players have been unmatched", () => {
+    let page =
+      render(
+        <LoadTournament tourneyId=TestData.simplePairing>
+          {tournament => <PageRound tournament roundId=1 />}
+        </LoadTournament>,
+      );
     page
     |> getByText(
          ~matcher=
            `RegExp(
-             [%bs.re
-               "/edit match for alfred pennyworth versus barbara gordon/i"
-             ],
+             [%bs.re "/edit match for crow t robot versus tom servo/i"],
            ),
        )
     |> click;
     page |> getByText(~matcher=`RegExp([%bs.re "/^unmatch$/i"])) |> click;
-    selectTab |> expect |> toHaveAttribute("aria-selected", ~value="false");
+    page
+    |> getByText(~matcher=`RegExp([%bs.re "/Matches/i"]))
+    |> expect
+    |> toHaveAttribute("aria-selected", ~value="false");
   });
 
-  Skip.test("The tab selection changes when all players have been paired", () => {
+  test("The tab selection changes when all players have been paired", () => {
+    let page =
+      render(
+        <LoadTournament tourneyId=TestData.simplePairing>
+          {tournament => <PageRound tournament roundId=1 />}
+        </LoadTournament>,
+      );
     page
     |> getByText(
          ~matcher=`RegExp([%bs.re "/^auto-pair unmatched players$/i"]),
        )
     |> click;
-    matchesTab |> expect |> toHaveAttribute("aria-selected", ~value="false");
+    page
+    |> getByText(~matcher=`RegExp([%bs.re "/^Unmatched players/i"]))
+    |> expect
+    |> toHaveAttribute("aria-selected", ~value="false");
   });
 });

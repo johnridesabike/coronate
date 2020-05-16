@@ -15,7 +15,7 @@ let make:
   (
     ~children: t => React.element,
     ~tourneyId: Data.Id.t,
-    ~windowDispatch: Window.action => unit
+    ~windowDispatch: Window.action => unit=?
   ) =>
   React.element;
 

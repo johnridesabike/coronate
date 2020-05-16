@@ -38,8 +38,7 @@ let make = (~tournament) => {
   let dateInput = React.useRef(Js.Nullable.null);
   let focusRef = myref =>
     Webapi.Dom.(
-      myref
-      ->React.Ref.current
+      myref.React.current
       ->Js.Nullable.toOption
       ->Option.flatMap(Element.asHtmlElement)
       ->Option.map(HtmlElement.focus)

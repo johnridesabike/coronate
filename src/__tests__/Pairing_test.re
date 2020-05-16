@@ -1,6 +1,6 @@
 open Belt;
 open Jest;
-open Expect;
+open JestDom;
 open Data.Converters;
 
 let tournaments = TestData.tournaments->Data.Id.Map.fromStringArray;
@@ -30,7 +30,7 @@ test("Players have 0 priority of pairing themselves.", () => {
   let pairData = loadPairData(TestData.byeRoundTourney);
   let newb = Map.getExn(pairData, TestData.newbieMcNewberson);
   let ideal = Data.Pairing.calcPairIdeal(newb, newb);
-  expect(ideal) |> toBe(0.0);
+  Expect.expect(ideal) |> Expect.toBe(0.0);
 });
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
@@ -40,15 +40,16 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   test("The lowest-ranking player is removed after bye selection.", () =>
     pairData
     |> Map.keysToArray
-    |> expect
-    |> not
-    |> toContain(TestData.newbieMcNewberson)
+    |> Expect.expect
+    |> Expect.not
+    |> Expect.toContain(TestData.newbieMcNewberson)
   );
   test("The lowest-ranking player is returned", () =>
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
+      Expect.expect(player.Data.Pairing.id)
+      |> Expect.toBe(TestData.newbieMcNewberson)
     }
   );
 });
@@ -62,7 +63,8 @@ test("The bye signup queue works", () => {
   switch (byedPlayer) {
   | None => assert(false)
   | Some(player) =>
-    expect(player.Data.Pairing.id) |> toBe(TestData.joelRobinson)
+    Expect.expect(player.Data.Pairing.id)
+    |> Expect.toBe(TestData.joelRobinson)
   };
 });
 test(
@@ -74,14 +76,15 @@ test(
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
+      Expect.expect(player.Data.Pairing.id)
+      |> Expect.toBe(TestData.newbieMcNewberson)
     };
   },
 );
 test("Players are paired correctly in a simple scenario.", () => {
   let pairData = loadPairData(TestData.simplePairing);
   let matches = Data.Pairing.pairPlayers(pairData);
-  expect(matches)
+  Expect.expect(matches)
   |> ExpectJs.toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),
        (TestData.drClaytonForrester, TestData.newbieMcNewberson),
@@ -92,8 +95,8 @@ test("Players are paired correctly in a simple scenario.", () => {
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws);
   let matches = Data.Pairing.pairPlayers(pairData);
-  expect(matches)
-  |> toEqual([
+  Expect.expect(matches)
+  |> Expect.toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),
        (TestData.drClaytonForrester, TestData.newbieMcNewberson),
        (TestData.tomServo, TestData.tvsFrank),
@@ -102,17 +105,12 @@ test("Players are paired correctly after a draw.", () => {
 });
 
 open ReactTestingLibrary;
-open JestDom;
 open FireEvent;
-
-afterEach(cleanup);
-
-let windowDispatch = _ => ();
 
 test("Auto-matching with bye players works", () => {
   let page =
     render(
-      <LoadTournament tourneyId=TestData.byeRoundTourney windowDispatch>
+      <LoadTournament tourneyId=TestData.byeRoundTourney>
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     );
@@ -122,7 +120,7 @@ test("Auto-matching with bye players works", () => {
   |> click;
 
   page
-  |> getByTestId("match-3-black")
+  |> getByTestId(~matcher=`Str("match-3-black"))
   |> expect
-  |> toHaveTextContent("Bye Player");
+  |> toHaveTextContent(`Str("Bye Player"));
 });

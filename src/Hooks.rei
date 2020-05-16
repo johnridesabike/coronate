@@ -1,8 +1,8 @@
 type getter('a) =
-  | GetString('a => string)
-  | GetInt('a => int)
-  | GetFloat('a => float)
-  | GetDate('a => Js.Date.t);
+  | GetString((. 'a) => string)
+  | GetInt((. 'a) => int)
+  | GetFloat((. 'a) => float)
+  | GetDate((. 'a) => Js.Date.t);
 
 type tableState('a) = {
   isDescending: bool,

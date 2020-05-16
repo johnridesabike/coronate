@@ -24,7 +24,7 @@ let tournaments =
   );
 
 let loadDemoDB = _: unit => {
-  let _: unit = [%bs.raw {|document.body.style.cursor = "wait"|}];
+  let () = [%bs.raw {|document.body.style.cursor = "wait"|}];
   Js.Promise.all3((
     LocalForage.Record.set(configDb, ~items=DemoData.config),
     LocalForage.Map.setItems(players, ~items=DemoData.players),
@@ -32,12 +32,12 @@ let loadDemoDB = _: unit => {
   ))
   ->Promise.Js.fromBsPromise
   ->Promise.Js.catch(_ => {
-      let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
-      Js.Console.error("Couldn't load demo data.");
+      let () = [%bs.raw {|document.body.style.cursor = "auto"|}];
+      Utils.alert("Couldn't load demo data.");
       Promise.resolved(((), (), ()));
     })
   ->Promise.get(_ => {
-      let _: unit = [%bs.raw {|document.body.style.cursor = "auto"|}];
+      let () = [%bs.raw {|document.body.style.cursor = "auto"|}];
       Utils.alert("Demo data loaded!");
     });
 };

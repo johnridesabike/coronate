@@ -10,9 +10,9 @@ open Belt;
 module Round = {
   type t = array(Data_Match.t);
 
-  external fromArray: array(Data_Match.t) => t = "%identity";
+  let fromArray = x => x;
 
-  external toArray: t => array(Data_Match.t) = "%identity";
+  let toArray = x => x;
 
   let empty: t = [||];
 
@@ -56,9 +56,9 @@ module Round = {
 
 type t = array(Round.t);
 
-external fromArray: array(Round.t) => t = "%identity";
+let fromArray = x => x;
 
-external toArray: t => array(Round.t) = "%identity";
+let toArray = x => x;
 
 let empty: t = [|[||]|];
 

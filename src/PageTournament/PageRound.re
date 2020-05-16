@@ -29,15 +29,15 @@ module PlayerMatchInfo = {
   [@react.component]
   let make =
       (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
-    let {
-      Hooks.player,
-      hasBye,
-      colorBalance,
-      score,
-      rating,
-      opponentResults,
-      avoidListHtml,
-    } =
+    let Hooks.{
+          player,
+          hasBye,
+          colorBalance,
+          score,
+          rating,
+          opponentResults,
+          avoidListHtml,
+        } =
       Hooks.useScoreInfo(
         ~player,
         ~scoreData,

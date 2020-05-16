@@ -3,11 +3,11 @@ open Router;
 open Data.Tournament;
 
 /* These can't be definined inline or the comparisons don't work. */
-let dateSort = Hooks.GetDate(x => x.date);
-let nameSort = Hooks.GetString(x => x.name);
+let dateSort = Hooks.GetDate((. x) => x.date);
+let nameSort = Hooks.GetString((. x) => x.name);
 
 [@react.component]
-let make = (~windowDispatch) => {
+let make = (~windowDispatch=_ => ()) => {
   let Db.{items: tourneys, dispatch, _} = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -98,21 +98,20 @@ let make = (~windowDispatch) => {
                </tr>
              </thead>
              <tbody className="content">
-               {Array.map(sorted.Hooks.table, t =>
-                  <tr
-                    key={t.id->Data.Id.toString} className="buttons-on-hover">
+               {Array.map(sorted.Hooks.table, ({id, date, name, _}) =>
+                  <tr key={id->Data.Id.toString} className="buttons-on-hover">
                     <td>
-                      <HashLink to_={Tournament(t.id, TourneyPage.Players)}>
-                        {React.string(t.name)}
+                      <HashLink to_={Tournament(id, TourneyPage.Players)}>
+                        {React.string(name)}
                       </HashLink>
                     </td>
-                    <td> <Utils.DateFormat date={t.date} /> </td>
+                    <td> <Utils.DateFormat date /> </td>
                     <td>
                       <button
-                        ariaLabel={"Delete " ++ t.name}
+                        ariaLabel={j|Delete “$name”|j}
                         className="danger button-ghost"
-                        title={"Delete " ++ t.name}
-                        onClick={_ => deleteTournament(t.id, t.name)}>
+                        title={"Delete " ++ name}
+                        onClick={_ => deleteTournament(id, name)}>
                         <Icons.Trash />
                       </button>
                     </td>

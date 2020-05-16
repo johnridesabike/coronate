@@ -1,1 +1,1 @@
-require("./Index.bs");
+import "./Index.bs";

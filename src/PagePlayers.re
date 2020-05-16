@@ -2,9 +2,9 @@ open Belt;
 open Data;
 open Router;
 
-let sortName = Hooks.GetString(x => x.Player.firstName);
-let sortRating = Hooks.GetInt(x => x.Player.rating);
-let sortMatchCount = Hooks.GetInt(x => x.Player.matchCount);
+let sortName = Hooks.GetString((. x) => x.Player.firstName);
+let sortRating = Hooks.GetInt((. x) => x.Player.rating);
+let sortMatchCount = Hooks.GetInt((. x) => x.Player.matchCount);
 
 module Form = [%form
   open Result;
@@ -65,7 +65,7 @@ module Form = [%form
 let errorNotification =
   fun
   | Some(Error(e)) =>
-    <Utils.Notification kind=Utils.Error> e->React.string </Utils.Notification>
+    <Utils.Notification kind=Error> e->React.string </Utils.Notification>
   | Some(Ok(_))
   | None => React.null;
 
@@ -173,7 +173,7 @@ module PlayerList = {
         ~players,
         ~playersDispatch,
         ~configDispatch,
-        ~windowDispatch,
+        ~windowDispatch=_ => (),
       ) => {
     open Player;
     let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
@@ -300,7 +300,7 @@ module Profile = {
         ~playersDispatch,
         ~config,
         ~configDispatch,
-        ~windowDispatch,
+        ~windowDispatch=_ => (),
       ) => {
     let Player.{
           id: playerId,
@@ -593,7 +593,7 @@ module Profile = {
 };
 
 [@react.component]
-let make = (~id=?, ~windowDispatch) => {
+let make = (~id=?, ~windowDispatch=?) => {
   let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -618,7 +618,7 @@ let make = (~id=?, ~windowDispatch) => {
          players
          playersDispatch
          configDispatch
-         windowDispatch
+         ?windowDispatch
        />
      | Some(id) =>
        switch (Map.get(players, id)) {
@@ -630,7 +630,7 @@ let make = (~id=?, ~windowDispatch) => {
            playersDispatch
            config
            configDispatch
-           windowDispatch
+           ?windowDispatch
          />
        }
      }}

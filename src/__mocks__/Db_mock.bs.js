@@ -3,27 +3,9 @@
 import * as React from "react";
 import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
-import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
 import * as Data_Id$Coronate from "../Data/Data_Id.bs.js";
-import * as DemoData$Coronate from "../DemoData.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
-
-var configData_avoidPairs = Belt_Set.mergeMany(TestData$Coronate.config.avoidPairs, Belt_Set.toArray(DemoData$Coronate.config.avoidPairs));
-
-var configData_byeValue = TestData$Coronate.config.byeValue;
-
-var configData_lastBackup = TestData$Coronate.config.lastBackup;
-
-var configData = {
-  avoidPairs: configData_avoidPairs,
-  byeValue: configData_byeValue,
-  lastBackup: configData_lastBackup
-};
-
-var tournamentData = Belt_Array.concat(TestData$Coronate.tournaments, DemoData$Coronate.tournaments);
-
-var playerData = Belt_Array.concat(TestData$Coronate.players, DemoData$Coronate.players);
 
 function genericDbReducer(state, action) {
   switch (action.tag | 0) {
@@ -98,15 +80,15 @@ function useAllItemsFromDb(data) {
 }
 
 function useAllPlayers(param) {
-  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(playerData));
+  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(TestData$Coronate.players));
 }
 
 function useAllTournaments(param) {
-  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(tournamentData));
+  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(TestData$Coronate.tournaments));
 }
 
 function useConfig(param) {
-  return React.useReducer(configReducer, configData);
+  return React.useReducer(configReducer, TestData$Coronate.config);
 }
 
 export {
@@ -115,4 +97,4 @@ export {
   useConfig ,
   
 }
-/* configData Not a pure module */
+/* react Not a pure module */

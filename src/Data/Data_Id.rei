@@ -1,8 +1,8 @@
 type t;
 
-external toString: t => string = "%identity";
+let toString: t => string;
 
-external fromString: string => t = "%identity";
+let fromString: string => t;
 
 /**
  * This is used in by matches to indicate a dummy player. The `getPlayerMaybe`

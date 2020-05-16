@@ -67,7 +67,7 @@ module LastBackupDate = {
 external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
-let make = (~windowDispatch) => {
+let make = (~windowDispatch=_ => ()) => {
   let Db.{items: tournaments, dispatch: tourneysDispatch, _} =
     Db.useAllTournaments();
   let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
@@ -138,6 +138,8 @@ let make = (~windowDispatch) => {
       ReactEvent.Form.currentTarget(event)##files->Array.getExn(0),
     );
     /* so the filename won't linger onscreen */
+    /* https://github.com/BuckleScript/bucklescript/issues/4391 */
+    [@warning "-20"]
     ReactEvent.Form.currentTarget(event)##value #= "";
   };
   let reloadDemoData = event => {

@@ -1,22 +1,9 @@
 open Belt;
-open TestData;
-
-let configData =
-  Data.Config.{
-    ...config,
-    avoidPairs:
-      config.avoidPairs
-      ->Set.mergeMany(DemoData.config.avoidPairs->Set.toArray),
-  };
-
-let tournamentData = Array.concat(tournaments, DemoData.tournaments);
-let playerData = Array.concat(players, DemoData.players);
 
 /* copied from Db */
 type action('a) =
-  | Del(Data.Id.t)
-  | Set(Data.Id.t, 'a)
-  | SetAll(Data.Id.Map.t('a));
+  Db.action('a) =
+    | Del(Data.Id.t) | Set(Data.Id.t, 'a) | SetAll(Data.Id.Map.t('a));
 
 type state('a) = {
   items: Data.Id.Map.t('a),
@@ -77,9 +64,9 @@ let useAllItemsFromDb = data => {
 };
 
 let useAllPlayers = () =>
-  useAllItemsFromDb(playerData->Data.Id.Map.fromStringArray);
+  useAllItemsFromDb(TestData.players->Data.Id.Map.fromStringArray);
 
 let useAllTournaments = () =>
-  useAllItemsFromDb(tournamentData->Data.Id.Map.fromStringArray);
+  useAllItemsFromDb(TestData.tournaments->Data.Id.Map.fromStringArray);
 
-let useConfig = () => React.useReducer(configReducer, configData);
+let useConfig = () => React.useReducer(configReducer, TestData.config);

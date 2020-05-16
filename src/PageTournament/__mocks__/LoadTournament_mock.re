@@ -2,34 +2,8 @@ open Belt;
 open Data;
 
 let log2 = num => log(num) /. log(2.0);
-/*
-  I'm depreciating `DemoData`, but currently merging it with `TestData` so
-  tests can keep working.
- */
-open TestData;
-let configData =
-  Data.Config.{
-    ...config,
-    avoidPairs:
-      Set.mergeMany(
-        config.avoidPairs,
-        Set.toArray(DemoData.config.avoidPairs),
-      ),
-  };
 
-let merger = (_key, a, b) => {
-  switch (a, b) {
-  | (Some(a), _) => Some(a)
-  | (_, Some(b)) => Some(b)
-  | (None, None) => None
-  };
-};
-
-let tournamentData =
-  Array.concat(tournaments, DemoData.tournaments)
-  ->Data.Id.Map.fromStringArray;
-let playerData =
-  Array.concat(players, DemoData.players)->Data.Id.Map.fromStringArray;
+let tournamentData = Data.Id.Map.fromStringArray(TestData.tournaments);
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
@@ -38,20 +12,21 @@ let calcNumOfRounds = playerCount => {
 
 let tournamentReducer = (_, action) => action;
 
-type t = {
-  activePlayers: Data.Id.Map.t(Player.t),
-  getPlayer: Data.Id.t => Player.t,
-  isItOver: bool,
-  isNewRoundReady: bool,
-  players: Data.Id.Map.t(Player.t),
-  playersDispatch: Db.action(Player.t) => unit,
-  roundCount: int,
-  tourney: Tournament.t,
-  setTourney: Tournament.t => unit,
-};
+type t =
+  LoadTournament.t = {
+    activePlayers: Data.Id.Map.t(Data.Player.t),
+    getPlayer: Data.Id.t => Data.Player.t,
+    isItOver: bool,
+    isNewRoundReady: bool,
+    players: Data.Id.Map.t(Data.Player.t),
+    playersDispatch: Db.action(Data.Player.t) => unit,
+    roundCount: int,
+    tourney: Data.Tournament.t,
+    setTourney: Data.Tournament.t => unit,
+  };
 
 [@react.component]
-let make = (~children, ~tourneyId) => {
+let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
   let (tourney, setTourney) =
     React.useReducer(
       tournamentReducer,
@@ -86,13 +61,15 @@ let make = (~children, ~tourneyId) => {
   });
 };
 
-type roundData = {
-  activePlayersCount: int,
-  scoreData: Data.Id.Map.t(Scoring.t),
-  unmatched: Data.Id.Map.t(Data.Player.t),
-  unmatchedCount: int,
-  unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
-};
+type roundData =
+  LoadTournament.roundData = {
+    activePlayersCount: int,
+    scoreData: Data.Id.Map.t(Scoring.t),
+    unmatched: Data.Id.Map.t(Data.Player.t),
+    unmatchedCount: int,
+    unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
+  };
+
 let useRoundData = (roundId: int, tournament: t) => {
   let {tourney, activePlayers, getPlayer, _} = tournament;
   let Tournament.{roundList, _} = tourney;

@@ -3,7 +3,7 @@ let license_url: string;
 let issues_url: string;
 
 type direction('data, 'field) =
-  (('field, 'field) => int, 'data => 'field, 'data, 'data) => int;
+  (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int;
 
 let ascend: direction('data, 'field);
 
@@ -11,12 +11,6 @@ let descend: direction('data, 'field);
 
 module Array: {
   type t('a) = array('a);
-
-  //let last: t('a) => option('a);
-
-  //let sum: t(int) => int;
-
-  //let sumF: t(float) => float;
 
   let swap: (t('a), int, int) => t('a);
 };
@@ -168,18 +162,18 @@ module PhotonColors: {
   let white_100: [> | `hex(string)];
 };
 
-type notification =
-  | Success
-  | Warning
-  | Error
-  | Generic;
-
 module Notification: {
+  type t =
+    | Success
+    | Warning
+    | Error
+    | Generic;
+
   [@react.component]
   let make:
     (
       ~children: React.element,
-      ~kind: notification=?,
+      ~kind: t=?,
       ~tooltip: string=?,
       ~className: string=?,
       ~style: ReactDOMRe.Style.t=?

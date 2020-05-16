@@ -1,8 +1,8 @@
 type t = string;
 
-external toString: t => string = "%identity";
+let toString = x => x;
 
-external fromString: string => t = "%identity";
+let fromString = x => x;
 
 let dummy = "________DUMMY________";
 
@@ -16,11 +16,7 @@ let decode = Json.Decode.string;
 
 let compare: (t, t) => int = compare;
 
-module Id =
-  Belt.Id.MakeComparable({
-    type nonrec t = t;
-    let cmp = compare;
-  });
+module Id = (val Belt.Id.comparable(~cmp=compare));
 
 let id: Belt.Id.comparable(t, Id.identity) = (module Id);
 
@@ -32,11 +28,9 @@ module Map = {
 
   let make = () => Belt.Map.make(~id);
 
-  external stringArray: array((string, 'v)) => array((key, 'v)) =
-    "%identity";
+  let stringArray = x => x;
 
-  external toStringArray: array((key, 'v)) => array((string, 'v)) =
-    "%identity";
+  let toStringArray = x => x;
 
   let fromStringArray = arr => arr->stringArray->Belt.Map.fromArray(~id);
 

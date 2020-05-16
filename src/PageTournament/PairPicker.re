@@ -41,8 +41,8 @@ type listEntry = {
   ideal: float,
 };
 
-let sortByName = Hooks.GetString(x => x.player.Player.firstName);
-let sortByIdeal = Hooks.GetFloat(x => x.ideal);
+let sortByName = Hooks.GetString((. x) => x.player.Player.firstName);
+let sortByIdeal = Hooks.GetFloat((. x) => x.ideal);
 
 module SelectList = {
   [@react.component]

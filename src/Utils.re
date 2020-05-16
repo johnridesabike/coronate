@@ -6,18 +6,12 @@ let issues_url = "https://github.com/johnridesabike/coronate/issues/new";
 
 /* Pass a `compare` function to avoid polymorphic compare errors. */
 type direction('data, 'field) =
-  (('field, 'field) => int, 'data => 'field, 'data, 'data) => int;
-let ascend = (cmp, getter, a, b) => cmp(getter(a), getter(b));
-let descend = (cmp, getter, a, b) => cmp(getter(b), getter(a));
+  (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int;
+let ascend = (cmp, getter, a, b) => cmp(getter(. a), getter(. b));
+let descend = (cmp, getter, a, b) => cmp(getter(. b), getter(. a));
 
 module Array = {
   type t('a) = array('a);
-
-  // let last = arr => arr[Array.size(arr) - 1];
-
-  // let sum = Array.reduce(_, 0, (+));
-
-  // let sumF = Array.reduce(_, 0.0, (+.));
 
   let swap = (arr, idx1, idx2) => {
     switch (arr[idx1], arr[idx2]) {
@@ -32,7 +26,7 @@ module Array = {
 };
 
 module List = {
-  open Belt.List;
+  open List;
 
   type t('a) = list('a);
 
@@ -238,13 +232,13 @@ module PhotonColors = {
   let white_100 = `hex("ffffff");
 };
 
-type notification =
-  | Success
-  | Warning
-  | Error
-  | Generic;
-
 module Notification = {
+  type t =
+    | Success
+    | Warning
+    | Error
+    | Generic;
+
   module Style = {
     open Css;
     let container =

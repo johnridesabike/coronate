@@ -9,10 +9,8 @@ let newb = players->Belt.Map.getExn(TestData.newbieMcNewberson);
 let master = players->Belt.Map.getExn(TestData.grandyMcMaster);
 
 test("K Factor is calculated correctly", () => {
-  // let newbKFactor = getKFactor(newb.matchCount);
   let masterKFactor =
     Ratings.EloRank.getKFactor(~matchCount=master.matchCount);
-  // expect(newbKFactor)|>toBe(800);
   expect(masterKFactor) |> toBe(8);
 });
 
