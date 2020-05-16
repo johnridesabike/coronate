@@ -1,1 +1,1 @@
-export * from "./LoadTournament_Mock.bs";
+export * from "./LoadTournament_mock.bs";
