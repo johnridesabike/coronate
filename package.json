@@ -30,6 +30,7 @@
     "start:electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "start:electron-win": "concurrently \"set BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "test": "react-scripts test --watchAll",
+    "test:ci": "react-scripts test --watchAll=false",
     "test:coverage": "npm run test -- --coverage",
     "re:cleanbuild": "bsb -make-world -clean-world",
     "re:build": "bsb -make-world",
