@@ -1,17 +1,10 @@
 let loadDemoDB: unit => unit;
 
-module Config: {
-  type t = Data.Config.t;
-  type identity;
-};
-module Tournament: {
-  type t = Data.Tournament.t;
-  type identity;
-};
-module Player: {
-  type t = Data.Player.t;
-  type identity;
-};
+module Config : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Config));
+
+module Tournament : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Tournament));
+
+module Player : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Player));
 
 let tournaments: LocalForage.Map.t(Data.Tournament.t, Tournament.identity);
 

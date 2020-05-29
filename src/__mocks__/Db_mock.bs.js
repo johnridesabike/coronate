@@ -3,9 +3,52 @@
 import * as React from "react";
 import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
+import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Id$LocalForage from "@johnridesabike/bs-localforage/src/Id.bs.js";
+import * as Map$LocalForage from "@johnridesabike/bs-localforage/src/Map.bs.js";
 import * as Data_Id$Coronate from "../Data/Data_Id.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
+import * as Data_Player$Coronate from "../Data/Data_Player.bs.js";
+import * as Data_Tournament$Coronate from "../Data/Data_Tournament.bs.js";
+
+function func(prim, prim$1, prim$2, prim$3, prim$4, prim$5, prim$6) {
+  var tmp = {
+    name: prim$2,
+    storeName: prim$4
+  };
+  if (prim !== undefined) {
+    tmp.description = Caml_option.valFromOption(prim);
+  }
+  if (prim$1 !== undefined) {
+    tmp.driver = Caml_option.valFromOption(prim$1);
+  }
+  if (prim$3 !== undefined) {
+    tmp.size = Caml_option.valFromOption(prim$3);
+  }
+  if (prim$5 !== undefined) {
+    tmp.version = Caml_option.valFromOption(prim$5);
+  }
+  return tmp;
+}
+
+var Config = Id$LocalForage.MakeEncodable({
+      encode: Data_Config$Coronate.encode,
+      decode: Data_Config$Coronate.decode
+    });
+
+var Player = Id$LocalForage.MakeEncodable({
+      encode: Data_Player$Coronate.encode,
+      decode: Data_Player$Coronate.decode
+    });
+
+var Tournament = Id$LocalForage.MakeEncodable(Data_Tournament$Coronate);
+
+var tournaments = Map$LocalForage.make(func(undefined, undefined, "Coronate", undefined, "Tournaments", undefined, undefined), Tournament);
+
+function loadDemoDB(param) {
+  
+}
 
 function genericDbReducer(state, action) {
   switch (action.tag | 0) {
@@ -92,9 +135,14 @@ function useConfig(param) {
 }
 
 export {
+  loadDemoDB ,
+  Config ,
+  Tournament ,
+  Player ,
+  tournaments ,
   useAllPlayers ,
   useAllTournaments ,
   useConfig ,
   
 }
-/* react Not a pure module */
+/* Config Not a pure module */

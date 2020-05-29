@@ -1,0 +1,4 @@
+exports.extendPrototype = function () {
+  return;
+}
+

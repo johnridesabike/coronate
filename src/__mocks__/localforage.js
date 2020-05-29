@@ -1,0 +1,3 @@
+exports.createInstance = function () {
+  return {}
+}

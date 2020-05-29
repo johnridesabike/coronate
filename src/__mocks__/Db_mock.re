@@ -1,11 +1,23 @@
 open Belt;
 
+let localForageConfig = LocalForage.Config.make(~name="Coronate");
+module Config = LocalForage.Id.MakeEncodable(Data.Config);
+module Player = LocalForage.Id.MakeEncodable(Data.Player);
+module Tournament = LocalForage.Id.MakeEncodable(Data.Tournament);
+let tournaments =
+  LocalForage.Map.make(
+    localForageConfig(~storeName="Tournaments", ()),
+    (module Tournament),
+  );
+
+let loadDemoDB = () => ();
+
 /* copied from Db */
 type action('a) =
   Db.action('a) =
     | Del(Data.Id.t) | Set(Data.Id.t, 'a) | SetAll(Data.Id.Map.t('a));
 
-type state('a) = {
+type state('a) = Db.state('a) = {
   items: Data.Id.Map.t('a),
   dispatch: action('a) => unit,
   loaded: bool,
@@ -19,7 +31,7 @@ let genericDbReducer = (state, action) => {
   };
 };
 
-type actionConfig =
+type actionConfig = Db.actionConfig =
   | AddAvoidPair(Data.Config.Pair.t)
   | DelAvoidPair(Data.Config.Pair.t)
   | DelAvoidSingle(Data.Id.t)
