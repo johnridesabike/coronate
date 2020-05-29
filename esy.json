@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "ocaml": "4.6.x",
+    "@opam/reason": "*",
+    "@opam/merlin": "*"
+  }
+}
