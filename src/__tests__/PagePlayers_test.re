@@ -42,3 +42,30 @@ test("Adding a player to avoid works", () => {
   |> expect
   |> toBeInTheDocument;
 });
+
+describe("The add player form works", () => {
+  module Players = {
+    [@react.component]
+    let make = () => {
+      let Db.{dispatch, _} = Db.useAllPlayers();
+      <PagePlayers.NewPlayerForm dispatch />;
+    };
+  };
+  test("Changing the rating works", () => {
+    let page = render(<Players />);
+    page
+    |> getByLabelText(~matcher=`RegExp([%bs.re "/rating/i"]))
+    |> change(~eventInit={
+                "target": {
+                  "value": "77",
+                },
+              });
+    page
+    |> getByLabelText(~matcher=`RegExp([%bs.re "/rating/i"]))
+    |> expect
+    |> toHaveValue(`Num(77));
+  });
+  Skip.test("Check the rest of the fields", () =>
+    Expect.expect(true) |> Expect.toBe(true)
+  );
+});

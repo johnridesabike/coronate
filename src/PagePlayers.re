@@ -65,7 +65,9 @@ module Form = [%form
 let errorNotification =
   fun
   | Some(Error(e)) =>
-    <Utils.Notification kind=Error> e->React.string </Utils.Notification>
+    <Utils.Notification kind=Utils.Notification.Error>
+      e->React.string
+    </Utils.Notification>
   | Some(Ok(_))
   | None => React.null;
 
@@ -111,12 +113,13 @@ module NewPlayerForm = {
           <input
             name="firstName"
             type_="text"
-            onBlur={form.blurFirstName}
+            onBlur={_ => form.blurFirstName()}
             value={form.input.firstName}
             required=true
-            onChange={
-              form.updateFirstName((~target, input) =>
-                {...input, firstName: target##value}
+            onChange={event =>
+              form.updateFirstName(
+                (input, firstName) => {...input, firstName},
+                event->ReactEvent.Form.target##value,
               )
             }
           />
@@ -128,27 +131,32 @@ module NewPlayerForm = {
             name="lastName"
             type_="text"
             value={form.input.lastName}
-            onBlur={form.blurLastName}
+            onBlur={_ => form.blurLastName()}
             required=true
-            onChange={
-              form.updateLastName((~target, input) =>
-                {...input, lastName: target##value}
+            onChange={event =>
+              form.updateLastName(
+                (input, lastName) => {...input, lastName},
+                event->ReactEvent.Form.target##value,
               )
             }
           />
         </p>
         {errorNotification(form.lastNameResult)}
         <p>
-          <label htmlFor="rating"> {React.string("Rating")} </label>
+          <label htmlFor="form-newplayer-rating">
+            {React.string("Rating")}
+          </label>
           <input
             name="rating"
+            id="form-newplayer-rating"
             type_="number"
             value={form.input.rating}
-            onBlur={form.blurRating}
+            onBlur={_ => form.blurRating()}
             required=true
-            onChange={
-              form.updateLastName((~target, input) =>
-                {...input, lastName: target##value}
+            onChange={event =>
+              form.updateLastName(
+                (input, rating) => {...input, rating},
+                event->ReactEvent.Form.target##value,
               )
             }
           />
@@ -422,10 +430,11 @@ module Profile = {
           <label htmlFor="firstName"> {React.string("First name")} </label>
           <input
             value={form.input.firstName}
-            onBlur={form.blurFirstName}
-            onChange={
-              form.updateFirstName((~target, input) =>
-                {...input, firstName: target##value}
+            onBlur={_ => form.blurFirstName()}
+            onChange={event =>
+              form.updateFirstName(
+                (input, firstName) => {...input, firstName},
+                event->ReactEvent.Form.target##value,
               )
             }
             name="firstName"
@@ -437,10 +446,11 @@ module Profile = {
           <label htmlFor="lastName"> {React.string("Last name")} </label>
           <input
             value={form.input.lastName}
-            onBlur={form.blurLastName}
-            onChange={
-              form.updateLastName((~target, input) =>
-                {...input, lastName: target##value}
+            onBlur={_ => form.blurLastName()}
+            onChange={event =>
+              form.updateLastName(
+                (input, lastName) => {...input, lastName},
+                event->ReactEvent.Form.target##value,
               )
             }
             name="lastName"
@@ -454,10 +464,11 @@ module Profile = {
           </label>
           <input
             value={form.input.matchCount}
-            onBlur={form.blurMatchCount}
-            onChange={
-              form.updateMatchCount((~target, input) =>
-                {...input, matchCount: target##value}
+            onBlur={_ => form.blurMatchCount()}
+            onChange={event =>
+              form.updateMatchCount(
+                (input, matchCount) => {...input, matchCount},
+                event->ReactEvent.Form.target##value,
               )
             }
             name="matchCount"
@@ -469,10 +480,11 @@ module Profile = {
           <label htmlFor="rating"> {React.string("Rating")} </label>
           <input
             value={form.input.rating}
-            onBlur={form.blurRating}
-            onChange={
-              form.updateRating((~target, input) =>
-                {...input, rating: target##value}
+            onBlur={_ => form.blurRating()}
+            onChange={event =>
+              form.updateRating(
+                (input, rating) => {...input, rating},
+                event->ReactEvent.Form.target##value,
               )
             }
             name="rating"
