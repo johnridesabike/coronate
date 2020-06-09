@@ -51,7 +51,7 @@ type action('a) =
 
 type state('a) = {
   items: Data.Id.Map.t('a),
-  dispatch: action('a) => unit,
+  dispatch: (. action('a)) => unit,
   loaded: bool,
 };
 
@@ -65,8 +65,8 @@ let genericDbReducer = (state, action) => {
 
 let useAllDb = store => {
   let (items, dispatch) =
-    React.useReducer(genericDbReducer, Data.Id.Map.make());
-  let (loaded, setLoaded) = React.useState(() => false);
+    React.Uncurried.useReducer(genericDbReducer, Data.Id.Map.make());
+  let (loaded, setLoaded) = React.Uncurried.useState(() => false);
   Hooks.useLoadingCursorUntil(loaded);
   /*
     Load items from the database.
@@ -78,8 +78,8 @@ let useAllDb = store => {
     ->Promise.Js.toResult
     ->Promise.tapOk(results =>
         if (! didCancel^) {
-          dispatch(SetAll(results->Data.Id.Map.fromStringArray));
-          setLoaded(_ => true);
+          dispatch(. SetAll(results->Data.Id.Map.fromStringArray));
+          setLoaded(. _ => true);
         }
       )
     ->Promise.getError(error =>
@@ -89,7 +89,7 @@ let useAllDb = store => {
              replace this with more elegant error recovery. */
           Js.Console.error(error);
           ()->LocalForage.LocalForageJs.clear->ignore;
-          setLoaded(_ => true);
+          setLoaded(. _ => true);
         }
       );
     Some(() => didCancel := true);
@@ -177,8 +177,8 @@ let configReducer = (state, action) => {
 
 let useConfig = () => {
   let (config, dispatch) =
-    React.useReducer(configReducer, Data.Config.default);
-  let (isLoaded, setIsLoaded) = React.useState(() => false);
+    React.Uncurried.useReducer(configReducer, Data.Config.default);
+  let (isLoaded, setIsLoaded) = React.Uncurried.useState(() => false);
   /* Load items from the database. */
   React.useEffect0(() => {
     let didCancel = ref(false);
@@ -187,15 +187,15 @@ let useConfig = () => {
     ->Promise.Js.toResult
     ->Promise.tapOk(values =>
         if (! didCancel^) {
-          dispatch(SetState(values));
-          setIsLoaded(_ => true);
+          dispatch(. SetState(values));
+          setIsLoaded(. _ => true);
         }
       )
     ->Promise.getError(_ =>
         if (! didCancel^) {
           ()->LocalForage.LocalForageJs.clear->ignore;
-          dispatch(SetState(Data.Config.default));
-          setIsLoaded(_ => true);
+          dispatch(. SetState(Data.Config.default));
+          setIsLoaded(. _ => true);
         }
       );
     Some(() => didCancel := true);

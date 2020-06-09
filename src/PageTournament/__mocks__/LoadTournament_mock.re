@@ -19,16 +19,16 @@ type t =
     isItOver: bool,
     isNewRoundReady: bool,
     players: Data.Id.Map.t(Data.Player.t),
-    playersDispatch: Db.action(Data.Player.t) => unit,
+    playersDispatch: (. Db.action(Data.Player.t)) => unit,
     roundCount: int,
     tourney: Data.Tournament.t,
-    setTourney: Data.Tournament.t => unit,
+    setTourney: (. Data.Tournament.t) => unit,
   };
 
 [@react.component]
 let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
   let (tourney, setTourney) =
-    React.useReducer(
+    React.Uncurried.useReducer(
       tournamentReducer,
       Map.getExn(tournamentData, tourneyId),
     );
@@ -48,7 +48,7 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
           Data.Rounds.size(roundList) - 1,
         );
 
-  children({
+  children(. {
     activePlayers,
     getPlayer: Player.getMaybe(players),
     isItOver,

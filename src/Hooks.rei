@@ -18,7 +18,7 @@ type actionTable('a) =
 
 let useSortedTable:
   (~table: array('a), ~column: getter('a), ~isDescending: bool) =>
-  (tableState('a), actionTable('a) => unit);
+  (tableState('a), (. actionTable('a)) => unit);
 
 module SortButton: {
   [@react.component]
@@ -27,7 +27,7 @@ module SortButton: {
       ~children: React.element,
       ~sortColumn: getter('a),
       ~data: tableState('a),
-      ~dispatch: actionTable('a) => unit
+      ~dispatch: (. actionTable('a)) => unit
     ) =>
     React.element;
 };

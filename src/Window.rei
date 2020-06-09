@@ -19,5 +19,5 @@ module Body: {
 
 [@react.component]
 let make:
-  (~children: (action => unit) => React.element, ~className: string) =>
+  (~children: ((. action) => unit) => React.element, ~className: string) =>
   React.element;

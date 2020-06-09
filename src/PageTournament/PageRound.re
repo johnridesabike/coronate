@@ -92,7 +92,7 @@ module MatchRow = {
           _,
         } = tournament;
     let Tournament.{roundList, _} = tourney;
-    let (isModalOpen, setIsModalOpen) = React.useState(() => false);
+    let (isModalOpen, setIsModalOpen) = React.Uncurried.useState(() => false);
     let whitePlayer = getPlayer(m.whiteId);
     let blackPlayer = getPlayer(m.blackId);
     let isDummyRound =
@@ -163,13 +163,13 @@ module MatchRow = {
         switch (m.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | Match.Result.NotSet =>
-          playersDispatch(
+          playersDispatch(.
             Db.Set(
               white.Player.id,
               Player.{...white, matchCount: white.matchCount + 1},
             ),
           );
-          playersDispatch(
+          playersDispatch(.
             Db.Set(
               black.Player.id,
               Player.{...black, matchCount: black.matchCount + 1},
@@ -178,13 +178,13 @@ module MatchRow = {
         /* If the result is being un-scored, decrement the matchCounts */
         | Match.Result.(WhiteWon | BlackWon | Draw)
             when newResult === Match.Result.NotSet =>
-          playersDispatch(
+          playersDispatch(.
             Db.Set(
               white.Player.id,
               Player.{...white, matchCount: white.matchCount - 1},
             ),
           );
-          playersDispatch(
+          playersDispatch(.
             Db.Set(
               black.Player.id,
               Player.{...black, matchCount: black.matchCount - 1},
@@ -192,8 +192,8 @@ module MatchRow = {
           );
         /* Simply update the players with new ratings. */
         | Match.Result.(WhiteWon | BlackWon | Draw) =>
-          playersDispatch(Db.Set(white.Player.id, white));
-          playersDispatch(Db.Set(black.Player.id, black));
+          playersDispatch(. Db.Set(white.Player.id, white));
+          playersDispatch(. Db.Set(black.Player.id, black));
         };
         let newMatch = {
           ...m,
@@ -204,7 +204,7 @@ module MatchRow = {
         roundList
         ->Rounds.setMatch(roundId, newMatch)
         ->Option.map(roundList =>
-            setTourney(Tournament.{...tourney, roundList})
+            setTourney(. Tournament.{...tourney, roundList})
           )
         ->ignore;
       };
@@ -216,13 +216,13 @@ module MatchRow = {
       setMatchResult(ReactEvent.Form.target(event)##value);
     };
     <tr
-      className={Cn.make([
-        className,
-        Option.mapWithDefault(selectedMatch, "", id =>
-          m.id === id ? "selected" : "buttons-on-hover"
-        ),
-      ])}>
-      <th className={Cn.make([Style.rowId, "table__number"])} scope="row">
+      className=Cn.(
+        className
+        <:> Option.mapWithDefault(selectedMatch, "", id =>
+              m.id === id ? "selected" : "buttons-on-hover"
+            )
+      )>
+      <th className=Cn.(Style.rowId <:> "table__number") scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>
       <td className=Style.playerResult>
@@ -230,10 +230,10 @@ module MatchRow = {
       </td>
       <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-white"}>
         <td
-          className={Cn.make([
-            "table__player row__player",
-            Player.Type.toString(whitePlayer.Player.type_),
-          ])}
+          className=Cn.(
+            "table__player row__player"
+            <:> Player.Type.toString(whitePlayer.Player.type_)
+          )
           id={"match-" ++ string_of_int(pos) ++ "-white"}>
           {React.string(whiteName)}
         </td>
@@ -243,16 +243,15 @@ module MatchRow = {
       </td>
       <Utils.TestId testId={"match-" ++ string_of_int(pos) ++ "-black"}>
         <td
-          className={Cn.make([
-            "table__player row__player",
-            Player.Type.toString(blackPlayer.Player.type_),
-          ])}
+          className=Cn.(
+            "table__player row__player"
+            <:> Player.Type.toString(blackPlayer.Player.type_)
+          )
           id={"match-" ++ string_of_int(pos) ++ "-black"}>
           {React.string(blackName)}
         </td>
       </Utils.TestId>
-      <td
-        className={Cn.make([Style.matchResult, "data__input row__controls"])}>
+      <td className=Cn.(Style.matchResult <:> "data__input row__controls")>
         <select
           className=Style.winnerSelect
           disabled=isDummyRound
@@ -277,12 +276,12 @@ module MatchRow = {
        | (false, None)
        | (true, _) => React.null
        | (false, Some(setSelectedMatch)) =>
-         <td className={Cn.make([Style.controls, "data__input"])}>
+         <td className=Cn.(Style.controls <:> "data__input")>
            {selectedMatch->Option.mapWithDefault(true, id => id !== m.id)
               ? <button
                   className="button-ghost"
                   title="Edit match"
-                  onClick={_ => setSelectedMatch(_ => Some(m.id))}>
+                  onClick={_ => setSelectedMatch(. _ => Some(m.id))}>
                   <Icons.Circle />
                   <Externals.VisuallyHidden>
                     {["Edit match for", whiteName, "versus", blackName]
@@ -293,13 +292,13 @@ module MatchRow = {
               : <button
                   className="button-ghost button-pressed"
                   title="End editing match"
-                  onClick={_ => setSelectedMatch(_ => None)}>
+                  onClick={_ => setSelectedMatch(. _ => None)}>
                   <Icons.CheckCircle />
                 </button>}
            <button
              className="button-ghost"
              title="Open match information."
-             onClick={_ => setIsModalOpen(_ => true)}>
+             onClick={_ => setIsModalOpen(. _ => true)}>
              <Icons.Info />
              <Externals.VisuallyHidden>
                {[
@@ -317,11 +316,11 @@ module MatchRow = {
             | Some(scoreData) =>
               <Externals.Dialog
                 isOpen=isModalOpen
-                onDismiss={_ => setIsModalOpen(_ => false)}
+                onDismiss={_ => setIsModalOpen(. _ => false)}
                 ariaLabel="Match information">
                 <button
                   className="button-micro button-primary"
-                  onClick={_ => setIsModalOpen(_ => false)}>
+                  onClick={_ => setIsModalOpen(. _ => false)}>
                   {React.string("close")}
                 </button>
                 <p> {React.string(tourney.Tournament.name)} </p>
@@ -445,7 +444,8 @@ module Round = {
   let make = (~roundId, ~tournament, ~scoreData) => {
     let LoadTournament.{tourney, players, setTourney, playersDispatch, _} = tournament;
     let Tournament.{roundList, _} = tourney;
-    let (selectedMatch, setSelectedMatch) = React.useState(() => None);
+    let (selectedMatch, setSelectedMatch) =
+      React.Uncurried.useState(() => None);
 
     let unMatch = (matchId, round) => {
       switch (round->Rounds.Round.getMatchById(matchId)) {
@@ -462,7 +462,7 @@ module Round = {
                on the dispatch. */
             | None => ()
             | Some(player) =>
-              playersDispatch(
+              playersDispatch(.
                 Db.Set(
                   player.Player.id,
                   Player.{
@@ -479,10 +479,10 @@ module Round = {
       };
       let newRound = round->Rounds.Round.removeMatchById(matchId);
       switch (roundList->Rounds.set(roundId, newRound)) {
-      | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
+      | Some(roundList) => setTourney(. Tournament.{...tourney, roundList})
       | None => ()
       };
-      setSelectedMatch(_ => None);
+      setSelectedMatch(. _ => None);
     };
 
     let swapColors = (matchId, round) => {
@@ -492,7 +492,7 @@ module Round = {
         roundList
         ->Rounds.setMatch(roundId, newMatch)
         ->Option.map(roundList =>
-            setTourney(Tournament.{...tourney, roundList})
+            setTourney(. Tournament.{...tourney, roundList})
           )
         ->ignore;
       | None => ()
@@ -504,7 +504,7 @@ module Round = {
       | None => ()
       | Some(newRound) =>
         switch (Rounds.set(roundList, roundId, newRound)) {
-        | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
+        | Some(roundList) => setTourney(. Tournament.{...tourney, roundList})
         | None => ()
         }
       };
@@ -581,22 +581,22 @@ let make = (~roundId, ~tournament) => {
       } =
     LoadTournament.useRoundData(roundId, tournament);
   let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
-  let (openTab, setOpenTab) = React.useState(() => initialTab);
+  let (openTab, setOpenTab) = React.Uncurried.useState(() => initialTab);
   /* Auto-switch the tab */
   React.useEffect3(
     () => {
       if (unmatchedCount === activePlayersCount) {
-        setOpenTab(_ => 1);
+        setOpenTab(. _ => 1);
       };
       if (unmatchedCount === 0) {
-        setOpenTab(_ => 0);
+        setOpenTab(. _ => 0);
       };
       None;
     },
     (unmatchedCount, activePlayersCount, setOpenTab),
   );
   Externals.ReachTabs.(
-    <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
+    <Tabs index=openTab onChange={index => setOpenTab(. _ => index)}>
       <TabList>
         <Tab disabled={unmatchedCount === activePlayersCount}>
           <Icons.List />

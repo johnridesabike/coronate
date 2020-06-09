@@ -12,7 +12,7 @@ let os: os;
 module IfElectron: {
   [@react.component]
   let make:
-    (~children: Externals.Electron.t => React.element, ~os: os) =>
+    (~children: (. Externals.Electron.t) => React.element, ~os: os) =>
     React.element;
 };
 

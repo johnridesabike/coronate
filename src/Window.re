@@ -151,7 +151,7 @@ module MSWindowsControls = {
       electron->ElectronJs.getRemote->ElectronJs.Remote.getCurrentWindow;
     <div className=Style.container>
       <button
-        className={Cn.make([Style.button, "button-ghost1"])}
+        className=Cn.(Style.button <:> "button-ghost1")
         onClick={_ => minimize(window)}>
         <Icons.Minimize className=Style.svg />
       </button>
@@ -172,7 +172,7 @@ module MSWindowsControls = {
          </button>
        }}
       <button
-        className={Cn.make([Style.button, Style.close])}
+        className=Cn.(Style.button <:> Style.close)
         onClick={_ => close(window)}>
         <Icons.Close className=Style.svg />
       </button>
@@ -193,11 +193,11 @@ module TitleBar = {
     | (Electron.(Windows | Other), _) => false
     };
   let toolbarClasses =
-    Cn.make([
-      Style.button,
-      Cn.ifTrue("macos-button-toolbar", isElectronMac),
-      Cn.ifTrue("button-ghost", !isElectronMac),
-    ]);
+    Cn.(
+      Style.button
+      <:> on("macos-button-toolbar", isElectronMac)
+      <:> on("button-ghost", !isElectronMac)
+    );
   [@react.component]
   let make =
       (
@@ -209,15 +209,15 @@ module TitleBar = {
         ~dispatch,
       ) => {
     <header
-      className={Cn.make([
-        "app__header",
-        "double-click-control",
-        Cn.ifTrue("traffic-light-padding", isElectronMac && !isFullScreen),
-      ])}
+      className=Cn.(
+        "app__header"
+        <:> "double-click-control"
+        <:> on("traffic-light-padding", isElectronMac && !isFullScreen)
+      )
       onDoubleClick=Electron.Event.macOSDoubleClick>
       <div>
         <Electron.IfElectron os=Electron.Windows>
-          {_ =>
+          {(. _) =>
              <span
                style={ReactDOMRe.Style.make(
                  ~alignItems="center",
@@ -236,14 +236,15 @@ module TitleBar = {
         </Electron.IfElectron>
         <button
           className=toolbarClasses
-          onClick={_ => dispatch(SetSidebar(!isSidebarOpen))}>
+          onClick={_ => dispatch(. SetSidebar(!isSidebarOpen))}>
           <Icons.Sidebar />
           <Externals.VisuallyHidden>
             {React.string("Toggle sidebar")}
           </Externals.VisuallyHidden>
         </button>
         <button
-          className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
+          className=toolbarClasses
+          onClick={_ => dispatch(. SetDialog(true))}>
           <Icons.Help />
           <Externals.VisuallyHidden>
             {React.string("About Coronate")}
@@ -251,11 +252,9 @@ module TitleBar = {
         </button>
       </div>
       <div
-        className={Cn.make([
-          "body-20",
-          "double-click-control",
-          Cn.ifTrue("disabled", isBlur),
-        ])}
+        className=Cn.(
+          "body-20" <:> "double-click-control" <:> on("disabled", isBlur)
+        )
         style={ReactDOMRe.Style.make(
           ~left="0",
           ~marginLeft="auto",
@@ -269,7 +268,8 @@ module TitleBar = {
         {title->formatTitle->React.string}
       </div>
       <Electron.IfElectron os=Electron.Windows>
-        {electron => <MSWindowsControls electron isFullScreen isMaximized />}
+        {(. electron) =>
+           <MSWindowsControls electron isFullScreen isMaximized />}
       </Electron.IfElectron>
     </header>;
   };
@@ -277,18 +277,19 @@ module TitleBar = {
 
 [@react.component]
 let make = (~children, ~className) => {
-  let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
+  let (state, dispatch) =
+    React.Uncurried.useReducer(windowReducer, initialWinState);
   let {isBlur, isSidebarOpen, isDialogOpen, isFullScreen, title, isMaximized} = state;
   React.useEffect0(() =>
     Electron.ifElectron(electron => {
       let win =
         electron->ElectronJs.getRemote->ElectronJs.Remote.getCurrentWindow;
-      /* This will ensure that stale event listeners aren't persisted.
-         That typically won't be relevant to production builds, but
-         in a dev environment, where the page reloads frequently,
-         stale listeners will accumulate. Note that this can cause
-         side effects if other listeners are added elsewhere. */
-      open ElectronJs.Window;
+      open ElectronJs.Window; /* This will ensure that stale event listeners aren't persisted.
+              That typically won't be relevant to production builds, but
+              in a dev environment, where the page reloads frequently,
+              stale listeners will accumulate. Note that this can cause
+              side effects if other listeners are added elsewhere. */
+
       let unregisterListeners = () => {
         removeAllListeners(win, `EnterFullScreen);
         removeAllListeners(win, `LeaveFullScreen);
@@ -298,41 +299,43 @@ let make = (~children, ~className) => {
         removeAllListeners(win, `Unmaximize);
       };
       unregisterListeners();
-      on(win, `EnterFullScreen, () => dispatch(SetFullScreen(true)));
-      on(win, `LeaveFullScreen, () => dispatch(SetFullScreen(false)));
-      on(win, `Maximize, () => dispatch(SetMaximized(true)));
-      on(win, `Unmaximize, () => dispatch(SetMaximized(false)));
-      on(win, `Blur, () => dispatch(SetBlur(true)));
-      on(win, `Focus, () => dispatch(SetBlur(false)));
-      dispatch(SetBlur(!isFocused(win)));
-      dispatch(SetFullScreen(ElectronJs.Window.isFullScreen(win)));
-      dispatch(SetMaximized(ElectronJs.Window.isMaximized(win)));
+      on(win, `EnterFullScreen, () => dispatch(. SetFullScreen(true)));
+      on(win, `LeaveFullScreen, () => dispatch(. SetFullScreen(false)));
+      on(win, `Maximize, () => dispatch(. SetMaximized(true)));
+      on(win, `Unmaximize, () => dispatch(. SetMaximized(false)));
+      on(win, `Blur, () => dispatch(. SetBlur(true)));
+      on(win, `Focus, () => dispatch(. SetBlur(false)));
+      dispatch(. SetBlur(!isFocused(win)));
+      dispatch(. SetFullScreen(ElectronJs.Window.isFullScreen(win)));
+      dispatch(. SetMaximized(ElectronJs.Window.isMaximized(win)));
       /* I don't think this ever really fires, but can it hurt? */
       unregisterListeners;
     })
   );
   <div
-    className={Cn.make([
-      className,
-      "open-sidebar"->Cn.ifTrue(isSidebarOpen),
-      "closed-sidebar"->Cn.ifTrue(!isSidebarOpen),
-      "window-blur"->Cn.ifTrue(isBlur),
-      switch (Electron.os) {
-      | Electron.Windows => "isWindows"
-      | Electron.Mac => "isMacOS"
-      | Electron.Other => ""
-      },
-      "isElectron"->Cn.ifSome(Electron.electron),
-    ])}>
+    className=Cn.(
+      className
+      <:> "open-sidebar"->on(isSidebarOpen)
+      <:> "closed-sidebar"->on(!isSidebarOpen)
+      <:> "window-blur"->on(isBlur)
+      <:> (
+        switch (Electron.os) {
+        | Electron.Windows => "isWindows"
+        | Electron.Mac => "isMacOS"
+        | Electron.Other => ""
+        }
+      )
+      <:> "isElectron"->onSome(Electron.electron)
+    )>
     <TitleBar isBlur isFullScreen isMaximized isSidebarOpen title dispatch />
     {children(dispatch)}
     <Externals.Dialog
       isOpen=isDialogOpen
-      onDismiss={() => dispatch(SetDialog(false))}
+      onDismiss={() => dispatch(. SetDialog(false))}
       style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}
       ariaLabel="About Coronate">
       <button
-        className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
+        className="button-micro" onClick={_ => dispatch(. SetDialog(false))}>
         {React.string("Close")}
       </button>
       <About />
@@ -397,16 +400,11 @@ let sidebarCallback = () => <DefaultSidebar />;
 module Body = {
   [@react.component]
   let make = (~children, ~footerFunc=?, ~sidebarFunc=sidebarCallback) => {
-    <div
-      className={Cn.make([
-        "winBody",
-        "winBody-hasFooter"->Cn.ifSome(footerFunc),
-      ])}>
+    <div className=Cn.("winBody" <:> "winBody-hasFooter"->onSome(footerFunc))>
       <div className="win__sidebar"> {sidebarFunc()} </div>
       <div className="win__content"> children </div>
       {switch (footerFunc) {
-       | Some(footer) =>
-         <footer className={Cn.make(["win__footer"])}> {footer()} </footer>
+       | Some(footer) => <footer className="win__footer"> {footer()} </footer>
        | None => React.null
        }}
     </div>;

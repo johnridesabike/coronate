@@ -78,12 +78,12 @@ module Splash = {
               style={ReactDOMRe.Style.make(~fontSize="40px", ())}>
               {React.string("Coronate")}
             </h1>
-            <p className={Cn.make([Style.subtitle, "caption-30"])}>
+            <p className=Cn.(Style.subtitle <:> "caption-30")>
               {React.string("Tournament manager")}
             </p>
           </div>
         </div>
-        <footer className={Cn.make([Style.footer, "body-20"])}>
+        <footer className={Cn.(Style.footer <:> "body-20")}>
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
             <p>
               {React.string(
@@ -164,7 +164,7 @@ module TimeCalculator = {
       ->Float.fromString
       ->Option.getWithDefault(minimum);
     let safeValue = value < minimum ? minimum : value;
-    dispatch(_ => safeValue);
+    dispatch(. _ => safeValue);
   };
 
   let updateInt = (dispatch, minimum, event) => {
@@ -174,7 +174,7 @@ module TimeCalculator = {
       ->Int.fromString
       ->Option.getWithDefault(minimum);
     let safeValue = value < minimum ? minimum : value;
-    dispatch(_ => safeValue);
+    dispatch(. _ => safeValue);
   };
 
   [@react.component]
@@ -182,9 +182,9 @@ module TimeCalculator = {
     let minPlayers = 0;
     let minBreakTime = 0;
     let minTotalTime = 0.5;
-    let (players, setPlayers) = React.useState(() => 2);
-    let (breakTime, setBreakTime) = React.useState(() => 5);
-    let (totalTime, setTotalTime) = React.useState(() => 4.0);
+    let (players, setPlayers) = React.Uncurried.useState(() => 2);
+    let (breakTime, setBreakTime) = React.Uncurried.useState(() => 5);
+    let (totalTime, setTotalTime) = React.Uncurried.useState(() => 4.0);
     <Window.Body>
       <div className="content-area">
         <h1> {React.string("Time calculator")} </h1>

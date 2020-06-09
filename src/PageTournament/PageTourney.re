@@ -97,7 +97,7 @@ module Sidebar = {
           true;
         };
       if (confirmed) {
-        setTourney({...tourney, roundList: Rounds.addRound(roundList)});
+        setTourney(. {...tourney, roundList: Rounds.addRound(roundList)});
       };
     };
 
@@ -134,7 +134,7 @@ module Sidebar = {
                     switch (players->Map.get(id)) {
                     | Some(player) =>
                       let matchCount = player.Player.matchCount - 1;
-                      playersDispatch(
+                      playersDispatch(.
                         Db.Set(
                           player.Player.id,
                           Player.{...player, matchCount, rating},
@@ -147,10 +147,13 @@ module Sidebar = {
               };
             })
         };
-        setTourney({...tourney, roundList: Rounds.delLastRound(roundList)});
+        setTourney(. {
+          ...tourney,
+          roundList: Rounds.delLastRound(roundList),
+        });
         if (Rounds.size(roundList) === 0) {
           /* Automatically remake round 1.*/
-          setTourney({
+          setTourney(. {
             ...tourney,
             roundList: Rounds.addRound(roundList),
           });
@@ -237,18 +240,16 @@ module Sidebar = {
                    {Js.Int.toString(id + 1)->React.string}
                    {isRoundComplete(id)
                       ? <span
-                          className={Cn.make([
-                            "sidebar__hide-on-close",
-                            "caption-20",
-                          ])}>
+                          className=Cn.(
+                            "sidebar__hide-on-close" <:> "caption-20"
+                          )>
                           {React.string(" Complete ")}
                           <Icons.Check />
                         </span>
                       : <span
-                          className={Cn.make([
-                            "sidebar__hide-on-close",
-                            "caption-20",
-                          ])}>
+                          className=Cn.(
+                            "sidebar__hide-on-close" <:> "caption-20"
+                          )>
                           {React.string(" Not complete ")}
                           <Icons.Alert />
                         </span>}
@@ -294,7 +295,7 @@ let sidebarFunc = (tournament, ()) => <Sidebar tournament />;
 [@react.component]
 let make = (~tourneyId, ~subPage, ~windowDispatch=?) => {
   <LoadTournament tourneyId ?windowDispatch>
-    {tournament =>
+    {(. tournament) =>
        <Window.Body
          footerFunc={footerFunc(tournament)}
          sidebarFunc={sidebarFunc(tournament)}>

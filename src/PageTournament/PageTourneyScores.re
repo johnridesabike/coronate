@@ -47,13 +47,11 @@ module ScoreTable = {
       ->Scoring.createStandingList(tieBreaks)
       ->List.keep(standing => !Data.Id.isDummy(standing.Scoring.id))
       ->Scoring.createStandingTree;
-    <table
-      className={Cn.make([Style.table, Style.compact->Cn.ifTrue(isCompact)])}>
+    <table className=Cn.(Style.table <:> Style.compact->on(isCompact))>
       <caption
-        className={Cn.make([
-          "title-30"->Cn.ifTrue(isCompact),
-          "title-40"->Cn.ifTrue(!isCompact),
-        ])}>
+        className=Cn.(
+          "title-30"->on(isCompact) <:> "title-40"->on(!isCompact)
+        )>
         {React.string(title)}
       </caption>
       <thead>
@@ -86,12 +84,12 @@ module ScoreTable = {
                    {i === 0
                       /* Only display the rank once */
                       ? <th
-                          className={Cn.make([
-                            "table__number",
-                            Style.number,
-                            Style.rank,
-                            Style.rowTh,
-                          ])}
+                          className=Cn.(
+                            "table__number"
+                            <:> Style.number
+                            <:> Style.rank
+                            <:> Style.rowTh
+                          )
                           rowSpan={List.size(standingsFlat)}
                           scope="row">
                           {string_of_int(rank + 1)->React.string}
@@ -99,8 +97,7 @@ module ScoreTable = {
                       : React.null}
                    /* It just uses <td> if it's compact.*/
                    {isCompact
-                      ? <td
-                          className={Cn.make([Style.rowTd, Style.playerName])}>
+                      ? <td className=Cn.(Style.rowTd <:> Style.playerName)>
                           {React.string(
                              getPlayer(standing.Scoring.id).Player.firstName,
                            )}
@@ -110,7 +107,7 @@ module ScoreTable = {
                            )}
                         </td>  /* Use the name as a header if not compact. */
                       : <th
-                          className={Cn.make([Style.rowTh, Style.playerName])}
+                          className=Cn.(Style.rowTh <:> Style.playerName)
                           /*dataTestid={rank |>string_of_int}*/
                           scope="row">
                           {React.string(
@@ -122,11 +119,9 @@ module ScoreTable = {
                            )}
                         </th>}
                    <td
-                     className={Cn.make([
-                       Style.number,
-                       Style.rowTd,
-                       "table__number",
-                     ])}>
+                     className=Cn.(
+                       Style.number <:> Style.rowTd <:> "table__number"
+                     )>
                      /*dataTestid={dashify(
                          getPlayer(standing.id).firstName
                          + getPlayer(standing.id).lastName
@@ -143,10 +138,7 @@ module ScoreTable = {
                         ->Array.map(((j, score)) =>
                             <td
                               key={Scoring.TieBreak.toString(j)}
-                              className={Cn.make([
-                                Style.rowTd,
-                                "table__number",
-                              ])}>
+                              className=Cn.(Style.rowTd <:> "table__number")>
                               /*dataTestid={dashify(
                                   getPlayer(standing.id).firstName
                                   + getPlayer(standing.id).lastName
@@ -172,7 +164,7 @@ module SelectTieBreaks = {
   [@react.component]
   let make = (~tourney, ~setTourney) => {
     let tieBreaks = tourney.Tournament.tieBreaks;
-    let (selectedTb, setSelectedTb) = React.useState(() => None);
+    let (selectedTb, setSelectedTb) = React.Uncurried.useState(() => None);
     let defaultId = x =>
       switch (x) {
       | Some(x) => x
@@ -185,7 +177,7 @@ module SelectTieBreaks = {
 
     let toggleTb = id =>
       if (Js.Array2.includes(tieBreaks, defaultId(id))) {
-        setTourney(
+        setTourney(.
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -194,9 +186,9 @@ module SelectTieBreaks = {
               ),
           },
         );
-        setSelectedTb(_ => None);
+        setSelectedTb(. _ => None);
       } else {
-        setTourney(
+        setTourney(.
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -210,7 +202,7 @@ module SelectTieBreaks = {
       | None => ()
       | Some(selectedTb) =>
         let index = Js.Array2.indexOf(tieBreaks, selectedTb);
-        setTourney(
+        setTourney(.
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -244,12 +236,11 @@ module SelectTieBreaks = {
             {React.string(" Move down")}
           </button>
           <button
-            className={Cn.make([
-              "button-micro",
-              "button-primary"->Cn.ifSome(selectedTb),
-            ])}
+            className=Cn.(
+              "button-micro" <:> "button-primary"->onSome(selectedTb)
+            )
             disabled={selectedTb === None}
-            onClick={_ => setSelectedTb(_ => None)}>
+            onClick={_ => setSelectedTb(. _ => None)}>
             {React.string("Done")}
           </button>
         </div>
@@ -271,9 +262,9 @@ module SelectTieBreaks = {
             {Array.map(tieBreaks, tieBreak =>
                <tr
                  key={Scoring.TieBreak.toString(tieBreak)}
-                 className={Cn.make([
-                   "selected"->Cn.ifTrue(selectedTb === Some(tieBreak)),
-                 ])}>
+                 className=Cn.(
+                   mapSome(selectedTb, x => x == tieBreak ? "selected" : "")
+                 )>
                  <td>
                    {Scoring.TieBreak.toPrettyString(tieBreak)->React.string}
                  </td>
@@ -285,11 +276,11 @@ module SelectTieBreaks = {
                      }
                      onClick={_ =>
                        switch (selectedTb) {
-                       | None => setSelectedTb(_ => Some(tieBreak))
+                       | None => setSelectedTb(. _ => Some(tieBreak))
                        | Some(selectedTb) =>
                          selectedTb === tieBreak
-                           ? setSelectedTb(_ => None)
-                           : setSelectedTb(_ => Some(tieBreak))
+                           ? setSelectedTb(. _ => None)
+                           : setSelectedTb(. _ => Some(tieBreak))
                        }
                      }>
                      {React.string(
@@ -408,10 +399,10 @@ module Crosstable = {
     let change =
       Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0");
     <>
-      <td className={Cn.make([Style.rowTd, "table__number"])}>
+      <td className=Cn.(Style.rowTd <:> "table__number")>
         {lastRating->Js.Int.toString->React.string}
       </td>
-      <td className={Cn.make([Style.rowTd, "table__number body-10"])}>
+      <td className=Cn.(Style.rowTd <:> "table__number body-10")>
         {React.string(change)}
       </td>
     </>;
@@ -449,12 +440,10 @@ module Crosstable = {
          ->List.toArray
          ->Array.mapWithIndex((index, standing) =>
              <tr key={string_of_int(index)} className=Style.row>
-               <th className={Cn.make([Style.rowTh, Style.rank])} scope="col">
+               <th className=Cn.(Style.rowTh <:> Style.rank) scope="col">
                  {string_of_int(index + 1)->React.string}
                </th>
-               <th
-                 className={Cn.make([Style.rowTh, Style.playerName])}
-                 scope="row">
+               <th className=Cn.(Style.rowTh <:> Style.playerName) scope="row">
                  {React.string(
                     getPlayer(standing.Scoring.id).Player.firstName,
                   )}
@@ -469,7 +458,7 @@ module Crosstable = {
                 ->Array.mapWithIndex((index2, opponent) =>
                     <td
                       key={string_of_int(index2)}
-                      className={Cn.make([Style.rowTd, "table__number"])}>
+                      className=Cn.(Style.rowTd <:> "table__number")>
                       {getXScore(
                          scoreData,
                          standing.Scoring.id,
@@ -479,7 +468,7 @@ module Crosstable = {
                   )
                 ->React.array}
                /* Output their score and rating change */
-               <td className={Cn.make([Style.rowTd, "table__number"])}>
+               <td className=Cn.(Style.rowTd <:> "table__number")>
                  {Numeral.make(standing.Scoring.score)
                   ->Numeral.format("1/2")
                   ->React.string}

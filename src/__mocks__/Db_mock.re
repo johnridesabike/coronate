@@ -19,7 +19,7 @@ type action('a) =
 
 type state('a) = Db.state('a) = {
   items: Data.Id.Map.t('a),
-  dispatch: action('a) => unit,
+  dispatch: (. action('a)) => unit,
   loaded: bool,
 };
 
@@ -71,7 +71,7 @@ let configReducer = (state, action) => {
 /* Instead of taking an IndexedDB store as an argument, this takes an object
    with the mocked data. */
 let useAllItemsFromDb = data => {
-  let (items, dispatch) = React.useReducer(genericDbReducer, data);
+  let (items, dispatch) = React.Uncurried.useReducer(genericDbReducer, data);
   {items, dispatch, loaded: true};
 };
 
@@ -81,4 +81,4 @@ let useAllPlayers = () =>
 let useAllTournaments = () =>
   useAllItemsFromDb(TestData.tournaments->Data.Id.Map.fromStringArray);
 
-let useConfig = () => React.useReducer(configReducer, TestData.config);
+let useConfig = () => React.Uncurried.useReducer(configReducer, TestData.config);

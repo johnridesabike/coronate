@@ -111,7 +111,7 @@ test("Auto-matching with bye players works", () => {
   let page =
     render(
       <LoadTournament tourneyId=TestData.byeRoundTourney>
-        {tournament => <PageRound tournament roundId=0 />}
+        {(. tournament) => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     );
 

@@ -6,7 +6,7 @@ test("Ratings are updated correctly after a match.", () => {
   let page =
     render(
       <LoadTournament tourneyId=TestData.simplePairing>
-        {tournament => <PageRound tournament roundId=1 />}
+        {(. tournament) => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     );
   page

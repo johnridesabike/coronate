@@ -50,7 +50,7 @@ function LoadTournament_mock(Props) {
   var roundCount = calcNumOfRounds(Belt_Map.size(activePlayers));
   var isItOver = Data_Rounds$Coronate.size(roundList) >= roundCount;
   var isNewRoundReady = Data_Rounds$Coronate.size(roundList) === 0 ? true : Data_Rounds$Coronate.isRoundComplete(roundList, activePlayers, Data_Rounds$Coronate.size(roundList) - 1 | 0);
-  return Curry._1(children, {
+  return children({
               activePlayers: activePlayers,
               getPlayer: (function (param) {
                   return Data_Player$Coronate.getMaybe(players, param);

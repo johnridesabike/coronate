@@ -1,10 +1,13 @@
 let loadDemoDB: unit => unit;
 
-module Config : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Config));
+module Config: (module type of
+  LocalForage.Id.MakeEncodable(Coronate.Data.Config));
 
-module Tournament : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Tournament));
+module Tournament: (module type of
+  LocalForage.Id.MakeEncodable(Coronate.Data.Tournament));
 
-module Player : (module type of LocalForage.Id.MakeEncodable(Coronate.Data.Player));
+module Player: (module type of
+  LocalForage.Id.MakeEncodable(Coronate.Data.Player));
 
 let tournaments: LocalForage.Map.t(Data.Tournament.t, Tournament.identity);
 
@@ -15,7 +18,7 @@ type action('a) =
 
 type state('a) = {
   items: Data.Id.Map.t('a),
-  dispatch: action('a) => unit,
+  dispatch: (. action('a)) => unit,
   loaded: bool,
 };
 
@@ -32,4 +35,4 @@ type actionConfig =
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
-let useConfig: unit => (Data.Config.t, actionConfig => unit);
+let useConfig: unit => (Data.Config.t, (. actionConfig) => unit);

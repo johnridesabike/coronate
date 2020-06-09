@@ -101,7 +101,7 @@ module SelectList = {
                 ideal: calcIdealOrNot(pairData->Map.get(player.Player.id)),
               }
             );
-        sortedDispatch(Hooks.SetTable(table));
+        sortedDispatch(. Hooks.SetTable(table));
         None;
       },
       (unmatched, pairData, sortedDispatch, stagedPlayers),
@@ -109,9 +109,9 @@ module SelectList = {
     /* only use unmatched players if this is the last round. */
     let selectPlayer = id => {
       switch (stagedPlayers) {
-      | (None, Some(p2)) => setStagedPlayers(_ => (Some(id), Some(p2)))
-      | (Some(p1), None) => setStagedPlayers(_ => (Some(p1), Some(id)))
-      | (None, None) => setStagedPlayers(_ => (Some(id), None))
+      | (None, Some(p2)) => setStagedPlayers(. _ => (Some(id), Some(p2)))
+      | (Some(p1), None) => setStagedPlayers(. _ => (Some(p1), Some(id)))
+      | (None, None) => setStagedPlayers(. _ => (Some(id), None))
       | (Some(_), Some(_)) => ()
       };
     };
@@ -229,8 +229,8 @@ module Stage = {
 
     let unstage = color => {
       switch (color) {
-      | White => setStagedPlayers(((_, p2)) => (None, p2))
-      | Black => setStagedPlayers(((p1, _)) => (p1, None))
+      | White => setStagedPlayers(. ((_, p2)) => (None, p2))
+      | Black => setStagedPlayers(. ((p1, _)) => (p1, None))
       };
     };
 
@@ -248,10 +248,10 @@ module Stage = {
             |],
           );
         switch (Rounds.set(roundList, roundId, newRound)) {
-        | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
+        | Some(roundList) => setTourney(. Tournament.{...tourney, roundList})
         | None => ()
         };
-        setStagedPlayers(_ => (None, None));
+        setStagedPlayers(. _ => (None, None));
       | (None, None)
       | (Some(_), None)
       | (None, Some(_)) => ()
@@ -318,7 +318,7 @@ module Stage = {
         <button
           disabled=noneAreSelected
           onClick={_ =>
-            setStagedPlayers(((oldWhite, oldBlack)) => (oldBlack, oldWhite))
+            setStagedPlayers(. ((oldWhite, oldBlack)) => (oldBlack, oldWhite))
           }>
           <Icons.Repeat />
           {React.string(" Swap colors")}
@@ -400,7 +400,7 @@ let make =
       ~unmatchedCount,
       ~unmatchedWithDummy,
     ) => {
-  let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None));
+  let (stagedPlayers, setStagedPlayers) = React.Uncurried.useState(() => (None, None));
   let (p1, p2) = stagedPlayers;
   let (Config.{avoidPairs, byeValue, _}, _) = Db.useConfig();
   let LoadTournament.{
@@ -414,7 +414,7 @@ let make =
       } = tournament;
   let Tournament.{roundList, byeQueue, _} = tourney;
   let round = roundList->Rounds.get(roundId);
-  let (isModalOpen, setIsModalOpen) = React.useState(() => false);
+  let (isModalOpen, setIsModalOpen) = React.Uncurried.useState(() => false);
   /* `createPairingData` is relatively expensive */
   let pairData =
     React.useMemo3(
@@ -430,7 +430,7 @@ let make =
       | None => ()
       | Some(p1) =>
         switch (unmatchedWithDummy->Map.get(p1)) {
-        | None => setStagedPlayers(((_, p2)) => (None, p2))
+        | None => setStagedPlayers(. ((_, p2)) => (None, p2))
         | Some(_) => ()
         }
       };
@@ -438,7 +438,7 @@ let make =
       | None => ()
       | Some(p2) =>
         switch (unmatchedWithDummy->Map.get(p2)) {
-        | None => setStagedPlayers(((p1, _)) => (p1, None))
+        | None => setStagedPlayers(. ((p1, _)) => (p1, None))
         | Some(_) => ()
         }
       };
@@ -454,7 +454,7 @@ let make =
         ->List.toArray,
       );
     switch (Rounds.set(roundList, roundId, newRound)) {
-    | Some(roundList) => setTourney(Tournament.{...tourney, roundList})
+    | Some(roundList) => setTourney(. Tournament.{...tourney, roundList})
     | None => ()
     };
   };
@@ -472,7 +472,7 @@ let make =
           {React.string("Auto-pair unmatched players")}
         </button>
         {React.string(" ")}
-        <button onClick={_ => setIsModalOpen(_ => true)}>
+        <button onClick={_ => setIsModalOpen(. _ => true)}>
           {React.string("Add or remove players from the roster.")}
         </button>
       </div>
@@ -522,10 +522,10 @@ let make =
       </Utils.PanelContainer>
       <Externals.Dialog
         isOpen=isModalOpen
-        onDismiss={_ => setIsModalOpen(_ => false)}
+        onDismiss={_ => setIsModalOpen(. _ => false)}
         ariaLabel="Select players">
         <button
-          className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
+          className="button-micro" onClick={_ => setIsModalOpen(. _ => false)}>
           {React.string("Done")}
         </button>
         <PageTourneyPlayers.Selecting

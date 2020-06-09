@@ -148,16 +148,14 @@ module Style = {
 module Panel = {
   [@react.component]
   let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) => {
-    <div className={Cn.make([Style.panel, className])} style> children </div>;
+    <div className=Cn.(Style.panel <:> className) style> children </div>;
   };
 };
 
 module PanelContainer = {
   [@react.component]
   let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) => {
-    <div style className={Cn.make([Style.panels, className])}>
-      children
-    </div>;
+    <div style className=Cn.(Style.panels <:> className)> children </div>;
   };
 };
 
@@ -320,8 +318,7 @@ module Notification = {
       | Error => (<Icons.Alert />, Style.error)
       | Generic => (<Icons.Info />, "")
       };
-    <div
-      className={Cn.make([Style.container, notifClassName, className])} style>
+    <div className=Cn.(Style.container <:> notifClassName <:> className) style>
       <div ariaLabel=tooltip className=Style.icon title=tooltip> icon </div>
       <div className=Style.text> children </div>
     </div>;
