@@ -3,6 +3,7 @@
     "ocaml": "4.6.x",
     "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
     "@opam/reason": "*",
-    "@opam/merlin": "*"
+    "@opam/merlin": "*",
+    "@opam/dune": "2.5.1"
   }
 }
