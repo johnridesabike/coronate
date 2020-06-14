@@ -31,8 +31,7 @@ yarn-error.log*
 .bsb.lock
 *.bs.js
 !**/__mocks__/*.bs.js
-/_esy/
-/esy.lock/
+_esy/
 *.cmt
 
 # editor
