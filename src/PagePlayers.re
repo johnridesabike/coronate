@@ -80,7 +80,7 @@ module NewPlayerForm = {
         ~initialInput,
         ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
           let id = Data.Id.random();
-          dispatch(.
+          dispatch(
             Db.Set(
               id,
               {
@@ -182,15 +182,15 @@ module PlayerList = {
         ~players,
         ~playersDispatch,
         ~configDispatch,
-        ~windowDispatch=(. _) => (),
+        ~windowDispatch=_ => (),
       ) => {
     open Player;
     let (isDialogOpen, setIsDialogOpen) =
-      React.Uncurried.useState(() => false);
+      React.useState(() => false);
     React.useEffect1(
       () => {
-        windowDispatch(. Window.SetTitle("Players"));
-        Some(() => windowDispatch(. Window.SetTitle("")));
+        windowDispatch(Window.SetTitle("Players"));
+        Some(() => windowDispatch(Window.SetTitle("")));
       },
       [|windowDispatch|],
     );
@@ -212,14 +212,14 @@ module PlayerList = {
             ~sep="",
           );
         if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
-          playersDispatch(. Db.Del(id));
-          configDispatch(. Db.DelAvoidSingle(id));
+          playersDispatch(Db.Del(id));
+          configDispatch(Db.DelAvoidSingle(id));
         };
       };
     };
     <div className="content-area">
       <div className="toolbar toolbar__left">
-        <button onClick={_ => setIsDialogOpen(. _ => true)}>
+        <button onClick={_ => setIsDialogOpen(_ => true)}>
           <Icons.UserPlus />
           {React.string(" Add a new player")}
         </button>
@@ -289,11 +289,10 @@ module PlayerList = {
       </table>
       <Externals.Dialog
         isOpen=isDialogOpen
-        onDismiss={_ => setIsDialogOpen(. _ => false)}
+        onDismiss={_ => setIsDialogOpen(_ => false)}
         ariaLabel="New player form">
         <button
-          className="button-micro"
-          onClick={_ => setIsDialogOpen(. _ => false)}>
+          className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
           {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />
@@ -311,7 +310,7 @@ module Profile = {
         ~playersDispatch,
         ~config,
         ~configDispatch,
-        ~windowDispatch=(. _) => (),
+        ~windowDispatch=_ => (),
       ) => {
     let Player.{
           id: playerId,
@@ -331,7 +330,7 @@ module Profile = {
           matchCount: Int.toString(initialMatchCount),
         },
         ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
-          playersDispatch(.
+          playersDispatch(
             Db.Set(
               playerId,
               {
@@ -355,8 +354,8 @@ module Profile = {
       );
     React.useEffect2(
       () => {
-        windowDispatch(. Window.SetTitle("Profile for " ++ playerName));
-        Some(() => windowDispatch(. Window.SetTitle("")));
+        windowDispatch(Window.SetTitle("Profile for " ++ playerName));
+        Some(() => windowDispatch(Window.SetTitle("")));
       },
       (windowDispatch, playerName),
     );
@@ -374,7 +373,7 @@ module Profile = {
           !singAvoidList->List.has(id, (===)) && id !== playerId
         );
     let (selectedAvoider, setSelectedAvoider) =
-      React.Uncurried.useState(() =>
+      React.useState(() =>
         switch (unavoided) {
         | [id, ..._] => Some(id)
         | [] => None
@@ -388,7 +387,7 @@ module Profile = {
         switch (Config.Pair.make(playerId, selectedAvoider)) {
         | None => ()
         | Some(pair) =>
-          configDispatch(. Db.AddAvoidPair(pair));
+          configDispatch(Db.AddAvoidPair(pair));
           /* Reset the selected avoider to the first on the list, but check to
              make sure they weren't they weren't the first. */
           let newSelected =
@@ -398,17 +397,17 @@ module Profile = {
             | [_]
             | [] => None
             };
-          setSelectedAvoider(. _ => newSelected);
+          setSelectedAvoider(_ => newSelected);
         }
       };
     };
     let handleAvoidChange = event => {
       let id = ReactEvent.Form.currentTarget(event)##value;
-      setSelectedAvoider(. _ => id);
+      setSelectedAvoider(_ => id);
     };
     let handleAvoidBlur = event => {
       let id = ReactEvent.Focus.currentTarget(event)##value;
-      setSelectedAvoider(. _ => id);
+      setSelectedAvoider(_ => id);
     };
     <div
       className="content-area"
@@ -556,7 +555,7 @@ module Profile = {
                  onClick={_ =>
                    switch (Config.Pair.make(playerId, pId)) {
                    | None => ()
-                   | Some(pair) => configDispatch(. Db.DelAvoidPair(pair))
+                   | Some(pair) => configDispatch(Db.DelAvoidPair(pair))
                    }
                  }>
                  <Icons.Trash />
@@ -619,7 +618,7 @@ let make = (~id=?, ~windowDispatch=?) => {
     );
   React.useEffect2(
     () => {
-      sortDispatch(. Hooks.SetTable(Map.valuesToArray(players)));
+      sortDispatch(Hooks.SetTable(Map.valuesToArray(players)));
       None;
     },
     (players, sortDispatch),

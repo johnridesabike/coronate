@@ -49,9 +49,9 @@ let sortedTableReducer = (state, action) => {
 
 let useSortedTable = (~table, ~column, ~isDescending) => {
   let initialState = {table, column, isDescending};
-  let (state, dispatch) = React.Uncurried.useReducer(sortedTableReducer, initialState);
+  let (state, dispatch) = React.useReducer(sortedTableReducer, initialState);
   React.useEffect0(() => {
-    dispatch(. SortWithoutUpdating);
+    dispatch(SortWithoutUpdating);
     None;
   });
   (state, dispatch);
@@ -70,8 +70,8 @@ module SortButton = {
      */
     let setKeyOrToggleDir = () => {
       data.column === sortColumn
-        ? dispatch(. SetIsDescending(!data.isDescending))
-        : dispatch(. SetColumn(sortColumn));
+        ? dispatch(SetIsDescending(!data.isDescending))
+        : dispatch(SetColumn(sortColumn));
     };
     let chevronStyle =
       ReactDOMRe.Style.(

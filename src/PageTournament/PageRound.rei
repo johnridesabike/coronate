@@ -6,7 +6,7 @@ module RoundTable: {
       ~roundId: int,
       ~matches: array(Data.Match.t),
       ~selectedMatch: Data.Id.t=?,
-      ~setSelectedMatch: (. 'a => option(Data_Id.t)) => unit=?,
+      ~setSelectedMatch: ('a => option(Data_Id.t)) => unit=?,
       ~tournament: LoadTournament.t,
       ~scoreData: Data.Id.Map.t(Data_Scoring.t)=?
     ) =>

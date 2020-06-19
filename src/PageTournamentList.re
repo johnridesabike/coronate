@@ -7,7 +7,7 @@ let dateSort = Hooks.GetDate((. x) => x.date);
 let nameSort = Hooks.GetString((. x) => x.name);
 
 [@react.component]
-let make = (~windowDispatch=(. _) => ()) => {
+let make = (~windowDispatch=_ => ()) => {
   let Db.{items: tourneys, dispatch, _} = Db.useAllTournaments();
   let (sorted, sortDispatch) =
     Hooks.useSortedTable(
@@ -15,31 +15,30 @@ let make = (~windowDispatch=(. _) => ()) => {
       ~column=dateSort,
       ~isDescending=true,
     );
-  let (newTourneyName, setNewTourneyName) =
-    React.Uncurried.useState(() => "");
-  let (isDialogOpen, setIsDialogOpen) = React.Uncurried.useState(() => false);
+  let (newTourneyName, setNewTourneyName) = React.useState(() => "");
+  let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
   React.useEffect1(
     () => {
-      windowDispatch(. Window.SetTitle("Tournament list"));
-      Some(() => windowDispatch(. Window.SetTitle("")));
+      windowDispatch(Window.SetTitle("Tournament list"));
+      Some(() => windowDispatch(Window.SetTitle("")));
     },
     [|windowDispatch|],
   );
   React.useEffect2(
     () => {
-      sortDispatch(. Hooks.SetTable(Map.valuesToArray(tourneys)));
+      sortDispatch(Hooks.SetTable(Map.valuesToArray(tourneys)));
       None;
     },
     (tourneys, sortDispatch),
   );
 
   let updateNewName = event => {
-    setNewTourneyName(. ReactEvent.Form.currentTarget(event)##value);
+    setNewTourneyName(ReactEvent.Form.currentTarget(event)##value);
   };
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
     let id = Data.Id.random();
-    dispatch(.
+    dispatch(
       Db.Set(
         id,
         {
@@ -56,19 +55,19 @@ let make = (~windowDispatch=(. _) => ()) => {
         },
       ),
     );
-    setNewTourneyName(. _ => "");
-    setIsDialogOpen(. _ => false);
+    setNewTourneyName(_ => "");
+    setIsDialogOpen(_ => false);
   };
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
     if (Webapi.(Dom.Window.confirm(message, Dom.window))) {
-      dispatch(. Db.Del(id));
+      dispatch(Db.Del(id));
     };
   };
   <Window.Body>
     <div className="content-area">
       <div className="toolbar toolbar__left">
-        <button onClick={_ => setIsDialogOpen(. _ => true)}>
+        <button onClick={_ => setIsDialogOpen(_ => true)}>
           <Icons.Plus />
           {React.string(" Add tournament")}
         </button>
@@ -123,11 +122,10 @@ let make = (~windowDispatch=(. _) => ()) => {
            </table>}
       <Externals.Dialog
         isOpen=isDialogOpen
-        onDismiss={() => setIsDialogOpen(. _ => false)}
+        onDismiss={() => setIsDialogOpen(_ => false)}
         ariaLabel="Create new tournament">
         <button
-          className="button-micro"
-          onClick={_ => setIsDialogOpen(. _ => false)}>
+          className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
           {React.string("Close")}
         </button>
         <form onSubmit=makeTournament>

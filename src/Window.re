@@ -2,6 +2,7 @@
  * This contains all of the logic and components that make up the window,
  * including titlebar, default sidebar, and layout.
  */
+open Belt;
 open Router;
 module ElectronJs = Externals.Electron;
 
@@ -44,8 +45,8 @@ let windowReducer = (state, action) => {
   | SetTitle(title) =>
     Webapi.Dom.(
       document
-      ->Document.unsafeAsHtmlDocument
-      ->HtmlDocument.setTitle(formatTitle(title))
+      ->Document.asHtmlDocument
+      ->Option.forEach(HtmlDocument.setTitle(_, formatTitle(title)))
     );
     {...state, title};
   | SetDialog(isDialogOpen) => {...state, isDialogOpen}
@@ -217,7 +218,7 @@ module TitleBar = {
       onDoubleClick=Electron.Event.macOSDoubleClick>
       <div>
         <Electron.IfElectron os=Electron.Windows>
-          {(. _) =>
+          {_ =>
              <span
                style={ReactDOMRe.Style.make(
                  ~alignItems="center",
@@ -236,15 +237,14 @@ module TitleBar = {
         </Electron.IfElectron>
         <button
           className=toolbarClasses
-          onClick={_ => dispatch(. SetSidebar(!isSidebarOpen))}>
+          onClick={_ => dispatch(SetSidebar(!isSidebarOpen))}>
           <Icons.Sidebar />
           <Externals.VisuallyHidden>
             {React.string("Toggle sidebar")}
           </Externals.VisuallyHidden>
         </button>
         <button
-          className=toolbarClasses
-          onClick={_ => dispatch(. SetDialog(true))}>
+          className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
           <Icons.Help />
           <Externals.VisuallyHidden>
             {React.string("About Coronate")}
@@ -268,8 +268,7 @@ module TitleBar = {
         {title->formatTitle->React.string}
       </div>
       <Electron.IfElectron os=Electron.Windows>
-        {(. electron) =>
-           <MSWindowsControls electron isFullScreen isMaximized />}
+        {electron => <MSWindowsControls electron isFullScreen isMaximized />}
       </Electron.IfElectron>
     </header>;
   };
@@ -277,8 +276,7 @@ module TitleBar = {
 
 [@react.component]
 let make = (~children, ~className) => {
-  let (state, dispatch) =
-    React.Uncurried.useReducer(windowReducer, initialWinState);
+  let (state, dispatch) = React.useReducer(windowReducer, initialWinState);
   let {isBlur, isSidebarOpen, isDialogOpen, isFullScreen, title, isMaximized} = state;
   React.useEffect0(() =>
     Electron.ifElectron(electron => {
@@ -299,15 +297,15 @@ let make = (~children, ~className) => {
         removeAllListeners(win, `Unmaximize);
       };
       unregisterListeners();
-      on(win, `EnterFullScreen, () => dispatch(. SetFullScreen(true)));
-      on(win, `LeaveFullScreen, () => dispatch(. SetFullScreen(false)));
-      on(win, `Maximize, () => dispatch(. SetMaximized(true)));
-      on(win, `Unmaximize, () => dispatch(. SetMaximized(false)));
-      on(win, `Blur, () => dispatch(. SetBlur(true)));
-      on(win, `Focus, () => dispatch(. SetBlur(false)));
-      dispatch(. SetBlur(!isFocused(win)));
-      dispatch(. SetFullScreen(ElectronJs.Window.isFullScreen(win)));
-      dispatch(. SetMaximized(ElectronJs.Window.isMaximized(win)));
+      on(win, `EnterFullScreen, () => dispatch(SetFullScreen(true)));
+      on(win, `LeaveFullScreen, () => dispatch(SetFullScreen(false)));
+      on(win, `Maximize, () => dispatch(SetMaximized(true)));
+      on(win, `Unmaximize, () => dispatch(SetMaximized(false)));
+      on(win, `Blur, () => dispatch(SetBlur(true)));
+      on(win, `Focus, () => dispatch(SetBlur(false)));
+      dispatch(SetBlur(!isFocused(win)));
+      dispatch(SetFullScreen(ElectronJs.Window.isFullScreen(win)));
+      dispatch(SetMaximized(ElectronJs.Window.isMaximized(win)));
       /* I don't think this ever really fires, but can it hurt? */
       unregisterListeners;
     })
@@ -331,11 +329,11 @@ let make = (~children, ~className) => {
     {children(dispatch)}
     <Externals.Dialog
       isOpen=isDialogOpen
-      onDismiss={() => dispatch(. SetDialog(false))}
+      onDismiss={() => dispatch(SetDialog(false))}
       style={ReactDOMRe.Style.make(~backgroundColor="var(--grey-20)", ())}
       ariaLabel="About Coronate">
       <button
-        className="button-micro" onClick={_ => dispatch(. SetDialog(false))}>
+        className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
         {React.string("Close")}
       </button>
       <About />

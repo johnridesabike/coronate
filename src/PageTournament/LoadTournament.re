@@ -27,10 +27,10 @@ type t = {
   isItOver: bool,
   isNewRoundReady: bool,
   players: Data.Id.Map.t(Player.t),
-  playersDispatch: (. Db.action(Player.t)) => unit,
+  playersDispatch: Db.action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
-  setTourney: (. Tournament.t) => unit,
+  setTourney: Tournament.t => unit,
 };
 
 type loadStatus =
@@ -45,15 +45,14 @@ let isLoadedDone =
   | Error => true;
 
 [@react.component]
-let make = (~children, ~tourneyId, ~windowDispatch=(. _) => ()) => {
+let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   let tourneyId = Data.Id.toString(tourneyId);
   let (tourney, setTourney) =
-    React.Uncurried.useReducer(tournamentReducer, emptyTourney);
+    React.useReducer(tournamentReducer, emptyTourney);
   let Tournament.{name, playerIds, roundList, _} = tourney;
   let Db.{items: players, dispatch: playersDispatch, loaded: arePlayersLoaded} =
     Db.useAllPlayers();
-  let (tourneyLoaded, setTourneyLoaded) =
-    React.Uncurried.useState(() => NotLoaded);
+  let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded);
   Hooks.useLoadingCursorUntil(
     isLoadedDone(tourneyLoaded) && arePlayersLoaded,
   );
@@ -62,8 +61,8 @@ let make = (~children, ~tourneyId, ~windowDispatch=(. _) => ()) => {
    */
   React.useEffect2(
     () => {
-      windowDispatch(. Window.SetTitle(name));
-      Some(() => windowDispatch(. Window.SetTitle("")));
+      windowDispatch(Window.SetTitle(name));
+      Some(() => windowDispatch(Window.SetTitle("")));
     },
     (name, windowDispatch),
   );
@@ -80,15 +79,15 @@ let make = (~children, ~tourneyId, ~windowDispatch=(. _) => ()) => {
       ->Promise.tapOk(value =>
           switch (value) {
           | _ when didCancel^ => ()
-          | None => setTourneyLoaded(. _ => Error)
+          | None => setTourneyLoaded(_ => Error)
           | Some(value) =>
-            setTourney(. value);
-            setTourneyLoaded(. _ => Loaded);
+            setTourney(value);
+            setTourneyLoaded(_ => Loaded);
           }
         )
       ->Promise.getError(_ =>
           if (! didCancel^) {
-            setTourneyLoaded(. _ => Error);
+            setTourneyLoaded(_ => Error);
           }
         );
       Some(() => didCancel := true);
@@ -136,7 +135,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=(. _) => ()) => {
             activePlayers,
             Rounds.size(roundList) - 1,
           );
-    children(. {
+    children({
       activePlayers,
       getPlayer: Player.getMaybe(players),
       isItOver,

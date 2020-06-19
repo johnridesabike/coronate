@@ -51,33 +51,33 @@ function loadDemoDB(param) {
 }
 
 function genericDbReducer(state, action) {
-  switch (action.tag | 0) {
+  switch (action.TAG | 0) {
     case /* Del */0 :
-        return Belt_Map.remove(state, action[0]);
+        return Belt_Map.remove(state, action._0);
     case /* Set */1 :
-        return Belt_Map.set(state, action[0], action[1]);
+        return Belt_Map.set(state, action._0, action._1);
     case /* SetAll */2 :
-        return action[0];
+        return action._0;
     
   }
 }
 
 function configReducer(state, action) {
-  switch (action.tag | 0) {
+  switch (action.TAG | 0) {
     case /* AddAvoidPair */0 :
         return {
-                avoidPairs: Belt_Set.add(state.avoidPairs, action[0]),
+                avoidPairs: Belt_Set.add(state.avoidPairs, action._0),
                 byeValue: state.byeValue,
                 lastBackup: state.lastBackup
               };
     case /* DelAvoidPair */1 :
         return {
-                avoidPairs: Belt_Set.remove(state.avoidPairs, action[0]),
+                avoidPairs: Belt_Set.remove(state.avoidPairs, action._0),
                 byeValue: state.byeValue,
                 lastBackup: state.lastBackup
               };
     case /* DelAvoidSingle */2 :
-        var id = action[0];
+        var id = action._0;
         return {
                 avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Config$Coronate.Pair.$$Set.empty, (function (acc, pair) {
                         if (Data_Config$Coronate.Pair.has(pair, id)) {
@@ -91,23 +91,23 @@ function configReducer(state, action) {
               };
     case /* SetAvoidPairs */3 :
         return {
-                avoidPairs: action[0],
+                avoidPairs: action._0,
                 byeValue: state.byeValue,
                 lastBackup: state.lastBackup
               };
     case /* SetByeValue */4 :
         return {
                 avoidPairs: state.avoidPairs,
-                byeValue: action[0],
+                byeValue: action._0,
                 lastBackup: state.lastBackup
               };
     case /* SetState */5 :
-        return action[0];
+        return action._0;
     case /* SetLastBackup */6 :
         return {
                 avoidPairs: state.avoidPairs,
                 byeValue: state.byeValue,
-                lastBackup: action[0]
+                lastBackup: action._0
               };
     
   }

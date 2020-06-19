@@ -67,16 +67,16 @@ module LastBackupDate = {
 external stringify: (Js.Json.t, Js.null(unit), int) => string = "stringify";
 
 [@react.component]
-let make = (~windowDispatch=(. _) => ()) => {
+let make = (~windowDispatch=_ => ()) => {
   let Db.{items: tournaments, dispatch: tourneysDispatch, _} =
     Db.useAllTournaments();
   let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
-  let (text, setText) = React.Uncurried.useState(() => "");
+  let (text, setText) = React.useState(() => "");
   let (config, configDispatch) = Db.useConfig();
   React.useEffect1(
     () => {
-      windowDispatch(. Window.SetTitle("Options"));
-      Some(() => windowDispatch(. Window.SetTitle("")));
+      windowDispatch(Window.SetTitle("Options"));
+      Some(() => windowDispatch(Window.SetTitle("")));
     },
     [|windowDispatch|],
   );
@@ -92,16 +92,16 @@ let make = (~windowDispatch=(. _) => ()) => {
     () => {
       let encoded = encodeOptions(exportData);
       let json = stringify(encoded, Js.null, 4);
-      setText(. _ => json);
+      setText(_ => json);
       None;
     },
     (exportData, setText),
   );
 
   let loadData = (~tournaments, ~players, ~config) => {
-    tourneysDispatch(. Db.SetAll(tournaments));
-    configDispatch(. Db.SetState(config));
-    playersDispatch(. Db.SetAll(players));
+    tourneysDispatch(Db.SetAll(tournaments));
+    configDispatch(Db.SetState(config));
+    playersDispatch(Db.SetAll(players));
     Utils.alert("Data loaded.");
   };
   let handleText = event => {
@@ -159,7 +159,7 @@ let make = (~windowDispatch=(. _) => ()) => {
   };
   let handleTextChange = event => {
     let newText = ReactEvent.Form.currentTarget(event)##value;
-    setText(. _ => newText);
+    setText(_ => newText);
   };
   <Window.Body>
     <div className="content-area">
@@ -174,7 +174,7 @@ let make = (~windowDispatch=(. _) => ()) => {
             checked={config.Config.byeValue === Config.ByeValue.Full}
             type_="radio"
             onChange={_ =>
-              configDispatch(. Db.SetByeValue(Config.ByeValue.Full))
+              configDispatch(Db.SetByeValue(Config.ByeValue.Full))
             }
           />
         </label>
@@ -184,7 +184,7 @@ let make = (~windowDispatch=(. _) => ()) => {
             checked={config.Config.byeValue === Config.ByeValue.Half}
             type_="radio"
             onChange={_ =>
-              configDispatch(. Db.SetByeValue(Config.ByeValue.Half))
+              configDispatch(Db.SetByeValue(Config.ByeValue.Half))
             }
           />
         </label>
@@ -198,7 +198,7 @@ let make = (~windowDispatch=(. _) => ()) => {
         <a
           download={"coronate-" ++ getDateForFile() ++ ".json"}
           href={"data:application/json," ++ exportDataURI}
-          onClick={_ => configDispatch(. Db.SetLastBackup(Js.Date.make()))}>
+          onClick={_ => configDispatch(Db.SetLastBackup(Js.Date.make()))}>
           <Icons.Download />
           {React.string(" Export all data")}
         </a>

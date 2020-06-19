@@ -8,7 +8,7 @@ describe("Tabs auto-change correctly.", () => {
     let page =
       render(
         <LoadTournament tourneyId=TestData.simplePairing>
-          {(. tournament) => <PageRound tournament roundId=1 />}
+          {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
     let selectTab =
@@ -22,7 +22,7 @@ describe("Tabs auto-change correctly.", () => {
     let page =
       render(
         <LoadTournament tourneyId=TestData.simplePairing>
-          {(. tournament) => <PageRound tournament roundId=1 />}
+          {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
     let selectTab =
@@ -43,7 +43,7 @@ describe("Tabs auto-change correctly.", () => {
     let page =
       render(
         <LoadTournament tourneyId=TestData.simplePairing>
-          {(. tournament) => <PageRound tournament roundId=1 />}
+          {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
     page
@@ -76,7 +76,7 @@ describe("Tabs auto-change correctly.", () => {
     let page =
       render(
         <LoadTournament tourneyId=TestData.simplePairing>
-          {(. tournament) => <PageRound tournament roundId=1 />}
+          {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
     page
@@ -98,7 +98,7 @@ describe("Tabs auto-change correctly.", () => {
     let page =
       render(
         <LoadTournament tourneyId=TestData.simplePairing>
-          {(. tournament) => <PageRound tournament roundId=1 />}
+          {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
     page

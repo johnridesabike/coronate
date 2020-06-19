@@ -33,7 +33,7 @@ type inputs =
 let make = (~tournament) => {
   let LoadTournament.{tourney, setTourney, _} = tournament;
   let Tournament.{name, date, roundList, _} = tourney;
-  let (editing, setEditing) = React.Uncurried.useState(() => NotEditing);
+  let (editing, setEditing) = React.useState(() => NotEditing);
   let nameInput = React.useRef(Js.Nullable.null);
   let dateInput = React.useRef(Js.Nullable.null);
   let focusRef = myref =>
@@ -58,7 +58,7 @@ let make = (~tournament) => {
   );
 
   let changeToOne = _ => {
-    setTourney(.
+    setTourney(
       Tournament.{
         ...tourney,
         roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
@@ -68,7 +68,7 @@ let make = (~tournament) => {
   };
 
   let changeToOneHalf = _ => {
-    setTourney(.
+    setTourney(
       Tournament.{
         ...tourney,
         roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
@@ -87,7 +87,7 @@ let make = (~tournament) => {
     let year = Js.Float.fromString(rawYear);
     let month = Js.Float.fromString(rawMonth) -. 1.0;
     let date = Js.Float.fromString(rawDay);
-    setTourney(.
+    setTourney(
       Tournament.{
         ...tourney,
         date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
@@ -101,7 +101,7 @@ let make = (~tournament) => {
        <form
          className="display-20"
          style={ReactDOMRe.Style.make(~textAlign="left", ())}
-         onSubmit={_ => setEditing(. _ => NotEditing)}>
+         onSubmit={_ => setEditing(_ => NotEditing)}>
          <input
            className="display-20"
            style={ReactDOMRe.Style.make(~textAlign="left", ())}
@@ -109,7 +109,7 @@ let make = (~tournament) => {
            type_="text"
            value=name
            onChange={event =>
-             setTourney(.
+             setTourney(
                Tournament.{
                  ...tourney,
                  name: event->ReactEvent.Form.currentTarget##value,
@@ -119,8 +119,7 @@ let make = (~tournament) => {
          />
          {React.string(" ")}
          <button
-           className="button-ghost"
-           onClick={_ => setEditing(. _ => NotEditing)}>
+           className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
            <Icons.Check />
          </button>
        </form>
@@ -129,8 +128,7 @@ let make = (~tournament) => {
        <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
          <span className="inputPlaceholder"> {React.string(name)} </span>
          {React.string(" ")}
-         <button
-           className="button-ghost" onClick={_ => setEditing(. _ => Name)}>
+         <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
            <Icons.Edit />
            <Externals.VisuallyHidden>
              {React.string("Edit name")}
@@ -141,7 +139,7 @@ let make = (~tournament) => {
     {switch (editing) {
      | Date =>
        <form
-         className="caption-30" onSubmit={_ => setEditing(. _ => NotEditing)}>
+         className="caption-30" onSubmit={_ => setEditing(_ => NotEditing)}>
          <input
            className="caption-30"
            type_="date"
@@ -151,8 +149,7 @@ let make = (~tournament) => {
          />
          {React.string(" ")}
          <button
-           className="button-ghost"
-           onClick={_ => setEditing(. _ => NotEditing)}>
+           className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
            <Icons.Check />
          </button>
        </form>
@@ -161,8 +158,7 @@ let make = (~tournament) => {
        <p className="caption-30">
          <Utils.DateFormat date />
          {React.string(" ")}
-         <button
-           className="button-ghost" onClick={_ => setEditing(. _ => Date)}>
+         <button className="button-ghost" onClick={_ => setEditing(_ => Date)}>
            <Icons.Edit />
            <Externals.VisuallyHidden>
              {React.string("Edit date")}

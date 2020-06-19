@@ -3,9 +3,9 @@ module Selecting: {
   let make:
     (
       ~tourney: Data.Tournament.t,
-      ~setTourney: (. Data.Tournament.t) => unit,
+      ~setTourney: Data.Tournament.t => unit,
       ~players: Data.Id.Map.t(Data.Player.t),
-      ~playersDispatch: (. Db.action(Data.Player.t)) => unit
+      ~playersDispatch: Db.action(Data.Player.t) => unit
     ) =>
     React.element;
 };

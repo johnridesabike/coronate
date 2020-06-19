@@ -35,7 +35,7 @@ module IfElectron = {
     switch (electron, os, targetOs) {
     | (Some(electron), Windows, Windows)
     | (Some(electron), Mac, Mac)
-    | (Some(electron), Other, Other) => children(. electron)
+    | (Some(electron), Other, Other) => children(electron)
     | (_, Windows | Mac | Other, Windows | Mac | Other) => React.null
     };
   };

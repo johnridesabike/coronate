@@ -18,7 +18,7 @@ type action('a) =
 
 type state('a) = {
   items: Data.Id.Map.t('a),
-  dispatch: (. action('a)) => unit,
+  dispatch: action('a) => unit,
   loaded: bool,
 };
 
@@ -35,4 +35,4 @@ type actionConfig =
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t);
 
-let useConfig: unit => (Data.Config.t, (. actionConfig) => unit);
+let useConfig: unit => (Data.Config.t, actionConfig => unit);

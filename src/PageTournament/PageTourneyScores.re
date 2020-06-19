@@ -164,7 +164,7 @@ module SelectTieBreaks = {
   [@react.component]
   let make = (~tourney, ~setTourney) => {
     let tieBreaks = tourney.Tournament.tieBreaks;
-    let (selectedTb, setSelectedTb) = React.Uncurried.useState(() => None);
+    let (selectedTb, setSelectedTb) = React.useState(() => None);
     let defaultId = x =>
       switch (x) {
       | Some(x) => x
@@ -177,7 +177,7 @@ module SelectTieBreaks = {
 
     let toggleTb = id =>
       if (Js.Array2.includes(tieBreaks, defaultId(id))) {
-        setTourney(.
+        setTourney(
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -186,9 +186,9 @@ module SelectTieBreaks = {
               ),
           },
         );
-        setSelectedTb(. _ => None);
+        setSelectedTb(_ => None);
       } else {
-        setTourney(.
+        setTourney(
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -202,7 +202,7 @@ module SelectTieBreaks = {
       | None => ()
       | Some(selectedTb) =>
         let index = Js.Array2.indexOf(tieBreaks, selectedTb);
-        setTourney(.
+        setTourney(
           Tournament.{
             ...tourney,
             tieBreaks:
@@ -240,7 +240,7 @@ module SelectTieBreaks = {
               "button-micro" <:> "button-primary"->onSome(selectedTb)
             )
             disabled={selectedTb === None}
-            onClick={_ => setSelectedTb(. _ => None)}>
+            onClick={_ => setSelectedTb(_ => None)}>
             {React.string("Done")}
           </button>
         </div>
@@ -276,11 +276,11 @@ module SelectTieBreaks = {
                      }
                      onClick={_ =>
                        switch (selectedTb) {
-                       | None => setSelectedTb(. _ => Some(tieBreak))
+                       | None => setSelectedTb(_ => Some(tieBreak))
                        | Some(selectedTb) =>
                          selectedTb === tieBreak
-                           ? setSelectedTb(. _ => None)
-                           : setSelectedTb(. _ => Some(tieBreak))
+                           ? setSelectedTb(_ => None)
+                           : setSelectedTb(_ => Some(tieBreak))
                        }
                      }>
                      {React.string(
