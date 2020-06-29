@@ -1,11 +1,28 @@
+open Belt;
+
 type t = {
   id: Data_Id.t,
   name: string,
   date: Js.Date.t,
   playerIds: list(Data_Id.t),
+  scoreAdjustments: Data_Id.Map.t(float),
   byeQueue: array(Data_Id.t),
   tieBreaks: array(Data_Scoring.TieBreak.t),
   roundList: Data_Rounds.t,
+};
+
+let make = (~id, ~name) => {
+  id,
+  name,
+  byeQueue: [||],
+  date: Js.Date.make(),
+  playerIds: [],
+  scoreAdjustments: Data_Id.Map.make(),
+  roundList: Data_Rounds.empty,
+  tieBreaks:
+    Data_Scoring.TieBreak.(
+      [|Median, Solkoff, Cumulative, CumulativeOfOpposition|]
+    ),
 };
 
 /**
@@ -24,6 +41,15 @@ let decode = json =>
     tieBreaks:
       json |> field("tieBreaks", array(Data_Scoring.TieBreak.decode)),
     roundList: json |> field("roundList", Data_Rounds.decode),
+    scoreAdjustments:
+      json
+      |> optional(
+           field(
+             "scoreAdjustments",
+             array(tuple2(Data_Id.decode, Json.Decode.float)),
+           ),
+         )
+      |> Option.mapWithDefault(_, Data_Id.Map.make(), Data_Id.Map.fromArray),
   };
 
 let encode = data =>
@@ -36,5 +62,11 @@ let encode = data =>
       ("byeQueue", data.byeQueue |> array(Data_Id.encode)),
       ("tieBreaks", data.tieBreaks |> array(Data_Scoring.TieBreak.encode)),
       ("roundList", data.roundList |> Data_Rounds.encode),
+      (
+        "scoreAdjustments",
+        data.scoreAdjustments
+        |> Map.toArray
+        |> array(tuple2(Data_Id.encode, Json.Encode.float)),
+      ),
     ])
   );

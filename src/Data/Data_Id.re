@@ -28,11 +28,9 @@ module Map = {
 
   let make = () => Belt.Map.make(~id);
 
-  let stringArray = x => x;
+  let fromArray = a => Belt.Map.fromArray(a, ~id);
 
-  let toStringArray = x => x;
+  let fromStringArray = arr => arr->Belt.Map.fromArray(~id);
 
-  let fromStringArray = arr => arr->stringArray->Belt.Map.fromArray(~id);
-
-  let toStringArray = map => map->Belt.Map.toArray->toStringArray;
+  let toStringArray = map => map->Belt.Map.toArray;
 };

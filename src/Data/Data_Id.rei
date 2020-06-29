@@ -31,6 +31,8 @@ module Map: {
 
   let make: unit => t('v);
 
+  let fromArray: array((key, 'v)) => t('v);
+
   let fromStringArray: array((string, 'v)) => t('v);
 
   let toStringArray: t('v) => array((string, 'v));

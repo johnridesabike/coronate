@@ -3,6 +3,11 @@
  * are implemented yet, just the most common ones.
  */
 
+module Score: {
+  type t;
+
+}
+
 module Color: {
   type t =
     | White
@@ -26,6 +31,7 @@ type t = {
   firstRating: int,
   results: list(float),
   resultsNoByes: list(float),
+  adjustment: float,
 };
 
 module TieBreak: {
@@ -59,6 +65,8 @@ module TieBreak: {
  * results because a player hasn't been added yet.
  */
 let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t;
+
+let calcScore: (list(float), ~adjustment: float) => float;
 
 type scores = {
   id: Data_Id.t,

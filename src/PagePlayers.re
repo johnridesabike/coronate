@@ -185,8 +185,7 @@ module PlayerList = {
         ~windowDispatch=_ => (),
       ) => {
     open Player;
-    let (isDialogOpen, setIsDialogOpen) =
-      React.useState(() => false);
+    let dialog = Hooks.useBool(false);
     React.useEffect1(
       () => {
         windowDispatch(Window.SetTitle("Players"));
@@ -219,7 +218,7 @@ module PlayerList = {
     };
     <div className="content-area">
       <div className="toolbar toolbar__left">
-        <button onClick={_ => setIsDialogOpen(_ => true)}>
+        <button onClick={_ => dialog.setTrue()}>
           <Icons.UserPlus />
           {React.string(" Add a new player")}
         </button>
@@ -288,11 +287,11 @@ module PlayerList = {
         </tbody>
       </table>
       <Externals.Dialog
-        isOpen=isDialogOpen
-        onDismiss={_ => setIsDialogOpen(_ => false)}
+        isOpen=dialog.state
+        onDismiss={_ => dialog.setFalse()}
         ariaLabel="New player form">
         <button
-          className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
+          className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />

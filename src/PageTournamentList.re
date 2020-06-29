@@ -16,7 +16,7 @@ let make = (~windowDispatch=_ => ()) => {
       ~isDescending=true,
     );
   let (newTourneyName, setNewTourneyName) = React.useState(() => "");
-  let (isDialogOpen, setIsDialogOpen) = React.useState(() => false);
+  let dialog = Hooks.useBool(false);
   React.useEffect1(
     () => {
       windowDispatch(Window.SetTitle("Tournament list"));
@@ -38,25 +38,9 @@ let make = (~windowDispatch=_ => ()) => {
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event);
     let id = Data.Id.random();
-    dispatch(
-      Db.Set(
-        id,
-        {
-          byeQueue: [||],
-          date: Js.Date.make(),
-          id,
-          name: newTourneyName,
-          playerIds: [],
-          roundList: Data.Rounds.empty,
-          tieBreaks:
-            Data.Scoring.TieBreak.(
-              [|Median, Solkoff, Cumulative, CumulativeOfOpposition|]
-            ),
-        },
-      ),
-    );
+    dispatch(Db.Set(id, Data.Tournament.make(~id, ~name=newTourneyName)));
     setNewTourneyName(_ => "");
-    setIsDialogOpen(_ => false);
+    dialog.setFalse();
   };
   let deleteTournament = (id, name) => {
     let message = {j|Are you sure you want to delete “$name”?|j};
@@ -67,7 +51,7 @@ let make = (~windowDispatch=_ => ()) => {
   <Window.Body>
     <div className="content-area">
       <div className="toolbar toolbar__left">
-        <button onClick={_ => setIsDialogOpen(_ => true)}>
+        <button onClick={_ => dialog.setTrue()}>
           <Icons.Plus />
           {React.string(" Add tournament")}
         </button>
@@ -121,11 +105,11 @@ let make = (~windowDispatch=_ => ()) => {
              </tbody>
            </table>}
       <Externals.Dialog
-        isOpen=isDialogOpen
-        onDismiss={() => setIsDialogOpen(_ => false)}
+        isOpen=dialog.state
+        onDismiss={dialog.setFalse}
         ariaLabel="Create new tournament">
         <button
-          className="button-micro" onClick={_ => setIsDialogOpen(_ => false)}>
+          className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
         <form onSubmit=makeTournament>

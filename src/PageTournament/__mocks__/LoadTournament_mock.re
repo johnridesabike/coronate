@@ -3,7 +3,7 @@ open Data;
 
 let log2 = num => log(num) /. log(2.0);
 
-let tournamentData = Data.Id.Map.fromStringArray(TestData.tournaments);
+let tournamentData = TestData.tournaments;
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
@@ -70,35 +70,30 @@ type roundData =
     unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
   };
 
-let useRoundData = (roundId: int, tournament: t) => {
-  let {tourney, activePlayers, getPlayer, _} = tournament;
-  let Tournament.{roundList, _} = tourney;
-  /* matches2ScoreData is relatively expensive*/
+let useRoundData =
+    (roundId, {tourney: {roundList, scoreAdjustments, _}, activePlayers, _}) => {
+  /* tournament2ScoreData is relatively expensive*/
   let scoreData =
-    React.useMemo1(
-      () =>
-        Converters.matches2ScoreData(Rounds.rounds2Matches(roundList, ())),
-      [|roundList|],
+    React.useMemo2(
+      () => Converters.tournament2ScoreData(~roundList, ~scoreAdjustments),
+      (roundList, scoreAdjustments),
     );
   /* Only calculate unmatched players for the latest round. Old rounds
      don't get to add new players.
      Should this be memoized? */
-  let round = Rounds.get(roundList, roundId);
-  let isThisTheLastRound = roundId === Rounds.getLastKey(roundList);
+  let isThisTheLastRound = roundId == Rounds.getLastKey(roundList);
   let unmatched =
-    switch (round, isThisTheLastRound) {
+    switch (Rounds.get(roundList, roundId), isThisTheLastRound) {
     | (Some(round), true) =>
       let matched = Rounds.Round.getMatched(round);
       Map.removeMany(activePlayers, matched);
-    | (None, _)
-    | (Some(_), false) => Data.Id.Map.make()
+    | _ => Data.Id.Map.make()
     };
   let unmatchedCount = Map.size(unmatched);
   /* make a new list so as not to affect auto-pairing*/
   let unmatchedWithDummy =
-    unmatchedCount mod 2 !== 0
-      ? Map.set(unmatched, Data.Id.dummy, getPlayer(Data.Id.dummy))
-      : unmatched;
+    unmatchedCount mod 2 != 0
+      ? Map.set(unmatched, Data.Id.dummy, Player.dummy) : unmatched;
   let activePlayersCount = Map.size(activePlayers);
   {
     activePlayersCount,

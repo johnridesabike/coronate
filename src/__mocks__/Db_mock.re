@@ -77,11 +77,8 @@ let useAllItemsFromDb = data => {
   {items, dispatch, loaded: true};
 };
 
-let useAllPlayers = () =>
-  useAllItemsFromDb(TestData.players->Data.Id.Map.fromStringArray);
+let useAllPlayers = () => useAllItemsFromDb(TestData.players);
 
-let useAllTournaments = () =>
-  useAllItemsFromDb(TestData.tournaments->Data.Id.Map.fromStringArray);
+let useAllTournaments = () => useAllItemsFromDb(TestData.tournaments);
 
-let useConfig = () =>
-  React.useReducer(configReducer, TestData.config);
+let useConfig = () => React.useReducer(configReducer, TestData.config);

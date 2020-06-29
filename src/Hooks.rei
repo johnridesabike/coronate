@@ -1,3 +1,11 @@
+type boolState = {
+  state: bool,
+  setTrue: unit => unit,
+  setFalse: unit => unit,
+};
+
+let useBool: bool => boolState;
+
 type getter('a) =
   | GetString((. 'a) => string)
   | GetInt((. 'a) => int)

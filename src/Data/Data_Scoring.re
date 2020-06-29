@@ -1,5 +1,9 @@
 open Belt;
 
+module Score = {
+  type t = float;
+}
+
 module Color = {
   type t =
     | White
@@ -26,6 +30,7 @@ type t = {
   firstRating: int,
   results: list(float),
   resultsNoByes: list(float),
+  adjustment: float,
 };
 
 module TieBreak = {
@@ -79,6 +84,7 @@ let createBlankScoreData = (~firstRating=0, id) => {
   firstRating,
   results: [],
   resultsNoByes: [],
+  adjustment: 0.0,
 };
 
 let isNotDummy = (scores, oppId) => {
@@ -88,10 +94,13 @@ let isNotDummy = (scores, oppId) => {
   };
 };
 
+let calcScore = (results, ~adjustment) =>
+  Utils.List.sumF(results) +. adjustment;
+
 let getPlayerScore = (scores, id) => {
   switch (Map.get(scores, id)) {
   | None => 0.0
-  | Some({results, _}) => Utils.List.sumF(results)
+  | Some({results, adjustment, _}) => calcScore(results, ~adjustment)
   };
 };
 
@@ -142,8 +151,8 @@ let runningReducer = (acc, score) =>
 let getCumulativeScore = (scores, id) => {
   switch (Map.get(scores, id)) {
   | None => 0.0
-  | Some({resultsNoByes, _}) =>
-    resultsNoByes->List.reduce([], runningReducer)->Utils.List.sumF
+  | Some({resultsNoByes, adjustment, _}) =>
+    resultsNoByes->List.reduce([], runningReducer)->calcScore(~adjustment)
   };
 };
 
@@ -220,47 +229,16 @@ let standingsSorter = (tieBreaks, a, b) => {
   };
 };
 
-/*
-   This is not used. It is preserved for reference purposes.
- */
-/*
- let standingsSorter_old = (tieBreaks: array(tieBreak), a: scores, b: scores) => {
-   let result = ref(0);
-   let tieBreakIndex = ref(0);
-   let break = ref(false);
-   while (result^ === 0 && ! break^) {
-     switch (tieBreaks->Array.get(tieBreakIndex^)) {
-     | None => break := true
-     | Some(tieBreak) =>
-       let getTieBreak = List.getAssoc(_, tieBreak, (===));
-       switch (compare(b.score, a.score)) {
-       | 0 =>
-         switch (getTieBreak(b.tieBreaks), getTieBreak(a.tieBreaks)) {
-         | (Some(tb_b), Some(tb_a)) =>
-           switch (compare(tb_b, tb_a)) {
-           | 0 => tieBreakIndex := tieBreakIndex^ + 1
-           | x => result := x
-           }
-         | (None, _)
-         | (_, None) => () /* Nothing happens. Should there be an error? */
-         }
-       | x => result := x
-       };
-     };
-   };
-   result^;
- }; */
-
 let createStandingList = (scores, methods) => {
   let funcList =
     methods
     ->List.fromArray
     ->List.map(tbType => (tbType, mapTieBreak(tbType)));
-  Map.reduce(scores, [], (acc, id, data) =>
+  Map.reduce(scores, [], (acc, id, {results, adjustment, _}) =>
     [
       {
         id,
-        score: Utils.List.sumF(data.results),
+        score: calcScore(results, ~adjustment),
         tieBreaks:
           funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
       },

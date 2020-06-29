@@ -1,6 +1,3 @@
-%raw
-{|import "./styles"|};
-
 module App = {
   [@react.component]
   let make = () => {
@@ -25,7 +22,7 @@ module App = {
   };
 };
 
-ReactDOMRe.renderToElementWithId(<App />, "root");
+let init = () => ReactDOMRe.renderToElementWithId(<App />, "root");
 
 module ServiceWorker = {
   [@bs.module "./serviceWorker"]

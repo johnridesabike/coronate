@@ -1,14 +1,13 @@
 open Belt;
 open Jest;
-open JestDom;
-open Data.Converters;
+open Expect;
 
-let tournaments = TestData.tournaments->Data.Id.Map.fromStringArray;
-let players = TestData.players->Data.Id.Map.fromStringArray;
+let tournaments = TestData.tournaments;
+let players = TestData.players;
 
 let loadPairData = tourneyId => {
-  let tournament = Map.getExn(tournaments, tourneyId);
-  let {Data.Tournament.playerIds, roundList, _} = tournament;
+  let Data.Tournament.{playerIds, roundList, scoreAdjustments, _} =
+    Map.getExn(tournaments, tourneyId);
   let players =
     Map.reduce(players, Data.Id.Map.make(), (acc, key, player) =>
       if (List.has(playerIds, key, (===))) {
@@ -17,9 +16,8 @@ let loadPairData = tourneyId => {
         acc;
       }
     );
-  Data.Rounds.rounds2Matches(roundList, ())
-  ->matches2ScoreData
-  ->createPairingData(players, TestData.config.Data.Config.avoidPairs)
+  Data.Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
+  ->Data.Converters.createPairingData(players, TestData.config.avoidPairs)
   ->Data.Pairing.setUpperHalves;
 };
 
@@ -30,7 +28,7 @@ test("Players have 0 priority of pairing themselves.", () => {
   let pairData = loadPairData(TestData.byeRoundTourney);
   let newb = Map.getExn(pairData, TestData.newbieMcNewberson);
   let ideal = Data.Pairing.calcPairIdeal(newb, newb);
-  Expect.expect(ideal) |> Expect.toBe(0.0);
+  expect(ideal) |> toBe(0.0);
 });
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
@@ -40,16 +38,15 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   test("The lowest-ranking player is removed after bye selection.", () =>
     pairData
     |> Map.keysToArray
-    |> Expect.expect
-    |> Expect.not
-    |> Expect.toContain(TestData.newbieMcNewberson)
+    |> expect
+    |> not
+    |> toContain(TestData.newbieMcNewberson)
   );
   test("The lowest-ranking player is returned", () =>
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      Expect.expect(player.Data.Pairing.id)
-      |> Expect.toBe(TestData.newbieMcNewberson)
+      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
     }
   );
 });
@@ -63,8 +60,7 @@ test("The bye signup queue works", () => {
   switch (byedPlayer) {
   | None => assert(false)
   | Some(player) =>
-    Expect.expect(player.Data.Pairing.id)
-    |> Expect.toBe(TestData.joelRobinson)
+    expect(player.Data.Pairing.id) |> toBe(TestData.joelRobinson)
   };
 });
 test(
@@ -76,15 +72,14 @@ test(
     switch (byedPlayer) {
     | None => assert(false)
     | Some(player) =>
-      Expect.expect(player.Data.Pairing.id)
-      |> Expect.toBe(TestData.newbieMcNewberson)
+      expect(player.Data.Pairing.id) |> toBe(TestData.newbieMcNewberson)
     };
   },
 );
 test("Players are paired correctly in a simple scenario.", () => {
   let pairData = loadPairData(TestData.simplePairing);
   let matches = Data.Pairing.pairPlayers(pairData);
-  Expect.expect(matches)
+  expect(matches)
   |> ExpectJs.toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),
        (TestData.drClaytonForrester, TestData.newbieMcNewberson),
@@ -95,8 +90,8 @@ test("Players are paired correctly in a simple scenario.", () => {
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws);
   let matches = Data.Pairing.pairPlayers(pairData);
-  Expect.expect(matches)
-  |> Expect.toEqual([
+  expect(matches)
+  |> toEqual([
        (TestData.grandyMcMaster, TestData.gypsy),
        (TestData.drClaytonForrester, TestData.newbieMcNewberson),
        (TestData.tomServo, TestData.tvsFrank),
@@ -104,6 +99,7 @@ test("Players are paired correctly after a draw.", () => {
      ]);
 });
 
+open JestDom;
 open ReactTestingLibrary;
 open FireEvent;
 
@@ -121,6 +117,51 @@ test("Auto-matching with bye players works", () => {
 
   page
   |> getByTestId(~matcher=`Str("match-3-black"))
-  |> expect
+  |> JestDom.expect
   |> toHaveTextContent(`Str("Bye Player"));
+});
+
+test("Auto-matching works with manually adjusted scores", () => {
+  /* This isn't ideal but routing isn't working for tests I think. */
+  let page =
+    render(
+      <LoadTournament tourneyId=TestData.scoreTest>
+        {tournament =>
+           <>
+             <PageTourneyPlayers tournament />
+             <PageRound tournament roundId=3 />
+           </>}
+      </LoadTournament>,
+    );
+  page
+  |> getByText(
+       ~matcher=`RegExp([%bs.re "/more options for kinga forrester/i"]),
+     )
+  |> click;
+  page
+  |> getByLabelText(~matcher=`RegExp([%bs.re "/score adjustment/i"]))
+  |> change(~eventInit={
+              "target": {
+                "value": "3",
+              },
+            });
+  page |> getByText(~matcher=`RegExp([%bs.re "/save/i"])) |> click;
+  page
+  |> getByText(~matcher=`RegExp([%bs.re "/more options for TV's Max/i"]))
+  |> click;
+  page
+  |> getByLabelText(~matcher=`RegExp([%bs.re "/score adjustment/i"]))
+  |> change(~eventInit={
+              "target": {
+                "value": "-3",
+              },
+            });
+  page |> getByText(~matcher=`RegExp([%bs.re "/save/i"])) |> click;
+  page
+  |> getByText(~matcher=`RegExp([%bs.re "/auto-pair unmatched players/i"]))
+  |> click;
+  page
+  |> getByTestId(~matcher=`Str("match-0-white"))
+  |> JestDom.expect
+  |> toHaveTextContent(`Str("Kinga Forrester"));
 });

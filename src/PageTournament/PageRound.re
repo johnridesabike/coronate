@@ -49,20 +49,20 @@ module PlayerMatchInfo = {
       );
     let fullName = player.Player.firstName ++ " " ++ player.Player.lastName;
     <dl className="player-card">
-      <h3> {React.string(fullName)} </h3>
-      <dt> {React.string("Score")} </dt>
-      <dd> {score->Js.Float.toString->React.string} </dd>
-      <dt> {React.string("Rating")} </dt>
+      <h3> fullName->React.string </h3>
+      <dt> "Score"->React.string </dt>
+      <dd> score->React.float </dd>
+      <dt> "Rating"->React.string </dt>
       <Utils.TestId testId={"rating-" ++ player.Player.id->Data.Id.toString}>
         <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
       </Utils.TestId>
-      <dt> {React.string("Color balance")} </dt>
-      <dd> {React.string(colorBalance)} </dd>
-      <dt> {React.string("Has had a bye round")} </dt>
+      <dt> "Color balance"->React.string </dt>
+      <dd> colorBalance->React.string </dd>
+      <dt> "Has had a bye round"->React.string </dt>
       <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
-      <dt> {React.string("Opponent history")} </dt>
+      <dt> "Opponent history"->React.string </dt>
       <dd> <ol> opponentResults </ol> </dd>
-      <p> {React.string("Players to avoid:")} </p>
+      <p> "Players to avoid:"->React.string </p>
       avoidListHtml
     </dl>;
   };
@@ -92,7 +92,7 @@ module MatchRow = {
           _,
         } = tournament;
     let Tournament.{roundList, _} = tourney;
-    let (isModalOpen, setIsModalOpen) = React.useState(() => false);
+    let dialog = Hooks.useBool(false);
     let whitePlayer = getPlayer(m.whiteId);
     let blackPlayer = getPlayer(m.blackId);
     let isDummyRound =
@@ -298,7 +298,7 @@ module MatchRow = {
            <button
              className="button-ghost"
              title="Open match information."
-             onClick={_ => setIsModalOpen(_ => true)}>
+             onClick={_ => dialog.setTrue()}>
              <Icons.Info />
              <Externals.VisuallyHidden>
                {[
@@ -315,21 +315,21 @@ module MatchRow = {
             | None => React.null
             | Some(scoreData) =>
               <Externals.Dialog
-                isOpen=isModalOpen
-                onDismiss={_ => setIsModalOpen(_ => false)}
+                isOpen={dialog.state}
+                onDismiss={_ => dialog.setFalse()}
                 ariaLabel="Match information">
                 <button
                   className="button-micro button-primary"
-                  onClick={_ => setIsModalOpen(_ => false)}>
+                  onClick={_ => dialog.setFalse()}>
                   {React.string("close")}
                 </button>
                 <p> {React.string(tourney.Tournament.name)} </p>
                 <p>
                   {[
                      "Round",
-                     Js.Int.toString(roundId + 1),
+                     Int.toString(roundId + 1),
                      "match",
-                     Js.Int.toString(pos + 1),
+                     Int.toString(pos + 1),
                    ]
                    ->Utils.String.concat(~sep=" ")
                    ->React.string}
@@ -382,7 +382,7 @@ module RoundTable = {
          : <>
              <caption className={isCompact ? "title-30" : "title-40"}>
                {React.string("Round ")}
-               {Js.Int.toString(roundId + 1)->React.string}
+               {React.int(roundId + 1)}
              </caption>
              <thead>
                <tr>
@@ -603,7 +603,7 @@ let make = (~roundId, ~tournament) => {
         </Tab>
         <Tab disabled={unmatchedCount === 0}>
           <Icons.Users />
-          {[" Unmatched players (", Js.Int.toString(unmatchedCount), ")"]
+          {[" Unmatched players (", Int.toString(unmatchedCount), ")"]
            ->Utils.String.concat(~sep="")
            ->React.string}
         </Tab>

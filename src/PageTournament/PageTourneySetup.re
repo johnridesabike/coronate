@@ -10,17 +10,17 @@ open Data;
  */
 let makeDateInput = date => {
   open Js.Date;
-  let year = date->getFullYear->Js.Float.toString;
+  let year = date->getFullYear->Float.toString;
   let rawMonth = date->getMonth;
   let rawDate = date->getDate;
   /* The date input requires a 2-digit month and day.*/
   let month =
     rawMonth < 9.0
-      ? "0" ++ Js.Float.toString(rawMonth +. 1.0)
-      : Js.Float.toString(rawMonth +. 1.0);
+      ? "0" ++ Float.toString(rawMonth +. 1.0)
+      : Float.toString(rawMonth +. 1.0);
   let day =
     rawDate < 10.0
-      ? "0" ++ Js.Float.toString(rawDate) : Js.Float.toString(rawDate);
+      ? "0" ++ Float.toString(rawDate) : Float.toString(rawDate);
   Utils.String.concat([year, month, day], ~sep="-");
 };
 
@@ -84,15 +84,19 @@ let make = (~tournament) => {
       | [|year, month, day|] => (year, month, day)
       | _ => ("2000", "01", "01") /* this was chosen randomly*/
       };
-    let year = Js.Float.fromString(rawYear);
-    let month = Js.Float.fromString(rawMonth) -. 1.0;
-    let date = Js.Float.fromString(rawDay);
-    setTourney(
-      Tournament.{
-        ...tourney,
-        date: Js.Date.makeWithYMD(~year, ~month, ~date, ()),
-      },
-    );
+    let year = Float.fromString(rawYear);
+    let month = Float.fromString(rawMonth);
+    let date = Float.fromString(rawDay);
+    switch (year, month, date) {
+    | (Some(year), Some(month), Some(date)) =>
+      setTourney(
+        Tournament.{
+          ...tourney,
+          date: Js.Date.makeWithYMD(~year, ~month=month -. 1.0, ~date, ()),
+        },
+      )
+    | _ => ()
+    };
   };
 
   <div className="content-area">

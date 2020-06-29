@@ -30,9 +30,9 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Rounds: ")}
-          {roundList->Rounds.size->Js.Int.toString->React.string}
+          {roundList->Rounds.size->React.int}
           <small> {React.string(" out of ")} </small>
-          {roundCount->Js.Int.toString->React.string}
+          {roundCount->React.int}
         </label>
         <hr className="win__footer-divider" />
         <Utils.Notification
@@ -54,7 +54,7 @@ module Footer = {
           className="win__footer-block"
           style={Style.make(~display="inline-block", ())}>
           {React.string("Registered players: ")}
-          {activePlayers->Map.size->Js.Int.toString->React.string}
+          {activePlayers->Map.size->React.int}
         </label>
       </>
     );
@@ -230,11 +230,11 @@ module Sidebar = {
           {roundList
            ->Rounds.toArray
            ->Array.mapWithIndex((id, _) =>
-               <li key={Js.Int.toString(id)}>
+               <li key={Int.toString(id)}>
                  <HashLink
                    to_={Tournament(tourney.id, TourneyPage.Round(id))}
                    onDragStart=noDraggy>
-                   {Js.Int.toString(id + 1)->React.string}
+                   {React.int(id + 1)}
                    {isRoundComplete(id)
                       ? <span
                           className=Cn.(

@@ -127,6 +127,10 @@ data in the same folder as its executable.
 
 Linux builds have not been tested.
 
+Coronate includes an [esy](https://esy.sh/) configuration for compatability with
+native development tools. If you prefer using native Reason tooling and esy, you
+can use it just by launching your editor with `esy`, such as `esy vim`.
+
 ## ⛏️ Built Using
 
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime

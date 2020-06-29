@@ -118,6 +118,10 @@ module X = {
   [@bs.module "react-feather"] [@react.component]
   external make: (~className: string=?) => React.element = "X";
 };
+module More = {
+  [@bs.module "react-feather"] [@react.component]
+  external make: unit => React.element = "MoreHorizontal";
+};
 
 type simpleIcon = {
   svg: string,

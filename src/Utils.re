@@ -350,7 +350,7 @@ Numeral.registerFormat(
           | _ => ""
           };
         let stringedWhole =
-          whole === 0.0 && fraction !== "" ? "" : Js.Float.toString(whole);
+          whole === 0.0 && fraction !== "" ? "" : Float.toString(whole);
         stringedWhole ++ fraction;
       },
     ~regexps=
@@ -359,6 +359,6 @@ Numeral.registerFormat(
         ~unformat=[%re "/(1\\/2)/"],
       ),
     /* This doesn't do anything currently */
-    ~unformatFn=value => Js.Float.fromString(value),
+    ~unformatFn=value => Float.fromString(value)->Option.getExn,
   ),
 );

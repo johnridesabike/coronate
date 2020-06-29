@@ -6,7 +6,7 @@ open Belt;
 let getDateForFile = () => {
   let date = Js.Date.make();
   [
-    date->Js.Date.getFullYear->Js.Float.toString,
+    date->Js.Date.getFullYear->Float.toString,
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
     Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
   ]
@@ -144,16 +144,16 @@ let make = (~windowDispatch=_ => ()) => {
   let reloadDemoData = event => {
     ReactEvent.Mouse.preventDefault(event);
     loadData(
-      ~tournaments=DemoData.tournaments->Data.Id.Map.fromStringArray,
-      ~players=DemoData.players->Data.Id.Map.fromStringArray,
+      ~tournaments=DemoData.tournaments,
+      ~players=DemoData.players,
       ~config=DemoData.config,
     );
   };
   let loadTestData = event => {
     ReactEvent.Mouse.preventDefault(event);
     loadData(
-      ~tournaments=TestData.tournaments->Data.Id.Map.fromStringArray,
-      ~players=TestData.players->Data.Id.Map.fromStringArray,
+      ~tournaments=TestData.tournaments,
+      ~players=TestData.players,
       ~config=TestData.config,
     );
   };

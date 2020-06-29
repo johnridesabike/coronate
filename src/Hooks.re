@@ -1,5 +1,22 @@
 open Belt;
 
+type boolState = {
+  state: bool,
+  setTrue: unit => unit,
+  setFalse: unit => unit,
+};
+
+let reducer = (_, newState) => newState;
+
+let useBool = init => {
+  let (state, setState) = React.Uncurried.useReducer(reducer, init);
+  {
+    state,
+    setTrue: () => setState(. true),
+    setFalse: () => setState(. false),
+  };
+};
+
 /**
  * Begin the sortable table hook.
  */
@@ -145,30 +162,19 @@ let useScoreInfo =
       (),
     ) => {
   open Data;
-  let {Scoring.colorScores, opponentResults, results, _} =
+  let {Scoring.colorScores, opponentResults, results, adjustment, _} =
     switch (Map.get(scoreData, player.Player.id)) {
     | Some(data) => data
-    | None => Scoring.createBlankScoreData(player.Player.id)
+    | None => Scoring.createBlankScoreData(player.id)
     };
   let hasBye = Map.has(opponentResults, Data.Id.dummy);
   let colorBalance =
     switch (Utils.List.sumF(colorScores)) {
-    | x when x < 0.0 => "White +" ++ x->abs_float->Js.Float.toString
-    | x when x > 0.0 => "Black +" ++ x->Js.Float.toString
+    | x when x < 0.0 => "White +" ++ x->abs_float->Float.toString
+    | x when x > 0.0 => "Black +" ++ x->Float.toString
     | _ => "Even"
     };
-  let avoidMap =
-    Option.mapWithDefault(
-      avoidPairs,
-      Data.Id.Map.make(),
-      Config.Pair.Set.toMap,
-    );
-  let avoidList =
-    switch (Map.get(avoidMap, player.Player.id)) {
-    | None => []
-    | Some(avoidList) => avoidList
-    };
-  let score = Utils.List.sumF(results);
+
   let opponentResults =
     opponentResults
     ->Map.toArray
@@ -176,7 +182,7 @@ let useScoreInfo =
         <li key={Data.Id.toString(opId)}>
           {[
              getPlayer(opId).Player.firstName,
-             getPlayer(opId).Player.lastName,
+             getPlayer(opId).lastName,
              "-",
              switch (result) {
              | 0.0 => "Lost"
@@ -191,7 +197,10 @@ let useScoreInfo =
       )
     ->React.array;
   let avoidListHtml =
-    avoidList
+    avoidPairs
+    ->Option.map(Config.Pair.Set.toMap)
+    ->Option.flatMap(Map.get(_, player.id))
+    ->Option.getWithDefault([])
     ->List.map(pId =>
         switch (Map.get(players, pId)) {
         /*  don't show players not in this tourney*/
@@ -207,7 +216,7 @@ let useScoreInfo =
     ->React.array;
   let rating =
     <>
-      {origRating->Js.Int.toString->React.string}
+      {origRating->React.int}
       {switch (newRating) {
        | None => React.null
        | Some(newRating) =>
@@ -224,7 +233,7 @@ let useScoreInfo =
     player,
     hasBye,
     colorBalance,
-    score,
+    score: Scoring.calcScore(results, ~adjustment),
     rating,
     opponentResults,
     avoidListHtml,

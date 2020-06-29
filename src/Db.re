@@ -27,8 +27,14 @@ let loadDemoDB = _: unit => {
   let () = [%bs.raw {|document.body.style.cursor = "wait"|}];
   Js.Promise.all3((
     LocalForage.Record.set(configDb, ~items=DemoData.config),
-    LocalForage.Map.setItems(players, ~items=DemoData.players),
-    LocalForage.Map.setItems(tournaments, ~items=DemoData.tournaments),
+    LocalForage.Map.setItems(
+      players,
+      ~items=DemoData.players->Data.Id.Map.toStringArray,
+    ),
+    LocalForage.Map.setItems(
+      tournaments,
+      ~items=DemoData.tournaments->Data.Id.Map.toStringArray,
+    ),
   ))
   ->Promise.Js.fromBsPromise
   ->Promise.Js.catch(_ => {
@@ -66,8 +72,8 @@ let genericDbReducer = (state, action) => {
 let useAllDb = store => {
   let (items, dispatch) =
     React.useReducer(genericDbReducer, Data.Id.Map.make());
-  let (loaded, setLoaded) = React.useState(() => false);
-  Hooks.useLoadingCursorUntil(loaded);
+  let loaded = Hooks.useBool(false);
+  Hooks.useLoadingCursorUntil(loaded.state);
   /*
     Load items from the database.
    */
@@ -79,7 +85,7 @@ let useAllDb = store => {
     ->Promise.tapOk(results =>
         if (! didCancel^) {
           dispatch(SetAll(results->Data.Id.Map.fromStringArray));
-          setLoaded(_ => true);
+          loaded.setTrue();
         }
       )
     ->Promise.getError(error =>
@@ -89,7 +95,7 @@ let useAllDb = store => {
              replace this with more elegant error recovery. */
           Js.Console.error(error);
           ()->LocalForage.LocalForageJs.clear->ignore;
-          setLoaded(_ => true);
+          loaded.setTrue();
         }
       );
     Some(() => didCancel := true);
@@ -99,7 +105,7 @@ let useAllDb = store => {
    */
   React.useEffect2(
     () => {
-      if (loaded) {
+      if (loaded.state) {
         store
         ->LocalForage.Map.setItems(~items=items->Data.Id.Map.toStringArray)
         ->Promise.Js.fromBsPromise
@@ -129,7 +135,7 @@ let useAllDb = store => {
     },
     (items, loaded),
   );
-  {items, dispatch, loaded};
+  {items, dispatch, loaded: loaded.state};
 };
 
 let useAllPlayers = () => useAllDb(players);
@@ -178,7 +184,7 @@ let configReducer = (state, action) => {
 let useConfig = () => {
   let (config, dispatch) =
     React.useReducer(configReducer, Data.Config.default);
-  let (isLoaded, setIsLoaded) = React.useState(() => false);
+  let loaded = Hooks.useBool(false);
   /* Load items from the database. */
   React.useEffect0(() => {
     let didCancel = ref(false);
@@ -188,14 +194,14 @@ let useConfig = () => {
     ->Promise.tapOk(values =>
         if (! didCancel^) {
           dispatch(SetState(values));
-          setIsLoaded(_ => true);
+          loaded.setTrue();
         }
       )
     ->Promise.getError(_ =>
         if (! didCancel^) {
           ()->LocalForage.LocalForageJs.clear->ignore;
           dispatch(SetState(Data.Config.default));
-          setIsLoaded(_ => true);
+          loaded.setTrue();
         }
       );
     Some(() => didCancel := true);
@@ -203,12 +209,12 @@ let useConfig = () => {
   /* Save items to the database. */
   React.useEffect2(
     () => {
-      if (isLoaded) {
+      if (loaded.state) {
         LocalForage.Record.set(configDb, ~items=config)->ignore;
       };
       None;
     },
-    (config, isLoaded),
+    (config, loaded.state),
   );
   (config, dispatch);
 };

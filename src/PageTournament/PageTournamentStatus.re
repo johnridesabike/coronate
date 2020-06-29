@@ -37,7 +37,7 @@ let make = (~tournament) => {
           getPlayer
           title="Rankings"
           tourney
-          isCompact=true
+          size=Compact
         />
       </Utils.Panel>
     </Utils.PanelContainer>

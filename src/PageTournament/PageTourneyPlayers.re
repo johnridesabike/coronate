@@ -101,6 +101,182 @@ let hasHadBye = (matches, playerId) => {
   );
 };
 
+module OptionsForm = {
+  let errorNotification =
+    fun
+    | Some(Error(e)) =>
+      <Utils.Notification kind=Utils.Notification.Error>
+        e->React.string
+      </Utils.Notification>
+    | Some(Ok(_))
+    | None => React.null;
+
+  module Form = [%form
+    type input = {scoreAdjustment: string};
+    type output = {scoreAdjustment: float};
+    let validators = {
+      scoreAdjustment: {
+        strategy: OnFirstSuccessOrFirstBlur,
+        validate: input =>
+          switch (Float.fromString(input.scoreAdjustment)) {
+          | None => Error("Score adjustment must be a number.")
+          | Some(x) => Ok(x)
+          },
+      },
+    }
+  ];
+
+  module More = {
+    [@react.component]
+    let make =
+        (
+          ~setTourney,
+          ~dialog: Hooks.boolState,
+          ~tourney: Data.Tournament.t,
+          ~p: Data.Player.t,
+        ) => {
+      let scoreAdjustment =
+        Map.get(tourney.scoreAdjustments, p.id)
+        ->Option.mapWithDefault("0", Float.toString);
+      let form =
+        Form.useForm(
+          ~initialInput={scoreAdjustment: scoreAdjustment},
+          ~onSubmit=(output, callback) => {
+            switch (output) {
+            | {scoreAdjustment: 0.} =>
+              setTourney({
+                ...tourney,
+                scoreAdjustments: Map.remove(tourney.scoreAdjustments, p.id),
+              })
+            | {scoreAdjustment} =>
+              setTourney({
+                ...tourney,
+                scoreAdjustments:
+                  Map.set(tourney.scoreAdjustments, p.id, scoreAdjustment),
+              })
+            };
+            callback.notifyOnSuccess(None);
+            dialog.setFalse();
+          },
+        );
+      <>
+        <button
+          className="button-micro button-primary"
+          onClick={_ => dialog.Hooks.setFalse()}>
+          {React.string("close")}
+        </button>
+        <h2>
+          {Utils.String.concat(
+             ["Options for", p.firstName, p.lastName],
+             ~sep=" ",
+           )
+           |> React.string}
+        </h2>
+        <form
+          onSubmit={event => {
+            ReactEvent.Form.preventDefault(event);
+            form.submit();
+          }}>
+          <h3>
+            <label
+              className="title-30"
+              htmlFor={Data.Id.toString(p.id) ++ "-scoreAdjustment"}>
+              "Score adjustment"->React.string
+            </label>
+          </h3>
+          <p
+            className="caption-30"
+            id={Data.Id.toString(p.id) ++ "-scoreAdjustment-description"}>
+            {|Score adjustment will be added to this player's actual score.
+              It can be negative.|}
+            ->React.string
+          </p>
+          <p>
+            <input
+              type_="number"
+              size=3
+              step=0.5
+              id={Data.Id.toString(p.id) ++ "-scoreAdjustment"}
+              ariaDescribedby={
+                Data.Id.toString(p.id) ++ "-scoreAdjustment-description"
+              }
+              value={form.input.scoreAdjustment}
+              disabled={form.submitting}
+              onBlur={_ => form.blurScoreAdjustment()}
+              onChange={event =>
+                form.updateScoreAdjustment(
+                  (_input, value) => {scoreAdjustment: value},
+                  event->ReactEvent.Form.target##value,
+                )
+              }
+            />
+            " "->React.string
+            <button
+              className="button-micro"
+              onClick={event => {
+                ReactEvent.Mouse.preventDefault(event);
+                form.updateScoreAdjustment(
+                  (_input, value) => {scoreAdjustment: value},
+                  "0",
+                );
+              }}>
+              "Reset"->React.string
+            </button>
+          </p>
+          {errorNotification(form.scoreAdjustmentResult)}
+          <p>
+            <input
+              type_="submit"
+              value="Save"
+              disabled={form.submitting || !form.valid()}
+            />
+          </p>
+        </form>
+      </>;
+    };
+  };
+
+  [@react.component]
+  let make = (~setTourney, ~tourney, ~byeQueue, ~p) => {
+    let dialog = Hooks.useBool(false);
+    <>
+      <button
+        className="button-micro"
+        disabled={Js.Array2.includes(byeQueue, p.Player.id)}
+        onClick={_ =>
+          setTourney(
+            Tournament.{
+              ...tourney,
+              byeQueue: Array.concat(byeQueue, [|p.id|]),
+            },
+          )
+        }>
+        "Bye signup"->React.string
+      </button>
+      " "->React.string
+      <button className="button-micro" onClick={_ => dialog.setTrue()}>
+        <span ariaHidden=true> <Icons.More /> </span>
+        <Externals.VisuallyHidden>
+          {Utils.String.concat(
+             ["More options for", p.firstName, p.lastName],
+             ~sep=" ",
+           )
+           |> React.string}
+        </Externals.VisuallyHidden>
+      </button>
+      <Externals.Dialog
+        isOpen={dialog.state}
+        onDismiss={dialog.setFalse}
+        ariaLabel={Utils.String.concat(
+          ["Options for", p.firstName, p.lastName],
+          ~sep=" ",
+        )}>
+        <More setTourney dialog tourney p />
+      </Externals.Dialog>
+    </>;
+  };
+};
+
 module PlayerList = {
   [@react.component]
   let make = (~players, ~tourney, ~setTourney, ~byeQueue) => {
@@ -113,21 +289,7 @@ module PlayerList = {
              className=Cn.(Player.Type.toString(p.Player.type_) <:> "player")>
              <td> {React.string(p.Player.firstName)} </td>
              <td> {React.string(p.Player.lastName)} </td>
-             <td>
-               <button
-                 className="button-micro"
-                 disabled={Js.Array2.includes(byeQueue, p.Player.id)}
-                 onClick={_ =>
-                   setTourney(
-                     Tournament.{
-                       ...tourney,
-                       byeQueue: Array.concat(byeQueue, [|p.Player.id|]),
-                     },
-                   )
-                 }>
-                 {React.string("Bye signup")}
-               </button>
-             </td>
+             <td> <OptionsForm setTourney tourney byeQueue p /> </td>
            </tr>
          )
        ->React.array}

@@ -6,7 +6,6 @@ import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Id$LocalForage from "@johnridesabike/bs-localforage/src/Id.bs.js";
 import * as Map$LocalForage from "@johnridesabike/bs-localforage/src/Map.bs.js";
-import * as Data_Id$Coronate from "../Data/Data_Id.bs.js";
 import * as TestData$Coronate from "../TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 import * as Data_Player$Coronate from "../Data/Data_Player.bs.js";
@@ -42,7 +41,10 @@ var Player = Id$LocalForage.MakeEncodable({
       decode: Data_Player$Coronate.decode
     });
 
-var Tournament = Id$LocalForage.MakeEncodable(Data_Tournament$Coronate);
+var Tournament = Id$LocalForage.MakeEncodable({
+      encode: Data_Tournament$Coronate.encode,
+      decode: Data_Tournament$Coronate.decode
+    });
 
 var tournaments = Map$LocalForage.make(func(undefined, undefined, "Coronate", undefined, "Tournaments", undefined, undefined), Tournament);
 
@@ -123,11 +125,11 @@ function useAllItemsFromDb(data) {
 }
 
 function useAllPlayers(param) {
-  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(TestData$Coronate.players));
+  return useAllItemsFromDb(TestData$Coronate.players);
 }
 
 function useAllTournaments(param) {
-  return useAllItemsFromDb(Data_Id$Coronate.$$Map.fromStringArray(TestData$Coronate.tournaments));
+  return useAllItemsFromDb(TestData$Coronate.tournaments);
 }
 
 function useConfig(param) {

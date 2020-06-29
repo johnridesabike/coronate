@@ -205,7 +205,7 @@ module TimeCalculator = {
                   <input
                     id="playerCount"
                     type_="number"
-                    value={Js.Int.toString(players)}
+                    value={Int.toString(players)}
                     onChange={updateInt(setPlayers, minPlayers)}
                     min={Int.toString(minPlayers)}
                     style={ReactDOMRe.Style.make(~width="40px", ())}
@@ -215,13 +215,7 @@ module TimeCalculator = {
               <tr>
                 <td> <label> {React.string("Round count")} </label> </td>
                 <td>
-                  {players
-                   ->Js.Int.toFloat
-                   ->log2
-                   ->ceil
-                   ->fixNumber
-                   ->Js.Float.toString
-                   ->React.string}
+                  {players->Int.toFloat->log2->ceil->fixNumber->React.float}
                 </td>
               </tr>
               <tr>
@@ -234,7 +228,7 @@ module TimeCalculator = {
                   <input
                     id="breakTime"
                     type_="number"
-                    value={Js.Int.toString(breakTime)}
+                    value={Int.toString(breakTime)}
                     onChange={updateInt(setBreakTime, minBreakTime)}
                     step=5.0
                     min={Int.toString(minBreakTime)}
@@ -253,7 +247,7 @@ module TimeCalculator = {
                   <input
                     id="totalTime"
                     type_="number"
-                    value={Js.Float.toString(totalTime)}
+                    value={Float.toString(totalTime)}
                     onChange={updateFloat(setTotalTime, minTotalTime)}
                     step=0.5
                     min={Float.toString(minTotalTime)}
@@ -272,30 +266,23 @@ module TimeCalculator = {
                (
                  totalTime
                  *. 60.0
-                 /. players->float_of_int->log2->ceil
-                 -. float_of_int(breakTime)
+                 /. players->Int.toFloat->log2->ceil
+                 -. Int.toFloat(breakTime)
                )
                /. 2.0
              )
              ->ceil
              ->fixNumber
-             ->Js.Float.toString
-             ->React.string}
+             ->React.float}
             {React.string(" minutes")}
           </span>
           <span className="caption-30">
             {React.string(" = ((")}
-            <strong className="monospace">
-              {totalTime->Js.Float.toString->React.string}
-            </strong>
+            <strong className="monospace"> totalTime->React.float </strong>
             {React.string({j| × 60 ÷ ⌈log₂(|j})}
-            <strong className="monospace">
-              {players->Js.Int.toString->React.string}
-            </strong>
+            <strong className="monospace"> players->React.int </strong>
             {React.string({j|)⌉) - |j})}
-            <strong className="monospace">
-              {breakTime->Js.Int.toString->React.string}
-            </strong>
+            <strong className="monospace"> breakTime->React.int </strong>
             {React.string({j|) ÷ 2|j})}
           </span>
         </p>

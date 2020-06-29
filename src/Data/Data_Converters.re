@@ -86,6 +86,17 @@ let matches2ScoreData = matchList =>
     )
   );
 
+let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
+  roundList
+  ->Data_Rounds.rounds2Matches()
+  ->matches2ScoreData
+  ->Map.map(scoreData =>
+      switch (Map.get(scoreAdjustments, scoreData.id)) {
+      | None => scoreData
+      | Some(adjustment) => {...scoreData, adjustment}
+      }
+    );
+
 let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.Pair.Set.toMap(avoidPairs);
   Map.reduce(
@@ -110,16 +121,18 @@ let createPairingData = (scoreData, playerData, avoidPairs) => {
         Data_Pairing.{
           avoidIds: newAvoidIds,
           colorScores: playerStats.Data_Scoring.colorScores,
-          colors: playerStats.Data_Scoring.colors,
+          colors: playerStats.colors,
           halfPos: 0,
           id: data.Data_Player.id,
           isUpperHalf: false,
           opponents:
-            playerStats.Data_Scoring.opponentResults
-            ->Map.keysToArray
-            ->List.fromArray,
+            playerStats.opponentResults->Map.keysToArray->List.fromArray,
           rating: data.Data_Player.rating,
-          score: Utils.List.sumF(playerStats.Data_Scoring.results),
+          score:
+            Data_Scoring.calcScore(
+              playerStats.results,
+              ~adjustment=playerStats.adjustment,
+            ),
         };
       Map.set(acc, key, newData);
     },

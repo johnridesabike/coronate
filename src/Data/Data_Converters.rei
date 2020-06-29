@@ -1,4 +1,6 @@
-let matches2ScoreData: array(Data_Match.t) => Data_Id.Map.t(Data_Scoring.t);
+let tournament2ScoreData:
+  (~roundList: Data_Rounds.t, ~scoreAdjustments: Data_Id.Map.t(float)) =>
+  Data_Id.Map.t(Data_Scoring.t);
 
 let createPairingData:
   (

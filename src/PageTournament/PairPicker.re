@@ -369,22 +369,19 @@ module PlayerInfo = {
 
     let fullName = player.firstName ++ " " ++ player.lastName;
     <dl className="player-card">
-      <h3> {React.string(fullName)} </h3>
-      <p>
-        {React.string("Score: ")}
-        {score->Js.Float.toString->React.string}
-      </p>
+      <h3> fullName->React.string </h3>
+      <p> "Score: "->React.string score->React.float </p>
       <p id={"rating-" ++ player.id->Data.Id.toString}>
-        {React.string("Rating: ")}
+        "Rating: "->React.string
         rating
       </p>
       <p> {React.string("Color balance: " ++ colorBalance)} </p>
       <p>
         {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))}
       </p>
-      <p> {React.string("Opponent history:")} </p>
+      <p> "Opponent history:"->React.string </p>
       <ol> opponentResults </ol>
-      <p> {React.string("Players to avoid:")} </p>
+      <p> "Players to avoid:"->React.string </p>
       avoidListHtml
     </dl>;
   };
@@ -414,7 +411,7 @@ let make =
       } = tournament;
   let Tournament.{roundList, byeQueue, _} = tourney;
   let round = roundList->Rounds.get(roundId);
-  let (isModalOpen, setIsModalOpen) = React.useState(() => false);
+  let dialog = Hooks.useBool(false);
   /* `createPairingData` is relatively expensive */
   let pairData =
     React.useMemo3(
@@ -472,7 +469,7 @@ let make =
           {React.string("Auto-pair unmatched players")}
         </button>
         {React.string(" ")}
-        <button onClick={_ => setIsModalOpen(_ => true)}>
+        <button onClick={_ => dialog.setTrue()}>
           {React.string("Add or remove players from the roster.")}
         </button>
       </div>
@@ -521,11 +518,10 @@ let make =
         </Utils.Panel>
       </Utils.PanelContainer>
       <Externals.Dialog
-        isOpen=isModalOpen
-        onDismiss={_ => setIsModalOpen(_ => false)}
+        isOpen={dialog.state}
+        onDismiss={dialog.setFalse}
         ariaLabel="Select players">
-        <button
-          className="button-micro" onClick={_ => setIsModalOpen(_ => false)}>
+        <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Done")}
         </button>
         <PageTourneyPlayers.Selecting

@@ -3,7 +3,7 @@ open Expect;
 open Data.Player;
 open Data.Scoring;
 
-let players = TestData.players->Data.Id.Map.fromStringArray;
+let players = TestData.players;
 
 let newb = players->Belt.Map.getExn(TestData.newbieMcNewberson);
 let master = players->Belt.Map.getExn(TestData.grandyMcMaster);
@@ -47,6 +47,139 @@ Skip.test("Tie break scores calculate correctly", () => {
   expect(true) |> toBe(true)
 });
 
-Skip.test("The players are ranked correctly", () => {
-  expect(true) |> toBe(true)
+open ReactTestingLibrary;
+open JestDom;
+
+let scorePage = () =>
+  <LoadTournament tourneyId=TestData.scoreTest>
+    {({tourney: {name: title, _} as tourney, getPlayer, _}) =>
+       <PageTourneyScores.ScoreTable tourney getPlayer title />}
+  </LoadTournament>
+  ->render;
+
+describe("Snapshot of ranks are correct", () => {
+  test("rank 1", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-1.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("TV's Max"))
+  );
+  test("rank 2", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-2.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Bobo Professor"))
+  );
+  test("rank 3", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-3.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("TV's Frank"))
+  );
+  test("rank 4", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-4.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Mike Nelson"))
+  );
+  test("rank 5", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-5.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Brain Guy"))
+  );
+  test("rank 6", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-6.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Clayton Forrester"))
+  );
+  test("rank 7", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-7.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Joel Robinson"))
+  );
+  test("rank 8", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-8.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Crow T Robot"))
+  );
+  test("rank 9", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-9.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Cambot"))
+  );
+  test("rank 10", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-10.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Jonah Heston"))
+  );
+  test("rank 11", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-11.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Tom Servo"))
+  );
+  test("rank 12", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-12.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Pearl Forrester"))
+  );
+  test("rank 13", () =>
+    ()
+    |> scorePage
+    |> getByTestId(~matcher=`Str("rank-13.0"))
+    |> JestDom.expect
+    |> toHaveTextContent(`Str("Kinga Forrester"))
+  );
+});
+
+open FireEvent;
+
+test("Manually adjusting scores works", () => {
+  /* This isn't ideal but routing isn't working for tests I think. */
+  let page =
+    render(
+      <LoadTournament tourneyId=TestData.scoreTest>
+        {tournament =>
+           <>
+             <PageTourneyPlayers tournament />
+             <PageTourneyScores tournament />
+           </>}
+      </LoadTournament>,
+    );
+  page
+  |> getByText(
+       ~matcher=`RegExp([%bs.re "/more options for kinga forrester/i"]),
+     )
+  |> click;
+  page
+  |> getByLabelText(~matcher=`RegExp([%bs.re "/score adjustment/i"]))
+  |> change(~eventInit={
+              "target": {
+                "value": "100",
+              },
+            });
+  page |> getByText(~matcher=`RegExp([%bs.re "/save/i"])) |> click;
+  page
+  |> getByTestId(~matcher=`Str("rank-1.0"))
+  |> JestDom.expect
+  |> toHaveTextContent(`Str("Kinga Forrester"));
 });
