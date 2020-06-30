@@ -4,9 +4,25 @@
  */
 
 module Score: {
-  type t;
+  /**
+    This manages the floating-point sum of individual match scores.
+   */
+  module Sum: {
+    type t;
+    let toFloat: t => float;
+    let toNumeral: t => Numeral.t;
+  };
 
-}
+  type t =
+    | Zero
+    | One
+    | NegOne
+    | Half;
+
+  let sum: list(t) => Sum.t;
+  let calcScore: (list(t), ~adjustment: float) => Sum.t;
+  let toFloat: t => float;
+};
 
 module Color: {
   type t =
@@ -18,21 +34,23 @@ module Color: {
   /**
    * This is used for calculating the "most black" tiebreak.
    */
-  let toScore: t => float;
+  let toScore: t => Score.t;
 };
 
 type t = {
-  colorScores: list(float),
+  colorScores: list(Score.t),
   colors: list(Color.t), /* This is used to create pairing data*/
   id: Data_Id.t,
   isDummy: bool,
-  opponentResults: Data_Id.Map.t(float),
+  opponentResults: list((Data_Id.t, Score.t)),
   ratings: list(int),
   firstRating: int,
-  results: list(float),
-  resultsNoByes: list(float),
+  results: list(Score.t),
+  resultsNoByes: list(Score.t),
   adjustment: float,
 };
+
+let oppResultsToSumById: (t, Data_Id.t) => option(Score.Sum.t);
 
 module TieBreak: {
   /**
@@ -58,6 +76,8 @@ module TieBreak: {
   let toString: t => string;
 
   let toPrettyString: t => string;
+
+  let eq: (t, t) => bool;
 };
 
 /**
@@ -66,12 +86,10 @@ module TieBreak: {
  */
 let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t;
 
-let calcScore: (list(float), ~adjustment: float) => float;
-
 type scores = {
   id: Data_Id.t,
-  score: float,
-  tieBreaks: list((TieBreak.t, float)),
+  score: Score.Sum.t,
+  tieBreaks: list((TieBreak.t, Score.Sum.t)),
 };
 
 /**
@@ -89,23 +107,3 @@ let createStandingList:
  * first, Pete is 2nd, Bob is 3rd.
  */
 let createStandingTree: list(scores) => list(list(scores));
-
-module Ratings: {
-  module EloRank: {
-    type t = int;
-    let getKFactor: (~matchCount: int) => int;
-  };
-
-  /**
-   * Make new ratings for white and black.
-   */
-  let calcNewRatings:
-    (
-      ~whiteRating: EloRank.t,
-      ~blackRating: EloRank.t,
-      ~whiteMatchCount: int,
-      ~blackMatchCount: int,
-      ~result: Data_Match.Result.t
-    ) =>
-    (EloRank.t, EloRank.t);
-};

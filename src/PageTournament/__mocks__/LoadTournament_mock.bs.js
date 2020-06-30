@@ -41,9 +41,7 @@ function LoadTournament_mock(Props) {
   var match$1 = Db$Coronate.useAllPlayers(undefined);
   var players = match$1.items;
   var activePlayers = Belt_Map.keep(players, (function (id, param) {
-          return Belt_List.has(playerIds, id, (function (prim, prim$1) {
-                        return prim === prim$1;
-                      }));
+          return Belt_List.has(playerIds, id, Data_Id$Coronate.eq);
         }));
   var roundCount = calcNumOfRounds(Belt_Map.size(activePlayers));
   var isItOver = Data_Rounds$Coronate.size(roundList) >= roundCount;

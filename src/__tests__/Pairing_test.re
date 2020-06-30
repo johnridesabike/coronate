@@ -10,7 +10,7 @@ let loadPairData = tourneyId => {
     Map.getExn(tournaments, tourneyId);
   let players =
     Map.reduce(players, Data.Id.Map.make(), (acc, key, player) =>
-      if (List.has(playerIds, key, (===))) {
+      if (List.has(playerIds, key, Data.Id.eq)) {
         Map.set(acc, key, player);
       } else {
         acc;

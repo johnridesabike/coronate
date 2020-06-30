@@ -1,5 +1,6 @@
 open Belt;
 open Data;
+module Id = Data.Id;
 
 module Style = {
   open Css;
@@ -99,10 +100,10 @@ module MatchRow = {
       Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId);
 
     let whiteName =
-      [whitePlayer.Player.firstName, whitePlayer.Player.lastName]
+      [whitePlayer.firstName, whitePlayer.lastName]
       ->Utils.String.concat(~sep=" ");
     let blackName =
-      [blackPlayer.Player.firstName, blackPlayer.Player.lastName]
+      [blackPlayer.firstName, blackPlayer.lastName]
       ->Utils.String.concat(~sep=" ");
 
     let resultDisplay = playerColor => {
@@ -143,14 +144,14 @@ module MatchRow = {
     let setMatchResult = jsResultCode => {
       let newResult = Match.Result.fromString(jsResultCode);
       /* if it hasn't changed, then do nothing*/
-      if (m.result !== newResult) {
+      if (m.result != newResult) {
         let white = players->Map.getExn(m.whiteId);
         let black = players->Map.getExn(m.blackId);
         let (whiteNewRating, blackNewRating) =
           switch (newResult) {
           | Match.Result.NotSet => (m.whiteOrigRating, m.blackOrigRating)
           | Match.Result.(BlackWon | WhiteWon | Draw) =>
-            Scoring.Ratings.calcNewRatings(
+            Ratings.calcNewRatings(
               ~whiteRating=m.whiteOrigRating,
               ~blackRating=m.blackOrigRating,
               ~whiteMatchCount=white.Player.matchCount,
@@ -219,7 +220,7 @@ module MatchRow = {
       className=Cn.(
         className
         <:> Option.mapWithDefault(selectedMatch, "", id =>
-              m.id === id ? "selected" : "buttons-on-hover"
+              Id.eq(m.id, id) ? "selected" : "buttons-on-hover"
             )
       )>
       <th className=Cn.(Style.rowId <:> "table__number") scope="row">
@@ -277,7 +278,7 @@ module MatchRow = {
        | (true, _) => React.null
        | (false, Some(setSelectedMatch)) =>
          <td className=Cn.(Style.controls <:> "data__input")>
-           {selectedMatch->Option.mapWithDefault(true, id => id !== m.id)
+           {selectedMatch->Option.mapWithDefault(true, id => !Id.eq(id, m.id))
               ? <button
                   className="button-ghost"
                   title="Edit match"
@@ -377,7 +378,7 @@ module RoundTable = {
         ~scoreData=?,
       ) => {
     <table className=Style.table>
-      {Js.Array.length(matches) === 0
+      {Js.Array.length(matches) == 0
          ? React.null
          : <>
              <caption className={isCompact ? "title-30" : "title-40"}>
@@ -516,7 +517,7 @@ module Round = {
         <div className="toolbar">
           <button
             className="button-micro"
-            disabled={selectedMatch === None}
+            disabled={selectedMatch == None}
             onClick={_ =>
               selectedMatch->Option.map(unMatch(_, matches))->ignore
             }>
@@ -526,7 +527,7 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === None}
+            disabled={selectedMatch == None}
             onClick={_ =>
               selectedMatch->Option.map(swapColors(_, matches))->ignore
             }>
@@ -536,7 +537,7 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === None}
+            disabled={selectedMatch == None}
             onClick={_ =>
               selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore
             }>
@@ -546,7 +547,7 @@ module Round = {
           {React.string(" ")}
           <button
             className="button-micro"
-            disabled={selectedMatch === None}
+            disabled={selectedMatch == None}
             onClick={_ =>
               selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore
             }>
@@ -554,7 +555,7 @@ module Round = {
             {React.string(" Move down")}
           </button>
         </div>
-        {Rounds.Round.size(matches) === 0
+        {Rounds.Round.size(matches) == 0
            ? <p> {React.string("No players matched yet.")} </p> : React.null}
         <RoundTable
           roundId
@@ -579,15 +580,15 @@ let make = (~roundId, ~tournament) => {
         unmatchedWithDummy,
       } =
     LoadTournament.useRoundData(roundId, tournament);
-  let initialTab = unmatchedCount === activePlayersCount ? 1 : 0;
+  let initialTab = unmatchedCount == activePlayersCount ? 1 : 0;
   let (openTab, setOpenTab) = React.useState(() => initialTab);
   /* Auto-switch the tab */
   React.useEffect3(
     () => {
-      if (unmatchedCount === activePlayersCount) {
+      if (unmatchedCount == activePlayersCount) {
         setOpenTab(_ => 1);
       };
-      if (unmatchedCount === 0) {
+      if (unmatchedCount == 0) {
         setOpenTab(_ => 0);
       };
       None;
@@ -597,11 +598,11 @@ let make = (~roundId, ~tournament) => {
   Externals.ReachTabs.(
     <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
       <TabList>
-        <Tab disabled={unmatchedCount === activePlayersCount}>
+        <Tab disabled={unmatchedCount == activePlayersCount}>
           <Icons.List />
           {React.string(" Matches")}
         </Tab>
-        <Tab disabled={unmatchedCount === 0}>
+        <Tab disabled={unmatchedCount == 0}>
           <Icons.Users />
           {[" Unmatched players (", Int.toString(unmatchedCount), ")"]
            ->Utils.String.concat(~sep="")
@@ -612,7 +613,7 @@ let make = (~roundId, ~tournament) => {
         <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
         <TabPanel>
           <div>
-            {unmatchedCount !== 0
+            {unmatchedCount != 0
                ? <PairPicker
                    roundId
                    tournament

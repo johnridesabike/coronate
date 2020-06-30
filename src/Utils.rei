@@ -15,12 +15,6 @@ module Array: {
   let swap: (t('a), int, int) => t('a);
 };
 
-module List: {
-  type t('a) = list('a);
-
-  let sumF: t(float) => float;
-};
-
 module String: {
   type t = string;
 

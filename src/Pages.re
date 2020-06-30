@@ -150,7 +150,7 @@ module Splash = {
 let log2 = num => log(num) /. log(2.0);
 
 let fixNumber = num =>
-  if (num < 0.0 || num === infinity || num === neg_infinity) {
+  if (num < 0.0 || num == infinity || num == neg_infinity) {
     0.0;
   } else {
     num;

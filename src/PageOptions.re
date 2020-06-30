@@ -56,7 +56,7 @@ let encodeOptions = data =>
 module LastBackupDate = {
   [@react.component]
   let make = (~date) =>
-    if (Js.Date.getTime(date) === 0.0) {
+    if (Js.Date.getTime(date) == 0.0) {
       React.string("Never");
     } else {
       <Utils.DateTimeFormat date />;
@@ -171,7 +171,12 @@ let make = (~windowDispatch=_ => ()) => {
         <label className="monospace body-30">
           {React.string("1 ")}
           <input
-            checked={config.Config.byeValue === Config.ByeValue.Full}
+            checked={
+              switch (config.byeValue) {
+              | Full => true
+              | Half => false
+              }
+            }
             type_="radio"
             onChange={_ =>
               configDispatch(Db.SetByeValue(Config.ByeValue.Full))
@@ -181,7 +186,12 @@ let make = (~windowDispatch=_ => ()) => {
         <label className="monospace body-30">
           {React.string({j|½ |j})}
           <input
-            checked={config.Config.byeValue === Config.ByeValue.Half}
+            checked={
+              switch (config.byeValue) {
+              | Full => false
+              | Half => true
+              }
+            }
             type_="radio"
             onChange={_ =>
               configDispatch(Db.SetByeValue(Config.ByeValue.Half))
@@ -213,7 +223,7 @@ let make = (~windowDispatch=_ => ()) => {
         {React.string("Reset demo data (this erases everything else)")}
       </button>
       {React.string(" ")}
-      {node_env !== "production"
+      {node_env != "production"
          ? <button onClick=loadTestData>
              {React.string("Load testing data")}
            </button>

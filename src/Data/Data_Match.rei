@@ -5,9 +5,9 @@ module Result: {
     | Draw
     | NotSet;
 
-  let toFloatWhite: t => float;
+  let toScoreWhite: t => Data_Scoring.Score.t;
 
-  let toFloatBlack: t => float;
+  let toScoreBlack: t => Data_Scoring.Score.t;
 
   let toString: t => string;
 

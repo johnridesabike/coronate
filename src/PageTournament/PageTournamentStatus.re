@@ -16,7 +16,7 @@ let make = (~tournament) => {
         {switch (lastRound) {
          | None => <p> {React.string("No rounds played yet.")} </p>
          | Some(matches) =>
-           if (Rounds.Round.size(matches) === 0) {
+           if (Rounds.Round.size(matches) == 0) {
              <p>
                {React.string(
                   "Matched players in the current round will be shown here.",

@@ -47,6 +47,13 @@ describe("Tabs auto-change correctly.", () => {
         </LoadTournament>,
       );
     page
+    |> getByText(~matcher=`RegExp([%bs.re "/add crow t robot/i"]))
+    |> click;
+    page |> getByText(~matcher=`RegExp([%bs.re "/add tom servo/i"])) |> click;
+    page
+    |> getByText(~matcher=`RegExp([%bs.re "/^match selected$/i"]))
+    |> click;
+    page
     |> getByText(~matcher=`RegExp([%bs.re "/add joel robinson/i"]))
     |> click;
     page
@@ -79,6 +86,13 @@ describe("Tabs auto-change correctly.", () => {
           {tournament => <PageRound tournament roundId=1 />}
         </LoadTournament>,
       );
+    page
+    |> getByText(~matcher=`RegExp([%bs.re "/add crow t robot/i"]))
+    |> click;
+    page |> getByText(~matcher=`RegExp([%bs.re "/add tom servo/i"])) |> click;
+    page
+    |> getByText(~matcher=`RegExp([%bs.re "/^match selected$/i"]))
+    |> click;
     page
     |> getByText(
          ~matcher=

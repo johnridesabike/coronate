@@ -56,7 +56,7 @@ let setMatch: (t, int, Data_Match.t) => option(t);
  * index specified. For example: if you just want to see the scores through
  * round 2 and not include round 3.
  */
-let rounds2Matches: (t, ~lastRound: int=?, unit) => array(Data_Match.t);
+let rounds2Matches: t => array(Data_Match.t);
 
 let isRoundComplete: (t, Data_Id.Map.t(Data_Player.t), int) => bool;
 

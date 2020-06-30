@@ -1,4 +1,5 @@
 open Belt;
+module Id = Data_Id;
 
 module ByeValue = {
   type t =
@@ -22,18 +23,18 @@ module ByeValue = {
 };
 
 module Pair = {
-  type t = (Data_Id.t, Data_Id.t);
+  type t = (Id.t, Id.t);
   type pair = t;
 
   /* This sorts the pairs. */
   let make = (a, b) =>
-    switch (Data_Id.compare(a, b)) {
+    switch (Id.compare(a, b)) {
     | 0 => None
     | 1 => Some((a, b))
     | _ => Some((b, a))
     };
 
-  let has = ((a, b), ~id) => a === id || b === id;
+  let has = ((a, b): t, ~id) => Id.eq(a, id) || Id.eq(b, id);
 
   module Cmp =
     Belt.Id.MakeComparable({
@@ -41,9 +42,9 @@ module Pair = {
 
       /* This only works if the pairs are sorted. */
       let cmp = ((a, b), (c, d)) =>
-        switch (Data_Id.compare(a, c)) {
+        switch (Id.compare(a, c)) {
         | 0 =>
-          switch (Data_Id.compare(b, d)) {
+          switch (Id.compare(b, d)) {
           | 0 => 0
           | x => x
           }
@@ -61,12 +62,10 @@ module Pair = {
     let fromArray = Set.fromArray(~id=(module Cmp));
 
     let decode = json =>
-      Json.Decode.(json |> array(pair(Data_Id.decode, Data_Id.decode)))
-      ->fromArray;
+      Json.Decode.(json |> array(pair(Id.decode, Id.decode)))->fromArray;
 
     let encode = data =>
-      Set.toArray(data)
-      |> Json.Encode.(array(pair(Data_Id.encode, Data_Id.encode)));
+      Set.toArray(data) |> Json.Encode.(array(pair(Id.encode, Id.encode)));
 
     let toMapReducer = (acc, (id1, id2)) => {
       let newList1 =
@@ -82,7 +81,7 @@ module Pair = {
       acc->Map.set(id1, newList1)->Map.set(id2, newList2);
     };
 
-    let toMap = x => Set.reduce(x, Data_Id.Map.make(), toMapReducer);
+    let toMap = x => Set.reduce(x, Id.Map.make(), toMapReducer);
   };
 };
 

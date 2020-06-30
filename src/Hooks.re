@@ -167,9 +167,9 @@ let useScoreInfo =
     | Some(data) => data
     | None => Scoring.createBlankScoreData(player.id)
     };
-  let hasBye = Map.has(opponentResults, Data.Id.dummy);
+  let hasBye = List.some(opponentResults, ((id, _)) => Data.Id.isDummy(id));
   let colorBalance =
-    switch (Utils.List.sumF(colorScores)) {
+    switch (Data.Scoring.Score.(sum(colorScores)->Sum.toFloat)) {
     | x when x < 0.0 => "White +" ++ x->abs_float->Float.toString
     | x when x > 0.0 => "Black +" ++ x->Float.toString
     | _ => "Even"
@@ -177,18 +177,18 @@ let useScoreInfo =
 
   let opponentResults =
     opponentResults
-    ->Map.toArray
-    ->Array.map(((opId, result)) =>
-        <li key={Data.Id.toString(opId)}>
+    ->List.toArray
+    ->Array.mapWithIndex((i, (opId, result)) =>
+        <li key={Data.Id.toString(opId) ++ "-" ++ Int.toString(i)}>
           {[
              getPlayer(opId).Player.firstName,
              getPlayer(opId).lastName,
              "-",
              switch (result) {
-             | 0.0 => "Lost"
-             | 1.0 => "Won"
-             | 0.5 => "Draw"
-             | _ => "Draw"
+             | Zero
+             | NegOne /* Shouldn't be used here */ => "Lost"
+             | One => "Won"
+             | Half => "Draw"
              },
            ]
            ->Utils.String.concat(~sep=" ")
@@ -216,7 +216,7 @@ let useScoreInfo =
     ->React.array;
   let rating =
     <>
-      {origRating->React.int}
+      origRating->React.int
       {switch (newRating) {
        | None => React.null
        | Some(newRating) =>
@@ -233,7 +233,9 @@ let useScoreInfo =
     player,
     hasBye,
     colorBalance,
-    score: Scoring.calcScore(results, ~adjustment),
+    score:
+      Scoring.Score.calcScore(results, ~adjustment)
+      ->Scoring.Score.Sum.toFloat,
     rating,
     opponentResults,
     avoidListHtml,

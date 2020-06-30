@@ -16,6 +16,8 @@ let decode = Json.Decode.string;
 
 let compare: (t, t) => int = compare;
 
+let eq: (t, t) => bool = (==);
+
 module Id = (val Belt.Id.comparable(~cmp=compare));
 
 let id: Belt.Id.comparable(t, Id.identity) = (module Id);

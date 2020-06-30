@@ -1,5 +1,6 @@
 open Data;
 open Belt;
+module Id = Data.Id;
 
 module Selecting = {
   [@react.component]
@@ -13,7 +14,7 @@ module Selecting = {
         setTourney(
           Tournament.{
             ...tourney,
-            playerIds: playerIds->List.keep(pId => pId !== id),
+            playerIds: playerIds->List.keep(pId => !Id.eq(pId, id)),
           },
         );
       };
@@ -64,7 +65,7 @@ module Selecting = {
                      </label>
                    </Externals.VisuallyHidden>
                    <input
-                     checked={playerIds->List.has(id, (===))}
+                     checked={playerIds->List.has(id, Id.eq)}
                      type_="checkbox"
                      value={id->Data.Id.toString}
                      id={"select-" ++ id->Data.Id.toString}
@@ -315,7 +316,7 @@ let make = (~tournament) => {
       | _ => false
       }
     );
-  let matches = Rounds.rounds2Matches(roundList, ());
+  let matches = Rounds.rounds2Matches(roundList);
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
@@ -340,7 +341,7 @@ let make = (~tournament) => {
       </Utils.Panel>
       <Utils.Panel>
         <h3> {React.string("Bye queue")} </h3>
-        {if (Js.Array.length(byeQueue) === 0) {
+        {if (Js.Array.length(byeQueue) == 0) {
            <p>
              {React.string("No players have signed up for a bye round.")}
            </p>;
@@ -368,7 +369,8 @@ let make = (~tournament) => {
                    setTourney(
                      Tournament.{
                        ...tourney,
-                       byeQueue: Js.Array2.filter(byeQueue, id => pId !== id),
+                       byeQueue:
+                         Js.Array2.filter(byeQueue, id => !Id.eq(pId, id)),
                      },
                    )
                  }>

@@ -25,14 +25,6 @@ module Array = {
   };
 };
 
-module List = {
-  open List;
-
-  type t('a) = list('a);
-
-  let sumF = list => reduce(list, 0.0, (+.));
-};
-
 module String = {
   include Js.String2;
 
@@ -350,7 +342,7 @@ Numeral.registerFormat(
           | _ => ""
           };
         let stringedWhole =
-          whole === 0.0 && fraction !== "" ? "" : Float.toString(whole);
+          whole == 0.0 && fraction != "" ? "" : Float.toString(whole);
         stringedWhole ++ fraction;
       },
     ~regexps=

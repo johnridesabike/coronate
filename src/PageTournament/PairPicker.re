@@ -1,5 +1,6 @@
 open Belt;
 open Data;
+module Id = Data.Id;
 
 let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   /* the pairData includes any players who were already matched. We need to
@@ -56,13 +57,13 @@ module SelectList = {
         ~column=sortByName,
         ~isDescending=false,
       );
-    let isNullSelected = p1 === None || p2 === None;
+    let isNullSelected = p1 == None || p2 == None;
     let isOnePlayerSelected = p1 !== p2 && isNullSelected;
     let isPlayerSelectable = id => {
       switch (stagedPlayers) {
       | (Some(_), Some(_)) => false
-      | (Some(p1), None) => p1 !== id
-      | (None, Some(p2)) => p2 !== id
+      | (Some(p1), None) => !Id.eq(p1, id)
+      | (None, Some(p2)) => !Id.eq(p2, id)
       | (None, None) => true
       };
     };
@@ -115,7 +116,7 @@ module SelectList = {
       | (Some(_), Some(_)) => ()
       };
     };
-    if (Map.size(unmatched) === 0) {
+    if (Map.size(unmatched) == 0) {
       React.null;
     } else {
       <table className="content">
@@ -464,7 +465,7 @@ let make =
       <div className="toolbar">
         <button
           className="button-primary"
-          disabled={unmatchedCount === 0}
+          disabled={unmatchedCount == 0}
           onClick={_ => autoPair(round)}>
           {React.string("Auto-pair unmatched players")}
         </button>

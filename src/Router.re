@@ -90,8 +90,8 @@ module HashLink = {
     let href = toString(to_);
     let isCurrent =
       switch (href) {
-      | "/" => hash === "" || hash === href
-      | _ => hash === href
+      | "/" => hash == "" || hash == href
+      | _ => hash == href
       };
     /**
      * ReasonReact hasn't implemented the aria-current attribute yet. We have to

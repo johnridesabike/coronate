@@ -6,9 +6,11 @@
  * component).
  */
 open Belt;
+module Match = Data_Match;
+module Id = Data_Id;
 
 module Round = {
-  type t = array(Data_Match.t);
+  type t = array(Match.t);
 
   let fromArray = x => x;
 
@@ -16,9 +18,9 @@ module Round = {
 
   let empty: t = [||];
 
-  let encode = Json.Encode.array(Data_Match.encode);
+  let encode = Json.Encode.array(Match.encode);
 
-  let decode = Json.Decode.array(Data_Match.decode);
+  let decode = Json.Decode.array(Match.decode);
 
   let size = Js.Array2.length;
 
@@ -26,19 +28,20 @@ module Round = {
 
   /* flatten all of the ids from the matches to one array.*/
   let getMatched = round =>
-    Array.reduce(round, [||], (acc, Data_Match.{whiteId, blackId, _}) =>
+    Array.reduce(round, [||], (acc, Match.{whiteId, blackId, _}) =>
       Array.concat(acc, [|whiteId, blackId|])
     );
 
   let getMatchById = (round: t, id) =>
-    Array.getBy(round, x => x.Data_Match.id === id);
+    Array.getBy(round, x => Id.eq(x.Match.id, id));
 
   let removeMatchById = (round: t, id) =>
-    Array.keep(round, x => x.Data_Match.id !== id);
+    Array.keep(round, x => !Id.eq(x.Match.id, id));
 
   let setMatch = (round: t, match) => {
+    let round = Array.copy(round);
     round
-    ->Array.getIndexBy((Data_Match.{id, _}) => id === match.Data_Match.id)
+    ->Array.getIndexBy((Match.{id, _}) => Id.eq(id, match.Match.id))
     ->Option.map(x => round[x] = match)
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None);
   };
@@ -73,6 +76,7 @@ let getLastKey = rounds => Array.length(rounds) - 1;
 let get = Array.get;
 
 let set = (rounds, key, round) => {
+  let rounds = Array.copy(rounds);
   let wasSuccessful = rounds[key] = round;
   wasSuccessful ? Some(rounds) : None;
 };
@@ -83,15 +87,18 @@ let setMatch = (rounds, key, match) =>
   ->Option.flatMap(Round.setMatch(_, match))
   ->Option.flatMap(set(rounds, key));
 
-let rounds2Matches = (roundList, ~lastRound=?, ()) => {
-  let rounds = {
-    switch (lastRound) {
-    | None => roundList
-    | Some(num) => Array.slice(roundList, ~offset=0, ~len=num + 1)
-    };
-  };
-  Array.reduce(rounds, [||], Array.concat);
-};
+let rounds2Matches = roundList => Array.reduce(roundList, [||], Array.concat);
+
+/*
+ let rounds2Matches = (roundList, ~lastRound=?, ()) => {
+   let rounds =
+     switch (lastRound) {
+     | None => roundList
+     | Some(num) => Array.slice(roundList, ~offset=0, ~len=num + 1)
+     };
+   Array.reduce(rounds, [||], Array.concat);
+ };
+ */
 
 let isRoundComplete = (roundList, players, roundId) =>
   switch (roundList[roundId]) {
@@ -102,9 +109,9 @@ let isRoundComplete = (roundList, players, roundId) =>
     } else {
       let matched = Round.getMatched(round);
       let unmatched = Map.removeMany(players, matched);
-      let results = Array.map(round, match => match.Data_Match.result);
-      Map.size(unmatched) === 0
-      && !Js.Array2.includes(results, Data_Match.Result.NotSet);
+      let results = Array.map(round, match => match.Match.result);
+      Map.size(unmatched) == 0
+      && !Js.Array2.includes(results, Match.Result.NotSet);
     }
   | None => true
   };
@@ -115,4 +122,4 @@ let delLastRound = roundList =>
   Js.Array2.slice(roundList, ~start=0, ~end_=-1);
 
 let updateByeScores = (rounds, byeValue) =>
-  Array.map(rounds, Array.map(_, Data_Match.scoreByeMatch(~byeValue)));
+  Array.map(rounds, Array.map(_, Match.scoreByeMatch(~byeValue)));

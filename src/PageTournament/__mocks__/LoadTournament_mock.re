@@ -1,5 +1,6 @@
 open Belt;
 open Data;
+module Id = Data.Id;
 
 let log2 = num => log(num) /. log(2.0);
 
@@ -7,7 +8,7 @@ let tournamentData = TestData.tournaments;
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
-  roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
+  roundCount != neg_infinity ? int_of_float(roundCount) : 0;
 };
 
 let tournamentReducer = (_, action) => action;
@@ -36,11 +37,11 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
   let Db.{items: players, dispatch: playersDispatch, _} = Db.useAllPlayers();
   /* `activePlayers` is only players to be matched in future matches. */
   let activePlayers =
-    Map.keep(players, (id, _) => playerIds->List.has(id, (===)));
+    Map.keep(players, (id, _) => playerIds->List.has(id, Id.eq));
   let roundCount = activePlayers->Map.size->calcNumOfRounds;
   let isItOver = Data.Rounds.size(roundList) >= roundCount;
   let isNewRoundReady =
-    Data.Rounds.size(roundList) === 0
+    Data.Rounds.size(roundList) == 0
       ? true
       : Rounds.isRoundComplete(
           roundList,

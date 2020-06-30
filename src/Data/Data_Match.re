@@ -1,3 +1,6 @@
+module Id = Data_Id;
+module Score = Data_Scoring.Score;
+
 /* Not to be confused with `Belt.Result` */
 module Result = {
   type t =
@@ -6,37 +9,35 @@ module Result = {
     | Draw
     | NotSet;
 
-  let toFloatWhite =
+  let toScoreWhite =
     fun
-    | WhiteWon => 1.0
-    | BlackWon => 0.0
-    | Draw => 0.5
+    | WhiteWon => Score.One
+    | BlackWon => Score.Zero
+    | Draw => Score.Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => 0.0;
+    | NotSet => Score.Zero;
 
-  let toFloatBlack =
+  let toScoreBlack =
     fun
-    | WhiteWon => 0.0
-    | BlackWon => 1.0
-    | Draw => 0.5
+    | WhiteWon => Score.Zero
+    | BlackWon => Score.One
+    | Draw => Score.Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => 0.0;
+    | NotSet => Score.Zero;
 
-  let toString = score =>
-    switch (score) {
+  let toString =
+    fun
     | WhiteWon => "whiteWon"
     | BlackWon => "blackWon"
     | Draw => "draw"
-    | NotSet => "notSet"
-    };
+    | NotSet => "notSet";
 
-  let fromString = score =>
-    switch (score) {
+  let fromString =
+    fun
     | "whiteWon" => WhiteWon
     | "blackWon" => BlackWon
     | "draw" => Draw
-    | _ => NotSet
-    };
+    | _ => NotSet;
 
   let encode = data => data->toString->Json.Encode.string;
 
@@ -44,9 +45,9 @@ module Result = {
 };
 
 type t = {
-  id: Data_Id.t,
-  whiteId: Data_Id.t,
-  blackId: Data_Id.t,
+  id: Id.t,
+  whiteId: Id.t,
+  blackId: Id.t,
   whiteNewRating: int,
   blackNewRating: int,
   whiteOrigRating: int,
@@ -56,9 +57,9 @@ type t = {
 
 let decode = json =>
   Json.Decode.{
-    id: json |> field("id", Data_Id.decode),
-    whiteId: json |> field("whiteId", Data_Id.decode),
-    blackId: json |> field("blackId", Data_Id.decode),
+    id: json |> field("id", Id.decode),
+    whiteId: json |> field("whiteId", Id.decode),
+    blackId: json |> field("blackId", Id.decode),
     whiteNewRating: json |> field("whiteNewRating", int),
     blackNewRating: json |> field("blackNewRating", int),
     whiteOrigRating: json |> field("whiteOrigRating", int),
@@ -69,9 +70,9 @@ let decode = json =>
 let encode = data =>
   Json.Encode.(
     object_([
-      ("id", data.id |> Data_Id.encode),
-      ("whiteId", data.whiteId |> Data_Id.encode),
-      ("blackId", data.blackId |> Data_Id.encode),
+      ("id", data.id |> Id.encode),
+      ("whiteId", data.whiteId |> Id.encode),
+      ("blackId", data.blackId |> Id.encode),
       ("whiteNewRating", data.whiteNewRating |> int),
       ("blackNewRating", data.blackNewRating |> int),
       ("whiteOrigRating", data.whiteOrigRating |> int),
@@ -89,7 +90,7 @@ let byeResultForPlayerColor = (byeValue, result) =>
   );
 
 let scoreByeMatch = (match, ~byeValue) =>
-  switch (Data_Id.(isDummy(match.whiteId), isDummy(match.blackId))) {
+  switch (Id.(isDummy(match.whiteId), isDummy(match.blackId))) {
   | (true, false) => {
       ...match,
       result: byeResultForPlayerColor(byeValue, Result.BlackWon),
@@ -104,14 +105,14 @@ let scoreByeMatch = (match, ~byeValue) =>
 
 let manualPair = ((white, black), byeValue) => {
   {
-    id: Data_Id.random(),
+    id: Id.random(),
     result: Result.NotSet,
     whiteId: white.Data_Player.id,
     blackId: black.Data_Player.id,
-    whiteOrigRating: white.Data_Player.rating,
-    blackOrigRating: black.Data_Player.rating,
-    whiteNewRating: white.Data_Player.rating,
-    blackNewRating: black.Data_Player.rating,
+    whiteOrigRating: white.rating,
+    blackOrigRating: black.rating,
+    whiteNewRating: white.rating,
+    blackNewRating: black.rating,
   }
   ->scoreByeMatch(~byeValue);
 };

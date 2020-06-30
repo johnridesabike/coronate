@@ -1,5 +1,6 @@
 open Belt;
 open Data;
+module Id = Data.Id;
 
 module Style = {
   open Css;
@@ -92,7 +93,7 @@ module ScoreTable = {
                  <tr
                    key={standing.Scoring.id->Data.Id.toString}
                    className=Style.row>
-                   {i === 0
+                   {i == 0
                       /* Only display the rank once */
                       ? <th
                           className=Cn.(
@@ -139,12 +140,10 @@ module ScoreTable = {
                      className=Cn.(
                        Style.number <:> Style.rowTd <:> "table__number"
                      )>
-                     Numeral.(
-                       standing.Scoring.score
-                       ->make
-                       ->format("1/2")
-                       ->React.string
-                     )
+                     {standing.Scoring.score
+                      ->Scoring.Score.Sum.toNumeral
+                      ->Numeral.format("1/2")
+                      ->React.string}
                    </td>
                    {switch (size) {
                     | Compact => React.null
@@ -155,7 +154,10 @@ module ScoreTable = {
                           <td
                             key={Scoring.TieBreak.toString(j)}
                             className=Cn.(Style.rowTd <:> "table__number")>
-                            Numeral.(score->make->format("1/2")->React.string)
+                            {score
+                             ->Scoring.Score.Sum.toNumeral
+                             ->Numeral.format("1/2")
+                             ->React.string}
                           </td>
                         )
                       ->React.array
@@ -192,7 +194,7 @@ module SelectTieBreaks = {
             ...tourney,
             tieBreaks:
               Js.Array2.filter(tourney.tieBreaks, tbId =>
-                defaultId(id) !== tbId
+                !Scoring.TieBreak.eq(defaultId(id), tbId)
               ),
           },
         );
@@ -227,20 +229,20 @@ module SelectTieBreaks = {
         <div className="toolbar">
           <button
             className="button-micro"
-            disabled={selectedTb === None}
+            disabled={selectedTb == None}
             onClick={_ => toggleTb(None)}>
             {React.string("Toggle")}
           </button>
           <button
             className="button-micro"
-            disabled={selectedTb === None}
+            disabled={selectedTb == None}
             onClick={_ => moveTb(-1)}>
             <Icons.ArrowUp />
             {React.string(" Move up")}
           </button>
           <button
             className="button-micro"
-            disabled={selectedTb === None}
+            disabled={selectedTb == None}
             onClick={_ => moveTb(1)}>
             <Icons.ArrowDown />
             {React.string(" Move down")}
@@ -249,7 +251,7 @@ module SelectTieBreaks = {
             className=Cn.(
               "button-micro" <:> "button-primary"->onSome(selectedTb)
             )
-            disabled={selectedTb === None}
+            disabled={selectedTb == None}
             onClick={_ => setSelectedTb(_ => None)}>
             {React.string("Done")}
           </button>
@@ -282,13 +284,13 @@ module SelectTieBreaks = {
                    <button
                      className="button-micro"
                      disabled={
-                       selectedTb !== None && selectedTb !== Some(tieBreak)
+                       selectedTb != None && selectedTb !== Some(tieBreak)
                      }
                      onClick={_ =>
                        switch (selectedTb) {
                        | None => setSelectedTb(_ => Some(tieBreak))
                        | Some(selectedTb) =>
-                         selectedTb === tieBreak
+                         Scoring.TieBreak.eq(selectedTb, tieBreak)
                            ? setSelectedTb(_ => None)
                            : setSelectedTb(_ => Some(tieBreak))
                        }
@@ -297,7 +299,8 @@ module SelectTieBreaks = {
                         switch (selectedTb) {
                         | None => "Edit"
                         | Some(selectedTb) =>
-                          selectedTb === tieBreak ? "Done" : "Edit"
+                          Scoring.TieBreak.eq(selectedTb, tieBreak)
+                            ? "Done" : "Edit"
                         },
                       )}
                    </button>
@@ -385,16 +388,19 @@ let make = (~tournament) => {
 
 module Crosstable = {
   let getXScore = (scoreData, player1Id, player2Id) =>
-    if (player1Id === player2Id) {
+    if (Id.eq(player1Id, player2Id)) {
       <Icons.X className="disabled" />;
     } else {
       switch (Map.get(scoreData, player1Id)) {
       | None => React.null
       | Some(scoreData) =>
-        switch (Map.get(scoreData.Scoring.opponentResults, player2Id)) {
+        switch (Scoring.oppResultsToSumById(scoreData, player2Id)) {
         | None => React.null
         | Some(result) =>
-          Numeral.make(result)->Numeral.format("1/2")->React.string
+          result
+          ->Scoring.Score.Sum.toNumeral
+          ->Numeral.format("1/2")
+          ->React.string
         }
       };
     };
@@ -410,7 +416,7 @@ module Crosstable = {
       Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0");
     <>
       <td className=Cn.(Style.rowTd <:> "table__number")>
-        {lastRating->React.int}
+        lastRating->React.int
       </td>
       <td className=Cn.(Style.rowTd <:> "table__number body-10")>
         {React.string(change)}
@@ -441,9 +447,7 @@ module Crosstable = {
           {standings
            ->List.toArray
            ->Array.mapWithIndex((rank, _) =>
-               <th key={Int.toString(rank)}>
-                 {React.int(rank + 1)}
-               </th>
+               <th key={Int.toString(rank)}> {React.int(rank + 1)} </th>
              )
            ->React.array}
           <th> {React.string("Score")} </th>
@@ -484,7 +488,8 @@ module Crosstable = {
                 ->React.array}
                /* Output their score and rating change */
                <td className=Cn.(Style.rowTd <:> "table__number")>
-                 {Numeral.make(standing.Scoring.score)
+                 {standing.Scoring.score
+                  ->Scoring.Score.Sum.toNumeral
                   ->Numeral.format("1/2")
                   ->React.string}
                </td>

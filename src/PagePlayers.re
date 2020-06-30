@@ -1,6 +1,7 @@
 open Belt;
 open Data;
 open Router;
+module Id = Data.Id;
 
 let sortName = Hooks.GetString((. x) => x.Player.firstName);
 let sortRating = Hooks.GetInt((. x) => x.Player.rating);
@@ -287,11 +288,10 @@ module PlayerList = {
         </tbody>
       </table>
       <Externals.Dialog
-        isOpen=dialog.state
+        isOpen={dialog.state}
         onDismiss={_ => dialog.setFalse()}
         ariaLabel="New player form">
-        <button
-          className="button-micro" onClick={_ => dialog.setFalse()}>
+        <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />
@@ -369,7 +369,7 @@ module Profile = {
       ->Map.keysToArray
       ->List.fromArray
       ->List.keep(id =>
-          !singAvoidList->List.has(id, (===)) && id !== playerId
+          !singAvoidList->List.has(id, Id.eq) && !Id.eq(id, playerId)
         );
     let (selectedAvoider, setSelectedAvoider) =
       React.useState(() =>
@@ -391,7 +391,7 @@ module Profile = {
              make sure they weren't they weren't the first. */
           let newSelected =
             switch (unavoided) {
-            | [id, ..._] when id !== selectedAvoider => Some(id)
+            | [id, ..._] when !Id.eq(id, selectedAvoider) => Some(id)
             | [_, id, ..._] => Some(id)
             | [_]
             | [] => None
@@ -503,12 +503,10 @@ module Profile = {
             value={
               switch (form.matchCountResult) {
               | Some(Ok(matchCount)) =>
-                Scoring.Ratings.EloRank.getKFactor(~matchCount)->Int.toString
+                Ratings.EloRank.getKFactor(~matchCount)->Int.toString
               | Some(Error(_)) => ""
               | None =>
-                Scoring.Ratings.EloRank.getKFactor(
-                  ~matchCount=initialMatchCount,
-                )
+                Ratings.EloRank.getKFactor(~matchCount=initialMatchCount)
                 ->Int.toString
               }
             }

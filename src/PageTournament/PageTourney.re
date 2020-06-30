@@ -32,7 +32,7 @@ module Footer = {
           {React.string("Rounds: ")}
           {roundList->Rounds.size->React.int}
           <small> {React.string(" out of ")} </small>
-          {roundCount->React.int}
+          roundCount->React.int
         </label>
         <hr className="win__footer-divider" />
         <Utils.Notification
@@ -148,7 +148,7 @@ module Sidebar = {
             })
         };
         setTourney({...tourney, roundList: Rounds.delLastRound(roundList)});
-        if (Rounds.size(roundList) === 0) {
+        if (Rounds.size(roundList) == 0) {
           /* Automatically remake round 1.*/
           setTourney({
             ...tourney,
@@ -272,7 +272,7 @@ module Sidebar = {
         </li>
         <li style={ReactDOMRe.Style.make(~textAlign="center", ())}>
           <button
-            disabled={Rounds.size(roundList) === 0}
+            disabled={Rounds.size(roundList) == 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
             style={ReactDOMRe.Style.make(~marginTop="8px", ())}>

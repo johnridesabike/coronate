@@ -1,23 +1,24 @@
 open Belt;
 open Data;
+module Id = Data.Id;
 
 let log2 = num => log(num) /. log(2.0);
 
 let calcNumOfRounds = playerCount => {
   let roundCount = playerCount->float_of_int->log2->ceil;
-  roundCount !== neg_infinity ? int_of_float(roundCount) : 0;
+  roundCount != neg_infinity ? int_of_float(roundCount) : 0;
 };
 
-let emptyTourney = Tournament.make(~id=Data.Id.random(), ~name="");
+let emptyTourney = Tournament.make(~id=Id.random(), ~name="");
 
 let tournamentReducer = (_, action) => action;
 
 type t = {
-  activePlayers: Data.Id.Map.t(Player.t),
-  getPlayer: Data.Id.t => Player.t,
+  activePlayers: Id.Map.t(Player.t),
+  getPlayer: Id.t => Player.t,
   isItOver: bool,
   isNewRoundReady: bool,
-  players: Data.Id.Map.t(Player.t),
+  players: Id.Map.t(Player.t),
   playersDispatch: Db.action(Player.t) => unit,
   roundCount: int,
   tourney: Tournament.t,
@@ -37,7 +38,7 @@ let isLoadedDone =
 
 [@react.component]
 let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
-  let tourneyId = Data.Id.toString(tourneyId);
+  let tourneyId = Id.toString(tourneyId);
   let (tourney, setTourney) =
     React.useReducer(tournamentReducer, emptyTourney);
   let Tournament.{name, playerIds, roundList, _} = tourney;
@@ -99,7 +100,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
          * is necessary. If you remove this and someone enters the URL for a
          * nonexistant tournament, then you can corrupt the database.
          */
-        if (Data.Id.fromString(tourneyId) === tourney.Tournament.id) {
+        if (Id.eq(Id.fromString(tourneyId), tourney.Tournament.id)) {
           Db.tournaments
           ->LocalForage.Map.setItem(~key=tourneyId, ~v=tourney)
           ->ignore;
@@ -113,11 +114,11 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
     let activePlayers =
-      players->Map.keep((id, _) => playerIds->List.has(id, (===)));
+      players->Map.keep((id, _) => playerIds->List.has(id, Id.eq));
     let roundCount = activePlayers->Map.size->calcNumOfRounds;
     let isItOver = Rounds.size(roundList) >= roundCount;
     let isNewRoundReady =
-      Rounds.size(roundList) === 0
+      Rounds.size(roundList) == 0
         ? true
         : Rounds.isRoundComplete(
             roundList,
@@ -148,10 +149,10 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
 
 type roundData = {
   activePlayersCount: int,
-  scoreData: Data.Id.Map.t(Scoring.t),
-  unmatched: Data.Id.Map.t(Data.Player.t),
+  scoreData: Id.Map.t(Scoring.t),
+  unmatched: Id.Map.t(Data.Player.t),
   unmatchedCount: int,
-  unmatchedWithDummy: Data.Id.Map.t(Data.Player.t),
+  unmatchedWithDummy: Id.Map.t(Data.Player.t),
 };
 
 let useRoundData =
@@ -171,13 +172,13 @@ let useRoundData =
     | (Some(round), true) =>
       let matched = Rounds.Round.getMatched(round);
       Map.removeMany(activePlayers, matched);
-    | _ => Data.Id.Map.make()
+    | _ => Id.Map.make()
     };
   let unmatchedCount = Map.size(unmatched);
   /* make a new list so as not to affect auto-pairing*/
   let unmatchedWithDummy =
     unmatchedCount mod 2 != 0
-      ? Map.set(unmatched, Data.Id.dummy, Player.dummy) : unmatched;
+      ? Map.set(unmatched, Id.dummy, Player.dummy) : unmatched;
   let activePlayersCount = Map.size(activePlayers);
   {
     activePlayersCount,

@@ -1,8 +1,52 @@
 open Belt;
+module Id = Data_Id;
 
 module Score = {
-  type t = float;
-}
+  module Sum: {
+    type t;
+    let zero: t;
+    let add: (t, t) => t;
+    let compare: (t, t) => int;
+    let eq: (t, t) => bool;
+    let sum: list(t) => t;
+    let fromFloat: float => t;
+    let toFloat: t => float;
+    let toNumeral: t => Numeral.t;
+    let calcScore: (list(t), ~adjustment: float) => t;
+  } = {
+    type t = float;
+    let zero = 0.0;
+    let add = (+.);
+    let compare: (t, t) => int = compare;
+    let eq: (t, t) => bool = (==);
+    let sum = list => List.reduce(list, zero, add);
+    let fromFloat = x => x;
+    let toFloat = x => x;
+    let toNumeral = Numeral.make;
+    let calcScore = (results, ~adjustment) =>
+      add(sum(results), fromFloat(adjustment));
+  };
+
+  type t =
+    | Zero
+    | One
+    | NegOne
+    | Half;
+
+  let toFloat =
+    fun
+    | Zero => 0.0
+    | One => 1.0
+    | NegOne => (-1.0)
+    | Half => 0.5;
+
+  let toSum = x => x->toFloat->Sum.fromFloat;
+
+  let add = (a, b) => Sum.add(a, toSum(b));
+  let sum = list => List.reduce(list, Sum.zero, add);
+  let calcScore = (results, ~adjustment) =>
+    Sum.add(sum(results), Sum.fromFloat(adjustment));
+};
 
 module Color = {
   type t =
@@ -16,22 +60,34 @@ module Color = {
 
   let toScore =
     fun
-    | White => (-1.0)
-    | Black => 1.0;
+    | White => Score.NegOne
+    | Black => Score.One;
 };
 
 type t = {
-  colorScores: list(float),
+  colorScores: list(Score.t),
   colors: list(Color.t), /* This is used to create pairing data*/
-  id: Data_Id.t,
+  id: Id.t,
   isDummy: bool,
-  opponentResults: Data_Id.Map.t(float),
+  opponentResults: list((Id.t, Score.t)),
   ratings: list(int),
   firstRating: int,
-  results: list(float),
-  resultsNoByes: list(float),
+  results: list(Score.t),
+  resultsNoByes: list(Score.t),
   adjustment: float,
 };
+
+let oppResultsToSumById = ({opponentResults, _}, id) =>
+  List.reduce(opponentResults, None, (acc, (id', result)) =>
+    if (Id.eq(id, id')) {
+      switch (acc) {
+      | Some(acc) => Some(Score.add(acc, result))
+      | None => Some(Score.add(Score.Sum.zero, result))
+      };
+    } else {
+      acc;
+    }
+  );
 
 module TieBreak = {
   type t =
@@ -72,6 +128,20 @@ module TieBreak = {
   let encode = data => data->toString->Json.Encode.string;
 
   let decode = json => json->Json.Decode.string->fromString;
+
+  let eq = (a, b) =>
+    switch (a, b) {
+    | (Median, Median)
+    | (Solkoff, Solkoff)
+    | (Cumulative, Cumulative)
+    | (CumulativeOfOpposition, CumulativeOfOpposition)
+    | (MostBlack, MostBlack) => true
+    | (
+        Median | Solkoff | Cumulative | CumulativeOfOpposition | MostBlack,
+        Median | Solkoff | Cumulative | CumulativeOfOpposition | MostBlack,
+      ) =>
+      false
+    };
 };
 
 let createBlankScoreData = (~firstRating=0, id) => {
@@ -79,7 +149,7 @@ let createBlankScoreData = (~firstRating=0, id) => {
   colors: [],
   id,
   isDummy: false,
-  opponentResults: Data_Id.Map.make(),
+  opponentResults: [],
   ratings: [],
   firstRating,
   results: [],
@@ -94,13 +164,10 @@ let isNotDummy = (scores, oppId) => {
   };
 };
 
-let calcScore = (results, ~adjustment) =>
-  Utils.List.sumF(results) +. adjustment;
-
 let getPlayerScore = (scores, id) => {
   switch (Map.get(scores, id)) {
-  | None => 0.0
-  | Some({results, adjustment, _}) => calcScore(results, ~adjustment)
+  | None => Score.Sum.zero
+  | Some({results, adjustment, _}) => Score.calcScore(results, ~adjustment)
   };
 };
 
@@ -108,7 +175,7 @@ let getOpponentScores = (scores, id) => {
   switch (Map.get(scores, id)) {
   | None => []
   | Some({opponentResults, _}) =>
-    Map.reduce(opponentResults, [], (acc, oppId, _) =>
+    List.reduce(opponentResults, [], (acc, (oppId, _)) =>
       if (isNotDummy(scores, oppId)) {
         [getPlayerScore(scores, oppId), ...acc];
       } else {
@@ -124,25 +191,29 @@ let getOpponentScores = (scores, id) => {
 let getMedianScore = (scores, id) =>
   scores
   ->getOpponentScores(id)
-  ->List.sort(compare)
+  ->List.sort(Score.Sum.compare)
   ->List.tail
   ->Option.mapWithDefault([], List.reverse)
   ->List.tail
-  ->Option.mapWithDefault(0.0, Utils.List.sumF);
+  ->Option.mapWithDefault(Score.Sum.zero, Score.Sum.sum);
 
 /**
  * USCF § 34E2.
  */
 let getSolkoffScore = (scores, id) =>
-  scores->getOpponentScores(id)->Utils.List.sumF;
+  scores->getOpponentScores(id)->Score.Sum.sum;
 
 /**
  * Turn the regular score list into a "running" score list.
  */
 let runningReducer = (acc, score) =>
   switch (acc) {
-  | [last, ...rest] => [last +. score, last, ...rest]
-  | [] => [score]
+  | [last, ...rest] => [
+      Score.Sum.add(last, Score.toSum(score)),
+      last,
+      ...rest,
+    ]
+  | [] => [score->Score.toSum]
   };
 
 /**
@@ -150,9 +221,11 @@ let runningReducer = (acc, score) =>
  */
 let getCumulativeScore = (scores, id) => {
   switch (Map.get(scores, id)) {
-  | None => 0.0
+  | None => Score.Sum.zero
   | Some({resultsNoByes, adjustment, _}) =>
-    resultsNoByes->List.reduce([], runningReducer)->calcScore(~adjustment)
+    resultsNoByes
+    ->List.reduce([], runningReducer)
+    ->Score.Sum.calcScore(~adjustment)
   };
 };
 
@@ -161,9 +234,9 @@ let getCumulativeScore = (scores, id) => {
  */
 let getCumulativeOfOpponentScore = (scores, id) => {
   switch (Map.get(scores, id)) {
-  | None => 0.0
+  | None => Score.Sum.zero
   | Some({opponentResults, _}) =>
-    Map.reduce(opponentResults, [], (acc, key, _) =>
+    List.reduce(opponentResults, [], (acc, (key, _)) =>
       if (isNotDummy(scores, key)) {
         [key, ...acc];
       } else {
@@ -171,7 +244,7 @@ let getCumulativeOfOpponentScore = (scores, id) => {
       }
     )
     ->List.map(getCumulativeScore(scores))
-    ->Utils.List.sumF
+    ->Score.Sum.sum
   };
 };
 
@@ -180,8 +253,8 @@ let getCumulativeOfOpponentScore = (scores, id) => {
  */
 let getColorBalanceScore = (scores, id) => {
   switch (Map.get(scores, id)) {
-  | None => 0.0
-  | Some({colorScores, _}) => Utils.List.sumF(colorScores)
+  | None => Score.Sum.zero
+  | Some({colorScores, _}) => Score.sum(colorScores)
   };
 };
 
@@ -194,9 +267,9 @@ let mapTieBreak =
   | TieBreak.MostBlack => getColorBalanceScore;
 
 type scores = {
-  id: Data_Id.t,
-  score: float,
-  tieBreaks: list((TieBreak.t, float)),
+  id: Id.t,
+  score: Score.Sum.t,
+  tieBreaks: list((TieBreak.t, Score.Sum.t)),
 };
 
 /**
@@ -209,13 +282,13 @@ let standingsSorter = (tieBreaks, a, b) => {
     switch (tieBreaks) {
     | [] => 0
     | [tieBreak, ...rest] =>
-      let getTieBreak = List.getAssoc(_, tieBreak, (===));
+      let getTieBreak = List.getAssoc(_, tieBreak, TieBreak.eq);
       switch (getTieBreak(a.tieBreaks), getTieBreak(b.tieBreaks)) {
       | (None, _)
       | (_, None) => tieBreaksCompare(rest)
       | (Some(tb_a), Some(tb_b)) =>
         /* a and b are switched for ascending order */
-        switch (compare(tb_b, tb_a)) {
+        switch (Score.Sum.compare(tb_b, tb_a)) {
         | 0 => tieBreaksCompare(rest)
         | x => x
         }
@@ -223,7 +296,7 @@ let standingsSorter = (tieBreaks, a, b) => {
     };
   };
   /* a and b are switched for ascending order */
-  switch (compare(b.score, a.score)) {
+  switch (Score.Sum.compare(b.score, a.score)) {
   | 0 => tieBreaksCompare(tieBreaks)
   | x => x
   };
@@ -238,7 +311,7 @@ let createStandingList = (scores, methods) => {
     [
       {
         id,
-        score: calcScore(results, ~adjustment),
+        score: Score.calcScore(results, ~adjustment),
         tieBreaks:
           funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
       },
@@ -254,17 +327,17 @@ let createStandingList = (scores, methods) => {
 };
 
 let areScoresEqual = (standing1, standing2) =>
-  if (standing1.score !== standing2.score) {
+  if (!Score.Sum.eq(standing1.score, standing2.score)) {
     false;
   } else {
     let comparisons =
       List.reduce(standing1.tieBreaks, [], (acc, (id, value)) =>
-        switch (List.getAssoc(standing2.tieBreaks, id, (===))) {
-        | Some(value2) => [value !== value2, ...acc]
+        switch (List.getAssoc(standing2.tieBreaks, id, TieBreak.eq)) {
+        | Some(value2) => [!Score.Sum.eq(value, value2), ...acc]
         | None => acc
         }
       );
-    !List.has(comparisons, true, (===));
+    !List.has(comparisons, true, (==));
   };
 
 let createStandingTree = (standingList: list(scores)) =>
@@ -285,50 +358,3 @@ let createStandingTree = (standingList: list(scores)) =>
       }
     }
   );
-
-module Ratings = {
-  module EloRank = {
-    type t = int;
-
-    let getExpected = (a: int, b: int) =>
-      1. /. (1. +. 10. ** (Float.fromInt(b - a) /. 400.));
-
-    let updateRating = (rating, expected, actual, current) =>
-      Float.fromInt(current)
-      +. Float.fromInt(rating)
-      *. (actual -. expected)
-      |> Js.Math.round
-      |> Int.fromFloat;
-
-    let getKFactor = (~matchCount) => {
-      let ne = matchCount > 0 ? matchCount : 1;
-      800 / ne;
-    };
-  };
-
-  let floor = 100;
-
-  let keepAboveFloor = rating => rating > floor ? rating : floor;
-
-  let calcNewRatings =
-      (
-        ~whiteRating,
-        ~blackRating,
-        ~whiteMatchCount,
-        ~blackMatchCount,
-        ~result,
-      ) => {
-    let whiteElo = EloRank.getKFactor(~matchCount=whiteMatchCount);
-    let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount);
-    let whiteExpected = EloRank.getExpected(whiteRating, blackRating);
-    let blackExpected = EloRank.getExpected(blackRating, whiteRating);
-    let whiteResult = Data_Match.Result.toFloatWhite(result);
-    let blackResult = Data_Match.Result.toFloatBlack(result);
-    (
-      EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)
-      ->keepAboveFloor,
-      EloRank.updateRating(blackElo, blackExpected, blackResult, blackRating)
-      ->keepAboveFloor,
-    );
-  };
-};

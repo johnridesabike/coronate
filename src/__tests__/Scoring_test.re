@@ -1,7 +1,6 @@
 open Jest;
 open Expect;
 open Data.Player;
-open Data.Scoring;
 
 let players = TestData.players;
 
@@ -10,13 +9,13 @@ let master = players->Belt.Map.getExn(TestData.grandyMcMaster);
 
 test("K Factor is calculated correctly", () => {
   let masterKFactor =
-    Ratings.EloRank.getKFactor(~matchCount=master.matchCount);
+    Data.Ratings.EloRank.getKFactor(~matchCount=master.matchCount);
   expect(masterKFactor) |> toBe(8);
 });
 
 test("Ratings are calculated correctly", () => {
   let calcRatingsForPair =
-    Ratings.calcNewRatings(
+    Data.Ratings.calcNewRatings(
       ~whiteRating=newb.rating,
       ~blackRating=master.rating,
       ~whiteMatchCount=newb.matchCount,
@@ -33,7 +32,7 @@ test("Ratings are calculated correctly", () => {
 test("Ratings never go below 100", () => {
   // The white player begins with a rating of 100 and loses.
   let (newRatingWhite, _) =
-    Ratings.calcNewRatings(
+    Data.Ratings.calcNewRatings(
       ~whiteRating=100,
       ~blackRating=100,
       ~whiteMatchCount=69,
@@ -182,4 +181,46 @@ test("Manually adjusting scores works", () => {
   |> getByTestId(~matcher=`Str("rank-1.0"))
   |> JestDom.expect
   |> toHaveTextContent(`Str("Kinga Forrester"));
+});
+
+test("Pairing players twice displays the correct history", () => {
+  let page =
+    render(
+      <LoadTournament tourneyId=TestData.simplePairing>
+        {tournament => <PageRound tournament roundId=1 />}
+      </LoadTournament>,
+    );
+  page
+  |> getByText(~matcher=`RegExp([%bs.re "/add crow t robot/i"]))
+  |> click;
+  page
+  |> getByText(~matcher=`RegExp([%bs.re "/add grandy mcmaster/i"]))
+  |> click;
+  page |> getByText(~matcher=`RegExp([%bs.re "/match selected/i"])) |> click;
+  page |> getByText(~matcher=`RegExp([%bs.re "/^Matches$/"])) |> click;
+  page
+  |> getByDisplayValue(~matcher=`Str("Select winner"))
+  |> change(
+       ~eventInit={
+         "target": {
+           "value": Data.Match.Result.(toString(BlackWon)),
+         },
+       },
+     );
+  page
+  |> getByText(
+       ~matcher=
+         `RegExp(
+           [%bs.re
+             "/View information for match: Crow T Robot versus Grandy McMaster/i"
+           ],
+         ),
+     )
+  |> click;
+  /* This is a quick heuristic, probably should be more robust */
+  page
+  |> queryAllByText(~matcher=`RegExp([%bs.re "/Crow T Robot - Won/i"]))
+  |> Belt.Array.size
+  |> Expect.expect
+  |> Expect.toBe(2);
 });

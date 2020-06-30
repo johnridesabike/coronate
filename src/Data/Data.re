@@ -7,3 +7,4 @@ module Converters = Data_Converters;
 module Id = Data_Id;
 module Pairing = Data_Pairing;
 module Scoring = Data_Scoring;
+module Ratings = Data_Ratings;

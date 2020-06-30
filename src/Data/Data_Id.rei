@@ -23,6 +23,8 @@ let decode: Js.Json.t => t;
 
 let compare: (t, t) => int;
 
+let eq: (t, t) => bool;
+
 module Map: {
   type key = t;
   type identity;
