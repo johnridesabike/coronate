@@ -1,8 +1,5 @@
 type action =
-  | SetBlur(bool)
   | SetDialog(bool)
-  | SetFullScreen(bool)
-  | SetMaximized(bool)
   | SetSidebar(bool)
   | SetTitle(string);
 

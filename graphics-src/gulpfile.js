@@ -46,19 +46,3 @@ gulp.task("svg-to-web-icons", function () {
         .on("error", log)
         .pipe(gulp.dest("../public"));
 });
-
-gulp.task("build-electron-icons", function () {
-    const src = sharp("./icon-src.svg");
-    return Promise.all([
-        src.resize(512).toFile("../assets/icon.png").catch(log),
-        src.resize(16).toFile("../assets/icons/16x16.png").catch(log),
-        src.resize(24).toFile("../assets/icons/24x24.png").catch(log),
-        src.resize(32).toFile("../assets/icons/32x32.png").catch(log),
-        src.resize(48).toFile("../assets/icons/48x48.png").catch(log),
-        src.resize(64).toFile("../assets/icons/64x64.png").catch(log),
-        src.resize(96).toFile("../assets/icons/96x96.png").catch(log),
-        src.resize(128).toFile("../assets/icons/128x128.png").catch(log),
-        src.resize(256).toFile("../assets/icons/256x256.png").catch(log)
-    ]);
-});
-

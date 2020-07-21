@@ -7,15 +7,6 @@
         "app-content";
 }
 
-.app.isElectron.isWindows {
-    grid-template-rows: 32px 1fr;
-}
-
-.app.isElectron.isMacOS {
-    /* This is the same as the default... for now */
-    grid-template-rows: 38px 1fr;
-}
-
 .app__header {
     grid-area: app-header;
     background-color: var(--grey-30);
@@ -27,10 +18,6 @@
     padding: 4px 4px;
     user-select: none;
     -webkit-app-region: drag;
-}
-
-.app__header.traffic-light-padding {
-    padding-left: 72px;
 }
 
 .app__header a,
@@ -148,17 +135,6 @@
     width: 2px;
     height: 16px;
     margin: 0 8px;
-}
-
-.window-blur .app__header,
-.window-blur .win__footer {
-    background-color: var(--grey-20);
-    border-color: var(--grey-30);
-}
-
-.window-blur .win__sidebar a,
-.window-blur .win__footer-block {
-    opacity: 0.4;
 }
 
 div[role="group"] {

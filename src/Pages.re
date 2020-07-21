@@ -93,17 +93,11 @@ module Splash = {
             <p>
               {React.string("Coronate is free software.")}
               <br />
-              <a
-                className=Style.footerLink
-                href=Utils.github_url
-                onClick=Electron.Event.openInBrowser>
+              <a className=Style.footerLink href=Utils.github_url>
                 {React.string("Source code is available")}
               </a>
               {React.string(" under the ")}
-              <a
-                className=Style.footerLink
-                href=Utils.license_url
-                onClick=Electron.Event.openInBrowser>
+              <a className=Style.footerLink href=Utils.license_url>
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
@@ -111,26 +105,19 @@ module Splash = {
           </div>
           <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
             <p>
-              <a
-                className=Style.footerLink
-                href=Utils.issues_url
-                onClick=Electron.Event.openInBrowser>
+              <a className=Style.footerLink href=Utils.issues_url>
                 {React.string("Suggestions and bug reports are welcome.")}
               </a>
             </p>
             <p>
               {React.string("Built with ")}
-              <a
-                className=Style.footerLink
-                href="https://reasonml.github.io/"
-                onClick=Electron.Event.openInBrowser>
+              <a className=Style.footerLink href="https://reasonml.github.io/">
                 {React.string("Reason")}
               </a>
               {React.string(" & ")}
               <a
                 className=Style.footerLink
-                href="https://reasonml.github.io/reason-react/"
-                onClick=Electron.Event.openInBrowser>
+                href="https://reasonml.github.io/reason-react/">
                 {React.string("ReasonReact")}
               </a>
               {React.string(". ")}
@@ -343,8 +330,7 @@ module NotFound = {
          {React.string(Utils.Entities.nbsp)}
          <a
            className=Styles.link
-           href=Utils.github_url
-           onClick=Electron.openInBrowser>
+           href=Utils.github_url>
            {React.string("Git repository")}
          </a>
          {React.string(".")}

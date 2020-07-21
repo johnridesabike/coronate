@@ -130,27 +130,3 @@ input[type="text"][disabled]:hover,
     display: block;
 }
 
-.macos-button-toolbar {
-    color: var(--grey-90);
-    background-color: var(--grey-20);
-    border-color:
-        var(--grey-90-a20)
-        var(--grey-90-a20)
-        var(--grey-90-a30)
-        var(--grey-90-a20);
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 6px;
-    font-size: 16px;
-    height: 26px;
-    min-width: 40px;
-    margin: 0 4px;
-}
-
-.macos-button-toolbar:hover {
-    background-color: var(--grey-20);
-}
-
-.macos-button-toolbar:active {
-    background-color: var(--grey-30);
-}

@@ -79,22 +79,7 @@ Because it keeps your data in your browser's storage, be mindful that data loss
 can happen unexpectedly depending on your settings. The app's "options" page has
 a button to back up your data in an external file.
 
-
-To use the standalone Electron version, then run this instead of `start`:
-```
-npm run start:electron
-```
-Or if you're on Windows, then run:
-```
-npm run start:electron-win
-```
-The Electron functionality is almost identical to the web version. The biggest 
-difference is that it stores your data separately from your browser.
-
 ## 🔧 Running the tests
-
-The current tests are incomplete and only test a few of the most fragile
-functions.
 
 Just as with using the live version, you need to run `npm run re:watch` first
 (but not if you're using an editor that compiles Reason automatically).
@@ -112,21 +97,6 @@ To create an optimized version that can be uploaded to your own website, run:
 npm run build
 ```
 
-To create a standalone Electron app for Mac and Windows, run: 
-```
-npm run build:electron-all
-```
-
-If you're on a Windows system, run this to only build the Windows version:
-```
-npm run build:electron-win
-```
-
-The Windows version is "portable." It has no installer and stores all of its
-data in the same folder as its executable.
-
-Linux builds have not been tested.
-
 Coronate includes an [esy](https://esy.sh/) configuration for compatability with
 native development tools. If you prefer using native Reason tooling and esy, you
 can use it just by launching your editor with `esy`, such as `esy vim`.
@@ -139,7 +109,6 @@ can use it just by launching your editor with `esy`, such as `esy vim`.
 - [ReasonReact](https://reasonml.github.io/reason-react/) - interface
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
 - [bs-css](https://github.com/SentiaAnalytics/bs-css) (with [Emotion](https://emotion.sh/)) - styling
-- [Electron](https://electronjs.org/) - standalone executables
 - [Feather](https://feathericons.com/) - icons
 - [Simple Icons](http://simpleicons.org/) - more icons
 
