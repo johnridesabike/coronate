@@ -143,14 +143,24 @@ module MatchRow = {
 
     let setMatchResult = jsResultCode => {
       let newResult = Match.Result.fromString(jsResultCode);
+      let {whiteId, blackId, _} = m;
       /* if it hasn't changed, then do nothing*/
       if (m.result != newResult) {
-        let white = players->Map.getExn(m.whiteId);
-        let black = players->Map.getExn(m.blackId);
+        let whiteOpt = players->Map.get(whiteId);
+        let blackOpt = players->Map.get(blackId);
         let (whiteNewRating, blackNewRating) =
-          switch (newResult) {
-          | Match.Result.NotSet => (m.whiteOrigRating, m.blackOrigRating)
-          | Match.Result.(BlackWon | WhiteWon | Draw) =>
+          switch (newResult, whiteOpt, blackOpt) {
+          | (_, None, _)
+          | (_, _, None)
+          | (Match.Result.NotSet, _, _) => (
+              m.whiteOrigRating,
+              m.blackOrigRating,
+            )
+          | (
+              Match.Result.(BlackWon | WhiteWon | Draw),
+              Some(white),
+              Some(black),
+            ) =>
             Ratings.calcNewRatings(
               ~whiteRating=m.whiteOrigRating,
               ~blackRating=m.blackOrigRating,
@@ -159,42 +169,60 @@ module MatchRow = {
               ~result=newResult,
             )
           };
-        let white = Player.{...white, rating: whiteNewRating};
-        let black = Player.{...black, rating: blackNewRating};
+        let whiteOpt =
+          Option.map(whiteOpt, white =>
+            Player.{...white, rating: whiteNewRating}
+          );
+        let blackOpt =
+          Option.map(blackOpt, black =>
+            Player.{...black, rating: blackNewRating}
+          );
         switch (m.result) {
         /* If the result hasn't been scored yet, increment the matchCounts */
         | Match.Result.NotSet =>
-          playersDispatch(
-            Db.Set(
-              white.Player.id,
-              Player.{...white, matchCount: white.matchCount + 1},
-            ),
+          Option.forEach(whiteOpt, white =>
+            playersDispatch(
+              Db.Set(
+                whiteId,
+                Player.{...white, matchCount: white.matchCount + 1},
+              ),
+            )
           );
-          playersDispatch(
-            Db.Set(
-              black.Player.id,
-              Player.{...black, matchCount: black.matchCount + 1},
-            ),
+          Option.forEach(blackOpt, black =>
+            playersDispatch(
+              Db.Set(
+                blackId,
+                Player.{...black, matchCount: black.matchCount + 1},
+              ),
+            )
           );
         /* If the result is being un-scored, decrement the matchCounts */
         | Match.Result.(WhiteWon | BlackWon | Draw)
             when newResult === Match.Result.NotSet =>
-          playersDispatch(
-            Db.Set(
-              white.Player.id,
-              Player.{...white, matchCount: white.matchCount - 1},
-            ),
+          Option.forEach(whiteOpt, white =>
+            playersDispatch(
+              Db.Set(
+                whiteId,
+                Player.{...white, matchCount: white.matchCount - 1},
+              ),
+            )
           );
-          playersDispatch(
-            Db.Set(
-              black.Player.id,
-              Player.{...black, matchCount: black.matchCount - 1},
-            ),
+          Option.forEach(blackOpt, black =>
+            playersDispatch(
+              Db.Set(
+                blackId,
+                Player.{...black, matchCount: black.matchCount - 1},
+              ),
+            )
           );
         /* Simply update the players with new ratings. */
         | Match.Result.(WhiteWon | BlackWon | Draw) =>
-          playersDispatch(Db.Set(white.Player.id, white));
-          playersDispatch(Db.Set(black.Player.id, black));
+          Option.forEach(whiteOpt, white =>
+            playersDispatch(Db.Set(whiteId, white))
+          );
+          Option.forEach(blackOpt, black =>
+            playersDispatch(Db.Set(blackId, black))
+          );
         };
         let newMatch = {
           ...m,
@@ -253,25 +281,27 @@ module MatchRow = {
         </td>
       </Utils.TestId>
       <td className=Cn.(Style.matchResult <:> "data__input row__controls")>
-        <select
-          className=Style.winnerSelect
-          disabled=isDummyRound
-          value={Match.Result.toString(m.result)}
-          onBlur=setMatchResultBlur
-          onChange=setMatchResultChange>
-          <option value=Match.Result.(toString(NotSet))>
-            {React.string("Select winner")}
-          </option>
-          <option value=Match.Result.(toString(WhiteWon))>
-            {React.string("White won")}
-          </option>
-          <option value=Match.Result.(toString(BlackWon))>
-            {React.string("Black won")}
-          </option>
-          <option value=Match.Result.(toString(Draw))>
-            {React.string("Draw")}
-          </option>
-        </select>
+        <Utils.TestId testId={"match-" ++ Int.toString(pos) ++ "-select"}>
+          <select
+            className=Style.winnerSelect
+            disabled=isDummyRound
+            value={Match.Result.toString(m.result)}
+            onBlur=setMatchResultBlur
+            onChange=setMatchResultChange>
+            <option value=Match.Result.(toString(NotSet))>
+              {React.string("Select winner")}
+            </option>
+            <option value=Match.Result.(toString(WhiteWon))>
+              {React.string("White won")}
+            </option>
+            <option value=Match.Result.(toString(BlackWon))>
+              {React.string("Black won")}
+            </option>
+            <option value=Match.Result.(toString(Draw))>
+              {React.string("Draw")}
+            </option>
+          </select>
+        </Utils.TestId>
       </td>
       {switch (isCompact, setSelectedMatch) {
        | (false, None)

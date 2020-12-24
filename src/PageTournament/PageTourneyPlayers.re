@@ -357,8 +357,8 @@ let make = (~tournament) => {
                  <:> "disabled"->on(hasHadBye(matches, pId))
                )>
                {[
-                  activePlayers->Map.getExn(pId).Player.firstName,
-                  activePlayers->Map.getExn(pId).Player.lastName,
+                  activePlayers->Player.getMaybe(pId).firstName,
+                  activePlayers->Player.getMaybe(pId).firstName,
                 ]
                 ->Utils.String.concat(~sep=" ")
                 ->React.string}

@@ -126,3 +126,21 @@ describe("Tabs auto-change correctly.", () => {
     |> toHaveAttribute("aria-selected", ~value="false");
   });
 });
+
+test("Matches with deleted players don't crash when edited.", () => {
+  let page = () =>
+    render(
+      <LoadTournament tourneyId=TestData.deletedPlayerTourney>
+        {tournament => <PageRound tournament roundId=0 />}
+      </LoadTournament>,
+    )
+    |> getByTestId(~matcher=`Str("match-1-select"))
+    |> change(
+         ~eventInit={
+           "target": {
+             "value": Data.Match.Result.toString(BlackWon),
+           },
+         },
+       );
+  page |> Expect.expect |> Expect.not |> Expect.toThrow;
+});

@@ -5,6 +5,7 @@ let byeRoundTourney = "Bye_Round_Tourney____"->id;
 let byeRoundTourney2 = "Bye_Round_Tourney_2__"->id;
 let byeRoundTourney3 = "Bye_Tourney_3________"->id;
 let simplePairing = "Simple_Pairing_______"->id;
+let deletedPlayerTourney = "Deleted_Player_Torney"->id;
 let pairingWithDraws = "Pairing_With_Draws___"->id;
 let scoreTest = "WY_AzAeDDZeHMbhgUVuum"->id;
 
@@ -25,6 +26,7 @@ let observer = "Observer_Brain_Guy___"->id;
 let pearl = "Pearl_Forrester______"->id;
 let bobo = "Professor_Bobo_______"->id;
 let tvsSon = "TVs_Son_of_TVs_Frank_"->id;
+let deletedPlayer = "Deleted_Player_______"->id;
 
 let config =
   Config.{
@@ -812,6 +814,78 @@ let tournaments =
           |]
           ->Rounds.fromArray,
         scoreAdjustments: Data.Id.Map.make(),
+      },
+    ),
+    (
+      deletedPlayerTourney,
+      Tournament.{
+        byeQueue: [|deletedPlayer|],
+        date: Js.Date.fromString("2020-12-24T11:40:34.407Z"),
+        id: deletedPlayerTourney,
+        playerIds: [
+          newbieMcNewberson,
+          grandyMcMaster,
+          joelRobinson,
+          drClaytonForrester,
+          tvsFrank,
+          crowTRobot,
+          tomServo,
+          deletedPlayer,
+        ],
+        scoreAdjustments: Data.Id.Map.make(),
+        roundList:
+          [|
+            [|
+              {
+                Match.id: "KdLva8hWqYHdaU9KnFTe2"->id,
+                result: Match.Result.BlackWon,
+                whiteNewRating: 1699,
+                blackNewRating: 2600,
+                whiteOrigRating: 1700,
+                blackOrigRating: 2600,
+                whiteId: crowTRobot,
+                blackId: grandyMcMaster,
+              },
+              {
+                Match.id: "WDPFsNF1yADs4qofFwCY0"->id,
+                result: Match.Result.WhiteWon,
+                whiteNewRating: 1650,
+                blackNewRating: 2389,
+                whiteOrigRating: 1600,
+                blackOrigRating: 2400,
+                whiteId: deletedPlayer,
+                blackId: joelRobinson,
+              },
+              {
+                Match.id: "R5sXfTOJw5vrJ4IytAjSi"->id,
+                result: Match.Result.BlackWon,
+                whiteNewRating: 1400,
+                blackNewRating: 2100,
+                whiteOrigRating: 1400,
+                blackOrigRating: 2100,
+                whiteId: tvsFrank,
+                blackId: drClaytonForrester,
+              },
+              {
+                Match.id: "2YOsn_JJFnaUMhRBAc9KY"->id,
+                result: Match.Result.WhiteWon,
+                whiteNewRating: 1597,
+                blackNewRating: 1728,
+                whiteOrigRating: 800,
+                blackOrigRating: 1800,
+                whiteId: newbieMcNewberson,
+                blackId: tomServo,
+              },
+            |]
+            ->Rounds.Round.fromArray,
+            Rounds.Round.empty,
+          |]
+          ->Rounds.fromArray,
+        tieBreaks:
+          Scoring.TieBreak.(
+            [|Median, Solkoff, Cumulative, CumulativeOfOpposition|]
+          ),
+        name: "Deleted Player",
       },
     ),
   |];

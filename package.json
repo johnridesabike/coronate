@@ -28,7 +28,7 @@
     "test:coverage": "npm run test -- --coverage",
     "re:cleanbuild": "bsb -make-world -clean-world",
     "re:build": "bsb -make-world",
-    "re:watch": "bsb -make-world -clean-world -w",
+    "re:watch": "bsb -make-world -w",
     "re:clean": "bsb -clean-world"
   },
   "dependencies": {
