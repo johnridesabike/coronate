@@ -306,6 +306,7 @@ let make = (~tournament) => {
         players,
         activePlayers,
         playersDispatch,
+        getPlayer,
         _,
       } = tournament;
   let Tournament.{playerIds, roundList, byeQueue, _} = tourney;
@@ -356,10 +357,7 @@ let make = (~tournament) => {
                  "buttons-on-hover"
                  <:> "disabled"->on(hasHadBye(matches, pId))
                )>
-               {[
-                  activePlayers->Player.getMaybe(pId).firstName,
-                  activePlayers->Player.getMaybe(pId).firstName,
-                ]
+               {[getPlayer(pId).firstName, getPlayer(pId).firstName]
                 ->Utils.String.concat(~sep=" ")
                 ->React.string}
                {React.string(" ")}
