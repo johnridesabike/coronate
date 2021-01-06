@@ -56,18 +56,13 @@ npm install
 Coronate works completely in your local browser. Running it only requires two 
 commands.
 
-First run this:
+First run this to compile the Reason source:
 
 ```
 npm run re:watch
 ```
 
-*Note: If you're using an editor that can compile Reason code automatically,
-such as VS Code and
-[reason-vscode](https://marketplace.visualstudio.com/items?itemName=jaredly.reason-vscode),
-then you don't need to run `re:watch`*
-
-Then run this:
+Then run this to start the app:
 
 ```
 npm start
