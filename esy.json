@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "ocaml": "4.6.x",
-    "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam",
-    "@opam/reason": "*",
-    "@opam/merlin": "*"
-  }
-}

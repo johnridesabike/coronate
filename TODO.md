@@ -1,3 +1,5 @@
+# To-do
+
 ## General
 - [ ] Saving and loading user data is fragile and subject to memory leaks. The current implementation is quick-and-dirty and "works" fine, but needs to be more robust.
   - [ ] Promises inside `useEffect` hooks need to be refactored to avoid memory leaks.

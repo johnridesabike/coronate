@@ -19,17 +19,16 @@
     "email": "johnbicyclejackson@icloud.com"
   },
   "scripts": {
-    "build": "npm run re:cleanbuild && react-scripts build",
+    "build": "npm run clean:res && npm run build:res && react-scripts build",
     "deploy:github-pages": "npm run build && gh-pages -d build",
     "eject": "react-scripts eject",
     "start": "react-scripts start",
     "test": "react-scripts test --watchAll",
     "test:ci": "react-scripts test --watchAll=false",
     "test:coverage": "npm run test -- --coverage",
-    "re:cleanbuild": "bsb -make-world -clean-world",
-    "re:build": "bsb -make-world",
-    "re:watch": "bsb -make-world -w",
-    "re:clean": "bsb -clean-world"
+    "build:res": "bsb -make-world",
+    "start:res": "bsb -make-world -w",
+    "clean:res": "bsb -clean-world"
   },
   "dependencies": {
     "@glennsl/bs-json": "^5.0.2",
@@ -57,7 +56,7 @@
   "devDependencies": {
     "@glennsl/bs-jest": "^0.5.1",
     "bs-jest-dom": "^4.1.1",
-    "bs-platform": "^8.2.0",
+    "bs-platform": "^9.0.1",
     "bs-react-testing-library": "^0.7.3",
     "eslint-plugin-react": "^7.20.3",
     "gh-pages": "^3.1.0",
