@@ -1,62 +1,55 @@
 {
-    "name": "coronate",
-    "reason": {
-        "react-jsx": 3
+  "name": "coronate",
+  "reason": {
+    "react-jsx": 3
+  },
+  "bsc-flags": ["-bs-super-errors"],
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": [
+        "PageTournament",
+        "Data",
+        "Externals",
+        "__mocks__",
+        "PageTournament/__mocks__"
+      ]
     },
-    "bsc-flags": [
-        "-bs-super-errors"
-    ],
-    "sources": [
-        {
-            "dir": "src",
-            "subdirs": [
-                "PageTournament",
-                "Data",
-                "__mocks__",
-                "PageTournament/__mocks__"
-            ]
-        },
-        {
-            "dir": "src/__tests__",
-            "type": "dev"
-        }
-    ],
-    "package-specs": [
-        {
-            "module": "es6",
-            "in-source": true
-        }
-    ],
-    "suffix": ".bs.js",
-    "namespace": true,
-    "bs-dependencies": [
-        "reason-react",
-        "re-classnames",
-        "bs-webapi",
-        "bs-css",
-        "bs-css-emotion",
-        "@johnridesabike/bs-numeral",
-        "@glennsl/bs-json",
-        "bs-intl",
-        "@johnridesabike/bs-localforage",
-        "re-blossom",
-        "reason-promise",
-        "re-formality"
-    ],
-    "bs-dev-dependencies": [
-        "@glennsl/bs-jest",
-        "bs-react-testing-library",
-        "bs-jest-dom"
-    ],
-    "ppx-flags": [
-        "re-formality/ppx"
-    ],
-    "refmt": 3,
-    "ignored-dirs": [
-        "node_modules"
-    ],
-    "warnings": {
-        "number": "+A-48-42",
-        "error": "+A-3-44-102"
+    {
+      "dir": "src/__tests__",
+      "type": "dev"
     }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "reason-react",
+    "re-classnames",
+    "bs-webapi",
+    "bs-css",
+    "bs-css-emotion",
+    "@glennsl/bs-json",
+    "bs-intl",
+    "re-blossom",
+    "reason-promise",
+    "re-formality"
+  ],
+  "bs-dev-dependencies": [
+    "@glennsl/bs-jest",
+    "bs-react-testing-library",
+    "bs-jest-dom"
+  ],
+  "ppx-flags": ["re-formality/ppx"],
+  "refmt": 3,
+  "ignored-dirs": ["node_modules"],
+  "warnings": {
+    "number": "+A-48-42",
+    "error": "+A-3-44-102"
+  }
 }

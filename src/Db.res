@@ -77,7 +77,7 @@ let useAllDb = store => {
              corrupt database will get wiped. In the future, we may need to
              replace this with more elegant error recovery. */
         Js.Console.error(error)
-        ()->LocalForage.LocalForageJs.clear->ignore
+        ()->LocalForage.Js.clear->ignore
         loaded.setTrue()
       }
     )
@@ -172,7 +172,7 @@ let useConfig = () => {
     )
     ->Promise.getError(_ =>
       if !didCancel.contents {
-        ()->LocalForage.LocalForageJs.clear->ignore
+        ()->LocalForage.Js.clear->ignore
         dispatch(SetState(Data.Config.default))
         loaded.setTrue()
       }
