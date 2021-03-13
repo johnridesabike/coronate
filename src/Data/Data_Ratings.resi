@@ -3,9 +3,7 @@ module EloRank: {
   let getKFactor: (~matchCount: int) => int
 }
 
-@ocaml.doc("
-   * Make new ratings for white and black.
-   ")
+@ocaml.doc("Make new ratings for white and black.")
 let calcNewRatings: (
   ~whiteRating: EloRank.t,
   ~blackRating: EloRank.t,

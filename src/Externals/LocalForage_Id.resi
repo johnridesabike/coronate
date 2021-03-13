@@ -1,5 +1,5 @@
-@ocaml.doc("
- * See https://bucklescript.github.io/blog/2019/10/16/another-encoding
+@@text("
+ See https://rescript-lang.org/blog/another-encoding
  ")
 type encode<'a, 'id>
 type decode<'a, 'id>

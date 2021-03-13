@@ -19,13 +19,13 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   pairsWithBye->List.map(((whiteId, blackId)) =>
     {
       id: Data.Id.random(),
-      whiteOrigRating: getPlayer(whiteId).Data.Player.rating,
-      blackOrigRating: getPlayer(blackId).Data.Player.rating,
-      whiteNewRating: getPlayer(whiteId).Data.Player.rating,
-      blackNewRating: getPlayer(blackId).Data.Player.rating,
+      whiteOrigRating: getPlayer(whiteId).rating,
+      blackOrigRating: getPlayer(blackId).rating,
+      whiteNewRating: getPlayer(whiteId).rating,
+      blackNewRating: getPlayer(blackId).rating,
       whiteId: whiteId,
       blackId: blackId,
-      result: Data.Match.Result.NotSet,
+      result: NotSet,
     }->Data.Match.scoreByeMatch(~byeValue)
   )
 }
@@ -88,7 +88,7 @@ module SelectList = {
           player: player,
           ideal: calcIdealOrNot(pairData->Map.get(player.Player.id)),
         })
-      sortedDispatch(Hooks.SetTable(table))
+      sortedDispatch(SetTable(table))
       None
     }, (unmatched, pairData, sortedDispatch, stagedPlayers))
     /* only use unmatched players if this is the last round. */
@@ -150,9 +150,7 @@ module SelectList = {
   }
 }
 
-type color =
-  | White
-  | Black
+type color = White | Black
 
 module Stage = {
   @react.component
@@ -164,11 +162,11 @@ module Stage = {
     ~setStagedPlayers,
     ~setTourney,
     ~byeValue,
-    ~tourney,
+    ~tourney: Tournament.t,
     ~round,
   ) => {
     let (white, black) = stagedPlayers
-    let {Tournament.roundList: roundList, _} = tourney
+    let {roundList, _} = tourney
     let noneAreSelected = switch stagedPlayers {
     | (None, None) => true
     | (Some(_), Some(_))
@@ -318,7 +316,7 @@ module PlayerInfo = {
 @react.component
 let make = (
   ~roundId,
-  ~tournament,
+  ~tournament: LoadTournament.t,
   ~scoreData,
   ~unmatched,
   ~unmatchedCount,
@@ -327,16 +325,8 @@ let make = (
   let (stagedPlayers, setStagedPlayers) = React.useState(() => (None, None))
   let (p1, p2) = stagedPlayers
   let ({Config.avoidPairs: avoidPairs, byeValue, _}, _) = Db.useConfig()
-  let {
-    LoadTournament.tourney: tourney,
-    activePlayers,
-    players,
-    getPlayer,
-    setTourney,
-    playersDispatch,
-    _,
-  } = tournament
-  let {Tournament.roundList: roundList, byeQueue, _} = tourney
+  let {tourney, activePlayers, players, getPlayer, setTourney, playersDispatch, _} = tournament
+  let {roundList, byeQueue, _} = tourney
   let round = roundList->Rounds.get(roundId)
   let dialog = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
@@ -417,7 +407,7 @@ let make = (
                     scoreData
                     players
                     avoidPairs
-                    origRating=getPlayer(playerId).Player.rating
+                    origRating=getPlayer(playerId).rating
                     newRating=None
                     getPlayer
                   />

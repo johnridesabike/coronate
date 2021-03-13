@@ -7,18 +7,11 @@ module Footer = {
   @react.component
   let make = (~tournament) => {
     let {roundCount, tourney, isItOver, isNewRoundReady, activePlayers, _} = tournament
-    let {Tournament.roundList: roundList, _} = tourney
-    let (tooltipText, tooltipKind) = switch (isNewRoundReady, isItOver) {
-    | (true, false) => (
-        Utils.Entities.nbsp ++ " Ready to begin a new round.",
-        Utils.Notification.Success,
-      )
-    | (false, false)
-    | (false, true) => (Utils.Entities.nbsp ++ "Round in progress.", Utils.Notification.Generic)
-    | (true, true) => (
-        Utils.Entities.nbsp ++ " All rounds have completed.",
-        Utils.Notification.Warning,
-      )
+    let {roundList, _} = tourney
+    let (tooltipText, tooltipKind: Utils.Notification.t) = switch (isNewRoundReady, isItOver) {
+    | (true, false) => (Utils.Entities.nbsp ++ " Ready to begin a new round.", Success)
+    | (false, false) | (false, true) => (Utils.Entities.nbsp ++ "Round in progress.", Generic)
+    | (true, true) => (Utils.Entities.nbsp ++ " All rounds have completed.", Warning)
     }
     module Style = ReactDOMRe.Style
     <>
@@ -101,20 +94,13 @@ module Sidebar = {
           round
           ->Rounds.Round.toArray
           ->Array.forEach(match_ => {
-            let {
-              Match.result: result,
-              whiteId,
-              blackId,
-              whiteOrigRating,
-              blackOrigRating,
-              _,
-            } = match_
+            let {result, whiteId, blackId, whiteOrigRating, blackOrigRating, _} = match_
             /* Don't change players who haven't scored. */
             switch result {
-            | Match.Result.NotSet => ()
-            | Match.Result.BlackWon
-            | Match.Result.Draw
-            | Match.Result.WhiteWon =>
+            | NotSet => ()
+            | BlackWon
+            | Draw
+            | WhiteWon =>
               list{(whiteId, whiteOrigRating), (blackId, blackOrigRating)}->List.forEach(((
                 id,
                 rating,
@@ -155,31 +141,31 @@ module Sidebar = {
         <hr />
         <ul>
           <li>
-            <HashLink to_=Tournament(tourney.id, TourneyPage.Setup) onDragStart=noDraggy>
+            <HashLink to_=Tournament(tourney.id, Setup) onDragStart=noDraggy>
               <Icons.Settings />
               <span className="sidebar__hide-on-close"> {React.string(" Setup")} </span>
             </HashLink>
           </li>
           <li>
-            <HashLink to_=Tournament(tourney.id, TourneyPage.Players) onDragStart=noDraggy>
+            <HashLink to_=Tournament(tourney.id, Players) onDragStart=noDraggy>
               <Icons.Users />
               <span className="sidebar__hide-on-close"> {React.string(" Players")} </span>
             </HashLink>
           </li>
           <li>
-            <HashLink to_=Tournament(tourney.id, TourneyPage.Status) onDragStart=noDraggy>
+            <HashLink to_=Tournament(tourney.id, Status) onDragStart=noDraggy>
               <Icons.Activity />
               <span className="sidebar__hide-on-close"> {React.string(" Status")} </span>
             </HashLink>
           </li>
           <li>
-            <HashLink to_=Tournament(tourney.id, TourneyPage.Crosstable) onDragStart=noDraggy>
+            <HashLink to_=Tournament(tourney.id, Crosstable) onDragStart=noDraggy>
               <Icons.Layers />
               <span className="sidebar__hide-on-close"> {React.string(" Crosstable")} </span>
             </HashLink>
           </li>
           <li>
-            <HashLink to_=Tournament(tourney.id, TourneyPage.Scores) onDragStart=noDraggy>
+            <HashLink to_=Tournament(tourney.id, Scores) onDragStart=noDraggy>
               <Icons.List />
               <span className="sidebar__hide-on-close"> {React.string(" Score detail")} </span>
             </HashLink>
@@ -192,7 +178,7 @@ module Sidebar = {
           ->Rounds.toArray
           ->Array.mapWithIndex((id, _) =>
             <li key={Int.toString(id)}>
-              <HashLink to_=Tournament(tourney.id, TourneyPage.Round(id)) onDragStart=noDraggy>
+              <HashLink to_=Tournament(tourney.id, Round(id)) onDragStart=noDraggy>
                 {React.int(id + 1)}
                 {isRoundComplete(id)
                   ? <span className={Cn.append("sidebar__hide-on-close", "caption-20")}>
@@ -237,17 +223,17 @@ module Sidebar = {
 let sidebarFunc = (tournament, ()) => <Sidebar tournament />
 
 @react.component
-let make = (~tourneyId, ~subPage, ~windowDispatch=?) =>
+let make = (~tourneyId, ~subPage: TourneyPage.t, ~windowDispatch=?) =>
   <LoadTournament tourneyId ?windowDispatch>
     {tournament =>
       <Window.Body footerFunc={footerFunc(tournament)} sidebarFunc={sidebarFunc(tournament)}>
         {switch subPage {
-        | TourneyPage.Players => <PageTourneyPlayers tournament />
-        | TourneyPage.Scores => <PageTourneyScores tournament />
-        | TourneyPage.Crosstable => <PageTourneyScores.Crosstable tournament />
-        | TourneyPage.Setup => <PageTourneySetup tournament />
-        | TourneyPage.Status => <PageTournamentStatus tournament />
-        | TourneyPage.Round(roundId) => <PageRound tournament roundId />
+        | Players => <PageTourneyPlayers tournament />
+        | Scores => <PageTourneyScores tournament />
+        | Crosstable => <PageTourneyScores.Crosstable tournament />
+        | Setup => <PageTourneySetup tournament />
+        | Status => <PageTournamentStatus tournament />
+        | Round(roundId) => <PageRound tournament roundId />
         }}
       </Window.Body>}
   </LoadTournament>

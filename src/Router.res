@@ -14,9 +14,7 @@ module TourneyPage = {
 
   let fromPath = x =>
     switch x {
-    | list{}
-    | list{""} =>
-      Some(Players)
+    | list{} | list{""} => Some(Players)
     | list{"scores"} => Some(Scores)
     | list{"crosstable"} => Some(Crosstable)
     | list{"setup"} => Some(Setup)
@@ -55,9 +53,7 @@ let id = Data.Id.fromString
 let fromPath = x =>
   /* The first item is always an empty string */
   switch x {
-  | list{""}
-  | list{"", ""} =>
-    Index
+  | list{""} | list{"", ""} => Index
   | list{"", "players"} => PlayerList
   | list{"", "players", x} => Player(id(x))
   | list{"", "timecalc"} => TimeCalculator
@@ -73,8 +69,7 @@ let fromPath = x =>
 
 let toString = x =>
   switch x {
-  | Index
-  | NotFound => "/"
+  | Index | NotFound => "/"
   | PlayerList => "/players"
   | Player(id) => "/players/" ++ str(id)
   | TimeCalculator => "/timecalc"
@@ -97,10 +92,11 @@ module HashLink = {
     | "/" => hash == "" || hash == href
     | _ => hash == href
     }
-    @ocaml.doc("
+
+    /**
      * ReasonReact hasn't implemented the aria-current attribute yet. We have to
      * define it ourselves!
-     ")
+     */
     ReactDOMRe.createElement(
       "a",
       ~props=ReactDOMRe.objToDOMProps({

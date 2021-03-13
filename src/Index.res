@@ -22,6 +22,11 @@ module App = {
 
 let init = () => ReactDOMRe.renderToElementWithId(<App />, "root")
 
+/* Ensure that all LocalForage plugins get loaded. */
+LocalForage_Plugins.GetItems.extendPrototype(LocalForage.localForage)
+LocalForage_Plugins.RemoveItems.extendPrototype(LocalForage.localForage)
+LocalForage_Plugins.SetItems.extendPrototype(LocalForage.localForage)
+
 module ServiceWorker = {
   @module("./serviceWorker")
   external unregister: unit => unit = "unregister"

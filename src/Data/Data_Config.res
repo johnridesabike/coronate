@@ -109,7 +109,7 @@ let encode = data => {
 }
 
 let default = {
-  byeValue: ByeValue.Full,
+  byeValue: Full,
   avoidPairs: Pair.Set.empty,
   lastBackup: Js.Date.fromFloat(0.0),
 }

@@ -32,15 +32,15 @@ module Round = {
       Array.concat(acc, [whiteId, blackId])
     )
 
-  let getMatchById = (round: t, id) => Array.getBy(round, x => Id.eq(x.Match.id, id))
+  let getMatchById = (round: t, id) => Array.getBy(round, x => Id.eq(x.id, id))
 
-  let removeMatchById = (round: t, id) => Array.keep(round, x => !Id.eq(x.Match.id, id))
+  let removeMatchById = (round: t, id) => Array.keep(round, x => !Id.eq(x.id, id))
 
-  let setMatch = (round: t, match_) => {
+  let setMatch = (round: t, match: Data_Match.t) => {
     let round = Array.copy(round)
     round
-    ->Array.getIndexBy(({Match.id: id, _}) => Id.eq(id, match_.Match.id))
-    ->Option.map(x => round[x] = match_)
+    ->Array.getIndexBy(({Match.id: id, _}) => Id.eq(id, match.id))
+    ->Option.map(x => round[x] = match)
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None)
   }
 
@@ -92,8 +92,8 @@ let isRoundComplete = (roundList, players, roundId) =>
     } else {
       let matched = Round.getMatched(round)
       let unmatched = Map.removeMany(players, matched)
-      let results = Array.map(round, match_ => match_.Match.result)
-      Map.size(unmatched) == 0 && !Js.Array2.includes(results, Match.Result.NotSet)
+      let results = Array.map(round, match => match.result)
+      Map.size(unmatched) == 0 && !Js.Array2.includes(results, NotSet)
     }
   | None => true
   }

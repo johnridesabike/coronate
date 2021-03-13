@@ -9,22 +9,22 @@ module Result = {
     | Draw
     | NotSet
 
-  let toScoreWhite = x =>
+  let toScoreWhite = (x): Score.t =>
     switch x {
-    | WhiteWon => Score.One
-    | BlackWon => Score.Zero
-    | Draw => Score.Half
+    | WhiteWon => One
+    | BlackWon => Zero
+    | Draw => Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Score.Zero
+    | NotSet => Zero
     }
 
-  let toScoreBlack = x =>
+  let toScoreBlack = (x): Score.t =>
     switch x {
-    | WhiteWon => Score.Zero
-    | BlackWon => Score.One
-    | Draw => Score.Half
+    | WhiteWon => Zero
+    | BlackWon => One
+    | Draw => Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Score.Zero
+    | NotSet => Zero
     }
 
   let toString = x =>
@@ -87,9 +87,9 @@ let encode = data => {
   })
 }
 
-let byeResultForPlayerColor = (byeValue, result) =>
+let byeResultForPlayerColor = (byeValue: Data_Config.ByeValue.t, result): Result.t =>
   switch byeValue {
-  | Data_Config.ByeValue.Half => Result.Draw
+  | Half => Draw
   | Full => result
   }
 
@@ -97,22 +97,22 @@ let scoreByeMatch = (match_, ~byeValue) =>
   switch (Id.isDummy(match_.whiteId), Id.isDummy(match_.blackId)) {
   | (true, false) => {
       ...match_,
-      result: byeResultForPlayerColor(byeValue, Result.BlackWon),
+      result: byeResultForPlayerColor(byeValue, BlackWon),
     }
   | (false, true) => {
       ...match_,
-      result: byeResultForPlayerColor(byeValue, Result.WhiteWon),
+      result: byeResultForPlayerColor(byeValue, WhiteWon),
     }
   | (true, true) /* Two dummies?! */
   | (false, false) => match_
   }
 
-let manualPair = ((white, black), byeValue) =>
+let manualPair = ((white: Data_Player.t, black: Data_Player.t), byeValue) =>
   {
     id: Id.random(),
-    result: Result.NotSet,
-    whiteId: white.Data_Player.id,
-    blackId: black.Data_Player.id,
+    result: NotSet,
+    whiteId: white.id,
+    blackId: black.id,
     whiteOrigRating: white.rating,
     blackOrigRating: black.rating,
     whiteNewRating: white.rating,
@@ -122,7 +122,7 @@ let manualPair = ((white, black), byeValue) =>
 let swapColors = match_ => {
   ...match_,
   result: switch match_.result {
-  | Result.WhiteWon => BlackWon
+  | WhiteWon => BlackWon
   | BlackWon => WhiteWon
   | Draw => Draw
   | NotSet => NotSet

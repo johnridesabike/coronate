@@ -4,7 +4,7 @@ import * as React from "react";
 import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
-import * as TestData$Coronate from "../TestData.bs.js";
+import * as TestData$Coronate from "../testdata/TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 import * as Data_Player$Coronate from "../Data/Data_Player.bs.js";
 import * as LocalForage_Id$Coronate from "../Externals/LocalForage_Id.bs.js";

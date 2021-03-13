@@ -51,19 +51,16 @@ module LastBackupDate = {
       <Utils.DateTimeFormat date />
     }
 }
-/* Using the raw JSON stringify because its formatting is prettier. */
-@scope("JSON") @val
-external stringify: (Js.Json.t, Js.null<unit>, int) => string = "stringify"
 
 @react.component
 let make = (~windowDispatch=_ => ()) => {
-  let {Db.items: tournaments, dispatch: tourneysDispatch, _} = Db.useAllTournaments()
-  let {Db.items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
+  let {items: tournaments, dispatch: tourneysDispatch, _} = Db.useAllTournaments()
+  let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (text, setText) = React.useState(() => "")
   let (config, configDispatch) = Db.useConfig()
   React.useEffect1(() => {
     windowDispatch(Window.SetTitle("Options"))
-    Some(() => windowDispatch(Window.SetTitle("")))
+    Some(() => windowDispatch(SetTitle("")))
   }, [windowDispatch])
   /* memoize this so the `useEffect` hook syncs with the correct states */
   let exportData = React.useMemo3(
@@ -73,15 +70,15 @@ let make = (~windowDispatch=_ => ()) => {
   let exportDataURI = exportData->encodeOptions->Json.stringify->Js.Global.encodeURIComponent
   React.useEffect2(() => {
     let encoded = encodeOptions(exportData)
-    let json = stringify(encoded, Js.null, 4)
+    let json = Js.Json.stringifyWithSpace(encoded, 2)
     setText(_ => json)
     None
   }, (exportData, setText))
 
   let loadData = (~tournaments, ~players, ~config) => {
-    tourneysDispatch(Db.SetAll(tournaments))
-    configDispatch(Db.SetState(config))
-    playersDispatch(Db.SetAll(players))
+    tourneysDispatch(SetAll(tournaments))
+    configDispatch(SetState(config))
+    playersDispatch(SetAll(players))
     Utils.alert("Data loaded.")
   }
   let handleText = event => {
@@ -141,7 +138,7 @@ let make = (~windowDispatch=_ => ()) => {
             | Half => false
             }}
             type_="radio"
-            onChange={_ => configDispatch(Db.SetByeValue(Config.ByeValue.Full))}
+            onChange={_ => configDispatch(SetByeValue(Full))}
           />
         </label>
         <label className="monospace body-30">
@@ -152,7 +149,7 @@ let make = (~windowDispatch=_ => ()) => {
             | Half => true
             }}
             type_="radio"
-            onChange={_ => configDispatch(Db.SetByeValue(Config.ByeValue.Half))}
+            onChange={_ => configDispatch(SetByeValue(Half))}
           />
         </label>
       </form>
@@ -164,7 +161,7 @@ let make = (~windowDispatch=_ => ()) => {
         <a
           download={"coronate-" ++ (getDateForFile() ++ ".json")}
           href={"data:application/json," ++ exportDataURI}
-          onClick={_ => configDispatch(Db.SetLastBackup(Js.Date.make()))}>
+          onClick={_ => configDispatch(SetLastBackup(Js.Date.make()))}>
           <Icons.Download /> {React.string(" Export all data")}
         </a>
       </p>

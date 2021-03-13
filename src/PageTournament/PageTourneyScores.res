@@ -36,8 +36,8 @@ let isCompact = x =>
 
 module ScoreTable = {
   @react.component
-  let make = (~size=Expanded, ~tourney, ~getPlayer, ~title) => {
-    let {Tournament.tieBreaks: tieBreaks, roundList, scoreAdjustments, _} = tourney
+  let make = (~size=Expanded, ~tourney: Tournament.t, ~getPlayer, ~title) => {
+    let {tieBreaks, roundList, scoreAdjustments, _} = tourney
     let tieBreakNames = Array.map(tieBreaks, Scoring.TieBreak.toPrettyString)
     let standingTree =
       Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
@@ -75,7 +75,7 @@ module ScoreTable = {
           ->List.toArray
           ->Array.reverse
           ->Array.mapWithIndex((i, standing) =>
-            <tr key={standing.Scoring.id->Data.Id.toString} className=Style.row>
+            <tr key={standing.id->Data.Id.toString} className=Style.row>
               {i == 0
               /* Only display the rank once */
                 ? <th
@@ -140,16 +140,16 @@ module ScoreTable = {
 
 module SelectTieBreaks = {
   @react.component
-  let make = (~tourney, ~setTourney) => {
-    let tieBreaks = tourney.Tournament.tieBreaks
-    let (selectedTb, setSelectedTb) = React.useState(() => None)
+  let make = (~tourney: Tournament.t, ~setTourney) => {
+    let {tieBreaks, _} = tourney
+    let (selectedTb: option<Scoring.TieBreak.t>, setSelectedTb) = React.useState(() => None)
     let defaultId = x =>
       switch x {
       | Some(x) => x
       | None =>
         switch selectedTb {
         | Some(x) => x
-        | None => Scoring.TieBreak.Median /* This should never happen. */
+        | None => Median /* This should never happen. */
         }
       }
 

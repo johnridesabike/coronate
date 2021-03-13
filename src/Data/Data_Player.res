@@ -61,7 +61,7 @@ let dummy = {
   id: Data_Id.dummy,
   firstName: "Bye",
   lastName: "Player",
-  type_: Type.Dummy,
+  type_: Dummy,
   matchCount: 0,
   rating: 0,
 }
@@ -74,7 +74,7 @@ let makeMissing = id => {
   id: id,
   firstName: "Anonymous",
   lastName: "Player",
-  type_: Type.Missing,
+  type_: Missing,
   matchCount: 0,
   rating: 0,
 }

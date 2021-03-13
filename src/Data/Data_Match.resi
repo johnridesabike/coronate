@@ -33,7 +33,5 @@ let scoreByeMatch: (t, ~byeValue: Data_Config.ByeValue.t) => t
 
 let manualPair: ((Data_Player.t, Data_Player.t), Data_Config.ByeValue.t) => t
 
-@ocaml.doc("
- * \"Reverse\" white and black.
- ")
+@ocaml.doc("\"Reverse\" white and black.")
 let swapColors: t => t

@@ -24,7 +24,7 @@ module PlayerMatchInfo = {
   @react.component
   let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
     let {
-      Hooks.player: player,
+      player,
       hasBye,
       colorBalance,
       score,
@@ -32,13 +32,13 @@ module PlayerMatchInfo = {
       opponentResults,
       avoidListHtml,
     } = Hooks.useScoreInfo(~player, ~scoreData, ~getPlayer, ~players, ~origRating, ~newRating, ())
-    let fullName = player.Player.firstName ++ (" " ++ player.Player.lastName)
+    let fullName = player.firstName ++ (" " ++ player.lastName)
     <dl className="player-card">
       <h3> {fullName->React.string} </h3>
       <dt> {"Score"->React.string} </dt>
       <dd> {score->React.float} </dd>
       <dt> {"Rating"->React.string} </dt>
-      <Utils.TestId testId={"rating-" ++ player.Player.id->Data.Id.toString}>
+      <Utils.TestId testId={"rating-" ++ player.id->Data.Id.toString}>
         <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
       </Utils.TestId>
       <dt> {"Color balance"->React.string} </dt>
@@ -63,18 +63,11 @@ module MatchRow = {
     ~selectedMatch=?,
     ~setSelectedMatch,
     ~scoreData,
-    ~tournament,
+    ~tournament: LoadTournament.t,
     ~className="",
   ) => {
-    let {
-      LoadTournament.tourney: tourney,
-      setTourney,
-      players,
-      getPlayer,
-      playersDispatch,
-      _,
-    } = tournament
-    let {Tournament.roundList: roundList, _} = tourney
+    let {tourney, setTourney, players, getPlayer, playersDispatch, _} = tournament
+    let {roundList, _} = tourney
     let dialog = Hooks.useBool(false)
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
@@ -83,27 +76,26 @@ module MatchRow = {
     let whiteName = list{whitePlayer.firstName, whitePlayer.lastName}->Utils.String.concat(~sep=" ")
     let blackName = list{blackPlayer.firstName, blackPlayer.lastName}->Utils.String.concat(~sep=" ")
 
-    let resultDisplay = playerColor => {
+    let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className={Css.style(list{Css.color(Utils.PhotonColors.yellow_70)})} />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
       switch m.result {
-      | Match.Result.NotSet =>
-        <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
-      | Match.Result.Draw =>
+      | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
+      | Draw =>
         /* TODO: find a better icon for draws. */
         <span
           ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
           {React.string(`🤝`)}
         </span>
-      | Match.Result.BlackWon =>
+      | BlackWon =>
         switch playerColor {
-        | Scoring.Color.White => lost
-        | Scoring.Color.Black => won
+        | White => lost
+        | Black => won
         }
-      | Match.Result.WhiteWon =>
+      | WhiteWon =>
         switch playerColor {
-        | Scoring.Color.White => won
-        | Scoring.Color.Black => lost
+        | White => won
+        | Black => lost
         }
       }
     }
@@ -118,17 +110,13 @@ module MatchRow = {
         let (whiteNewRating, blackNewRating) = switch (newResult, whiteOpt, blackOpt) {
         | (_, None, _)
         | (_, _, None)
-        | (Match.Result.NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
-        | (
-            Match.Result.BlackWon | Match.Result.WhiteWon | Match.Result.Draw,
-            Some(white),
-            Some(black),
-          ) =>
+        | (NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
+        | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
           Ratings.calcNewRatings(
             ~whiteRating=m.whiteOrigRating,
             ~blackRating=m.blackOrigRating,
-            ~whiteMatchCount=white.Player.matchCount,
-            ~blackMatchCount=black.Player.matchCount,
+            ~whiteMatchCount=white.matchCount,
+            ~blackMatchCount=black.matchCount,
             ~result=newResult,
           )
         }
@@ -136,26 +124,25 @@ module MatchRow = {
         let blackOpt = Option.map(blackOpt, black => {...black, rating: blackNewRating})
         switch m.result {
         /* If the result hasn't been scored yet, increment the matchCounts */
-        | Match.Result.NotSet =>
+        | NotSet =>
           Option.forEach(whiteOpt, white =>
-            playersDispatch(Db.Set(whiteId, {...white, matchCount: white.matchCount + 1}))
+            playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount + 1}))
           )
           Option.forEach(blackOpt, black =>
-            playersDispatch(Db.Set(blackId, {...black, matchCount: black.matchCount + 1}))
+            playersDispatch(Set(blackId, {...black, matchCount: black.matchCount + 1}))
           )
         /* If the result is being un-scored, decrement the matchCounts */
-        | Match.Result.WhiteWon | Match.Result.BlackWon | Match.Result.Draw
-          if newResult === Match.Result.NotSet =>
+        | WhiteWon | BlackWon | Draw if newResult == NotSet =>
           Option.forEach(whiteOpt, white =>
-            playersDispatch(Db.Set(whiteId, {...white, matchCount: white.matchCount - 1}))
+            playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount - 1}))
           )
           Option.forEach(blackOpt, black =>
-            playersDispatch(Db.Set(blackId, {...black, matchCount: black.matchCount - 1}))
+            playersDispatch(Set(blackId, {...black, matchCount: black.matchCount - 1}))
           )
         /* Simply update the players with new ratings. */
-        | Match.Result.WhiteWon | Match.Result.BlackWon | Match.Result.Draw =>
-          Option.forEach(whiteOpt, white => playersDispatch(Db.Set(whiteId, white)))
-          Option.forEach(blackOpt, black => playersDispatch(Db.Set(blackId, black)))
+        | WhiteWon | BlackWon | Draw =>
+          Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
+          Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
         }
         let newMatch = {
           ...m,
@@ -181,7 +168,7 @@ module MatchRow = {
       <th className={Cn.append(Style.rowId, "table__number")} scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>
-      <td className=Style.playerResult> {resultDisplay(Scoring.Color.White)} </td>
+      <td className=Style.playerResult> {resultDisplay(White)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-white")}>
         <td
           className={Cn.append(
@@ -192,7 +179,7 @@ module MatchRow = {
           {React.string(whiteName)}
         </td>
       </Utils.TestId>
-      <td className=Style.playerResult> {resultDisplay(Scoring.Color.Black)} </td>
+      <td className=Style.playerResult> {resultDisplay(Black)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-black")}>
         <td
           className={Cn.append(
@@ -370,10 +357,10 @@ module Round = {
       switch round->Rounds.Round.getMatchById(matchId) {
       /* checks if the match has been scored yet & resets the players'
        records */
-      | Some(match_) if match_.Match.result !== Match.Result.NotSet =>
+      | Some(match) if match.result != NotSet =>
         list{
-          (match_.whiteId, match_.whiteOrigRating),
-          (match_.blackId, match_.blackOrigRating),
+          (match.whiteId, match.whiteOrigRating),
+          (match.blackId, match.blackOrigRating),
         }->List.forEach(((id, rating)) =>
           switch players->Map.get(id) {
           /* If there was a dummy player or a deleted player then bail
@@ -381,8 +368,8 @@ module Round = {
           | None => ()
           | Some(player) =>
             playersDispatch(
-              Db.Set(
-                player.Player.id,
+              Set(
+                player.id,
                 {
                   ...player,
                   rating: rating,

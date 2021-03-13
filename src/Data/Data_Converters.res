@@ -1,8 +1,8 @@
 open Belt
 
 @ocaml.doc("
- * This module is designed to convert types from the `Data` module to types to
- * be used in the `Pairing` and `Scoring` modules.
+ This module is designed to convert types from the `Data` module to types to
+ be used in the `Pairing` and `Scoring` modules.
  ")
 let makeScoreData = (
   ~existingData,
@@ -19,9 +19,9 @@ let makeScoreData = (
   | Some(data) => data
   }
 
-  let newResultsNoByes = {
-    Data_Id.isDummy(oppId) ? oldData.resultsNoByes : list{result, ...oldData.resultsNoByes}
-  }
+  let newResultsNoByes = Data_Id.isDummy(oppId)
+    ? oldData.resultsNoByes
+    : list{result, ...oldData.resultsNoByes}
 
   let oldOppResults = oldData.opponentResults
 
@@ -40,32 +40,31 @@ let makeScoreData = (
 }
 
 let matches2ScoreData = matchList =>
-  Array.reduce(matchList, Data_Id.Map.make(), (acc, match_) => {
-    open Data_Match
-    switch match_.result {
-    | Data_Match.Result.NotSet => acc
-    | Data_Match.Result.WhiteWon
-    | Data_Match.Result.BlackWon
-    | Data_Match.Result.Draw =>
+  Array.reduce(matchList, Data_Id.Map.make(), (acc, match: Data_Match.t) => {
+    switch match.result {
+    | NotSet => acc
+    | WhiteWon
+    | BlackWon
+    | Draw =>
       let whiteData = makeScoreData(
         ~existingData=acc,
-        ~playerId=match_.whiteId,
-        ~origRating=match_.whiteOrigRating,
-        ~newRating=match_.whiteNewRating,
-        ~result=Data_Match.Result.toScoreWhite(match_.result),
-        ~oppId=match_.blackId,
-        ~color=Data_Scoring.Color.White,
+        ~playerId=match.whiteId,
+        ~origRating=match.whiteOrigRating,
+        ~newRating=match.whiteNewRating,
+        ~result=Data_Match.Result.toScoreWhite(match.result),
+        ~oppId=match.blackId,
+        ~color=White,
       )
       let blackData = makeScoreData(
         ~existingData=acc,
-        ~playerId=match_.blackId,
-        ~origRating=match_.blackOrigRating,
-        ~newRating=match_.blackNewRating,
-        ~result=Data_Match.Result.toScoreBlack(match_.result),
-        ~oppId=match_.whiteId,
+        ~playerId=match.blackId,
+        ~origRating=match.blackOrigRating,
+        ~newRating=match.blackNewRating,
+        ~result=Data_Match.Result.toScoreBlack(match.result),
+        ~oppId=match.whiteId,
         ~color=Data_Scoring.Color.Black,
       )
-      acc->Map.set(match_.whiteId, whiteData)->Map.set(match_.blackId, blackData)
+      acc->Map.set(match.whiteId, whiteData)->Map.set(match.blackId, blackData)
     }
   })
 
@@ -82,7 +81,7 @@ let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
 
 let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.Pair.Set.toMap(avoidPairs)
-  Map.reduce(playerData, Data_Id.Map.make(), (acc, key, data) => {
+  Map.reduce(playerData, Data_Id.Map.make(), (acc, key, data: Data_Player.t) => {
     let playerStats = switch Map.get(scoreData, key) {
     | None => Data_Scoring.createBlankScoreData(key)
     | Some(x) => x
@@ -94,21 +93,18 @@ let createPairingData = (scoreData, playerData, avoidPairs) => {
     /* `isUpperHalf` and `halfPos` will have to be set by another
      function later. */
     let newData = {
-      open Data_Pairing
-      {
-        avoidIds: newAvoidIds,
-        colorScores: playerStats.Data_Scoring.colorScores->List.map(Data_Scoring.Score.toFloat),
-        colors: playerStats.colors,
-        halfPos: 0,
-        id: data.Data_Player.id,
-        isUpperHalf: false,
-        opponents: playerStats.opponentResults->List.map(((id, _)) => id),
-        rating: data.Data_Player.rating,
-        score: Data_Scoring.Score.calcScore(
-          playerStats.results,
-          ~adjustment=playerStats.adjustment,
-        )->Data_Scoring.Score.Sum.toFloat,
-      }
+      Data_Pairing.avoidIds: newAvoidIds,
+      colorScores: playerStats.Data_Scoring.colorScores->List.map(Data_Scoring.Score.toFloat),
+      colors: playerStats.colors,
+      halfPos: 0,
+      id: data.id,
+      isUpperHalf: false,
+      opponents: playerStats.opponentResults->List.map(((id, _)) => id),
+      rating: data.Data_Player.rating,
+      score: Data_Scoring.Score.calcScore(
+        playerStats.results,
+        ~adjustment=playerStats.adjustment,
+      )->Data_Scoring.Score.Sum.toFloat,
     }
     Map.set(acc, key, newData)
   })

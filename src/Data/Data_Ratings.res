@@ -6,9 +6,9 @@ module EloRank = {
   let getExpected = (a: int, b: int) => 1. /. (1. +. 10. ** (Float.fromInt(b - a) /. 400.))
 
   let updateRating = (rating, expected, actual, current) =>
-    Float.fromInt(current) +. Float.fromInt(rating) *. (actual -. expected)
-    |> Js.Math.round
-    |> Int.fromFloat
+    (Float.fromInt(current) +. Float.fromInt(rating) *. (actual -. expected))
+    ->Js.Math.round
+    ->Int.fromFloat
 
   let getKFactor = (~matchCount) => {
     let ne = matchCount > 0 ? matchCount : 1

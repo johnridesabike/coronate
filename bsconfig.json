@@ -11,6 +11,7 @@
         "PageTournament",
         "Data",
         "Externals",
+        "testdata",
         "__mocks__",
         "PageTournament/__mocks__"
       ]
@@ -46,7 +47,6 @@
     "bs-jest-dom"
   ],
   "ppx-flags": ["re-formality/ppx"],
-  "refmt": 3,
   "ignored-dirs": ["node_modules"],
   "warnings": {
     "number": "+A-48-42",

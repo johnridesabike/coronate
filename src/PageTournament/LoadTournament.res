@@ -41,20 +41,17 @@ let isLoadedDone = x =>
 let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   let tourneyId = Id.toString(tourneyId)
   let (tourney, setTourney) = React.useReducer(tournamentReducer, emptyTourney)
-  let {Tournament.name: name, playerIds, roundList, _} = tourney
-  let {Db.items: players, dispatch: playersDispatch, loaded: arePlayersLoaded} = Db.useAllPlayers()
+  let {name, playerIds, roundList, _} = tourney
+  let {items: players, dispatch: playersDispatch, loaded: arePlayersLoaded} = Db.useAllPlayers()
   let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded)
   Hooks.useLoadingCursorUntil(isLoadedDone(tourneyLoaded) && arePlayersLoaded)
-  @ocaml.doc("
-   * Set the document title.
-   ")
+
   React.useEffect2(() => {
     windowDispatch(Window.SetTitle(name))
     Some(() => windowDispatch(Window.SetTitle("")))
   }, (name, windowDispatch))
-  @ocaml.doc("
-   * Initialize the tournament from the database.
-   ")
+
+  /* Initialize the tournament from the database. */
   React.useEffect1(() => {
     let didCancel = ref(false)
     Db.tournaments
@@ -77,9 +74,8 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
     )
     Some(() => didCancel := true)
   }, [tourneyId])
-  @ocaml.doc("
-   * Save the tournament to DB.
-   ")
+
+  /* Save the tournament to DB. */
   React.useEffect3(() => {
     switch tourneyLoaded {
     | NotLoaded

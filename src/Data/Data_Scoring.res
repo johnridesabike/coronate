@@ -58,10 +58,10 @@ module Color = {
     | Black => White
     }
 
-  let toScore = x =>
+  let toScore = (x): Score.t =>
     switch x {
-    | White => Score.NegOne
-    | Black => Score.One
+    | White => NegOne
+    | Black => One
     }
 }
 
@@ -182,9 +182,7 @@ let getOpponentScores = (scores, id) =>
     )
   }
 
-@ocaml.doc("
- * USCF § 34E1
- ")
+@ocaml.doc("USCF § 34E1")
 let getMedianScore = (scores, id) =>
   scores
   ->getOpponentScores(id)
@@ -194,23 +192,17 @@ let getMedianScore = (scores, id) =>
   ->List.tail
   ->Option.mapWithDefault(Score.Sum.zero, Score.Sum.sum)
 
-@ocaml.doc("
- * USCF § 34E2.
- ")
+@ocaml.doc("USCF § 34E2.")
 let getSolkoffScore = (scores, id) => scores->getOpponentScores(id)->Score.Sum.sum
 
-@ocaml.doc("
- * Turn the regular score list into a \"running\" score list.
- ")
+@ocaml.doc("Turn the regular score list into a \"running\" score list.")
 let runningReducer = (acc, score) =>
   switch acc {
   | list{last, ...rest} => list{Score.Sum.add(last, Score.toSum(score)), last, ...rest}
   | list{} => list{score->Score.toSum}
   }
 
-@ocaml.doc("
- * USCF § 34E3.
- ")
+@ocaml.doc("USCF § 34E3.")
 let getCumulativeScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
@@ -218,9 +210,7 @@ let getCumulativeScore = (scores, id) =>
     resultsNoByes->List.reduce(list{}, runningReducer)->Score.Sum.calcScore(~adjustment)
   }
 
-@ocaml.doc("
- * USCF § 34E4.
- ")
+@ocaml.doc("USCF § 34E4.")
 let getCumulativeOfOpponentScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
@@ -236,22 +226,20 @@ let getCumulativeOfOpponentScore = (scores, id) =>
     ->Score.Sum.sum
   }
 
-@ocaml.doc("
- * USCF § 34E6.
- ")
+@ocaml.doc("USCF § 34E6.")
 let getColorBalanceScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({colorScores, _}) => Score.sum(colorScores)
   }
 
-let mapTieBreak = x =>
+let mapTieBreak = (x: TieBreak.t) =>
   switch x {
-  | TieBreak.Median => getMedianScore
-  | TieBreak.Solkoff => getSolkoffScore
-  | TieBreak.Cumulative => getCumulativeScore
-  | TieBreak.CumulativeOfOpposition => getCumulativeOfOpponentScore
-  | TieBreak.MostBlack => getColorBalanceScore
+  | Median => getMedianScore
+  | Solkoff => getSolkoffScore
+  | Cumulative => getCumulativeScore
+  | CumulativeOfOpposition => getCumulativeOfOpponentScore
+  | MostBlack => getColorBalanceScore
   }
 
 type scores = {
@@ -261,9 +249,9 @@ type scores = {
 }
 
 @ocaml.doc("
- * `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
- * tiebreak results to sort by, and in what order. It is expected that `a` and
- *`b` will have a result for every item in `tieBreaks`.
+ `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
+ tiebreak results to sort by, and in what order. It is expected that `a` and
+ b` will have a result for every item in `tieBreaks`.
  ")
 let standingsSorter = (tieBreaks, a, b) => {
   let rec tieBreaksCompare = tieBreaks =>

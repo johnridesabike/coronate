@@ -9,7 +9,8 @@ external localStorage: LocalForage_Config.driver = "LOCALSTORAGE"
 @module("localforage")
 external clear: unit => Js.Promise.t<unit> = "clear"
 
-@ocaml.doc(" Data API ") @bs.send
+/* Data API */
+@bs.send
 external setItem: (t, string, Js.Json.t) => Js.Promise.t<unit> = "setItem"
 @bs.send
 external getItem: (t, string) => Js.Promise.t<Js.Nullable.t<Js.Json.t>> = "getItem"
@@ -21,7 +22,8 @@ external removeItem: (t, string) => Js.Promise.t<unit> = "removeItem"
 @bs.send
 external iterate: (t, @uncurry (Js.Json.t, string, int) => unit) => Js.Promise.t<unit> = "iterate"
 
-@ocaml.doc(" Settings API ") @bs.send
+/* Settings API */
+@bs.send
 external setDriver: (t, LocalForage_Config.driver) => unit = "setDriver"
 @bs.send
 external setDriverMany: (t, array<LocalForage_Config.driver>) => unit = "setDriver"

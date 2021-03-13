@@ -8,7 +8,7 @@ import * as Pervasives from "bs-platform/lib/es6/pervasives.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Db$Coronate from "../../Db.bs.js";
 import * as Data_Id$Coronate from "../../Data/Data_Id.bs.js";
-import * as TestData$Coronate from "../../TestData.bs.js";
+import * as TestData$Coronate from "../../testdata/TestData.bs.js";
 import * as Data_Player$Coronate from "../../Data/Data_Player.bs.js";
 import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.bs.js";
 import * as Data_Converters$Coronate from "../../Data/Data_Converters.bs.js";

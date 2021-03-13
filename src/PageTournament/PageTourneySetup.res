@@ -3,10 +3,10 @@ open Router
 open Data
 
 @ocaml.doc("
- * Why are dates so complicated?
- * Note to future self & other maintainers: getDate() begins at 1, and
- * getMonth() begins at 0. An HTML date input requires that the month begins at
- * 1 and the JS Date() object requires that the month begins at 0.
+ Why are dates so complicated?
+ Note to future self & other maintainers: getDate() begins at 1, and
+ getMonth() begins at 0. An HTML date input requires that the month begins at
+ 1 and the JS Date() object requires that the month begins at 0.
  ")
 let makeDateInput = date => {
   open Js.Date
@@ -26,9 +26,9 @@ type inputs =
   | NotEditing
 
 @react.component
-let make = (~tournament) => {
-  let {LoadTournament.tourney: tourney, setTourney, _} = tournament
-  let {Tournament.name: name, date, roundList, _} = tourney
+let make = (~tournament: LoadTournament.t) => {
+  let {tourney, setTourney, _} = tournament
+  let {name, date, roundList, _} = tourney
   let (editing, setEditing) = React.useState(() => NotEditing)
   let nameInput = React.useRef(Js.Nullable.null)
   let dateInput = React.useRef(Js.Nullable.null)
@@ -51,7 +51,7 @@ let make = (~tournament) => {
   let changeToOne = _ => {
     setTourney({
       ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Full),
+      roundList: roundList->Rounds.updateByeScores(Full),
     })
     Utils.alert("Bye scores updated to 1.")
   }
@@ -59,7 +59,7 @@ let make = (~tournament) => {
   let changeToOneHalf = _ => {
     setTourney({
       ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Config.ByeValue.Half),
+      roundList: roundList->Rounds.updateByeScores(Half),
     })
     Utils.alert(`Bye scores updated to ½.`)
   }

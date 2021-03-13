@@ -64,8 +64,7 @@ module Form = %form(
 
 let errorNotification = x =>
   switch x {
-  | Some(Error(e)) =>
-    <Utils.Notification kind=Utils.Notification.Error> {e->React.string} </Utils.Notification>
+  | Some(Error(e)) => <Utils.Notification kind=Error> {e->React.string} </Utils.Notification>
   | Some(Ok(_))
   | None => React.null
   }
@@ -84,7 +83,7 @@ module NewPlayerForm = {
             lastName: lastName,
             rating: rating,
             id: id,
-            type_: Player.Type.Person,
+            type_: Person,
             matchCount: matchCount,
           },
         ),
@@ -93,8 +92,8 @@ module NewPlayerForm = {
       | None => ()
       | Some(fn) => fn(id)
       }
-      cb.Formality.notifyOnSuccess(None)
-      cb.Formality.reset()
+      cb.notifyOnSuccess(None)
+      cb.reset()
     })
 
     <form
@@ -174,7 +173,7 @@ module PlayerList = {
     let dialog = Hooks.useBool(false)
     React.useEffect1(() => {
       windowDispatch(Window.SetTitle("Players"))
-      Some(() => windowDispatch(Window.SetTitle("")))
+      Some(() => windowDispatch(SetTitle("")))
     }, [windowDispatch])
     let delPlayer = (event, id) => {
       ReactEvent.Mouse.preventDefault(event)
@@ -261,21 +260,14 @@ module PlayerList = {
 module Profile = {
   @react.component
   let make = (
-    ~player,
+    ~player: Player.t,
     ~players,
     ~playersDispatch,
     ~config: Data.Config.t,
     ~configDispatch,
     ~windowDispatch=_ => (),
   ) => {
-    let {
-      Player.id: playerId,
-      firstName,
-      lastName,
-      rating,
-      matchCount: initialMatchCount,
-      type_,
-    } = player
+    let {id: playerId, firstName, lastName, rating, matchCount: initialMatchCount, type_} = player
     open Form
     let form = useForm(
       ~initialInput={
@@ -298,14 +290,14 @@ module Profile = {
             },
           ),
         )
-        cb.Formality.notifyOnSuccess(None)
-        cb.Formality.reset()
+        cb.notifyOnSuccess(None)
+        cb.reset()
       },
     )
     let playerName = Utils.String.concat(list{form.input.firstName, form.input.lastName}, ~sep=" ")
     React.useEffect2(() => {
       windowDispatch(Window.SetTitle("Profile for " ++ playerName))
-      Some(() => windowDispatch(Window.SetTitle("")))
+      Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
     let avoidMap = Data.Config.Pair.Set.toMap(config.avoidPairs)
     let singAvoidList = switch Map.get(avoidMap, playerId) {
@@ -481,7 +473,7 @@ module Profile = {
               onClick={_ =>
                 switch Config.Pair.make(playerId, pId) {
                 | None => ()
-                | Some(pair) => configDispatch(Db.DelAvoidPair(pair))
+                | Some(pair) => configDispatch(DelAvoidPair(pair))
                 }}>
               <Icons.Trash />
             </button>
@@ -525,14 +517,14 @@ module Profile = {
 
 @react.component
 let make = (~id=?, ~windowDispatch=?) => {
-  let {Db.items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
+  let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (sorted, sortDispatch) = Hooks.useSortedTable(
     ~table=Map.valuesToArray(players),
     ~column=sortName,
     ~isDescending=false,
   )
   React.useEffect2(() => {
-    sortDispatch(Hooks.SetTable(Map.valuesToArray(players)))
+    sortDispatch(SetTable(Map.valuesToArray(players)))
     None
   }, (players, sortDispatch))
   let (config, configDispatch) = Db.useConfig()

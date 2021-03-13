@@ -1,7 +1,5 @@
 module ByeValue: {
-  type t =
-    | Full
-    | Half
+  type t = Full | Half
 
   let toFloat: t => float
 
@@ -26,8 +24,8 @@ module Pair: {
     let fromArray: array<pair> => t
 
     @ocaml.doc("
-     * Flatten the `(id1, id2), (id1, id3)` structure into an easy-to-access
-     * `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
+     Flatten the `(id1, id2), (id1, id3)` structure into an easy-to-access
+     `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
      ")
     let toMap: t => Data_Id.Map.t<list<Data_Id.t>>
   }

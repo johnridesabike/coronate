@@ -18,9 +18,9 @@ let make: (
 ) => React.element
 
 @ocaml.doc("
- * I extracted this logic to its own module so it could be easily
- * reused (e.g. in testing). It may have also made the whole component tree more
- * complicated.
+ I extracted this logic to its own module so it could be easily
+ reused (e.g. in testing). It may have also made the whole component tree more
+ complicated.
  ")
 type roundData = {
   activePlayersCount: int,

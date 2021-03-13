@@ -1,14 +1,3 @@
-/*
-let autoPair:
-  (
-    ~pairData: Data.Id.Map.t(Pairing.t),
-    ~byeValue: Data.Config.ByeValue.t,
-    ~playerMap: Data.Id.Map.t(Data.Player.t),
-    ~byeQueue: array(Data.Id.t)
-  ) =>
-  list(Data.Match.t);
-*/
-
 @react.component
 let make: (
   ~roundId: int,

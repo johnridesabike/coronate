@@ -1,12 +1,11 @@
 module D = Js.Dict
-module LF = LocalForageJs
+module LF = LocalForage_Js
 module P = Js.Promise
-module A = Js.Array
+module A = Js.Array2
 module Id = LocalForage_Id
-include LocalForage_LoadAllPlugins
 
 type t<'a, 'id> = {
-  store: LocalForageJs.t,
+  store: LF.t,
   encode: (. 'a) => Js.Json.t,
   decode: (. Js.Json.t) => 'a,
 }
@@ -32,10 +31,10 @@ let getKeys = ({store, _}) => LF.keys(store)
 
 let mapValues = ((key, value), ~f) => (key, f(. value))
 
-let parseItems = (decode, items) => items |> D.entries |> A.map(mapValues(~f=decode))
+let parseItems = (decode, items) => items->D.entries->A.map(mapValues(~f=decode))
 
 let getItems = ({store, decode, _}, ~keys) =>
-  LocalForage_GetItemsJs.dictFromArray(store, keys) |> P.then_(items =>
+  LocalForage_Plugins.GetItems.dictFromArray(store, keys) |> P.then_(items =>
     switch parseItems(decode, items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)
@@ -43,7 +42,7 @@ let getItems = ({store, decode, _}, ~keys) =>
   )
 
 let getAllItems = ({store, decode, _}) =>
-  LocalForage_GetItemsJs.allDict(store) |> P.then_(items =>
+  LocalForage_Plugins.GetItems.allDict(store) |> P.then_(items =>
     switch parseItems(decode, items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)
@@ -51,9 +50,9 @@ let getAllItems = ({store, decode, _}) =>
   )
 
 let setItems = ({store, encode, _}, ~items) =>
-  items |> A.map(mapValues(~f=encode)) |> D.fromArray |> LocalForage_SetItemsJs.fromDict(store)
+  items->A.map(mapValues(~f=encode))->D.fromArray->LocalForage_Plugins.SetItems.fromDict(store, _)
 
-let removeItems = ({store, _}, ~items) => LocalForage_RemoveItemsJs.fromArray(store, items)
+let removeItems = ({store, _}, ~items) => LocalForage_Plugins.RemoveItems.fromArray(store, items)
 
 let iterateU = ({store, decode, _}, ~f) =>
   LF.iterate(store, (value, key, iterationNumber) => f(. decode(. value), key, iterationNumber))

@@ -4,8 +4,8 @@ module Id = Data.Id
 
 module Selecting = {
   @react.component
-  let make = (~tourney, ~setTourney, ~players, ~playersDispatch) => {
-    let {Tournament.playerIds: playerIds, _} = tourney
+  let make = (~tourney: Tournament.t, ~setTourney, ~players, ~playersDispatch) => {
+    let {playerIds, _} = tourney
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)["value"]
       if ReactEvent.Form.target(event)["checked"] {
@@ -89,8 +89,7 @@ let hasHadBye = (matches, playerId) => {
 module OptionsForm = {
   let errorNotification = x =>
     switch x {
-    | Some(Error(e)) =>
-      <Utils.Notification kind=Utils.Notification.Error> {e->React.string} </Utils.Notification>
+    | Some(Error(e)) => <Utils.Notification kind=Error> {e->React.string} </Utils.Notification>
     | Some(Ok(_))
     | None => React.null
     }
@@ -140,14 +139,14 @@ module OptionsForm = {
         dialog.setFalse()
       })
       <>
-        <button className="button-micro button-primary" onClick={_ => dialog.Hooks.setFalse()}>
+        <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
           {React.string("close")}
         </button>
         <h2>
           {Utils.String.concat(
             list{"Options for", p.firstName, p.lastName},
             ~sep=" ",
-          ) |> React.string}
+          )->React.string}
         </h2>
         <form
           onSubmit={event => {
@@ -217,7 +216,7 @@ module OptionsForm = {
           {Utils.String.concat(
             list{"More options for", p.firstName, p.lastName},
             ~sep=" ",
-          ) |> React.string}
+          )->React.string}
         </Externals.VisuallyHidden>
       </button>
       <Externals.Dialog
@@ -232,15 +231,14 @@ module OptionsForm = {
 
 module PlayerList = {
   @react.component
-  let make = (~players, ~tourney, ~setTourney, ~byeQueue) => <>
+  let make = (~players: Id.Map.t<Player.t>, ~tourney, ~setTourney, ~byeQueue) => <>
     {players
     ->Map.valuesToArray
     ->Array.map(p =>
       <tr
-        key={p.Player.id->Data.Id.toString}
-        className={Cn.append(Player.Type.toString(p.Player.type_), "player")}>
-        <td> {React.string(p.Player.firstName)} </td>
-        <td> {React.string(p.Player.lastName)} </td>
+        key={p.id->Data.Id.toString} className={Cn.append(Player.Type.toString(p.type_), "player")}>
+        <td> {React.string(p.firstName)} </td>
+        <td> {React.string(p.lastName)} </td>
         <td> <OptionsForm setTourney tourney byeQueue p /> </td>
       </tr>
     )
@@ -249,17 +247,9 @@ module PlayerList = {
 }
 
 @react.component
-let make = (~tournament) => {
-  let {
-    LoadTournament.tourney: tourney,
-    setTourney,
-    players,
-    activePlayers,
-    playersDispatch,
-    getPlayer,
-    _,
-  } = tournament
-  let {Tournament.playerIds: playerIds, roundList, byeQueue, _} = tourney
+let make = (~tournament: LoadTournament.t) => {
+  let {tourney, setTourney, players, activePlayers, playersDispatch, getPlayer, _} = tournament
+  let {playerIds, roundList, byeQueue, _} = tourney
   let (isSelecting, setIsSelecting) = React.useState(() =>
     switch playerIds {
     | list{} => true

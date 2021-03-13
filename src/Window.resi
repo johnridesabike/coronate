@@ -1,3 +1,7 @@
+@@text("
+ This contains all of the logic and components that make up the window,
+ including titlebar, default sidebar, and layout.
+ ")
 type action =
   | SetDialog(bool)
   | SetSidebar(bool)

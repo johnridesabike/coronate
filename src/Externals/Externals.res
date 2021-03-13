@@ -1,11 +1,5 @@
-/* ******************************************************************************
-  Misc. utilities
- ******************************************************************************/
 @module("nanoid") external nanoid: unit => string = "nanoid"
 
-/* ******************************************************************************
-  Browser stuff
- ******************************************************************************/
 module FileReader = {
   type t
   @new external make: unit => t = "FileReader"
@@ -14,18 +8,11 @@ module FileReader = {
   @bs.send external readAsText: (t, string) => unit = "readAsText"
 }
 
-/* ******************************************************************************
-  LocalForage
-  This code has moved to https://github.com/johnridesabike/bs-localforage
- ******************************************************************************/
-/* ******************************************************************************
-  Components
- ******************************************************************************/
-
 module VisuallyHidden = {
   @module("@reach/visually-hidden") @react.component
   external make: (~children: React.element) => React.element = "default"
 }
+
 module Dialog = {
   /* This binding is awkward to account for Reason's inability to directly use
      aria-* properties with components. The second make function fixes it for

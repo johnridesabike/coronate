@@ -29,14 +29,14 @@ let make = (~windowDispatch=_ => ()) => {
   let makeTournament = event => {
     ReactEvent.Form.preventDefault(event)
     let id = Data.Id.random()
-    dispatch(Db.Set(id, Data.Tournament.make(~id, ~name=newTourneyName)))
+    dispatch(Set(id, Data.Tournament.make(~id, ~name=newTourneyName)))
     setNewTourneyName(_ => "")
     dialog.setFalse()
   }
   let deleteTournament = (id, name) => {
     let message = j`Are you sure you want to delete “$name”?`
     if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
-      dispatch(Db.Del(id))
+      dispatch(Del(id))
     }
   }
   <Window.Body>

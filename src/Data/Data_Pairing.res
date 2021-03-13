@@ -21,33 +21,33 @@ let divisiblePriority = (dividend, divisor) => dividend /. divisor
 /* The following values probably need to be tweaked a lot. */
 
 @ocaml.doc("
- * The weight given to avoid players meeting twice. This same weight is given to
- * avoid matching players on each other's \"avoid\" list.
- * This is the highest priority. (USCF § 27A1)
+ The weight given to avoid players meeting twice. This same weight is given to
+ avoid matching players on each other's \"avoid\" list.
+ This is the highest priority. (USCF § 27A1)
  ")
 let avoidMeetingTwice = priority(32.0)
 
 @ocaml.doc("
- * The weight given to match players with equal scores. This gets divided
- * against the difference between each players' scores, plus one. For example,
- * players with scores `1` and `3` would have this priority divided by `3`.
- * Players with scores `0` and `3` would have this priority divided by `4`.
- * Players with equal scores would divide it by `1`, leaving it unchanged.
- * (USCF § 27A2)
+ The weight given to match players with equal scores. This gets divided
+ against the difference between each players' scores, plus one. For example,
+ players with scores `1` and `3` would have this priority divided by `3`.
+ Players with scores `0` and `3` would have this priority divided by `4`.
+ Players with equal scores would divide it by `1`, leaving it unchanged.
+ (USCF § 27A2)
  ")
 let sameScores = divisiblePriority(16.0)
 
 @ocaml.doc("
- * The weight given to match players in lower versus upper halves. This is only
- * applied to players being matched within the same score group. (USCF § 27A3)
+ The weight given to match players in lower versus upper halves. This is only
+ applied to players being matched within the same score group. (USCF § 27A3)
  ")
 let halfPosition = divisiblePriority(8.0)
 let sameHalfPriority = _ => 0.0
 let differentHalf = isDiffHalf => isDiffHalf ? halfPosition : sameHalfPriority
 
 @ocaml.doc("
- * The weight given to match players with opposite due colors.
- * (USCF § 27A4 and § 27A5)
+ The weight given to match players with opposite due colors.
+ (USCF § 27A4 and § 27A5)
  ")
 let differentDueColor = priority(4.0)
 

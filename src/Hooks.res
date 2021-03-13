@@ -17,19 +17,13 @@ let useBool = init => {
   }
 }
 
-@ocaml.doc("
- * Begin the sortable table hook.
- ")
+@ocaml.doc("Begin the sortable table hook.")
 type getter<'a> =
   | GetString((. 'a) => string)
   | GetInt((. 'a) => int)
   | GetFloat((. 'a) => float)
   | GetDate((. 'a) => Js.Date.t)
 
-@ocaml.doc("
- * Arrays or lists? I'm using arrays because this data only exists to be
- * rendered in React.
- ")
 type tableState<'a> = {
   isDescending: bool,
   column: getter<'a>,
@@ -78,7 +72,7 @@ module SortButton = {
        outside a React component. If you try to define them inline, e.g.
        `<... sortKey=KeyString(nameGet)...>` then the comparisons will always
        return false. This is due to how Bucklescript compiles and how JS
-       comparisons work. IDK if there's a more idiomatic ReasonML way to do this
+       comparisons work. IDK if there's a more idiomatic way to do this
        and ensure correct comparisons.
  */
     let setKeyOrToggleDir = () =>
@@ -121,10 +115,10 @@ let useLoadingCursorUntil = isLoaded => React.useEffect1(() => {
   }, [isLoaded])
 
 @ocaml.doc("
- * For the two components that use this, their logic is basically the same but
- * their markup is slightly different. We may want to just merge them into one
- * component instead of managing two similar components and one higher-order
- * component.
+ For the two components that use this, their logic is basically the same but
+ their markup is slightly different. We may want to just merge them into one
+ component instead of managing two similar components and one higher-order
+ component.
  ")
 type scoreInfo = {
   player: Data.Player.t,
