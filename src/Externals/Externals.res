@@ -14,7 +14,7 @@ module VisuallyHidden = {
 }
 
 module Dialog = {
-  /* This binding is awkward to account for Reason's inability to directly use
+  /* This binding is awkward to account for ReScript's inability to directly use
      aria-* properties with components. The second make function fixes it for
      us. I don't know if there's a better way of doing this.
      https://dev.to/johnridesabike/binding-external-components-with-aria-properties-in-reasonreact-5pj

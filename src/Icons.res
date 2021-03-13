@@ -161,11 +161,6 @@ module SimpleIcon = (
   React.setDisplayName(make, IconData.icon.title)
 }
 
-module Reason = SimpleIcon({
-  @module("simple-icons/icons/reason")
-  external icon: simpleIcon = "default"
-})
-
 module React = SimpleIcon({
   @module("simple-icons/icons/react")
   external icon: simpleIcon = "default"

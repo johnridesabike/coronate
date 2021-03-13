@@ -57,7 +57,7 @@ module About = {
         | None => React.null
         }}
         <p>
-          {list{"Copyright ", Utils.Entities.copy, " 2020 John", Utils.Entities.nbsp, "Jackson"}
+          {list{"Copyright ", Utils.Entities.copy, " 2021 John", Utils.Entities.nbsp, "Jackson"}
           ->Utils.String.concat(~sep="")
           ->React.string}
         </p>

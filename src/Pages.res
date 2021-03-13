@@ -75,7 +75,7 @@ module Splash = {
         </div>
         <footer className={Cn.append(Style.footer, "body-20")}>
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
-            <p> {React.string("Copyright " ++ (Utils.Entities.copy ++ " 2020 John Jackson."))} </p>
+            <p> {React.string("Copyright " ++ (Utils.Entities.copy ++ " 2021 John Jackson."))} </p>
             <p>
               {React.string("Coronate is free software.")}
               <br />
@@ -97,16 +97,18 @@ module Splash = {
             </p>
             <p>
               {React.string("Built with ")}
-              <a className=Style.footerLink href="https://reasonml.github.io/">
-                {React.string("Reason")}
+              <a className=Style.footerLink href="https://rescript-lang.org/">
+                {React.string("Rescript")}
               </a>
               {React.string(" & ")}
-              <a className=Style.footerLink href="https://reasonml.github.io/reason-react/">
-                {React.string("ReasonReact")}
+              <a className=Style.footerLink href="https://reactjs.org/">
+                {React.string("React")}
               </a>
               {React.string(". ")}
               <span style={ReactDOMRe.Style.make(~fontSize="16px", ())}>
-                <Icons.Reason /> {React.string(" ")} <Icons.React />
+                <img src=Utils.WebpackAssets.rescript alt="" height="16" width="16" />
+                {React.string(" ")}
+                <Icons.React />
               </span>
             </p>
           </div>
