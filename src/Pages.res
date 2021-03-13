@@ -98,7 +98,7 @@ module Splash = {
             <p>
               {React.string("Built with ")}
               <a className=Style.footerLink href="https://rescript-lang.org/">
-                {React.string("Rescript")}
+                {React.string("ReScript")}
               </a>
               {React.string(" & ")}
               <a className=Style.footerLink href="https://reactjs.org/">
