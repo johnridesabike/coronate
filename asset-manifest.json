@@ -1,28 +1,27 @@
 {
   "files": {
-    "main.css": "./static/css/main.79fb8b48.chunk.css",
-    "main.js": "./static/js/main.1607dd9e.chunk.js",
-    "main.js.map": "./static/js/main.1607dd9e.chunk.js.map",
-    "runtime-main.js": "./static/js/runtime-main.9bad3f34.js",
-    "runtime-main.js.map": "./static/js/runtime-main.9bad3f34.js.map",
-    "static/css/2.e027f1bf.chunk.css": "./static/css/2.e027f1bf.chunk.css",
-    "static/js/2.d3247a2b.chunk.js": "./static/js/2.d3247a2b.chunk.js",
-    "static/js/2.d3247a2b.chunk.js.map": "./static/js/2.d3247a2b.chunk.js.map",
+    "main.css": "./static/css/main.00e44912.chunk.css",
+    "main.js": "./static/js/main.81d1d24b.chunk.js",
+    "main.js.map": "./static/js/main.81d1d24b.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.ec50d8b9.js",
+    "runtime-main.js.map": "./static/js/runtime-main.ec50d8b9.js.map",
+    "static/css/2.31d516f2.chunk.css": "./static/css/2.31d516f2.chunk.css",
+    "static/js/2.b28b0a7a.chunk.js": "./static/js/2.b28b0a7a.chunk.js",
+    "static/js/2.b28b0a7a.chunk.js.map": "./static/js/2.b28b0a7a.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.fa79f67aab1d81f424fd4a86fa9c08de.js": "./precache-manifest.fa79f67aab1d81f424fd4a86fa9c08de.js",
-    "service-worker.js": "./service-worker.js",
-    "static/css/2.e027f1bf.chunk.css.map": "./static/css/2.e027f1bf.chunk.css.map",
-    "static/css/main.79fb8b48.chunk.css.map": "./static/css/main.79fb8b48.chunk.css.map",
-    "static/js/2.d3247a2b.chunk.js.LICENSE.txt": "./static/js/2.d3247a2b.chunk.js.LICENSE.txt",
-    "static/media/caution.svg": "./static/media/caution.01a9c1c3.svg",
-    "static/media/index.css": "./static/media/fira-sans-latin-900italic.d9d38660.woff2",
-    "static/media/icon-min.svg": "./static/media/icon-min.53b3e3eb.svg"
+    "static/css/2.31d516f2.chunk.css.map": "./static/css/2.31d516f2.chunk.css.map",
+    "static/css/main.00e44912.chunk.css.map": "./static/css/main.00e44912.chunk.css.map",
+    "static/js/2.b28b0a7a.chunk.js.LICENSE.txt": "./static/js/2.b28b0a7a.chunk.js.LICENSE.txt",
+    "static/media/caution.a8d38854.svg": "./static/media/caution.a8d38854.svg",
+    "static/media/index.css": "./static/media/fira-sans-latin-900italic.b0ef5a72.woff2",
+    "static/media/icon-min.738074f5.svg": "./static/media/icon-min.738074f5.svg",
+    "static/media/rescript.a088c7b6.svg": "./static/media/rescript.a088c7b6.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.9bad3f34.js",
-    "static/css/2.e027f1bf.chunk.css",
-    "static/js/2.d3247a2b.chunk.js",
-    "static/css/main.79fb8b48.chunk.css",
-    "static/js/main.1607dd9e.chunk.js"
+    "static/js/runtime-main.ec50d8b9.js",
+    "static/css/2.31d516f2.chunk.css",
+    "static/js/2.b28b0a7a.chunk.js",
+    "static/css/main.00e44912.chunk.css",
+    "static/js/main.81d1d24b.chunk.js"
   ]
 }
