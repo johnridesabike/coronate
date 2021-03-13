@@ -44,9 +44,8 @@ module String = {
 let alert = Webapi.Dom.Window.alert(_, Webapi.Dom.window)
 
 module WebpackAssets = {
-  @val external require: string => string = "require"
-  let logo = require("./assets/icon-min.svg")
-  let caution = require("./assets/caution.svg")
+  @module("./assets/icon-min.svg") external logo: string = "default"
+  @module("./assets/caution.svg") external caution: string = "default"
 }
 
 module Entities = {
