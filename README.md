@@ -56,14 +56,17 @@ npm install
 Coronate works completely in your local browser. Running it only requires two 
 commands.
 
-First run this to compile the Reason source:
-
+First run this to compile the ReScript source:
 ```
-npm run re:watch
+npm run build:res
+```
+
+Alternatively, you can run the compiler in watch mode:
+``
+npm run start:res
 ```
 
 Then run this to start the app:
-
 ```
 npm start
 ```
@@ -76,8 +79,7 @@ a button to back up your data in an external file.
 
 ## 🔧 Running the tests
 
-Just as with using the live version, you need to run `npm run re:watch` first
-(but not if you're using an editor that compiles Reason automatically).
+Just as with using the live version, you need to run `npm run build:res` first.
 
 Then you can run the tests with the command:
 ```
@@ -92,16 +94,12 @@ To create an optimized version that can be uploaded to your own website, run:
 npm run build
 ```
 
-Coronate includes an [esy](https://esy.sh/) configuration for compatability with
-native development tools. If you prefer using native Reason tooling and esy, you
-can use it just by launching your editor with `esy`, such as `esy vim`.
-
 ## ⛏️ Built Using
 
 - [Node.js](https://nodejs.org/en/) - JavaScript runtime
 - [Create React App](https://create-react-app.dev) - Build and development configuration
-- [ReasonML](https://reasonml.github.io) - most of the code
-- [ReasonReact](https://reasonml.github.io/reason-react/) - interface
+- [ReScript](https://rescript-lang.org/) - most of the code
+- [ReScript-React](https://rescript-lang.org/docs/react/latest/introduction) - interface
 - [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
 - [bs-css](https://github.com/SentiaAnalytics/bs-css) (with [Emotion](https://emotion.sh/)) - styling
 - [Feather](https://feathericons.com/) - icons
