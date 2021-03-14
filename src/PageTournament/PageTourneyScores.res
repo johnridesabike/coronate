@@ -2,31 +2,7 @@ open Belt
 open Data
 module Id = Data.Id
 
-module Style = {
-  open Css
-  open Utils.PhotonColors
-  let table = style(list{borderCollapse(#collapse), unsafe("width", "min-content")})
-  let topHeader = style(list{verticalAlign(#bottom)})
-  let compact = style(list{})
-  let row = style(list{
-    selector(":nth-of-type(even)", list{backgroundColor(white_100)}),
-    selector(":nth-of-type(odd)", list{backgroundColor(grey_20)}),
-  })
-  let rowTd = style(list{borderWidth(#px(1)), borderColor(grey_40), borderStyle(#solid)})
-  let rowTh = style(list{
-    borderBottomStyle(#solid),
-    borderWidth(#px(1)),
-    borderColor(grey_40),
-    backgroundColor(white_100),
-  })
-  let playerName = style(list{textAlign(#left), color(grey_90)})
-  let rank = style(list{textAlign(#center), color(grey_90)})
-  let number = style(list{padding(#px(4))})
-}
-
-type size =
-  | Compact
-  | Expanded
+type size = Compact | Expanded
 
 let isCompact = x =>
   switch x {
@@ -44,7 +20,7 @@ module ScoreTable = {
       ->Scoring.createStandingList(tieBreaks)
       ->List.keep(({id, _}) => !Data.Id.isDummy(id))
       ->Scoring.createStandingTree
-    <table className={Cn.append(Style.table, Style.compact->Cn.on(isCompact(size)))}>
+    <table className={"pagescores__table"}>
       <caption
         className={Cn.append(
           "title-30"->Cn.on(isCompact(size)),
@@ -53,7 +29,7 @@ module ScoreTable = {
         {React.string(title)}
       </caption>
       <thead>
-        <tr className=Style.topHeader>
+        <tr className="pagescores__topheader">
           <th className="title-10" scope="col"> {React.string("Rank")} </th>
           <th className="title-10" scope="col"> {React.string("Name")} </th>
           <th className="title-10" scope="col"> {React.string("Score")} </th>
@@ -75,16 +51,11 @@ module ScoreTable = {
           ->List.toArray
           ->Array.reverse
           ->Array.mapWithIndex((i, standing) =>
-            <tr key={standing.id->Data.Id.toString} className=Style.row>
+            <tr key={standing.id->Data.Id.toString} className="pagescores__row">
               {i == 0
               /* Only display the rank once */
                 ? <th
-                    className={Cn.fromList(list{
-                      "table__number",
-                      Style.number,
-                      Style.rank,
-                      Style.rowTh,
-                    })}
+                    className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
                     rowSpan={List.size(standingsFlat)}
                     scope="row">
                     {React.int(rank + 1)}
@@ -93,7 +64,7 @@ module ScoreTable = {
               {/* It just uses <td> if it's compact. */
               switch size {
               | Compact =>
-                <td className={Cn.append(Style.rowTd, Style.playerName)}>
+                <td className={"pagescores__row-td pagescores__playername"}>
                   {getPlayer(standing.Scoring.id).Player.firstName |> React.string}
                   {Utils.Entities.nbsp->React.string}
                   {getPlayer(standing.Scoring.id).Player.lastName |> React.string}
@@ -101,14 +72,14 @@ module ScoreTable = {
               | Expanded =>
                 <Utils.TestId
                   testId={"rank-" ++ (Int.toString(rank + 1) ++ ("." ++ Int.toString(i)))}>
-                  <th className={Cn.append(Style.rowTh, Style.playerName)} scope="row">
+                  <th className={"pagescores__row-th pagescores__playername"} scope="row">
                     {getPlayer(standing.Scoring.id).Player.firstName |> React.string}
                     {Utils.Entities.nbsp->React.string}
                     {getPlayer(standing.Scoring.id).Player.lastName |> React.string}
                   </th>
                 </Utils.TestId>
               }}
-              <td className={Cn.fromList(list{Style.number, Style.rowTd, "table__number"})}>
+              <td className={"pagescores__number pagescores__row-td table__number"}>
                 {standing.Scoring.score
                 ->Scoring.Score.Sum.toNumeral
                 ->Numeral.format("1/2")
@@ -122,7 +93,7 @@ module ScoreTable = {
                 ->Array.map(((j, score)) =>
                   <td
                     key={Scoring.TieBreak.toString(j)}
-                    className={Cn.append(Style.rowTd, "table__number")}>
+                    className={"pagescores__row-td table__number"}>
                     {score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}
                   </td>
                 )
@@ -320,8 +291,8 @@ module Crosstable = {
     }
     let change = Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0")
     <>
-      <td className={Cn.append(Style.rowTd, "table__number")}> {lastRating->React.int} </td>
-      <td className={Cn.append(Style.rowTd, "table__number body-10")}> {React.string(change)} </td>
+      <td className={"pagescores__row-td table__number"}> {lastRating->React.int} </td>
+      <td className={"pagescores__row-td table__number body-10"}> {React.string(change)} </td>
     </>
   }
 
@@ -336,7 +307,7 @@ module Crosstable = {
     let scoreData = Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
     let standings = Scoring.createStandingList(scoreData, tieBreaks)
 
-    <table className=Style.table>
+    <table className="pagescores__table">
       <caption> {React.string("Crosstable")} </caption>
       <thead>
         <tr>
@@ -357,11 +328,11 @@ module Crosstable = {
         {standings
         ->List.toArray
         ->Array.mapWithIndex((index, standing) =>
-          <tr key={Int.toString(index)} className=Style.row>
-            <th className={Cn.append(Style.rowTh, Style.rank)} scope="col">
+          <tr key={Int.toString(index)} className="pagescores__row">
+            <th className={"pagescores__row-th pagescores__rank"} scope="col">
               {React.int(index + 1)}
             </th>
-            <th className={Cn.append(Style.rowTh, Style.playerName)} scope="row">
+            <th className={"pagescores__row-th pagescores__playername"} scope="row">
               {React.string(getPlayer(standing.Scoring.id).Player.firstName)}
               {React.string(Utils.Entities.nbsp)}
               {React.string(getPlayer(standing.Scoring.id).Player.lastName)}
@@ -370,13 +341,13 @@ module Crosstable = {
             standings
             ->List.toArray
             ->Array.mapWithIndex((index2, opponent) =>
-              <td key={Int.toString(index2)} className={Cn.append(Style.rowTd, "table__number")}>
+              <td key={Int.toString(index2)} className={"pagescores__row-td table__number"}>
                 {getXScore(scoreData, standing.Scoring.id, opponent.Scoring.id)}
               </td>
             )
             ->React.array}
             /* Output their score and rating change */
-            <td className={Cn.append(Style.rowTd, "table__number")}>
+            <td className={"pagescores__row-td table__number"}>
               {standing.Scoring.score
               ->Scoring.Score.Sum.toNumeral
               ->Numeral.format("1/2")

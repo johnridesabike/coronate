@@ -37,7 +37,6 @@
     "@reach/tabs": "^0.11.0",
     "@reach/visually-hidden": "^0.11.0",
     "bfj": "^7.0.2",
-    "bs-css-emotion": "^1.2.0",
     "bs-intl": "^1.1.0",
     "bs-jest-dom": "^4.1.1",
     "bs-platform": "^9.0.2",

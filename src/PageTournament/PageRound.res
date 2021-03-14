@@ -2,24 +2,6 @@ open Belt
 open Data
 module Id = Data.Id
 
-module Style = {
-  open Css
-  open Utils.PhotonColors
-  let winnerSelect = style(list{width(#percent(100.0)), fontSize(#em(1.0))})
-  let table = style(list{
-    width(#percent(100.0)),
-    selector(
-      " tr:not(:last-of-type)",
-      list{borderBottomStyle(#solid), borderWidth(#px(1)), borderColor(grey_40)},
-    ),
-  })
-  let td = style(list{padding2(~v=#px(8), ~h=#px(4))})
-  let rowId = style(list{width(#px(20)), padding(#px(4)), textAlign(#center)})
-  let controls = style(list{width(#px(72))})
-  let matchResult = style(list{width(#px(140))})
-  let playerResult = style(list{width(#px(32)), textAlign(#center)})
-}
-
 module PlayerMatchInfo = {
   @react.component
   let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
@@ -77,7 +59,7 @@ module MatchRow = {
     let blackName = list{blackPlayer.firstName, blackPlayer.lastName}->Utils.String.concat(~sep=" ")
 
     let resultDisplay = (playerColor: Scoring.Color.t) => {
-      let won = <Icons.Award className={Css.style(list{Css.color(Utils.PhotonColors.yellow_70)})} />
+      let won = <Icons.Award className="pageround__wonicon" />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
@@ -165,10 +147,10 @@ module MatchRow = {
           Id.eq(m.id, id) ? "selected" : "buttons-on-hover"
         ),
       )}>
-      <th className={Cn.append(Style.rowId, "table__number")} scope="row">
+      <th className={"pageround__row-id table__number"} scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>
-      <td className=Style.playerResult> {resultDisplay(White)} </td>
+      <td className="pageround__playerresult"> {resultDisplay(White)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-white")}>
         <td
           className={Cn.append(
@@ -179,7 +161,7 @@ module MatchRow = {
           {React.string(whiteName)}
         </td>
       </Utils.TestId>
-      <td className=Style.playerResult> {resultDisplay(Black)} </td>
+      <td className="pageround__playerresult"> {resultDisplay(Black)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-black")}>
         <td
           className={Cn.append(
@@ -190,10 +172,10 @@ module MatchRow = {
           {React.string(blackName)}
         </td>
       </Utils.TestId>
-      <td className={Cn.append(Style.matchResult, "data__input row__controls")}>
+      <td className={"pageround__matchresult data__input row__controls"}>
         <Utils.TestId testId={"match-" ++ (Int.toString(pos) ++ "-select")}>
           <select
-            className=Style.winnerSelect
+            className="pageround__winnerSelect"
             disabled=isDummyRound
             value={Match.Result.toString(m.result)}
             onBlur=setMatchResultBlur
@@ -209,7 +191,7 @@ module MatchRow = {
       | (false, None)
       | (true, _) => React.null
       | (false, Some(setSelectedMatch)) =>
-        <td className={Cn.append(Style.controls, "data__input")}>
+        <td className={"pageround__controls data__input"}>
           {selectedMatch->Option.mapWithDefault(true, id => !Id.eq(id, m.id))
             ? <button
                 className="button-ghost"
@@ -294,7 +276,7 @@ module RoundTable = {
     ~tournament,
     ~scoreData=?,
   ) =>
-    <table className=Style.table>
+    <table className="pageround__table">
       {Js.Array.length(matches) == 0
         ? React.null
         : <>
@@ -303,7 +285,7 @@ module RoundTable = {
             </caption>
             <thead>
               <tr>
-                <th className=Style.rowId scope="col"> {React.string("#")} </th>
+                <th className="pageround__row-id" scope="col"> {React.string("#")} </th>
                 <th scope="col">
                   <Externals.VisuallyHidden>
                     {React.string("White result")}
@@ -330,7 +312,7 @@ module RoundTable = {
       <tbody className="content">
         {Array.mapWithIndex(matches, (pos, m: Match.t) =>
           <MatchRow
-            key={m.Match.id->Data.Id.toString}
+            key={m.id->Data.Id.toString}
             isCompact
             m
             pos
@@ -339,7 +321,7 @@ module RoundTable = {
             setSelectedMatch
             scoreData
             tournament
-            className=Style.td
+            className="pageround__td"
           />
         )->React.array}
       </tbody>
