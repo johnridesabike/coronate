@@ -62,7 +62,7 @@ npm run build:res
 ```
 
 Alternatively, you can run the compiler in watch mode:
-``
+```
 npm run start:res
 ```
 
