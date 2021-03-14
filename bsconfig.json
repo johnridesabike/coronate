@@ -7,17 +7,10 @@
   "sources": [
     {
       "dir": "src",
-      "subdirs": [
-        "PageTournament",
-        "Data",
-        "Externals",
-        "testdata",
-        "__mocks__",
-        "PageTournament/__mocks__"
-      ]
+      "subdirs": true
     },
     {
-      "dir": "src/__tests__",
+      "dir": "__tests__",
       "type": "dev"
     }
   ],
