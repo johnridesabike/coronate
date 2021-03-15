@@ -28,7 +28,7 @@
     "bs-webapi",
     "@glennsl/bs-json",
     "bs-intl",
-    "re-blossom",
+    "rescript-blossom",
     "reason-promise",
     "re-formality"
   ],

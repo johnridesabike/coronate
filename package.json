@@ -71,7 +71,6 @@
     "postcss-normalize": "8.0.1",
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
-    "re-blossom": "^1.1.0",
     "re-classnames": "^5.0.1",
     "re-formality": "^4.0.0-beta.8",
     "react": "^16.13.1",
@@ -82,6 +81,7 @@
     "react-refresh": "^0.9.0",
     "reason-promise": "^1.1.1",
     "reason-react": "^0.9.1",
+    "rescript-blossom": "^2.0.0",
     "simple-icons": "^3.6.0",
     "style-loader": "1.3.0",
     "typeface-fira-sans": "0.0.75",
@@ -118,7 +118,7 @@
       "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!(reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-[a-z\\-]+|bs-[a-z\\-]+)/)"
+      "node_modules/(?!(reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-[a-z\\-]+|rescript-[a-z\\-]+|bs-[a-z\\-]+)/)"
     ],
     "modulePaths": [],
     "moduleNameMapper": {
