@@ -1,3 +1,2 @@
-import "./styles";
-import {init} from "./Index.bs";
+import { init } from "./App.bs";
 init();

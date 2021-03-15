@@ -74,12 +74,7 @@ module About = {
 }
 
 module TitleBar = {
-  module Style = {
-    open Css
-    open Utils.PhotonColors
-    let button = style(list{color(grey_90)})
-  }
-  let toolbarClasses = Cn.append(Style.button, "button-ghost")
+  let toolbarClasses = "win__titlebar-button button-ghost"
   @react.component
   let make = (~isSidebarOpen, ~title, ~dispatch) =>
     <header className="app__header">

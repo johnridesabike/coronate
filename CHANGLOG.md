@@ -1,7 +1,11 @@
 # Changelog
 
-This only covers user-facing changes. Under-the-hood code updates aren't listed
-here.
+## 1.1.2
+
+- Internal changes:
+  - Migrated to ReScript.
+  - Ejected from Create-React-App to optimize build system.
+  - Simplified CSS.
 
 ## 1.1.1
 

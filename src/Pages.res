@@ -1,58 +1,24 @@
 open Belt
 
 module Splash = {
-  module Style = {
-    open Css
-    open Utils.PhotonColors
-    let container = style(list{
-      display(#flex),
-      flexDirection(#column),
-      alignContent(#center),
-      height(#percent(100.0)),
-      justifyContent(#spaceBetween),
-      backgroundColor(grey_10),
-    })
-    let hint = style(list{
-      margin2(~v=#zero, ~h=#auto),
-      /* This reduces the offset of the main title: */
-      height(#px(64)),
-      overflow(#visible),
-    })
-    let hintLi = style(list{margin2(~v=#px(8), ~h=#zero)})
-    let footer = style(list{
-      backgroundColor(ink_80),
-      color(grey_20),
-      padding2(~v=#zero, ~h=#px(16)),
-      display(#flex),
-      justifyContent(#spaceBetween),
-    })
-    let footerLink = style(list{color(teal_50), hover(list{color(teal_60)})})
-    let title = style(list{
-      color(grey_90),
-      margin2(~v=#zero, ~h=#auto),
-      display(#flex),
-      alignItems(#center),
-    })
-    let titleIcon = style(list{flexShrink(1.0), marginRight(#px(8))})
-    let titleText = style(list{flexGrow(1.0)})
-    let subtitle = style(list{textAlign(#right), margin(#zero)})
-  }
   @react.component
   let make = () =>
     <Window.Body>
-      <div className=Style.container>
-        <aside className=Style.hint>
+      <div className="pages__container">
+        <aside className="pages__hint">
           <ol>
-            <li className=Style.hintLi>
+            <li className="pages__hint-item">
               <button className="button-primary" onClick={_ => Db.loadDemoDB()}>
                 {React.string("Click here to load the demo data")}
               </button>
               {React.string(" (optional)")}
             </li>
-            <li className=Style.hintLi>
+            <li className="pages__hint-item">
               <Icons.ArrowLeft /> {React.string(" Select a menu item.")}
             </li>
-            <li className=Style.hintLi> {React.string("Start creating your tournaments!")} </li>
+            <li className="pages__hint-item">
+              {React.string("Start creating your tournaments!")}
+            </li>
           </ol>
           <Utils.Notification kind=Warning>
             {React.string("If you experience glitches or crashes,")}
@@ -60,30 +26,28 @@ module Splash = {
             {React.string("clear your browser cache and try again.")}
           </Utils.Notification>
         </aside>
-        <div className=Style.title>
-          <div className=Style.titleIcon>
+        <div className="pages__title">
+          <div className="pages__title-icon">
             <img src=Utils.WebpackAssets.logo alt="" height="96" width="96" />
           </div>
-          <div className=Style.titleText>
+          <div className="pages__title-text">
             <h1 className="title" style={ReactDOMRe.Style.make(~fontSize="40px", ())}>
               {React.string("Coronate")}
             </h1>
-            <p className={Cn.append(Style.subtitle, "caption-30")}>
-              {React.string("Tournament manager")}
-            </p>
+            <p className={"pages__subtitle caption-30"}> {React.string("Tournament manager")} </p>
           </div>
         </div>
-        <footer className={Cn.append(Style.footer, "body-20")}>
+        <footer className={"pages__footer body-20"}>
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
             <p> {React.string("Copyright " ++ (Utils.Entities.copy ++ " 2021 John Jackson."))} </p>
             <p>
               {React.string("Coronate is free software.")}
               <br />
-              <a className=Style.footerLink href=Utils.github_url>
+              <a className="pages__footer-link" href=Utils.github_url>
                 {React.string("Source code is available")}
               </a>
               {React.string(" under the ")}
-              <a className=Style.footerLink href=Utils.license_url>
+              <a className="pages__footer-link" href=Utils.license_url>
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
@@ -91,17 +55,17 @@ module Splash = {
           </div>
           <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
             <p>
-              <a className=Style.footerLink href=Utils.issues_url>
+              <a className="pages__footer-link" href=Utils.issues_url>
                 {React.string("Suggestions and bug reports are welcome.")}
               </a>
             </p>
             <p>
               {React.string("Built with ")}
-              <a className=Style.footerLink href="https://rescript-lang.org/">
+              <a className="pages__footer-link" href="https://rescript-lang.org/">
                 {React.string("ReScript")}
               </a>
               {React.string(" & ")}
-              <a className=Style.footerLink href="https://reactjs.org/">
+              <a className="pages__footer-link" href="https://reactjs.org/">
                 {React.string("React")}
               </a>
               {React.string(". ")}
