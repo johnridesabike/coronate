@@ -181,10 +181,10 @@ module Sidebar = {
               <HashLink to_=Tournament(tourney.id, Round(id)) onDragStart=noDraggy>
                 {React.int(id + 1)}
                 {isRoundComplete(id)
-                  ? <span className={Cn.append("sidebar__hide-on-close", "caption-20")}>
+                  ? <span className={"sidebar__hide-on-close caption-20"}>
                       {React.string(" Complete ")} <Icons.Check />
                     </span>
-                  : <span className={Cn.append("sidebar__hide-on-close", "caption-20")}>
+                  : <span className={"sidebar__hide-on-close caption-20"}>
                       {React.string(" Not complete ")} <Icons.Alert />
                     </span>}
               </HashLink>
