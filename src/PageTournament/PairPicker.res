@@ -12,7 +12,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   | Some(player) =>
     /* These two reverses ensure that the bye match is added at the end, not
      the beginning */
-    pairs->List.reverse->List.add((player.Pairing.id, Data.Id.dummy))->List.reverse
+    pairs->List.reverse->List.add((player.id, Data.Id.dummy))->List.reverse
   | None => pairs
   }
   let getPlayer = Data.Player.getMaybe(playerMap)
@@ -35,7 +35,7 @@ type listEntry = {
   ideal: float,
 }
 
-let sortByName = Hooks.GetString((. x) => x.player.Player.firstName)
+let sortByName = Hooks.GetString((. x) => x.player.firstName)
 let sortByIdeal = Hooks.GetFloat((. x) => x.ideal)
 
 module SelectList = {
@@ -86,7 +86,7 @@ module SelectList = {
         ->Map.valuesToArray
         ->Array.map(player => {
           player: player,
-          ideal: calcIdealOrNot(pairData->Map.get(player.Player.id)),
+          ideal: calcIdealOrNot(pairData->Map.get(player.id)),
         })
       sortedDispatch(SetTable(table))
       None

@@ -31,8 +31,8 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
     tournamentReducer,
     Map.getExn(tournamentData, tourneyId),
   )
-  let {Tournament.playerIds: playerIds, roundList, _} = tourney
-  let {Db.items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
+  let {playerIds, roundList, _} = tourney
+  let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   /* `activePlayers` is only players to be matched in future matches. */
   let activePlayers = Map.keep(players, (id, _) => playerIds->List.has(id, Id.eq))
   let roundCount = activePlayers->Map.size->calcNumOfRounds

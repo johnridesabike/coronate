@@ -81,8 +81,8 @@ module Selecting = {
 let hasHadBye = (matches, playerId) => {
   open Js.Array2
   matches
-  ->filter((match_: Match.t) => includes([match_.Match.whiteId, match_.Match.blackId], playerId))
-  ->reduce((acc, match_: Match.t) => concat(acc, [match_.Match.whiteId, match_.Match.blackId]), [])
+  ->filter((match: Match.t) => includes([match.whiteId, match.blackId], playerId))
+  ->reduce((acc, match: Match.t) => concat(acc, [match.whiteId, match.blackId]), [])
   ->includes(Data.Id.dummy)
 }
 
@@ -196,12 +196,12 @@ module OptionsForm = {
   }
 
   @react.component
-  let make = (~setTourney, ~tourney: Tournament.t, ~byeQueue, ~p) => {
+  let make = (~setTourney, ~tourney: Tournament.t, ~byeQueue, ~p: Player.t) => {
     let dialog = Hooks.useBool(false)
     <>
       <button
         className="button-micro"
-        disabled={Js.Array2.includes(byeQueue, p.Player.id)}
+        disabled={Js.Array2.includes(byeQueue, p.id)}
         onClick={_ =>
           setTourney({
             ...tourney,

@@ -86,7 +86,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
        * is necessary. If you remove this and someone enters the URL for a
        * nonexistant tournament, then you can corrupt the database.
        */
-      if Id.eq(Id.fromString(tourneyId), tourney.Tournament.id) {
+      if Id.eq(Id.fromString(tourneyId), tourney.id) {
         Db.tournaments->LocalForage.Map.setItem(~key=tourneyId, ~v=tourney)->ignore
       }
     }

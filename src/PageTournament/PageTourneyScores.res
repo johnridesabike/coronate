@@ -65,30 +65,27 @@ module ScoreTable = {
               switch size {
               | Compact =>
                 <td className={"pagescores__row-td pagescores__playername"}>
-                  {getPlayer(standing.Scoring.id).Player.firstName |> React.string}
+                  {getPlayer(standing.id).Player.firstName->React.string}
                   {Utils.Entities.nbsp->React.string}
-                  {getPlayer(standing.Scoring.id).Player.lastName |> React.string}
+                  {getPlayer(standing.id).lastName->React.string}
                 </td> /* Use the name as a header if not compact. */
               | Expanded =>
                 <Utils.TestId
                   testId={"rank-" ++ (Int.toString(rank + 1) ++ ("." ++ Int.toString(i)))}>
                   <th className={"pagescores__row-th pagescores__playername"} scope="row">
-                    {getPlayer(standing.Scoring.id).Player.firstName |> React.string}
+                    {getPlayer(standing.id).firstName->React.string}
                     {Utils.Entities.nbsp->React.string}
-                    {getPlayer(standing.Scoring.id).Player.lastName |> React.string}
+                    {getPlayer(standing.id).lastName->React.string}
                   </th>
                 </Utils.TestId>
               }}
               <td className={"pagescores__number pagescores__row-td table__number"}>
-                {standing.Scoring.score
-                ->Scoring.Score.Sum.toNumeral
-                ->Numeral.format("1/2")
-                ->React.string}
+                {standing.score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}
               </td>
               {switch size {
               | Compact => React.null
               | Expanded =>
-                standing.Scoring.tieBreaks
+                standing.tieBreaks
                 ->List.toArray
                 ->Array.map(((j, score)) =>
                   <td
@@ -253,8 +250,8 @@ module SelectTieBreaks = {
 }
 
 @react.component
-let make = (~tournament) => {
-  let {LoadTournament.getPlayer: getPlayer, tourney, setTourney, _} = tournament
+let make = (~tournament: LoadTournament.t) => {
+  let {getPlayer, tourney, setTourney, _} = tournament
   open Externals.ReachTabs
   <Tabs>
     <TabList>
@@ -285,7 +282,7 @@ module Crosstable = {
 
   let getRatingChangeTds = (scoreData, playerId) => {
     let firstRating = (scoreData->Map.getExn(playerId)).Scoring.firstRating
-    let lastRating = switch Map.getExn(scoreData, playerId).Scoring.ratings {
+    let lastRating = switch Map.getExn(scoreData, playerId).ratings {
     | list{} => firstRating
     | list{rating, ..._} => rating
     }
@@ -299,10 +296,10 @@ module Crosstable = {
   @react.component
   let make = (
     ~tournament as {
-      LoadTournament.tourney: {tieBreaks, roundList, scoreAdjustments, _},
+      tourney: {tieBreaks, roundList, scoreAdjustments, _},
       getPlayer,
       _,
-    },
+    }: LoadTournament.t,
   ) => {
     let scoreData = Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
     let standings = Scoring.createStandingList(scoreData, tieBreaks)
@@ -333,27 +330,24 @@ module Crosstable = {
               {React.int(index + 1)}
             </th>
             <th className={"pagescores__row-th pagescores__playername"} scope="row">
-              {React.string(getPlayer(standing.Scoring.id).Player.firstName)}
+              {React.string(getPlayer(standing.id).firstName)}
               {React.string(Utils.Entities.nbsp)}
-              {React.string(getPlayer(standing.Scoring.id).Player.lastName)}
+              {React.string(getPlayer(standing.id).lastName)}
             </th>
             {/* Output a cell for each other player */
             standings
             ->List.toArray
             ->Array.mapWithIndex((index2, opponent) =>
               <td key={Int.toString(index2)} className={"pagescores__row-td table__number"}>
-                {getXScore(scoreData, standing.Scoring.id, opponent.Scoring.id)}
+                {getXScore(scoreData, standing.id, opponent.id)}
               </td>
             )
             ->React.array}
             /* Output their score and rating change */
             <td className={"pagescores__row-td table__number"}>
-              {standing.Scoring.score
-              ->Scoring.Score.Sum.toNumeral
-              ->Numeral.format("1/2")
-              ->React.string}
+              {standing.score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}
             </td>
-            {getRatingChangeTds(scoreData, standing.Scoring.id)}
+            {getRatingChangeTds(scoreData, standing.id)}
           </tr>
         )
         ->React.array}

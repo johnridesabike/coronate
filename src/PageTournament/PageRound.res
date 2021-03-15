@@ -155,7 +155,7 @@ module MatchRow = {
         <td
           className={Cn.append(
             "table__player row__player",
-            Player.Type.toString(whitePlayer.Player.type_),
+            Player.Type.toString(whitePlayer.type_),
           )}
           id={"match-" ++ (string_of_int(pos) ++ "-white")}>
           {React.string(whiteName)}
@@ -166,7 +166,7 @@ module MatchRow = {
         <td
           className={Cn.append(
             "table__player row__player",
-            Player.Type.toString(blackPlayer.Player.type_),
+            Player.Type.toString(blackPlayer.type_),
           )}
           id={"match-" ++ (string_of_int(pos) ++ "-black")}>
           {React.string(blackName)}
@@ -229,7 +229,7 @@ module MatchRow = {
               <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
                 {React.string("close")}
               </button>
-              <p> {React.string(tourney.Tournament.name)} </p>
+              <p> {React.string(tourney.name)} </p>
               <p>
                 {list{"Round", Int.toString(roundId + 1), "match", Int.toString(pos + 1)}
                 ->Utils.String.concat(~sep=" ")
@@ -330,9 +330,9 @@ module RoundTable = {
 
 module Round = {
   @react.component
-  let make = (~roundId, ~tournament, ~scoreData) => {
-    let {LoadTournament.tourney: tourney, players, setTourney, playersDispatch, _} = tournament
-    let {Tournament.roundList: roundList, _} = tourney
+  let make = (~roundId, ~tournament: LoadTournament.t, ~scoreData) => {
+    let {tourney, players, setTourney, playersDispatch, _} = tournament
+    let {roundList, _} = tourney
     let (selectedMatch, setSelectedMatch) = React.useState(() => None)
 
     let unMatch = (matchId, round) => {
@@ -397,7 +397,7 @@ module Round = {
         }
       }
 
-    switch Rounds.get(tourney.Tournament.roundList, roundId) {
+    switch Rounds.get(tourney.roundList, roundId) {
     | None => <Pages.NotFound />
     | Some(matches) =>
       <div className="content-area">
@@ -449,7 +449,7 @@ module Round = {
 @react.component
 let make = (~roundId, ~tournament) => {
   let {
-    LoadTournament.activePlayersCount: activePlayersCount,
+    activePlayersCount,
     scoreData,
     unmatched,
     unmatchedCount,

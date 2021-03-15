@@ -1,5 +1,5 @@
-open Data
 open Belt
+open Data
 
 @val external node_env: string = "process.env.NODE_ENV"
 
@@ -19,26 +19,26 @@ let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
 let mapToDict = map => map->Data.Id.Map.toStringArray->Js.Dict.fromArray
 
 type input_data = {
-  config: Data.Config.t,
-  players: Data.Id.Map.t<Data.Player.t>,
-  tournaments: Data.Id.Map.t<Data.Tournament.t>,
+  config: Config.t,
+  players: Data.Id.Map.t<Player.t>,
+  tournaments: Data.Id.Map.t<Tournament.t>,
 }
 
 let decodeOptions = json => {
   open Json.Decode
   {
-    config: json |> field("config", Data.Config.decode),
-    players: json |> field("players", dict(Data.Player.decode)) |> dictToMap,
-    tournaments: json |> field("tournaments", dict(Data.Tournament.decode)) |> dictToMap,
+    config: json |> field("config", Config.decode),
+    players: json |> field("players", dict(Player.decode)) |> dictToMap,
+    tournaments: json |> field("tournaments", dict(Tournament.decode)) |> dictToMap,
   }
 }
 
 let encodeOptions = data => {
   open Json.Encode
   object_(list{
-    ("config", Data.Config.encode(data.config)),
-    ("players", Map.map(data.players, Data.Player.encode)->mapToDict->jsonDict),
-    ("tournaments", Map.map(data.tournaments, Data.Tournament.encode)->mapToDict->jsonDict),
+    ("config", Config.encode(data.config)),
+    ("players", Map.map(data.players, Player.encode)->mapToDict->jsonDict),
+    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->jsonDict),
   })
 }
 
@@ -155,7 +155,7 @@ let make = (~windowDispatch=_ => ()) => {
       </form>
       <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">
-        {React.string("Last export: ")} <LastBackupDate date=config.Config.lastBackup />
+        {React.string("Last export: ")} <LastBackupDate date=config.lastBackup />
       </p>
       <p>
         <a

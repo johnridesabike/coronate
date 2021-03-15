@@ -107,9 +107,9 @@ module Sidebar = {
               )) =>
                 switch players->Map.get(id) {
                 | Some(player) =>
-                  let matchCount = player.Player.matchCount - 1
+                  let matchCount = player.matchCount - 1
                   playersDispatch(
-                    Db.Set(player.Player.id, {...player, matchCount: matchCount, rating: rating}),
+                    Set(player.id, {...player, matchCount: matchCount, rating: rating}),
                   )
                 /* Don't try to set dummy or deleted players */
                 | None => ()

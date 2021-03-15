@@ -3,9 +3,9 @@ open Data
 open Router
 module Id = Data.Id
 
-let sortName = Hooks.GetString((. x) => x.Player.firstName)
-let sortRating = Hooks.GetInt((. x) => x.Player.rating)
-let sortMatchCount = Hooks.GetInt((. x) => x.Player.matchCount)
+let sortName = Hooks.GetString((. x: Player.t) => x.firstName)
+let sortRating = Hooks.GetInt((. x: Player.t) => x.rating)
+let sortMatchCount = Hooks.GetInt((. x: Player.t) => x.matchCount)
 
 module Form = %form(
   type input = {
@@ -447,15 +447,15 @@ module Profile = {
         ->Array.reverse
         ->Array.map(pId =>
           <li key={pId->Data.Id.toString}>
-            {React.string(Player.getMaybe(players, pId).Player.firstName)}
+            {React.string(Player.getMaybe(players, pId).firstName)}
             {React.string(" ")}
-            {React.string(Player.getMaybe(players, pId).Player.lastName)}
+            {React.string(Player.getMaybe(players, pId).lastName)}
             <button
               ariaLabel={Utils.String.concat(
                 list{
                   "Remove",
-                  Player.getMaybe(players, pId).Player.firstName,
-                  Player.getMaybe(players, pId).Player.lastName,
+                  Player.getMaybe(players, pId).firstName,
+                  Player.getMaybe(players, pId).lastName,
                   "from avoid list.",
                 },
                 ~sep=" ",
@@ -463,8 +463,8 @@ module Profile = {
               title={Utils.String.concat(
                 list{
                   "Remove",
-                  Player.getMaybe(players, pId).Player.firstName,
-                  Player.getMaybe(players, pId).Player.lastName,
+                  Player.getMaybe(players, pId).firstName,
+                  Player.getMaybe(players, pId).lastName,
                   "from avoid list.",
                 },
                 ~sep=" ",
@@ -498,9 +498,9 @@ module Profile = {
               ->List.toArray
               ->Array.map(pId =>
                 <option key={pId->Data.Id.toString} value={pId->Data.Id.toString}>
-                  {React.string(Player.getMaybe(players, pId).Player.firstName)}
+                  {React.string(Player.getMaybe(players, pId).firstName)}
                   {React.string(" ")}
-                  {React.string(Player.getMaybe(players, pId).Player.lastName)}
+                  {React.string(Player.getMaybe(players, pId).lastName)}
                 </option>
               )
               ->React.array}
