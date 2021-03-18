@@ -18,7 +18,7 @@ use it to run their tournament.
 ![Round screenshot](./screenshot-round.png)
 ![Scoring screenshot](./screenshot-score-detail.png)
 
-## 🏁 Getting Started
+## 🏁 Getting started
 
 These are the basic steps you'll need to follow to get a development copy of
 Coronate running on your machine:
@@ -94,16 +94,13 @@ To create an optimized version that can be uploaded to your own website, run:
 npm run build
 ```
 
-## ⛏️ Built Using
+## ⛏️ Built using
 
-- [Node.js](https://nodejs.org/en/) - JavaScript runtime
-- [Create React App](https://create-react-app.dev) - Build and development configuration
+- [Node.js](https://nodejs.org/en/) - JavaScript
 - [ReScript](https://rescript-lang.org/) - most of the code
-- [ReScript-React](https://rescript-lang.org/docs/react/latest/introduction) - interface
-- [LocalForage](https://localforage.github.io/localForage/) - IndexedDB storage
-- [bs-css](https://github.com/SentiaAnalytics/bs-css) (with [Emotion](https://emotion.sh/)) - styling
-- [Feather](https://feathericons.com/) - icons
-- [Simple Icons](http://simpleicons.org/) - more icons
+- [React](https://rescript-lang.org/docs/react/latest/introduction) - interface
+- [LocalForage](https://localforage.github.io/localForage/) - browser storage
+- [Feather](https://feathericons.com/) & [Simple Icons](http://simpleicons.org/) - icons
 
 ## ✍️ Authors
 
