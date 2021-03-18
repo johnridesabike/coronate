@@ -2,6 +2,7 @@
 
 ## 1.1.2
 
+- Added "Buy Me a Coffee" button and tweaked splash page.
 - Internal changes:
   - Migrated to ReScript.
   - Ejected from Create-React-App to optimize build system.

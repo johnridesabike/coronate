@@ -123,6 +123,7 @@ module More = {
   external make: unit => React.element = "MoreHorizontal"
 }
 
+/*
 type simpleIcon = {
   svg: string,
   title: string,
@@ -160,8 +161,4 @@ module SimpleIcon = (
     </svg>
   React.setDisplayName(make, IconData.icon.title)
 }
-
-module React = SimpleIcon({
-  @module("simple-icons/icons/react")
-  external icon: simpleIcon = "default"
-})
+*/

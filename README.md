@@ -18,6 +18,19 @@ use it to run their tournament.
 ![Round screenshot](./screenshot-round.png)
 ![Scoring screenshot](./screenshot-score-detail.png)
 
+## 🥰 Enjoy using Coronate?
+
+Coronate is free software, but you're welcome to show your appreciation.
+
+<a href="https://www.buymeacoffee.com/johnridesabike" target="_blank">
+  <img
+    src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+    alt="Buy Me A Coffee"
+    height="60"
+    width="217"
+    style="height: 60px !important;width: 217px !important;" />
+</a>
+
 ## 🏁 Getting started
 
 These are the basic steps you'll need to follow to get a development copy of
@@ -100,7 +113,7 @@ npm run build
 - [ReScript](https://rescript-lang.org/) - most of the code
 - [React](https://rescript-lang.org/docs/react/latest/introduction) - interface
 - [LocalForage](https://localforage.github.io/localForage/) - browser storage
-- [Feather](https://feathericons.com/) & [Simple Icons](http://simpleicons.org/) - icons
+- [Feather](https://feathericons.com/) - icons
 
 ## ✍️ Authors
 

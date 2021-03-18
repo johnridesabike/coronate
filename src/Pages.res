@@ -39,10 +39,31 @@ module Splash = {
         </div>
         <footer className={"pages__footer body-20"}>
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
-            <p> {React.string("Copyright " ++ (Utils.Entities.copy ++ " 2021 John Jackson."))} </p>
             <p>
-              {React.string("Coronate is free software.")}
-              <br />
+              <a href="https://www.buymeacoffee.com/johnridesabike" target="_blank">
+                <img
+                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                  alt="Buy Me A Coffee"
+                  height="60"
+                  width="217"
+                  style={ReactDOMRe.Style.make(
+                    ~height="60px !important",
+                    ~width="217px !important;",
+                    (),
+                  )}
+                />
+              </a>
+            </p>
+            <p> {React.string(`Copyright ${Utils.Entities.copy} 2021 John Jackson.`)} </p>
+          </div>
+          <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
+            <p>
+              <a className="pages__footer-link" href=Utils.issues_url>
+                {React.string("Suggestions and bug reports are welcome.")}
+              </a>
+            </p>
+            <p> {React.string("Coronate is free software.")} </p>
+            <p>
               <a className="pages__footer-link" href=Utils.github_url>
                 {React.string("Source code is available")}
               </a>
@@ -51,35 +72,6 @@ module Splash = {
                 {React.string("AGPL v3.0 license")}
               </a>
               {React.string(".")}
-            </p>
-          </div>
-          <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
-            <p>
-              <a className="pages__footer-link" href=Utils.issues_url>
-                {React.string("Suggestions and bug reports are welcome.")}
-              </a>
-            </p>
-            <p>
-              {React.string("Built with ")}
-              <a className="pages__footer-link" href="https://rescript-lang.org/">
-                {React.string("ReScript")}
-              </a>
-              {React.string(" & ")}
-              <a className="pages__footer-link" href="https://reactjs.org/">
-                {React.string("React")}
-              </a>
-              {React.string(". ")}
-              <span style={ReactDOMRe.Style.make(~fontSize="16px", ())} ariaHidden=true>
-                <img
-                  src=Utils.WebpackAssets.rescript
-                  alt=""
-                  height="16"
-                  width="16"
-                  style={ReactDOMRe.Style.make(~verticalAlign="middle", ())}
-                />
-                {React.string(" ")}
-                <Icons.React />
-              </span>
             </p>
           </div>
         </footer>

@@ -31,7 +31,6 @@ let alert: string => unit
 module WebpackAssets: {
   let logo: string
   let caution: string
-  let rescript: string
 }
 
 module Entities: {
