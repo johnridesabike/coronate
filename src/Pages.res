@@ -69,8 +69,14 @@ module Splash = {
                 {React.string("React")}
               </a>
               {React.string(". ")}
-              <span style={ReactDOMRe.Style.make(~fontSize="16px", ())}>
-                <img src=Utils.WebpackAssets.rescript alt="" height="16" width="16" />
+              <span style={ReactDOMRe.Style.make(~fontSize="16px", ())} ariaHidden=true>
+                <img
+                  src=Utils.WebpackAssets.rescript
+                  alt=""
+                  height="16"
+                  width="16"
+                  style={ReactDOMRe.Style.make(~verticalAlign="middle", ())}
+                />
                 {React.string(" ")}
                 <Icons.React />
               </span>
