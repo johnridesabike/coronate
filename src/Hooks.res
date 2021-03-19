@@ -159,7 +159,7 @@ let useScoreInfo = (
     ->List.toArray
     ->Array.mapWithIndex((i, (opId, result)) =>
       <li key={Data.Id.toString(opId) ++ ("-" ++ Int.toString(i))}>
-        {list{
+        {[
           getPlayer(opId).Data.Player.firstName,
           getPlayer(opId).lastName,
           "-",
@@ -169,8 +169,8 @@ let useScoreInfo = (
           | One => "Won"
           | Half => "Draw"
           },
-        }
-        ->Utils.String.concat(~sep=" ")
+        ]
+        ->Js.Array2.joinWith(" ")
         ->React.string}
       </li>
     )

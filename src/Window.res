@@ -6,7 +6,7 @@ let global_title = "Coronate"
 let formatTitle = x =>
   switch x {
   | "" => global_title
-  | title => Utils.String.concat(list{title, global_title}, ~sep=" - ")
+  | title => title ++ " - " ++ global_title
   }
 
 type windowState = {
@@ -57,9 +57,7 @@ module About = {
         | None => React.null
         }}
         <p>
-          {list{"Copyright ", Utils.Entities.copy, " 2021 John", Utils.Entities.nbsp, "Jackson"}
-          ->Utils.String.concat(~sep="")
-          ->React.string}
+          {`Copyright ${Utils.Entities.copy} 2021 John ${Utils.Entities.nbsp} Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>

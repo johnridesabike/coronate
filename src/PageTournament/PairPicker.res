@@ -131,9 +131,7 @@ module SelectList = {
                   onClick={_ => selectPlayer(player.id)}>
                   <Icons.UserPlus />
                   <Externals.VisuallyHidden>
-                    {list{"Add", player.firstName, player.lastName}
-                    ->Utils.String.concat(~sep=" ")
-                    ->React.string}
+                    {`Add ${player.firstName} ${player.lastName}`->React.string}
                   </Externals.VisuallyHidden>
                 </button>
               </td>

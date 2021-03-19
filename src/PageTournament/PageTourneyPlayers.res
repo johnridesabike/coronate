@@ -52,9 +52,7 @@ module Selecting = {
               <td>
                 <Externals.VisuallyHidden>
                   <label htmlFor={"select-" ++ id->Data.Id.toString}>
-                    {list{"Select", firstName, lastName}
-                    ->Utils.String.concat(~sep=" ")
-                    ->React.string}
+                    {`Select ${firstName} ${lastName}`->React.string}
                   </label>
                 </Externals.VisuallyHidden>
                 <input
@@ -142,12 +140,7 @@ module OptionsForm = {
         <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
           {React.string("close")}
         </button>
-        <h2>
-          {Utils.String.concat(
-            list{"Options for", p.firstName, p.lastName},
-            ~sep=" ",
-          )->React.string}
-        </h2>
+        <h2> {`Options for ${p.firstName} ${p.lastName}`->React.string} </h2>
         <form
           onSubmit={event => {
             ReactEvent.Form.preventDefault(event)
@@ -213,16 +206,13 @@ module OptionsForm = {
       <button className="button-micro" onClick={_ => dialog.setTrue()}>
         <span ariaHidden=true> <Icons.More /> </span>
         <Externals.VisuallyHidden>
-          {Utils.String.concat(
-            list{"More options for", p.firstName, p.lastName},
-            ~sep=" ",
-          )->React.string}
+          {`More options for ${p.firstName} ${p.lastName}`->React.string}
         </Externals.VisuallyHidden>
       </button>
       <Externals.Dialog
         isOpen=dialog.state
         onDismiss=dialog.setFalse
-        ariaLabel={Utils.String.concat(list{"Options for", p.firstName, p.lastName}, ~sep=" ")}>
+        ariaLabel={`Options for ${p.firstName} ${p.lastName}`}>
         <More setTourney dialog tourney p />
       </Externals.Dialog>
     </>
@@ -289,9 +279,7 @@ let make = (~tournament: LoadTournament.t) => {
             <li
               key={pId->Data.Id.toString}
               className={Cn.append("buttons-on-hover", "disabled"->Cn.on(hasHadBye(matches, pId)))}>
-              {list{getPlayer(pId).firstName, getPlayer(pId).firstName}
-              ->Utils.String.concat(~sep=" ")
-              ->React.string}
+              {React.string(getPlayer(pId).firstName ++ " " ++ getPlayer(pId).firstName)}
               {React.string(" ")}
               <button
                 className="button-micro"

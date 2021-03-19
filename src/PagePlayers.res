@@ -181,10 +181,7 @@ module PlayerList = {
       switch playerOpt {
       | None => ()
       | Some(player) =>
-        let message = Utils.String.concat(
-          list{"Are you sure you want to delete ", player.firstName, " ", player.lastName, "?"},
-          ~sep="",
-        )
+        let message = `Are you sure you want to delete ${player.firstName} ${player.lastName} ?`
         if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
           playersDispatch(Db.Del(id))
           configDispatch(Db.DelAvoidSingle(id))
@@ -226,7 +223,7 @@ module PlayerList = {
             <tr key={p.id->Data.Id.toString} className="buttons-on-hover">
               <td className="table__player">
                 <HashLink to_=Player(p.id)>
-                  {Utils.String.concat(list{p.firstName, p.lastName}, ~sep=" ")->React.string}
+                  {React.string(p.firstName ++ " " ++ p.lastName)}
                 </HashLink>
               </td>
               <td className="table__number"> {p.rating->string_of_int->React.string} </td>
@@ -235,10 +232,7 @@ module PlayerList = {
                 <button className="danger button-ghost" onClick={event => delPlayer(event, p.id)}>
                   <Icons.Trash />
                   <Externals.VisuallyHidden>
-                    {Utils.String.concat(
-                      list{"Delete", p.firstName, p.lastName},
-                      ~sep=" ",
-                    )->React.string}
+                    {React.string(`Delete ${p.firstName} ${p.lastName}`)}
                   </Externals.VisuallyHidden>
                 </button>
               </td>
@@ -294,16 +288,13 @@ module Profile = {
         cb.reset()
       },
     )
-    let playerName = Utils.String.concat(list{form.input.firstName, form.input.lastName}, ~sep=" ")
+    let playerName = form.input.firstName ++ " " ++ form.input.lastName
     React.useEffect2(() => {
       windowDispatch(Window.SetTitle("Profile for " ++ playerName))
       Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
     let avoidMap = Data.Config.Pair.Set.toMap(config.avoidPairs)
-    let singAvoidList = switch Map.get(avoidMap, playerId) {
-    | None => list{}
-    | Some(x) => x
-    }
+    let singAvoidList = Map.get(avoidMap, playerId)->Option.getWithDefault(list{})
     let unavoided =
       players
       ->Map.keysToArray
@@ -445,30 +436,13 @@ module Profile = {
         {singAvoidList
         ->List.toArray
         ->Array.reverse
-        ->Array.map(pId =>
+        ->Array.map(pId => {
+          let {firstName, lastName, _} = Player.getMaybe(players, pId)
           <li key={pId->Data.Id.toString}>
-            {React.string(Player.getMaybe(players, pId).firstName)}
-            {React.string(" ")}
-            {React.string(Player.getMaybe(players, pId).lastName)}
+            {React.string(firstName ++ " " ++ lastName)}
             <button
-              ariaLabel={Utils.String.concat(
-                list{
-                  "Remove",
-                  Player.getMaybe(players, pId).firstName,
-                  Player.getMaybe(players, pId).lastName,
-                  "from avoid list.",
-                },
-                ~sep=" ",
-              )}
-              title={Utils.String.concat(
-                list{
-                  "Remove",
-                  Player.getMaybe(players, pId).firstName,
-                  Player.getMaybe(players, pId).lastName,
-                  "from avoid list.",
-                },
-                ~sep=" ",
-              )}
+              ariaLabel={`Remove ${firstName} ${lastName} from avoid list.`}
+              title={`Remove ${firstName} ${lastName} from avoid list.`}
               className="danger button-ghost"
               onClick={_ =>
                 switch Config.Pair.make(playerId, pId) {
@@ -478,7 +452,7 @@ module Profile = {
               <Icons.Trash />
             </button>
           </li>
-        )
+        })
         ->React.array}
         {switch singAvoidList {
         | list{} => <li> {React.string("None")} </li>

@@ -55,8 +55,8 @@ module MatchRow = {
     let blackPlayer = getPlayer(m.blackId)
     let isDummyRound = Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId)
 
-    let whiteName = list{whitePlayer.firstName, whitePlayer.lastName}->Utils.String.concat(~sep=" ")
-    let blackName = list{blackPlayer.firstName, blackPlayer.lastName}->Utils.String.concat(~sep=" ")
+    let whiteName = whitePlayer.firstName ++ " " ++ whitePlayer.lastName
+    let blackName = blackPlayer.firstName ++ " " ++ blackPlayer.lastName
 
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
@@ -199,9 +199,7 @@ module MatchRow = {
                 onClick={_ => setSelectedMatch(_ => Some(m.id))}>
                 <Icons.Circle />
                 <Externals.VisuallyHidden>
-                  {list{"Edit match for", whiteName, "versus", blackName}
-                  ->Utils.String.concat(~sep=" ")
-                  ->React.string}
+                  {`Edit match for ${whiteName} versus ${blackName}`->React.string}
                 </Externals.VisuallyHidden>
               </button>
             : <button
@@ -216,9 +214,7 @@ module MatchRow = {
             onClick={_ => dialog.setTrue()}>
             <Icons.Info />
             <Externals.VisuallyHidden>
-              {list{"View information for match:", whiteName, "versus", blackName}
-              ->Utils.String.concat(~sep=" ")
-              ->React.string}
+              {`View information for match: ${whiteName} versus ${blackName}`->React.string}
             </Externals.VisuallyHidden>
           </button>
           {switch scoreData {
@@ -231,9 +227,7 @@ module MatchRow = {
               </button>
               <p> {React.string(tourney.name)} </p>
               <p>
-                {list{"Round", Int.toString(roundId + 1), "match", Int.toString(pos + 1)}
-                ->Utils.String.concat(~sep=" ")
-                ->React.string}
+                {`Round ${Int.toString(roundId + 1)} match ${Int.toString(pos + 1)}`->React.string}
               </p>
               <Utils.PanelContainer>
                 <Utils.Panel>
@@ -474,10 +468,7 @@ let make = (~roundId, ~tournament) => {
         <Icons.List /> {React.string(" Matches")}
       </Tab>
       <Tab disabled={unmatchedCount == 0}>
-        <Icons.Users />
-        {list{" Unmatched players (", Int.toString(unmatchedCount), ")"}
-        ->Utils.String.concat(~sep="")
-        ->React.string}
+        <Icons.Users /> {` Unmatched players (${Int.toString(unmatchedCount)})`->React.string}
       </Tab>
     </TabList>
     <TabPanels>

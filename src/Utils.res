@@ -26,16 +26,6 @@ module Array = {
 module String = {
   include Js.String2
 
-  let concat = (l, ~sep) => {
-    let rec loop = (acc, l) =>
-      switch l {
-      | list{s} => s ++ acc
-      | list{s, ...l} => loop(sep ++ (s ++ acc), l)
-      | list{} => acc
-      }
-    loop("", Belt.List.reverse(l))
-  }
-
   let includes = (s, ~substr) => Js.String2.includes(s, substr)
 
   let split = (s, ~on) => Js.String2.split(s, on)

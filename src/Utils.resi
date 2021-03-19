@@ -17,8 +17,6 @@ module Array: {
 module String: {
   type t = string
 
-  let concat: (list<t>, ~sep: t) => t
-
   let toLowerCase: t => t
 
   let includes: (t, ~substr: t) => bool
