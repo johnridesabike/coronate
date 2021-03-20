@@ -1,6 +1,5 @@
 open Belt
 open Data
-module Id = Data.Id
 
 let log2 = num => log(num) /. log(2.0)
 
@@ -53,42 +52,4 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
     tourney: tourney,
     setTourney: setTourney,
   })
-}
-
-type roundData = LoadTournament.roundData = {
-  activePlayersCount: int,
-  scoreData: Data.Id.Map.t<Scoring.t>,
-  unmatched: Data.Id.Map.t<Data.Player.t>,
-  unmatchedCount: int,
-  unmatchedWithDummy: Data.Id.Map.t<Data.Player.t>,
-}
-
-let useRoundData = (roundId, {tourney: {roundList, scoreAdjustments, _}, activePlayers, _}) => {
-  /* tournament2ScoreData is relatively expensive */
-  let scoreData = React.useMemo2(
-    () => Converters.tournament2ScoreData(~roundList, ~scoreAdjustments),
-    (roundList, scoreAdjustments),
-  )
-  /* Only calculate unmatched players for the latest round. Old rounds
-     don't get to add new players.
-     Should this be memoized? */
-  let isThisTheLastRound = roundId == Rounds.getLastKey(roundList)
-  let unmatched = switch (Rounds.get(roundList, roundId), isThisTheLastRound) {
-  | (Some(round), true) =>
-    let matched = Rounds.Round.getMatched(round)
-    Map.removeMany(activePlayers, matched)
-  | _ => Map.make(~id=Id.id)
-  }
-  let unmatchedCount = Map.size(unmatched)
-  /* make a new list so as not to affect auto-pairing */
-  let unmatchedWithDummy =
-    mod(unmatchedCount, 2) != 0 ? Map.set(unmatched, Data.Id.dummy, Player.dummy) : unmatched
-  let activePlayersCount = Map.size(activePlayers)
-  {
-    activePlayersCount: activePlayersCount,
-    scoreData: scoreData,
-    unmatched: unmatched,
-    unmatchedCount: unmatchedCount,
-    unmatchedWithDummy: unmatchedWithDummy,
-  }
 }

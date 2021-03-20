@@ -41,24 +41,3 @@ module SortButton: {
 }
 
 let useLoadingCursorUntil: bool => unit
-
-type scoreInfo = {
-  player: Data.Player.t,
-  hasBye: bool,
-  colorBalance: string,
-  score: float,
-  rating: React.element,
-  opponentResults: React.element,
-  avoidListHtml: React.element,
-}
-
-let useScoreInfo: (
-  ~player: Data.Player.t,
-  ~scoreData: Data.Id.Map.t<Data_Scoring.t>,
-  ~avoidPairs: Data.Config.Pair.Set.t=?,
-  ~getPlayer: Data.Id.t => Data.Player.t,
-  ~players: Data.Id.Map.t<Data.Player.t>,
-  ~origRating: int,
-  ~newRating: option<int>,
-  unit,
-) => scoreInfo

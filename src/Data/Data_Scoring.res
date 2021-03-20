@@ -16,9 +16,9 @@ module Score = {
   } = {
     type t = float
     let zero = 0.0
-    let add = \"+."
+    let add = (a, b) => a +. b
     let compare: (t, t) => int = compare
-    let eq: (t, t) => bool = \"="
+    let eq: (t, t) => bool = (a, b) => a == b
     let sum = list => List.reduce(list, zero, add)
     let fromFloat = x => x
     let toFloat = x => x
@@ -26,11 +26,7 @@ module Score = {
     let calcScore = (results, ~adjustment) => add(sum(results), fromFloat(adjustment))
   }
 
-  type t =
-    | Zero
-    | One
-    | NegOne
-    | Half
+  type t = Zero | One | NegOne | Half
 
   let toFloat = x =>
     switch x {
@@ -245,7 +241,7 @@ let mapTieBreak = (x: TieBreak.t) =>
 type scores = {
   id: Id.t,
   score: Score.Sum.t,
-  tieBreaks: list<(TieBreak.t, Score.Sum.t)>,
+  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
 }
 
 @ocaml.doc("
@@ -258,12 +254,10 @@ let standingsSorter = (tieBreaks, a, b) => {
     switch tieBreaks {
     | list{} => 0
     | list{tieBreak, ...rest} =>
-      let getTieBreak = List.getAssoc(_, tieBreak, TieBreak.eq)
+      let getTieBreak = a => Array.getBy(a, ((k, _)) => TieBreak.eq(k, tieBreak))
       switch (getTieBreak(a.tieBreaks), getTieBreak(b.tieBreaks)) {
-      | (None, _)
-      | (_, None) =>
-        tieBreaksCompare(rest)
-      | (Some(tb_a), Some(tb_b)) =>
+      | (None, _) | (_, None) => tieBreaksCompare(rest)
+      | (Some((_, tb_a)), Some((_, tb_b))) =>
         /* a and b are switched for ascending order */
         switch Score.Sum.compare(tb_b, tb_a) {
         | 0 => tieBreaksCompare(rest)
@@ -279,12 +273,12 @@ let standingsSorter = (tieBreaks, a, b) => {
 }
 
 let createStandingList = (scores, methods) => {
-  let funcList = methods->List.fromArray->List.map(tbType => (tbType, mapTieBreak(tbType)))
+  let funcList = Array.map(methods, tbType => (tbType, mapTieBreak(tbType)))
   Map.reduce(scores, list{}, (acc, id, {results, adjustment, _}) => list{
     {
       id: id,
       score: Score.calcScore(results, ~adjustment),
-      tieBreaks: funcList->List.map(((tbType, fn)) => (tbType, fn(scores, id))),
+      tieBreaks: Array.map(funcList, ((tbType, fn)) => (tbType, fn(scores, id))),
     },
     ...acc,
   })
@@ -300,16 +294,16 @@ let areScoresEqual = (standing1, standing2) =>
   if !Score.Sum.eq(standing1.score, standing2.score) {
     false
   } else {
-    let comparisons = List.reduce(standing1.tieBreaks, list{}, (acc, (id, value)) =>
-      switch List.getAssoc(standing2.tieBreaks, id, TieBreak.eq) {
-      | Some(value2) => list{!Score.Sum.eq(value, value2), ...acc}
+    let comparisons = Array.reduce(standing1.tieBreaks, list{}, (acc, (id, value)) =>
+      switch Array.getBy(standing2.tieBreaks, ((k, _)) => TieBreak.eq(k, id)) {
+      | Some((_, value2)) => list{!Score.Sum.eq(value, value2), ...acc}
       | None => acc
       }
     )
     !List.has(comparisons, true, \"=")
   }
 
-let createStandingTree = (standingList: list<scores>) =>
+let createStandingTree = standingList =>
   List.reduce(standingList, list{}, (acc, standing) =>
     switch acc {
     /* Always make a new rank for the first player */

@@ -12,11 +12,7 @@ module Score: {
     let toNumeral: t => Numeral.t
   }
 
-  type t =
-    | Zero
-    | One
-    | NegOne
-    | Half
+  type t = Zero | One | NegOne | Half
 
   let sum: list<t> => Sum.t
   let calcScore: (list<t>, ~adjustment: float) => Sum.t
@@ -88,7 +84,7 @@ let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: list<(TieBreak.t, Score.Sum.t)>,
+  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
 }
 
 @ocaml.doc("

@@ -18,22 +18,15 @@ let makeScoreData = (
   | None => createBlankScoreData(~firstRating=origRating, playerId)
   | Some(data) => data
   }
-
-  let newResultsNoByes = Data_Id.isDummy(oppId)
-    ? oldData.resultsNoByes
-    : list{result, ...oldData.resultsNoByes}
-
-  let oldOppResults = oldData.opponentResults
-
-  let oppResult = list{(oppId, result), ...oldOppResults}
-
   {
     ...oldData,
     results: list{result, ...oldData.results},
-    resultsNoByes: newResultsNoByes,
+    resultsNoByes: Data_Id.isDummy(oppId)
+      ? oldData.resultsNoByes
+      : list{result, ...oldData.resultsNoByes},
     colors: list{color, ...oldData.colors},
     colorScores: list{Color.toScore(color), ...oldData.colorScores},
-    opponentResults: oppResult,
+    opponentResults: list{(oppId, result), ...oldData.opponentResults},
     ratings: list{newRating, ...oldData.ratings},
     isDummy: Data_Id.isDummy(playerId),
   }
@@ -43,9 +36,7 @@ let matches2ScoreData = matchList =>
   Array.reduce(matchList, Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) => {
     switch match.result {
     | NotSet => acc
-    | WhiteWon
-    | BlackWon
-    | Draw =>
+    | WhiteWon | BlackWon | Draw =>
       let whiteData = makeScoreData(
         ~existingData=acc,
         ~playerId=match.whiteId,
@@ -62,7 +53,7 @@ let matches2ScoreData = matchList =>
         ~newRating=match.blackNewRating,
         ~result=Data_Match.Result.toScoreBlack(match.result),
         ~oppId=match.whiteId,
-        ~color=Data_Scoring.Color.Black,
+        ~color=Black,
       )
       acc->Map.set(match.whiteId, whiteData)->Map.set(match.blackId, blackData)
     }
@@ -81,31 +72,30 @@ let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
 
 let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.Pair.Set.toMap(avoidPairs)
-  Map.reduce(playerData, Map.make(~id=Data_Id.id), (acc, key, data: Data_Player.t) => {
+  Map.mapWithKey(playerData, (key, data: Data_Player.t): Data_Pairing.t => {
     let playerStats = switch Map.get(scoreData, key) {
     | None => Data_Scoring.createBlankScoreData(key)
     | Some(x) => x
     }
     let newAvoidIds = switch Map.get(avoidMap, key) {
-    | None => list{}
+    | None => Set.make(~id=Data_Id.id)
     | Some(x) => x
     }
     /* `isUpperHalf` and `halfPos` will have to be set by another
      function later. */
-    let newData = {
-      Data_Pairing.avoidIds: newAvoidIds,
-      colorScores: playerStats.Data_Scoring.colorScores->List.map(Data_Scoring.Score.toFloat),
+    {
+      avoidIds: newAvoidIds,
+      colorScores: playerStats.colorScores->List.map(Data_Scoring.Score.toFloat),
       colors: playerStats.colors,
       halfPos: 0,
       id: data.id,
       isUpperHalf: false,
       opponents: playerStats.opponentResults->List.map(((id, _)) => id),
-      rating: data.Data_Player.rating,
+      rating: data.rating,
       score: Data_Scoring.Score.calcScore(
         playerStats.results,
         ~adjustment=playerStats.adjustment,
       )->Data_Scoring.Score.Sum.toFloat,
     }
-    Map.set(acc, key, newData)
   })
 }

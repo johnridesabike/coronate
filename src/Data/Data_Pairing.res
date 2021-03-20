@@ -5,7 +5,7 @@ let sum = list => List.reduce(list, 0.0, \"+.")
 
 type t = {
   id: Id.t,
-  avoidIds: list<Id.t>,
+  avoidIds: Id.Set.t,
   colorScores: list<float>,
   colors: list<Data_Scoring.Color.t>,
   halfPos: int,
@@ -63,7 +63,7 @@ let calcPairIdeal = (player1, player2) =>
     0.0
   } else {
     let metBefore = List.has(player1.opponents, player2.id, Id.eq)
-    let mustAvoid = List.has(player1.avoidIds, player2.id, Id.eq)
+    let mustAvoid = Set.has(player1.avoidIds, player2.id)
     let isDiffDueColor = switch (player1.colors, player2.colors) {
     | (_, list{})
     | (list{}, _) => true
@@ -89,10 +89,10 @@ let splitInHalf = arr => {
 }
 
 let setUpperHalves = data => {
-  let dataList = Map.valuesToArray(data)
+  let dataArr = Map.valuesToArray(data)
   Map.map(data, playerData => {
     let (upperHalfIds, lowerHalfIds) =
-      dataList
+      dataArr
       ->Array.keep(({score, _}) => score == playerData.score)
       ->Belt.SortArray.stableSortBy(descendingRating)
       ->splitInHalf

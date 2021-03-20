@@ -294,18 +294,12 @@ module Profile = {
       Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
     let avoidMap = Data.Config.Pair.Set.toMap(config.avoidPairs)
-    let singAvoidList = Map.get(avoidMap, playerId)->Option.getWithDefault(list{})
+    let singAvoidList = Map.get(avoidMap, playerId)->Option.getWithDefault(Set.make(~id=Id.id))
     let unavoided =
       players
       ->Map.keysToArray
-      ->List.fromArray
-      ->List.keep(id => !(singAvoidList->List.has(id, Id.eq)) && !Id.eq(id, playerId))
-    let (selectedAvoider, setSelectedAvoider) = React.useState(() =>
-      switch unavoided {
-      | list{id, ..._} => Some(id)
-      | list{} => None
-      }
-    )
+      ->Array.keep(id => !Set.has(singAvoidList, id) && !Id.eq(id, playerId))
+    let (selectedAvoider, setSelectedAvoider) = React.useState(() => unavoided[0])
     let avoidAdd = event => {
       ReactEvent.Form.preventDefault(event)
       switch selectedAvoider {
@@ -317,12 +311,9 @@ module Profile = {
           configDispatch(Db.AddAvoidPair(pair))
           /* Reset the selected avoider to the first on the list, but check to
            make sure they weren't they weren't the first. */
-          let newSelected = switch unavoided {
-          | list{id, ..._} if !Id.eq(id, selectedAvoider) => Some(id)
-          | list{_, id, ..._} => Some(id)
-          | list{_}
-          | list{} =>
-            None
+          let newSelected = switch unavoided[0] {
+          | Some(id) if !Id.eq(id, selectedAvoider) => Some(id)
+          | _ => unavoided[1]
           }
           setSelectedAvoider(_ => newSelected)
         }
@@ -434,8 +425,7 @@ module Profile = {
       <h3> {React.string("Players to avoid")} </h3>
       <ul>
         {singAvoidList
-        ->List.toArray
-        ->Array.reverse
+        ->Set.toArray
         ->Array.map(pId => {
           let {firstName, lastName, _} = Player.getMaybe(players, pId)
           <li key={pId->Data.Id.toString}>
@@ -454,9 +444,10 @@ module Profile = {
           </li>
         })
         ->React.array}
-        {switch singAvoidList {
-        | list{} => <li> {React.string("None")} </li>
-        | _ => React.null
+        {if Set.isEmpty(singAvoidList) {
+          <li> {React.string("None")} </li>
+        } else {
+          React.null
         }}
       </ul>
       <form onSubmit=avoidAdd>
@@ -469,7 +460,6 @@ module Profile = {
               onChange=handleAvoidChange
               value={selectedAvoider->Data.Id.toString}>
               {unavoided
-              ->List.toArray
               ->Array.map(pId =>
                 <option key={pId->Data.Id.toString} value={pId->Data.Id.toString}>
                   {React.string(Player.getMaybe(players, pId).firstName)}

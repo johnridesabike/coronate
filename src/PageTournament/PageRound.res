@@ -4,7 +4,7 @@ module Id = Data.Id
 
 module PlayerMatchInfo = {
   @react.component
-  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
+  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players, ~avoidPairs) => {
     let {
       player,
       hasBye,
@@ -13,7 +13,15 @@ module PlayerMatchInfo = {
       rating,
       opponentResults,
       avoidListHtml,
-    } = Hooks.useScoreInfo(~player, ~scoreData, ~getPlayer, ~players, ~origRating, ~newRating, ())
+    } = TournamentUtils.getScoreInfo(
+      ~player,
+      ~scoreData,
+      ~getPlayer,
+      ~players,
+      ~origRating,
+      ~newRating,
+      ~avoidPairs,
+    )
     let fullName = player.firstName ++ (" " ++ player.lastName)
     <dl className="player-card">
       <h3> {fullName->React.string} </h3>
@@ -50,6 +58,7 @@ module MatchRow = {
   ) => {
     let {tourney, setTourney, players, getPlayer, playersDispatch, _} = tournament
     let {roundList, _} = tourney
+    let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
     let dialog = Hooks.useBool(false)
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
@@ -238,6 +247,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
+                    avoidPairs
                   />
                 </Utils.Panel>
                 <Utils.Panel>
@@ -248,6 +258,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
+                    avoidPairs
                   />
                 </Utils.Panel>
               </Utils.PanelContainer>
@@ -334,10 +345,10 @@ module Round = {
       /* checks if the match has been scored yet & resets the players'
        records */
       | Some(match) if match.result != NotSet =>
-        list{
+        [
           (match.whiteId, match.whiteOrigRating),
           (match.blackId, match.blackOrigRating),
-        }->List.forEach(((id, rating)) =>
+        ]->Array.forEach(((id, rating)) =>
           switch players->Map.get(id) {
           /* If there was a dummy player or a deleted player then bail
            on the dispatch. */
@@ -448,7 +459,7 @@ let make = (~roundId, ~tournament) => {
     unmatched,
     unmatchedCount,
     unmatchedWithDummy,
-  } = LoadTournament.useRoundData(roundId, tournament)
+  } = TournamentUtils.useRoundData(roundId, tournament)
   let initialTab = unmatchedCount == activePlayersCount ? 1 : 0
   let (openTab, setOpenTab) = React.useState(() => initialTab)
   /* Auto-switch the tab */

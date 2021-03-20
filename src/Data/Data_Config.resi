@@ -24,10 +24,10 @@ module Pair: {
     let fromArray: array<pair> => t
 
     @ocaml.doc("
-     Flatten the `(id1, id2), (id1, id3)` structure into an easy-to-access
-     `{id1: [id2, id3], id2: [id1], id3: [id1]}` structure.
+     Flatten the `set((id1, id2), (id1, id3))` structure into an easy-to-access
+     `{id1: set(id2, id3), id2: set(id1), id3: set(id1)}` structure.
      ")
-    let toMap: t => Data_Id.Map.t<list<Data_Id.t>>
+    let toMap: t => Data_Id.Map.t<Data_Id.Set.t>
   }
 }
 

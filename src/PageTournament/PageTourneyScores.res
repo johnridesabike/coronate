@@ -86,7 +86,6 @@ module ScoreTable = {
               | Compact => React.null
               | Expanded =>
                 standing.tieBreaks
-                ->List.toArray
                 ->Array.map(((j, score)) =>
                   <td
                     key={Scoring.TieBreak.toString(j)}

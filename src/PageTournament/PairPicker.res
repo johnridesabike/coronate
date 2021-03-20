@@ -285,7 +285,7 @@ module PlayerInfo = {
       rating,
       opponentResults,
       avoidListHtml,
-    } = Hooks.useScoreInfo(
+    } = TournamentUtils.getScoreInfo(
       ~player,
       ~scoreData,
       ~getPlayer,
@@ -293,7 +293,6 @@ module PlayerInfo = {
       ~origRating,
       ~newRating,
       ~avoidPairs,
-      (),
     )
 
     let fullName = player.firstName ++ (" " ++ player.lastName)

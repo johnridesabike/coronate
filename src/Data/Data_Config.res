@@ -69,15 +69,15 @@ module Pair = {
       Set.toArray(data) |> Json.Encode.array(Json.Encode.pair(Id.encode, Id.encode))
 
     let toMapReducer = (acc, (id1, id2)) => {
-      let newList1 = switch Map.get(acc, id1) {
-      | None => list{id2}
-      | Some(currentList) => list{id2, ...currentList}
+      let newSet1 = switch Map.get(acc, id1) {
+      | None => Set.make(~id=Data_Id.id)->Set.add(id2)
+      | Some(s) => Set.add(s, id2)
       }
-      let newList2 = switch Map.get(acc, id2) {
-      | None => list{id1}
-      | Some(currentList) => list{id1, ...currentList}
+      let newSet2 = switch Map.get(acc, id2) {
+      | None => Set.make(~id=Data_Id.id)->Set.add(id1)
+      | Some(s) => Set.add(s, id1)
       }
-      acc->Map.set(id1, newList1)->Map.set(id2, newList2)
+      acc->Map.set(id1, newSet1)->Map.set(id2, newSet2)
     }
 
     let toMap = x => Set.reduce(x, Map.make(~id=Id.id), toMapReducer)
