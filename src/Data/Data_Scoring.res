@@ -103,20 +103,6 @@ module TieBreak = {
     | MostBlack => "mostBlack"
     }
 
-  let toInt = x =>
-    switch x {
-    | Median => 0
-    | Solkoff => 1
-    | Cumulative => 2
-    | CumulativeOfOpposition => 3
-    | MostBlack => 4
-    }
-
-  let compare = (a, b) => compare(toInt(a), toInt(b))
-
-  module Cmp = unpack(Belt.Id.comparable(~cmp=compare))
-  type identity = Cmp.identity
-
   let toPrettyString = tieBreak =>
     switch tieBreak {
     | Median => "Median"
@@ -255,8 +241,11 @@ let mapTieBreak = (x: TieBreak.t) =>
 type scores = {
   id: Id.t,
   score: Score.Sum.t,
-  tieBreaks: Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
+  // The order of the tiebreaks is important
+  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
 }
+
+let getTieBreak = (a, k) => Array.getBy(a, ((k', _)) => TieBreak.eq(k, k'))
 
 @ocaml.doc("
  `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
@@ -268,9 +257,9 @@ let standingsSorter = (tieBreaks, a, b) => {
     switch tieBreaks[i] {
     | None => 0
     | Some(tieBreak) =>
-      switch (Map.get(a.tieBreaks, tieBreak), Map.get(b.tieBreaks, tieBreak)) {
+      switch (getTieBreak(a.tieBreaks, tieBreak), getTieBreak(b.tieBreaks, tieBreak)) {
       | (None, _) | (_, None) => tieBreaksCompare(succ(i))
-      | (Some(a'), Some(b')) =>
+      | (Some((_, a')), Some((_, b'))) =>
         /* a and b are switched for ascending order */
         switch Score.Sum.compare(b', a') {
         | 0 => tieBreaksCompare(succ(i))
@@ -286,14 +275,12 @@ let standingsSorter = (tieBreaks, a, b) => {
 }
 
 let createStandingArray = (scores, methods) => {
-  let funcMap = Array.reduce(methods, Map.make(~id=module(TieBreak.Cmp)), (acc, tbType) =>
-    Map.set(acc, tbType, mapTieBreak(tbType))
-  )
+  let funcArr = Array.map(methods, tbType => (tbType, mapTieBreak(tbType)))
   scores
   ->Map.map(({id, results, adjustment, _}) => {
     id: id,
     score: Score.calcScore(results, ~adjustment),
-    tieBreaks: Map.map(funcMap, fn => fn(scores, id)),
+    tieBreaks: Array.map(funcArr, ((k, fn)) => (k, fn(scores, id))),
   })
   ->Map.valuesToArray
   ->SortArray.stableSortBy(standingsSorter(methods))
@@ -303,9 +290,9 @@ let areScoresEqual = (standing1, standing2) =>
   if !Score.Sum.eq(standing1.score, standing2.score) {
     false
   } else {
-    let comparisons = Map.reduce(standing1.tieBreaks, list{}, (acc, id, value) =>
-      switch Map.get(standing2.tieBreaks, id) {
-      | Some(value2) => list{!Score.Sum.eq(value, value2), ...acc}
+    let comparisons = Array.reduce(standing1.tieBreaks, list{}, (acc, (id, value)) =>
+      switch getTieBreak(standing2.tieBreaks, id) {
+      | Some((_, value2)) => list{!Score.Sum.eq(value, value2), ...acc}
       | None => acc
       }
     )

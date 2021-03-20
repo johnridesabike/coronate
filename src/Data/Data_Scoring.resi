@@ -64,8 +64,6 @@ module TieBreak: {
     | CumulativeOfOpposition
     | MostBlack
 
-  type identity
-
   let encode: t => Js.Json.t
 
   let decode: Js.Json.t => t
@@ -86,7 +84,7 @@ let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: Belt.Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
+  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
 }
 
 @ocaml.doc("
