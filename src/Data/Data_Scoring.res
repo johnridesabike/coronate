@@ -103,6 +103,20 @@ module TieBreak = {
     | MostBlack => "mostBlack"
     }
 
+  let toInt = x =>
+    switch x {
+    | Median => 0
+    | Solkoff => 1
+    | Cumulative => 2
+    | CumulativeOfOpposition => 3
+    | MostBlack => 4
+    }
+
+  let compare = (a, b) => compare(toInt(a), toInt(b))
+
+  module Cmp = unpack(Belt.Id.comparable(~cmp=compare))
+  type identity = Cmp.identity
+
   let toPrettyString = tieBreak =>
     switch tieBreak {
     | Median => "Median"
@@ -241,7 +255,7 @@ let mapTieBreak = (x: TieBreak.t) =>
 type scores = {
   id: Id.t,
   score: Score.Sum.t,
-  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
+  tieBreaks: Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
 }
 
 @ocaml.doc("
@@ -250,61 +264,56 @@ type scores = {
  b` will have a result for every item in `tieBreaks`.
  ")
 let standingsSorter = (tieBreaks, a, b) => {
-  let rec tieBreaksCompare = tieBreaks =>
-    switch tieBreaks {
-    | list{} => 0
-    | list{tieBreak, ...rest} =>
-      let getTieBreak = a => Array.getBy(a, ((k, _)) => TieBreak.eq(k, tieBreak))
-      switch (getTieBreak(a.tieBreaks), getTieBreak(b.tieBreaks)) {
-      | (None, _) | (_, None) => tieBreaksCompare(rest)
-      | (Some((_, tb_a)), Some((_, tb_b))) =>
+  let rec tieBreaksCompare = i =>
+    switch tieBreaks[i] {
+    | None => 0
+    | Some(tieBreak) =>
+      switch (Map.get(a.tieBreaks, tieBreak), Map.get(b.tieBreaks, tieBreak)) {
+      | (None, _) | (_, None) => tieBreaksCompare(succ(i))
+      | (Some(a'), Some(b')) =>
         /* a and b are switched for ascending order */
-        switch Score.Sum.compare(tb_b, tb_a) {
-        | 0 => tieBreaksCompare(rest)
+        switch Score.Sum.compare(b', a') {
+        | 0 => tieBreaksCompare(succ(i))
         | x => x
         }
       }
     }
   /* a and b are switched for ascending order */
   switch Score.Sum.compare(b.score, a.score) {
-  | 0 => tieBreaksCompare(tieBreaks)
+  | 0 => tieBreaksCompare(0)
   | x => x
   }
 }
 
-let createStandingList = (scores, methods) => {
-  let funcList = Array.map(methods, tbType => (tbType, mapTieBreak(tbType)))
-  Map.reduce(scores, list{}, (acc, id, {results, adjustment, _}) => list{
-    {
-      id: id,
-      score: Score.calcScore(results, ~adjustment),
-      tieBreaks: Array.map(funcList, ((tbType, fn)) => (tbType, fn(scores, id))),
-    },
-    ...acc,
+let createStandingArray = (scores, methods) => {
+  let funcMap = Array.reduce(methods, Map.make(~id=module(TieBreak.Cmp)), (acc, tbType) =>
+    Map.set(acc, tbType, mapTieBreak(tbType))
+  )
+  scores
+  ->Map.map(({id, results, adjustment, _}) => {
+    id: id,
+    score: Score.calcScore(results, ~adjustment),
+    tieBreaks: Map.map(funcMap, fn => fn(scores, id)),
   })
-  /* The `reverse` just ensures that ties are sorted according to their original
-     order (alphabetically by name) and not reversed. It has no practical
-     purpose and should probably be replaced with a more robust sorting option
- */
-  ->List.reverse
-  ->List.sort(standingsSorter(List.fromArray(methods)))
+  ->Map.valuesToArray
+  ->SortArray.stableSortBy(standingsSorter(methods))
 }
 
 let areScoresEqual = (standing1, standing2) =>
   if !Score.Sum.eq(standing1.score, standing2.score) {
     false
   } else {
-    let comparisons = Array.reduce(standing1.tieBreaks, list{}, (acc, (id, value)) =>
-      switch Array.getBy(standing2.tieBreaks, ((k, _)) => TieBreak.eq(k, id)) {
-      | Some((_, value2)) => list{!Score.Sum.eq(value, value2), ...acc}
+    let comparisons = Map.reduce(standing1.tieBreaks, list{}, (acc, id, value) =>
+      switch Map.get(standing2.tieBreaks, id) {
+      | Some(value2) => list{!Score.Sum.eq(value, value2), ...acc}
       | None => acc
       }
     )
-    !List.has(comparisons, true, \"=")
+    !List.has(comparisons, true, (a, b) => a == b)
   }
 
-let createStandingTree = standingList =>
-  List.reduce(standingList, list{}, (acc, standing) =>
+let createStandingTree = standingArray =>
+  Array.reduce(standingArray, list{}, (acc, standing) =>
     switch acc {
     /* Always make a new rank for the first player */
     | list{} => list{list{standing}}

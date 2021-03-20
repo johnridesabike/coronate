@@ -46,7 +46,7 @@ open JestDom
 let scorePage = () =>
   <LoadTournament tourneyId=TestData.scoreTest>
     {({tourney: {name: title, _} as tourney, getPlayer, _}) =>
-      <PageTourneyScores.ScoreTable tourney getPlayer title />}
+      <PageTourneyScores.ScoreTable size=Expanded tourney getPlayer title />}
   </LoadTournament>->render
 
 describe("Snapshot of ranks are correct", () => {

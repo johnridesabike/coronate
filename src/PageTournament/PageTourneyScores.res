@@ -12,13 +12,13 @@ let isCompact = x =>
 
 module ScoreTable = {
   @react.component
-  let make = (~size=Expanded, ~tourney: Tournament.t, ~getPlayer, ~title) => {
+  let make = (~size, ~tourney: Tournament.t, ~getPlayer, ~title) => {
     let {tieBreaks, roundList, scoreAdjustments, _} = tourney
     let tieBreakNames = Array.map(tieBreaks, Scoring.TieBreak.toPrettyString)
     let standingTree =
       Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
-      ->Scoring.createStandingList(tieBreaks)
-      ->List.keep(({id, _}) => !Data.Id.isDummy(id))
+      ->Scoring.createStandingArray(tieBreaks)
+      ->Array.keep(({id, _}) => !Data.Id.isDummy(id))
       ->Scoring.createStandingTree
     <table className={"pagescores__table"}>
       <caption
@@ -86,6 +86,7 @@ module ScoreTable = {
               | Compact => React.null
               | Expanded =>
                 standing.tieBreaks
+                ->Map.toArray
                 ->Array.map(((j, score)) =>
                   <td
                     key={Scoring.TieBreak.toString(j)}
@@ -258,7 +259,7 @@ let make = (~tournament: LoadTournament.t) => {
       <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
     </TabList>
     <TabPanels>
-      <TabPanel> <ScoreTable tourney getPlayer title="Score detail" /> </TabPanel>
+      <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
       <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
     </TabPanels>
   </Tabs>
@@ -301,7 +302,7 @@ module Crosstable = {
     }: LoadTournament.t,
   ) => {
     let scoreData = Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
-    let standings = Scoring.createStandingList(scoreData, tieBreaks)
+    let standings = Scoring.createStandingArray(scoreData, tieBreaks)
 
     <table className="pagescores__table">
       <caption> {React.string("Crosstable")} </caption>
@@ -311,7 +312,6 @@ module Crosstable = {
           <th> {React.string("Name")} </th>
           {/* Display a rank as a shorthand for each player. */
           standings
-          ->List.toArray
           ->Array.mapWithIndex((rank, _) =>
             <th key={Int.toString(rank)}> {React.int(rank + 1)} </th>
           )
@@ -322,7 +322,6 @@ module Crosstable = {
       </thead>
       <tbody>
         {standings
-        ->List.toArray
         ->Array.mapWithIndex((index, standing) =>
           <tr key={Int.toString(index)} className="pagescores__row">
             <th className={"pagescores__row-th pagescores__rank"} scope="col">
@@ -335,7 +334,6 @@ module Crosstable = {
             </th>
             {/* Output a cell for each other player */
             standings
-            ->List.toArray
             ->Array.mapWithIndex((index2, opponent) =>
               <td key={Int.toString(index2)} className={"pagescores__row-td table__number"}>
                 {getXScore(scoreData, standing.id, opponent.id)}

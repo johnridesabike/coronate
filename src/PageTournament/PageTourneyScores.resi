@@ -8,7 +8,7 @@ type size =
 module ScoreTable: {
   @react.component
   let make: (
-    ~size: size=?,
+    ~size: size,
     ~tourney: Data.Tournament.t,
     ~getPlayer: Data.Id.t => Data.Player.t,
     ~title: string,

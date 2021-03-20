@@ -64,6 +64,8 @@ module TieBreak: {
     | CumulativeOfOpposition
     | MostBlack
 
+  type identity
+
   let encode: t => Js.Json.t
 
   let decode: Js.Json.t => t
@@ -84,7 +86,7 @@ let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
+  tieBreaks: Belt.Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
 }
 
 @ocaml.doc("
@@ -93,11 +95,11 @@ type scores = {
  which lists the score associated with each method. The order of these
  coresponds to the order of the method names in the second list.
  ")
-let createStandingList: (Data_Id.Map.t<t>, array<TieBreak.t>) => list<scores>
+let createStandingArray: (Data_Id.Map.t<t>, array<TieBreak.t>) => array<scores>
 
 @ocaml.doc("
  Groups the standings by score, see USCF tie-break rules from § 34.
  example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
  first, Pete is 2nd, Bob is 3rd.
  ")
-let createStandingTree: list<scores> => list<list<scores>>
+let createStandingTree: array<scores> => list<list<scores>>
