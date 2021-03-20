@@ -95,7 +95,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   switch (tourneyLoaded, arePlayersLoaded) {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
-    let activePlayers = players->Map.keep((id, _) => playerIds->List.has(id, Id.eq))
+    let activePlayers = Map.keep(players, (id, _) => Set.has(playerIds, id))
     let roundCount = activePlayers->Map.size->calcNumOfRounds
     let isItOver = Rounds.size(roundList) >= roundCount
     let isNewRoundReady =
@@ -144,7 +144,7 @@ let useRoundData = (roundId, {tourney: {roundList, scoreAdjustments, _}, activeP
   | (Some(round), true) =>
     let matched = Rounds.Round.getMatched(round)
     Map.removeMany(activePlayers, matched)
-  | _ => Id.Map.make()
+  | _ => Map.make(~id=Id.id)
   }
   let unmatchedCount = Map.size(unmatched)
   /* make a new list so as not to affect auto-pairing */

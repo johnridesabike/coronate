@@ -25,17 +25,20 @@ let compare: (t, t) => int
 
 let eq: (t, t) => bool
 
+type identity
+
+let id: Belt.Id.comparable<t, identity>
+
 module Map: {
   type key = t
-  type identity
-
   type t<'v> = Belt.Map.t<key, 'v, identity>
-
-  let make: unit => t<'v>
-
-  let fromArray: array<(key, 'v)> => t<'v>
 
   let fromStringArray: array<(string, 'v)> => t<'v>
 
   let toStringArray: t<'v> => array<(string, 'v)>
+}
+
+module Set: {
+  type value = t
+  type t = Belt.Set.t<value, identity>
 }

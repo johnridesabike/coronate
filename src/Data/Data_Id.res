@@ -16,23 +16,22 @@ let decode = Json.Decode.string
 
 let compare: (t, t) => int = compare
 
-let eq: (t, t) => bool = \"="
+let eq: (t, t) => bool = (a, b) => a == b
 
-module Id = unpack(Belt.Id.comparable(~cmp=compare))
+module Cmp = unpack(Belt.Id.comparable(~cmp=compare))
 
-let id: Belt.Id.comparable<t, Id.identity> = module(Id)
+type identity = Cmp.identity
+
+let id: Belt.Id.comparable<t, identity> = module(Cmp)
 
 module Map = {
   type key = t
-  type identity = Id.identity
-
   type t<'v> = Belt.Map.t<key, 'v, identity>
-
-  let make = () => Belt.Map.make(~id)
-
-  let fromArray = a => Belt.Map.fromArray(a, ~id)
-
   let fromStringArray = arr => arr->Belt.Map.fromArray(~id)
+  let toStringArray = Belt.Map.toArray
+}
 
-  let toStringArray = map => map->Belt.Map.toArray
+module Set = {
+  type value = t
+  type t = Belt.Set.t<value, identity>
 }

@@ -40,7 +40,7 @@ let makeScoreData = (
 }
 
 let matches2ScoreData = matchList =>
-  Array.reduce(matchList, Data_Id.Map.make(), (acc, match: Data_Match.t) => {
+  Array.reduce(matchList, Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) => {
     switch match.result {
     | NotSet => acc
     | WhiteWon
@@ -81,7 +81,7 @@ let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
 
 let createPairingData = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Config.Pair.Set.toMap(avoidPairs)
-  Map.reduce(playerData, Data_Id.Map.make(), (acc, key, data: Data_Player.t) => {
+  Map.reduce(playerData, Map.make(~id=Data_Id.id), (acc, key, data: Data_Player.t) => {
     let playerStats = switch Map.get(scoreData, key) {
     | None => Data_Scoring.createBlankScoreData(key)
     | Some(x) => x

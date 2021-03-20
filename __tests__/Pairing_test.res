@@ -10,8 +10,8 @@ let loadPairData = tourneyId => {
     tournaments,
     tourneyId,
   )
-  let players = Map.reduce(players, Data.Id.Map.make(), (acc, key, player) =>
-    if List.has(playerIds, key, Data.Id.eq) {
+  let players = Map.reduce(players, Belt.Map.make(~id=Data.Id.id), (acc, key, player) =>
+    if Set.has(playerIds, key) {
       Map.set(acc, key, player)
     } else {
       acc

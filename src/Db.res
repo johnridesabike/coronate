@@ -54,7 +54,7 @@ let genericDbReducer = (state, action) =>
   }
 
 let useAllDb = store => {
-  let (items, dispatch) = React.useReducer(genericDbReducer, Data.Id.Map.make())
+  let (items, dispatch) = React.useReducer(genericDbReducer, Map.make(~id=Data.Id.id))
   let loaded = Hooks.useBool(false)
   Hooks.useLoadingCursorUntil(loaded.state)
   /*

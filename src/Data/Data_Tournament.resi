@@ -2,7 +2,7 @@ type t = {
   id: Data_Id.t,
   name: string,
   date: Js.Date.t,
-  playerIds: list<Data_Id.t>,
+  playerIds: Data_Id.Set.t,
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
   tieBreaks: array<Data_Scoring.TieBreak.t>,

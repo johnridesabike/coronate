@@ -9,11 +9,11 @@ module Selecting = {
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)["value"]
       if ReactEvent.Form.target(event)["checked"] {
-        setTourney({...tourney, playerIds: list{id, ...playerIds}})
+        setTourney({...tourney, playerIds: Set.add(playerIds, id)})
       } else {
         setTourney({
           ...tourney,
-          playerIds: playerIds->List.keep(pId => !Id.eq(pId, id)),
+          playerIds: Set.keep(playerIds, pId => !Id.eq(pId, id)),
         })
       }
     }
@@ -25,11 +25,13 @@ module Selecting = {
           onClick={_ =>
             setTourney({
               ...tourney,
-              playerIds: players->Map.keysToArray->List.fromArray,
+              playerIds: players->Map.keysToArray->Set.fromArray(~id=Id.id),
             })}>
           {React.string("Select all")}
         </button>
-        <button className="button-micro" onClick={_ => setTourney({...tourney, playerIds: list{}})}>
+        <button
+          className="button-micro"
+          onClick={_ => setTourney({...tourney, playerIds: Set.make(~id=Id.id)})}>
           {React.string("Select none")}
         </button>
       </div>
@@ -56,7 +58,7 @@ module Selecting = {
                   </label>
                 </Externals.VisuallyHidden>
                 <input
-                  checked={playerIds->List.has(id, Id.eq)}
+                  checked={Set.has(playerIds, id)}
                   type_="checkbox"
                   value={id->Data.Id.toString}
                   id={"select-" ++ id->Data.Id.toString}
@@ -70,7 +72,7 @@ module Selecting = {
       </table>
       <PagePlayers.NewPlayerForm
         dispatch=playersDispatch
-        addPlayerCallback={id => setTourney({...tourney, playerIds: list{id, ...playerIds}})}
+        addPlayerCallback={id => setTourney({...tourney, playerIds: Set.add(playerIds, id)})}
       />
     </div>
   }
@@ -240,12 +242,7 @@ module PlayerList = {
 let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, players, activePlayers, playersDispatch, getPlayer, _} = tournament
   let {playerIds, roundList, byeQueue, _} = tourney
-  let (isSelecting, setIsSelecting) = React.useState(() =>
-    switch playerIds {
-    | list{} => true
-    | _ => false
-    }
-  )
+  let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
   let matches = Rounds.rounds2Matches(roundList)
   <div className="content-area">
     <div className="toolbar">

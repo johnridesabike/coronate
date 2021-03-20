@@ -80,7 +80,7 @@ module Pair = {
       acc->Map.set(id1, newList1)->Map.set(id2, newList2)
     }
 
-    let toMap = x => Set.reduce(x, Id.Map.make(), toMapReducer)
+    let toMap = x => Set.reduce(x, Map.make(~id=Id.id), toMapReducer)
   }
 }
 
