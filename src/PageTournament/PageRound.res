@@ -55,10 +55,10 @@ module MatchRow = {
     ~scoreData,
     ~tournament: LoadTournament.t,
     ~className="",
+    ~avoidPairs,
   ) => {
     let {tourney, setTourney, players, getPlayer, playersDispatch, _} = tournament
     let {roundList, _} = tourney
-    let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
     let dialog = Hooks.useBool(false)
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
@@ -280,7 +280,8 @@ module RoundTable = {
     ~setSelectedMatch=?,
     ~tournament,
     ~scoreData=?,
-  ) =>
+  ) => {
+    let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
     <table className="pageround__table">
       {Js.Array.length(matches) == 0
         ? React.null
@@ -327,10 +328,12 @@ module RoundTable = {
             scoreData
             tournament
             className="pageround__td"
+            avoidPairs
           />
         )->React.array}
       </tbody>
     </table>
+  }
 }
 
 module Round = {

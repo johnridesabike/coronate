@@ -70,6 +70,8 @@ module TieBreak: {
 
   let toString: t => string
 
+  type identity
+
   let toPrettyString: t => string
 
   let eq: (t, t) => bool
@@ -84,7 +86,7 @@ let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: array<(TieBreak.t, Score.Sum.t)>,
+  tieBreaks: Belt.Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
 }
 
 @ocaml.doc("

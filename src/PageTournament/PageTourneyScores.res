@@ -4,17 +4,10 @@ module Id = Data.Id
 
 type size = Compact | Expanded
 
-let isCompact = x =>
-  switch x {
-  | Compact => true
-  | Expanded => false
-  }
-
 module ScoreTable = {
   @react.component
   let make = (~size, ~tourney: Tournament.t, ~getPlayer, ~title) => {
     let {tieBreaks, roundList, scoreAdjustments, _} = tourney
-    let tieBreakNames = Array.map(tieBreaks, Scoring.TieBreak.toPrettyString)
     let standingTree =
       Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
       ->Scoring.createStandingArray(tieBreaks)
@@ -22,10 +15,10 @@ module ScoreTable = {
       ->Scoring.createStandingTree
     <table className={"pagescores__table"}>
       <caption
-        className={Cn.append(
-          "title-30"->Cn.on(isCompact(size)),
-          "title-40"->Cn.on(!isCompact(size)),
-        )}>
+        className={switch size {
+        | Compact => "title-30"
+        | Expanded => "title-40"
+        }}>
         {React.string(title)}
       </caption>
       <thead>
@@ -36,9 +29,13 @@ module ScoreTable = {
           {switch size {
           | Compact => React.null
           | Expanded =>
-            Array.mapWithIndex(tieBreakNames, (i, name) =>
-              <th key={Int.toString(i)} className="title-10" scope="col"> {React.string(name)} </th>
-            )->React.array
+            tieBreaks
+            ->Array.map(tb =>
+              <th key={Scoring.TieBreak.toString(tb)} className="title-10" scope="col">
+                {tb->Scoring.TieBreak.toPrettyString->React.string}
+              </th>
+            )
+            ->React.array
           }}
         </tr>
       </thead>
@@ -85,12 +82,16 @@ module ScoreTable = {
               {switch size {
               | Compact => React.null
               | Expanded =>
-                standing.tieBreaks
-                ->Array.map(((j, score)) =>
+                tieBreaks
+                ->Array.map(tb =>
                   <td
-                    key={Scoring.TieBreak.toString(j)}
+                    key={Scoring.TieBreak.toString(tb)}
                     className={"pagescores__row-td table__number"}>
-                    {score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}
+                    {switch Map.get(standing.tieBreaks, tb) {
+                    | None => React.null
+                    | Some(score) =>
+                      score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string
+                    }}
                   </td>
                 )
                 ->React.array
