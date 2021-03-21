@@ -294,7 +294,7 @@ module Profile = {
       Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
     let avoidMap = Id.Pair.Set.toMap(config.avoidPairs)
-    let singAvoidList = Map.get(avoidMap, playerId)->Option.getWithDefault(Set.make(~id=Id.id))
+    let singAvoidList = Map.getWithDefault(avoidMap, playerId, Set.make(~id=Id.id))
     let unavoided =
       players
       ->Map.keysToArray

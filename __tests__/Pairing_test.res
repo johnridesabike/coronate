@@ -17,7 +17,7 @@ let loadPairData = tourneyId => {
       acc
     }
   )
-  Data.Scoring.tournament2ScoreData(~roundList, ~scoreAdjustments)
+  Data.Scoring.fromTournament(~roundList, ~scoreAdjustments)
   ->Data.Pairing.make(players, TestData.config.avoidPairs)
   ->Data.Pairing.setUpperHalves
 }

@@ -81,11 +81,7 @@ module TieBreak: {
   let eq: (t, t) => bool
 }
 
-@ocaml.doc("
- This is useful for cases where the regular factory functions return empty
- results because a player hasn't been added yet.
- ")
-let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
+let make: Data_Id.t => t
 
 type scores = {
   id: Data_Id.t,
@@ -108,7 +104,7 @@ let createStandingArray: (Data_Id.Map.t<t>, array<TieBreak.t>) => array<scores>
  ")
 let createStandingTree: array<scores> => list<list<scores>>
 
-let tournament2ScoreData: (
+let fromTournament: (
   ~roundList: Data_Rounds.t,
   ~scoreAdjustments: Data_Id.Map.t<float>,
 ) => Data_Id.Map.t<t>

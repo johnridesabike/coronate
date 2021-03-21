@@ -14,9 +14,9 @@ let useRoundData = (
   roundId,
   {tourney: {roundList, scoreAdjustments, _}, activePlayers, _}: LoadTournament.t,
 ) => {
-  /* tournament2ScoreData is relatively expensive */
+  /* Scoring.fromTournament is relatively expensive */
   let scoreData = React.useMemo2(
-    () => Scoring.tournament2ScoreData(~roundList, ~scoreAdjustments),
+    () => Scoring.fromTournament(~roundList, ~scoreAdjustments),
     (roundList, scoreAdjustments),
   )
   /* Only calculate unmatched players for the latest round. Old rounds
@@ -67,7 +67,7 @@ let getScoreInfo = (
     player.id,
   ) {
   | Some(data) => data
-  | None => Data.Scoring.createBlankScoreData(player.id)
+  | None => Data.Scoring.make(player.id)
   }
   let hasBye = List.some(opponentResults, ((id, _)) => Data.Id.isDummy(id))
   let colorBalance = switch Data.Scoring.Score.sum(colorScores)->Data.Scoring.Score.Sum.toFloat {
@@ -100,8 +100,7 @@ let getScoreInfo = (
   let avoidListHtml =
     Data.Id.Pair.Set.toMap(avoidPairs)
     ->Map.get(player.id)
-    ->Option.map(Set.toArray)
-    ->Option.getWithDefault([])
+    ->Option.mapWithDefault([], Set.toArray)
     ->Array.map(pId =>
       switch Map.get(players, pId) {
       /* don't show players not in this tourney */

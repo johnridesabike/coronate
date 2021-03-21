@@ -162,14 +162,14 @@ module TieBreak = {
     }
 }
 
-let createBlankScoreData = (~firstRating=0, id) => {
+let make = id => {
   colorScores: list{},
   colors: list{},
   id: id,
   isDummy: false,
   opponentResults: list{},
   ratings: list{},
-  firstRating: firstRating,
+  firstRating: 0,
   results: list{},
   resultsNoByes: list{},
   adjustment: 0.0,
@@ -231,8 +231,9 @@ let getCumulativeOfOpponentScore = (scores, id) =>
   | None => Score.Sum.zero
   | Some({opponentResults, _}) =>
     opponentResults
-    ->List.keepMap(((key, _)) => isNotDummy(scores, key) ? Some(key) : None)
-    ->List.map(getCumulativeScore(scores))
+    ->List.keepMap(((id, _)) =>
+      isNotDummy(scores, id) ? Some(getCumulativeScore(scores, id)) : None
+    )
     ->Score.Sum.sum
   }
 
@@ -299,81 +300,90 @@ let createStandingArray = (scores, orderedMethods) => {
   ->SortArray.stableSortBy(standingsSorter(orderedMethods))
 }
 
-let areScoresEqual = (a, b) =>
-  Score.Sum.eq(a.score, b.score) && Map.eq(a.tieBreaks, b.tieBreaks, Score.Sum.eq)
+let eq = (a, b) => Score.Sum.eq(a.score, b.score) && Map.eq(a.tieBreaks, b.tieBreaks, Score.Sum.eq)
 
 let createStandingTree = standingArray =>
-  Array.reduce(standingArray, list{}, (acc, standing) =>
-    switch acc {
+  Array.reduce(standingArray, list{}, (tree, standing) =>
+    switch tree {
     /* Always make a new rank for the first player */
     | list{} => list{list{standing}}
-    | list{lastRank, ...pastRanks} =>
-      switch lastRank {
-      | list{} => list{list{standing}, ...acc}
-      | list{lastStanding, ..._} =>
-        /* Make a new rank if the scores aren't equal */
-        if !areScoresEqual(lastStanding, standing) {
-          list{list{standing}, lastRank, ...pastRanks}
-        } else {
-          list{list{standing, ...lastRank}, ...pastRanks}
+    | list{treeHead, ...treeTail} =>
+      switch treeHead {
+      | list{} => list{list{standing}, ...tree}
+      /* Make a new rank if the scores aren't equal */
+      | list{lastStanding, ..._} if !eq(lastStanding, standing) => list{
+          list{standing},
+          treeHead,
+          ...treeTail,
         }
+      | _ => list{list{standing, ...treeHead}, ...treeTail}
       }
     }
   )
 
-let makeScoreData = (~player, ~playerId, ~origRating, ~newRating, ~result, ~oppId, ~color) => {
-  let player = switch player {
-  | None => createBlankScoreData(~firstRating=origRating, playerId)
-  | Some(data) => data
+let update = (
+  ~data,
+  ~playerId,
+  ~origRating,
+  ~newRating,
+  ~result,
+  ~oppId,
+  ~color,
+  ~scoreAdjustments,
+) =>
+  switch data {
+  | None => {
+      id: playerId,
+      firstRating: origRating,
+      adjustment: Map.getWithDefault(scoreAdjustments, playerId, 0.0),
+      results: list{result},
+      resultsNoByes: Data_Id.isDummy(oppId) ? list{} : list{result},
+      colors: list{color},
+      colorScores: list{Color.toScore(color)},
+      opponentResults: list{(oppId, result)},
+      ratings: list{newRating},
+      isDummy: Data_Id.isDummy(playerId),
+    }
+  | Some(data) => {
+      ...data,
+      results: list{result, ...data.results},
+      resultsNoByes: Data_Id.isDummy(oppId)
+        ? data.resultsNoByes
+        : list{result, ...data.resultsNoByes},
+      colors: list{color, ...data.colors},
+      colorScores: list{Color.toScore(color), ...data.colorScores},
+      opponentResults: list{(oppId, result), ...data.opponentResults},
+      ratings: list{newRating, ...data.ratings},
+    }
   }
-  {
-    ...player,
-    results: list{result, ...player.results},
-    resultsNoByes: Data_Id.isDummy(oppId)
-      ? player.resultsNoByes
-      : list{result, ...player.resultsNoByes},
-    colors: list{color, ...player.colors},
-    colorScores: list{Color.toScore(color), ...player.colorScores},
-    opponentResults: list{(oppId, result), ...player.opponentResults},
-    ratings: list{newRating, ...player.ratings},
-    isDummy: Data_Id.isDummy(playerId),
-  }
-}
 
-let matches2ScoreData = matchList =>
-  MutableQueue.reduce(matchList, Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
+let fromTournament = (~roundList, ~scoreAdjustments) =>
+  roundList
+  ->Data_Rounds.rounds2Matches
+  ->MutableQueue.reduce(Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
     switch match.result {
     | NotSet => acc
     | WhiteWon | BlackWon | Draw =>
-      let whiteData = makeScoreData(
-        ~player=Map.get(acc, match.whiteId),
+      let whiteData = update(
+        ~data=Map.get(acc, match.whiteId),
         ~playerId=match.whiteId,
         ~origRating=match.whiteOrigRating,
         ~newRating=match.whiteNewRating,
         ~result=Score.fromResultWhite(match.result),
         ~oppId=match.blackId,
         ~color=White,
+        ~scoreAdjustments,
       )
-      let blackData = makeScoreData(
-        ~player=Map.get(acc, match.blackId),
+      let blackData = update(
+        ~data=Map.get(acc, match.blackId),
         ~playerId=match.blackId,
         ~origRating=match.blackOrigRating,
         ~newRating=match.blackNewRating,
         ~result=Score.fromResultBlack(match.result),
         ~oppId=match.whiteId,
         ~color=Black,
+        ~scoreAdjustments,
       )
       acc->Map.set(match.whiteId, whiteData)->Map.set(match.blackId, blackData)
-    }
-  )
-
-let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
-  roundList
-  ->Data_Rounds.rounds2Matches
-  ->matches2ScoreData
-  ->Map.map(scoreData =>
-    switch Map.get(scoreAdjustments, scoreData.id) {
-    | None => scoreData
-    | Some(adjustment) => {...scoreData, adjustment: adjustment}
     }
   )

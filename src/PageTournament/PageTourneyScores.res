@@ -9,7 +9,7 @@ module ScoreTable = {
   let make = (~size, ~tourney: Tournament.t, ~getPlayer, ~title) => {
     let {tieBreaks, roundList, scoreAdjustments, _} = tourney
     let standingTree =
-      Scoring.tournament2ScoreData(~roundList, ~scoreAdjustments)
+      Scoring.fromTournament(~roundList, ~scoreAdjustments)
       ->Scoring.createStandingArray(tieBreaks)
       ->Array.keep(({id, _}) => !Data.Id.isDummy(id))
       ->Scoring.createStandingTree
@@ -301,7 +301,7 @@ module Crosstable = {
       _,
     }: LoadTournament.t,
   ) => {
-    let scoreData = Scoring.tournament2ScoreData(~roundList, ~scoreAdjustments)
+    let scoreData = Scoring.fromTournament(~roundList, ~scoreAdjustments)
     let standings = Scoring.createStandingArray(scoreData, tieBreaks)
 
     <table className="pagescores__table">

@@ -19,7 +19,7 @@ let make = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
   Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
     let playerStats = switch Map.get(scoreData, key) {
-    | None => Data_Scoring.createBlankScoreData(key)
+    | None => Data_Scoring.make(key)
     | Some(x) => x
     }
     let newAvoidIds = switch Map.get(avoidMap, key) {
