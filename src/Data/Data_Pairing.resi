@@ -5,11 +5,11 @@
 type t = {
   id: Data_Id.t,
   avoidIds: Data_Id.Set.t,
-  colorScores: list<float>,
-  colors: list<Data_Scoring.Color.t>,
+  colorScores: array<float>,
+  colors: array<Data_Scoring.Color.t>,
   halfPos: int,
   isUpperHalf: bool,
-  opponents: list<Data_Id.t>,
+  opponents: array<Data_Id.t>,
   rating: int,
   score: float,
 }
@@ -47,4 +47,4 @@ let setByePlayer: (array<Data_Id.t>, Data_Id.t, Data_Id.Map.t<t>) => (Data_Id.Ma
  § 29. This is a work in progress and does not account for all of the rules
  yet.
  ")
-let pairPlayers: Data_Id.Map.t<t> => list<(Data_Id.t, Data_Id.t)>
+let pairPlayers: Data_Id.Map.t<t> => array<(Data_Id.t, Data_Id.t)>

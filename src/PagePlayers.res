@@ -293,7 +293,7 @@ module Profile = {
       windowDispatch(Window.SetTitle("Profile for " ++ playerName))
       Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
-    let avoidMap = Data.Config.Pair.Set.toMap(config.avoidPairs)
+    let avoidMap = Id.Pair.Set.toMap(config.avoidPairs)
     let singAvoidList = Map.get(avoidMap, playerId)->Option.getWithDefault(Set.make(~id=Id.id))
     let unavoided =
       players
@@ -305,7 +305,7 @@ module Profile = {
       switch selectedAvoider {
       | None => ()
       | Some(selectedAvoider) =>
-        switch Config.Pair.make(playerId, selectedAvoider) {
+        switch Id.Pair.make(playerId, selectedAvoider) {
         | None => ()
         | Some(pair) =>
           configDispatch(Db.AddAvoidPair(pair))
@@ -435,7 +435,7 @@ module Profile = {
               title={`Remove ${firstName} ${lastName} from avoid list.`}
               className="danger button-ghost"
               onClick={_ =>
-                switch Config.Pair.make(playerId, pId) {
+                switch Id.Pair.make(playerId, pId) {
                 | None => ()
                 | Some(pair) => configDispatch(DelAvoidPair(pair))
                 }}>

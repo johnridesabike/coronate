@@ -70,22 +70,22 @@ test(
 test("Players are paired correctly in a simple scenario.", () => {
   let pairData = loadPairData(TestData.simplePairing)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches) |> ExpectJs.toEqual(list{
+  expect(matches) |> ExpectJs.toEqual([
     (TestData.grandyMcMaster, TestData.gypsy),
     (TestData.drClaytonForrester, TestData.newbieMcNewberson),
     (TestData.joelRobinson, TestData.crowTRobot),
     (TestData.tomServo, TestData.tvsFrank),
-  })
+  ])
 })
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches) |> toEqual(list{
+  expect(matches) |> toEqual([
     (TestData.grandyMcMaster, TestData.gypsy),
     (TestData.drClaytonForrester, TestData.newbieMcNewberson),
     (TestData.tomServo, TestData.tvsFrank),
     (TestData.joelRobinson, TestData.crowTRobot),
-  })
+  ])
 })
 
 open JestDom
@@ -140,5 +140,5 @@ test("Auto-matching works with manually adjusted scores", () => {
   page
   |> getByTestId(~matcher=#Str("match-0-white"))
   |> JestDom.expect
-  |> toHaveTextContent(#Str("Kinga Forrester"))
+  |> toHaveTextContent(#Str("Bobo Professor"))
 })

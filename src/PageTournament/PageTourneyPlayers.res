@@ -78,13 +78,11 @@ module Selecting = {
   }
 }
 
-let hasHadBye = (matches, playerId) => {
-  open Js.Array2
+let hasHadBye = (matches, playerId) =>
   matches
-  ->filter((match: Match.t) => includes([match.whiteId, match.blackId], playerId))
-  ->reduce((acc, match: Match.t) => concat(acc, [match.whiteId, match.blackId]), [])
-  ->includes(Data.Id.dummy)
-}
+  ->MutableQueue.toArray
+  ->Array.keep((match: Match.t) => Id.eq(match.whiteId, playerId) || Id.eq(match.blackId, playerId))
+  ->Array.some(match => Id.isDummy(match.whiteId) || Id.isDummy(match.blackId))
 
 module OptionsForm = {
   let errorNotification = x =>

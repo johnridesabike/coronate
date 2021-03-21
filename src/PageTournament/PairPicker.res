@@ -7,26 +7,26 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
    only include the specified players. */
   let filteredData = pairData->Map.keep((id, _) => playerMap->Map.has(id))
   let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Data.Id.dummy, filteredData)
-  let pairs = Pairing.pairPlayers(pairdataNoByes)
-  let pairsWithBye = switch byePlayerData {
-  | Some(player) =>
-    /* These two reverses ensure that the bye match is added at the end, not
-     the beginning */
-    pairs->List.reverse->List.add((player.id, Data.Id.dummy))->List.reverse
-  | None => pairs
+  let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
+  switch byePlayerData {
+  | Some(player) => MutableQueue.add(pairs, (player.id, Data.Id.dummy))
+  | None => ()
   }
   let getPlayer = Data.Player.getMaybe(playerMap)
-  pairsWithBye->List.map(((whiteId, blackId)) =>
-    {
-      id: Data.Id.random(),
-      whiteOrigRating: getPlayer(whiteId).rating,
-      blackOrigRating: getPlayer(blackId).rating,
-      whiteNewRating: getPlayer(whiteId).rating,
-      blackNewRating: getPlayer(blackId).rating,
-      whiteId: whiteId,
-      blackId: blackId,
-      result: NotSet,
-    }->Data.Match.scoreByeMatch(~byeValue)
+  MutableQueue.map(pairs, ((whiteId, blackId)) =>
+    Data.Match.scoreByeMatch(
+      ~byeValue,
+      {
+        id: Data.Id.random(),
+        whiteOrigRating: getPlayer(whiteId).rating,
+        blackOrigRating: getPlayer(blackId).rating,
+        whiteNewRating: getPlayer(whiteId).rating,
+        blackNewRating: getPlayer(blackId).rating,
+        whiteId: whiteId,
+        blackId: blackId,
+        result: NotSet,
+      },
+    )
   )
 }
 
@@ -355,7 +355,7 @@ let make = (
   let autoPair = round => {
     let newRound = Rounds.Round.addMatches(
       round,
-      autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->List.toArray,
+      autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->MutableQueue.toArray,
     )
     switch Rounds.set(roundList, roundId, newRound) {
     | Some(roundList) => setTourney({...tourney, roundList: roundList})

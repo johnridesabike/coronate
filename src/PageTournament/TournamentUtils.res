@@ -98,7 +98,7 @@ let getScoreInfo = (
     )
     ->React.array
   let avoidListHtml =
-    Data.Config.Pair.Set.toMap(avoidPairs)
+    Data.Id.Pair.Set.toMap(avoidPairs)
     ->Map.get(player.id)
     ->Option.map(Set.toArray)
     ->Option.getWithDefault([])

@@ -120,10 +120,10 @@ let useAllPlayers = () => useAllDb(players)
 let useAllTournaments = () => useAllDb(tournaments)
 
 type actionConfig =
-  | AddAvoidPair(Data.Config.Pair.t)
-  | DelAvoidPair(Data.Config.Pair.t)
+  | AddAvoidPair(Data.Id.Pair.t)
+  | DelAvoidPair(Data.Id.Pair.t)
   | DelAvoidSingle(Data.Id.t)
-  | SetAvoidPairs(Data.Config.Pair.Set.t)
+  | SetAvoidPairs(Data.Id.Pair.Set.t)
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t)
@@ -140,8 +140,8 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
     }
   | DelAvoidSingle(id) => {
       ...state,
-      avoidPairs: Set.reduce(state.avoidPairs, Data.Config.Pair.Set.empty, (acc, pair) =>
-        if Data.Config.Pair.has(pair, ~id) {
+      avoidPairs: Set.reduce(state.avoidPairs, Data.Id.Pair.Set.empty, (acc, pair) =>
+        if Data.Id.Pair.has(pair, ~id) {
           acc
         } else {
           Set.add(acc, pair)

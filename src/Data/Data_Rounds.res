@@ -81,7 +81,12 @@ let set = (rounds, key, round) => {
 let setMatch = (rounds, key, match_) =>
   rounds->get(key)->Option.flatMap(Round.setMatch(_, match_))->Option.flatMap(set(rounds, key))
 
-let rounds2Matches = roundList => Array.reduce(roundList, [], Array.concat)
+let rounds2Matches = roundList => {
+  module Q = MutableQueue
+  let q = Q.make()
+  Array.forEach(roundList, r => r->Q.fromArray->Q.transfer(q))
+  q
+}
 
 let isRoundComplete = (roundList, players, roundId) =>
   switch roundList[roundId] {

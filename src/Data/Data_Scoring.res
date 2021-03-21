@@ -173,24 +173,21 @@ let getOpponentScores = (scores, id) =>
   switch Map.get(scores, id) {
   | None => list{}
   | Some({opponentResults, _}) =>
-    List.reduce(opponentResults, list{}, (acc, (oppId, _)) =>
-      if isNotDummy(scores, oppId) {
-        list{getPlayerScore(scores, oppId), ...acc}
-      } else {
-        acc
-      }
+    List.keepMap(opponentResults, ((oppId, _)) =>
+      isNotDummy(scores, oppId) ? Some(getPlayerScore(scores, oppId)) : None
     )
   }
 
 @ocaml.doc("USCF § 34E1")
-let getMedianScore = (scores, id) =>
-  scores
-  ->getOpponentScores(id)
+let getMedianScore = (scores, id) => {
+  let oppScores = scores->getOpponentScores(id)
+  let size = List.size(oppScores)
+  oppScores
   ->List.sort(Score.Sum.compare)
-  ->List.tail
-  ->Option.mapWithDefault(list{}, List.reverse)
-  ->List.tail
-  ->Option.mapWithDefault(Score.Sum.zero, Score.Sum.sum)
+  // Remove the highest and lowest scores.
+  ->List.keepWithIndex((_, i) => !(i == 0 || i == size - 1))
+  ->Score.Sum.sum
+}
 
 @ocaml.doc("USCF § 34E2.")
 let getSolkoffScore = (scores, id) => scores->getOpponentScores(id)->Score.Sum.sum
@@ -198,8 +195,8 @@ let getSolkoffScore = (scores, id) => scores->getOpponentScores(id)->Score.Sum.s
 @ocaml.doc("Turn the regular score list into a \"running\" score list.")
 let runningReducer = (acc, score) =>
   switch acc {
+  | list{} => list{Score.toSum(score)}
   | list{last, ...rest} => list{Score.Sum.add(last, Score.toSum(score)), last, ...rest}
-  | list{} => list{score->Score.toSum}
   }
 
 @ocaml.doc("USCF § 34E3.")
@@ -215,13 +212,8 @@ let getCumulativeOfOpponentScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({opponentResults, _}) =>
-    List.reduce(opponentResults, list{}, (acc, (key, _)) =>
-      if isNotDummy(scores, key) {
-        list{key, ...acc}
-      } else {
-        acc
-      }
-    )
+    opponentResults
+    ->List.keepMap(((key, _)) => isNotDummy(scores, key) ? Some(key) : None)
     ->List.map(getCumulativeScore(scores))
     ->Score.Sum.sum
   }

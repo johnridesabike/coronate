@@ -25,8 +25,8 @@ let hugo = "HugoStrange_az43f9mtS"->id
 let config: Config.t = {
   byeValue: Full,
   avoidPairs: [(barbara, james), (joker, harley), (huntress, batman)]
-  ->Array.keepMap(((a, b)) => Config.Pair.make(a, b))
-  ->Config.Pair.Set.fromArray,
+  ->Array.keepMap(((a, b)) => Id.Pair.make(a, b))
+  ->Id.Pair.Set.fromArray,
   lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
 }
 

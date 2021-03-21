@@ -49,6 +49,10 @@ let scorePage = () =>
       <PageTourneyScores.ScoreTable size=Expanded tourney getPlayer title />}
   </LoadTournament>->render
 
+test("Snapshot of score table", () => {
+  scorePage() |> Expect.expect |> Expect.toMatchSnapshot
+})
+
 describe("Snapshot of ranks are correct", () => {
   test("rank 1", () =>
     ()
