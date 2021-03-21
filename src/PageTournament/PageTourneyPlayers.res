@@ -274,7 +274,7 @@ let make = (~tournament: LoadTournament.t) => {
             <li
               key={pId->Data.Id.toString}
               className={Cn.append("buttons-on-hover", "disabled"->Cn.on(hasHadBye(matches, pId)))}>
-              {React.string(getPlayer(pId).firstName ++ " " ++ getPlayer(pId).firstName)}
+              {React.string(getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName)}
               {React.string(" ")}
               <button
                 className="button-micro"
