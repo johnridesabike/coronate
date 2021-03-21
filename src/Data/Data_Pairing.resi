@@ -14,6 +14,12 @@ type t = {
   score: float,
 }
 
+let make: (
+  Data_Id.Map.t<Data_Scoring.t>,
+  Data_Id.Map.t<Data_Player.t>,
+  Data_Id.Pair.Set.t,
+) => Data_Id.Map.t<t>
+
 @ocaml.doc("
  This is useful for dividing against a calculated priority, to inspect how
  \"compatible\" two players may be.

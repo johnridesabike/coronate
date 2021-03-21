@@ -15,6 +15,36 @@ type t = {
   score: float,
 }
 
+let make = (scoreData, playerData, avoidPairs) => {
+  let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
+  Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
+    let playerStats = switch Map.get(scoreData, key) {
+    | None => Data_Scoring.createBlankScoreData(key)
+    | Some(x) => x
+    }
+    let newAvoidIds = switch Map.get(avoidMap, key) {
+    | None => Set.make(~id=Data_Id.id)
+    | Some(x) => x
+    }
+    /* `isUpperHalf` and `halfPos` will have to be set by another
+     function later. */
+    {
+      avoidIds: newAvoidIds,
+      colorScores: playerStats.colorScores->List.toArray->Array.map(Data_Scoring.Score.toFloat),
+      colors: playerStats.colors->List.toArray,
+      halfPos: 0,
+      id: data.id,
+      isUpperHalf: false,
+      opponents: playerStats.opponentResults->List.toArray->Array.map(((id, _)) => id),
+      rating: data.rating,
+      score: Data_Scoring.Score.calcScore(
+        playerStats.results,
+        ~adjustment=playerStats.adjustment,
+      )->Data_Scoring.Score.Sum.toFloat,
+    }
+  })
+}
+
 let priority = (value, condition) => condition ? value : 0.0
 let divisiblePriority = (dividend, divisor) => dividend /. divisor
 

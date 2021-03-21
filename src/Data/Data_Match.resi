@@ -1,13 +1,5 @@
 module Result: {
-  type t =
-    | WhiteWon
-    | BlackWon
-    | Draw
-    | NotSet
-
-  let toScoreWhite: t => Data_Scoring.Score.t
-
-  let toScoreBlack: t => Data_Scoring.Score.t
+  type t = WhiteWon | BlackWon | Draw | NotSet
 
   let toString: t => string
 

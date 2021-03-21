@@ -14,6 +14,10 @@ module Score: {
 
   type t = Zero | One | NegOne | Half
 
+  let fromResultWhite: Data_Match.Result.t => t
+
+  let fromResultBlack: Data_Match.Result.t => t
+
   let sum: list<t> => Sum.t
   let calcScore: (list<t>, ~adjustment: float) => Sum.t
   let toFloat: t => float
@@ -103,3 +107,8 @@ let createStandingArray: (Data_Id.Map.t<t>, array<TieBreak.t>) => array<scores>
  first, Pete is 2nd, Bob is 3rd.
  ")
 let createStandingTree: array<scores> => list<list<scores>>
+
+let tournament2ScoreData: (
+  ~roundList: Data_Rounds.t,
+  ~scoreAdjustments: Data_Id.Map.t<float>,
+) => Data_Id.Map.t<t>

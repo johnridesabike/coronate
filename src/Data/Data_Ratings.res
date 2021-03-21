@@ -25,8 +25,8 @@ let calcNewRatings = (~whiteRating, ~blackRating, ~whiteMatchCount, ~blackMatchC
   let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount)
   let whiteExpected = EloRank.getExpected(whiteRating, blackRating)
   let blackExpected = EloRank.getExpected(blackRating, whiteRating)
-  let whiteResult = Data_Match.Result.toScoreWhite(result)->Data_Scoring.Score.toFloat
-  let blackResult = Data_Match.Result.toScoreBlack(result)->Data_Scoring.Score.toFloat
+  let whiteResult = Data_Scoring.Score.fromResultWhite(result)->Data_Scoring.Score.toFloat
+  let blackResult = Data_Scoring.Score.fromResultBlack(result)->Data_Scoring.Score.toFloat
   (
     EloRank.updateRating(whiteElo, whiteExpected, whiteResult, whiteRating)->keepAboveFloor,
     EloRank.updateRating(blackElo, blackExpected, blackResult, blackRating)->keepAboveFloor,

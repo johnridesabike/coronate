@@ -328,8 +328,7 @@ let make = (
   let dialog = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
   let pairData = React.useMemo3(
-    () =>
-      Converters.createPairingData(scoreData, activePlayers, avoidPairs)->Pairing.setUpperHalves,
+    () => Pairing.make(scoreData, activePlayers, avoidPairs)->Pairing.setUpperHalves,
     (activePlayers, avoidPairs, scoreData),
   )
   /* Clean staged players if they were removed from the tournament */

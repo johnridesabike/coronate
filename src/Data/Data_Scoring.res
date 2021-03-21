@@ -41,6 +41,24 @@ module Score = {
   let add = (a, b) => Sum.add(a, toSum(b))
   let sum = list => List.reduce(list, Sum.zero, add)
   let calcScore = (results, ~adjustment) => Sum.add(sum(results), Sum.fromFloat(adjustment))
+
+  let fromResultWhite = (x: Data_Match.Result.t) =>
+    switch x {
+    | WhiteWon => One
+    | BlackWon => Zero
+    | Draw => Half
+    /* This loses data, so is a one-way trip. Use with prudence! */
+    | NotSet => Zero
+    }
+
+  let fromResultBlack = (x: Data_Match.Result.t) =>
+    switch x {
+    | WhiteWon => Zero
+    | BlackWon => One
+    | Draw => Half
+    /* This loses data, so is a one-way trip. Use with prudence! */
+    | NotSet => Zero
+    }
 }
 
 module Color = {
@@ -300,5 +318,62 @@ let createStandingTree = standingArray =>
           list{list{standing, ...lastRank}, ...pastRanks}
         }
       }
+    }
+  )
+
+let makeScoreData = (~player, ~playerId, ~origRating, ~newRating, ~result, ~oppId, ~color) => {
+  let player = switch player {
+  | None => createBlankScoreData(~firstRating=origRating, playerId)
+  | Some(data) => data
+  }
+  {
+    ...player,
+    results: list{result, ...player.results},
+    resultsNoByes: Data_Id.isDummy(oppId)
+      ? player.resultsNoByes
+      : list{result, ...player.resultsNoByes},
+    colors: list{color, ...player.colors},
+    colorScores: list{Color.toScore(color), ...player.colorScores},
+    opponentResults: list{(oppId, result), ...player.opponentResults},
+    ratings: list{newRating, ...player.ratings},
+    isDummy: Data_Id.isDummy(playerId),
+  }
+}
+
+let matches2ScoreData = matchList =>
+  MutableQueue.reduce(matchList, Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
+    switch match.result {
+    | NotSet => acc
+    | WhiteWon | BlackWon | Draw =>
+      let whiteData = makeScoreData(
+        ~player=Map.get(acc, match.whiteId),
+        ~playerId=match.whiteId,
+        ~origRating=match.whiteOrigRating,
+        ~newRating=match.whiteNewRating,
+        ~result=Score.fromResultWhite(match.result),
+        ~oppId=match.blackId,
+        ~color=White,
+      )
+      let blackData = makeScoreData(
+        ~player=Map.get(acc, match.blackId),
+        ~playerId=match.blackId,
+        ~origRating=match.blackOrigRating,
+        ~newRating=match.blackNewRating,
+        ~result=Score.fromResultBlack(match.result),
+        ~oppId=match.whiteId,
+        ~color=Black,
+      )
+      acc->Map.set(match.whiteId, whiteData)->Map.set(match.blackId, blackData)
+    }
+  )
+
+let tournament2ScoreData = (~roundList, ~scoreAdjustments) =>
+  roundList
+  ->Data_Rounds.rounds2Matches
+  ->matches2ScoreData
+  ->Map.map(scoreData =>
+    switch Map.get(scoreAdjustments, scoreData.id) {
+    | None => scoreData
+    | Some(adjustment) => {...scoreData, adjustment: adjustment}
     }
   )

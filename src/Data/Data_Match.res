@@ -1,31 +1,8 @@
 module Id = Data_Id
-module Score = Data_Scoring.Score
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
-  type t =
-    | WhiteWon
-    | BlackWon
-    | Draw
-    | NotSet
-
-  let toScoreWhite = (x): Score.t =>
-    switch x {
-    | WhiteWon => One
-    | BlackWon => Zero
-    | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
-    }
-
-  let toScoreBlack = (x): Score.t =>
-    switch x {
-    | WhiteWon => Zero
-    | BlackWon => One
-    | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
-    }
+  type t = WhiteWon | BlackWon | Draw | NotSet
 
   let toString = x =>
     switch x {

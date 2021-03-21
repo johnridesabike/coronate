@@ -16,7 +16,7 @@ let useRoundData = (
 ) => {
   /* tournament2ScoreData is relatively expensive */
   let scoreData = React.useMemo2(
-    () => Converters.tournament2ScoreData(~roundList, ~scoreAdjustments),
+    () => Scoring.tournament2ScoreData(~roundList, ~scoreAdjustments),
     (roundList, scoreAdjustments),
   )
   /* Only calculate unmatched players for the latest round. Old rounds
