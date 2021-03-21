@@ -17,8 +17,6 @@ module Array: {
 module String: {
   type t = string
 
-  let toLowerCase: t => t
-
   let includes: (t, ~substr: t) => bool
 
   let split: (t, ~on: t) => array<t>

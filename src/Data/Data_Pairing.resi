@@ -2,17 +2,9 @@
  This handles all of the logic for calculating pairings. It requires data
  taken from past tournament scores and player ratings.
  ")
-type t = {
-  id: Data_Id.t,
-  avoidIds: Data_Id.Set.t,
-  colorScores: array<float>,
-  colors: array<Data_Scoring.Color.t>,
-  halfPos: int,
-  isUpperHalf: bool,
-  opponents: array<Data_Id.t>,
-  rating: int,
-  score: float,
-}
+type t
+
+let id: t => Data_Id.t
 
 let make: (
   Data_Id.Map.t<Data_Scoring.t>,

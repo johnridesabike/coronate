@@ -5,14 +5,12 @@ let toString: t => string
 let fromString: string => t
 
 @ocaml.doc("
- * This is used in by matches to indicate a dummy player. The `getPlayerMaybe`
- * function returns a special dummy player profile when fetching this ID.
+  This is used in by matches to indicate a dummy player. The `getPlayerMaybe`
+  function returns a special dummy player profile when fetching this ID.
  ")
 let dummy: t
 
-@ocaml.doc("
- * This is useful for passing to `keep` functions.
- ")
+@ocaml.doc("This is useful for passing to `keep` functions.")
 let isDummy: t => bool
 
 let random: unit => t

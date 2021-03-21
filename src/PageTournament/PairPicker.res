@@ -9,7 +9,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Data.Id.dummy, filteredData)
   let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
   switch byePlayerData {
-  | Some(player) => MutableQueue.add(pairs, (player.id, Data.Id.dummy))
+  | Some(player) => MutableQueue.add(pairs, (Pairing.id(player), Data.Id.dummy))
   | None => ()
   }
   let getPlayer = Data.Player.getMaybe(playerMap)

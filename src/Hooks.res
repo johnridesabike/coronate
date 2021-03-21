@@ -43,7 +43,7 @@ let sortedTableReducer = (state, action) => {
   }
   let direction = newState.isDescending ? Utils.descend : Utils.ascend
   let sortFunc = switch newState.column {
-  | GetString(f) => direction(compare, (. str) => f(. str)->Utils.String.toLowerCase)
+  | GetString(f) => direction(compare, (. str) => f(. str)->Js.String2.toLowerCase)
   | GetInt(f) => direction(compare, f)
   | GetFloat(f) => direction(compare, f)
   | GetDate(f) => direction(compare, (. date) => f(. date)->Js.Date.getTime)

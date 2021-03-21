@@ -322,7 +322,7 @@ let createStandingTree = standingArray =>
   )
 
 let update = (
-  ~data,
+  data,
   ~playerId,
   ~origRating,
   ~newRating,
@@ -332,7 +332,8 @@ let update = (
   ~scoreAdjustments,
 ) =>
   switch data {
-  | None => {
+  | None =>
+    Some({
       id: playerId,
       firstRating: origRating,
       adjustment: Map.getWithDefault(scoreAdjustments, playerId, 0.0),
@@ -343,8 +344,9 @@ let update = (
       opponentResults: list{(oppId, result)},
       ratings: list{newRating},
       isDummy: Data_Id.isDummy(playerId),
-    }
-  | Some(data) => {
+    })
+  | Some(data) =>
+    Some({
       ...data,
       results: list{result, ...data.results},
       resultsNoByes: Data_Id.isDummy(oppId)
@@ -354,7 +356,7 @@ let update = (
       colorScores: list{Color.toScore(color), ...data.colorScores},
       opponentResults: list{(oppId, result), ...data.opponentResults},
       ratings: list{newRating, ...data.ratings},
-    }
+    })
   }
 
 let fromTournament = (~roundList, ~scoreAdjustments) =>
@@ -364,8 +366,7 @@ let fromTournament = (~roundList, ~scoreAdjustments) =>
     switch match.result {
     | NotSet => acc
     | WhiteWon | BlackWon | Draw =>
-      let whiteData = update(
-        ~data=Map.get(acc, match.whiteId),
+      let whiteUpdate = update(
         ~playerId=match.whiteId,
         ~origRating=match.whiteOrigRating,
         ~newRating=match.whiteNewRating,
@@ -374,8 +375,7 @@ let fromTournament = (~roundList, ~scoreAdjustments) =>
         ~color=White,
         ~scoreAdjustments,
       )
-      let blackData = update(
-        ~data=Map.get(acc, match.blackId),
+      let blackUpdate = update(
         ~playerId=match.blackId,
         ~origRating=match.blackOrigRating,
         ~newRating=match.blackNewRating,
@@ -384,6 +384,6 @@ let fromTournament = (~roundList, ~scoreAdjustments) =>
         ~color=Black,
         ~scoreAdjustments,
       )
-      acc->Map.set(match.whiteId, whiteData)->Map.set(match.blackId, blackData)
+      acc->Map.update(match.whiteId, whiteUpdate)->Map.update(match.blackId, blackUpdate)
     }
   )

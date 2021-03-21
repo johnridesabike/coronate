@@ -24,15 +24,11 @@ module Score: {
 }
 
 module Color: {
-  type t =
-    | White
-    | Black
+  type t = White | Black
 
   let opposite: t => t
 
-  @ocaml.doc("
-   This is used for calculating the \"most black\" tiebreak.
-   ")
+  @ocaml.doc("This is used for calculating the \"most black\" tiebreak.")
   let toScore: t => Score.t
 }
 

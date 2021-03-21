@@ -24,7 +24,7 @@ module Array = {
 }
 
 module String = {
-  include Js.String2
+  type t = string
 
   let includes = (s, ~substr) => Js.String2.includes(s, substr)
 

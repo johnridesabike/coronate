@@ -15,6 +15,8 @@ type t = {
   score: float,
 }
 
+let id = t => t.id
+
 let make = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
   Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
@@ -157,15 +159,15 @@ let setByePlayer = (byeQueue, dummyId, data) => {
       ->SortArray.stableSortBy(sortByScoreThenRating)
     let playerIdsWithoutByes = Array.map(dataArr, p => p.id)
     let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id))
-    let nextByeSignups = byeQueue->List.fromArray->List.keep(hasntHadByeFn)
-    let dataForNextBye = switch nextByeSignups {
+    let nextByeSignups = Array.keep(byeQueue, hasntHadByeFn)
+    let dataForNextBye = switch nextByeSignups[0] {
     /* Assign the bye to the next person who signed up. */
-    | list{id, ..._} =>
-      switch data->Map.get(id) {
+    | Some(id) =>
+      switch Map.get(data, id) {
       | Some(x) => x
-      | None => dataArr->Array.getExn(0)
+      | None => Array.getExn(dataArr, 0)
       }
-    | list{} =>
+    | None =>
       /* Assign a bye to the lowest-rated player in the lowest score group.
            Because the list is sorted, the last player is the lowest.
            (USCF § 29L2.) */
