@@ -25,13 +25,6 @@ let maxPriority: float
 let calcPairIdeal: (t, t) => float
 
 @ocaml.doc("
- This determines what \"half\" each player is in: upper half or lower half. It
- also determines their \"position\" within each half.
- USCF § 29C1
- ")
-let setUpperHalves: Data_Id.Map.t<t> => Data_Id.Map.t<t>
-
-@ocaml.doc("
  This this returns a tuple of two objects: The modified array of player data
  without the player assigned a bye, and the player assigned a bye.
  If no player is assigned a bye, the second object is `null`.

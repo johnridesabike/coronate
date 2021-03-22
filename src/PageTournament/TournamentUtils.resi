@@ -5,7 +5,7 @@
  ")
 type roundData = {
   activePlayersCount: int,
-  scoreData: Data.Id.Map.t<Data_Scoring.t>,
+  scoreData: Data.Id.Map.t<Data.Scoring.t>,
   unmatched: Data.Id.Map.t<Data.Player.t>,
   unmatchedCount: int,
   unmatchedWithDummy: Data.Id.Map.t<Data.Player.t>,
@@ -31,7 +31,7 @@ type scoreInfo = {
 
 let getScoreInfo: (
   ~player: Data.Player.t,
-  ~scoreData: Data.Id.Map.t<Data_Scoring.t>,
+  ~scoreData: Data.Id.Map.t<Data.Scoring.t>,
   ~avoidPairs: Data.Id.Pair.Set.t,
   ~getPlayer: Data.Id.t => Data.Player.t,
   ~players: Data.Id.Map.t<Data.Player.t>,

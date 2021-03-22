@@ -192,7 +192,7 @@ module Stage = {
       | Black => setStagedPlayers(((p1, _)) => (p1, None))
       }
 
-    let match_ = _ =>
+    let match = _ =>
       switch stagedPlayers {
       | (Some(white), Some(black)) =>
         let newRound = Rounds.Round.addMatches(
@@ -266,7 +266,7 @@ module Stage = {
           <Icons.Repeat /> {React.string(" Swap colors")}
         </button>
         {React.string(" ")}
-        <button className="button-primary" disabled={!twoAreSelected} onClick=match_>
+        <button className="button-primary" disabled={!twoAreSelected} onClick=match>
           <Icons.Check /> {React.string(" Match selected")}
         </button>
       </div>
@@ -328,7 +328,7 @@ let make = (
   let dialog = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
   let pairData = React.useMemo3(
-    () => Pairing.make(scoreData, activePlayers, avoidPairs)->Pairing.setUpperHalves,
+    () => Pairing.make(scoreData, activePlayers, avoidPairs),
     (activePlayers, avoidPairs, scoreData),
   )
   /* Clean staged players if they were removed from the tournament */

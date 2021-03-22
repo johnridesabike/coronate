@@ -1,21 +1,53 @@
 open Belt
 module Id = Data_Id
 
-let sum = list => Array.reduce(list, 0.0, (a, b) => a +. b)
-
 type t = {
   id: Id.t,
   avoidIds: Id.Set.t,
-  colorScores: array<float>,
-  colors: array<Data_Scoring.Color.t>,
+  colorScore: float,
+  colors: list<Data_Scoring.Color.t>,
   halfPos: int,
   isUpperHalf: bool,
-  opponents: array<Id.t>,
+  opponents: list<Id.t>,
   rating: int,
   score: float,
 }
 
 let id = t => t.id
+
+//let descendingScore = Utils.descend(compare, x => x.score);
+let descendingRating = Utils.descend(compare, (. x) => x.rating)
+
+let splitInHalf = arr => {
+  let midpoint = Js.Array.length(arr) / 2
+  (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
+}
+
+@ocaml.doc("
+ This determines what \"half\" each player is in: upper half or lower half.
+ It also determines their \"position\" within each half.
+ USCF § 29C1
+ ")
+let setUpperHalves = data => {
+  let dataArr = Map.valuesToArray(data)
+  Map.map(data, playerData => {
+    let (upperHalfIds, lowerHalfIds) =
+      dataArr
+      ->Array.keep(({score, _}) => score == playerData.score)
+      ->Belt.SortArray.stableSortBy(descendingRating)
+      ->splitInHalf
+    /* We need to know what position in each half the player occupies. We're
+     uisng array indices to identify these. */
+    let getIndex = Array.getIndexBy(_, x => Data_Id.eq(x.id, playerData.id))
+    let (halfPos, isUpperHalf) = switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
+    | (Some(index), Some(_)) /* This shouldn't happen. */
+    | (Some(index), None) => (index, true)
+    | (None, Some(index)) => (index, false)
+    | (None, None) => (0, false) /* This shouldn't happen. */
+    }
+    {...playerData, halfPos: halfPos, isUpperHalf: isUpperHalf}
+  })
+}
 
 let make = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
@@ -28,23 +60,20 @@ let make = (scoreData, playerData, avoidPairs) => {
     | None => Set.make(~id=Data_Id.id)
     | Some(x) => x
     }
-    /* `isUpperHalf` and `halfPos` will have to be set by another
-     function later. */
     {
       avoidIds: newAvoidIds,
-      colorScores: playerStats.colorScores->List.toArray->Array.map(Data_Scoring.Score.toFloat),
-      colors: playerStats.colors->List.toArray,
-      halfPos: 0,
+      colorScore: playerStats.colorScores->Data_Scoring.Score.sum->Data_Scoring.Score.Sum.toFloat,
+      colors: playerStats.colors,
+      halfPos: 0, // temporary
       id: data.id,
-      isUpperHalf: false,
-      opponents: playerStats.opponentResults->List.toArray->Array.map(((id, _)) => id),
+      isUpperHalf: false, // temporary
+      opponents: playerStats.opponentResults->List.map(((id, _)) => id),
       rating: data.rating,
-      score: Data_Scoring.Score.calcScore(
-        playerStats.results,
-        ~adjustment=playerStats.adjustment,
-      )->Data_Scoring.Score.Sum.toFloat,
+      score: playerStats.results
+      ->Data_Scoring.Score.calcScore(~adjustment=playerStats.adjustment)
+      ->Data_Scoring.Score.Sum.toFloat,
     }
-  })
+  })->setUpperHalves
 }
 
 let priority = (value, condition) => condition ? value : 0.0
@@ -83,62 +112,27 @@ let differentHalf = isDiffHalf => isDiffHalf ? halfPosition : sameHalfPriority
  ")
 let differentDueColor = priority(4.0)
 
-let maxPriority = sum([
-  differentHalf(true, 1.0),
-  differentDueColor(true),
-  sameScores(1.0),
-  avoidMeetingTwice(true),
-])
+let maxPriority =
+  differentHalf(true, 1.0) +. differentDueColor(true) +. sameScores(1.0) +. avoidMeetingTwice(true)
 
 let calcPairIdeal = (player1, player2) =>
   if Id.eq(player1.id, player2.id) {
     0.0
   } else {
-    let metBefore = Array.some(player1.opponents, Id.eq(player2.id))
+    let metBefore = List.some(player1.opponents, Id.eq(player2.id))
     let mustAvoid = Set.has(player1.avoidIds, player2.id)
-    let isDiffDueColor = switch (player1.colors[0], player2.colors[0]) {
-    | (Some(color1), Some(color2)) => color1 != color2
+    let isDiffDueColor = switch (player1.colors, player2.colors) {
+    | (list{color1, ..._}, list{color2, ..._}) => color1 != color2
     | (_, _) => true
     }
     let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0
     let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1)
     let isDiffHalf = player1.isUpperHalf != player2.isUpperHalf && player1.score == player2.score
-    sum([
-      differentDueColor(isDiffDueColor),
-      sameScores(scoreDiff),
-      differentHalf(isDiffHalf, halfDiff),
-      avoidMeetingTwice(!metBefore && !mustAvoid),
-    ])
+    differentDueColor(isDiffDueColor) +.
+    sameScores(scoreDiff) +.
+    differentHalf(isDiffHalf, halfDiff) +.
+    avoidMeetingTwice(!metBefore && !mustAvoid)
   }
-
-//let descendingScore = Utils.descend(compare, x => x.score);
-let descendingRating = Utils.descend(compare, (. x) => x.rating)
-
-let splitInHalf = arr => {
-  let midpoint = Js.Array.length(arr) / 2
-  (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
-}
-
-let setUpperHalves = data => {
-  let dataArr = Map.valuesToArray(data)
-  Map.map(data, playerData => {
-    let (upperHalfIds, lowerHalfIds) =
-      dataArr
-      ->Array.keep(({score, _}) => score == playerData.score)
-      ->Belt.SortArray.stableSortBy(descendingRating)
-      ->splitInHalf
-    /* We need to know what position in each half the player occupies. We're
-     uisng array indices to identify these. */
-    let getIndex = Array.getIndexBy(_, x => x === playerData)
-    let (halfPos, isUpperHalf) = switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
-    | (Some(index), Some(_)) /* This shouldn't happen. */
-    | (Some(index), None) => (index, true)
-    | (None, Some(index)) => (index, false)
-    | (None, None) => (0, false) /* This shouldn't happen. */
-    }
-    {...playerData, halfPos: halfPos, isUpperHalf: isUpperHalf}
-  })
-}
 
 let sortByScoreThenRating = (data1, data2) =>
   switch compare(data1.score, data2.score) {
@@ -147,7 +141,7 @@ let sortByScoreThenRating = (data1, data2) =>
   }
 
 let setByePlayer = (byeQueue, dummyId, data) => {
-  let hasNotHadBye = p => !Array.some(p.opponents, Id.eq(dummyId))
+  let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId))
   /* if the list is even, just return it. */
   if mod(Map.size(data), 2) == 0 {
     (data, None)
@@ -188,9 +182,9 @@ let assignColorsForPair = ((player1, player2)) =>
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  sum(player1.colorScores) < sum(player2.colorScores)
-  /* player 1 has played as white more than player 2 */
-    ? (player2.id, player1.id)
+  player1.colorScore < player2.colorScore
+    ? /* player 1 has played as white more than player 2 */
+      (player2.id, player1.id)
       /* player 1 has played as black more than player 2
        (or they're equal). */
     : (player1.id, player2.id)

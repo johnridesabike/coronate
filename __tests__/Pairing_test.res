@@ -17,9 +17,10 @@ let loadPairData = tourneyId => {
       acc
     }
   )
-  Data.Scoring.fromTournament(~roundList, ~scoreAdjustments)
-  ->Data.Pairing.make(players, TestData.config.avoidPairs)
-  ->Data.Pairing.setUpperHalves
+  Data.Scoring.fromTournament(~roundList, ~scoreAdjustments)->Data.Pairing.make(
+    players,
+    TestData.config.avoidPairs,
+  )
 }
 
 test("Players have 0 priority of pairing themselves.", () => {

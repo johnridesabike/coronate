@@ -96,18 +96,17 @@ let manualPair = ((white: Data_Player.t, black: Data_Player.t), byeValue) =>
     blackNewRating: black.rating,
   }->scoreByeMatch(~byeValue)
 
-let swapColors = match_ => {
-  ...match_,
-  result: switch match_.result {
+let swapColors = match => {
+  ...match,
+  result: switch match.result {
   | WhiteWon => BlackWon
   | BlackWon => WhiteWon
-  | Draw => Draw
-  | NotSet => NotSet
+  | (Draw | NotSet) as x => x
   },
-  whiteId: match_.blackId,
-  blackId: match_.whiteId,
-  whiteOrigRating: match_.blackOrigRating,
-  blackOrigRating: match_.whiteOrigRating,
-  whiteNewRating: match_.blackNewRating,
-  blackNewRating: match_.whiteNewRating,
+  whiteId: match.blackId,
+  blackId: match.whiteId,
+  whiteOrigRating: match.blackOrigRating,
+  blackOrigRating: match.whiteOrigRating,
+  whiteNewRating: match.blackNewRating,
+  blackNewRating: match.whiteNewRating,
 }
