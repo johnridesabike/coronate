@@ -12,7 +12,7 @@ module ScoreTable = {
       Scoring.fromTournament(~roundList, ~scoreAdjustments)
       ->Scoring.createStandingArray(tieBreaks)
       ->Array.keep(({id, _}) => !Data.Id.isDummy(id))
-      ->Scoring.createStandingTree
+      ->Scoring.createStandingTree(~tieBreaks)
     <table className={"pagescores__table"}>
       <caption
         className={switch size {
@@ -87,11 +87,10 @@ module ScoreTable = {
                   <td
                     key={Scoring.TieBreak.toString(tb)}
                     className={"pagescores__row-td table__number"}>
-                    {switch Map.get(standing.tieBreaks, tb) {
-                    | None => React.null
-                    | Some(score) =>
-                      score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string
-                    }}
+                    {Scoring.getTieBreak(standing, tb)
+                    ->Scoring.Score.Sum.toNumeral
+                    ->Numeral.format("1/2")
+                    ->React.string}
                   </td>
                 )
                 ->React.array
@@ -125,9 +124,7 @@ module SelectTieBreaks = {
       if Js.Array2.includes(tieBreaks, defaultId(id)) {
         setTourney({
           ...tourney,
-          tieBreaks: Js.Array2.filter(tourney.tieBreaks, tbId =>
-            !Scoring.TieBreak.eq(defaultId(id), tbId)
-          ),
+          tieBreaks: Js.Array2.filter(tourney.tieBreaks, tbId => defaultId(id) != tbId),
         })
         setSelectedTb(_ => None)
       } else {
@@ -192,15 +189,14 @@ module SelectTieBreaks = {
                       switch selectedTb {
                       | None => setSelectedTb(_ => Some(tieBreak))
                       | Some(selectedTb) =>
-                        Scoring.TieBreak.eq(selectedTb, tieBreak)
+                        selectedTb == tieBreak
                           ? setSelectedTb(_ => None)
                           : setSelectedTb(_ => Some(tieBreak))
                       }}>
                     {React.string(
                       switch selectedTb {
                       | None => "Edit"
-                      | Some(selectedTb) =>
-                        Scoring.TieBreak.eq(selectedTb, tieBreak) ? "Done" : "Edit"
+                      | Some(selectedTb) => selectedTb == tieBreak ? "Done" : "Edit"
                       },
                     )}
                   </button>
@@ -268,7 +264,7 @@ let make = (~tournament: LoadTournament.t) => {
 module Crosstable = {
   let getXScore = (scoreData, player1Id, player2Id) =>
     if Id.eq(player1Id, player2Id) {
-      <Icons.X className="disabled" />
+      <Icons.X className="pagescores__x" />
     } else {
       switch Map.get(scoreData, player1Id) {
       | None => React.null

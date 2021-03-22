@@ -70,11 +70,7 @@ module TieBreak: {
 
   let toString: t => string
 
-  type identity
-
   let toPrettyString: t => string
-
-  let eq: (t, t) => bool
 }
 
 let make: Data_Id.t => t
@@ -82,8 +78,14 @@ let make: Data_Id.t => t
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: Belt.Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
+  median: Score.Sum.t,
+  solkoff: Score.Sum.t,
+  cumulative: Score.Sum.t,
+  cumulativeOfOpposition: Score.Sum.t,
+  mostBlack: Score.Sum.t,
 }
+
+let getTieBreak: (scores, TieBreak.t) => Score.Sum.t
 
 @ocaml.doc("
  Sort the standings by score, see USCF tie-break rules from § 34.
@@ -98,7 +100,7 @@ let createStandingArray: (Data_Id.Map.t<t>, array<TieBreak.t>) => array<scores>
  example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
  first, Pete is 2nd, Bob is 3rd.
  ")
-let createStandingTree: array<scores> => list<list<scores>>
+let createStandingTree: (array<scores>, ~tieBreaks: array<TieBreak.t>) => list<list<scores>>
 
 let fromTournament: (
   ~roundList: Data_Rounds.t,

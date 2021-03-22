@@ -121,10 +121,6 @@ module TieBreak = {
     | MostBlack => "mostBlack"
     }
 
-  module Cmp = unpack(Belt.Id.comparable(~cmp=(a: t, b: t) => compare(a, b)))
-
-  type identity = Cmp.identity
-
   let toPrettyString = tieBreak =>
     switch tieBreak {
     | Median => "Median"
@@ -147,19 +143,6 @@ module TieBreak = {
   let encode = data => data->toString->Json.Encode.string
 
   let decode = json => json->Json.Decode.string->fromString
-
-  let eq = (a, b) =>
-    switch (a, b) {
-    | (Median, Median)
-    | (Solkoff, Solkoff)
-    | (Cumulative, Cumulative)
-    | (CumulativeOfOpposition, CumulativeOfOpposition)
-    | (MostBlack, MostBlack) => true
-    | (
-        Median | Solkoff | Cumulative | CumulativeOfOpposition | MostBlack,
-        Median | Solkoff | Cumulative | CumulativeOfOpposition | MostBlack,
-      ) => false
-    }
 }
 
 let make = id => {
@@ -244,20 +227,24 @@ let getColorBalanceScore = (scores, id) =>
   | Some({colorScores, _}) => Score.sum(colorScores)
   }
 
-let mapTieBreak = (x: TieBreak.t) =>
-  switch x {
-  | Median => getMedianScore
-  | Solkoff => getSolkoffScore
-  | Cumulative => getCumulativeScore
-  | CumulativeOfOpposition => getCumulativeOfOpponentScore
-  | MostBlack => getColorBalanceScore
-  }
-
 type scores = {
-  id: Id.t,
+  id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: Map.t<TieBreak.t, Score.Sum.t, TieBreak.identity>,
+  median: Score.Sum.t,
+  solkoff: Score.Sum.t,
+  cumulative: Score.Sum.t,
+  cumulativeOfOpposition: Score.Sum.t,
+  mostBlack: Score.Sum.t,
 }
+
+let getTieBreak = (scores, x: TieBreak.t) =>
+  switch x {
+  | Median => scores.median
+  | Solkoff => scores.solkoff
+  | Cumulative => scores.cumulative
+  | CumulativeOfOpposition => scores.cumulativeOfOpposition
+  | MostBlack => scores.mostBlack
+  }
 
 @ocaml.doc("
  `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
@@ -269,9 +256,8 @@ let standingsSorter = (orderedMethods, a, b) => {
     switch orderedMethods[i] {
     | None => 0
     | Some(tieBreak) =>
-      switch (Map.get(a.tieBreaks, tieBreak), Map.get(b.tieBreaks, tieBreak)) {
-      | (None, _) | (_, None) => tieBreaksCompare(succ(i))
-      | (Some(a'), Some(b')) =>
+      switch (getTieBreak(a, tieBreak), getTieBreak(b, tieBreak)) {
+      | (a', b') =>
         /* a and b are switched for ascending order */
         switch Score.Sum.compare(b', a') {
         | 0 => tieBreaksCompare(succ(i))
@@ -286,23 +272,27 @@ let standingsSorter = (orderedMethods, a, b) => {
   }
 }
 
-let createStandingArray = (scores, orderedMethods) => {
-  let funcMap = Array.reduce(orderedMethods, Map.make(~id=module(TieBreak.Cmp)), (acc, tbType) =>
-    Map.set(acc, tbType, mapTieBreak(tbType))
-  )
-  scores
+let createStandingArray = (t, orderedMethods) =>
+  t
+  // Tiebreaks are computed even if they aren't necessary.
+  // If this is a performance problem, they could be wrapped in a lazy type.
   ->Map.map(({id, results, adjustment, _}) => {
     id: id,
     score: Score.calcScore(results, ~adjustment),
-    tieBreaks: Map.map(funcMap, fn => fn(scores, id)),
+    median: getMedianScore(t, id),
+    solkoff: getSolkoffScore(t, id),
+    cumulative: getCumulativeScore(t, id),
+    cumulativeOfOpposition: getCumulativeOfOpponentScore(t, id),
+    mostBlack: getColorBalanceScore(t, id),
   })
   ->Map.valuesToArray
   ->SortArray.stableSortBy(standingsSorter(orderedMethods))
-}
 
-let eq = (a, b) => Score.Sum.eq(a.score, b.score) && Map.eq(a.tieBreaks, b.tieBreaks, Score.Sum.eq)
+let eq = (a, b, tieBreaks) =>
+  Score.Sum.eq(a.score, b.score) &&
+  Array.every(tieBreaks, tb => Score.Sum.eq(getTieBreak(a, tb), getTieBreak(b, tb)))
 
-let createStandingTree = standingArray =>
+let createStandingTree = (standingArray, ~tieBreaks) =>
   Array.reduce(standingArray, list{}, (tree, standing) =>
     switch tree {
     /* Always make a new rank for the first player */
@@ -311,7 +301,7 @@ let createStandingTree = standingArray =>
       switch treeHead {
       | list{} => list{list{standing}, ...tree}
       /* Make a new rank if the scores aren't equal */
-      | list{lastStanding, ..._} if !eq(lastStanding, standing) => list{
+      | list{lastStanding, ..._} if !eq(lastStanding, standing, tieBreaks) => list{
           list{standing},
           treeHead,
           ...treeTail,
