@@ -12,10 +12,10 @@
   "devDependencies": {},
   "dependencies": {
     "fancy-log": "^1.3.3",
-    "favicons": "^6.2.0",
+    "favicons": "^6.2.1",
     "gulp": "^4.0.2",
     "photon-colors": "^3.3.2",
-    "sharp": "^0.24.1",
-    "svgo": "^1.3.2"
+    "sharp": "^0.27.2",
+    "svgo": "^2.2.2"
   }
 }
