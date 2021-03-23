@@ -1,19 +1,18 @@
 open Belt
 module Id = Data_Id
 
+@deriving(accessors)
 type t = {
   id: Id.t,
   avoidIds: Id.Set.t,
   colorScore: float,
-  colors: list<Data_Scoring.Color.t>,
+  lastColor: option<Data_Scoring.Color.t>,
   halfPos: int,
   isUpperHalf: bool,
   opponents: list<Id.t>,
   rating: int,
   score: float,
 }
-
-let id = t => t.id
 
 //let descendingScore = Utils.descend(compare, x => x.score);
 let descendingRating = Utils.descend(compare, (. x) => x.rating)
@@ -63,7 +62,7 @@ let make = (scoreData, playerData, avoidPairs) => {
     {
       avoidIds: newAvoidIds,
       colorScore: playerStats.colorScores->Data_Scoring.Score.sum->Data_Scoring.Score.Sum.toFloat,
-      colors: playerStats.colors,
+      lastColor: playerStats.lastColor,
       halfPos: 0, // temporary
       id: data.id,
       isUpperHalf: false, // temporary
@@ -121,12 +120,12 @@ let calcPairIdeal = (player1, player2) =>
   } else {
     let metBefore = List.some(player1.opponents, Id.eq(player2.id))
     let mustAvoid = Set.has(player1.avoidIds, player2.id)
-    let isDiffDueColor = switch (player1.colors, player2.colors) {
-    | (list{color1, ..._}, list{color2, ..._}) => color1 != color2
+    let isDiffDueColor = switch (player1.lastColor, player2.lastColor) {
+    | (Some(color1), Some(color2)) => color1 != color2
     | (_, _) => true
     }
     let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0
-    let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1)
+    let halfDiff = Float.fromInt(abs(player1.halfPos - player2.halfPos) + 1)
     let isDiffHalf = player1.isUpperHalf != player2.isUpperHalf && player1.score == player2.score
     differentDueColor(isDiffDueColor) +.
     sameScores(scoreDiff) +.
@@ -213,7 +212,7 @@ let pairPlayers = pairData => {
    algorithm work its magic. */
   ->Blossom.Match.make(~id=module(IdMatch))
   /* Blossom returns redundant pair data. This filters them out. */
-  ->Blossom.Match.reduce(~init=Data_Id.Pair.Set.empty, ~f=(acc, p1, p2) =>
+  ->Blossom.Match.reduce(~init=Set.make(~id=Data_Id.Pair.id), ~f=(acc, p1, p2) =>
     switch Data_Id.Pair.make(p1, p2) {
     | None => acc
     | Some(pair) => Set.add(acc, pair)

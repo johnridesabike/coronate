@@ -48,13 +48,12 @@ module Pair: {
   let make: (id, id) => option<t>
   let has: (t, ~id: id) => bool
   let toTuple: t => (id, id)
+  let id: Belt.Id.comparable<t, identity>
   module Id_Set = Set
 
   module Set: {
     type pair = t
     type t = Belt.Set.t<pair, identity>
-    let empty: t
-    let fromArray: array<pair> => t
     let encode: t => Js.Json.t
     let decode: Js.Json.t => t
 

@@ -81,7 +81,7 @@ module Color = {
 
 type t = {
   colorScores: list<Score.t>,
-  colors: list<Color.t> /* This is used to create pairing data */,
+  lastColor: option<Color.t>, // This is used to create pairing data
   id: Id.t,
   isDummy: bool,
   opponentResults: list<(Id.t, Score.t)>,
@@ -147,7 +147,7 @@ module TieBreak = {
 
 let make = id => {
   colorScores: list{},
-  colors: list{},
+  lastColor: None,
   id: id,
   isDummy: false,
   opponentResults: list{},
@@ -329,7 +329,7 @@ let update = (
       adjustment: Map.getWithDefault(scoreAdjustments, playerId, 0.0),
       results: list{result},
       resultsNoByes: Data_Id.isDummy(oppId) ? list{} : list{result},
-      colors: list{color},
+      lastColor: Some(color),
       colorScores: list{Color.toScore(color)},
       opponentResults: list{(oppId, result)},
       ratings: list{newRating},
@@ -342,7 +342,7 @@ let update = (
       resultsNoByes: Data_Id.isDummy(oppId)
         ? data.resultsNoByes
         : list{result, ...data.resultsNoByes},
-      colors: list{color, ...data.colors},
+      lastColor: Some(color),
       colorScores: list{Color.toScore(color), ...data.colorScores},
       opponentResults: list{(oppId, result), ...data.opponentResults},
       ratings: list{newRating, ...data.ratings},

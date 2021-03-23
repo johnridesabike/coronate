@@ -26,7 +26,7 @@ let config: Config.t = {
   byeValue: Full,
   avoidPairs: [(barbara, james), (joker, harley), (huntress, batman)]
   ->Array.keepMap(((a, b)) => Id.Pair.make(a, b))
-  ->Id.Pair.Set.fromArray,
+  ->Set.fromArray(~id=Id.Pair.id),
   lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
 }
 

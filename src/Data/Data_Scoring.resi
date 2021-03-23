@@ -34,7 +34,7 @@ module Color: {
 
 type t = {
   colorScores: list<Score.t>,
-  colors: list<Color.t> /* This is used to create pairing data */,
+  lastColor: option<Color.t>, // This is used to create pairing data
   id: Data_Id.t,
   isDummy: bool,
   opponentResults: list<(Data_Id.t, Score.t)>,

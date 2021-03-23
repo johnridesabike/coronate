@@ -82,7 +82,7 @@ function configReducer(state, action) {
     case /* DelAvoidSingle */2 :
         var id = action._0;
         return {
-                avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Id$Coronate.Pair.$$Set.empty, (function (acc, pair) {
+                avoidPairs: Belt_Set.reduce(state.avoidPairs, Belt_Set.make(Data_Id$Coronate.Pair.id), (function (acc, pair) {
                         if (Data_Id$Coronate.Pair.has(pair, id)) {
                           return acc;
                         } else {

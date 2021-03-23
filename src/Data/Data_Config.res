@@ -47,6 +47,6 @@ let encode = data => {
 
 let default = {
   byeValue: Full,
-  avoidPairs: Data_Id.Pair.Set.empty,
+  avoidPairs: Belt.Set.make(~id=Data_Id.Pair.id),
   lastBackup: Js.Date.fromFloat(0.0),
 }

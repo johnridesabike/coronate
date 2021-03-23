@@ -71,32 +71,37 @@ module Pair = {
 
   type identity = Cmp.identity
 
+  let id_id = id
+  let id: Belt.Id.comparable<t, identity> = module(Cmp)
+
   module Id_Set = Set
 
   module Set = {
     type pair = t
     type t = Belt.Set.t<pair, identity>
 
-    let empty = Belt.Set.make(~id=module(Cmp))
+    let decode = json => json |> Json.Decode.array(decode) |> Belt.Set.fromArray(~id)
 
-    let fromArray = Belt.Set.fromArray(~id=module(Cmp))
-
-    let decode = json => json |> Json.Decode.array(decode) |> fromArray
-
-    let encode = data => Belt.Set.toArray(data) |> Json.Encode.array(encode)
+    let encode = data => data |> Belt.Set.toArray |> Json.Encode.array(encode)
 
     let toMapReducer = (acc, (id1, id2)) => {
-      let newSet1 = switch Belt.Map.get(acc, id1) {
-      | None => Belt.Set.make(~id)->Belt.Set.add(id2)
-      | Some(s) => Belt.Set.add(s, id2)
-      }
-      let newSet2 = switch Belt.Map.get(acc, id2) {
-      | None => Belt.Set.make(~id)->Belt.Set.add(id1)
-      | Some(s) => Belt.Set.add(s, id1)
-      }
-      acc->Belt.Map.set(id1, newSet1)->Belt.Map.set(id2, newSet2)
+      let s1 = Belt.Set.make(~id=id_id)->Belt.Set.add(id2)
+      let s2 = Belt.Set.make(~id=id_id)->Belt.Set.add(id1)
+      acc
+      ->Belt.Map.update(id1, s =>
+        switch s {
+        | None => Some(s1)
+        | Some(s) => Some(Belt.Set.union(s, s1))
+        }
+      )
+      ->Belt.Map.update(id2, s =>
+        switch s {
+        | None => Some(s2)
+        | Some(s) => Some(Belt.Set.union(s, s2))
+        }
+      )
     }
 
-    let toMap = x => Belt.Set.reduce(x, Belt.Map.make(~id), toMapReducer)
+    let toMap = x => Belt.Set.reduce(x, Belt.Map.make(~id=id_id), toMapReducer)
   }
 }
