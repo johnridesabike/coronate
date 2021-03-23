@@ -820,6 +820,7 @@ li.player.missing {
 .pagescores__playername {
   text-align: left;
   color: var(--grey-90);
+  white-space: nowrap;
 }
 
 .pagescores__rank {
