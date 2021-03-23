@@ -46,11 +46,7 @@ module Splash = {
                   alt="Buy Me A Coffee"
                   height="60"
                   width="217"
-                  style={ReactDOMRe.Style.make(
-                    ~height="60px !important",
-                    ~width="217px !important;",
-                    (),
-                  )}
+                  style={ReactDOMRe.Style.make(~height="60px ", ~width="217px ", ())}
                 />
               </a>
             </p>
