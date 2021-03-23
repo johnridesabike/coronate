@@ -66,7 +66,7 @@ let make = (~tournament: LoadTournament.t) => {
 
   let updateDate = event => {
     let rawDate = ReactEvent.Form.currentTarget(event)["value"]
-    let (rawYear, rawMonth, rawDay) = switch Utils.String.split(rawDate, ~on="-") {
+    let (rawYear, rawMonth, rawDay) = switch Js.String2.split(rawDate, "-") {
     | [year, month, day] => (year, month, day)
     | _ => ("2000", "01", "01") /* this was chosen randomly */
     }

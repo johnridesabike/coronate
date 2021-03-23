@@ -225,8 +225,7 @@ module PlayerList = {
     {players
     ->Map.valuesToArray
     ->Array.map(p =>
-      <tr
-        key={p.id->Data.Id.toString} className={Cn.append(Player.Type.toString(p.type_), "player")}>
+      <tr key={p.id->Data.Id.toString} className={"player " ++ Player.Type.toString(p.type_)}>
         <td> {React.string(p.firstName)} </td>
         <td> {React.string(p.lastName)} </td>
         <td> <OptionsForm setTourney tourney byeQueue p /> </td>

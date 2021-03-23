@@ -178,7 +178,9 @@ module SelectTieBreaks = {
             {Array.map(tieBreaks, tieBreak =>
               <tr
                 key={Scoring.TieBreak.toString(tieBreak)}
-                className={Cn.mapSome(selectedTb, x => x == tieBreak ? "selected" : "")}>
+                className={Option.mapWithDefault(selectedTb, "", x =>
+                  x == tieBreak ? "selected" : ""
+                )}>
                 <td> {Scoring.TieBreak.toPrettyString(tieBreak)->React.string} </td>
                 <td style={ReactDOMRe.Style.make(~width="48px", ())}>
                   <button

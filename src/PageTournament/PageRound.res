@@ -148,9 +148,7 @@ module MatchRow = {
     <tr
       className={Cn.append(
         className,
-        Option.mapWithDefault(selectedMatch, "", id =>
-          Id.eq(m.id, id) ? "selected" : "buttons-on-hover"
-        ),
+        Cn.mapSome(selectedMatch, id => Id.eq(m.id, id) ? "selected" : "buttons-on-hover"),
       )}>
       <th className={"pageround__row-id table__number"} scope="row">
         {string_of_int(pos + 1)->React.string}
@@ -158,10 +156,7 @@ module MatchRow = {
       <td className="pageround__playerresult"> {resultDisplay(White)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-white")}>
         <td
-          className={Cn.append(
-            "table__player row__player",
-            Player.Type.toString(whitePlayer.type_),
-          )}
+          className={"table__player row__player " ++ Player.Type.toString(whitePlayer.type_)}
           id={"match-" ++ (string_of_int(pos) ++ "-white")}>
           {whitePlayer->Player.fullName->React.string}
         </td>
@@ -169,10 +164,7 @@ module MatchRow = {
       <td className="pageround__playerresult"> {resultDisplay(Black)} </td>
       <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-black")}>
         <td
-          className={Cn.append(
-            "table__player row__player",
-            Player.Type.toString(blackPlayer.type_),
-          )}
+          className={"table__player row__player " ++ Player.Type.toString(blackPlayer.type_)}
           id={"match-" ++ (string_of_int(pos) ++ "-black")}>
           {blackPlayer->Player.fullName->React.string}
         </td>

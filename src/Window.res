@@ -107,12 +107,7 @@ module TitleBar = {
 let make = (~children, ~className) => {
   let (state, dispatch) = React.useReducer(windowReducer, initialWinState)
   let {isSidebarOpen, isDialogOpen, title} = state
-  <div
-    className={Cn.fromList(list{
-      className,
-      "open-sidebar"->Cn.on(isSidebarOpen),
-      "closed-sidebar"->Cn.on(!isSidebarOpen),
-    })}>
+  <div className={Cn.append(className, isSidebarOpen ? "open-sidebar" : "closed-sidebar")}>
     <TitleBar isSidebarOpen title dispatch />
     {children(dispatch)}
     <Externals.Dialog

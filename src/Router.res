@@ -80,7 +80,7 @@ let toString = x =>
 
 let useHashUrl = () => {
   let {hash, _} = useUrl()
-  hash->Utils.String.split(~on="/")->List.fromArray->fromPath
+  hash->Js.String2.split("/")->List.fromArray->fromPath
 }
 
 module HashLink = {

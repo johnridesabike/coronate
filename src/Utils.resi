@@ -14,19 +14,11 @@ module Array: {
   let swap: (t<'a>, int, int) => t<'a>
 }
 
-module String: {
-  type t = string
-
-  let includes: (t, ~substr: t) => bool
-
-  let split: (t, ~on: t) => array<t>
-}
-
 let alert: string => unit
 
 module WebpackAssets: {
-  let logo: string
-  let caution: string
+  @module("./assets/icon-min.svg") external logo: string = "default"
+  //@module("./assets/caution.svg") external caution: string = "default"
 }
 
 module Entities: {
