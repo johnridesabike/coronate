@@ -5,11 +5,11 @@ open Data
 
 let getDateForFile = () => {
   let date = Js.Date.make()
-  list{
+  [
     date->Js.Date.getFullYear->Float.toString,
     (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
     Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
-  }->Utils.String.concat(~sep="-")
+  ]->Js.Array2.joinWith("-")
 }
 
 let invalidAlert = () =>

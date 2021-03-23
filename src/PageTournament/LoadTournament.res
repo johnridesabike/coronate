@@ -25,16 +25,12 @@ type t = {
   setTourney: Tournament.t => unit,
 }
 
-type loadStatus =
-  | NotLoaded
-  | Loaded
-  | Error
+type loadStatus = NotLoaded | Loaded | Error
 
 let isLoadedDone = x =>
   switch x {
   | NotLoaded => false
-  | Loaded
-  | Error => true
+  | Loaded | Error => true
   }
 
 @react.component
@@ -48,7 +44,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
 
   React.useEffect2(() => {
     windowDispatch(Window.SetTitle(name))
-    Some(() => windowDispatch(Window.SetTitle("")))
+    Some(() => windowDispatch(SetTitle("")))
   }, (name, windowDispatch))
 
   /* Initialize the tournament from the database. */
@@ -78,8 +74,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   /* Save the tournament to DB. */
   React.useEffect3(() => {
     switch tourneyLoaded {
-    | NotLoaded
-    | Error => ()
+    | NotLoaded | Error => ()
     | Loaded =>
       /*
        * If the tournament wasn't loaded then the id won't match. IDK why this
@@ -95,7 +90,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   switch (tourneyLoaded, arePlayersLoaded) {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
-    let activePlayers = players->Map.keep((id, _) => playerIds->List.has(id, Id.eq))
+    let activePlayers = Map.keep(players, (id, _) => Set.has(playerIds, id))
     let roundCount = activePlayers->Map.size->calcNumOfRounds
     let isItOver = Rounds.size(roundList) >= roundCount
     let isNewRoundReady =
@@ -115,47 +110,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
     })
   | (Error, _) =>
     <Window.Body> {React.string("Error: tournament couldn't be loaded.")} </Window.Body>
-  | (NotLoaded, false)
-  | (NotLoaded, true)
-  | (Loaded, false) =>
+  | (NotLoaded, false) | (NotLoaded, true) | (Loaded, false) =>
     <Window.Body> {React.string("Loading...")} </Window.Body>
-  }
-}
-
-type roundData = {
-  activePlayersCount: int,
-  scoreData: Id.Map.t<Scoring.t>,
-  unmatched: Id.Map.t<Data.Player.t>,
-  unmatchedCount: int,
-  unmatchedWithDummy: Id.Map.t<Data.Player.t>,
-}
-
-let useRoundData = (roundId, {tourney: {roundList, scoreAdjustments, _}, activePlayers, _}) => {
-  /* tournament2ScoreData is relatively expensive */
-  let scoreData = React.useMemo2(
-    () => Converters.tournament2ScoreData(~roundList, ~scoreAdjustments),
-    (roundList, scoreAdjustments),
-  )
-  /* Only calculate unmatched players for the latest round. Old rounds
-     don't get to add new players.
-     Should this be memoized? */
-  let isThisTheLastRound = roundId == Rounds.getLastKey(roundList)
-  let unmatched = switch (Rounds.get(roundList, roundId), isThisTheLastRound) {
-  | (Some(round), true) =>
-    let matched = Rounds.Round.getMatched(round)
-    Map.removeMany(activePlayers, matched)
-  | _ => Id.Map.make()
-  }
-  let unmatchedCount = Map.size(unmatched)
-  /* make a new list so as not to affect auto-pairing */
-  let unmatchedWithDummy =
-    mod(unmatchedCount, 2) != 0 ? Map.set(unmatched, Id.dummy, Player.dummy) : unmatched
-  let activePlayersCount = Map.size(activePlayers)
-  {
-    activePlayersCount: activePlayersCount,
-    scoreData: scoreData,
-    unmatched: unmatched,
-    unmatchedCount: unmatchedCount,
-    unmatchedWithDummy: unmatchedWithDummy,
   }
 }

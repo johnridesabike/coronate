@@ -16,18 +16,3 @@ let make: (
   ~tourneyId: Data.Id.t,
   ~windowDispatch: Window.action => unit=?,
 ) => React.element
-
-@ocaml.doc("
- I extracted this logic to its own module so it could be easily
- reused (e.g. in testing). It may have also made the whole component tree more
- complicated.
- ")
-type roundData = {
-  activePlayersCount: int,
-  scoreData: Data.Id.Map.t<Data_Scoring.t>,
-  unmatched: Data.Id.Map.t<Data.Player.t>,
-  unmatchedCount: int,
-  unmatchedWithDummy: Data.Id.Map.t<Data.Player.t>,
-}
-
-let useRoundData: (int, t) => roundData

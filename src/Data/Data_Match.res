@@ -1,31 +1,8 @@
 module Id = Data_Id
-module Score = Data_Scoring.Score
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
-  type t =
-    | WhiteWon
-    | BlackWon
-    | Draw
-    | NotSet
-
-  let toScoreWhite = (x): Score.t =>
-    switch x {
-    | WhiteWon => One
-    | BlackWon => Zero
-    | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
-    }
-
-  let toScoreBlack = (x): Score.t =>
-    switch x {
-    | WhiteWon => Zero
-    | BlackWon => One
-    | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
-    }
+  type t = WhiteWon | BlackWon | Draw | NotSet
 
   let toString = x =>
     switch x {
@@ -119,18 +96,17 @@ let manualPair = ((white: Data_Player.t, black: Data_Player.t), byeValue) =>
     blackNewRating: black.rating,
   }->scoreByeMatch(~byeValue)
 
-let swapColors = match_ => {
-  ...match_,
-  result: switch match_.result {
+let swapColors = match => {
+  ...match,
+  result: switch match.result {
   | WhiteWon => BlackWon
   | BlackWon => WhiteWon
-  | Draw => Draw
-  | NotSet => NotSet
+  | (Draw | NotSet) as x => x
   },
-  whiteId: match_.blackId,
-  blackId: match_.whiteId,
-  whiteOrigRating: match_.blackOrigRating,
-  blackOrigRating: match_.whiteOrigRating,
-  whiteNewRating: match_.blackNewRating,
-  blackNewRating: match_.whiteNewRating,
+  whiteId: match.blackId,
+  blackId: match.whiteId,
+  whiteOrigRating: match.blackOrigRating,
+  blackOrigRating: match.whiteOrigRating,
+  whiteNewRating: match.blackNewRating,
+  blackNewRating: match.whiteNewRating,
 }

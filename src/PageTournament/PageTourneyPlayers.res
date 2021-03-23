@@ -9,11 +9,11 @@ module Selecting = {
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)["value"]
       if ReactEvent.Form.target(event)["checked"] {
-        setTourney({...tourney, playerIds: list{id, ...playerIds}})
+        setTourney({...tourney, playerIds: Set.add(playerIds, id)})
       } else {
         setTourney({
           ...tourney,
-          playerIds: playerIds->List.keep(pId => !Id.eq(pId, id)),
+          playerIds: Set.keep(playerIds, pId => !Id.eq(pId, id)),
         })
       }
     }
@@ -25,11 +25,13 @@ module Selecting = {
           onClick={_ =>
             setTourney({
               ...tourney,
-              playerIds: players->Map.keysToArray->List.fromArray,
+              playerIds: players->Map.keysToArray->Set.fromArray(~id=Id.id),
             })}>
           {React.string("Select all")}
         </button>
-        <button className="button-micro" onClick={_ => setTourney({...tourney, playerIds: list{}})}>
+        <button
+          className="button-micro"
+          onClick={_ => setTourney({...tourney, playerIds: Set.make(~id=Id.id)})}>
           {React.string("Select none")}
         </button>
       </div>
@@ -52,13 +54,11 @@ module Selecting = {
               <td>
                 <Externals.VisuallyHidden>
                   <label htmlFor={"select-" ++ id->Data.Id.toString}>
-                    {list{"Select", firstName, lastName}
-                    ->Utils.String.concat(~sep=" ")
-                    ->React.string}
+                    {`Select ${firstName} ${lastName}`->React.string}
                   </label>
                 </Externals.VisuallyHidden>
                 <input
-                  checked={playerIds->List.has(id, Id.eq)}
+                  checked={Set.has(playerIds, id)}
                   type_="checkbox"
                   value={id->Data.Id.toString}
                   id={"select-" ++ id->Data.Id.toString}
@@ -72,19 +72,17 @@ module Selecting = {
       </table>
       <PagePlayers.NewPlayerForm
         dispatch=playersDispatch
-        addPlayerCallback={id => setTourney({...tourney, playerIds: list{id, ...playerIds}})}
+        addPlayerCallback={id => setTourney({...tourney, playerIds: Set.add(playerIds, id)})}
       />
     </div>
   }
 }
 
-let hasHadBye = (matches, playerId) => {
-  open Js.Array2
+let hasHadBye = (matches, playerId) =>
   matches
-  ->filter((match: Match.t) => includes([match.whiteId, match.blackId], playerId))
-  ->reduce((acc, match: Match.t) => concat(acc, [match.whiteId, match.blackId]), [])
-  ->includes(Data.Id.dummy)
-}
+  ->MutableQueue.toArray
+  ->Array.keep((match: Match.t) => Id.eq(match.whiteId, playerId) || Id.eq(match.blackId, playerId))
+  ->Array.some(match => Id.isDummy(match.whiteId) || Id.isDummy(match.blackId))
 
 module OptionsForm = {
   let errorNotification = x =>
@@ -142,12 +140,7 @@ module OptionsForm = {
         <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
           {React.string("close")}
         </button>
-        <h2>
-          {Utils.String.concat(
-            list{"Options for", p.firstName, p.lastName},
-            ~sep=" ",
-          )->React.string}
-        </h2>
+        <h2> {`Options for ${p.firstName} ${p.lastName}`->React.string} </h2>
         <form
           onSubmit={event => {
             ReactEvent.Form.preventDefault(event)
@@ -213,16 +206,13 @@ module OptionsForm = {
       <button className="button-micro" onClick={_ => dialog.setTrue()}>
         <span ariaHidden=true> <Icons.More /> </span>
         <Externals.VisuallyHidden>
-          {Utils.String.concat(
-            list{"More options for", p.firstName, p.lastName},
-            ~sep=" ",
-          )->React.string}
+          {`More options for ${p.firstName} ${p.lastName}`->React.string}
         </Externals.VisuallyHidden>
       </button>
       <Externals.Dialog
         isOpen=dialog.state
         onDismiss=dialog.setFalse
-        ariaLabel={Utils.String.concat(list{"Options for", p.firstName, p.lastName}, ~sep=" ")}>
+        ariaLabel={`Options for ${p.firstName} ${p.lastName}`}>
         <More setTourney dialog tourney p />
       </Externals.Dialog>
     </>
@@ -250,12 +240,7 @@ module PlayerList = {
 let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, players, activePlayers, playersDispatch, getPlayer, _} = tournament
   let {playerIds, roundList, byeQueue, _} = tourney
-  let (isSelecting, setIsSelecting) = React.useState(() =>
-    switch playerIds {
-    | list{} => true
-    | _ => false
-    }
-  )
+  let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
   let matches = Rounds.rounds2Matches(roundList)
   <div className="content-area">
     <div className="toolbar">
@@ -289,9 +274,7 @@ let make = (~tournament: LoadTournament.t) => {
             <li
               key={pId->Data.Id.toString}
               className={Cn.append("buttons-on-hover", "disabled"->Cn.on(hasHadBye(matches, pId)))}>
-              {list{getPlayer(pId).firstName, getPlayer(pId).firstName}
-              ->Utils.String.concat(~sep=" ")
-              ->React.string}
+              {React.string(getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName)}
               {React.string(" ")}
               <button
                 className="button-micro"

@@ -17,7 +17,7 @@ let makeDateInput = date => {
   let month =
     rawMonth < 9.0 ? "0" ++ Float.toString(rawMonth +. 1.0) : Float.toString(rawMonth +. 1.0)
   let day = rawDate < 10.0 ? "0" ++ Float.toString(rawDate) : Float.toString(rawDate)
-  Utils.String.concat(list{year, month, day}, ~sep="-")
+  `${year}-${month}-${day}`
 }
 
 type inputs =

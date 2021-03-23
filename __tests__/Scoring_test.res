@@ -43,100 +43,95 @@ Skip.test("Tie break scores calculate correctly", () => expect(true) |> toBe(tru
 open ReactTestingLibrary
 open JestDom
 
-let scorePage = () =>
-  <LoadTournament tourneyId=TestData.scoreTest>
+let scorePage = (~id) =>
+  <LoadTournament tourneyId=id>
     {({tourney: {name: title, _} as tourney, getPlayer, _}) =>
-      <PageTourneyScores.ScoreTable tourney getPlayer title />}
+      <PageTourneyScores.ScoreTable size=Expanded tourney getPlayer title />}
   </LoadTournament>->render
+
+test("Snapshot of score table, score test", () => {
+  scorePage(~id=TestData.scoreTest) |> Expect.expect |> Expect.toMatchSnapshot
+})
+
+test("Snapshot of score table, simple pairing", () => {
+  scorePage(~id=TestData.simplePairing) |> Expect.expect |> Expect.toMatchSnapshot
+})
 
 describe("Snapshot of ranks are correct", () => {
   test("rank 1", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-1.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("TV's Max"))
   )
   test("rank 2", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-2.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Bobo Professor"))
   )
   test("rank 3", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-3.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("TV's Frank"))
   )
   test("rank 4", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-4.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Mike Nelson"))
   )
   test("rank 5", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-5.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Brain Guy"))
   )
   test("rank 6", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-6.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Clayton Forrester"))
   )
   test("rank 7", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-7.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Joel Robinson"))
   )
   test("rank 8", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-8.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Crow T Robot"))
   )
   test("rank 9", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-9.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Cambot"))
   )
   test("rank 10", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-10.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Jonah Heston"))
   )
   test("rank 11", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-11.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Tom Servo"))
   )
   test("rank 12", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-12.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Pearl Forrester"))
   )
   test("rank 13", () =>
-    ()
-    |> scorePage
+    scorePage(~id=TestData.scoreTest)
     |> getByTestId(~matcher=#Str("rank-13.0"))
     |> JestDom.expect
     |> toHaveTextContent(#Str("Kinga Forrester"))

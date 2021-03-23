@@ -7,26 +7,26 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
    only include the specified players. */
   let filteredData = pairData->Map.keep((id, _) => playerMap->Map.has(id))
   let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Data.Id.dummy, filteredData)
-  let pairs = Pairing.pairPlayers(pairdataNoByes)
-  let pairsWithBye = switch byePlayerData {
-  | Some(player) =>
-    /* These two reverses ensure that the bye match is added at the end, not
-     the beginning */
-    pairs->List.reverse->List.add((player.id, Data.Id.dummy))->List.reverse
-  | None => pairs
+  let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
+  switch byePlayerData {
+  | Some(player) => MutableQueue.add(pairs, (Pairing.id(player), Data.Id.dummy))
+  | None => ()
   }
   let getPlayer = Data.Player.getMaybe(playerMap)
-  pairsWithBye->List.map(((whiteId, blackId)) =>
-    {
-      id: Data.Id.random(),
-      whiteOrigRating: getPlayer(whiteId).rating,
-      blackOrigRating: getPlayer(blackId).rating,
-      whiteNewRating: getPlayer(whiteId).rating,
-      blackNewRating: getPlayer(blackId).rating,
-      whiteId: whiteId,
-      blackId: blackId,
-      result: NotSet,
-    }->Data.Match.scoreByeMatch(~byeValue)
+  MutableQueue.map(pairs, ((whiteId, blackId)) =>
+    Data.Match.scoreByeMatch(
+      ~byeValue,
+      {
+        id: Data.Id.random(),
+        whiteOrigRating: getPlayer(whiteId).rating,
+        blackOrigRating: getPlayer(blackId).rating,
+        whiteNewRating: getPlayer(whiteId).rating,
+        blackNewRating: getPlayer(blackId).rating,
+        whiteId: whiteId,
+        blackId: blackId,
+        result: NotSet,
+      },
+    )
   )
 }
 
@@ -131,9 +131,7 @@ module SelectList = {
                   onClick={_ => selectPlayer(player.id)}>
                   <Icons.UserPlus />
                   <Externals.VisuallyHidden>
-                    {list{"Add", player.firstName, player.lastName}
-                    ->Utils.String.concat(~sep=" ")
-                    ->React.string}
+                    {`Add ${player.firstName} ${player.lastName}`->React.string}
                   </Externals.VisuallyHidden>
                 </button>
               </td>
@@ -194,7 +192,7 @@ module Stage = {
       | Black => setStagedPlayers(((p1, _)) => (p1, None))
       }
 
-    let match_ = _ =>
+    let match = _ =>
       switch stagedPlayers {
       | (Some(white), Some(black)) =>
         let newRound = Rounds.Round.addMatches(
@@ -268,7 +266,7 @@ module Stage = {
           <Icons.Repeat /> {React.string(" Swap colors")}
         </button>
         {React.string(" ")}
-        <button className="button-primary" disabled={!twoAreSelected} onClick=match_>
+        <button className="button-primary" disabled={!twoAreSelected} onClick=match>
           <Icons.Check /> {React.string(" Match selected")}
         </button>
       </div>
@@ -287,7 +285,7 @@ module PlayerInfo = {
       rating,
       opponentResults,
       avoidListHtml,
-    } = Hooks.useScoreInfo(
+    } = TournamentUtils.getScoreInfo(
       ~player,
       ~scoreData,
       ~getPlayer,
@@ -295,7 +293,6 @@ module PlayerInfo = {
       ~origRating,
       ~newRating,
       ~avoidPairs,
-      (),
     )
 
     let fullName = player.firstName ++ (" " ++ player.lastName)
@@ -331,8 +328,7 @@ let make = (
   let dialog = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
   let pairData = React.useMemo3(
-    () =>
-      Converters.createPairingData(scoreData, activePlayers, avoidPairs)->Pairing.setUpperHalves,
+    () => Pairing.make(scoreData, activePlayers, avoidPairs),
     (activePlayers, avoidPairs, scoreData),
   )
   /* Clean staged players if they were removed from the tournament */
@@ -358,7 +354,7 @@ let make = (
   let autoPair = round => {
     let newRound = Rounds.Round.addMatches(
       round,
-      autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->List.toArray,
+      autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->MutableQueue.toArray,
     )
     switch Rounds.set(roundList, roundId, newRound) {
     | Some(roundList) => setTourney({...tourney, roundList: roundList})

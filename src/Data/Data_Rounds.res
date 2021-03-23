@@ -27,10 +27,14 @@ module Round = {
   let addMatches = Array.concat
 
   /* flatten all of the ids from the matches to one array. */
-  let getMatched = round =>
-    Array.reduce(round, [], (acc, {Match.whiteId: whiteId, blackId, _}) =>
-      Array.concat(acc, [whiteId, blackId])
-    )
+  let getMatched = (round: t) => {
+    let q = MutableQueue.make()
+    Array.forEach(round, ({whiteId, blackId, _}) => {
+      MutableQueue.add(q, whiteId)
+      MutableQueue.add(q, blackId)
+    })
+    MutableQueue.toArray(q)
+  }
 
   let getMatchById = (round: t, id) => Array.getBy(round, x => Id.eq(x.id, id))
 
@@ -81,7 +85,12 @@ let set = (rounds, key, round) => {
 let setMatch = (rounds, key, match_) =>
   rounds->get(key)->Option.flatMap(Round.setMatch(_, match_))->Option.flatMap(set(rounds, key))
 
-let rounds2Matches = roundList => Array.reduce(roundList, [], Array.concat)
+let rounds2Matches = roundList => {
+  module Q = MutableQueue
+  let q = Q.make()
+  Array.forEach(roundList, r => r->Q.fromArray->Q.transfer(q))
+  q
+}
 
 let isRoundComplete = (roundList, players, roundId) =>
   switch roundList[roundId] {

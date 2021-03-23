@@ -52,13 +52,7 @@ let set: (t, int, Round.t) => option<t>
 
 let setMatch: (t, int, Data_Match.t) => option<t>
 
-@ocaml.doc("
- Flatten a sequence of rounds to a sequence of matches.
- The optional `lastRound` parameter will slice the rounds to only the last
- index specified. For example: if you just want to see the scores through
- round 2 and not include round 3.
- ")
-let rounds2Matches: t => array<Data_Match.t>
+let rounds2Matches: t => Belt.MutableQueue.t<Data_Match.t>
 
 let isRoundComplete: (t, Data_Id.Map.t<Data_Player.t>, int) => bool
 

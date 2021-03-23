@@ -4,6 +4,7 @@ import * as React from "react";
 import * as Belt_Map from "bs-platform/lib/es6/belt_Map.js";
 import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
+import * as Data_Id$Coronate from "../Data/Data_Id.bs.js";
 import * as TestData$Coronate from "../testdata/TestData.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 import * as Data_Player$Coronate from "../Data/Data_Player.bs.js";
@@ -81,8 +82,8 @@ function configReducer(state, action) {
     case /* DelAvoidSingle */2 :
         var id = action._0;
         return {
-                avoidPairs: Belt_Set.reduce(state.avoidPairs, Data_Config$Coronate.Pair.$$Set.empty, (function (acc, pair) {
-                        if (Data_Config$Coronate.Pair.has(pair, id)) {
+                avoidPairs: Belt_Set.reduce(state.avoidPairs, Belt_Set.make(Data_Id$Coronate.Pair.id), (function (acc, pair) {
+                        if (Data_Id$Coronate.Pair.has(pair, id)) {
                           return acc;
                         } else {
                           return Belt_Set.add(acc, pair);

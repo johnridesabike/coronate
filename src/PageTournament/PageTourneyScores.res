@@ -4,28 +4,21 @@ module Id = Data.Id
 
 type size = Compact | Expanded
 
-let isCompact = x =>
-  switch x {
-  | Compact => true
-  | Expanded => false
-  }
-
 module ScoreTable = {
   @react.component
-  let make = (~size=Expanded, ~tourney: Tournament.t, ~getPlayer, ~title) => {
+  let make = (~size, ~tourney: Tournament.t, ~getPlayer, ~title) => {
     let {tieBreaks, roundList, scoreAdjustments, _} = tourney
-    let tieBreakNames = Array.map(tieBreaks, Scoring.TieBreak.toPrettyString)
     let standingTree =
-      Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
-      ->Scoring.createStandingList(tieBreaks)
-      ->List.keep(({id, _}) => !Data.Id.isDummy(id))
-      ->Scoring.createStandingTree
+      Scoring.fromTournament(~roundList, ~scoreAdjustments)
+      ->Scoring.createStandingArray(tieBreaks)
+      ->Array.keep(({id, _}) => !Data.Id.isDummy(id))
+      ->Scoring.createStandingTree(~tieBreaks)
     <table className={"pagescores__table"}>
       <caption
-        className={Cn.append(
-          "title-30"->Cn.on(isCompact(size)),
-          "title-40"->Cn.on(!isCompact(size)),
-        )}>
+        className={switch size {
+        | Compact => "title-30"
+        | Expanded => "title-40"
+        }}>
         {React.string(title)}
       </caption>
       <thead>
@@ -36,9 +29,13 @@ module ScoreTable = {
           {switch size {
           | Compact => React.null
           | Expanded =>
-            Array.mapWithIndex(tieBreakNames, (i, name) =>
-              <th key={Int.toString(i)} className="title-10" scope="col"> {React.string(name)} </th>
-            )->React.array
+            tieBreaks
+            ->Array.map(tb =>
+              <th key={Scoring.TieBreak.toString(tb)} className="title-10" scope="col">
+                {tb->Scoring.TieBreak.toPrettyString->React.string}
+              </th>
+            )
+            ->React.array
           }}
         </tr>
       </thead>
@@ -85,13 +82,15 @@ module ScoreTable = {
               {switch size {
               | Compact => React.null
               | Expanded =>
-                standing.tieBreaks
-                ->List.toArray
-                ->Array.map(((j, score)) =>
+                tieBreaks
+                ->Array.map(tb =>
                   <td
-                    key={Scoring.TieBreak.toString(j)}
+                    key={Scoring.TieBreak.toString(tb)}
                     className={"pagescores__row-td table__number"}>
-                    {score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}
+                    {Scoring.getTieBreak(standing, tb)
+                    ->Scoring.Score.Sum.toNumeral
+                    ->Numeral.format("1/2")
+                    ->React.string}
                   </td>
                 )
                 ->React.array
@@ -125,9 +124,7 @@ module SelectTieBreaks = {
       if Js.Array2.includes(tieBreaks, defaultId(id)) {
         setTourney({
           ...tourney,
-          tieBreaks: Js.Array2.filter(tourney.tieBreaks, tbId =>
-            !Scoring.TieBreak.eq(defaultId(id), tbId)
-          ),
+          tieBreaks: Js.Array2.filter(tourney.tieBreaks, tbId => defaultId(id) != tbId),
         })
         setSelectedTb(_ => None)
       } else {
@@ -192,15 +189,14 @@ module SelectTieBreaks = {
                       switch selectedTb {
                       | None => setSelectedTb(_ => Some(tieBreak))
                       | Some(selectedTb) =>
-                        Scoring.TieBreak.eq(selectedTb, tieBreak)
+                        selectedTb == tieBreak
                           ? setSelectedTb(_ => None)
                           : setSelectedTb(_ => Some(tieBreak))
                       }}>
                     {React.string(
                       switch selectedTb {
                       | None => "Edit"
-                      | Some(selectedTb) =>
-                        Scoring.TieBreak.eq(selectedTb, tieBreak) ? "Done" : "Edit"
+                      | Some(selectedTb) => selectedTb == tieBreak ? "Done" : "Edit"
                       },
                     )}
                   </button>
@@ -259,7 +255,7 @@ let make = (~tournament: LoadTournament.t) => {
       <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
     </TabList>
     <TabPanels>
-      <TabPanel> <ScoreTable tourney getPlayer title="Score detail" /> </TabPanel>
+      <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
       <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
     </TabPanels>
   </Tabs>
@@ -268,7 +264,7 @@ let make = (~tournament: LoadTournament.t) => {
 module Crosstable = {
   let getXScore = (scoreData, player1Id, player2Id) =>
     if Id.eq(player1Id, player2Id) {
-      <Icons.X className="disabled" />
+      <Icons.X className="pagescores__x" />
     } else {
       switch Map.get(scoreData, player1Id) {
       | None => React.null
@@ -301,8 +297,8 @@ module Crosstable = {
       _,
     }: LoadTournament.t,
   ) => {
-    let scoreData = Converters.tournament2ScoreData(~roundList, ~scoreAdjustments)
-    let standings = Scoring.createStandingList(scoreData, tieBreaks)
+    let scoreData = Scoring.fromTournament(~roundList, ~scoreAdjustments)
+    let standings = Scoring.createStandingArray(scoreData, tieBreaks)
 
     <table className="pagescores__table">
       <caption> {React.string("Crosstable")} </caption>
@@ -312,7 +308,6 @@ module Crosstable = {
           <th> {React.string("Name")} </th>
           {/* Display a rank as a shorthand for each player. */
           standings
-          ->List.toArray
           ->Array.mapWithIndex((rank, _) =>
             <th key={Int.toString(rank)}> {React.int(rank + 1)} </th>
           )
@@ -323,7 +318,6 @@ module Crosstable = {
       </thead>
       <tbody>
         {standings
-        ->List.toArray
         ->Array.mapWithIndex((index, standing) =>
           <tr key={Int.toString(index)} className="pagescores__row">
             <th className={"pagescores__row-th pagescores__rank"} scope="col">
@@ -336,7 +330,6 @@ module Crosstable = {
             </th>
             {/* Output a cell for each other player */
             standings
-            ->List.toArray
             ->Array.mapWithIndex((index2, opponent) =>
               <td key={Int.toString(index2)} className={"pagescores__row-td table__number"}>
                 {getXScore(scoreData, standing.id, opponent.id)}

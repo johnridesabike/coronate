@@ -4,7 +4,7 @@ type t = {
   id: Data_Id.t,
   name: string,
   date: Js.Date.t,
-  playerIds: list<Data_Id.t>,
+  playerIds: Data_Id.Set.t,
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
   tieBreaks: array<Data_Scoring.TieBreak.t>,
@@ -16,8 +16,8 @@ let make = (~id, ~name) => {
   name: name,
   byeQueue: [],
   date: Js.Date.make(),
-  playerIds: list{},
-  scoreAdjustments: Data_Id.Map.make(),
+  playerIds: Set.make(~id=Data_Id.id),
+  scoreAdjustments: Map.make(~id=Data_Id.id),
   roundList: Data_Rounds.empty,
   tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
 }
@@ -34,13 +34,13 @@ let decode = json => {
     id: json |> field("id", Data_Id.decode),
     name: json |> field("name", string),
     date: json |> field("date", oneOf(list{date, unsafe_date})),
-    playerIds: json |> field("playerIds", list(Data_Id.decode)),
+    playerIds: json |> field("playerIds", array(Data_Id.decode)) |> Set.fromArray(~id=Data_Id.id),
     byeQueue: json |> field("byeQueue", array(Data_Id.decode)),
     tieBreaks: json |> field("tieBreaks", array(Data_Scoring.TieBreak.decode)),
     roundList: json |> field("roundList", Data_Rounds.decode),
     scoreAdjustments: json
     |> optional(field("scoreAdjustments", array(tuple2(Data_Id.decode, Json.Decode.float))))
-    |> Option.mapWithDefault(_, Data_Id.Map.make(), Data_Id.Map.fromArray),
+    |> Option.mapWithDefault(_, Map.make(~id=Data_Id.id), Map.fromArray(~id=Data_Id.id)),
   }
 }
 
@@ -50,7 +50,7 @@ let encode = data => {
     ("id", data.id |> Data_Id.encode),
     ("name", data.name |> string),
     ("date", data.date |> date),
-    ("playerIds", data.playerIds |> list(Data_Id.encode)),
+    ("playerIds", data.playerIds |> Set.toArray |> array(Data_Id.encode)),
     ("byeQueue", data.byeQueue |> array(Data_Id.encode)),
     ("tieBreaks", data.tieBreaks |> array(Data_Scoring.TieBreak.encode)),
     ("roundList", data.roundList |> Data_Rounds.encode),

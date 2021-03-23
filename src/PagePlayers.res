@@ -181,10 +181,7 @@ module PlayerList = {
       switch playerOpt {
       | None => ()
       | Some(player) =>
-        let message = Utils.String.concat(
-          list{"Are you sure you want to delete ", player.firstName, " ", player.lastName, "?"},
-          ~sep="",
-        )
+        let message = `Are you sure you want to delete ${player.firstName} ${player.lastName} ?`
         if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
           playersDispatch(Db.Del(id))
           configDispatch(Db.DelAvoidSingle(id))
@@ -226,7 +223,7 @@ module PlayerList = {
             <tr key={p.id->Data.Id.toString} className="buttons-on-hover">
               <td className="table__player">
                 <HashLink to_=Player(p.id)>
-                  {Utils.String.concat(list{p.firstName, p.lastName}, ~sep=" ")->React.string}
+                  {React.string(p.firstName ++ " " ++ p.lastName)}
                 </HashLink>
               </td>
               <td className="table__number"> {p.rating->string_of_int->React.string} </td>
@@ -235,10 +232,7 @@ module PlayerList = {
                 <button className="danger button-ghost" onClick={event => delPlayer(event, p.id)}>
                   <Icons.Trash />
                   <Externals.VisuallyHidden>
-                    {Utils.String.concat(
-                      list{"Delete", p.firstName, p.lastName},
-                      ~sep=" ",
-                    )->React.string}
+                    {React.string(`Delete ${p.firstName} ${p.lastName}`)}
                   </Externals.VisuallyHidden>
                 </button>
               </td>
@@ -294,44 +288,32 @@ module Profile = {
         cb.reset()
       },
     )
-    let playerName = Utils.String.concat(list{form.input.firstName, form.input.lastName}, ~sep=" ")
+    let playerName = form.input.firstName ++ " " ++ form.input.lastName
     React.useEffect2(() => {
       windowDispatch(Window.SetTitle("Profile for " ++ playerName))
       Some(() => windowDispatch(SetTitle("")))
     }, (windowDispatch, playerName))
-    let avoidMap = Data.Config.Pair.Set.toMap(config.avoidPairs)
-    let singAvoidList = switch Map.get(avoidMap, playerId) {
-    | None => list{}
-    | Some(x) => x
-    }
+    let avoidMap = Id.Pair.Set.toMap(config.avoidPairs)
+    let singAvoidList = Map.getWithDefault(avoidMap, playerId, Set.make(~id=Id.id))
     let unavoided =
       players
       ->Map.keysToArray
-      ->List.fromArray
-      ->List.keep(id => !(singAvoidList->List.has(id, Id.eq)) && !Id.eq(id, playerId))
-    let (selectedAvoider, setSelectedAvoider) = React.useState(() =>
-      switch unavoided {
-      | list{id, ..._} => Some(id)
-      | list{} => None
-      }
-    )
+      ->Array.keep(id => !Set.has(singAvoidList, id) && !Id.eq(id, playerId))
+    let (selectedAvoider, setSelectedAvoider) = React.useState(() => unavoided[0])
     let avoidAdd = event => {
       ReactEvent.Form.preventDefault(event)
       switch selectedAvoider {
       | None => ()
       | Some(selectedAvoider) =>
-        switch Config.Pair.make(playerId, selectedAvoider) {
+        switch Id.Pair.make(playerId, selectedAvoider) {
         | None => ()
         | Some(pair) =>
           configDispatch(Db.AddAvoidPair(pair))
           /* Reset the selected avoider to the first on the list, but check to
            make sure they weren't they weren't the first. */
-          let newSelected = switch unavoided {
-          | list{id, ..._} if !Id.eq(id, selectedAvoider) => Some(id)
-          | list{_, id, ..._} => Some(id)
-          | list{_}
-          | list{} =>
-            None
+          let newSelected = switch unavoided[0] {
+          | Some(id) if !Id.eq(id, selectedAvoider) => Some(id)
+          | _ => unavoided[1]
           }
           setSelectedAvoider(_ => newSelected)
         }
@@ -443,46 +425,29 @@ module Profile = {
       <h3> {React.string("Players to avoid")} </h3>
       <ul>
         {singAvoidList
-        ->List.toArray
-        ->Array.reverse
-        ->Array.map(pId =>
+        ->Set.toArray
+        ->Array.map(pId => {
+          let {firstName, lastName, _} = Player.getMaybe(players, pId)
           <li key={pId->Data.Id.toString}>
-            {React.string(Player.getMaybe(players, pId).firstName)}
-            {React.string(" ")}
-            {React.string(Player.getMaybe(players, pId).lastName)}
+            {React.string(firstName ++ " " ++ lastName)}
             <button
-              ariaLabel={Utils.String.concat(
-                list{
-                  "Remove",
-                  Player.getMaybe(players, pId).firstName,
-                  Player.getMaybe(players, pId).lastName,
-                  "from avoid list.",
-                },
-                ~sep=" ",
-              )}
-              title={Utils.String.concat(
-                list{
-                  "Remove",
-                  Player.getMaybe(players, pId).firstName,
-                  Player.getMaybe(players, pId).lastName,
-                  "from avoid list.",
-                },
-                ~sep=" ",
-              )}
+              ariaLabel={`Remove ${firstName} ${lastName} from avoid list.`}
+              title={`Remove ${firstName} ${lastName} from avoid list.`}
               className="danger button-ghost"
               onClick={_ =>
-                switch Config.Pair.make(playerId, pId) {
+                switch Id.Pair.make(playerId, pId) {
                 | None => ()
                 | Some(pair) => configDispatch(DelAvoidPair(pair))
                 }}>
               <Icons.Trash />
             </button>
           </li>
-        )
+        })
         ->React.array}
-        {switch singAvoidList {
-        | list{} => <li> {React.string("None")} </li>
-        | _ => React.null
+        {if Set.isEmpty(singAvoidList) {
+          <li> {React.string("None")} </li>
+        } else {
+          React.null
         }}
       </ul>
       <form onSubmit=avoidAdd>
@@ -495,7 +460,6 @@ module Profile = {
               onChange=handleAvoidChange
               value={selectedAvoider->Data.Id.toString}>
               {unavoided
-              ->List.toArray
               ->Array.map(pId =>
                 <option key={pId->Data.Id.toString} value={pId->Data.Id.toString}>
                   {React.string(Player.getMaybe(players, pId).firstName)}

@@ -12,11 +12,11 @@ module Score: {
     let toNumeral: t => Numeral.t
   }
 
-  type t =
-    | Zero
-    | One
-    | NegOne
-    | Half
+  type t = Zero | One | NegOne | Half
+
+  let fromResultWhite: Data_Match.Result.t => t
+
+  let fromResultBlack: Data_Match.Result.t => t
 
   let sum: list<t> => Sum.t
   let calcScore: (list<t>, ~adjustment: float) => Sum.t
@@ -24,21 +24,17 @@ module Score: {
 }
 
 module Color: {
-  type t =
-    | White
-    | Black
+  type t = White | Black
 
   let opposite: t => t
 
-  @ocaml.doc("
-   This is used for calculating the \"most black\" tiebreak.
-   ")
+  @ocaml.doc("This is used for calculating the \"most black\" tiebreak.")
   let toScore: t => Score.t
 }
 
 type t = {
   colorScores: list<Score.t>,
-  colors: list<Color.t> /* This is used to create pairing data */,
+  lastColor: option<Color.t>, // This is used to create pairing data
   id: Data_Id.t,
   isDummy: bool,
   opponentResults: list<(Data_Id.t, Score.t)>,
@@ -75,21 +71,21 @@ module TieBreak: {
   let toString: t => string
 
   let toPrettyString: t => string
-
-  let eq: (t, t) => bool
 }
 
-@ocaml.doc("
- This is useful for cases where the regular factory functions return empty
- results because a player hasn't been added yet.
- ")
-let createBlankScoreData: (~firstRating: int=?, Data_Id.t) => t
+let make: Data_Id.t => t
 
 type scores = {
   id: Data_Id.t,
   score: Score.Sum.t,
-  tieBreaks: list<(TieBreak.t, Score.Sum.t)>,
+  median: Score.Sum.t,
+  solkoff: Score.Sum.t,
+  cumulative: Score.Sum.t,
+  cumulativeOfOpposition: Score.Sum.t,
+  mostBlack: Score.Sum.t,
 }
+
+let getTieBreak: (scores, TieBreak.t) => Score.Sum.t
 
 @ocaml.doc("
  Sort the standings by score, see USCF tie-break rules from § 34.
@@ -97,11 +93,16 @@ type scores = {
  which lists the score associated with each method. The order of these
  coresponds to the order of the method names in the second list.
  ")
-let createStandingList: (Data_Id.Map.t<t>, array<TieBreak.t>) => list<scores>
+let createStandingArray: (Data_Id.Map.t<t>, array<TieBreak.t>) => array<scores>
 
 @ocaml.doc("
  Groups the standings by score, see USCF tie-break rules from § 34.
  example: `[[Dale, Audrey], [Pete], [Bob]]` Dale and Audrey are tied for
  first, Pete is 2nd, Bob is 3rd.
  ")
-let createStandingTree: list<scores> => list<list<scores>>
+let createStandingTree: (array<scores>, ~tieBreaks: array<TieBreak.t>) => list<list<scores>>
+
+let fromTournament: (
+  ~roundList: Data_Rounds.t,
+  ~scoreAdjustments: Data_Id.Map.t<float>,
+) => Data_Id.Map.t<t>

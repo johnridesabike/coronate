@@ -24,10 +24,10 @@ let useAllPlayers: unit => state<Data.Player.t>
 let useAllTournaments: unit => state<Data.Tournament.t>
 
 type actionConfig =
-  | AddAvoidPair(Data.Config.Pair.t)
-  | DelAvoidPair(Data.Config.Pair.t)
+  | AddAvoidPair(Data.Id.Pair.t)
+  | DelAvoidPair(Data.Id.Pair.t)
   | DelAvoidSingle(Data.Id.t)
-  | SetAvoidPairs(Data.Config.Pair.Set.t)
+  | SetAvoidPairs(Data.Id.Pair.Set.t)
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t)

@@ -101,7 +101,7 @@ module Sidebar = {
             | BlackWon
             | Draw
             | WhiteWon =>
-              list{(whiteId, whiteOrigRating), (blackId, blackOrigRating)}->List.forEach(((
+              [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]->Array.forEach(((
                 id,
                 rating,
               )) =>

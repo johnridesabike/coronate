@@ -4,7 +4,7 @@ module Id = Data.Id
 
 module PlayerMatchInfo = {
   @react.component
-  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players) => {
+  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players, ~avoidPairs) => {
     let {
       player,
       hasBye,
@@ -13,7 +13,15 @@ module PlayerMatchInfo = {
       rating,
       opponentResults,
       avoidListHtml,
-    } = Hooks.useScoreInfo(~player, ~scoreData, ~getPlayer, ~players, ~origRating, ~newRating, ())
+    } = TournamentUtils.getScoreInfo(
+      ~player,
+      ~scoreData,
+      ~getPlayer,
+      ~players,
+      ~origRating,
+      ~newRating,
+      ~avoidPairs,
+    )
     let fullName = player.firstName ++ (" " ++ player.lastName)
     <dl className="player-card">
       <h3> {fullName->React.string} </h3>
@@ -47,6 +55,7 @@ module MatchRow = {
     ~scoreData,
     ~tournament: LoadTournament.t,
     ~className="",
+    ~avoidPairs,
   ) => {
     let {tourney, setTourney, players, getPlayer, playersDispatch, _} = tournament
     let {roundList, _} = tourney
@@ -55,8 +64,8 @@ module MatchRow = {
     let blackPlayer = getPlayer(m.blackId)
     let isDummyRound = Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId)
 
-    let whiteName = list{whitePlayer.firstName, whitePlayer.lastName}->Utils.String.concat(~sep=" ")
-    let blackName = list{blackPlayer.firstName, blackPlayer.lastName}->Utils.String.concat(~sep=" ")
+    let whiteName = whitePlayer.firstName ++ " " ++ whitePlayer.lastName
+    let blackName = blackPlayer.firstName ++ " " ++ blackPlayer.lastName
 
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
@@ -199,9 +208,7 @@ module MatchRow = {
                 onClick={_ => setSelectedMatch(_ => Some(m.id))}>
                 <Icons.Circle />
                 <Externals.VisuallyHidden>
-                  {list{"Edit match for", whiteName, "versus", blackName}
-                  ->Utils.String.concat(~sep=" ")
-                  ->React.string}
+                  {`Edit match for ${whiteName} versus ${blackName}`->React.string}
                 </Externals.VisuallyHidden>
               </button>
             : <button
@@ -216,9 +223,7 @@ module MatchRow = {
             onClick={_ => dialog.setTrue()}>
             <Icons.Info />
             <Externals.VisuallyHidden>
-              {list{"View information for match:", whiteName, "versus", blackName}
-              ->Utils.String.concat(~sep=" ")
-              ->React.string}
+              {`View information for match: ${whiteName} versus ${blackName}`->React.string}
             </Externals.VisuallyHidden>
           </button>
           {switch scoreData {
@@ -231,9 +236,7 @@ module MatchRow = {
               </button>
               <p> {React.string(tourney.name)} </p>
               <p>
-                {list{"Round", Int.toString(roundId + 1), "match", Int.toString(pos + 1)}
-                ->Utils.String.concat(~sep=" ")
-                ->React.string}
+                {`Round ${Int.toString(roundId + 1)} match ${Int.toString(pos + 1)}`->React.string}
               </p>
               <Utils.PanelContainer>
                 <Utils.Panel>
@@ -244,6 +247,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
+                    avoidPairs
                   />
                 </Utils.Panel>
                 <Utils.Panel>
@@ -254,6 +258,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
+                    avoidPairs
                   />
                 </Utils.Panel>
               </Utils.PanelContainer>
@@ -275,7 +280,8 @@ module RoundTable = {
     ~setSelectedMatch=?,
     ~tournament,
     ~scoreData=?,
-  ) =>
+  ) => {
+    let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
     <table className="pageround__table">
       {Js.Array.length(matches) == 0
         ? React.null
@@ -322,10 +328,12 @@ module RoundTable = {
             scoreData
             tournament
             className="pageround__td"
+            avoidPairs
           />
         )->React.array}
       </tbody>
     </table>
+  }
 }
 
 module Round = {
@@ -340,10 +348,10 @@ module Round = {
       /* checks if the match has been scored yet & resets the players'
        records */
       | Some(match) if match.result != NotSet =>
-        list{
+        [
           (match.whiteId, match.whiteOrigRating),
           (match.blackId, match.blackOrigRating),
-        }->List.forEach(((id, rating)) =>
+        ]->Array.forEach(((id, rating)) =>
           switch players->Map.get(id) {
           /* If there was a dummy player or a deleted player then bail
            on the dispatch. */
@@ -454,7 +462,7 @@ let make = (~roundId, ~tournament) => {
     unmatched,
     unmatchedCount,
     unmatchedWithDummy,
-  } = LoadTournament.useRoundData(roundId, tournament)
+  } = TournamentUtils.useRoundData(roundId, tournament)
   let initialTab = unmatchedCount == activePlayersCount ? 1 : 0
   let (openTab, setOpenTab) = React.useState(() => initialTab)
   /* Auto-switch the tab */
@@ -474,10 +482,7 @@ let make = (~roundId, ~tournament) => {
         <Icons.List /> {React.string(" Matches")}
       </Tab>
       <Tab disabled={unmatchedCount == 0}>
-        <Icons.Users />
-        {list{" Unmatched players (", Int.toString(unmatchedCount), ")"}
-        ->Utils.String.concat(~sep="")
-        ->React.string}
+        <Icons.Users /> {` Unmatched players (${Int.toString(unmatchedCount)})`->React.string}
       </Tab>
     </TabList>
     <TabPanels>

@@ -1,18 +1,78 @@
 open Belt
 module Id = Data_Id
 
-let sum = list => List.reduce(list, 0.0, \"+.")
-
+@deriving(accessors)
 type t = {
   id: Id.t,
-  avoidIds: list<Id.t>,
-  colorScores: list<float>,
-  colors: list<Data_Scoring.Color.t>,
+  avoidIds: Id.Set.t,
+  colorScore: float,
+  lastColor: option<Data_Scoring.Color.t>,
   halfPos: int,
   isUpperHalf: bool,
   opponents: list<Id.t>,
   rating: int,
   score: float,
+}
+
+//let descendingScore = Utils.descend(compare, x => x.score);
+let descendingRating = Utils.descend(compare, (. x) => x.rating)
+
+let splitInHalf = arr => {
+  let midpoint = Js.Array.length(arr) / 2
+  (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
+}
+
+@ocaml.doc("
+ This determines what \"half\" each player is in: upper half or lower half.
+ It also determines their \"position\" within each half.
+ USCF § 29C1
+ ")
+let setUpperHalves = data => {
+  let dataArr = Map.valuesToArray(data)
+  Map.map(data, playerData => {
+    let (upperHalfIds, lowerHalfIds) =
+      dataArr
+      ->Array.keep(({score, _}) => score == playerData.score)
+      ->Belt.SortArray.stableSortBy(descendingRating)
+      ->splitInHalf
+    /* We need to know what position in each half the player occupies. We're
+     uisng array indices to identify these. */
+    let getIndex = Array.getIndexBy(_, x => Data_Id.eq(x.id, playerData.id))
+    let (halfPos, isUpperHalf) = switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
+    | (Some(index), Some(_)) /* This shouldn't happen. */
+    | (Some(index), None) => (index, true)
+    | (None, Some(index)) => (index, false)
+    | (None, None) => (0, false) /* This shouldn't happen. */
+    }
+    {...playerData, halfPos: halfPos, isUpperHalf: isUpperHalf}
+  })
+}
+
+let make = (scoreData, playerData, avoidPairs) => {
+  let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
+  Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
+    let playerStats = switch Map.get(scoreData, key) {
+    | None => Data_Scoring.make(key)
+    | Some(x) => x
+    }
+    let newAvoidIds = switch Map.get(avoidMap, key) {
+    | None => Set.make(~id=Data_Id.id)
+    | Some(x) => x
+    }
+    {
+      avoidIds: newAvoidIds,
+      colorScore: playerStats.colorScores->Data_Scoring.Score.sum->Data_Scoring.Score.Sum.toFloat,
+      lastColor: playerStats.lastColor,
+      halfPos: 0, // temporary
+      id: data.id,
+      isUpperHalf: false, // temporary
+      opponents: playerStats.opponentResults->List.map(((id, _)) => id),
+      rating: data.rating,
+      score: playerStats.results
+      ->Data_Scoring.Score.calcScore(~adjustment=playerStats.adjustment)
+      ->Data_Scoring.Score.Sum.toFloat,
+    }
+  })->setUpperHalves
 }
 
 let priority = (value, condition) => condition ? value : 0.0
@@ -51,63 +111,27 @@ let differentHalf = isDiffHalf => isDiffHalf ? halfPosition : sameHalfPriority
  ")
 let differentDueColor = priority(4.0)
 
-let maxPriority = sum(list{
-  differentHalf(true, 1.0),
-  differentDueColor(true),
-  sameScores(1.0),
-  avoidMeetingTwice(true),
-})
+let maxPriority =
+  differentHalf(true, 1.0) +. differentDueColor(true) +. sameScores(1.0) +. avoidMeetingTwice(true)
 
 let calcPairIdeal = (player1, player2) =>
   if Id.eq(player1.id, player2.id) {
     0.0
   } else {
-    let metBefore = List.has(player1.opponents, player2.id, Id.eq)
-    let mustAvoid = List.has(player1.avoidIds, player2.id, Id.eq)
-    let isDiffDueColor = switch (player1.colors, player2.colors) {
-    | (_, list{})
-    | (list{}, _) => true
-    | (list{color1, ..._}, list{color2, ..._}) => color1 != color2
+    let metBefore = List.some(player1.opponents, Id.eq(player2.id))
+    let mustAvoid = Set.has(player1.avoidIds, player2.id)
+    let isDiffDueColor = switch (player1.lastColor, player2.lastColor) {
+    | (Some(color1), Some(color2)) => color1 != color2
+    | (_, _) => true
     }
     let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0
-    let halfDiff = float_of_int(abs(player1.halfPos - player2.halfPos) + 1)
+    let halfDiff = Float.fromInt(abs(player1.halfPos - player2.halfPos) + 1)
     let isDiffHalf = player1.isUpperHalf != player2.isUpperHalf && player1.score == player2.score
-    sum(list{
-      differentDueColor(isDiffDueColor),
-      sameScores(scoreDiff),
-      differentHalf(isDiffHalf, halfDiff),
-      avoidMeetingTwice(!metBefore && !mustAvoid),
-    })
+    differentDueColor(isDiffDueColor) +.
+    sameScores(scoreDiff) +.
+    differentHalf(isDiffHalf, halfDiff) +.
+    avoidMeetingTwice(!metBefore && !mustAvoid)
   }
-
-//let descendingScore = Utils.descend(compare, x => x.score);
-let descendingRating = Utils.descend(compare, (. x) => x.rating)
-
-let splitInHalf = arr => {
-  let midpoint = Js.Array.length(arr) / 2
-  (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
-}
-
-let setUpperHalves = data => {
-  let dataList = Map.valuesToArray(data)
-  Map.map(data, playerData => {
-    let (upperHalfIds, lowerHalfIds) =
-      dataList
-      ->Array.keep(({score, _}) => score == playerData.score)
-      ->Belt.SortArray.stableSortBy(descendingRating)
-      ->splitInHalf
-    /* We need to know what position in each half the player occupies. We're
-     uisng array indices to identify these. */
-    let getIndex = Array.getIndexBy(_, x => x === playerData)
-    let (halfPos, isUpperHalf) = switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
-    | (Some(index), Some(_)) /* This shouldn't happen. */
-    | (Some(index), None) => (index, true)
-    | (None, Some(index)) => (index, false)
-    | (None, None) => (0, false) /* This shouldn't happen. */
-    }
-    {...playerData, halfPos: halfPos, isUpperHalf: isUpperHalf}
-  })
-}
 
 let sortByScoreThenRating = (data1, data2) =>
   switch compare(data1.score, data2.score) {
@@ -116,37 +140,36 @@ let sortByScoreThenRating = (data1, data2) =>
   }
 
 let setByePlayer = (byeQueue, dummyId, data) => {
-  let hasNotHadBye = p => !List.has(p.opponents, dummyId, Id.eq)
+  let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId))
   /* if the list is even, just return it. */
   if mod(Map.size(data), 2) == 0 {
     (data, None)
   } else {
-    let dataList =
+    let dataArr =
       data
       ->Map.valuesToArray
-      ->List.fromArray
-      ->List.keep(hasNotHadBye)
-      ->List.sort(sortByScoreThenRating)
-    let playerIdsWithoutByes = List.map(dataList, p => p.id)
-    let hasntHadByeFn = id => List.has(playerIdsWithoutByes, id, Id.eq)
-    let nextByeSignups = byeQueue->List.fromArray->List.keep(hasntHadByeFn)
-    let dataForNextBye = switch nextByeSignups {
+      ->Array.keep(hasNotHadBye)
+      ->SortArray.stableSortBy(sortByScoreThenRating)
+    let playerIdsWithoutByes = Array.map(dataArr, p => p.id)
+    let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id))
+    let nextByeSignups = Array.keep(byeQueue, hasntHadByeFn)
+    let dataForNextBye = switch nextByeSignups[0] {
     /* Assign the bye to the next person who signed up. */
-    | list{id, ..._} =>
-      switch data->Map.get(id) {
+    | Some(id) =>
+      switch Map.get(data, id) {
       | Some(x) => x
-      | None => dataList->List.getExn(0)
+      | None => Array.getExn(dataArr, 0)
       }
-    | list{} =>
+    | None =>
       /* Assign a bye to the lowest-rated player in the lowest score group.
            Because the list is sorted, the last player is the lowest.
            (USCF § 29L2.) */
-      switch dataList {
-      | list{data, ..._} => data
+      switch dataArr[0] {
+      | Some(data) => data
       /* In the impossible situation that *everyone* has played a bye
        round previously, then just pick the last player. */
-      | list{} =>
-        data->Map.valuesToArray->List.fromArray->List.sort(sortByScoreThenRating)->List.getExn(0)
+      | None =>
+        data->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.getExn(0)
       }
     }
     let dataWithoutBye = Map.remove(data, dataForNextBye.id)
@@ -158,9 +181,9 @@ let assignColorsForPair = ((player1, player2)) =>
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  sum(player1.colorScores) < sum(player2.colorScores)
-  /* player 1 has played as white more than player 2 */
-    ? (player2.id, player1.id)
+  player1.colorScore < player2.colorScore
+    ? /* player 1 has played as white more than player 2 */
+      (player2.id, player1.id)
       /* player 1 has played as black more than player 2
        (or they're equal). */
     : (player1.id, player2.id)
@@ -174,33 +197,36 @@ let sortByNetScoreThenRating = (pair1, pair2) =>
   | x => x
   }
 
-let pairEq = ((a, b), (c, d)) => (a === c && b === d) || (b === c && a === d)
+module IdMatch = unpack(Blossom.Match.comparable(Id.compare))
 
-let pairPlayers = pairData =>
-  /* This is not optimized for performance, but in practice that hasn't been a
-   problem yet. */
+/* This is not optimized for performance, but in practice that hasn't been a
+ problem yet. */
+let pairPlayers = pairData => {
   Map.reduce(pairData, list{}, (acc, p1Id, p1) =>
     Map.reduce(pairData, acc, (acc2, p2Id, p2) => list{
-      (Id.toString(p1Id), Id.toString(p2Id), calcPairIdeal(p1, p2)),
+      (p1Id, p2Id, calcPairIdeal(p1, p2)),
       ...acc2,
     })
   )
   /* Feed all of the potential matches to the Blossom algorithim and let the
    algorithm work its magic. */
-  ->Blossom.Match.String.make
+  ->Blossom.Match.make(~id=module(IdMatch))
   /* Blossom returns redundant pair data. This filters them out. */
-  ->Blossom.Match.reduce(~init=list{}, ~f=(acc, p1, p2) =>
-    List.has(acc, (p1, p2), pairEq) ? acc : list{(p1, p2), ...acc}
+  ->Blossom.Match.reduce(~init=Set.make(~id=Data_Id.Pair.id), ~f=(acc, p1, p2) =>
+    switch Data_Id.Pair.make(p1, p2) {
+    | None => acc
+    | Some(pair) => Set.add(acc, pair)
+    }
   )
   /* Convert the ids back to their pairing data */
-  ->List.keepMap(((p1, p2)) => {
-    let p1 = Id.fromString(p1)
-    let p2 = Id.fromString(p2)
+  ->Set.toArray
+  ->Array.keepMap(pair => {
+    let (p1, p2) = Data_Id.Pair.toTuple(pair)
     switch (Map.get(pairData, p1), Map.get(pairData, p2)) {
     | (Some(p1), Some(p2)) => Some((p1, p2))
     | _ => None
     }
   })
-  ->List.sort(sortByNetScoreThenRating)
-  /* assign colors and also convert them back to their id strings */
-  ->List.map(assignColorsForPair)
+  ->SortArray.stableSortBy(sortByNetScoreThenRating)
+  ->Array.map(assignColorsForPair)
+}
