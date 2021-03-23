@@ -140,7 +140,7 @@ module OptionsForm = {
         <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
           {React.string("close")}
         </button>
-        <h2> {`Options for ${p.firstName} ${p.lastName}`->React.string} </h2>
+        <h2> {`Options for ${Player.fullName(p)}`->React.string} </h2>
         <form
           onSubmit={event => {
             ReactEvent.Form.preventDefault(event)
@@ -206,13 +206,13 @@ module OptionsForm = {
       <button className="button-micro" onClick={_ => dialog.setTrue()}>
         <span ariaHidden=true> <Icons.More /> </span>
         <Externals.VisuallyHidden>
-          {`More options for ${p.firstName} ${p.lastName}`->React.string}
+          {`More options for ${Player.fullName(p)}`->React.string}
         </Externals.VisuallyHidden>
       </button>
       <Externals.Dialog
         isOpen=dialog.state
         onDismiss=dialog.setFalse
-        ariaLabel={`Options for ${p.firstName} ${p.lastName}`}>
+        ariaLabel={`Options for ${Player.fullName(p)}`}>
         <More setTourney dialog tourney p />
       </Externals.Dialog>
     </>
@@ -274,7 +274,7 @@ let make = (~tournament: LoadTournament.t) => {
             <li
               key={pId->Data.Id.toString}
               className={Cn.append("buttons-on-hover", "disabled"->Cn.on(hasHadBye(matches, pId)))}>
-              {React.string(getPlayer(pId).firstName ++ " " ++ getPlayer(pId).lastName)}
+              {pId->getPlayer->Player.fullName->React.string}
               {React.string(" ")}
               <button
                 className="button-micro"

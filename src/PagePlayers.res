@@ -181,7 +181,7 @@ module PlayerList = {
       switch playerOpt {
       | None => ()
       | Some(player) =>
-        let message = `Are you sure you want to delete ${player.firstName} ${player.lastName} ?`
+        let message = `Are you sure you want to delete ${Player.fullName(player)}?`
         if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
           playersDispatch(Db.Del(id))
           configDispatch(Db.DelAvoidSingle(id))
@@ -219,12 +219,10 @@ module PlayerList = {
           </tr>
         </thead>
         <tbody className="content">
-          {Array.map(sorted.Hooks.table, p =>
+          {Array.map(sorted.table, p =>
             <tr key={p.id->Data.Id.toString} className="buttons-on-hover">
               <td className="table__player">
-                <HashLink to_=Player(p.id)>
-                  {React.string(p.firstName ++ " " ++ p.lastName)}
-                </HashLink>
+                <HashLink to_=Player(p.id)> {p->Player.fullName->React.string} </HashLink>
               </td>
               <td className="table__number"> {p.rating->string_of_int->React.string} </td>
               <td className="table__number"> {p.matchCount->string_of_int->React.string} </td>
@@ -232,7 +230,7 @@ module PlayerList = {
                 <button className="danger button-ghost" onClick={event => delPlayer(event, p.id)}>
                   <Icons.Trash />
                   <Externals.VisuallyHidden>
-                    {React.string(`Delete ${p.firstName} ${p.lastName}`)}
+                    {React.string(`Delete ${Player.fullName(p)}`)}
                   </Externals.VisuallyHidden>
                 </button>
               </td>
@@ -462,9 +460,7 @@ module Profile = {
               {unavoided
               ->Array.map(pId =>
                 <option key={pId->Data.Id.toString} value={pId->Data.Id.toString}>
-                  {React.string(Player.getMaybe(players, pId).firstName)}
-                  {React.string(" ")}
-                  {React.string(Player.getMaybe(players, pId).lastName)}
+                  {players->Player.getMaybe(pId)->Player.fullName->React.string}
                 </option>
               )
               ->React.array}

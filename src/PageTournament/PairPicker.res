@@ -13,21 +13,23 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   | None => ()
   }
   let getPlayer = Data.Player.getMaybe(playerMap)
-  MutableQueue.map(pairs, ((whiteId, blackId)) =>
+  MutableQueue.map(pairs, ((whiteId, blackId)) => {
+    let white = getPlayer(whiteId)
+    let black = getPlayer(blackId)
     Data.Match.scoreByeMatch(
       ~byeValue,
       {
         id: Data.Id.random(),
-        whiteOrigRating: getPlayer(whiteId).rating,
-        blackOrigRating: getPlayer(blackId).rating,
-        whiteNewRating: getPlayer(whiteId).rating,
-        blackNewRating: getPlayer(blackId).rating,
+        whiteOrigRating: white.rating,
+        blackOrigRating: black.rating,
+        whiteNewRating: white.rating,
+        blackNewRating: black.rating,
         whiteId: whiteId,
         blackId: blackId,
         result: NotSet,
       },
     )
-  )
+  })
 }
 
 type listEntry = {
@@ -131,11 +133,11 @@ module SelectList = {
                   onClick={_ => selectPlayer(player.id)}>
                   <Icons.UserPlus />
                   <Externals.VisuallyHidden>
-                    {`Add ${player.firstName} ${player.lastName}`->React.string}
+                    {`Add ${Player.fullName(player)}`->React.string}
                   </Externals.VisuallyHidden>
                 </button>
               </td>
-              <td> {React.string(player.firstName ++ (" " ++ player.lastName))} </td>
+              <td> {player->Player.fullName->React.string} </td>
               <td>
                 {React.string(isOnePlayerSelected ? ideal->Numeral.make->Numeral.format("%") : "-")}
               </td>
@@ -179,11 +181,11 @@ module Stage = {
     }
     let whiteName = switch white {
     | None => ""
-    | Some(player) => getPlayer(player).Player.firstName ++ (" " ++ getPlayer(player).lastName)
+    | Some(player) => player->getPlayer->Player.fullName
     }
     let blackName = switch black {
     | None => ""
-    | Some(player) => getPlayer(player).firstName ++ (" " ++ getPlayer(player).lastName)
+    | Some(player) => player->getPlayer->Player.fullName
     }
 
     let unstage = color =>
@@ -295,9 +297,8 @@ module PlayerInfo = {
       ~avoidPairs,
     )
 
-    let fullName = player.firstName ++ (" " ++ player.lastName)
     <dl className="player-card">
-      <h3> {fullName->React.string} </h3>
+      <h3> {player->Player.fullName->React.string} </h3>
       <p> {"Score: "->React.string} {score->React.float} </p>
       <p id={"rating-" ++ player.id->Data.Id.toString}> {"Rating: "->React.string} rating </p>
       <p> {React.string("Color balance: " ++ colorBalance)} </p>

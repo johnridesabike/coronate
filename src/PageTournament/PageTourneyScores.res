@@ -4,6 +4,9 @@ module Id = Data.Id
 
 type size = Compact | Expanded
 
+// The nbsp helps the table formatting. Maybe it should be the default?
+let fullName = p => p.Player.firstName ++ Utils.Entities.nbsp ++ p.lastName
+
 module ScoreTable = {
   @react.component
   let make = (~size, ~tourney: Tournament.t, ~getPlayer, ~title) => {
@@ -62,17 +65,13 @@ module ScoreTable = {
               switch size {
               | Compact =>
                 <td className={"pagescores__row-td pagescores__playername"}>
-                  {getPlayer(standing.id).Player.firstName->React.string}
-                  {Utils.Entities.nbsp->React.string}
-                  {getPlayer(standing.id).lastName->React.string}
+                  {standing.id->getPlayer->fullName->React.string}
                 </td> /* Use the name as a header if not compact. */
               | Expanded =>
                 <Utils.TestId
                   testId={"rank-" ++ (Int.toString(rank + 1) ++ ("." ++ Int.toString(i)))}>
                   <th className={"pagescores__row-th pagescores__playername"} scope="row">
-                    {getPlayer(standing.id).firstName->React.string}
-                    {Utils.Entities.nbsp->React.string}
-                    {getPlayer(standing.id).lastName->React.string}
+                    {standing.id->getPlayer->fullName->React.string}
                   </th>
                 </Utils.TestId>
               }}
@@ -324,9 +323,7 @@ module Crosstable = {
               {React.int(index + 1)}
             </th>
             <th className={"pagescores__row-th pagescores__playername"} scope="row">
-              {React.string(getPlayer(standing.id).firstName)}
-              {React.string(Utils.Entities.nbsp)}
-              {React.string(getPlayer(standing.id).lastName)}
+              {standing.id->getPlayer->fullName->React.string}
             </th>
             {/* Output a cell for each other player */
             standings

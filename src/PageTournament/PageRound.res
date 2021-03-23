@@ -22,14 +22,13 @@ module PlayerMatchInfo = {
       ~newRating,
       ~avoidPairs,
     )
-    let fullName = player.firstName ++ (" " ++ player.lastName)
     <dl className="player-card">
-      <h3> {fullName->React.string} </h3>
+      <h3> {player->Player.fullName->React.string} </h3>
       <dt> {"Score"->React.string} </dt>
       <dd> {score->React.float} </dd>
       <dt> {"Rating"->React.string} </dt>
       <Utils.TestId testId={"rating-" ++ player.id->Data.Id.toString}>
-        <dd ariaLabel={"Rating for " ++ fullName}> rating </dd>
+        <dd ariaLabel={"Rating for " ++ Player.fullName(player)}> rating </dd>
       </Utils.TestId>
       <dt> {"Color balance"->React.string} </dt>
       <dd> {colorBalance->React.string} </dd>
@@ -37,8 +36,8 @@ module PlayerMatchInfo = {
       <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
       <dt> {"Opponent history"->React.string} </dt>
       <dd> <ol> opponentResults </ol> </dd>
-      <p> {"Players to avoid:"->React.string} </p>
-      avoidListHtml
+      <dt> {"Players to avoid:"->React.string} </dt>
+      <dd> <ul> avoidListHtml </ul> </dd>
     </dl>
   }
 }
@@ -63,9 +62,6 @@ module MatchRow = {
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
     let isDummyRound = Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId)
-
-    let whiteName = whitePlayer.firstName ++ " " ++ whitePlayer.lastName
-    let blackName = blackPlayer.firstName ++ " " ++ blackPlayer.lastName
 
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
@@ -167,7 +163,7 @@ module MatchRow = {
             Player.Type.toString(whitePlayer.type_),
           )}
           id={"match-" ++ (string_of_int(pos) ++ "-white")}>
-          {React.string(whiteName)}
+          {whitePlayer->Player.fullName->React.string}
         </td>
       </Utils.TestId>
       <td className="pageround__playerresult"> {resultDisplay(Black)} </td>
@@ -178,7 +174,7 @@ module MatchRow = {
             Player.Type.toString(blackPlayer.type_),
           )}
           id={"match-" ++ (string_of_int(pos) ++ "-black")}>
-          {React.string(blackName)}
+          {blackPlayer->Player.fullName->React.string}
         </td>
       </Utils.TestId>
       <td className={"pageround__matchresult data__input row__controls"}>
@@ -208,7 +204,9 @@ module MatchRow = {
                 onClick={_ => setSelectedMatch(_ => Some(m.id))}>
                 <Icons.Circle />
                 <Externals.VisuallyHidden>
-                  {`Edit match for ${whiteName} versus ${blackName}`->React.string}
+                  {`Edit match for ${Player.fullName(whitePlayer)} versus ${Player.fullName(
+                      blackPlayer,
+                    )}`->React.string}
                 </Externals.VisuallyHidden>
               </button>
             : <button
@@ -223,7 +221,9 @@ module MatchRow = {
             onClick={_ => dialog.setTrue()}>
             <Icons.Info />
             <Externals.VisuallyHidden>
-              {`View information for match: ${whiteName} versus ${blackName}`->React.string}
+              {`View information for match: ${Player.fullName(
+                  whitePlayer,
+                )} versus ${Player.fullName(blackPlayer)}`->React.string}
             </Externals.VisuallyHidden>
           </button>
           {switch scoreData {
@@ -241,7 +241,7 @@ module MatchRow = {
               <Utils.PanelContainer>
                 <Utils.Panel>
                   <PlayerMatchInfo
-                    player={getPlayer(m.whiteId)}
+                    player={whitePlayer}
                     origRating=m.whiteOrigRating
                     newRating=Some(m.whiteNewRating)
                     getPlayer
@@ -252,7 +252,7 @@ module MatchRow = {
                 </Utils.Panel>
                 <Utils.Panel>
                   <PlayerMatchInfo
-                    player={getPlayer(m.blackId)}
+                    player={blackPlayer}
                     origRating=m.blackOrigRating
                     newRating=Some(m.blackNewRating)
                     getPlayer

@@ -81,19 +81,16 @@ let getScoreInfo = (
     ->List.toArray
     ->Array.mapWithIndex((i, (opId, result)) =>
       <li key={Data.Id.toString(opId) ++ ("-" ++ Int.toString(i))}>
-        {[
-          getPlayer(opId).Data.Player.firstName,
-          getPlayer(opId).lastName,
-          "-",
+        {opId->getPlayer->Data.Player.fullName->React.string}
+        {" - "->React.string}
+        {React.string(
           switch result {
           | Zero
           | NegOne /* Shouldn't be used here */ => "Lost"
           | One => "Won"
           | Half => "Draw"
           },
-        ]
-        ->Js.Array2.joinWith(" ")
-        ->React.string}
+        )}
       </li>
     )
     ->React.array
@@ -105,8 +102,7 @@ let getScoreInfo = (
       switch Map.get(players, pId) {
       /* don't show players not in this tourney */
       | None => React.null
-      | Some({Data.Player.firstName: firstName, lastName, _}) =>
-        <li key={Data.Id.toString(pId)}> {React.string(firstName ++ " " ++ lastName)} </li>
+      | Some(p) => <li key={Data.Id.toString(pId)}> {p->Player.fullName->React.string} </li>
       }
     )
     ->React.array

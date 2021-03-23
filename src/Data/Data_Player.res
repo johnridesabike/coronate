@@ -33,6 +33,8 @@ type t = {
   type_: Type.t,
 }
 
+let fullName = t => t.firstName ++ " " ++ t.lastName
+
 let decode = json => {
   open Json.Decode
   {

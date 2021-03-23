@@ -16,6 +16,8 @@ type t = {
   type_: Type.t,
 }
 
+let fullName: t => string
+
 let encode: t => Js.Json.t
 
 let decode: Js.Json.t => t
