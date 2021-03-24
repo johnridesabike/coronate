@@ -421,33 +421,32 @@ module Profile = {
         </p>
       </form>
       <h3> {React.string("Players to avoid")} </h3>
-      <ul>
-        {singAvoidList
-        ->Set.toArray
-        ->Array.map(pId => {
-          let {firstName, lastName, _} = Player.getMaybe(players, pId)
-          <li key={pId->Data.Id.toString}>
-            {React.string(firstName ++ " " ++ lastName)}
-            <button
-              ariaLabel={`Remove ${firstName} ${lastName} from avoid list.`}
-              title={`Remove ${firstName} ${lastName} from avoid list.`}
-              className="danger button-ghost"
-              onClick={_ =>
-                switch Id.Pair.make(playerId, pId) {
-                | None => ()
-                | Some(pair) => configDispatch(DelAvoidPair(pair))
-                }}>
-              <Icons.Trash />
-            </button>
-          </li>
-        })
-        ->React.array}
-        {if Set.isEmpty(singAvoidList) {
-          <li> {React.string("None")} </li>
-        } else {
-          React.null
-        }}
-      </ul>
+      {if Set.isEmpty(singAvoidList) {
+        <p className="disabled"> {React.string("None")} </p>
+      } else {
+        <ul>
+          {singAvoidList
+          ->Set.toArray
+          ->Array.map(pId => {
+            let fullName = Player.getMaybe(players, pId)->Player.fullName
+            <li key={pId->Data.Id.toString}>
+              {fullName->React.string}
+              <button
+                ariaLabel={`Remove ${fullName} from avoid list.`}
+                title={`Remove ${fullName} from avoid list.`}
+                className="danger button-ghost"
+                onClick={_ =>
+                  switch Id.Pair.make(playerId, pId) {
+                  | None => ()
+                  | Some(pair) => configDispatch(DelAvoidPair(pair))
+                  }}>
+                <Icons.Trash />
+              </button>
+            </li>
+          })
+          ->React.array}
+        </ul>
+      }}
       <form onSubmit=avoidAdd>
         <label htmlFor="avoid-select"> {React.string("Select a new player to avoid.")} </label>
         {switch selectedAvoider {

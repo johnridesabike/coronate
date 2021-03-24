@@ -140,13 +140,7 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
     }
   | DelAvoidSingle(id) => {
       ...state,
-      avoidPairs: Set.reduce(state.avoidPairs, Set.make(~id=Data.Id.Pair.id), (acc, pair) =>
-        if Data.Id.Pair.has(pair, ~id) {
-          acc
-        } else {
-          Set.add(acc, pair)
-        }
-      ),
+      avoidPairs: Set.keep(state.avoidPairs, pair => !Data.Id.Pair.has(pair, ~id)),
     }
   | SetAvoidPairs(avoidPairs) => {...state, avoidPairs: avoidPairs}
   | SetByeValue(byeValue) => {...state, byeValue: byeValue}
