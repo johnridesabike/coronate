@@ -19,7 +19,7 @@ const modules = require("./modules");
 const getClientEnvironment = require("./env");
 const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const { ESBuildPlugin, ESBuildMinifyPlugin } = require("esbuild-loader");
+const { ESBuildMinifyPlugin } = require("esbuild-loader");
 
 const postcssNormalize = require("postcss-normalize");
 
@@ -328,7 +328,6 @@ module.exports = function (webpackEnv) {
       ],
     },
     plugins: [
-      new ESBuildPlugin(),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
