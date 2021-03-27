@@ -29,7 +29,7 @@
     "@glennsl/bs-json",
     "bs-intl",
     "rescript-blossom",
-    "reason-promise",
+    "@ryyppy/rescript-promise",
     "re-formality"
   ],
   "bs-dev-dependencies": [
