@@ -21,9 +21,18 @@ module Splash = {
             </li>
           </ol>
           <Utils.Notification kind=Warning>
-            {React.string("If you experience glitches or crashes,")}
-            <br />
-            {React.string("clear your browser cache and try again.")}
+            <div>
+              <p>
+                {React.string("Coronate requires no account to use, and")}
+                <br />
+                {React.string("saves your data locally in your browser.")}
+              </p>
+              <p>
+                {React.string("To manage your data, visit the ")}
+                <Router.HashLink to_=Options> {"Options"->React.string} </Router.HashLink>
+                {React.string(" page.")}
+              </p>
+            </div>
           </Utils.Notification>
         </aside>
         <div className="pages__title">
@@ -39,6 +48,7 @@ module Splash = {
         </div>
         <footer className={"pages__footer body-20"}>
           <div style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+            <p> {React.string("Do you enjoy using Coronate?")} </p>
             <p>
               <a href="https://www.buymeacoffee.com/johnridesabike" target="_blank">
                 <img
@@ -50,9 +60,9 @@ module Splash = {
                 />
               </a>
             </p>
-            <p> {React.string(`Copyright ${Utils.Entities.copy} 2021 John Jackson.`)} </p>
           </div>
           <div style={ReactDOMRe.Style.make(~textAlign="right", ())}>
+            <p> {React.string(`Copyright ${Utils.Entities.copy} 2021 John Jackson.`)} </p>
             <p>
               <a className="pages__footer-link" href=Utils.issues_url>
                 {React.string("Suggestions and bug reports are welcome.")}
