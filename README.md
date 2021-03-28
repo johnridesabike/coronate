@@ -31,19 +31,19 @@ Coronate is free software, but you're welcome to show your appreciation.
     style="height: 60px !important;width: 217px !important;" />
 </a>
 
-## 🏁 Getting started
+## 🛠 Development
 
 These are the basic steps you'll need to follow to get a development copy of
 Coronate running on your machine:
 
 ### Prerequisites
 
-You'll need [Node.js](https://nodejs.org/) version 13. Coronate probably runs
+You'll need [Node.js](https://nodejs.org/) version 14. Coronate probably runs
 on other versions too, but it's not tested on them.
 
 ### Installing
 
-#### 1: Grab the code
+#### 1: Get the code
 
 For most people, the easiest method is to click the "Clone or Download" button
 on [this project's GitHub homepage](https://github.com/johnridesabike/coronate).
