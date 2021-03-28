@@ -56,7 +56,7 @@ module About = {
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
         <p>
-          {`Copyright ${Utils.Entities.copy} 2021 John ${Utils.Entities.nbsp} Jackson`->React.string}
+          {`Copyright ${Utils.Entities.copy} 2021 John${Utils.Entities.nbsp}Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
