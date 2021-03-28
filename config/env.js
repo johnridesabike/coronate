@@ -1,8 +1,10 @@
 "use strict";
 
 const fs = require("fs");
+const childProcess = require("child_process");
 const path = require("path");
 const paths = require("./paths");
+const pkg = require("../package.json");
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve("./paths")];
@@ -60,6 +62,11 @@ process.env.NODE_PATH = (process.env.NODE_PATH || "")
 // injected into the application via DefinePlugin in webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
+const hash = childProcess
+  .execSync("git rev-parse --short HEAD")
+  .toString()
+  .trim();
+
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter((key) => REACT_APP.test(key))
@@ -90,6 +97,8 @@ function getClientEnvironment(publicUrl) {
         // which is why it's disabled by default.
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== "false",
+        GIT_HASH: hash,
+        APP_VERSION: pkg.version,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin

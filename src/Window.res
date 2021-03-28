@@ -35,7 +35,9 @@ let windowReducer = (state, action) =>
 
 module About = {
   @val
-  external version: option<string> = "process.env.REACT_APP_VERSION"
+  external version: string = "process.env.APP_VERSION"
+  @val
+  external hash: string = "process.env.GIT_HASH"
   @react.component
   let make = () =>
     <article
@@ -52,10 +54,7 @@ module About = {
         <h1 className="title" style={ReactDOMRe.Style.make(~textAlign="left", ())}>
           {React.string("Coronate")}
         </h1>
-        {switch version {
-        | Some(version) => <p> {React.string("Version " ++ version)} </p>
-        | None => React.null
-        }}
+        <p> {React.string(`Version ${version}-${hash}`)} </p>
         <p>
           {`Copyright ${Utils.Entities.copy} 2021 John ${Utils.Entities.nbsp} Jackson`->React.string}
         </p>
