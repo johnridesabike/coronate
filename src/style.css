@@ -28,7 +28,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: var(--font-body-20);
   font-family: var(--font-main);
   color: var(--grey-90);
   background-color: var(--grey-10);
@@ -66,7 +66,7 @@ svg {
 
 .display-20,
 h1 {
-  font-size: 36px;
+  font-size: var(--font-display-20);
   font-weight: 200;
   text-align: center;
   margin: 0.25em 0;
@@ -75,14 +75,14 @@ h1 {
 .title-40,
 h2,
 caption {
-  font-size: 28px;
+  font-size: var(--font-title-40);
   font-weight: 300;
   margin: 0.25em 0;
 }
 
 .title-30,
 h3 {
-  font-size: 22px;
+  font-size: var(--font-title-30);
   font-weight: 300;
   margin: 0.25em 0;
 }
@@ -90,30 +90,30 @@ h3 {
 .title-20,
 th,
 h4 {
-  font-size: 17px;
+  font-size: var(--font-title-20);
   margin: 0.25em 0;
   font-weight: 500;
 }
 
 .title-10,
 h5 {
-  font-size: 13px;
+  font-size: var(--font-title-10);
   margin: 0.25em 0;
 }
 
 .body-30 {
-  font-size: 17px;
+  font-size: var(--font-body-30);
   font-weight: 400;
 }
 
 .body-20,
 legend {
-  font-size: 15px;
+  font-size: var(--font-body-20);
   font-weight: 400;
 }
 
 .body-10 {
-  font-size: 13px;
+  font-size: var(--font-body-10);
   font-weight: 400;
 }
 
@@ -123,13 +123,13 @@ code {
 }
 
 .caption-30 {
-  font-size: 15px;
+  font-size: var(--font-caption-30);
   font-weight: 400;
   color: var(--grey-50);
 }
 
 .caption-20 {
-  font-size: 13px;
+  font-size: var(--font-caption-20);
   font-weight: 400;
   color: var(--grey-50);
 }
@@ -368,7 +368,6 @@ hr {
   .content-area {
     width: 600px;
     padding-bottom: 16px;
-    margin: 0 auto;
   }
 
   /* Empty space used for balancing visual elements */
@@ -409,7 +408,7 @@ input[type="submit"],
   border-radius: 2px;
   height: 32px;
   padding: 0 8px;
-  font-size: 13px;
+  font-size: var(--font-body-10);
   min-width: 132px;
   width: auto;
   border: none;
@@ -423,7 +422,7 @@ a.button {
 .button-micro,
  input[type="submit"].button-micro /* need that specificity*/ {
   height: 24px;
-  font-size: 11px;
+  font-size: var(--font-caption-10);
   min-width: auto;
 }
 
@@ -742,7 +741,7 @@ li.player.missing {
 }
 
 .pages__footer {
-  font-size: 13px;
+  font-size: var(--font-body-10);
   background-color: var(--ink-80);
   color: var(--grey-20);
   padding: 0 16px;
@@ -921,7 +920,7 @@ li.player.missing {
   flex-direction: row;
   justify-content: center;
   min-height: 32px;
-  font-size: 13px;
+  font-size: var(--font-body-10);
   font-weight: 400;
   padding-top: 4px;
   padding-bottom: 4px;
