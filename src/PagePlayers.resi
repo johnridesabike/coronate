@@ -19,4 +19,4 @@ module Profile: {
 }
 
 @react.component
-let make: (~id: Data.Id.t=?, ~windowDispatch: Window.action => unit=?) => React.element
+let make: (~id: Data.Id.t=?, ~windowDispatch: Window.action => unit) => React.element

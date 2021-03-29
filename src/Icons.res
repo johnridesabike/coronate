@@ -78,6 +78,10 @@ module List = {
   @module("react-feather") @react.component
   external make: unit => React.element = "List"
 }
+module Menu = {
+  @module("react-feather") @react.component
+  external make: unit => React.element = "Menu"
+}
 module Plus = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Plus"
@@ -90,10 +94,12 @@ module Settings = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Settings"
 }
+/*
 module Sidebar = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Sidebar"
 }
+*/
 module Trash = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Trash2"

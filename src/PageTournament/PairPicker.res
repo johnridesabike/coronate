@@ -415,7 +415,8 @@ let make = (
           </Utils.PanelContainer>
         </Utils.Panel>
       </Utils.PanelContainer>
-      <Externals.Dialog isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Select players">
+      <Externals.Dialog
+        isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Select players" className="">
         <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Done")}
         </button>

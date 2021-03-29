@@ -28,6 +28,7 @@ module Dialog = {
     ~ariaLabel: string,
     ~children: React.element,
     ~style=ReactDOMRe.Style.make(),
+    ~className,
   ) =>
     React.createElement(
       make,
@@ -37,6 +38,7 @@ module Dialog = {
         "style": style,
         "aria-label": ariaLabel,
         "children": children,
+        "className": className,
       },
     )
 }

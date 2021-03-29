@@ -125,33 +125,36 @@ let make = (~windowDispatch=_ => ()) => {
     let newText = ReactEvent.Form.currentTarget(event)["value"]
     setText(_ => newText)
   }
-  <Window.Body>
+  <Window.Body windowDispatch>
     <div className="content-area">
       <h2> {React.string("Bye  settings")} </h2>
       <form>
         <p className="caption-30"> {React.string("Select the default score for a bye round.")} </p>
-        <label className="monospace body-30">
-          {React.string("1 ")}
-          <input
-            checked={switch config.byeValue {
-            | Full => true
-            | Half => false
-            }}
-            type_="radio"
-            onChange={_ => configDispatch(SetByeValue(Full))}
-          />
-        </label>
-        <label className="monospace body-30">
-          {React.string(j`½ `)}
-          <input
-            checked={switch config.byeValue {
-            | Full => false
-            | Half => true
-            }}
-            type_="radio"
-            onChange={_ => configDispatch(SetByeValue(Half))}
-          />
-        </label>
+        <div style={ReactDOMRe.Style.make(~display="flex", ())}>
+          <label
+            className="monospace body-30" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+            {React.string("1 ")}
+            <input
+              checked={switch config.byeValue {
+              | Full => true
+              | Half => false
+              }}
+              type_="radio"
+              onChange={_ => configDispatch(SetByeValue(Full))}
+            />
+          </label>
+          <label className="monospace body-30">
+            {React.string(j`½ `)}
+            <input
+              checked={switch config.byeValue {
+              | Full => false
+              | Half => true
+              }}
+              type_="radio"
+              onChange={_ => configDispatch(SetByeValue(Half))}
+            />
+          </label>
+        </div>
       </form>
       <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">
@@ -179,7 +182,7 @@ let make = (~windowDispatch=_ => ()) => {
       <h3> {React.string("Advanced: manually edit data")} </h3>
       <form onSubmit=handleText>
         <textarea
-          className="json"
+          className="pages__text-json"
           cols=50
           name="playerdata"
           rows=25

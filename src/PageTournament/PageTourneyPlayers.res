@@ -212,7 +212,8 @@ module OptionsForm = {
       <Externals.Dialog
         isOpen=dialog.state
         onDismiss=dialog.setFalse
-        ariaLabel={`Options for ${Player.fullName(p)}`}>
+        ariaLabel={`Options for ${Player.fullName(p)}`}
+        className="">
         <More setTourney dialog tourney p />
       </Externals.Dialog>
     </>
@@ -226,8 +227,7 @@ module PlayerList = {
     ->Map.valuesToArray
     ->Array.map(p =>
       <tr key={p.id->Data.Id.toString} className={"player " ++ Player.Type.toString(p.type_)}>
-        <td> {React.string(p.firstName)} </td>
-        <td> {React.string(p.lastName)} </td>
+        <td> {p->Player.fullName->React.string} </td>
         <td> <OptionsForm setTourney tourney byeQueue p /> </td>
       </tr>
     )
@@ -252,9 +252,7 @@ let make = (~tournament: LoadTournament.t) => {
         <table>
           <caption> {React.string("Current roster")} </caption>
           <thead>
-            <tr>
-              <th colSpan=2> {React.string("Name")} </th> <th> {React.string("Options")} </th>
-            </tr>
+            <tr> <th> {React.string("Name")} </th> <th> {React.string("Options")} </th> </tr>
           </thead>
           <tbody className="content">
             <PlayerList byeQueue setTourney tourney players=activePlayers />
@@ -263,33 +261,37 @@ let make = (~tournament: LoadTournament.t) => {
       </Utils.Panel>
       <Utils.Panel>
         <h3> {React.string("Bye queue")} </h3>
-        {if Js.Array.length(byeQueue) == 0 {
-          <p> {React.string("No players have signed up for a bye round.")} </p>
-        } else {
-          React.null
+        {switch byeQueue {
+        | [] => <p className="caption-20"> {React.string("No one has signed up yet.")} </p>
+        | byeQueue =>
+          <table style={ReactDOMRe.Style.make(~width="100%", ())}>
+            <tbody>
+              {Array.map(byeQueue, pId =>
+                <tr
+                  key={Data.Id.toString(pId)} className={hasHadBye(matches, pId) ? "disabled" : ""}>
+                  <td> {pId->getPlayer->Player.fullName->React.string} </td>
+                  <td>
+                    <button
+                      className="button-micro"
+                      onClick={_ =>
+                        setTourney({
+                          ...tourney,
+                          byeQueue: Js.Array2.filter(byeQueue, id => !Id.eq(pId, id)),
+                        })}>
+                      {React.string("Remove")}
+                    </button>
+                  </td>
+                </tr>
+              )->React.array}
+            </tbody>
+          </table>
         }}
-        <ol>
-          {Array.map(byeQueue, pId =>
-            <li
-              key={pId->Data.Id.toString}
-              className={Cn.append("buttons-on-hover", "disabled"->Cn.on(hasHadBye(matches, pId)))}>
-              {pId->getPlayer->Player.fullName->React.string}
-              {React.string(" ")}
-              <button
-                className="button-micro"
-                onClick={_ =>
-                  setTourney({
-                    ...tourney,
-                    byeQueue: Js.Array2.filter(byeQueue, id => !Id.eq(pId, id)),
-                  })}>
-                {React.string("Remove")}
-              </button>
-            </li>
-          )->React.array}
-        </ol>
       </Utils.Panel>
       <Externals.Dialog
-        isOpen=isSelecting onDismiss={() => setIsSelecting(_ => false)} ariaLabel="Select players">
+        isOpen=isSelecting
+        onDismiss={() => setIsSelecting(_ => false)}
+        ariaLabel="Select players"
+        className="">
         <button className="button-micro button-primary" onClick={_ => setIsSelecting(_ => false)}>
           {React.string("Done")}
         </button>

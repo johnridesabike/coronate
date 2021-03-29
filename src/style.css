@@ -14,10 +14,21 @@
   --font-monospace: "Fira Code", source-code-pro, Menlo, Monaco, Consolas,
     "Courier New", monospace;
   --selected-box-shadow: 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
+  --font-display-20: 36px;
+  --font-title-40: 28px;
+  --font-title-30: 22px;
+  --font-title-20: 17px;
+  --font-title-10: 13px;
+  --font-body-30: 17px;
+  --font-body-20: 15px;
+  --font-body-10: 13px;
+  --font-caption-30: 15px;
+  --font-caption-20: 13px;
+  --font-caption-10: 11px;
 }
 
 html {
-  font-size: 17px;
+  font-size: 16px;
   font-family: var(--font-main);
   color: var(--grey-90);
   background-color: var(--grey-10);
@@ -26,8 +37,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   overflow: hidden;
 }
@@ -40,11 +49,6 @@ svg {
   vertical-align: middle;
   height: 1em;
   width: auto;
-}
-
-textarea.json {
-  font-family: var(--font-monospace);
-  white-space: pre;
 }
 
 .content {
@@ -198,12 +202,6 @@ hr {
   align-items: center;
   padding: 4px 4px;
   user-select: none;
-  -webkit-app-region: drag;
-}
-
-.app__header a,
-.app__header button {
-  -webkit-app-region: no-drag;
 }
 
 .app__header button:focus {
@@ -216,19 +214,18 @@ hr {
   overflow: auto;
 }
 
-.winBody {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: "win-sidebar win-content";
+@media screen and (max-width: 600px) {
+  .mobile-sidebar-open .win__content {
+    display: none;
+  }
+
+  .mobile-sidebar-closed .win__sidebar {
+    display: none;
+  }
 }
 
-.winBody-hasFooter {
-  grid-template-rows: 1fr 24px;
-  grid-template-areas:
-    "win-sidebar win-content"
-    "win-statusbar win-statusbar";
+.winBody {
+  height: 100%;
 }
 
 .win__titlebar-button {
@@ -236,7 +233,6 @@ hr {
 }
 
 .win__sidebar {
-  grid-area: win-sidebar;
   background-color: var(--grey-20);
   padding: 8px;
   border-width: 1px;
@@ -244,14 +240,8 @@ hr {
   border-right-style: solid;
   overflow: auto;
   user-select: none;
-}
-
-.closed-sidebar .winBody {
-  grid-template-columns: 32px 1fr;
-}
-
-.closed-sidebar .sidebar__hide-on-close {
-  display: none;
+  height: 100%;
+  font-size: var(--font-body-30);
 }
 
 .win__sidebar ul {
@@ -260,7 +250,7 @@ hr {
 }
 
 .win__sidebar li {
-  margin: 4px 0;
+  margin: 8px 0;
 }
 
 .win__sidebar a {
@@ -286,67 +276,125 @@ hr {
   color: var(--grey-90-a70);
 }
 
-.closed-sidebar .center-on-close a {
-  text-align: center;
-  padding-left: 0;
-}
-
-.closed-sidebar .sidebar-button {
-  margin-left: -8px;
-}
-
 .win__content {
-  grid-area: win-content;
-  overflow: auto;
-}
-
-.win__footer {
-  grid-area: win-statusbar;
-  background-color: var(--grey-30);
-  border-top: 1px var(--grey-40) solid;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  user-select: none;
-}
-
-.win__footer-block {
-  margin: 0 8px;
-}
-
-.win__footer-divider {
-  display: inline-block;
-  width: 2px;
-  height: 16px;
-  margin: 0 8px;
-}
-
-div[role="group"] {
   height: 100%;
 }
 
-.passthrough,
-.passthrough > div[role="group"] {
-  width: 100%;
-  height: 100%;
+.win__about-dialog {
+  background-color: var(--grey-20);
+}
+
+[data-reach-dialog-content] {
+  width: calc(80vw - 2rem);
 }
 
 .content-area {
-  width: 600px;
-  padding-bottom: 16px;
-  margin: 0 auto;
+  margin: 0 8px 16px 8px;
 }
 
-/* Empty space used for balancing visual elements */
-.placeholder {
-  opacity: 0;
-  background-color: transparent;
+.win__footer {
+  background-color: var(--grey-30);
+  border-top: 1px var(--grey-40) solid;
+  overflow: hidden;
+  font-size: var(--font-body-10);
+  user-select: none;
 }
 
-.plain-list {
-  list-style-type: none;
-  padding: 0;
+.win__footer-divider {
+  margin: 0;
+}
+
+.win__footer-block {
+  padding: 4px 0;
+  margin: 0 8px;
+}
+
+@media screen and (min-width: 600px) {
+  .win__sidebar {
+    font-size: var(--font-body-20);
+  }
+
+  .win__sidebar li {
+    margin: 4px 0;
+  }
+
+  .winBody {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "win-sidebar win-content";
+  }
+
+  .winBody-hasFooter {
+    grid-template-rows: 1fr 24px;
+    grid-template-areas:
+      "win-sidebar win-content"
+      "win-statusbar win-statusbar";
+  }
+
+  .win__sidebar {
+    grid-area: win-sidebar;
+  }
+
+  .win__content {
+    grid-area: win-content;
+    overflow: auto;
+  }
+
+  .win__footer {
+    grid-area: win-statusbar;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .win__footer-divider {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    margin: 0 8px;
+  }
+
+  div[role="group"] {
+    height: 100%;
+  }
+
+  .passthrough,
+  .passthrough > div[role="group"] {
+    width: 100%;
+    height: 100%;
+  }
+
+  .content-area {
+    width: 600px;
+    padding-bottom: 16px;
+    margin: 0 auto;
+  }
+
+  /* Empty space used for balancing visual elements */
+  .placeholder {
+    opacity: 0;
+    background-color: transparent;
+  }
+
+  .plain-list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .win__about {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  [data-reach-dialog-content] {
+    width: 50vw;
+  }
+
+  .mobile-only {
+    visibility: hidden;
+  }
 }
 
 /*******************************************************************************
@@ -428,7 +476,7 @@ input[type="submit"]:focus,
 }
 
 .button-ghost,
-.closed-sidebar .win__sidebar button {
+.mobile-sidebar-closed .win__sidebar button {
   font-size: 16px;
   color: var(--grey-90-a80);
   background-color: transparent;
@@ -446,6 +494,14 @@ input[type="submit"]:focus,
   width: auto;
 }
 
+.button-ghost-large {
+  height: 40px;
+  min-width: 40px;
+  width: 40px;
+  font-size: 20px;
+  padding: 10px;
+}
+
 /* .danger:not([disabled]) {
      color: darkred;
  } */
@@ -458,20 +514,6 @@ input[type="text"][disabled]:hover,
 .disabled:hover {
   border-color: transparent;
   background-color: var(--grey-90-a10);
-}
-
-/* Any buttons wrapped in this will only display on hover. */
-.buttons-on-hover:not(:hover) button {
-  opacity: 0;
-}
-
-/* Use `dont-hide` on buttons that should always be visible. */
-.buttons-on-hover:not(:hover) .dont-hide {
-  opacity: 1;
-}
-
-.buttons-on-hover:not(:hover) select {
-  border-color: transparent;
 }
 
 .button-ghost svg {
@@ -692,8 +734,6 @@ li.player.missing {
 
 .pages__hint {
   margin: 0 auto;
-  /* This reduces the offset of the main title: */
-  height: 64px;
   overflow: visible;
 }
 
@@ -702,11 +742,10 @@ li.player.missing {
 }
 
 .pages__footer {
+  font-size: 13px;
   background-color: var(--ink-80);
   color: var(--grey-20);
   padding: 0 16px;
-  display: flex;
-  justify-content: space-between;
 }
 
 .pages__footer-link {
@@ -715,6 +754,21 @@ li.player.missing {
 
 .pages__footer-link:hover {
   color: var(--teal-60);
+}
+
+@media screen and (min-width: 600px) {
+  .pages__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .pages__footer-left {
+    text-align: left;
+  }
+
+  .pages__footer-right {
+    text-align: right;
+  }
 }
 
 .pages__title {
@@ -736,6 +790,12 @@ li.player.missing {
 .pages__subtitle {
   text-align: right;
   margin: 0;
+}
+
+.pages__text-json {
+  font-family: var(--font-monospace);
+  white-space: pre;
+  max-width: 100%;
 }
 
 /*******************************************************************************
@@ -840,19 +900,20 @@ li.player.missing {
 ### Utils
 *******************************************************************************/
 
-.utils__panels {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 @media screen and (min-width: 600px) {
   .utils__panels {
+    display: flex;
     flex-wrap: nowrap;
   }
-}
 
-.utils__panel {
-  margin-right: 16px;
+  .utils__panel {
+    margin-right: 16px;
+    flex-grow: 1;
+  }
+
+  .utils__panel:last-child {
+    margin-right: 0;
+  }
 }
 
 .utils__notification-container {
