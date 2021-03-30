@@ -214,7 +214,7 @@ hr {
   overflow: auto;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 741px) {
   .mobile-sidebar-open .win__content {
     display: none;
   }
@@ -278,6 +278,7 @@ hr {
 
 .win__content {
   height: 100%;
+  overflow: auto;
 }
 
 .win__about-dialog {
@@ -289,7 +290,8 @@ hr {
 }
 
 .content-area {
-  margin: 0 8px 16px 8px;
+  padding: 0 8px 16px 8px;
+  margin: 0 auto;
 }
 
 .win__footer {
@@ -309,9 +311,10 @@ hr {
   margin: 0 8px;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 768px) {
   .win__sidebar {
     font-size: var(--font-body-20);
+    height: auto;
   }
 
   .win__sidebar li {
@@ -320,7 +323,7 @@ hr {
 
   .winBody {
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 11em 1fr;
     grid-template-rows: 1fr;
     grid-template-areas: "win-sidebar win-content";
   }
@@ -338,7 +341,6 @@ hr {
 
   .win__content {
     grid-area: win-content;
-    overflow: auto;
   }
 
   .win__footer {
@@ -366,8 +368,7 @@ hr {
   }
 
   .content-area {
-    width: 600px;
-    padding-bottom: 16px;
+    max-width: 600px;
   }
 
   /* Empty space used for balancing visual elements */
@@ -474,8 +475,7 @@ input[type="submit"]:focus,
   opacity: 0.4;
 }
 
-.button-ghost,
-.mobile-sidebar-closed .win__sidebar button {
+.button-ghost {
   font-size: 16px;
   color: var(--grey-90-a80);
   background-color: transparent;
@@ -755,7 +755,7 @@ li.player.missing {
   color: var(--teal-60);
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 768px) {
   .pages__footer {
     display: flex;
     justify-content: space-between;
@@ -899,7 +899,7 @@ li.player.missing {
 ### Utils
 *******************************************************************************/
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 768px) {
   .utils__panels {
     display: flex;
     flex-wrap: nowrap;
