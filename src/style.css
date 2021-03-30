@@ -186,7 +186,7 @@ hr {
 .app {
   height: 100vh;
   display: grid;
-  grid-template-rows: 38px 1fr;
+  grid-template-rows: 40px 1fr;
   grid-template-areas:
     "app-header"
     "app-content";
@@ -368,7 +368,7 @@ hr {
   }
 
   .content-area {
-    max-width: 600px;
+    max-width: 720px;
   }
 
   /* Empty space used for balancing visual elements */
