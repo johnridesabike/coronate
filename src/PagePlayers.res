@@ -220,7 +220,7 @@ module PlayerList = {
         </thead>
         <tbody className="content">
           {Array.map(sorted.table, p =>
-            <tr key={p.id->Data.Id.toString} className="buttons-on-hover">
+            <tr key={p.id->Data.Id.toString}>
               <td className="table__player">
                 <HashLink to_=Player(p.id)> {p->Player.fullName->React.string} </HashLink>
               </td>
@@ -239,7 +239,10 @@ module PlayerList = {
         </tbody>
       </table>
       <Externals.Dialog
-        isOpen=dialog.state onDismiss={_ => dialog.setFalse()} ariaLabel="New player form">
+        isOpen=dialog.state
+        onDismiss={_ => dialog.setFalse()}
+        ariaLabel="New player form"
+        className="">
         <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
@@ -325,7 +328,7 @@ module Profile = {
       let id = ReactEvent.Focus.currentTarget(event)["value"]
       setSelectedAvoider(_ => id)
     }
-    <div className="content-area" style={ReactDOMRe.Style.make(~width="650px", ~margin="auto", ())}>
+    <div className="content-area">
       <HashLink
         to_=PlayerList
         onClick={event =>
@@ -475,7 +478,7 @@ module Profile = {
 }
 
 @react.component
-let make = (~id=?, ~windowDispatch=?) => {
+let make = (~id=?, ~windowDispatch) => {
   let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (sorted, sortDispatch) = Hooks.useSortedTable(
     ~table=Map.valuesToArray(players),
@@ -487,15 +490,15 @@ let make = (~id=?, ~windowDispatch=?) => {
     None
   }, (players, sortDispatch))
   let (config, configDispatch) = Db.useConfig()
-  <Window.Body>
+  <Window.Body windowDispatch>
     {switch id {
     | None =>
-      <PlayerList sorted sortDispatch players playersDispatch configDispatch ?windowDispatch />
+      <PlayerList sorted sortDispatch players playersDispatch configDispatch windowDispatch />
     | Some(id) =>
       switch Map.get(players, id) {
       | None => <div> {React.string("Loading...")} </div>
       | Some(player) =>
-        <Profile player players playersDispatch config configDispatch ?windowDispatch />
+        <Profile player players playersDispatch config configDispatch windowDispatch />
       }
     }}
   </Window.Body>

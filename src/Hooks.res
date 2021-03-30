@@ -82,7 +82,7 @@ module SortButton = {
         ? ReactDOMRe.Style.make(~opacity="1", ())
         : ReactDOMRe.Style.make(~opacity="0", ())
     <button
-      className="button-micro dont-hide button-text-ghost title-20"
+      className="button-micro button-text-ghost title-20"
       style={ReactDOMRe.Style.make(~width="100%", ())}
       onClick={_ => setKeyOrToggleDir()}>
       <span ariaHidden=true>

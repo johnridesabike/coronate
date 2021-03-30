@@ -6,14 +6,14 @@ module App = {
       {windowDispatch =>
         <main className="app__main">
           {switch url {
-          | Index => <Pages.Splash />
+          | Index => <Window.Body windowDispatch> <Pages.Splash /> </Window.Body>
           | TournamentList => <PageTournamentList windowDispatch />
           | Tournament(id, subPage) => <PageTourney tourneyId=id subPage windowDispatch />
           | PlayerList => <PagePlayers windowDispatch />
           | Player(id) => <PagePlayers id windowDispatch />
-          | TimeCalculator => <Pages.TimeCalculator />
+          | TimeCalculator => <Window.Body windowDispatch> <Pages.TimeCalculator /> </Window.Body>
           | Options => <PageOptions windowDispatch />
-          | NotFound => <Window.Body> <Pages.NotFound /> </Window.Body>
+          | NotFound => <Window.Body windowDispatch> <Pages.NotFound /> </Window.Body>
           }}
         </main>}
     </Window>

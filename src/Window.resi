@@ -11,8 +11,9 @@ module Body: {
   @react.component
   let make: (
     ~children: React.element,
+    ~windowDispatch: action => unit,
     ~footerFunc: unit => React.element=?,
-    ~sidebarFunc: unit => React.element=?,
+    ~sidebarFunc: (action => unit) => React.element=?,
   ) => React.element
 }
 
