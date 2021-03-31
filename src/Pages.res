@@ -59,7 +59,7 @@ module Splash = {
           </p>
         </div>
         <div className="pages__footer-right">
-          <p> {React.string(`Copyright ${Utils.Entities.copy} 2021 John Jackson.`)} </p>
+          <p> {React.string(`Copyright ${HtmlEntities.copy} 2021 John Jackson.`)} </p>
           <p>
             <a className="pages__footer-link" href=Utils.issues_url>
               {React.string("Suggestions and bug reports are welcome.")}

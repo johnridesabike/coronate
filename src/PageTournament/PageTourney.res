@@ -9,9 +9,9 @@ module Footer = {
     let {roundCount, tourney, isItOver, isNewRoundReady, activePlayers, _} = tournament
     let {roundList, _} = tourney
     let (tooltipText, tooltipKind: Utils.Notification.t) = switch (isNewRoundReady, isItOver) {
-    | (true, false) => (Utils.Entities.nbsp ++ " Ready to begin a new round.", Success)
-    | (false, false) | (false, true) => (Utils.Entities.nbsp ++ "Round in progress.", Generic)
-    | (true, true) => (Utils.Entities.nbsp ++ " All rounds have completed.", Warning)
+    | (true, false) => (HtmlEntities.nbsp ++ " Ready to begin a new round.", Success)
+    | (false, false) | (false, true) => (HtmlEntities.nbsp ++ "Round in progress.", Generic)
+    | (true, true) => (HtmlEntities.nbsp ++ " All rounds have completed.", Warning)
     }
     <>
       <div className="win__footer-block">

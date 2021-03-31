@@ -21,11 +21,6 @@ module WebpackAssets: {
   //@module("./assets/caution.svg") external caution: string = "default"
 }
 
-module Entities: {
-  let nbsp: string
-  let copy: string
-}
-
 module DateFormat: {
   @react.component
   let make: (~date: Js.Date.t) => React.element

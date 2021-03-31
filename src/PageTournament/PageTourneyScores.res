@@ -205,7 +205,7 @@ module SelectTieBreaks = {
         </table>
       </Utils.Panel>
       <Utils.Panel>
-        <div className="toolbar"> {React.string(Utils.Entities.nbsp)} </div>
+        <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>
         <table style={ReactDOMRe.Style.make(~marginTop="16px", ())}>
           <caption className="title-30"> {React.string("Available tiebreak methods")} </caption>
           <thead>

@@ -50,7 +50,7 @@ module About = {
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
         <p>
-          {`Copyright ${Utils.Entities.copy} 2021 John${Utils.Entities.nbsp}Jackson`->React.string}
+          {`Copyright ${HtmlEntities.copy} 2021 John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
@@ -133,7 +133,7 @@ module DefaultSidebar = {
             to_=TournamentList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
-              {React.string(Utils.Entities.nbsp ++ "Tournaments")}
+              {React.string(HtmlEntities.nbsp ++ "Tournaments")}
             </span>
           </HashLink>
         </li>
@@ -141,7 +141,7 @@ module DefaultSidebar = {
           <HashLink to_=PlayerList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Users />
             <span className="sidebar__hide-on-close">
-              {React.string(Utils.Entities.nbsp ++ "Players")}
+              {React.string(HtmlEntities.nbsp ++ "Players")}
             </span>
           </HashLink>
         </li>
@@ -149,7 +149,7 @@ module DefaultSidebar = {
           <HashLink to_=Options onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Settings />
             <span className="sidebar__hide-on-close">
-              {React.string(Utils.Entities.nbsp ++ "Options")}
+              {React.string(HtmlEntities.nbsp ++ "Options")}
             </span>
           </HashLink>
         </li>
@@ -158,7 +158,7 @@ module DefaultSidebar = {
             to_=TimeCalculator onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Clock />
             <span className="sidebar__hide-on-close">
-              {React.string(Utils.Entities.nbsp ++ "Time calculator")}
+              {React.string(HtmlEntities.nbsp ++ "Time calculator")}
             </span>
           </HashLink>
         </li>
@@ -166,7 +166,7 @@ module DefaultSidebar = {
           <HashLink to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Help />
             <span className="sidebar__hide-on-close">
-              {React.string(Utils.Entities.nbsp ++ "Info")}
+              {React.string(HtmlEntities.nbsp ++ "Info")}
             </span>
           </HashLink>
         </li>

@@ -29,11 +29,6 @@ module WebpackAssets = {
   //@module("./assets/caution.svg") external caution: string = "default"
 }
 
-module Entities = {
-  let nbsp = `\xa0`
-  let copy = `\xA9`
-}
-
 module DateFormat = {
   let formatter = {
     Intl.DateTimeFormat.make(~locales=["en-US"], ~day=TwoDigit, ~month=Short, ~year=Numeric, ())
