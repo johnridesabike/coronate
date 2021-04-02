@@ -37,7 +37,6 @@
     "@reach/tabs": "^0.11.2",
     "@reach/visually-hidden": "^0.11.1",
     "bfj": "^7.0.2",
-    "bs-intl": "^1.1.0",
     "bs-jest-dom": "^4.1.1",
     "bs-platform": "^9.0.2",
     "bs-react-testing-library": "^0.8.0",
@@ -89,7 +88,6 @@
     "webpack-dev-server": "3.11.1",
     "webpack-manifest-plugin": "2.2.0"
   },
-  "devDependencies": {},
   "browserslist": [
     ">0.2%",
     "not dead",
