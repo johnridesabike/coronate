@@ -145,6 +145,6 @@ let _ = Numeral.registerFormat(
     },
     ~regexps=Numeral.RegExps.make(~format=%re("/(1\\/2)/"), ~unformat=%re("/(1\\/2)/")),
     /* This doesn't do anything currently */
-    ~unformatFn=value => Float.fromString(value)->Option.getExn,
+    ~unformatFn=value => Float.fromString(value)->Option.getWithDefault(0.0),
   ),
 )

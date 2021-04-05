@@ -18,6 +18,7 @@ module ByeValue = {
 
   let encode = data => data->toFloat->Json.Encode.float
 
+  @raises(DecodeError)
   let decode = json => json->Json.Decode.float->fromFloat
 }
 
@@ -27,6 +28,7 @@ type t = {
   lastBackup: Js.Date.t,
 }
 
+@raises(DecodeError)
 let decode = json => {
   open Json.Decode
   {

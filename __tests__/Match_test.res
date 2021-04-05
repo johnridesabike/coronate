@@ -4,7 +4,7 @@ open FireEvent
 
 test("Ratings are updated correctly after a match.", () => {
   let page = render(
-    <LoadTournament tourneyId=TestData.simplePairing>
+    <LoadTournament tourneyId=TestData.simplePairing.id>
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )

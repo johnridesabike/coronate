@@ -275,11 +275,12 @@ module Crosstable = {
     }
 
   let getRatingChangeTds = (scoreData, playerId) => {
-    let firstRating = (scoreData->Map.getExn(playerId)).Scoring.firstRating
-    let lastRating = switch Map.getExn(scoreData, playerId).ratings {
-    | list{} => firstRating
-    | list{rating, ..._} => rating
-    }
+    let firstRating =
+      Map.get(scoreData, playerId)->Option.map(x => x.Scoring.firstRating)->Option.getWithDefault(0)
+    let lastRating =
+      Map.get(scoreData, playerId)
+      ->Option.flatMap(x => List.head(x.ratings))
+      ->Option.getWithDefault(firstRating)
     let change = Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0")
     <>
       <td className={"pagescores__row-td table__number"}> {lastRating->React.int} </td>

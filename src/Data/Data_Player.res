@@ -21,6 +21,7 @@ module Type = {
 
   let encode = data => data->toString->Json.Encode.string
 
+  @raises(DecodeError)
   let decode = data => data->Json.Decode.string->fromString
 }
 
@@ -35,6 +36,7 @@ type t = {
 
 let fullName = t => t.firstName ++ " " ++ t.lastName
 
+@raises(DecodeError)
 let decode = json => {
   open Json.Decode
   {

@@ -22,6 +22,7 @@ module Result = {
 
   let encode = data => data->toString->Json.Encode.string
 
+  @raises(DecodeError)
   let decode = json => json->Json.Decode.string->fromString
 }
 
@@ -36,6 +37,7 @@ type t = {
   result: Result.t,
 }
 
+@raises(DecodeError)
 let decode = json => {
   open Json.Decode
   {

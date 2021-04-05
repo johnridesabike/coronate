@@ -24,6 +24,7 @@ type input_data = {
   tournaments: Data.Id.Map.t<Tournament.t>,
 }
 
+@raises(DecodeError)
 let decodeOptions = json => {
   open Json.Decode
   {
@@ -81,6 +82,8 @@ let make = (~windowDispatch=_ => ()) => {
     playersDispatch(SetAll(players))
     Utils.alert("Data loaded.")
   }
+
+  @raises(DecodeError)
   let handleText = event => {
     ReactEvent.Form.preventDefault(event)
     switch Json.parse(text) {
@@ -92,11 +95,16 @@ let make = (~windowDispatch=_ => ()) => {
       }
     }
   }
+
+  @raises(DecodeError)
   let handleFile = event => {
     module FileReader = Externals.FileReader
     ReactEvent.Form.preventDefault(event)
     let reader = FileReader.make()
+
+    @raises(DecodeError)
     let onload = ev => {
+      ignore(ev)
       let data = ev["target"]["result"]
       switch Json.parse(data) {
       | None => invalidAlert()
@@ -108,7 +116,10 @@ let make = (~windowDispatch=_ => ()) => {
       }
     }
     FileReader.setOnLoad(reader, onload)
-    FileReader.readAsText(reader, ReactEvent.Form.currentTarget(event)["files"]->Array.getExn(0))
+    FileReader.readAsText(
+      reader,
+      ReactEvent.Form.currentTarget(event)["files"]->Array.get(0)->Option.getWithDefault(""),
+    )
     /* so the filename won't linger onscreen */
     /* https://github.com/BuckleScript/bucklescript/issues/4391 */
     @warning("-20") ReactEvent.Form.currentTarget(event)["value"] = ""

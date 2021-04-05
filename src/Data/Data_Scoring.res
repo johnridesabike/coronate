@@ -142,6 +142,7 @@ module TieBreak = {
 
   let encode = data => data->toString->Json.Encode.string
 
+  @raises(DecodeError)
   let decode = json => json->Json.Decode.string->fromString
 }
 

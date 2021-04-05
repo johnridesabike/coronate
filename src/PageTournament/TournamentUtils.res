@@ -31,8 +31,11 @@ let useRoundData = (
   }
   let unmatchedCount = Map.size(unmatched)
   /* make a new list so as not to affect auto-pairing */
-  let unmatchedWithDummy =
-    mod(unmatchedCount, 2) != 0 ? Map.set(unmatched, Id.dummy, Player.dummy) : unmatched
+  let unmatchedWithDummy = switch mod(unmatchedCount, 2) {
+  | 0 => unmatched
+  | _ => Map.set(unmatched, Id.dummy, Player.dummy)
+  | exception Division_by_zero => unmatched
+  }
   let activePlayersCount = Map.size(activePlayers)
   {
     activePlayersCount: activePlayersCount,

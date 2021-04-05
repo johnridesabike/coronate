@@ -10,13 +10,15 @@ module Profile = {
   let make = (~id) => {
     let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
     let (config, configDispatch) = Db.useConfig()
-    let player = Map.getExn(players, id)
-    <PagePlayers.Profile player players playersDispatch config configDispatch />
+    switch Map.get(players, id) {
+    | Some(player) => <PagePlayers.Profile player players playersDispatch config configDispatch />
+    | None => React.null
+    }
   }
 }
 
 test("Adding a player to avoid works", () => {
-  let page = render(<Profile id=TestData.newbieMcNewberson />)
+  let page = render(<Profile id=TestData.newbieMcNewberson.id />)
 
   page
   |> getByLabelText(~matcher=#RegExp(%bs.re("/Select a new player to avoid/i")))

@@ -27,7 +27,9 @@
     "test:coverage": "npm run test -- --coverage",
     "build:res": "bsb -make-world",
     "start:res": "bsb -make-world -w",
-    "clean:res": "bsb -clean-world"
+    "clean:res": "bsb -clean-world",
+    "analyze:dce": "reanalyze -dce -live-paths src/HtmlEntities",
+    "analyze:exception": "reanalyze -exception"
   },
   "dependencies": {
     "@glennsl/bs-jest": "^0.6.0",
@@ -78,6 +80,7 @@
     "react-dom": "^16.14.0",
     "react-feather": "^2.0.9",
     "react-refresh": "^0.9.0",
+    "reanalyze": "^2.15.0",
     "reason-promise": "^1.1.1",
     "reason-react": "^0.9.1",
     "rescript-blossom": "^2.0.0",
