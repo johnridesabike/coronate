@@ -297,17 +297,24 @@ module PlayerInfo = {
       ~avoidPairs,
     )
 
-    <dl className="player-card">
+    <div className="player-card">
       <h3> {player->Player.fullName->React.string} </h3>
-      <p> {"Score: "->React.string} {score->React.float} </p>
-      <p id={"rating-" ++ player.id->Data.Id.toString}> {"Rating: "->React.string} rating </p>
-      <p> {React.string("Color balance: " ++ colorBalance)} </p>
-      <p> {React.string("Has had a bye round: " ++ (hasBye ? "Yes" : "No"))} </p>
-      <p> {"Opponent history:"->React.string} </p>
-      <ol> opponentResults </ol>
-      <p> {"Players to avoid:"->React.string} </p>
-      avoidListHtml
-    </dl>
+      <dl>
+        <dt> {"Score"->React.string} </dt>
+        <dd> {score->React.float} </dd>
+        <dt id={"rating-" ++ player.id->Data.Id.toString} />
+        <dt> {"Rating"->React.string} </dt>
+        <dd> rating </dd>
+        <dt> {"Color balance"->React.string} </dt>
+        <dd> {colorBalance->React.string} </dd>
+        <dt> {"Has had a bye round"->React.string} </dt>
+        <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
+        <dt> {"Opponent history"->React.string} </dt>
+        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ol> opponentResults </ol> </dd>
+        <dt> {"Players to avoid"->React.string} </dt>
+        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ul> avoidListHtml </ul> </dd>
+      </dl>
+    </div>
   }
 }
 
@@ -365,7 +372,7 @@ let make = (
   switch round {
   | None => <div> {React.string("No round available.")} </div>
   | Some(round) =>
-    <div className="content-area" style={ReactDOMRe.Style.make(~width="720px", ())}>
+    <div className="content-area">
       <div className="toolbar">
         <button
           className="button-primary" disabled={unmatchedCount == 0} onClick={_ => autoPair(round)}>
@@ -415,7 +422,8 @@ let make = (
           </Utils.PanelContainer>
         </Utils.Panel>
       </Utils.PanelContainer>
-      <Externals.Dialog isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Select players">
+      <Externals.Dialog
+        isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Select players" className="">
         <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Done")}
         </button>

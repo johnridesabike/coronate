@@ -39,7 +39,7 @@ let make = (~windowDispatch=_ => ()) => {
       dispatch(Del(id))
     }
   }
-  <Window.Body>
+  <Window.Body windowDispatch>
     <div className="content-area">
       <div className="toolbar toolbar__left">
         <button onClick={_ => dialog.setTrue()}>
@@ -69,7 +69,7 @@ let make = (~windowDispatch=_ => ()) => {
             </thead>
             <tbody className="content">
               {Array.map(sorted.Hooks.table, ({id, date, name, _}) =>
-                <tr key={id->Data.Id.toString} className="buttons-on-hover">
+                <tr key={id->Data.Id.toString}>
                   <td>
                     <HashLink to_=Tournament(id, TourneyPage.Players)>
                       {React.string(name)}
@@ -90,25 +90,29 @@ let make = (~windowDispatch=_ => ()) => {
             </tbody>
           </table>}
       <Externals.Dialog
-        isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Create new tournament">
+        isOpen=dialog.state
+        onDismiss=dialog.setFalse
+        ariaLabel="Create new tournament"
+        className="">
         <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
         <form onSubmit=makeTournament>
           <fieldset>
             <legend> {React.string("Make a new tournament")} </legend>
-            <label htmlFor="tourney-name"> {React.string("Name:")} </label>
-            <input
-              id="tourney-name"
-              name="tourney-name"
-              placeholder="tournament name"
-              required=true
-              type_="text"
-              value=newTourneyName
-              onChange=updateNewName
-            />
-            {React.string(" ")}
-            <input className="button-primary" type_="submit" value="Create" />
+            <p>
+              <label htmlFor="tourney-name"> {React.string("Name:")} </label>
+              <input
+                id="tourney-name"
+                name="tourney-name"
+                placeholder="tournament name"
+                required=true
+                type_="text"
+                value=newTourneyName
+                onChange=updateNewName
+              />
+            </p>
+            <p> <input className="button-primary" type_="submit" value="Create" /> </p>
           </fieldset>
         </form>
       </Externals.Dialog>

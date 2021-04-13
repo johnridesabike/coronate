@@ -12,6 +12,7 @@ let random = Externals.nanoid
 
 let encode = Json.Encode.string
 
+@raises(DecodeError)
 let decode = Json.Decode.string
 
 let compare: (t, t) => int = compare
@@ -63,6 +64,7 @@ module Pair = {
 
   let toTuple = t => t
 
+  @raises(DecodeError)
   let decode = json => Json.Decode.pair(decode, decode, json)
 
   let encode = data => Json.Encode.pair(encode, encode, data)
@@ -80,6 +82,7 @@ module Pair = {
     type pair = t
     type t = Belt.Set.t<pair, identity>
 
+    @raises(DecodeError)
     let decode = json => json |> Json.Decode.array(decode) |> Belt.Set.fromArray(~id)
 
     let encode = data => data |> Belt.Set.toArray |> Json.Encode.array(encode)

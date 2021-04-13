@@ -148,7 +148,7 @@ module MatchRow = {
     <tr
       className={Cn.append(
         className,
-        Cn.mapSome(selectedMatch, id => Id.eq(m.id, id) ? "selected" : "buttons-on-hover"),
+        Cn.mapSome(selectedMatch, id => Id.eq(m.id, id) ? "selected" : ""),
       )}>
       <th className={"pageround__row-id table__number"} scope="row">
         {string_of_int(pos + 1)->React.string}
@@ -222,7 +222,10 @@ module MatchRow = {
           | None => React.null
           | Some(scoreData) =>
             <Externals.Dialog
-              isOpen=dialog.state onDismiss={_ => dialog.setFalse()} ariaLabel="Match information">
+              isOpen=dialog.state
+              onDismiss={_ => dialog.setFalse()}
+              ariaLabel="Match information"
+              className="">
               <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
                 {React.string("close")}
               </button>

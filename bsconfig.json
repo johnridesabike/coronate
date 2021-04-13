@@ -27,7 +27,6 @@
     "re-classnames",
     "bs-webapi",
     "@glennsl/bs-json",
-    "bs-intl",
     "rescript-blossom",
     "@ryyppy/rescript-promise",
     "re-formality"

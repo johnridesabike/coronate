@@ -28,6 +28,7 @@ let make = (~id, ~name) => {
  ")
 external unsafe_date: Js.Json.t => Js.Date.t = "%identity"
 
+@raises(DecodeError)
 let decode = json => {
   open Json.Decode
   {

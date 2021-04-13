@@ -12,7 +12,11 @@ module EloRank = {
 
   let getKFactor = (~matchCount) => {
     let ne = matchCount > 0 ? matchCount : 1
-    800 / ne
+    try {
+      800 / ne
+    } catch {
+    | Division_by_zero => 0
+    }
   }
 }
 

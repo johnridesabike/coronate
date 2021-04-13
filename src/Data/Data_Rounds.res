@@ -20,6 +20,7 @@ module Round = {
 
   let encode = Json.Encode.array(Match.encode)
 
+  @raises(DecodeError)
   let decode = Json.Decode.array(Match.decode)
 
   let size = Js.Array2.length
@@ -68,6 +69,7 @@ let empty: t = [[]]
 
 let encode = Json.Encode.array(Round.encode)
 
+@raises(DecodeError)
 let decode = Json.Decode.array(Round.decode)
 
 let size = Js.Array2.length

@@ -38,10 +38,6 @@ module ChevronLeft = {
   @module("react-feather") @react.component
   external make: unit => React.element = "ChevronLeft"
 }
-module ChevronRight = {
-  @module("react-feather") @react.component
-  external make: unit => React.element = "ChevronRight"
-}
 module ChevronUp = {
   @module("react-feather") @react.component
   external make: (~style: ReactDOMRe.Style.t=?) => React.element = "ChevronUp"
@@ -78,6 +74,10 @@ module List = {
   @module("react-feather") @react.component
   external make: unit => React.element = "List"
 }
+module Menu = {
+  @module("react-feather") @react.component
+  external make: unit => React.element = "Menu"
+}
 module Plus = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Plus"
@@ -90,17 +90,9 @@ module Settings = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Settings"
 }
-module Sidebar = {
-  @module("react-feather") @react.component
-  external make: unit => React.element = "Sidebar"
-}
 module Trash = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Trash2"
-}
-module Unfullscreen = {
-  @module("react-feather") @react.component
-  external make: (~className: string=?) => React.element = "Minimize2"
 }
 module UserMinus = {
   @module("react-feather") @react.component

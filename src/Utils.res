@@ -29,19 +29,17 @@ module WebpackAssets = {
   //@module("./assets/caution.svg") external caution: string = "default"
 }
 
-module Entities = {
-  let nbsp = `\xa0`
-  let copy = `\xA9`
-}
-
 module DateFormat = {
   let formatter = {
-    Intl.DateTimeFormat.make(~locales=["en-US"], ~day=TwoDigit, ~month=Short, ~year=Numeric, ())
+    DateTimeFormat.make(
+      ["en-US"],
+      DateTimeFormat.Options.make(~day=#"2-digit", ~month=#short, ~year=#numeric, ()),
+    )
   }
   @react.component
   let make = (~date) =>
     <time dateTime={Js.Date.toISOString(date)}>
-      {formatter->Intl.DateTimeFormat.format(date)->React.string}
+      {formatter->DateTimeFormat.format(date)->React.string}
     </time>
 }
 
@@ -51,14 +49,16 @@ module DateTimeFormat = {
      passed from a configuration. It's inefficent to construct a fresh formatter
      for every render. */
   let formatter = {
-    Intl.DateTimeFormat.make(
-      ~locales=["en-US"],
-      ~day=TwoDigit,
-      ~month=Short,
-      ~year=Numeric,
-      ~hour=TwoDigit,
-      ~minute=TwoDigit,
-      (),
+    DateTimeFormat.make(
+      ["en-US"],
+      DateTimeFormat.Options.make(
+        ~day=#"2-digit",
+        ~month=#short,
+        ~year=#numeric,
+        ~hour=#"2-digit",
+        ~minute=#"2-digit",
+        (),
+      ),
     )
   }
   @react.component
@@ -66,19 +66,21 @@ module DateTimeFormat = {
     let formatter = switch timeZone {
     | None => formatter
     | Some(timeZone) =>
-      Intl.DateTimeFormat.make(
-        ~locales=["en-US"],
-        ~day=TwoDigit,
-        ~month=Short,
-        ~year=Numeric,
-        ~hour=TwoDigit,
-        ~minute=TwoDigit,
-        ~timeZone,
-        (),
+      DateTimeFormat.make(
+        ["en-US"],
+        DateTimeFormat.Options.make(
+          ~day=#"2-digit",
+          ~month=#short,
+          ~year=#numeric,
+          ~hour=#"2-digit",
+          ~minute=#"2-digit",
+          ~timeZone,
+          (),
+        ),
       )
     }
     <time dateTime={Js.Date.toISOString(date)}>
-      {formatter->Intl.DateTimeFormat.format(date)->React.string}
+      {formatter->DateTimeFormat.format(date)->React.string}
     </time>
   }
 }
@@ -143,6 +145,6 @@ let _ = Numeral.registerFormat(
     },
     ~regexps=Numeral.RegExps.make(~format=%re("/(1\\/2)/"), ~unformat=%re("/(1\\/2)/")),
     /* This doesn't do anything currently */
-    ~unformatFn=value => Float.fromString(value)->Option.getExn,
+    ~unformatFn=value => Float.fromString(value)->Option.getWithDefault(0.0),
   ),
 )

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- Made layout responsive so it works on mobile screens.
+
 ## 1.1.2
 
 - Added "Buy Me a Coffee" button and tweaked splash page.

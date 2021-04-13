@@ -5,7 +5,7 @@ open ReactTestingLibrary
 test("Deleted players do not crash the bye queue.", () => {
   let page = () =>
     render(
-      <LoadTournament tourneyId=TestData.deletedPlayerTourney>
+      <LoadTournament tourneyId=TestData.deletedPlayerTourney.id>
         {tournament => <PageTourneyPlayers tournament />}
       </LoadTournament>,
     )

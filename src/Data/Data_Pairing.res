@@ -18,7 +18,11 @@ type t = {
 let descendingRating = Utils.descend(compare, (. x) => x.rating)
 
 let splitInHalf = arr => {
-  let midpoint = Js.Array.length(arr) / 2
+  let midpoint = try {
+    Array.size(arr) / 2
+  } catch {
+  | Division_by_zero => 0
+  }
   (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
 }
 
@@ -142,9 +146,10 @@ let sortByScoreThenRating = (data1, data2) =>
 let setByePlayer = (byeQueue, dummyId, data) => {
   let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId))
   /* if the list is even, just return it. */
-  if mod(Map.size(data), 2) == 0 {
-    (data, None)
-  } else {
+  switch mod(Map.size(data), 2) {
+  | 0 => (data, None)
+  | exception Division_by_zero => (data, None)
+  | _ =>
     let dataArr =
       data
       ->Map.valuesToArray
@@ -157,23 +162,25 @@ let setByePlayer = (byeQueue, dummyId, data) => {
     /* Assign the bye to the next person who signed up. */
     | Some(id) =>
       switch Map.get(data, id) {
-      | Some(x) => x
-      | None => Array.getExn(dataArr, 0)
+      | Some(_) as x => x
+      | None => dataArr[0]
       }
     | None =>
       /* Assign a bye to the lowest-rated player in the lowest score group.
-           Because the list is sorted, the last player is the lowest.
-           (USCF § 29L2.) */
+         Because the list is sorted, the last player is the lowest.
+         (USCF § 29L2.) */
       switch dataArr[0] {
-      | Some(data) => data
+      | Some(_) as x => x
       /* In the impossible situation that *everyone* has played a bye
        round previously, then just pick the last player. */
-      | None =>
-        data->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.getExn(0)
+      | None => data->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.get(0)
       }
     }
-    let dataWithoutBye = Map.remove(data, dataForNextBye.id)
-    (dataWithoutBye, Some(dataForNextBye))
+    let dataWithoutBye = switch dataForNextBye {
+    | Some(dataForNextBye) => Map.remove(data, dataForNextBye.id)
+    | None => data
+    }
+    (dataWithoutBye, dataForNextBye)
   }
 }
 
