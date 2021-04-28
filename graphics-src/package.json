@@ -8,7 +8,7 @@
     "build": "gulp svg-to-web-icons"
   },
   "author": "",
-  "license": "GPL-3.0-or-later",
+  "license": "MPL-2.0",
   "devDependencies": {},
   "dependencies": {
     "fancy-log": "^1.3.3",

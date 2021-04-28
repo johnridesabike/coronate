@@ -1,3 +1,10 @@
+/*
+  Copyright (c) 2021 John Jackson. 
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
 open Belt
 
 module Splash = {
@@ -72,7 +79,7 @@ module Splash = {
             </a>
             {React.string(" under the ")}
             <a className="pages__footer-link" href=Utils.license_url>
-              {React.string("AGPL v3.0 license")}
+              {React.string("Mozilla Public License 2.0")}
             </a>
             {React.string(".")}
           </p>
