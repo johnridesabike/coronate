@@ -15,14 +15,14 @@ type response<'a, 'b> = {
 @new @module("@octokit/core") external make: {"auth": string} => t = "Octokit"
 @send external request: (t, string, {..} as 'opts) => Js.Promise.t<response<'a, 'b>> = "request"
 
-module GistList = {
-  type t = {
+module Gist = {
+  type file = {
     id: string,
     name: string,
     updated_at: Js.Date.t,
   }
 
-  let load = (~token) => {
+  let list = (~token) => {
     make({"auth": token})->request("GET /gists", Js.Obj.empty())
       |> Js.Promise.then_(result =>
         result.data
@@ -34,10 +34,8 @@ module GistList = {
         ->Js.Promise.resolve
       )
   }
-}
 
-module GistWrite = {
-  let exec = (~token, ~id, ~data, ~minify) => {
+  let write = (~token, ~id, ~data, ~minify) => {
     make({"auth": token})->request(
       "PATCH /gists/" ++ id,
       {
@@ -54,9 +52,7 @@ module GistWrite = {
       },
     )
   }
-}
 
-module GistRead = {
   let read = (~token, ~id) => {
     let octokit = make({"auth": token})
     request(octokit, "GET /gists/" ++ id, {"gist_id": id}) |> Js.Promise.then_(x => {
@@ -64,10 +60,8 @@ module GistRead = {
       file["content"]->Js.Promise.resolve
     })
   }
-}
 
-module GistCreate = {
-  let exec = (~token, ~data, ~minify) => {
+  let create = (~token, ~data, ~minify) => {
     make({"auth": token})->request(
       "POST /gists",
       {

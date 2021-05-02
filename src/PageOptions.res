@@ -101,7 +101,7 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
     switch token {
     | "" => Js.Promise.resolve(setGists(_ => []))
     | token =>
-      Octokit.GistList.load(~token)
+      Octokit.Gist.list(~token)
       |> Js.Promise.then_(data => {
         if !cancelAllEffects.contents {
           setGists(_ => data)
@@ -131,6 +131,8 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
     setText(_ => json)
     None
   }, (exportData, setText))
+
+  let savedAlert = () => Utils.alert("Data saved.")
 
   let loadData = (~tournaments, ~players, ~config) => {
     tourneysDispatch(SetAll(tournaments))
@@ -276,7 +278,7 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
         <div>
           <button
             onClick={_ => {
-              Octokit.GistCreate.exec(
+              Octokit.Gist.create(
                 ~token=github_token,
                 ~data=encodeOptions(exportData),
                 ~minify=minify.state,
@@ -286,7 +288,7 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
                   authDispatch(SetGistId(newGist.data["id"]))
                   configDispatch(SetLastBackup(Js.Date.make()))
                 }
-                Js.Promise.resolve()
+                savedAlert()->Js.Promise.resolve
               })
               |> Js.Promise.then_(() => loadGistList(github_token))
               |> Js.Promise.catch(e => {
@@ -325,17 +327,17 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
                 switch auth.github_gist_id {
                 | "" => Js.Console.error("Gist ID is blank.")
                 | id =>
-                  Octokit.GistWrite.exec(
+                  Octokit.Gist.write(
                     ~id,
                     ~token=github_token,
                     ~data=encodeOptions(exportData),
                     ~minify=minify.state,
                   )
-                  |> Js.Promise.then_(result => {
+                  |> Js.Promise.then_(_ => {
                     configDispatch(SetLastBackup(Js.Date.make()))
-                    Js.Promise.resolve(result)
+                    savedAlert()->Js.Promise.resolve
                   })
-                  |> Js.Promise.then_(_ => loadGistList(github_token))
+                  |> Js.Promise.then_(() => loadGistList(github_token))
                   |> Js.Promise.catch(e => {
                     Utils.alert(
                       "Backup failed. Check your GitHub credentials or try a different gist.",
@@ -354,7 +356,7 @@ let make = (~windowDispatch=_ => (), ~auth: Data.Auth.t, ~authDispatch: Db.actio
                 switch auth.github_gist_id {
                 | "" => Js.Console.error("Gist ID is blank.")
                 | id =>
-                  Octokit.GistRead.read(~id, ~token=github_token)
+                  Octokit.Gist.read(~id, ~token=github_token)
                   |> Js.Promise.then_(result => {
                     loadJson(result)->Js.Promise.resolve
                   })
