@@ -120,7 +120,7 @@ let useAllDb = store => {
       )
     }
     None
-  }, (items, loaded))
+  }, (items, loaded.state))
   {items: items, dispatch: dispatch, loaded: loaded.state}
 }
 
