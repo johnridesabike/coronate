@@ -78,9 +78,7 @@ let make = (~windowDispatch=_ => ()) => {
               {Array.map(sorted.Hooks.table, ({id, date, name, _}) =>
                 <tr key={id->Data.Id.toString}>
                   <td>
-                    <HashLink to_=Tournament(id, TourneyPage.Players)>
-                      {React.string(name)}
-                    </HashLink>
+                    <Link to_=Tournament(id, TourneyPage.Players)> {React.string(name)} </Link>
                   </td>
                   <td> <Utils.DateFormat date /> </td>
                   <td>

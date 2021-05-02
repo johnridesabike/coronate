@@ -136,46 +136,44 @@ module DefaultSidebar = {
     <nav>
       <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
         <li>
-          <HashLink
-            to_=TournamentList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+          <Link to_=TournamentList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Tournaments")}
             </span>
-          </HashLink>
+          </Link>
         </li>
         <li>
-          <HashLink to_=PlayerList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+          <Link to_=PlayerList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Users />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Players")}
             </span>
-          </HashLink>
+          </Link>
         </li>
         <li>
-          <HashLink to_=Options onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+          <Link to_=Options onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Settings />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Options")}
             </span>
-          </HashLink>
+          </Link>
         </li>
         <li>
-          <HashLink
-            to_=TimeCalculator onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+          <Link to_=TimeCalculator onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Clock />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Time calculator")}
             </span>
-          </HashLink>
+          </Link>
         </li>
         <li>
-          <HashLink to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+          <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Help />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Info")}
             </span>
-          </HashLink>
+          </Link>
         </li>
       </ul>
     </nav>

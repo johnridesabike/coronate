@@ -138,61 +138,61 @@ module Sidebar = {
       <nav>
         <ul style={ReactDOMRe.Style.make(~marginTop="0", ())}>
           <li>
-            <HashLink
+            <Link
               to_=TournamentList
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close"> {React.string(" Back")} </span>
-            </HashLink>
+            </Link>
           </li>
         </ul>
         <hr />
         <ul>
           <li>
-            <HashLink
+            <Link
               to_=Tournament(tourney.id, Setup)
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.Settings />
               <span className="sidebar__hide-on-close"> {React.string(" Setup")} </span>
-            </HashLink>
+            </Link>
           </li>
           <li>
-            <HashLink
+            <Link
               to_=Tournament(tourney.id, Players)
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.Users />
               <span className="sidebar__hide-on-close"> {React.string(" Players")} </span>
-            </HashLink>
+            </Link>
           </li>
           <li>
-            <HashLink
+            <Link
               to_=Tournament(tourney.id, Status)
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.Activity />
               <span className="sidebar__hide-on-close"> {React.string(" Status")} </span>
-            </HashLink>
+            </Link>
           </li>
           <li>
-            <HashLink
+            <Link
               to_=Tournament(tourney.id, Crosstable)
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.Layers />
               <span className="sidebar__hide-on-close"> {React.string(" Crosstable")} </span>
-            </HashLink>
+            </Link>
           </li>
           <li>
-            <HashLink
+            <Link
               to_=Tournament(tourney.id, Scores)
               onDragStart=noDraggy
               onClick={_ => windowDispatch(Window.SetSidebar(false))}>
               <Icons.List />
               <span className="sidebar__hide-on-close"> {React.string(" Score detail")} </span>
-            </HashLink>
+            </Link>
           </li>
         </ul>
         <hr />
@@ -202,7 +202,7 @@ module Sidebar = {
           ->Rounds.toArray
           ->Array.mapWithIndex((id, _) =>
             <li key={Int.toString(id)}>
-              <HashLink
+              <Link
                 to_=Tournament(tourney.id, Round(id))
                 onDragStart=noDraggy
                 onClick={_ => windowDispatch(Window.SetSidebar(false))}>
@@ -214,7 +214,7 @@ module Sidebar = {
                   : <span className={"sidebar__hide-on-close caption-20"}>
                       {React.string(" Not complete ")} <Icons.Alert />
                     </span>}
-              </HashLink>
+              </Link>
             </li>
           )
           ->React.array}

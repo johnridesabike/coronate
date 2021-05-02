@@ -72,3 +72,12 @@ let useAllPlayers = () => useAllItemsFromDb(TestData.players)
 let useAllTournaments = () => useAllItemsFromDb(TestData.tournaments)
 
 let useConfig = () => React.useReducer(configReducer, TestData.config)
+
+type actionAuth = Db.actionAuth =
+  | SetGitHubToken(string)
+  | SetGistId(string)
+  | RemoveGistId
+  | SetState(Data.Auth.t)
+  | Reset
+
+let useAuth = () => (Data.Auth.default, _ => ())
