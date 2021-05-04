@@ -99,9 +99,14 @@ let useAllDb = store => {
       ->LocalForage.Map.setItems(~items=items->Data.Id.Map.toStringArray)
       ->Promise.Js.fromBsPromise
       ->Promise.Js.toResult
-      /* TODO: This will delete any DB keys that aren't present in the
-           state, with the assumption that the state must have intentionally
-           removed them. This probably needs to be replaced */
+      /* Delete any DB keys that aren't present in the state, with the
+         assumption that the state must have intentionally removed them.
+
+         This is vulnerable to a race condition where if the effect fires too
+         quickly, the state from a stale render will delete DB keys from a
+         newer render.
+         
+         It needs to be fixed. */
       ->Promise.getOk(() =>
         LocalForage.Map.getKeys(store)
         ->Promise.Js.fromBsPromise
@@ -118,7 +123,7 @@ let useAllDb = store => {
       )
     }
     None
-  }, (items, loaded))
+  }, (items, loaded.state))
   {items: items, dispatch: dispatch, loaded: loaded.state}
 }
 
