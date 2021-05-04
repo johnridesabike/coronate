@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Relicensed to MPL 2.0.
+
 ## 1.2.0
 
 - Made layout responsive so it works on mobile screens.

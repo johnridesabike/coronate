@@ -1,3 +1,10 @@
+/*
+  Copyright (c) 2021 John Jackson. 
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
 // Adapted from
 // https://github.com/babel/babel/blob/2ae19d01b132f5222e1d5bee2c83921e2f107d70/packages/babel-parser/src/plugins/jsx/xhtml.js
 

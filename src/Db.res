@@ -1,3 +1,10 @@
+/*
+  Copyright (c) 2021 John Jackson. 
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
 open Belt
 
 /* ******************************************************************************
@@ -85,9 +92,14 @@ let useAllDb = store => {
     if loaded.state {
       store
       ->LocalForage.Map.setItems(~items=Data.Id.Map.toStringArray(items))
-      /* TODO: This will delete any DB keys that aren't present in the
-         state, with the assumption that the state must have intentionally
-         removed them. This probably needs to be replaced. */
+      /* Delete any DB keys that aren't present in the state, with the
+         assumption that the state must have intentionally removed them.
+
+         This is vulnerable to a race condition where if the effect fires too
+         quickly, the state from a stale render will delete DB keys from a
+         newer render.
+         
+         It needs to be fixed. */
       ->Promise.then(() => LocalForage.Map.getKeys(store))
       ->Promise.then(keys => {
         let deleted = Array.keep(keys, x => !Map.has(items, Data.Id.fromString(x)))
@@ -100,7 +112,7 @@ let useAllDb = store => {
       ->ignore
     }
     None
-  }, (items, loaded))
+  }, (items, loaded.state))
   {items: items, dispatch: dispatch, loaded: loaded.state}
 }
 
