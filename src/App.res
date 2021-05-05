@@ -9,7 +9,6 @@ module App = {
   @react.component
   let make = () => {
     let url = Router.useUrl()
-    let (auth, authDispatch) = Db.useAuth()
     <Window className="app">
       {windowDispatch =>
         <main className="app__main">
@@ -20,7 +19,7 @@ module App = {
           | PlayerList => <PagePlayers windowDispatch />
           | Player(id) => <PagePlayers id windowDispatch />
           | TimeCalculator => <Window.Body windowDispatch> <Pages.TimeCalculator /> </Window.Body>
-          | Options => <PageOptions windowDispatch auth authDispatch />
+          | Options => <PageOptions windowDispatch />
           | NotFound => <Window.Body windowDispatch> <Pages.NotFound /> </Window.Body>
           }}
         </main>}

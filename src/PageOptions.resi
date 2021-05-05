@@ -6,8 +6,4 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 @react.component
-let make: (
-  ~windowDispatch: Window.action => unit=?,
-  ~auth: Data.Auth.t,
-  ~authDispatch: Db.actionAuth => unit,
-) => React.element
+let make: (~windowDispatch: Window.action => unit=?) => React.element
