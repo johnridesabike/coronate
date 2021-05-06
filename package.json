@@ -19,7 +19,7 @@
     "email": "johnbicyclejackson@icloud.com"
   },
   "scripts": {
-    "build": "npm run clean:res && npm run build:res && node scripts/build.js",
+    "build": "npm run build:res && node scripts/build.js",
     "deploy:github-pages": "npm run build && gh-pages -d build",
     "start": "node scripts/start.js",
     "test": "node scripts/test.js --watchAll",
