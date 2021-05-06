@@ -100,14 +100,17 @@ module GistOpts = {
       Js.Promise.resolve()
     }
 
-    let loadGistList = token =>
-      switch token {
+    let loadGistList = (auth: Data.Auth.t) =>
+      switch auth.github_token {
       | "" => Js.Promise.resolve(setGists(_ => []))
       | token =>
         Octokit.Gist.list(~token)
-        |> Js.Promise.then_(data => {
+        |> Js.Promise.then_((data: array<Octokit.Gist.file>) => {
           if !cancelAllEffects.contents {
             setGists(_ => data)
+            if !Array.some(data, x => x.id == auth.github_gist_id) {
+              authDispatch(RemoveGistId)
+            }
           }
           Js.Promise.resolve()
         })
@@ -115,7 +118,7 @@ module GistOpts = {
       }
 
     React.useEffect1(() => {
-      loadGistList(auth.github_token)->ignore
+      loadGistList(auth)->ignore
       Some(() => cancelAllEffects := true)
     }, [auth.github_token])
 
@@ -176,7 +179,7 @@ module GistOpts = {
                 }
                 savedAlert()->Js.Promise.resolve
               })
-              |> Js.Promise.then_(() => loadGistList(github_token))
+              |> Js.Promise.then_(() => loadGistList(auth))
               |> Js.Promise.catch(e => {
                 Utils.alert("Backup failed. Check your GitHub credentials.")
                 handleAuthError(e)
@@ -225,7 +228,7 @@ module GistOpts = {
                     }
                     savedAlert()->Js.Promise.resolve
                   })
-                  |> Js.Promise.then_(() => loadGistList(github_token))
+                  |> Js.Promise.then_(() => loadGistList(auth))
                   |> Js.Promise.catch(e => {
                     Utils.alert(
                       "Backup failed. Check your GitHub credentials or try a different gist.",
