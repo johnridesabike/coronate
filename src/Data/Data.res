@@ -14,3 +14,4 @@ module Id = Data_Id
 module Pairing = Data_Pairing
 module Scoring = Data_Scoring
 module Ratings = Data_Ratings
+module Auth = Data_Auth

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- Moved hosting to Netlify.
+- Added "export to gist" feature.
+  - Added basic authentication with GitHub.
+
 ## 1.3.0
 
 - Relicensed to MPL 2.0.

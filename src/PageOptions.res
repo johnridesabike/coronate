@@ -60,12 +60,235 @@ module LastBackupDate = {
     }
 }
 
+module GistOpts = {
+  let dateFormatter = {
+    DateTimeFormat.make(
+      ["en-US"],
+      DateTimeFormat.Options.make(
+        ~day=#"2-digit",
+        ~month=#"2-digit",
+        ~year=#"2-digit",
+        ~hour=#"2-digit",
+        ~minute=#"2-digit",
+        (),
+      ),
+    )
+  }
+
+  @val external github_app_id: string = "process.env.GITHUB_APP_ID"
+  @val external netlify_id: option<string> = "process.env.NETLIFY_ID"
+
+  let netlifyopts = switch netlify_id {
+  | Some(site_id) => {"site_id": site_id}
+  | None => Js.Obj.empty()
+  }
+
+  let savedAlert = () => Utils.alert("Data saved.")
+
+  @react.component
+  let make = (~exportData, ~configDispatch: Db.actionConfig => unit, ~loadJson) => {
+    let (auth, authDispatch) = Db.useAuth()
+    let minify = Hooks.useBool(true)
+    let (gists, setGists) = React.useState(() => [])
+    let cancelAllEffects = ref(false)
+
+    let handleAuthError = e => {
+      Js.Console.error(e)
+      if !cancelAllEffects.contents {
+        authDispatch(Reset)
+      }
+      Js.Promise.resolve()
+    }
+
+    let loadGistList = (auth: Data.Auth.t) =>
+      switch auth.github_token {
+      | "" => Js.Promise.resolve(setGists(_ => []))
+      | token =>
+        Octokit.Gist.list(~token)
+        |> Js.Promise.then_((data: array<Octokit.Gist.file>) => {
+          if !cancelAllEffects.contents {
+            setGists(_ => data)
+            if !Array.some(data, x => x.id == auth.github_gist_id) {
+              authDispatch(RemoveGistId)
+            }
+          }
+          Js.Promise.resolve()
+        })
+        |> Js.Promise.catch(handleAuthError)
+      }
+
+    React.useEffect1(() => {
+      loadGistList(auth)->ignore
+      Some(() => cancelAllEffects := true)
+    }, [auth.github_token])
+
+    <div>
+      <h3> {"Backup to GitHub"->React.string} </h3>
+      <p className="caption-30">
+        {`With a GitHub account, you can save your data to a `->React.string}
+        <a href="https://gist.github.com/"> {"gist"->React.string} </a>
+        {`. Note that gists can be ${HtmlEntities.ldquo}secret${HtmlEntities.rdquo} but are always 
+        publicly accessible. For more information, `->React.string}
+        <a href="https://docs.github.com/en/github/writing-on-github/creating-gists">
+          {"refer to the gist documentation on GitHub"->React.string}
+        </a>
+        {"."->React.string}
+      </p>
+      <p>
+        {switch auth.github_token {
+        | "" =>
+          <button
+            onClick={e => {
+              ReactEvent.Mouse.preventDefault(e)
+              NetlifyAuth.make(netlifyopts)->NetlifyAuth.authenticate(
+                {"provider": #github, "scope": "gist"},
+                (err, data) =>
+                  switch (Js.Nullable.toOption(err), data) {
+                  | (_, Some({token})) =>
+                    if !cancelAllEffects.contents {
+                      authDispatch(SetGitHubToken(token))
+                    }
+                  | (Some(err), _) => Js.Console.error(err)
+                  | (None, None) => Js.Console.error("Something wrong happened.")
+                  },
+              )
+            }}>
+            {"Log in with GitHub"->React.string}
+          </button>
+        | _ =>
+          <a href={"https://github.com/settings/connections/applications/" ++ github_app_id}>
+            {"Change or remove your GitHub access."->React.string}
+          </a>
+        }}
+      </p>
+      {switch auth.github_token {
+      | "" => React.null
+      | github_token =>
+        <div>
+          <button
+            onClick={_ => {
+              Octokit.Gist.create(
+                ~token=github_token,
+                ~data=encodeOptions(exportData),
+                ~minify=minify.state,
+              )
+              |> Js.Promise.then_((newGist: Octokit.response<_, _>) => {
+                if !cancelAllEffects.contents {
+                  authDispatch(SetGistId(newGist.data["id"]))
+                  configDispatch(SetLastBackup(Js.Date.make()))
+                }
+                savedAlert()->Js.Promise.resolve
+              })
+              |> Js.Promise.then_(() => loadGistList(auth))
+              |> Js.Promise.catch(e => {
+                Utils.alert("Backup failed. Check your GitHub credentials.")
+                handleAuthError(e)
+              })
+              |> ignore
+            }}>
+            {"Create a new gist"->React.string}
+          </button>
+          <p className="caption-30"> {"Or select an existing gist."->React.string} </p>
+          <select
+            value={auth.github_gist_id}
+            onBlur={e => {
+              let id = ReactEvent.Focus.currentTarget(e)["value"]
+              authDispatch(SetGistId(id))
+            }}
+            onChange={e => {
+              let id = ReactEvent.Form.currentTarget(e)["value"]
+              authDispatch(SetGistId(id))
+            }}>
+            <option value=""> {"No gist selected."->React.string} </option>
+            {gists
+            ->Array.map(({name, id, updated_at}) =>
+              <option key=id value=id>
+                {name->React.string}
+                {" | updated "->React.string}
+                {DateTimeFormat.format(dateFormatter, updated_at)->React.string}
+              </option>
+            )
+            ->React.array}
+          </select>
+          <p>
+            <button
+              onClick={_ => {
+                switch auth.github_gist_id {
+                | "" => Js.Console.error("Gist ID is blank.")
+                | id =>
+                  Octokit.Gist.write(
+                    ~id,
+                    ~token=github_token,
+                    ~data=encodeOptions(exportData),
+                    ~minify=minify.state,
+                  )
+                  |> Js.Promise.then_(_ => {
+                    if !cancelAllEffects.contents {
+                      configDispatch(SetLastBackup(Js.Date.make()))
+                    }
+                    savedAlert()->Js.Promise.resolve
+                  })
+                  |> Js.Promise.then_(() => loadGistList(auth))
+                  |> Js.Promise.catch(e => {
+                    Utils.alert(
+                      "Backup failed. Check your GitHub credentials or try a different gist.",
+                    )
+                    handleAuthError(e)
+                  })
+                  |> ignore
+                }
+              }}
+              disabled={auth.github_gist_id == ""}>
+              {"Backup to this gist"->React.string}
+            </button>
+            {" "->React.string}
+            <button
+              onClick={_ => {
+                switch auth.github_gist_id {
+                | "" => Js.Console.error("Gist ID is blank.")
+                | id =>
+                  Octokit.Gist.read(~id, ~token=github_token)
+                  |> Js.Promise.then_(result => {
+                    loadJson(result)->Js.Promise.resolve
+                  })
+                  |> Js.Promise.catch(e => {
+                    invalidAlert()
+                    handleAuthError(e)
+                  })
+                  |> ignore
+                }
+              }}
+              disabled={auth.github_gist_id == ""}>
+              {"Load from this gist"->React.string}
+            </button>
+          </p>
+          <p className="caption-30">
+            <label>
+              <input
+                type_="checkbox"
+                checked=minify.state
+                onChange={_ =>
+                  switch minify.state {
+                  | true => minify.setFalse()
+                  | false => minify.setTrue()
+                  }}
+              />
+              {" Minify output."->React.string}
+            </label>
+          </p>
+        </div>
+      }}
+    </div>
+  }
+}
+
 @react.component
 let make = (~windowDispatch=_ => ()) => {
   let {items: tournaments, dispatch: tourneysDispatch, _} = Db.useAllTournaments()
   let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (text, setText) = React.useState(() => "")
   let (config, configDispatch) = Db.useConfig()
+
   React.useEffect1(() => {
     windowDispatch(Window.SetTitle("Options"))
     Some(() => windowDispatch(SetTitle("")))
@@ -91,16 +314,24 @@ let make = (~windowDispatch=_ => ()) => {
   }
 
   @raises(DecodeError)
-  let handleText = event => {
-    ReactEvent.Form.preventDefault(event)
-    switch Json.parse(text) {
-    | None => invalidAlert()
+  let loadJson = json => {
+    switch Json.parse(json) {
+    | None =>
+      Js.Console.error(json)
+      invalidAlert()
     | Some(rawJson) =>
       switch decodeOptions(rawJson) {
-      | exception Json.Decode.DecodeError(_) => invalidAlert()
+      | exception Json.Decode.DecodeError(_) =>
+        Js.Console.error(rawJson)
+        invalidAlert()
       | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
       }
     }
+  }
+
+  let handleText = event => {
+    ReactEvent.Form.preventDefault(event)
+    loadJson(text)
   }
 
   @raises(DecodeError)
@@ -178,15 +409,17 @@ let make = (~windowDispatch=_ => ()) => {
       <p className="caption-20">
         {React.string("Last export: ")} <LastBackupDate date=config.lastBackup />
       </p>
+      <GistOpts configDispatch exportData loadJson />
+      <h3> {"Backup locally"->React.string} </h3>
       <p>
         <a
           download={"coronate-" ++ (getDateForFile() ++ ".json")}
           href={"data:application/json," ++ exportDataURI}
           onClick={_ => configDispatch(SetLastBackup(Js.Date.make()))}>
-          <Icons.Download /> {React.string(" Export all data")}
+          <Icons.Download /> {React.string(" Export data to a file.")}
         </a>
       </p>
-      <label htmlFor="file"> {React.string("Load data file:")} </label>
+      <label htmlFor="file"> {React.string("Load data from a file:")} </label>
       <input id="file" name="file" type_="file" onChange=handleFile />
       <h2> {React.string("Danger zone")} </h2>
       <p className="caption-30"> {React.string("I hope you know what you're doing...")} </p>

@@ -6,8 +6,6 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 open Belt
-open ReasonReact.Router
-
 let str = Data.Id.toString
 
 module TourneyPage = {
@@ -41,7 +39,7 @@ module TourneyPage = {
     | Crosstable => str(id) ++ "/crosstable"
     | Setup => str(id) ++ "/setup"
     | Status => str(id) ++ "/status"
-    | Round(round) => str(id) ++ ("/round/" ++ Int.toString(round))
+    | Round(round) => str(id) ++ "/round/" ++ Int.toString(round)
     }
 }
 
@@ -60,13 +58,13 @@ let id = Data.Id.fromString
 let fromPath = x =>
   /* The first item is always an empty string */
   switch x {
-  | list{""} | list{"", ""} => Index
-  | list{"", "players"} => PlayerList
-  | list{"", "players", x} => Player(id(x))
-  | list{"", "timecalc"} => TimeCalculator
-  | list{"", "options"} => Options
-  | list{"", "tourneys"} => TournamentList
-  | list{"", "tourneys", x, ...path} =>
+  | list{} => Index
+  | list{"players"} => PlayerList
+  | list{"players", x} => Player(id(x))
+  | list{"timecalc"} => TimeCalculator
+  | list{"options"} => Options
+  | list{"tourneys"} => TournamentList
+  | list{"tourneys", x, ...path} =>
     switch TourneyPage.fromPath(path) {
     | Some(page) => Tournament(id(x), page)
     | None => NotFound
@@ -85,32 +83,34 @@ let toString = x =>
   | Tournament(id, page) => "/tourneys/" ++ TourneyPage.toString(id, page)
   }
 
-let useHashUrl = () => {
-  let {hash, _} = useUrl()
-  hash->Js.String2.split("/")->List.fromArray->fromPath
+let useUrl = () => {
+  let {path, _} = ReasonReactRouter.useUrl()
+  fromPath(path)
 }
 
-module HashLink = {
+module Link = {
   @react.component
   let make = (~children, ~to_, ~onDragStart=?, ~onClick=?) => {
-    let {hash, _} = useUrl()
+    let path = useUrl()
     let href = toString(to_)
-    let isCurrent = switch href {
-    | "/" => hash == "" || hash == href
-    | _ => hash == href
-    }
-
-    /**
-     * ReasonReact hasn't implemented the aria-current attribute yet. We have to
-     * define it ourselves!
-     */
+    /* RescriptReact hasn't implemented the aria-current attribute yet. We have
+     to define it ourselves! */
     ReactDOMRe.createElement(
       "a",
       ~props=ReactDOMRe.objToDOMProps({
-        "aria-current": isCurrent,
-        "href": "#" ++ href,
+        "aria-current": href == toString(path),
+        "href": href,
         "onDragStart": onDragStart,
-        "onClick": onClick,
+        "onClick": event => {
+          switch onClick {
+          | None => ()
+          | Some(f) => f(event)
+          }
+          if !ReactEvent.Mouse.defaultPrevented(event) {
+            ReactEvent.Mouse.preventDefault(event)
+            ReasonReactRouter.push(href)
+          }
+        },
       }),
       [children],
     )

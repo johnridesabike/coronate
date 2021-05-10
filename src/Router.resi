@@ -25,9 +25,9 @@ type t =
   | Options
   | NotFound
 
-let useHashUrl: unit => t
+let useUrl: unit => t
 
-module HashLink: {
+module Link: {
   @react.component
   let make: (
     ~children: React.element,

@@ -229,7 +229,7 @@ module PlayerList = {
           {Array.map(sorted.table, p =>
             <tr key={p.id->Data.Id.toString}>
               <td className="table__player">
-                <HashLink to_=Player(p.id)> {p->Player.fullName->React.string} </HashLink>
+                <Link to_=Player(p.id)> {p->Player.fullName->React.string} </Link>
               </td>
               <td className="table__number"> {p.rating->string_of_int->React.string} </td>
               <td className="table__number"> {p.matchCount->string_of_int->React.string} </td>
@@ -336,14 +336,14 @@ module Profile = {
       setSelectedAvoider(_ => id)
     }
     <div className="content-area">
-      <HashLink
+      <Link
         to_=PlayerList
         onClick={event =>
           if form.dirty() && !Webapi.Dom.Window.confirm("Discard changes?", Webapi.Dom.window) {
             ReactEvent.Mouse.preventDefault(event)
           }}>
         <Icons.ChevronLeft /> {React.string(" Back")}
-      </HashLink>
+      </Link>
       <h2> {React.string("Profile for " ++ playerName)} </h2>
       <form
         onSubmit={event => {

@@ -6,6 +6,7 @@ import * as Belt_Set from "bs-platform/lib/es6/belt_Set.js";
 import * as Caml_option from "bs-platform/lib/es6/caml_option.js";
 import * as Data_Id$Coronate from "../Data/Data_Id.bs.js";
 import * as TestData$Coronate from "../testdata/TestData.bs.js";
+import * as Data_Auth$Coronate from "../Data/Data_Auth.bs.js";
 import * as Data_Config$Coronate from "../Data/Data_Config.bs.js";
 import * as Data_Player$Coronate from "../Data/Data_Player.bs.js";
 import * as LocalForage_Id$Coronate from "../Externals/LocalForage_Id.bs.js";
@@ -133,6 +134,15 @@ function useConfig(param) {
   return React.useReducer(configReducer, TestData$Coronate.config);
 }
 
+function useAuth(param) {
+  return [
+          Data_Auth$Coronate.$$default,
+          (function (param) {
+              
+            })
+        ];
+}
+
 export {
   loadDemoDB ,
   Config ,
@@ -142,6 +152,7 @@ export {
   useAllPlayers ,
   useAllTournaments ,
   useConfig ,
+  useAuth ,
   
 }
 /* Config Not a pure module */
