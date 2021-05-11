@@ -12,27 +12,23 @@ module Splash = {
   let make = () =>
     <div className="pages__container">
       <aside className="pages__hint">
-        <ol>
-          <li className="pages__hint-item">
-            <button className="button-primary" onClick={_ => Db.loadDemoDB()}>
-              {React.string("Click here to load the demo data")}
-            </button>
-            {React.string(" (optional)")}
-          </li>
-          <li className="pages__hint-item">
-            <Icons.ArrowLeft /> {React.string(" Select a menu item.")}
-          </li>
-          <li className="pages__hint-item"> {React.string("Start creating your tournaments!")} </li>
-        </ol>
         <Utils.Notification kind=Warning>
-          <div>
+          <div style={ReactDOMStyle.make(~maxWidth="320px", ())}>
             <p>
-              {React.string("Coronate requires no account to use, and")}
-              <br />
-              {React.string("saves your data locally in your browser.")}
+              {"Coronate is moving! "->React.string}
+              <a href="https://coronate.netlify.app/">
+                {"Click here to visit the new version"->React.string}
+              </a>
+              {"."->React.string}
             </p>
             <p>
-              {React.string("To manage your data, visit the ")}
+              {`The new Coronate allows you to export your data directly to a
+                GitHub account. To transfer your current data, you will need to
+                export it manually (from this version) and re-import it into the
+                new version.`->React.string}
+            </p>
+            <p>
+              {React.string("You can export your data in the ")}
               <Router.HashLink to_=Options> {"Options"->React.string} </Router.HashLink>
               {React.string(" page.")}
             </p>

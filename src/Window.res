@@ -95,7 +95,7 @@ module TitleBar = {
           ~overflow="hidden",
           (),
         )}>
-        {title->formatTitle->React.string}
+        {title->formatTitle->React.string} {` (old)`->React.string}
       </div>
       <button className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
         <Icons.Help />
