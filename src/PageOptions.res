@@ -97,24 +97,24 @@ module GistOpts = {
       if !cancelAllEffects.contents {
         authDispatch(Reset)
       }
-      Js.Promise.resolve()
+      Promise.resolve()
     }
 
     let loadGistList = (auth: Data.Auth.t) =>
       switch auth.github_token {
-      | "" => Js.Promise.resolve(setGists(_ => []))
+      | "" => Promise.resolve(setGists(_ => []))
       | token =>
         Octokit.Gist.list(~token)
-        |> Js.Promise.then_((data: array<Octokit.Gist.file>) => {
+        ->Promise.then(data => {
           if !cancelAllEffects.contents {
             setGists(_ => data)
             if !Array.some(data, x => x.id == auth.github_gist_id) {
               authDispatch(RemoveGistId)
             }
           }
-          Js.Promise.resolve()
+          Promise.resolve()
         })
-        |> Js.Promise.catch(handleAuthError)
+        ->Promise.catch(handleAuthError)
       }
 
     React.useEffect1(() => {
@@ -172,19 +172,19 @@ module GistOpts = {
                 ~data=encodeOptions(exportData),
                 ~minify=minify.state,
               )
-              |> Js.Promise.then_((newGist: Octokit.response<_, _>) => {
+              ->Promise.then(newGist => {
                 if !cancelAllEffects.contents {
                   authDispatch(SetGistId(newGist.data["id"]))
                   configDispatch(SetLastBackup(Js.Date.make()))
                 }
-                savedAlert()->Js.Promise.resolve
+                savedAlert()->Promise.resolve
               })
-              |> Js.Promise.then_(() => loadGistList(auth))
-              |> Js.Promise.catch(e => {
+              ->Promise.then(() => loadGistList(auth))
+              ->Promise.catch(e => {
                 Utils.alert("Backup failed. Check your GitHub credentials.")
                 handleAuthError(e)
               })
-              |> ignore
+              ->ignore
             }}>
             {"Create a new gist"->React.string}
           </button>
@@ -222,20 +222,20 @@ module GistOpts = {
                     ~data=encodeOptions(exportData),
                     ~minify=minify.state,
                   )
-                  |> Js.Promise.then_(_ => {
+                  ->Promise.then(_ => {
                     if !cancelAllEffects.contents {
                       configDispatch(SetLastBackup(Js.Date.make()))
                     }
-                    savedAlert()->Js.Promise.resolve
+                    savedAlert()->Promise.resolve
                   })
-                  |> Js.Promise.then_(() => loadGistList(auth))
-                  |> Js.Promise.catch(e => {
+                  ->Promise.then(() => loadGistList(auth))
+                  ->Promise.catch(e => {
                     Utils.alert(
                       "Backup failed. Check your GitHub credentials or try a different gist.",
                     )
                     handleAuthError(e)
                   })
-                  |> ignore
+                  ->ignore
                 }
               }}
               disabled={auth.github_gist_id == ""}>
@@ -248,14 +248,14 @@ module GistOpts = {
                 | "" => Js.Console.error("Gist ID is blank.")
                 | id =>
                   Octokit.Gist.read(~id, ~token=github_token)
-                  |> Js.Promise.then_(result => {
-                    loadJson(result)->Js.Promise.resolve
+                  ->Promise.then(result => {
+                    loadJson(result)->Promise.resolve
                   })
-                  |> Js.Promise.catch(e => {
+                  ->Promise.catch(e => {
                     invalidAlert()
                     handleAuthError(e)
                   })
-                  |> ignore
+                  ->ignore
                 }
               }}
               disabled={auth.github_gist_id == ""}>

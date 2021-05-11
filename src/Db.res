@@ -210,21 +210,23 @@ let useAuth = () => {
   React.useEffect0(() => {
     let didCancel = ref(false)
     LocalForage.Record.get(authDb)
-    ->Promise.Js.fromBsPromise
-    ->Promise.Js.toResult
-    ->Promise.tapOk(values =>
+    ->Promise.then(values => {
       if !didCancel.contents {
         dispatch(SetState(values))
         loaded.setTrue()
       }
-    )
-    ->Promise.getError(_ =>
+      Promise.resolve()
+    })
+    ->Promise.catch(e => {
+      Js.Console.error(e)
       if !didCancel.contents {
         ()->LocalForage.Js.clear->ignore
         dispatch(SetState(Data.Auth.default))
         loaded.setTrue()
       }
-    )
+      Promise.resolve()
+    })
+    ->ignore
     Some(() => didCancel := true)
   })
   /* Save items to the database. */

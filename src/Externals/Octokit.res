@@ -23,16 +23,17 @@ module Gist = {
   }
 
   let list = (~token) => {
-    make({"auth": token})->request("GET /gists", Js.Obj.empty())
-      |> Js.Promise.then_(result =>
-        result.data
-        ->Belt.Array.map(x => {
-          name: Js.Dict.keys(x["files"])->Belt.Array.getUnsafe(0),
-          id: x["id"],
-          updated_at: Js.Date.fromString(x["updated_at"]),
-        })
-        ->Js.Promise.resolve
-      )
+    make({"auth": token})
+    ->request("GET /gists", Js.Obj.empty())
+    ->Promise.then(result =>
+      result.data
+      ->Belt.Array.map(x => {
+        name: Js.Dict.keys(x["files"])->Belt.Array.getUnsafe(0),
+        id: x["id"],
+        updated_at: Js.Date.fromString(x["updated_at"]),
+      })
+      ->Promise.resolve
+    )
   }
 
   let write = (~token, ~id, ~data, ~minify) => {
@@ -55,9 +56,9 @@ module Gist = {
 
   let read = (~token, ~id) => {
     let octokit = make({"auth": token})
-    request(octokit, "GET /gists/" ++ id, {"gist_id": id}) |> Js.Promise.then_(x => {
+    request(octokit, "GET /gists/" ++ id, {"gist_id": id})->Promise.then(x => {
       let file = x.data["files"]->Js.Dict.values->Belt.Array.getUnsafe(0)
-      file["content"]->Js.Promise.resolve
+      file["content"]->Promise.resolve
     })
   }
 

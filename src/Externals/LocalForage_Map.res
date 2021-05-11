@@ -7,7 +7,7 @@
 */
 module D = Js.Dict
 module LF = LocalForage_Js
-module P = Js.Promise
+module P = Promise
 module A = Js.Array2
 module Id = LocalForage_Id
 
@@ -25,7 +25,7 @@ let make = (config, type t id, data: Id.encodable<t, id>) => {
 }
 
 let getItem = ({store, decode, _}, ~key) =>
-  LF.getItem(store, key) |> P.then_(value =>
+  LF.getItem(store, key)->P.then(value =>
     switch value->Js.Nullable.toOption->Belt.Option.mapU(decode) {
     | exception error => P.reject(error)
     | value => P.resolve(value)
@@ -41,7 +41,7 @@ let mapValues = ((key, value), ~f) => (key, f(. value))
 let parseItems = (decode, items) => items->D.entries->A.map(mapValues(~f=decode))
 
 let getItems = ({store, decode, _}, ~keys) =>
-  LocalForage_Plugins.GetItems.dictFromArray(store, keys) |> P.then_(items =>
+  LocalForage_Plugins.GetItems.dictFromArray(store, keys)->P.then(items =>
     switch parseItems(decode, items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)
@@ -49,7 +49,7 @@ let getItems = ({store, decode, _}, ~keys) =>
   )
 
 let getAllItems = ({store, decode, _}) =>
-  LocalForage_Plugins.GetItems.allDict(store) |> P.then_(items =>
+  LocalForage_Plugins.GetItems.allDict(store)->P.then(items =>
     switch parseItems(decode, items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)
