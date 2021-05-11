@@ -8,7 +8,7 @@
 module App = {
   @react.component
   let make = () => {
-    let url = Router.useHashUrl()
+    let url = Router.useUrl()
     <Window className="app">
       {windowDispatch =>
         <main className="app__main">

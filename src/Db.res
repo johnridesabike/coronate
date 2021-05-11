@@ -14,7 +14,9 @@ let localForageConfig = LocalForage.Config.make(~name="Coronate")
 module Config = LocalForage.Id.MakeEncodable(Data.Config)
 module Player = LocalForage.Id.MakeEncodable(Data.Player)
 module Tournament = LocalForage.Id.MakeEncodable(Data.Tournament)
+module Auth = LocalForage.Id.MakeEncodable(Data.Auth)
 let configDb = LocalForage.Record.make(localForageConfig(~storeName="Options", ()), module(Config))
+let authDb = LocalForage.Record.make(localForageConfig(~storeName="Auth", ()), module(Auth))
 let players = LocalForage.Map.make(localForageConfig(~storeName="Players", ()), module(Player))
 let tournaments = LocalForage.Map.make(
   localForageConfig(~storeName="Tournaments", ()),
@@ -183,4 +185,54 @@ let useConfig = () => {
     None
   }, (config, loaded.state))
   (config, dispatch)
+}
+
+type actionAuth =
+  | SetGitHubToken(string)
+  | SetGistId(string)
+  | RemoveGistId
+  | SetState(Data.Auth.t)
+  | Reset
+
+let authReducer = (state: Data.Auth.t, action) =>
+  switch action {
+  | Reset => Data.Auth.default
+  | SetGitHubToken(token) => {...state, github_token: token}
+  | SetGistId(id) => {...state, github_gist_id: id}
+  | RemoveGistId => {...state, github_gist_id: ""}
+  | SetState(state) => state
+  }
+
+let useAuth = () => {
+  let (auth, dispatch) = React.useReducer(authReducer, Data.Auth.default)
+  let loaded = Hooks.useBool(false)
+  /* Load items from the database. */
+  React.useEffect0(() => {
+    let didCancel = ref(false)
+    LocalForage.Record.get(authDb)
+    ->Promise.Js.fromBsPromise
+    ->Promise.Js.toResult
+    ->Promise.tapOk(values =>
+      if !didCancel.contents {
+        dispatch(SetState(values))
+        loaded.setTrue()
+      }
+    )
+    ->Promise.getError(_ =>
+      if !didCancel.contents {
+        ()->LocalForage.Js.clear->ignore
+        dispatch(SetState(Data.Auth.default))
+        loaded.setTrue()
+      }
+    )
+    Some(() => didCancel := true)
+  })
+  /* Save items to the database. */
+  React.useEffect2(() => {
+    if loaded.state {
+      LocalForage.Record.set(authDb, ~items=auth)->ignore
+    }
+    None
+  }, (auth, loaded.state))
+  (auth, dispatch)
 }

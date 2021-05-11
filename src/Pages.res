@@ -33,7 +33,7 @@ module Splash = {
             </p>
             <p>
               {React.string("To manage your data, visit the ")}
-              <Router.HashLink to_=Options> {"Options"->React.string} </Router.HashLink>
+              <Router.Link to_=Options> {"Options"->React.string} </Router.Link>
               {React.string(" page.")}
             </p>
           </div>

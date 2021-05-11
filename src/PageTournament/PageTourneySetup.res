@@ -163,7 +163,7 @@ let make = (~tournament: LoadTournament.t) => {
       {React.string("This will update all bye matches which have been previously
           scored in this tournament. To change the default bye value in
           future matches, go to the ")}
-      <HashLink to_=Options> {React.string("app options")} </HashLink>
+      <Link to_=Options> {React.string("app options")} </Link>
       {React.string(".")}
     </p>
   </div>

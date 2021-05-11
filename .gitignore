@@ -36,3 +36,6 @@ _esy/
 
 # editor
 *.swp
+
+# Local Netlify folder
+.netlify

@@ -99,6 +99,8 @@ function getClientEnvironment(publicUrl) {
         FAST_REFRESH: process.env.FAST_REFRESH !== "false",
         GIT_HASH: hash,
         APP_VERSION: pkg.version,
+        GITHUB_APP_ID: process.env.GITHUB_APP_ID,
+        NETLIFY_ID: process.env.NETLIFY_ID,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin

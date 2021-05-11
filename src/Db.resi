@@ -40,3 +40,12 @@ type actionConfig =
   | SetLastBackup(Js.Date.t)
 
 let useConfig: unit => (Data.Config.t, actionConfig => unit)
+
+type actionAuth =
+  | SetGitHubToken(string)
+  | SetGistId(string)
+  | RemoveGistId
+  | SetState(Data.Auth.t)
+  | Reset
+
+let useAuth: unit => (Data.Auth.t, actionAuth => unit)
