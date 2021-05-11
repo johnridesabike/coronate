@@ -25,9 +25,9 @@
     "test": "node scripts/test.js --watchAll",
     "test:ci": "node scripts/test.js --watchAll=false",
     "test:coverage": "npm run test -- --coverage",
-    "build:res": "bsb -make-world",
-    "start:res": "bsb -make-world -w",
-    "clean:res": "bsb -clean-world",
+    "build:res": "rescript",
+    "start:res": "rescript build -w",
+    "clean:res": "rescript clean",
     "analyze:dce": "reanalyze -dce -live-paths src/HtmlEntities",
     "analyze:exception": "reanalyze -exception"
   },
@@ -41,7 +41,6 @@
     "@reach/visually-hidden": "^0.11.1",
     "bfj": "^7.0.2",
     "bs-jest-dom": "^4.1.1",
-    "bs-platform": "^9.0.2",
     "bs-react-testing-library": "^0.8.0",
     "bs-webapi": "^0.19.1",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
@@ -75,7 +74,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
     "re-classnames": "^5.0.1",
-    "re-formality": "^4.0.0-beta.8",
+    "re-formality": "4.0.0-beta.10",
     "react": "^16.14.0",
     "react-app-polyfill": "^2.0.0",
     "react-dev-utils": "^11.0.3",
@@ -85,7 +84,8 @@
     "reanalyze": "^2.15.0",
     "reason-promise": "^1.1.1",
     "reason-react": "^0.9.1",
-    "rescript-blossom": "^2.0.0",
+    "rescript": "^9.1.2",
+    "rescript-blossom": "^3.0.0",
     "style-loader": "1.3.0",
     "typeface-fira-sans": "0.0.75",
     "url-loader": "4.1.1",
@@ -120,7 +120,7 @@
       "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!(reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-[a-z\\-]+|rescript-[a-z\\-]+|bs-[a-z\\-]+)/)"
+      "node_modules/(?!(rescript|reason-[a-z\\-]+|@[a-z\\-]+/bs-[a-z\\-]+|re-[a-z\\-]+|rescript-[a-z\\-]+|bs-[a-z\\-]+)/)"
     ],
     "modulePaths": [],
     "moduleNameMapper": {
