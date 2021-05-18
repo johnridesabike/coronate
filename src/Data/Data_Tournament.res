@@ -30,41 +30,83 @@ let make = (~id, ~name) => {
 }
 
 @ocaml.doc("
- * LocalForage/IndexedDB sometimes automatically parses the date for us
- * already, and I'm not sure how to propertly handle it.
- ")
+  LocalForage/IndexedDB sometimes automatically parses the date for us already,
+  and I'm not sure how to propertly handle it.
+")
 external unsafe_date: Js.Json.t => Js.Date.t = "%identity"
 
-@raises(DecodeError)
+@raises(Not_found)
 let decode = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)
   {
-    id: json |> field("id", Data_Id.decode),
-    name: json |> field("name", string),
-    date: json |> field("date", oneOf(list{date, unsafe_date})),
-    playerIds: json |> field("playerIds", array(Data_Id.decode)) |> Set.fromArray(~id=Data_Id.id),
-    byeQueue: json |> field("byeQueue", array(Data_Id.decode)),
-    tieBreaks: json |> field("tieBreaks", array(Data_Scoring.TieBreak.decode)),
-    roundList: json |> field("roundList", Data_Rounds.decode),
-    scoreAdjustments: json
-    |> optional(field("scoreAdjustments", array(tuple2(Data_Id.decode, Json.Decode.float))))
-    |> Option.mapWithDefault(_, Map.make(~id=Data_Id.id), Map.fromArray(~id=Data_Id.id)),
+    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Data_Id.decode,
+    name: d
+    ->Option.flatMap(d => Js.Dict.get(d, "name"))
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn,
+    date: d
+    ->Option.flatMap(d => Js.Dict.get(d, "date"))
+    ->Option.map(json =>
+      switch Js.Json.decodeString(json) {
+      | Some(s) => Js.Date.fromString(s)
+      | None => unsafe_date(json)
+      }
+    )
+    ->Option.getExn,
+    playerIds: d
+    ->Option.flatMap(d => Js.Dict.get(d, "playerIds"))
+    ->Option.flatMap(Js.Json.decodeArray)
+    ->Option.getExn
+    ->Array.map(Data_Id.decode)
+    ->Set.fromArray(~id=Data_Id.id),
+    byeQueue: d
+    ->Option.flatMap(d => Js.Dict.get(d, "byeQueue"))
+    ->Option.flatMap(Js.Json.decodeArray)
+    ->Option.getExn
+    ->Array.map(Data_Id.decode),
+    tieBreaks: d
+    ->Option.flatMap(d => Js.Dict.get(d, "tieBreaks"))
+    ->Option.flatMap(Js.Json.decodeArray)
+    ->Option.getExn
+    ->Array.map(Data_Scoring.TieBreak.decode),
+    roundList: d
+    ->Option.flatMap(d => Js.Dict.get(d, "roundList"))
+    ->Option.getExn
+    ->Data_Rounds.decode,
+    scoreAdjustments: d
+    ->Option.flatMap(d => Js.Dict.get(d, "scoreAdjustments"))
+    ->Option.flatMap(Js.Json.decodeArray)
+    ->Option.map(a =>
+      Array.keepMap(a, Js.Json.decodeArray)->Array.keepMap(a =>
+        switch (a[0], a[1]) {
+        | (Some(k), Some(v)) =>
+          switch Js.Json.decodeNumber(v) {
+          | Some(v) => Some((Data_Id.decode(k), v))
+          | None => None
+          }
+        | _ => None
+        }
+      )
+    )
+    ->Option.getWithDefault([])
+    ->Map.fromArray(~id=Data_Id.id),
   }
 }
 
-let encode = data => {
-  open Json.Encode
-  object_(list{
-    ("id", data.id |> Data_Id.encode),
-    ("name", data.name |> string),
-    ("date", data.date |> date),
-    ("playerIds", data.playerIds |> Set.toArray |> array(Data_Id.encode)),
-    ("byeQueue", data.byeQueue |> array(Data_Id.encode)),
-    ("tieBreaks", data.tieBreaks |> array(Data_Scoring.TieBreak.encode)),
-    ("roundList", data.roundList |> Data_Rounds.encode),
+let encode = data =>
+  Js.Dict.fromArray([
+    ("id", data.id->Data_Id.encode),
+    ("name", data.name->Js.Json.string),
+    ("date", data.date->Js.Date.toJSONUnsafe->Js.Json.string),
+    ("playerIds", data.playerIds->Set.toArray->Array.map(Data_Id.encode)->Js.Json.array),
+    ("byeQueue", data.byeQueue->Array.map(Data_Id.encode)->Js.Json.array),
+    ("tieBreaks", data.tieBreaks->Array.map(Data_Scoring.TieBreak.encode)->Js.Json.array),
+    ("roundList", data.roundList->Data_Rounds.encode),
     (
       "scoreAdjustments",
-      data.scoreAdjustments |> Map.toArray |> array(tuple2(Data_Id.encode, Json.Encode.float)),
+      data.scoreAdjustments
+      ->Map.toArray
+      ->Array.map(((k, v)) => [Data_Id.encode(k), Js.Json.number(v)]->Js.Json.array)
+      ->Js.Json.array,
     ),
-  })
-}
+  ])->Js.Json.object_

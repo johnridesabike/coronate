@@ -26,7 +26,6 @@
     "reason-react",
     "re-classnames",
     "bs-webapi",
-    "@glennsl/bs-json",
     "rescript-blossom",
     "reason-promise",
     "re-formality"

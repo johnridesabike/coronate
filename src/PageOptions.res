@@ -31,24 +31,32 @@ type input_data = {
   tournaments: Data.Id.Map.t<Tournament.t>,
 }
 
-@raises(DecodeError)
+@raises(Not_found)
 let decodeOptions = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)
   {
-    config: json |> field("config", Config.decode),
-    players: json |> field("players", dict(Player.decode)) |> dictToMap,
-    tournaments: json |> field("tournaments", dict(Tournament.decode)) |> dictToMap,
+    config: d->Option.flatMap(d => Js.Dict.get(d, "config"))->Option.getExn->Config.decode,
+    players: d
+    ->Option.flatMap(d => Js.Dict.get(d, "players"))
+    ->Option.flatMap(Js.Json.decodeObject)
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Player.decode),
+    tournaments: d
+    ->Option.flatMap(d => Js.Dict.get(d, "tournaments"))
+    ->Option.flatMap(Js.Json.decodeObject)
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Tournament.decode),
   }
 }
 
-let encodeOptions = data => {
-  open Json.Encode
-  object_(list{
+let encodeOptions = data =>
+  Js.Dict.fromArray([
     ("config", Config.encode(data.config)),
-    ("players", Map.map(data.players, Player.encode)->mapToDict->jsonDict),
-    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->jsonDict),
-  })
-}
+    ("players", Map.map(data.players, Player.encode)->mapToDict->Js.Json.object_),
+    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->Js.Json.object_),
+  ])->Js.Json.object_
 
 module LastBackupDate = {
   @react.component
@@ -298,7 +306,7 @@ let make = (~windowDispatch=_ => ()) => {
     () => {config: config, players: players, tournaments: tournaments},
     (config, tournaments, players),
   )
-  let exportDataURI = exportData->encodeOptions->Json.stringify->Js.Global.encodeURIComponent
+  let exportDataURI = exportData->encodeOptions->Js.Json.stringify->Js.Global.encodeURIComponent
   React.useEffect2(() => {
     let encoded = encodeOptions(exportData)
     let json = Js.Json.stringifyWithSpace(encoded, 2)
@@ -313,16 +321,16 @@ let make = (~windowDispatch=_ => ()) => {
     Utils.alert("Data loaded.")
   }
 
-  @raises(DecodeError)
   let loadJson = json => {
-    switch Json.parse(json) {
-    | None =>
+    switch Js.Json.parseExn(json) {
+    | exception e =>
+      Js.Console.error(e)
       Js.Console.error(json)
       invalidAlert()
-    | Some(rawJson) =>
+    | rawJson =>
       switch decodeOptions(rawJson) {
-      | exception Json.Decode.DecodeError(_) =>
-        Js.Console.error(rawJson)
+      | exception e =>
+        Js.Console.error(e)
         invalidAlert()
       | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
       }
@@ -334,21 +342,23 @@ let make = (~windowDispatch=_ => ()) => {
     loadJson(text)
   }
 
-  @raises(DecodeError)
   let handleFile = event => {
     module FileReader = Externals.FileReader
     ReactEvent.Form.preventDefault(event)
     let reader = FileReader.make()
 
-    @raises(DecodeError)
     let onload = ev => {
       ignore(ev)
       let data = ev["target"]["result"]
-      switch Json.parse(data) {
-      | None => invalidAlert()
-      | Some(rawJson) =>
+      switch Js.Json.parseExn(data) {
+      | exception e =>
+        Js.Console.error(e)
+        invalidAlert()
+      | rawJson =>
         switch decodeOptions(rawJson) {
-        | exception Json.Decode.DecodeError(_) => invalidAlert()
+        | exception e =>
+          Js.Console.error(e)
+          invalidAlert()
         | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
         }
       }

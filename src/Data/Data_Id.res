@@ -5,6 +5,9 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+module Array = Belt.Array
+module Option = Belt.Option
+
 type t = string
 
 let toString = x => x
@@ -17,10 +20,9 @@ let isDummy = id => id == dummy
 
 let random = Externals.nanoid
 
-let encode = Json.Encode.string
+let encode = Js.Json.string
 
-@raises(DecodeError)
-let decode = Json.Decode.string
+let decode = json => Js.Json.decodeString(json)->Option.getExn
 
 let compare: (t, t) => int = compare
 
@@ -71,10 +73,14 @@ module Pair = {
 
   let toTuple = t => t
 
-  @raises(DecodeError)
-  let decode = json => Json.Decode.pair(decode, decode, json)
+  let decode = json => {
+    let arr = Js.Json.decodeArray(json)
+    let a = arr->Option.flatMap(arr => arr[0])->Option.getExn
+    let b = arr->Option.flatMap(arr => arr[1])->Option.getExn
+    (decode(a), decode(b))
+  }
 
-  let encode = data => Json.Encode.pair(encode, encode, data)
+  let encode = ((a, b)) => Js.Json.array([encode(a), encode(b)])
 
   module Cmp = unpack(Belt.Id.comparable(~cmp=compare))
 
@@ -89,10 +95,10 @@ module Pair = {
     type pair = t
     type t = Belt.Set.t<pair, identity>
 
-    @raises(DecodeError)
-    let decode = json => json |> Json.Decode.array(decode) |> Belt.Set.fromArray(~id)
+    let decode = json =>
+      json->Js.Json.decodeArray->Option.getExn->Array.map(decode)->Belt.Set.fromArray(~id)
 
-    let encode = data => data |> Belt.Set.toArray |> Json.Encode.array(encode)
+    let encode = data => data->Belt.Set.toArray->Array.map(encode)->Js.Json.array
 
     let toMapReducer = (acc, (id1, id2)) => {
       let s1 = Belt.Set.make(~id=id_id)->Belt.Set.add(id2)

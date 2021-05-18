@@ -10,22 +10,27 @@ type t = {
   github_gist_id: string,
 }
 
-@raises(DecodeError)
+module Option = Belt.Option
+
 let decode = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)
   {
-    github_token: json |> field("github_token", string),
-    github_gist_id: json |> field("github_gist_id", string),
+    github_token: d
+    ->Option.flatMap(d => Js.Dict.get(d, "github_token"))
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn,
+    github_gist_id: d
+    ->Option.flatMap(d => Js.Dict.get(d, "github_gist_id"))
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn,
   }
 }
 
-let encode = data => {
-  open Json.Encode
-  object_(list{
-    ("github_token", data.github_token |> string),
-    ("github_gist_id", data.github_gist_id |> string),
-  })
-}
+let encode = data =>
+  Js.Dict.fromArray([
+    ("github_token", data.github_token->Js.Json.string),
+    ("github_gist_id", data.github_gist_id->Js.Json.string),
+  ])->Js.Json.object_
 
 let default = {
   github_token: "",
