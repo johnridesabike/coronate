@@ -60,7 +60,7 @@ let make = (~tournament: LoadTournament.t) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Full),
     })
-    Utils.alert("Bye scores updated to 1.")
+    Webapi.Dom.Window.alert("Bye scores updated to 1.", Webapi.Dom.window)
   }
 
   let changeToOneHalf = _ => {
@@ -68,7 +68,7 @@ let make = (~tournament: LoadTournament.t) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(Half),
     })
-    Utils.alert(`Bye scores updated to ½.`)
+    Webapi.Dom.Window.alert(`Bye scores updated to ½.`, Webapi.Dom.window)
   }
 
   let updateDate = event => {

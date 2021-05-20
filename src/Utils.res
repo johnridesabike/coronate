@@ -29,8 +29,6 @@ module Array = {
     }
 }
 
-let alert = Webapi.Dom.Window.alert(_, Webapi.Dom.window)
-
 module WebpackAssets = {
   @module("./assets/icon-min.svg") external logo: string = "default"
   //@module("./assets/caution.svg") external caution: string = "default"

@@ -20,7 +20,10 @@ let getDateForFile = () => {
 }
 
 let invalidAlert = () =>
-  Utils.alert("That data is invalid! A more helpful error message could not be written yet.")
+  Webapi.Dom.Window.alert(
+    "That data is invalid! A more helpful error message could not be written yet.",
+    Webapi.Dom.window,
+  )
 
 let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
 let mapToDict = map => map->Data.Id.Map.toStringArray->Js.Dict.fromArray
@@ -91,7 +94,7 @@ module GistOpts = {
   | None => Js.Obj.empty()
   }
 
-  let savedAlert = () => Utils.alert("Data saved.")
+  let savedAlert = () => Webapi.Dom.Window.alert("Data saved.", Webapi.Dom.window)
 
   @react.component
   let make = (~exportData, ~configDispatch: Db.actionConfig => unit, ~loadJson) => {
@@ -189,7 +192,10 @@ module GistOpts = {
               })
               |> Js.Promise.then_(() => loadGistList(auth))
               |> Js.Promise.catch(e => {
-                Utils.alert("Backup failed. Check your GitHub credentials.")
+                Webapi.Dom.Window.alert(
+                  "Backup failed. Check your GitHub credentials.",
+                  Webapi.Dom.window,
+                )
                 handleAuthError(e)
               })
               |> ignore
@@ -238,8 +244,9 @@ module GistOpts = {
                   })
                   |> Js.Promise.then_(() => loadGistList(auth))
                   |> Js.Promise.catch(e => {
-                    Utils.alert(
+                    Webapi.Dom.Window.alert(
                       "Backup failed. Check your GitHub credentials or try a different gist.",
+                      Webapi.Dom.window,
                     )
                     handleAuthError(e)
                   })
@@ -318,24 +325,18 @@ let make = (~windowDispatch=_ => ()) => {
     tourneysDispatch(SetAll(tournaments))
     configDispatch(SetState(config))
     playersDispatch(SetAll(players))
-    Utils.alert("Data loaded.")
+    Webapi.Dom.Window.alert("Data loaded.", Webapi.Dom.window)
   }
 
-  let loadJson = json => {
-    switch Js.Json.parseExn(json) {
-    | exception e =>
+  let loadJson = json =>
+    try {
+      let {config, players, tournaments} = json->Js.Json.parseExn->decodeOptions
+      loadData(~tournaments, ~players, ~config)
+    } catch {
+    | e =>
       Js.Console.error(e)
-      Js.Console.error(json)
       invalidAlert()
-    | rawJson =>
-      switch decodeOptions(rawJson) {
-      | exception e =>
-        Js.Console.error(e)
-        invalidAlert()
-      | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
-      }
     }
-  }
 
   let handleText = event => {
     ReactEvent.Form.preventDefault(event)
@@ -350,17 +351,13 @@ let make = (~windowDispatch=_ => ()) => {
     let onload = ev => {
       ignore(ev)
       let data = ev["target"]["result"]
-      switch Js.Json.parseExn(data) {
-      | exception e =>
+      try {
+        let {config, players, tournaments} = data->Js.Json.parseExn->decodeOptions
+        loadData(~tournaments, ~players, ~config)
+      } catch {
+      | e =>
         Js.Console.error(e)
         invalidAlert()
-      | rawJson =>
-        switch decodeOptions(rawJson) {
-        | exception e =>
-          Js.Console.error(e)
-          invalidAlert()
-        | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
-        }
       }
     }
     FileReader.setOnLoad(reader, onload)
