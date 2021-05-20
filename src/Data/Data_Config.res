@@ -35,15 +35,12 @@ type t = {
 }
 
 let decode = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
-    avoidPairs: d
-    ->Option.flatMap(d => Js.Dict.get(d, "avoidPairs"))
-    ->Option.getExn
-    ->Data_Id.Pair.Set.decode,
-    byeValue: d->Option.flatMap(d => Js.Dict.get(d, "byeValue"))->Option.getExn->ByeValue.decode,
+    avoidPairs: d->Js.Dict.get("avoidPairs")->Option.getExn->Data_Id.Pair.Set.decode,
+    byeValue: d->Js.Dict.get("byeValue")->Option.getExn->ByeValue.decode,
     lastBackup: d
-    ->Option.flatMap(d => Js.Dict.get(d, "lastBackup"))
+    ->Js.Dict.get("lastBackup")
     ->Option.flatMap(Js.Json.decodeString)
     ->Option.getExn
     ->Js.Date.fromString,

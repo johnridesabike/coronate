@@ -13,14 +13,14 @@ type t = {
 module Option = Belt.Option
 
 let decode = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
     github_token: d
-    ->Option.flatMap(d => Js.Dict.get(d, "github_token"))
+    ->Js.Dict.get("github_token")
     ->Option.flatMap(Js.Json.decodeString)
     ->Option.getExn,
     github_gist_id: d
-    ->Option.flatMap(d => Js.Dict.get(d, "github_gist_id"))
+    ->Js.Dict.get("github_gist_id")
     ->Option.flatMap(Js.Json.decodeString)
     ->Option.getExn,
   }

@@ -37,15 +37,12 @@ external unsafe_date: Js.Json.t => Js.Date.t = "%identity"
 
 @raises(Not_found)
 let decode = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
-    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Data_Id.decode,
-    name: d
-    ->Option.flatMap(d => Js.Dict.get(d, "name"))
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn,
+    id: d->Js.Dict.get("id")->Option.getExn->Data_Id.decode,
+    name: d->Js.Dict.get("name")->Option.flatMap(Js.Json.decodeString)->Option.getExn,
     date: d
-    ->Option.flatMap(d => Js.Dict.get(d, "date"))
+    ->Js.Dict.get("date")
     ->Option.map(json =>
       switch Js.Json.decodeString(json) {
       | Some(s) => Js.Date.fromString(s)
@@ -54,41 +51,37 @@ let decode = json => {
     )
     ->Option.getExn,
     playerIds: d
-    ->Option.flatMap(d => Js.Dict.get(d, "playerIds"))
+    ->Js.Dict.get("playerIds")
     ->Option.flatMap(Js.Json.decodeArray)
     ->Option.getExn
     ->Array.map(Data_Id.decode)
     ->Set.fromArray(~id=Data_Id.id),
     byeQueue: d
-    ->Option.flatMap(d => Js.Dict.get(d, "byeQueue"))
+    ->Js.Dict.get("byeQueue")
     ->Option.flatMap(Js.Json.decodeArray)
     ->Option.getExn
     ->Array.map(Data_Id.decode),
     tieBreaks: d
-    ->Option.flatMap(d => Js.Dict.get(d, "tieBreaks"))
+    ->Js.Dict.get("tieBreaks")
     ->Option.flatMap(Js.Json.decodeArray)
     ->Option.getExn
     ->Array.map(Data_Scoring.TieBreak.decode),
-    roundList: d
-    ->Option.flatMap(d => Js.Dict.get(d, "roundList"))
-    ->Option.getExn
-    ->Data_Rounds.decode,
+    roundList: d->Js.Dict.get("roundList")->Option.getExn->Data_Rounds.decode,
     scoreAdjustments: d
-    ->Option.flatMap(d => Js.Dict.get(d, "scoreAdjustments"))
+    ->Js.Dict.get("scoreAdjustments")
     ->Option.flatMap(Js.Json.decodeArray)
-    ->Option.map(a =>
-      Array.keepMap(a, Js.Json.decodeArray)->Array.keepMap(a =>
-        switch (a[0], a[1]) {
-        | (Some(k), Some(v)) =>
-          switch Js.Json.decodeNumber(v) {
-          | Some(v) => Some((Data_Id.decode(k), v))
-          | None => None
-          }
-        | _ => None
-        }
-      )
-    )
     ->Option.getWithDefault([])
+    ->Array.keepMap(Js.Json.decodeArray)
+    ->Array.keepMap(a =>
+      switch (a[0], a[1]) {
+      | (Some(k), Some(v)) =>
+        switch Js.Json.decodeNumber(v) {
+        | Some(v) => Some((Data_Id.decode(k), v))
+        | None => None
+        }
+      | _ => None
+      }
+    )
     ->Map.fromArray(~id=Data_Id.id),
   }
 }

@@ -36,17 +36,17 @@ type input_data = {
 
 @raises(Not_found)
 let decodeOptions = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
-    config: d->Option.flatMap(d => Js.Dict.get(d, "config"))->Option.getExn->Config.decode,
+    config: d->Js.Dict.get("config")->Option.getExn->Config.decode,
     players: d
-    ->Option.flatMap(d => Js.Dict.get(d, "players"))
+    ->Js.Dict.get("players")
     ->Option.flatMap(Js.Json.decodeObject)
     ->Option.getExn
     ->dictToMap
     ->Map.map(Player.decode),
     tournaments: d
-    ->Option.flatMap(d => Js.Dict.get(d, "tournaments"))
+    ->Js.Dict.get("tournaments")
     ->Option.flatMap(Js.Json.decodeObject)
     ->Option.getExn
     ->dictToMap
