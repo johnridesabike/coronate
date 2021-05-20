@@ -25,10 +25,10 @@ module Round = {
 
   let empty: t = []
 
-  let encode = Json.Encode.array(Match.encode)
+  let encode = t => t->Array.map(Match.encode)->Js.Json.array
 
-  @raises(DecodeError)
-  let decode = Json.Decode.array(Match.decode)
+  @raises(Not_found)
+  let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Match.decode)
 
   let size = Js.Array2.length
 
@@ -74,10 +74,10 @@ let toArray = x => x
 
 let empty: t = [[]]
 
-let encode = Json.Encode.array(Round.encode)
+let encode = t => t->Array.map(Round.encode)->Js.Json.array
 
-@raises(DecodeError)
-let decode = Json.Decode.array(Round.decode)
+@raises(Not_found)
+let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Round.decode)
 
 let size = Js.Array2.length
 

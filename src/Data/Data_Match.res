@@ -6,6 +6,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 module Id = Data_Id
+module Float = Belt.Float
+module Option = Belt.Option
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
@@ -27,10 +29,9 @@ module Result = {
     | _ => NotSet
     }
 
-  let encode = data => data->toString->Json.Encode.string
+  let encode = data => data->toString->Js.Json.string
 
-  @raises(DecodeError)
-  let decode = json => json->Json.Decode.string->fromString
+  let decode = json => Js.Json.decodeString(json)->Option.getExn->fromString
 }
 
 type t = {
@@ -44,34 +45,47 @@ type t = {
   result: Result.t,
 }
 
-@raises(DecodeError)
 let decode = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)
   {
-    id: json |> field("id", Id.decode),
-    whiteId: json |> field("whiteId", Id.decode),
-    blackId: json |> field("blackId", Id.decode),
-    whiteNewRating: json |> field("whiteNewRating", int),
-    blackNewRating: json |> field("blackNewRating", int),
-    whiteOrigRating: json |> field("whiteOrigRating", int),
-    blackOrigRating: json |> field("blackOrigRating", int),
-    result: json |> field("result", Result.decode),
+    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Id.decode,
+    whiteId: d->Option.flatMap(d => Js.Dict.get(d, "whiteId"))->Option.getExn->Id.decode,
+    blackId: d->Option.flatMap(d => Js.Dict.get(d, "blackId"))->Option.getExn->Id.decode,
+    whiteNewRating: d
+    ->Option.flatMap(d => Js.Dict.get(d, "whiteNewRating"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Float.toInt,
+    blackNewRating: d
+    ->Option.flatMap(d => Js.Dict.get(d, "blackNewRating"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Float.toInt,
+    whiteOrigRating: d
+    ->Option.flatMap(d => Js.Dict.get(d, "whiteOrigRating"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Float.toInt,
+    blackOrigRating: d
+    ->Option.flatMap(d => Js.Dict.get(d, "blackOrigRating"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Float.toInt,
+    result: d->Option.flatMap(d => Js.Dict.get(d, "result"))->Option.getExn->Result.decode,
   }
 }
 
-let encode = data => {
-  open Json.Encode
-  object_(list{
-    ("id", data.id |> Id.encode),
-    ("whiteId", data.whiteId |> Id.encode),
-    ("blackId", data.blackId |> Id.encode),
-    ("whiteNewRating", data.whiteNewRating |> int),
-    ("blackNewRating", data.blackNewRating |> int),
-    ("whiteOrigRating", data.whiteOrigRating |> int),
-    ("blackOrigRating", data.blackOrigRating |> int),
-    ("result", data.result |> Result.encode),
-  })
-}
+let encode = data =>
+  Js.Dict.fromArray([
+    ("id", data.id->Id.encode),
+    ("whiteId", data.whiteId->Id.encode),
+    ("blackId", data.blackId->Id.encode),
+    ("whiteNewRating", data.whiteNewRating->Float.fromInt->Js.Json.number),
+    ("blackNewRating", data.blackNewRating->Float.fromInt->Js.Json.number),
+    ("whiteOrigRating", data.whiteOrigRating->Float.fromInt->Js.Json.number),
+    ("blackOrigRating", data.blackOrigRating->Float.fromInt->Js.Json.number),
+    ("result", data.result->Result.encode),
+  ])->Js.Json.object_
 
 let byeResultForPlayerColor = (byeValue: Data_Config.ByeValue.t, result): Result.t =>
   switch byeValue {

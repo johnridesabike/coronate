@@ -33,12 +33,13 @@ let loadDemoDB = (_): unit => {
   ->Promise.Js.fromBsPromise
   ->Promise.Js.catch(_ => {
     let () = %raw(`document.body.style.cursor = "auto"`)
-    Utils.alert("Couldn't load demo data.")
+    Webapi.Dom.Window.alert("Couldn't load demo data.", Webapi.Dom.window)
+
     Promise.resolved(((), (), ()))
   })
   ->Promise.get(_ => {
     let () = %raw(`document.body.style.cursor = "auto"`)
-    Utils.alert("Demo data loaded!")
+    Webapi.Dom.Window.alert("Demo data loaded!", Webapi.Dom.window)
   })
 }
 /* ******************************************************************************

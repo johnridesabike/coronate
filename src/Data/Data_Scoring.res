@@ -147,10 +147,10 @@ module TieBreak = {
     | _ => Median
     }
 
-  let encode = data => data->toString->Json.Encode.string
+  let encode = data => data->toString->Js.Json.string
 
-  @raises(DecodeError)
-  let decode = json => json->Json.Decode.string->fromString
+  @raises(Not_found)
+  let decode = json => Js.Json.decodeString(json)->Option.getExn->fromString
 }
 
 let make = id => {

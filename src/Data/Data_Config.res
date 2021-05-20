@@ -5,10 +5,10 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+module Option = Belt.Option
+
 module ByeValue = {
-  type t =
-    | Full
-    | Half
+  type t = Full | Half
 
   let toFloat = x =>
     switch x {
@@ -23,10 +23,9 @@ module ByeValue = {
     | _ => Full
     }
 
-  let encode = data => data->toFloat->Json.Encode.float
+  let encode = data => data->toFloat->Js.Json.number
 
-  @raises(DecodeError)
-  let decode = json => json->Json.Decode.float->fromFloat
+  let decode = json => Js.Json.decodeNumber(json)->Option.getExn->fromFloat
 }
 
 type t = {
@@ -35,24 +34,25 @@ type t = {
   lastBackup: Js.Date.t,
 }
 
-@raises(DecodeError)
 let decode = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
-    avoidPairs: json |> field("avoidPairs", Data_Id.Pair.Set.decode),
-    byeValue: json |> field("byeValue", ByeValue.decode),
-    lastBackup: json |> field("lastBackup", date),
+    avoidPairs: d->Js.Dict.get("avoidPairs")->Option.getExn->Data_Id.Pair.Set.decode,
+    byeValue: d->Js.Dict.get("byeValue")->Option.getExn->ByeValue.decode,
+    lastBackup: d
+    ->Js.Dict.get("lastBackup")
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn
+    ->Js.Date.fromString,
   }
 }
 
-let encode = data => {
-  open Json.Encode
-  object_(list{
-    ("avoidPairs", data.avoidPairs |> Data_Id.Pair.Set.encode),
-    ("byeValue", data.byeValue |> ByeValue.encode),
-    ("lastBackup", data.lastBackup |> date),
-  })
-}
+let encode = data =>
+  Js.Dict.fromArray([
+    ("avoidPairs", data.avoidPairs->Data_Id.Pair.Set.encode),
+    ("byeValue", data.byeValue->ByeValue.encode),
+    ("lastBackup", data.lastBackup->Js.Date.toJSONUnsafe->Js.Json.string),
+  ])->Js.Json.object_
 
 let default = {
   byeValue: Full,
