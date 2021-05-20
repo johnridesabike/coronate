@@ -30,11 +30,14 @@ let loadDemoDB = _ => {
     LocalForage.Map.setItems(players, ~items=DemoData.players->Data.Id.Map.toStringArray),
     LocalForage.Map.setItems(tournaments, ~items=DemoData.tournaments->Data.Id.Map.toStringArray),
   ))
-  ->Promise.then(_ => Promise.resolve(Utils.alert("Demo data loaded!")))
+  ->Promise.then(_ =>
+    Webapi.Dom.Window.alert("Demo data loaded!", Webapi.Dom.window)->Promise.resolve
+  )
   ->Promise.catch(e => {
     Js.Console.error(e)
-    Utils.alert(
+    Webapi.Dom.Window.alert(
       "I couldn't load demo data. You can find further information in the console.",
+      Webapi.Dom.window,
     )->Promise.resolve
   })
   ->Promise.finally(() => %raw(`document.body.style.cursor = "auto"`))

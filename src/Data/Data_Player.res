@@ -5,11 +5,10 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+module Option = Belt.Option
+
 module Type = {
-  type t =
-    | Person
-    | Dummy
-    | Missing
+  type t = Person | Dummy | Missing
 
   let toString = data =>
     switch data {
@@ -26,10 +25,9 @@ module Type = {
     | _ => Person
     }
 
-  let encode = data => data->toString->Json.Encode.string
+  let encode = data => data->toString->Js.Json.string
 
-  @raises(DecodeError)
-  let decode = data => data->Json.Decode.string->fromString
+  let decode = data => Js.Json.decodeString(data)->Option.getExn->fromString
 }
 
 type t = {
@@ -43,30 +41,41 @@ type t = {
 
 let fullName = t => t.firstName ++ " " ++ t.lastName
 
-@raises(DecodeError)
 let decode = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)
   {
-    firstName: json |> field("firstName", string),
-    id: json |> field("id", Data_Id.decode),
-    lastName: json |> field("lastName", string),
-    matchCount: json |> field("matchCount", int),
-    rating: json |> field("rating", int),
-    type_: json |> field("type_", Type.decode),
+    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Data_Id.decode,
+    firstName: d
+    ->Option.flatMap(d => Js.Dict.get(d, "firstName"))
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn,
+    lastName: d
+    ->Option.flatMap(d => Js.Dict.get(d, "lastName"))
+    ->Option.flatMap(Js.Json.decodeString)
+    ->Option.getExn,
+    matchCount: d
+    ->Option.flatMap(d => Js.Dict.get(d, "matchCount"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Belt.Float.toInt,
+    rating: d
+    ->Option.flatMap(d => Js.Dict.get(d, "rating"))
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.getExn
+    ->Belt.Float.toInt,
+    type_: d->Option.flatMap(d => Js.Dict.get(d, "type_"))->Option.getExn->Type.decode,
   }
 }
 
-let encode = data => {
-  open Json.Encode
-  object_(list{
-    ("firstName", data.firstName |> string),
-    ("id", data.id |> Data_Id.encode),
-    ("lastName", data.lastName |> string),
-    ("matchCount", data.matchCount |> int),
-    ("rating", data.rating |> int),
-    ("type_", data.type_ |> Type.encode),
-  })
-}
+let encode = data =>
+  Js.Dict.fromArray([
+    ("firstName", data.firstName->Js.Json.string),
+    ("id", data.id->Data_Id.encode),
+    ("lastName", data.lastName->Js.Json.string),
+    ("matchCount", data.matchCount->Belt.Float.fromInt->Js.Json.number),
+    ("rating", data.rating->Belt.Float.fromInt->Js.Json.number),
+    ("type_", data.type_->Type.encode),
+  ])->Js.Json.object_
 
 let dummy = {
   id: Data_Id.dummy,

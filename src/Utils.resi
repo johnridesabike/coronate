@@ -21,8 +21,6 @@ module Array: {
   let swap: (t<'a>, int, int) => t<'a>
 }
 
-let alert: string => unit
-
 module WebpackAssets: {
   @module("./assets/icon-min.svg") external logo: string = "default"
   //@module("./assets/caution.svg") external caution: string = "default"

@@ -20,7 +20,10 @@ let getDateForFile = () => {
 }
 
 let invalidAlert = () =>
-  Utils.alert("That data is invalid! A more helpful error message could not be written yet.")
+  Webapi.Dom.Window.alert(
+    "That data is invalid! A more helpful error message could not be written yet.",
+    Webapi.Dom.window,
+  )
 
 let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
 let mapToDict = map => map->Data.Id.Map.toStringArray->Js.Dict.fromArray
@@ -31,24 +34,32 @@ type input_data = {
   tournaments: Data.Id.Map.t<Tournament.t>,
 }
 
-@raises(DecodeError)
+@raises(Not_found)
 let decodeOptions = json => {
-  open Json.Decode
+  let d = Js.Json.decodeObject(json)->Option.getExn
   {
-    config: json |> field("config", Config.decode),
-    players: json |> field("players", dict(Player.decode)) |> dictToMap,
-    tournaments: json |> field("tournaments", dict(Tournament.decode)) |> dictToMap,
+    config: d->Js.Dict.get("config")->Option.getExn->Config.decode,
+    players: d
+    ->Js.Dict.get("players")
+    ->Option.flatMap(Js.Json.decodeObject)
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Player.decode),
+    tournaments: d
+    ->Js.Dict.get("tournaments")
+    ->Option.flatMap(Js.Json.decodeObject)
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Tournament.decode),
   }
 }
 
-let encodeOptions = data => {
-  open Json.Encode
-  object_(list{
+let encodeOptions = data =>
+  Js.Dict.fromArray([
     ("config", Config.encode(data.config)),
-    ("players", Map.map(data.players, Player.encode)->mapToDict->jsonDict),
-    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->jsonDict),
-  })
-}
+    ("players", Map.map(data.players, Player.encode)->mapToDict->Js.Json.object_),
+    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->Js.Json.object_),
+  ])->Js.Json.object_
 
 module LastBackupDate = {
   @react.component
@@ -83,7 +94,7 @@ module GistOpts = {
   | None => Js.Obj.empty()
   }
 
-  let savedAlert = () => Utils.alert("Data saved.")
+  let savedAlert = () => Webapi.Dom.Window.alert("Data saved.", Webapi.Dom.window)
 
   @react.component
   let make = (~exportData, ~configDispatch: Db.actionConfig => unit, ~loadJson) => {
@@ -181,7 +192,10 @@ module GistOpts = {
               })
               ->Promise.then(() => loadGistList(auth))
               ->Promise.catch(e => {
-                Utils.alert("Backup failed. Check your GitHub credentials.")
+                Webapi.Dom.Window.alert(
+                  "Backup failed. Check your GitHub credentials.",
+                  Webapi.Dom.window,
+                )
                 handleAuthError(e)
               })
               ->ignore
@@ -230,8 +244,9 @@ module GistOpts = {
                   })
                   ->Promise.then(() => loadGistList(auth))
                   ->Promise.catch(e => {
-                    Utils.alert(
+                    Webapi.Dom.Window.alert(
                       "Backup failed. Check your GitHub credentials or try a different gist.",
+                      Webapi.Dom.window,
                     )
                     handleAuthError(e)
                   })
@@ -298,7 +313,7 @@ let make = (~windowDispatch=_ => ()) => {
     () => {config: config, players: players, tournaments: tournaments},
     (config, tournaments, players),
   )
-  let exportDataURI = exportData->encodeOptions->Json.stringify->Js.Global.encodeURIComponent
+  let exportDataURI = exportData->encodeOptions->Js.Json.stringify->Js.Global.encodeURIComponent
   React.useEffect2(() => {
     let encoded = encodeOptions(exportData)
     let json = Js.Json.stringifyWithSpace(encoded, 2)
@@ -310,47 +325,39 @@ let make = (~windowDispatch=_ => ()) => {
     tourneysDispatch(SetAll(tournaments))
     configDispatch(SetState(config))
     playersDispatch(SetAll(players))
-    Utils.alert("Data loaded.")
+    Webapi.Dom.Window.alert("Data loaded.", Webapi.Dom.window)
   }
 
-  @raises(DecodeError)
-  let loadJson = json => {
-    switch Json.parse(json) {
-    | None =>
-      Js.Console.error(json)
+  let loadJson = json =>
+    try {
+      let {config, players, tournaments} = json->Js.Json.parseExn->decodeOptions
+      loadData(~tournaments, ~players, ~config)
+    } catch {
+    | e =>
+      Js.Console.error(e)
       invalidAlert()
-    | Some(rawJson) =>
-      switch decodeOptions(rawJson) {
-      | exception Json.Decode.DecodeError(_) =>
-        Js.Console.error(rawJson)
-        invalidAlert()
-      | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
-      }
     }
-  }
 
   let handleText = event => {
     ReactEvent.Form.preventDefault(event)
     loadJson(text)
   }
 
-  @raises(DecodeError)
   let handleFile = event => {
     module FileReader = Externals.FileReader
     ReactEvent.Form.preventDefault(event)
     let reader = FileReader.make()
 
-    @raises(DecodeError)
     let onload = ev => {
       ignore(ev)
       let data = ev["target"]["result"]
-      switch Json.parse(data) {
-      | None => invalidAlert()
-      | Some(rawJson) =>
-        switch decodeOptions(rawJson) {
-        | exception Json.Decode.DecodeError(_) => invalidAlert()
-        | {config, players, tournaments} => loadData(~tournaments, ~players, ~config)
-        }
+      try {
+        let {config, players, tournaments} = data->Js.Json.parseExn->decodeOptions
+        loadData(~tournaments, ~players, ~config)
+      } catch {
+      | e =>
+        Js.Console.error(e)
+        invalidAlert()
       }
     }
     FileReader.setOnLoad(reader, onload)
