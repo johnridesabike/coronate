@@ -27,9 +27,9 @@ module Splash = {
         <Utils.Notification kind=Warning>
           <div>
             <p>
-              {React.string("Coronate requires no account to use, and")}
+              {React.string("Coronate does not require an account.")}
               <br />
-              {React.string("saves your data locally in your browser.")}
+              {React.string("It saves your data locally in your browser.")}
             </p>
             <p>
               {React.string("To manage your data, visit the ")}
@@ -91,7 +91,7 @@ module Splash = {
 let log2 = num => log(num) /. log(2.0)
 
 let fixNumber = num =>
-  if num < 0.0 || (num == infinity || num == neg_infinity) {
+  if num < 0.0 || num == infinity || num == neg_infinity {
     0.0
   } else {
     num
