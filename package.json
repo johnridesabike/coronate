@@ -67,6 +67,7 @@
     "numeral": "^2.0.6",
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "photon-colors": "^3.3.2",
+    "postcss": "^8.3.6",
     "postcss-flexbugs-fixes": "4.2.1",
     "postcss-loader": "3.0.0",
     "postcss-normalize": "8.0.1",
