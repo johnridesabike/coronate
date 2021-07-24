@@ -108,12 +108,9 @@ let useAllDb = store => {
          
          It needs to be fixed. */
       ->Promise.then(_ => LocalForage.Map.getKeys(store))
-      ->Promise.thenResolve(keys => {
+      ->Promise.then(keys => {
         let deleted = Array.keep(keys, x => !Map.has(items, Data.Id.fromString(x)))
-        switch deleted {
-        | [] => Promise.resolve()
-        | deleted => LocalForage.Map.removeItems(store, ~items=deleted)
-        }
+        LocalForage.Map.removeItems(store, ~items=deleted)
       })
       ->ignore
     }
@@ -169,8 +166,9 @@ let useConfig = () => {
         loaded.setTrue()
       }
     )
-    ->Promise.catch(_ => {
+    ->Promise.catch(error => {
       if !didCancel.contents {
+        Js.Console.error(error)
         ()->LocalForage.Js.clear->ignore
         dispatch(SetState(Data.Config.default))
         loaded.setTrue()
