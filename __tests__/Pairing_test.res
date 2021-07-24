@@ -104,12 +104,12 @@ test("Auto-matching with bye players works", () => {
     </LoadTournament>,
   )
 
-  page |> getByText(~matcher=#RegExp(%bs.re("/auto-pair unmatched players/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
 
   page
   |> getByTestId(~matcher=#Str("match-3-black"))
   |> JestDom.expect
-  |> toHaveTextContent(#Str("Bye Player"))
+  |> toHaveTextContent(#Str("[Bye]"))
 })
 
 test("Auto-matching works with manually adjusted scores", () => {
@@ -119,9 +119,9 @@ test("Auto-matching works with manually adjusted scores", () => {
       {tournament => <> <PageTourneyPlayers tournament /> <PageRound tournament roundId=3 /> </>}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/more options for kinga forrester/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/more options for kinga forrester/i"))) |> click
   page
-  |> getByLabelText(~matcher=#RegExp(%bs.re("/score adjustment/i")))
+  |> getByLabelText(~matcher=#RegExp(%re("/score adjustment/i")))
   |> change(
     ~eventInit={
       "target": {
@@ -129,10 +129,10 @@ test("Auto-matching works with manually adjusted scores", () => {
       },
     },
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/save/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/more options for TV's Max/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/save/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/more options for TV's Max/i"))) |> click
   page
-  |> getByLabelText(~matcher=#RegExp(%bs.re("/score adjustment/i")))
+  |> getByLabelText(~matcher=#RegExp(%re("/score adjustment/i")))
   |> change(
     ~eventInit={
       "target": {
@@ -140,8 +140,8 @@ test("Auto-matching works with manually adjusted scores", () => {
       },
     },
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/save/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/auto-pair unmatched players/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/save/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
   page
   |> getByTestId(~matcher=#Str("match-0-white"))
   |> JestDom.expect
