@@ -23,11 +23,11 @@
   "suffix": ".bs.js",
   "namespace": true,
   "bs-dependencies": [
+    "@ryyppy/rescript-promise",
     "reason-react",
     "re-classnames",
     "bs-webapi",
     "rescript-blossom",
-    "reason-promise",
     "re-formality"
   ],
   "bs-dev-dependencies": [

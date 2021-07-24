@@ -6,7 +6,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 module LF = LocalForage_Js
-module P = Js.Promise
+module P = Promise
 module Id = LocalForage_Id
 
 type t<'a, 'identity> = {
@@ -23,7 +23,7 @@ let make = (config, type t id, data: Id.encodable<t, id>) => {
 }
 
 let get = ({store, decode, _}) =>
-  LocalForage_Plugins.GetItems.allJson(store) |> P.then_(items =>
+  LocalForage_Plugins.GetItems.allJson(store)->P.then(items =>
     switch decode(. items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)

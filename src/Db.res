@@ -25,22 +25,21 @@ let tournaments = LocalForage.Map.make(
 
 let loadDemoDB = (_): unit => {
   let () = %raw(`document.body.style.cursor = "wait"`)
-  Js.Promise.all3((
+  Promise.all3((
     LocalForage.Record.set(configDb, ~items=DemoData.config),
     LocalForage.Map.setItems(players, ~items=DemoData.players->Data.Id.Map.toStringArray),
     LocalForage.Map.setItems(tournaments, ~items=DemoData.tournaments->Data.Id.Map.toStringArray),
   ))
-  ->Promise.Js.fromBsPromise
-  ->Promise.Js.catch(_ => {
+  ->Promise.thenResolve(_ => Webapi.Dom.Window.alert("Demo data loaded!", Webapi.Dom.window))
+  ->Promise.catch(_ => {
     let () = %raw(`document.body.style.cursor = "auto"`)
     Webapi.Dom.Window.alert("Couldn't load demo data.", Webapi.Dom.window)
-
-    Promise.resolved(((), (), ()))
+    Promise.resolve()
   })
-  ->Promise.get(_ => {
+  ->Promise.finally(_ => {
     let () = %raw(`document.body.style.cursor = "auto"`)
-    Webapi.Dom.Window.alert("Demo data loaded!", Webapi.Dom.window)
   })
+  ->ignore
 }
 /* ******************************************************************************
  * Generic database hooks
@@ -73,15 +72,13 @@ let useAllDb = store => {
   React.useEffect0(() => {
     let didCancel = ref(false)
     LocalForage.Map.getAllItems(store)
-    ->Promise.Js.fromBsPromise
-    ->Promise.Js.toResult
-    ->Promise.tapOk(results =>
+    ->Promise.thenResolve(results =>
       if !didCancel.contents {
         dispatch(SetAll(results->Data.Id.Map.fromStringArray))
         loaded.setTrue()
       }
     )
-    ->Promise.getError(error =>
+    ->Promise.catch(error => {
       if !didCancel.contents {
         /* Even if there was an error, we'll clear the database. This means a
              corrupt database will get wiped. In the future, we may need to
@@ -90,7 +87,9 @@ let useAllDb = store => {
         ()->LocalForage.Js.clear->ignore
         loaded.setTrue()
       }
-    )
+      Promise.resolve()
+    })
+    ->ignore
     Some(() => didCancel := true)
   })
   /*
@@ -100,8 +99,6 @@ let useAllDb = store => {
     if loaded.state {
       store
       ->LocalForage.Map.setItems(~items=items->Data.Id.Map.toStringArray)
-      ->Promise.Js.fromBsPromise
-      ->Promise.Js.toResult
       /* Delete any DB keys that aren't present in the state, with the
          assumption that the state must have intentionally removed them.
 
@@ -110,20 +107,12 @@ let useAllDb = store => {
          newer render.
          
          It needs to be fixed. */
-      ->Promise.getOk(() =>
-        LocalForage.Map.getKeys(store)
-        ->Promise.Js.fromBsPromise
-        ->Promise.Js.toResult
-        ->Promise.getOk(keys => {
-          let stateKeys = Map.keysToArray(items)
-          let deleted = Js.Array2.filter(keys, x =>
-            !Js.Array2.includes(stateKeys, x->Data.Id.fromString)
-          )
-          if Array.size(deleted) > 0 {
-            LocalForage.Map.removeItems(store, ~items=deleted)->ignore
-          }
-        })
-      )
+      ->Promise.then(_ => LocalForage.Map.getKeys(store))
+      ->Promise.then(keys => {
+        let deleted = Array.keep(keys, x => !Map.has(items, Data.Id.fromString(x)))
+        LocalForage.Map.removeItems(store, ~items=deleted)
+      })
+      ->ignore
     }
     None
   }, (items, loaded.state))
@@ -171,21 +160,22 @@ let useConfig = () => {
   React.useEffect0(() => {
     let didCancel = ref(false)
     LocalForage.Record.get(configDb)
-    ->Promise.Js.fromBsPromise
-    ->Promise.Js.toResult
-    ->Promise.tapOk(values =>
+    ->Promise.thenResolve(values =>
       if !didCancel.contents {
         dispatch(SetState(values))
         loaded.setTrue()
       }
     )
-    ->Promise.getError(_ =>
+    ->Promise.catch(error => {
       if !didCancel.contents {
+        Js.Console.error(error)
         ()->LocalForage.Js.clear->ignore
         dispatch(SetState(Data.Config.default))
         loaded.setTrue()
       }
-    )
+      Promise.resolve()
+    })
+    ->ignore
     Some(() => didCancel := true)
   })
   /* Save items to the database. */
@@ -221,21 +211,21 @@ let useAuth = () => {
   React.useEffect0(() => {
     let didCancel = ref(false)
     LocalForage.Record.get(authDb)
-    ->Promise.Js.fromBsPromise
-    ->Promise.Js.toResult
-    ->Promise.tapOk(values =>
+    ->Promise.thenResolve(values =>
       if !didCancel.contents {
         dispatch(SetState(values))
         loaded.setTrue()
       }
     )
-    ->Promise.getError(_ =>
+    ->Promise.catch(_ => {
       if !didCancel.contents {
         ()->LocalForage.Js.clear->ignore
         dispatch(SetState(Data.Auth.default))
         loaded.setTrue()
       }
-    )
+      Promise.resolve()
+    })
+    ->ignore
     Some(() => didCancel := true)
   })
   /* Save items to the database. */

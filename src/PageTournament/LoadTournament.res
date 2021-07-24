@@ -59,9 +59,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
     let didCancel = ref(false)
     Db.tournaments
     ->LocalForage.Map.getItem(~key=tourneyId)
-    ->Promise.Js.fromBsPromise
-    ->Promise.Js.toResult
-    ->Promise.tapOk(value =>
+    ->Promise.thenResolve(value =>
       switch value {
       | _ if didCancel.contents => ()
       | None => setTourneyLoaded(_ => Error)
@@ -70,11 +68,13 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
         setTourneyLoaded(_ => Loaded)
       }
     )
-    ->Promise.getError(_ =>
+    ->Promise.catch(_ => {
       if !didCancel.contents {
         setTourneyLoaded(_ => Error)
       }
-    )
+      Promise.resolve()
+    })
+    ->ignore
     Some(() => didCancel := true)
   }, [tourneyId])
 
