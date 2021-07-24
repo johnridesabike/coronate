@@ -93,18 +93,17 @@ let byeResultForPlayerColor = (byeValue: Data_Config.ByeValue.t, result): Result
   | Full => result
   }
 
-let scoreByeMatch = (match_, ~byeValue) =>
-  switch (Id.isDummy(match_.whiteId), Id.isDummy(match_.blackId)) {
+let scoreByeMatch = (match, ~byeValue) =>
+  switch (Id.isDummy(match.whiteId), Id.isDummy(match.blackId)) {
   | (true, false) => {
-      ...match_,
+      ...match,
       result: byeResultForPlayerColor(byeValue, BlackWon),
     }
   | (false, true) => {
-      ...match_,
+      ...match,
       result: byeResultForPlayerColor(byeValue, WhiteWon),
     }
-  | (true, true) /* Two dummies?! */
-  | (false, false) => match_
+  | _ => match
   }
 
 let manualPair = ((white: Data_Player.t, black: Data_Player.t), byeValue) =>

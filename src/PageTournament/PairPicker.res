@@ -47,6 +47,34 @@ type listEntry = {
 let sortByName = Hooks.GetString((. x) => x.player.firstName)
 let sortByIdeal = Hooks.GetFloat((. x) => x.ideal)
 
+module SelectPlayerRow = {
+  @react.component
+  let make = (
+    ~player: Player.t,
+    ~ideal,
+    ~isPlayerSelectable,
+    ~selectPlayer,
+    ~isOnePlayerSelected,
+  ) =>
+    <tr className={Player.Type.toString(player.type_)}>
+      <td>
+        <button
+          className="button-ghost"
+          disabled={!isPlayerSelectable(player.id)}
+          onClick={_ => selectPlayer(player.id)}>
+          <Icons.UserPlus />
+          <Externals.VisuallyHidden>
+            {`Add ${Player.fullName(player)}`->React.string}
+          </Externals.VisuallyHidden>
+        </button>
+      </td>
+      <td className="pageround__selectlist-name"> {player->Player.fullName->React.string} </td>
+      <td>
+        {React.string(isOnePlayerSelected ? ideal->Numeral.make->Numeral.format("%") : "-")}
+      </td>
+    </tr>
+}
+
 module SelectList = {
   @react.component
   let make = (~pairData, ~stagedPlayers, ~setStagedPlayers, ~unmatched) => {
@@ -111,7 +139,7 @@ module SelectList = {
     if Map.size(unmatched) == 0 {
       React.null
     } else {
-      <table className="content">
+      <table className="content pageround__select-list">
         <thead>
           <tr>
             <th>
@@ -130,27 +158,21 @@ module SelectList = {
           </tr>
         </thead>
         <tbody>
-          {sorted.Hooks.table
-          ->Array.map(({player, ideal}) => {
-            <tr key={player.id->Data.Id.toString}>
-              <td>
-                <button
-                  className="button-ghost"
-                  disabled={!isPlayerSelectable(player.id)}
-                  onClick={_ => selectPlayer(player.id)}>
-                  <Icons.UserPlus />
-                  <Externals.VisuallyHidden>
-                    {`Add ${Player.fullName(player)}`->React.string}
-                  </Externals.VisuallyHidden>
-                </button>
-              </td>
-              <td> {player->Player.fullName->React.string} </td>
-              <td>
-                {React.string(isOnePlayerSelected ? ideal->Numeral.make->Numeral.format("%") : "-")}
-              </td>
-            </tr>
-          })
+          {sorted.table
+          ->Array.map(({player, ideal}) =>
+            <SelectPlayerRow
+              key={player.id->Data.Id.toString}
+              player
+              ideal
+              isOnePlayerSelected
+              isPlayerSelectable
+              selectPlayer
+            />
+          )
           ->React.array}
+          <SelectPlayerRow
+            player=Data.Player.dummy ideal=0.0 isOnePlayerSelected isPlayerSelectable selectPlayer
+          />
         </tbody>
       </table>
     }
@@ -392,7 +414,7 @@ let make = (
       </div>
       <Utils.PanelContainer>
         <Utils.Panel>
-          <SelectList setStagedPlayers stagedPlayers unmatched=unmatchedWithDummy pairData />
+          <SelectList setStagedPlayers stagedPlayers unmatched pairData />
         </Utils.Panel>
         <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
           <Stage
