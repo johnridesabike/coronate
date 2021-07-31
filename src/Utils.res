@@ -10,6 +10,7 @@ open Belt
 let github_url = "https://github.com/johnridesabike/coronate"
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE"
 let issues_url = "https://github.com/johnridesabike/coronate/issues/new"
+let changelog_url = "https://github.com/johnridesabike/coronate/blob/master/CHANGLOG.md"
 
 /* Pass a `compare` function to avoid polymorphic compare errors. */
 type direction<'data, 'field> = (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int

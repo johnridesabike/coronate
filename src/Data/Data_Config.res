@@ -8,18 +8,19 @@
 module Option = Belt.Option
 
 module ByeValue = {
-  type t = Full | Half
+  type t = Full | Half | Zero
 
   let toFloat = x =>
     switch x {
     | Full => 1.0
     | Half => 0.5
+    | Zero => 0.0
     }
 
   let fromFloat = x =>
     switch x {
-    | 1.0 => Full
     | 0.5 => Half
+    | 0.0 => Zero
     | _ => Full
     }
 

@@ -56,6 +56,7 @@ module About = {
           {React.string("Coronate")}
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
+        <p> <a href=Utils.changelog_url> {React.string("View the changelog.")} </a> </p>
         <p>
           {`Copyright ${HtmlEntities.copy} 2021 John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>

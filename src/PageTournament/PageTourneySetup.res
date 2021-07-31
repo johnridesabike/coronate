@@ -55,20 +55,12 @@ let make = (~tournament: LoadTournament.t) => {
     None
   }, [editing])
 
-  let changeToOne = _ => {
+  let changeByes = (bye, s) => {
     setTourney({
       ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Full),
+      roundList: roundList->Rounds.updateByeScores(bye),
     })
-    Webapi.Dom.Window.alert("Bye scores updated to 1.", Webapi.Dom.window)
-  }
-
-  let changeToOneHalf = _ => {
-    setTourney({
-      ...tourney,
-      roundList: roundList->Rounds.updateByeScores(Half),
-    })
-    Webapi.Dom.Window.alert(`Bye scores updated to ½.`, Webapi.Dom.window)
+    Webapi.Dom.Window.alert(`Bye scores updated to ${s}.`, Webapi.Dom.window)
   }
 
   let updateDate = event => {
@@ -151,18 +143,24 @@ let make = (~tournament: LoadTournament.t) => {
         </button>
       </p>
     }}
-    <h2> {React.string("Change bye scores")} </h2>
-    <button ariaDescribedby="score-desc" onClick=changeToOne>
+    <h2> {React.string("Change all bye scores")} </h2>
+    <button ariaDescribedby="score-desc" onClick={_ => changeByes(Full, "1")}>
       {React.string("Change byes to 1")}
     </button>
     {React.string(" ")}
-    <button ariaDescribedby="score-desc" onClick=changeToOneHalf>
+    <button ariaDescribedby="score-desc" onClick={_ => changeByes(Half, `½`)}>
       {React.string(`Change byes to ½`)}
     </button>
+    {React.string(" ")}
+    <button ariaDescribedby="score-desc" onClick={_ => changeByes(Zero, "0")}>
+      {React.string(`Change byes to 0`)}
+    </button>
     <p className="caption-30" id="score-desc">
-      {React.string("This will update all bye matches which have been previously
-          scored in this tournament. To change the default bye value in
-          future matches, go to the ")}
+      {React.string("This will update ")}
+      <em> {React.string("all")} </em>
+      {React.string(" bye matches which have been previously scored in this
+      tournament. To change the default bye value in future matches, go to the
+      ")}
       <Link to_=Options> {React.string("app options")} </Link>
       {React.string(".")}
     </p>

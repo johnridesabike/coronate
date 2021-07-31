@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.0
+
+- Byes can no longer be batch-changed per tournament.
+- The default bye value can be set to zero points, in addition to full and half.
+- Players can now take voluntary bye rounds.
+- Each individual bye can have a custom point value: full, half, or zero. (This
+  is controlled by changing who won the round.)
+- The tournmanet pairing screen allows pre-selecting the winner of each match.
+- Added a link to this changelog with the version information.
+
 ## 1.4.0
 
 - Moved hosting to Netlify.

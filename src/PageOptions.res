@@ -392,21 +392,33 @@ let make = (~windowDispatch=_ => ()) => {
             <input
               checked={switch config.byeValue {
               | Full => true
-              | Half => false
+              | Half | Zero => false
               }}
               type_="radio"
               onChange={_ => configDispatch(SetByeValue(Full))}
             />
           </label>
-          <label className="monospace body-30">
-            {React.string(j`½ `)}
+          <label
+            className="monospace body-30" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+            {React.string(`½ `)}
             <input
               checked={switch config.byeValue {
-              | Full => false
               | Half => true
+              | Full | Zero => false
               }}
               type_="radio"
               onChange={_ => configDispatch(SetByeValue(Half))}
+            />
+          </label>
+          <label className="monospace body-30">
+            {React.string(`0 `)}
+            <input
+              checked={switch config.byeValue {
+              | Zero => true
+              | Full | Half => false
+              }}
+              type_="radio"
+              onChange={_ => configDispatch(SetByeValue(Zero))}
             />
           </label>
         </div>

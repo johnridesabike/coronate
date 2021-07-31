@@ -68,7 +68,6 @@ module MatchRow = {
     let dialog = Hooks.useBool(false)
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
-    let isDummyRound = Data.Id.isDummy(m.whiteId) || Data.Id.isDummy(m.blackId)
 
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
@@ -177,10 +176,9 @@ module MatchRow = {
         </td>
       </Utils.TestId>
       <td className={"pageround__matchresult data__input row__controls"}>
-        <Utils.TestId testId={"match-" ++ (Int.toString(pos) ++ "-select")}>
+        <Utils.TestId testId={`match-${Int.toString(pos)}-select`}>
           <select
             className="pageround__winnerSelect"
-            disabled=isDummyRound
             value={Match.Result.toString(m.result)}
             onBlur=setMatchResultBlur
             onChange=setMatchResultChange>
@@ -458,13 +456,12 @@ module Round = {
 
 @react.component
 let make = (~roundId, ~tournament) => {
-  let {
-    activePlayersCount,
-    scoreData,
-    unmatched,
-    unmatchedCount,
-    unmatchedWithDummy,
-  } = TournamentUtils.useRoundData(roundId, tournament)
+  let {scoreData, unmatched, unmatchedWithDummy, _} = TournamentUtils.useRoundData(
+    roundId,
+    tournament,
+  )
+  let unmatchedCount = Map.size(unmatched)
+  let activePlayersCount = Map.size(tournament.activePlayers)
   let initialTab = unmatchedCount == activePlayersCount ? 1 : 0
   let (openTab, setOpenTab) = React.useState(() => initialTab)
   /* Auto-switch the tab */
@@ -492,9 +489,7 @@ let make = (~roundId, ~tournament) => {
       <TabPanel>
         <div>
           {unmatchedCount != 0
-            ? <PairPicker
-                roundId tournament unmatched unmatchedWithDummy unmatchedCount scoreData
-              />
+            ? <PairPicker roundId tournament unmatched unmatchedWithDummy scoreData />
             : React.null}
         </div>
       </TabPanel>

@@ -8,6 +8,7 @@
 let github_url: string
 let license_url: string
 let issues_url: string
+let changelog_url: string
 
 type direction<'data, 'field> = (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int
 

@@ -10,10 +10,8 @@ open Data
 module Id = Data.Id
 
 type roundData = {
-  activePlayersCount: int,
   scoreData: Id.Map.t<Scoring.t>,
   unmatched: Id.Map.t<Data.Player.t>,
-  unmatchedCount: int,
   unmatchedWithDummy: Id.Map.t<Data.Player.t>,
 }
 
@@ -36,15 +34,11 @@ let useRoundData = (
     Map.removeMany(activePlayers, matched)
   | _ => Map.make(~id=Id.id)
   }
-  let unmatchedCount = Map.size(unmatched)
   /* make a new map so as not to affect auto-pairing */
   let unmatchedWithDummy = Map.set(unmatched, Id.dummy, Player.dummy)
-  let activePlayersCount = Map.size(activePlayers)
   {
-    activePlayersCount: activePlayersCount,
     scoreData: scoreData,
     unmatched: unmatched,
-    unmatchedCount: unmatchedCount,
     unmatchedWithDummy: unmatchedWithDummy,
   }
 }
