@@ -147,3 +147,48 @@ test("Auto-matching works with manually adjusted scores", () => {
   |> JestDom.expect
   |> toHaveTextContent(#Str("Bobo Professor"))
 })
+
+describe("Manually pairing and byes.", () => {
+  test("Pairing players does not automatically pre-select the winner.", () => {
+    let page = render(
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+        {tournament => <PageRound tournament roundId=0 />}
+      </LoadTournament>,
+    )
+    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
+    page |> getByText(~matcher=#Str("Add Tom Servo")) |> click
+    page
+    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
+    |> JestDom.expect
+    |> toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
+  })
+
+  test("Pairing with a bye player automatically pre-selects the winner.", () => {
+    let page = render(
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+        {tournament => <PageRound tournament roundId=0 />}
+      </LoadTournament>,
+    )
+    page |> getByText(~matcher=#Str("Add [Bye]")) |> click
+    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
+    page
+    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
+    |> JestDom.expect
+    |> toHaveValue(#Str(Data.Match.Result.toString(BlackWon)))
+  })
+
+  test("Un-pairing a bye player automatically un-pre-selects the winner.", () => {
+    let page = render(
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+        {tournament => <PageRound tournament roundId=0 />}
+      </LoadTournament>,
+    )
+    page |> getByText(~matcher=#Str("Add [Bye]")) |> click
+    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
+    page |> getByText(~matcher=#Str("Remove [Bye]")) |> click
+    page
+    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
+    |> JestDom.expect
+    |> toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
+  })
+})

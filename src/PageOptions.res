@@ -384,11 +384,14 @@ let make = (~windowDispatch=_ => ()) => {
     <div className="content-area">
       <h2> {React.string("Bye  settings")} </h2>
       <form>
-        <p className="caption-30"> {React.string("Select the default score for a bye round.")} </p>
+        <p className="caption-30">
+          {React.string("Select the default score given to a player who takes a bye.")}
+        </p>
         <div style={ReactDOMRe.Style.make(~display="flex", ())}>
-          <label
-            className="monospace body-30" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
-            {React.string("1 ")}
+          <label className="body-20" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+            {React.string("Full (")}
+            <span className="monospace"> {React.string("1")} </span>
+            {React.string(") ")}
             <input
               checked={switch config.byeValue {
               | Full => true
@@ -398,9 +401,10 @@ let make = (~windowDispatch=_ => ()) => {
               onChange={_ => configDispatch(SetByeValue(Full))}
             />
           </label>
-          <label
-            className="monospace body-30" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
-            {React.string(`½ `)}
+          <label className="body-20" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+            {React.string("Half (")}
+            <span className="monospace"> {React.string(`½`)} </span>
+            {React.string(") ")}
             <input
               checked={switch config.byeValue {
               | Half => true
@@ -410,8 +414,10 @@ let make = (~windowDispatch=_ => ()) => {
               onChange={_ => configDispatch(SetByeValue(Half))}
             />
           </label>
-          <label className="monospace body-30">
-            {React.string(`0 `)}
+          <label className="body-20">
+            {React.string("None (")}
+            <span className="monospace"> {React.string(`0`)} </span>
+            {React.string(") ")}
             <input
               checked={switch config.byeValue {
               | Zero => true

@@ -287,11 +287,11 @@ module Stage = {
               <span className={getPlayer(p).type_->Player.Type.toString}>
                 {React.string(whiteName ++ " ")}
               </span>
-              <button
-                ariaLabel={`remove ${whiteName}`}
-                className="button-micro"
-                onClick={_ => dispatch(RemoveP1)}>
-                <Icons.UserMinus /> {React.string(" Remove")}
+              <button className="button-micro button-ghost" onClick={_ => dispatch(RemoveP1)}>
+                <Icons.UserMinus />
+                <Externals.VisuallyHidden>
+                  {React.string(" Remove " ++ whiteName)}
+                </Externals.VisuallyHidden>
               </button>
             </>
           | None => React.null
@@ -304,11 +304,11 @@ module Stage = {
               <span className={getPlayer(p).type_->Player.Type.toString}>
                 {React.string(blackName ++ " ")}
               </span>
-              <button
-                ariaLabel={`remove ${blackName}`}
-                className="button-micro"
-                onClick={_ => dispatch(RemoveP2)}>
-                <Icons.UserMinus /> {React.string(" Remove")}
+              <button className="button-micro button-ghost" onClick={_ => dispatch(RemoveP2)}>
+                <Icons.UserMinus />
+                <Externals.VisuallyHidden>
+                  {React.string(" Remove " ++ blackName)}
+                </Externals.VisuallyHidden>
               </button>
             </>
           | None => React.null
@@ -319,18 +319,20 @@ module Stage = {
       <p>
         <label>
           {React.string("Pre-select winner ")}
-          <select
-            value={Match.Result.toString(state.result)}
-            disabled={state.num != Two}
-            onBlur={e =>
-              ReactEvent.Focus.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}
-            onChange={e =>
-              ReactEvent.Form.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}>
-            <option value={Match.Result.toString(NotSet)}> {React.string("None")} </option>
-            <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
-            <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
-            <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
-          </select>
+          <Utils.TestId testId="pairpicker-preselect-winner">
+            <select
+              value={Match.Result.toString(state.result)}
+              disabled={state.num != Two}
+              onBlur={e =>
+                ReactEvent.Focus.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}
+              onChange={e =>
+                ReactEvent.Form.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}>
+              <option value={Match.Result.toString(NotSet)}> {React.string("None")} </option>
+              <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
+              <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
+              <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
+            </select>
+          </Utils.TestId>
         </label>
       </p>
       <div className="toolbar">

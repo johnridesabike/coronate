@@ -69,6 +69,10 @@ module Help = {
   @module("react-feather") @react.component
   external make: unit => React.element = "HelpCircle"
 }
+module Home = {
+  @module("react-feather") @react.component
+  external make: unit => React.element = "Home"
+}
 module Info = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Info"

@@ -137,6 +137,14 @@ module DefaultSidebar = {
     <nav>
       <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
         <li>
+          <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+            <Icons.Home />
+            <span className="sidebar__hide-on-close">
+              {React.string(HtmlEntities.nbsp ++ "Home")}
+            </span>
+          </Link>
+        </li>
+        <li>
           <Link to_=TournamentList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
@@ -165,14 +173,6 @@ module DefaultSidebar = {
             <Icons.Clock />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Time calculator")}
-            </span>
-          </Link>
-        </li>
-        <li>
-          <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
-            <Icons.Help />
-            <span className="sidebar__hide-on-close">
-              {React.string(HtmlEntities.nbsp ++ "Info")}
             </span>
           </Link>
         </li>
