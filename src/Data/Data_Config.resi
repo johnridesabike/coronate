@@ -6,7 +6,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 module ByeValue: {
-  type t = Full | Half
+  type t = Full | Half | Zero
 
   let toFloat: t => float
 

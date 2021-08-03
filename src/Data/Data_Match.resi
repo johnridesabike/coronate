@@ -11,6 +11,15 @@ module Result: {
   let toString: t => string
 
   let fromString: string => t
+
+  let scoreByeMatch: (
+    ~white: Data_Id.t,
+    ~black: Data_Id.t,
+    ~byeValue: Data_Config.ByeValue.t,
+    ~default: t,
+  ) => t
+
+  let reverse: t => t
 }
 
 type t = {
@@ -28,9 +37,12 @@ let decode: Js.Json.t => t
 
 let encode: t => Js.Json.t
 
-let scoreByeMatch: (t, ~byeValue: Data_Config.ByeValue.t) => t
-
-let manualPair: ((Data_Player.t, Data_Player.t), Data_Config.ByeValue.t) => t
+let manualPair: (
+  ~white: Data_Player.t,
+  ~black: Data_Player.t,
+  Result.t,
+  Data_Config.ByeValue.t,
+) => t
 
 @ocaml.doc("\"Reverse\" white and black.")
 let swapColors: t => t

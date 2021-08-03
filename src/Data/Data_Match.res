@@ -32,6 +32,22 @@ module Result = {
   let encode = data => data->toString->Js.Json.string
 
   let decode = json => Js.Json.decodeString(json)->Option.getExn->fromString
+
+  let scoreByeMatch = (~white, ~black, ~byeValue: Data_Config.ByeValue.t, ~default) => {
+    switch (Id.isDummy(white), Id.isDummy(black), byeValue) {
+    | (true, _, Full) | (_, true, Zero) => BlackWon
+    | (_, true, Full) | (true, _, Zero) => WhiteWon
+    | (true, _, Half) | (_, true, Half) => Draw
+    | (false, false, Full | Half | Zero) => default
+    }
+  }
+
+  let reverse = t =>
+    switch t {
+    | WhiteWon => BlackWon
+    | BlackWon => WhiteWon
+    | (NotSet | Draw) as t => t
+    }
 }
 
 type t = {
@@ -87,37 +103,20 @@ let encode = data =>
     ("result", data.result->Result.encode),
   ])->Js.Json.object_
 
-let byeResultForPlayerColor = (byeValue: Data_Config.ByeValue.t, result): Result.t =>
-  switch byeValue {
-  | Half => Draw
-  | Full => result
-  }
-
-let scoreByeMatch = (match_, ~byeValue) =>
-  switch (Id.isDummy(match_.whiteId), Id.isDummy(match_.blackId)) {
-  | (true, false) => {
-      ...match_,
-      result: byeResultForPlayerColor(byeValue, BlackWon),
-    }
-  | (false, true) => {
-      ...match_,
-      result: byeResultForPlayerColor(byeValue, WhiteWon),
-    }
-  | (true, true) /* Two dummies?! */
-  | (false, false) => match_
-  }
-
-let manualPair = ((white: Data_Player.t, black: Data_Player.t), byeValue) =>
-  {
-    id: Id.random(),
-    result: NotSet,
-    whiteId: white.id,
-    blackId: black.id,
-    whiteOrigRating: white.rating,
-    blackOrigRating: black.rating,
-    whiteNewRating: white.rating,
-    blackNewRating: black.rating,
-  }->scoreByeMatch(~byeValue)
+let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result, byeValue) => {
+  id: Id.random(),
+  result: switch result {
+  | Result.NotSet =>
+    Result.scoreByeMatch(~byeValue, ~white=white.id, ~black=black.id, ~default=NotSet)
+  | WhiteWon | BlackWon | Draw => result
+  },
+  whiteId: white.id,
+  blackId: black.id,
+  whiteOrigRating: white.rating,
+  blackOrigRating: black.rating,
+  whiteNewRating: white.rating,
+  blackNewRating: black.rating,
+}
 
 let swapColors = match => {
   ...match,

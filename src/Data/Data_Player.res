@@ -79,8 +79,8 @@ let encode = data =>
 
 let dummy = {
   id: Data_Id.dummy,
-  firstName: "Bye",
-  lastName: "Player",
+  firstName: "[Bye]",
+  lastName: "",
   type_: Dummy,
   matchCount: 0,
   rating: 0,

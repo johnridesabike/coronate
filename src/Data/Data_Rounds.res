@@ -120,5 +120,15 @@ let addRound = roundList => Array.concat(roundList, [[]])
 
 let delLastRound = roundList => Js.Array2.slice(roundList, ~start=0, ~end_=-1)
 
-let updateByeScores = (rounds, byeValue) =>
-  Array.map(rounds, Array.map(_, Match.scoreByeMatch(~byeValue)))
+let updateByeScores = (rounds: t, byeValue) =>
+  Array.map(rounds, round =>
+    Array.map(round, m => {
+      ...m,
+      result: Match.Result.scoreByeMatch(
+        ~white=m.whiteId,
+        ~black=m.blackId,
+        ~default=m.result,
+        ~byeValue,
+      ),
+    })
+  )

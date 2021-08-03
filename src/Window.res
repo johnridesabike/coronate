@@ -56,6 +56,7 @@ module About = {
           {React.string("Coronate")}
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
+        <p> <a href=Utils.changelog_url> {React.string("View the changelog.")} </a> </p>
         <p>
           {`Copyright ${HtmlEntities.copy} 2021 John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>
@@ -136,6 +137,14 @@ module DefaultSidebar = {
     <nav>
       <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
         <li>
+          <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
+            <Icons.Home />
+            <span className="sidebar__hide-on-close">
+              {React.string(HtmlEntities.nbsp ++ "Home")}
+            </span>
+          </Link>
+        </li>
+        <li>
           <Link to_=TournamentList onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Award />
             <span className="sidebar__hide-on-close">
@@ -164,14 +173,6 @@ module DefaultSidebar = {
             <Icons.Clock />
             <span className="sidebar__hide-on-close">
               {React.string(HtmlEntities.nbsp ++ "Time calculator")}
-            </span>
-          </Link>
-        </li>
-        <li>
-          <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
-            <Icons.Help />
-            <span className="sidebar__hide-on-close">
-              {React.string(HtmlEntities.nbsp ++ "Info")}
             </span>
           </Link>
         </li>
