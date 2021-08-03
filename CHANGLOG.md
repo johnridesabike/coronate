@@ -2,7 +2,7 @@
 
 ## 1.5.0
 
-- Players can now take voluntary bye rounds.
+- Players can now take voluntary byes.
 - Each individual bye can have a custom point value: full, half, or zero. (This
   is controlled by changing who won the round.)
 - The default bye value can be set to full, half, or zero.
