@@ -13,7 +13,7 @@ let newb = TestData.newbieMcNewberson
 let master = TestData.grandyMcMaster
 
 test("K Factor is calculated correctly", () => {
-  let masterKFactor = Data.Ratings.EloRank.getKFactor(~matchCount=master.matchCount)
+  let masterKFactor = Data.Ratings.EloRank.getKFactor(master.matchCount)
   expect(masterKFactor) |> toBe(8)
 })
 
@@ -152,9 +152,9 @@ test("Manually adjusting scores works", () => {
       {tournament => <> <PageTourneyPlayers tournament /> <PageTourneyScores tournament /> </>}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/more options for kinga forrester/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/more options for kinga forrester/i"))) |> click
   page
-  |> getByLabelText(~matcher=#RegExp(%bs.re("/score adjustment/i")))
+  |> getByLabelText(~matcher=#RegExp(%re("/score adjustment/i")))
   |> change(
     ~eventInit={
       "target": {
@@ -162,7 +162,7 @@ test("Manually adjusting scores works", () => {
       },
     },
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/save/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/save/i"))) |> click
   page
   |> getByTestId(~matcher=#Str("rank-1.0"))
   |> JestDom.expect
@@ -175,10 +175,10 @@ test("Pairing players twice displays the correct history", () => {
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/add crow t robot/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/add grandy mcmaster/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/match selected/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/^Matches$/"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/add crow t robot/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/add grandy mcmaster/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/match selected/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/^Matches$/"))) |> click
   page
   |> getByDisplayValue(~matcher=#Str("Select winner"))
   |> change(
@@ -190,12 +190,12 @@ test("Pairing players twice displays the correct history", () => {
   )
   page
   |> getByText(
-    ~matcher=#RegExp(%bs.re("/View information for match: Crow T Robot versus Grandy McMaster/i")),
+    ~matcher=#RegExp(%re("/View information for match: Crow T Robot versus Grandy McMaster/i")),
   )
   |> click
   /* This is a quick heuristic, probably should be more robust */
   page
-  |> queryAllByText(~matcher=#RegExp(%bs.re("/Crow T Robot - Won/i")))
+  |> queryAllByText(~matcher=#RegExp(%re("/Crow T Robot - Won/i")))
   |> Belt.Array.size
   |> Expect.expect
   |> Expect.toBe(2)

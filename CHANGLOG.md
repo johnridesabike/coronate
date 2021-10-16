@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1
+- Adjusted how K-factor is displayed in player profiles.
+
 ## 1.5.0
 
 - Players can now take voluntary byes.

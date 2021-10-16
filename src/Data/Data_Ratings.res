@@ -17,14 +17,12 @@ module EloRank = {
     ->Js.Math.round
     ->Int.fromFloat
 
-  let getKFactor = (~matchCount) => {
-    let ne = matchCount > 0 ? matchCount : 1
+  let getKFactor = matchCount =>
     try {
-      800 / ne
+      800 / matchCount
     } catch {
-    | Division_by_zero => 0
+    | Division_by_zero => 800
     }
-  }
 }
 
 let floor = 100
@@ -32,8 +30,8 @@ let floor = 100
 let keepAboveFloor = rating => rating > floor ? rating : floor
 
 let calcNewRatings = (~whiteRating, ~blackRating, ~whiteMatchCount, ~blackMatchCount, ~result) => {
-  let whiteElo = EloRank.getKFactor(~matchCount=whiteMatchCount)
-  let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount)
+  let whiteElo = EloRank.getKFactor(whiteMatchCount)
+  let blackElo = EloRank.getKFactor(blackMatchCount)
   let whiteExpected = EloRank.getExpected(whiteRating, blackRating)
   let blackExpected = EloRank.getExpected(blackRating, whiteRating)
   let whiteResult = Data_Scoring.Score.fromResultWhite(result)->Data_Scoring.Score.toFloat
