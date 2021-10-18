@@ -479,8 +479,6 @@ module Profile = {
               },
             )}
           </dd>
-          <dt> {React.string("Internal identifier")} </dt>
-          <dd className="monospace"> {playerId->Id.toString->React.string} </dd>
         </dl>
         <p className="caption-20">
           <a href="https://en.wikipedia.org/wiki/Elo_rating_system#The_K-factor_used_by_the_USCF">
