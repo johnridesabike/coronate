@@ -63,7 +63,7 @@
     "localforage-removeitems": "^1.4.0",
     "localforage-setitems": "^1.4.0",
     "mini-css-extract-plugin": "0.11.3",
-    "nanoid": "^3.1.23",
+    "nanoid": "^3.1.31",
     "netlify-auth-providers": "^1.0.0-alpha5",
     "numeral": "^2.0.6",
     "optimize-css-assets-webpack-plugin": "5.0.4",
