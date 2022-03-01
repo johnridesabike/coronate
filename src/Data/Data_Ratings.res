@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2021 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@ open Belt
 module EloRank = {
   type t = int
 
-  let getExpected = (a: int, b: int) => 1. /. (1. +. 10. ** (Float.fromInt(b - a) /. 400.))
+  let getExpected = (a, b) => 1. /. (1. +. 10. ** (Float.fromInt(b - a) /. 400.))
 
   let updateRating = (rating, expected, actual, current) =>
     (Float.fromInt(current) +. Float.fromInt(rating) *. (actual -. expected))
