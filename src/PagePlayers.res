@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2021 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -411,20 +411,6 @@ module Profile = {
         </p>
         {errorNotification(form.ratingResult)}
         <p>
-          <label htmlFor="Kfactor"> {React.string("K factor")} </label>
-          <input
-            name="kfactor"
-            type_="number"
-            disabled=true
-            value={switch form.matchCountResult {
-            | Some(Ok(matchCount)) => Ratings.EloRank.getKFactor(~matchCount)->Int.toString
-            | Some(Error(_)) => ""
-            | None => Ratings.EloRank.getKFactor(~matchCount=initialMatchCount)->Int.toString
-            }}
-            readOnly=true
-          />
-        </p>
-        <p>
           <button disabled={form.submitting || !form.valid()}>
             {form.dirty() ? "Save"->React.string : "Saved"->React.string}
           </button>
@@ -432,7 +418,7 @@ module Profile = {
       </form>
       <h3> {React.string("Players to avoid")} </h3>
       {if Set.isEmpty(singAvoidList) {
-        <p className="disabled"> {React.string("None")} </p>
+        <p> {React.string("None")} </p>
       } else {
         <ul>
           {singAvoidList
@@ -480,6 +466,28 @@ module Profile = {
         | None => React.string("No players are available to avoid.")
         }}
       </form>
+      <hr />
+      <details>
+        <summary> {"Additional information"->React.string} </summary>
+        <dl>
+          <dt> {React.string("K-factor")} </dt>
+          <dd className="monospace">
+            {React.int(
+              switch form.matchCountResult {
+              | Some(Ok(matchCount)) => Ratings.EloRank.getKFactor(matchCount)
+              | Some(Error(_)) | None => Ratings.EloRank.getKFactor(initialMatchCount)
+              },
+            )}
+          </dd>
+        </dl>
+        <p className="caption-20">
+          <a href="https://en.wikipedia.org/wiki/Elo_rating_system#The_K-factor_used_by_the_USCF">
+            {React.string("K-factor")}
+          </a>
+          {` is automatically calculated based on the number of matches
+            a player has completed.`->React.string}
+        </p>
+      </details>
     </div>
   }
 }

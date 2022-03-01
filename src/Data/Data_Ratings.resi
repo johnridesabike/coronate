@@ -7,7 +7,7 @@
 */
 module EloRank: {
   type t = int
-  let getKFactor: (~matchCount: int) => int
+  let getKFactor: int => int
 }
 
 @ocaml.doc("Make new ratings for white and black.")
