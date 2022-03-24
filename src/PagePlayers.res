@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson.
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -474,18 +474,16 @@ module Profile = {
           <dd className="monospace">
             {React.int(
               switch form.matchCountResult {
-              | Some(Ok(matchCount)) => Ratings.EloRank.getKFactor(matchCount)
-              | Some(Error(_)) | None => Ratings.EloRank.getKFactor(initialMatchCount)
+              | Some(Ok(matchCount)) => Ratings.EloRank.getKFactor(~matchCount, ~rating)
+              | Some(Error(_)) | None =>
+                Ratings.EloRank.getKFactor(~matchCount=initialMatchCount, ~rating)
               },
             )}
           </dd>
         </dl>
         <p className="caption-20">
-          <a href="https://en.wikipedia.org/wiki/Elo_rating_system#The_K-factor_used_by_the_USCF">
-            {React.string("K-factor")}
-          </a>
-          {` is automatically calculated based on the number of matches
-            a player has completed.`->React.string}
+          {`K-factor is 40 for players who have played fewer than 30 matches, 20 for players with
+            a rating below 2100, and 10 for players with a rating above 2100.`->React.string}
         </p>
       </details>
     </div>

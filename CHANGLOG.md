@@ -1,6 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Changed K-factor calculation to be more conservative.
+- Added help windows that explain the Swiss system, pairing rules, and tie-break
+  rules.
+
 ## 1.5.1
+
 - Adjusted how K-factor is displayed in player profiles.
 
 ## 1.5.0
@@ -9,7 +16,7 @@
 - Each individual bye can have a custom point value: full, half, or zero. (This
   is controlled by changing who won the round.)
 - The default bye value can be set to full, half, or zero.
-- The tournmanet pairing screen allows pre-selecting the winner of each match.
+- The tournament pairing screen allows pre-selecting the winner of each match.
 - Added a link to this changelog with the version information.
 
 ## 1.4.0

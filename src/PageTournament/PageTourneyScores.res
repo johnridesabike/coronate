@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -113,6 +113,7 @@ module SelectTieBreaks = {
   let make = (~tourney: Tournament.t, ~setTourney) => {
     let {tieBreaks, _} = tourney
     let (selectedTb: option<Scoring.TieBreak.t>, setSelectedTb) = React.useState(() => None)
+    let helpDialog = Hooks.useBool(false)
     let defaultId = x =>
       switch x {
       | Some(x) => x
@@ -210,6 +211,12 @@ module SelectTieBreaks = {
             )->React.array}
           </tbody>
         </table>
+        <div className="toolbar">
+          <button onClick={_ => helpDialog.setTrue()}>
+            <Icons.Help /> {React.string(" Tiebreak method information.")}
+          </button>
+        </div>
+        <HelpDialogs.TieBreaks state=helpDialog ariaLabel="Tiebreak method information" />
       </Utils.Panel>
       <Utils.Panel>
         <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>

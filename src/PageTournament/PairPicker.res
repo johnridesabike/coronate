@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -402,7 +402,8 @@ let make = (
   let {tourney, activePlayers, players, getPlayer, setTourney, playersDispatch, _} = tournament
   let {roundList, byeQueue, _} = tourney
   let round = Rounds.get(roundList, roundId)
-  let dialog = Hooks.useBool(false)
+  let addOrRemovePlayers = Hooks.useBool(false)
+  let autoPairHelp = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
   let pairData = React.useMemo3(
     () => Pairing.make(scoreData, activePlayers, avoidPairs),
@@ -444,20 +445,29 @@ let make = (
   | None => <div> {React.string("No round available.")} </div>
   | Some(round) =>
     <div className="content-area">
-      <div className="toolbar">
-        <button
-          className="button-primary"
-          disabled={Map.size(unmatched) == 0}
-          onClick={_ => autoPair(round)}>
-          {React.string("Auto-pair unmatched players")}
-        </button>
-        {React.string(" ")}
-        <button onClick={_ => dialog.setTrue()}>
-          {React.string("Add or remove players from the roster.")}
-        </button>
-      </div>
       <Utils.PanelContainer>
-        <Utils.Panel> <SelectList state dispatch unmatched pairData /> </Utils.Panel>
+        <Utils.Panel>
+          <div className="toolbar">
+            <button
+              className="button-primary"
+              disabled={Map.size(unmatched) == 0}
+              onClick={_ => autoPair(round)}>
+              {React.string("Auto-pair unmatched players")}
+            </button>
+            <button className="button-ghost" onClick={_ => autoPairHelp.setTrue()}>
+              <Icons.Help />
+              <Externals.VisuallyHidden>
+                {React.string("Auto-pair information.")}
+              </Externals.VisuallyHidden>
+            </button>
+          </div>
+          <SelectList state dispatch unmatched pairData />
+          <div className="toolbar">
+            <button onClick={_ => addOrRemovePlayers.setTrue()}>
+              {React.string("Add or remove players from the roster.")}
+            </button>
+          </div>
+        </Utils.Panel>
         <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
           <Stage state roundId dispatch pairData setTourney getPlayer byeValue tourney round />
           <Utils.PanelContainer>
@@ -484,12 +494,16 @@ let make = (
         </Utils.Panel>
       </Utils.PanelContainer>
       <Externals.Dialog
-        isOpen=dialog.state onDismiss=dialog.setFalse ariaLabel="Select players" className="">
-        <button className="button-micro" onClick={_ => dialog.setFalse()}>
+        isOpen=addOrRemovePlayers.state
+        onDismiss=addOrRemovePlayers.setFalse
+        ariaLabel="Select players"
+        className="">
+        <button className="button-micro" onClick={_ => addOrRemovePlayers.setFalse()}>
           {React.string("Done")}
         </button>
         <PageTourneyPlayers.Selecting tourney setTourney players playersDispatch />
       </Externals.Dialog>
+      <HelpDialogs.Pairing state=autoPairHelp ariaLabel="Auto-pair information" />
     </div>
   }
 }

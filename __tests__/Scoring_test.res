@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,8 +13,11 @@ let newb = TestData.newbieMcNewberson
 let master = TestData.grandyMcMaster
 
 test("K Factor is calculated correctly", () => {
-  let masterKFactor = Data.Ratings.EloRank.getKFactor(master.matchCount)
-  expect(masterKFactor) |> toBe(8)
+  let masterKFactor = Data.Ratings.EloRank.getKFactor(
+    ~matchCount=master.matchCount,
+    ~rating=master.rating,
+  )
+  expect(masterKFactor) |> toBe(10)
 })
 
 test("Ratings are calculated correctly", () => {
@@ -28,7 +31,7 @@ test("Ratings are calculated correctly", () => {
   // not really a good example for this next one because they don't change:
   let masterWon = calcRatingsForPair(~result=Data.Match.Result.BlackWon)
   let draw = calcRatingsForPair(~result=Data.Match.Result.Draw)
-  expect((newbWon, masterWon, draw)) |> toEqual(((1600, 2592), (800, 2600), (1200, 2596)))
+  expect((newbWon, masterWon, draw)) |> toEqual(((840, 2590), (800, 2600), (820, 2595)))
 })
 
 test("Ratings never go below 100", () => {

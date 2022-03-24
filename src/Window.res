@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,15 +56,23 @@ module About = {
           {React.string("Coronate")}
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
-        <p> <a href=Utils.changelog_url> {React.string("View the changelog.")} </a> </p>
+        <p>
+          <a href=Utils.changelog_url>
+            {React.string("View the changelog ")} <Icons.ExternalLink />
+          </a>
+        </p>
         <p>
           {`Copyright ${HtmlEntities.copy} 2021 John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
-          <a href=Utils.github_url> {React.string("Source code is available")} </a>
+          <a href=Utils.github_url>
+            {React.string("Source code is available ")} <Icons.ExternalLink />
+          </a>
           {React.string(" under the ")}
-          <a href=Utils.license_url> {React.string("Mozilla Public License 2.0")} </a>
+          <a href=Utils.license_url>
+            {React.string("Mozilla Public License 2.0 ")} <Icons.ExternalLink />
+          </a>
           {React.string(".")}
         </p>
       </div>

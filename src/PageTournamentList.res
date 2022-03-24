@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,7 +22,8 @@ let make = (~windowDispatch=_ => ()) => {
     ~isDescending=true,
   )
   let (newTourneyName, setNewTourneyName) = React.useState(() => "")
-  let dialog = Hooks.useBool(false)
+  let newTourneyDialog = Hooks.useBool(false)
+  let helpDialog = Hooks.useBool(false)
   React.useEffect1(() => {
     windowDispatch(Window.SetTitle("Tournament list"))
     Some(() => windowDispatch(Window.SetTitle("")))
@@ -38,7 +39,7 @@ let make = (~windowDispatch=_ => ()) => {
     let id = Data.Id.random()
     dispatch(Set(id, Data.Tournament.make(~id, ~name=newTourneyName)))
     setNewTourneyName(_ => "")
-    dialog.setFalse()
+    newTourneyDialog.setFalse()
   }
   let deleteTournament = (id, name) => {
     let message = j`Are you sure you want to delete “$name”?`
@@ -48,11 +49,15 @@ let make = (~windowDispatch=_ => ()) => {
   }
   <Window.Body windowDispatch>
     <div className="content-area">
-      <div className="toolbar toolbar__left">
-        <button onClick={_ => dialog.setTrue()}>
+      <div className="toolbar">
+        <button onClick={_ => newTourneyDialog.setTrue()}>
           <Icons.Plus /> {React.string(" Add tournament")}
         </button>
+        <button onClick={_ => helpDialog.setTrue()}>
+          <Icons.Help /> {React.string(" Information")}
+        </button>
       </div>
+      <HelpDialogs.SwissTournament state=helpDialog ariaLabel="Tournament information" />
       {Map.isEmpty(tourneys)
         ? <p> {React.string("No tournaments are added yet.")} </p>
         : <table>
@@ -95,11 +100,11 @@ let make = (~windowDispatch=_ => ()) => {
             </tbody>
           </table>}
       <Externals.Dialog
-        isOpen=dialog.state
-        onDismiss=dialog.setFalse
+        isOpen=newTourneyDialog.state
+        onDismiss=newTourneyDialog.setFalse
         ariaLabel="Create new tournament"
         className="">
-        <button className="button-micro" onClick={_ => dialog.setFalse()}>
+        <button className="button-micro" onClick={_ => newTourneyDialog.setFalse()}>
           {React.string("Close")}
         </button>
         <form onSubmit=makeTournament>

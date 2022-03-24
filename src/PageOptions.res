@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -136,11 +136,11 @@ module GistOpts = {
       <h3> {"Backup to GitHub"->React.string} </h3>
       <p className="caption-30">
         {`With a GitHub account, you can save your data to a `->React.string}
-        <a href="https://gist.github.com/"> {"gist"->React.string} </a>
+        <a href="https://gist.github.com/"> {"gist "->React.string} <Icons.ExternalLink /> </a>
         {`. Note that gists can be ${HtmlEntities.ldquo}secret${HtmlEntities.rdquo} but are always 
         publicly accessible. For more information, `->React.string}
         <a href="https://docs.github.com/en/github/writing-on-github/creating-gists">
-          {"refer to the gist documentation on GitHub"->React.string}
+          {"refer to the gist documentation on GitHub "->React.string} <Icons.ExternalLink />
         </a>
         {"."->React.string}
       </p>
@@ -167,7 +167,7 @@ module GistOpts = {
           </button>
         | _ =>
           <a href={"https://github.com/settings/connections/applications/" ++ github_app_id}>
-            {"Change or remove your GitHub access."->React.string}
+            {"Change or remove your GitHub access "->React.string} <Icons.ExternalLink />
           </a>
         }}
       </p>
