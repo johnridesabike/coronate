@@ -195,12 +195,14 @@ let assignColorsForPair = ((player1, player2)) =>
   /* This is a quick-and-dirty heuristic to keep color balances
      mostly equal. Ideally, it would also examine due colors and how
      many times a player played each color last. */
-  player1.colorScore < player2.colorScore
-    ? /* player 1 has played as white more than player 2 */
-      (player2.id, player1.id)
-      /* player 1 has played as black more than player 2
-       (or they're equal). */
-    : (player1.id, player2.id)
+  if player1.colorScore < player2.colorScore {
+    /* player 1 has played as white more than player 2 */
+    (player2.id, player1.id)
+  } else {
+    /* player 1 has played as black more than player 2
+     (or they're equal). */
+    (player1.id, player2.id)
+  }
 
 let netScore = ((player1, player2)) => player1.score +. player2.score
 let netRating = ((player1, player2)) => player1.rating + player2.rating

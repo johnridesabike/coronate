@@ -58,47 +58,49 @@ let make = (~windowDispatch=_ => ()) => {
         </button>
       </div>
       <HelpDialogs.SwissTournament state=helpDialog ariaLabel="Tournament information" />
-      {Map.isEmpty(tourneys)
-        ? <p> {React.string("No tournaments are added yet.")} </p>
-        : <table>
-            <caption> {React.string("Tournament list")} </caption>
-            <thead>
-              <tr>
-                <th>
-                  <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=nameSort>
-                    {React.string("Name")}
-                  </Hooks.SortButton>
-                </th>
-                <th>
-                  <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=dateSort>
-                    {React.string("Date")}
-                  </Hooks.SortButton>
-                </th>
-                <th>
-                  <Externals.VisuallyHidden> {React.string("Controls")} </Externals.VisuallyHidden>
-                </th>
+      {if Map.isEmpty(tourneys) {
+        <p> {React.string("No tournaments are added yet.")} </p>
+      } else {
+        <table>
+          <caption> {React.string("Tournament list")} </caption>
+          <thead>
+            <tr>
+              <th>
+                <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=nameSort>
+                  {React.string("Name")}
+                </Hooks.SortButton>
+              </th>
+              <th>
+                <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=dateSort>
+                  {React.string("Date")}
+                </Hooks.SortButton>
+              </th>
+              <th>
+                <Externals.VisuallyHidden> {React.string("Controls")} </Externals.VisuallyHidden>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="content">
+            {Array.map(sorted.Hooks.table, ({id, date, name, _}) =>
+              <tr key={id->Data.Id.toString}>
+                <td>
+                  <Link to_=Tournament(id, TourneyPage.Players)> {React.string(name)} </Link>
+                </td>
+                <td> <Utils.DateFormat date /> </td>
+                <td>
+                  <button
+                    ariaLabel=j`Delete “$name”`
+                    className="danger button-ghost"
+                    title={"Delete " ++ name}
+                    onClick={_ => deleteTournament(id, name)}>
+                    <Icons.Trash />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="content">
-              {Array.map(sorted.Hooks.table, ({id, date, name, _}) =>
-                <tr key={id->Data.Id.toString}>
-                  <td>
-                    <Link to_=Tournament(id, TourneyPage.Players)> {React.string(name)} </Link>
-                  </td>
-                  <td> <Utils.DateFormat date /> </td>
-                  <td>
-                    <button
-                      ariaLabel=j`Delete “$name”`
-                      className="danger button-ghost"
-                      title={"Delete " ++ name}
-                      onClick={_ => deleteTournament(id, name)}>
-                      <Icons.Trash />
-                    </button>
-                  </td>
-                </tr>
-              )->React.array}
-            </tbody>
-          </table>}
+            )->React.array}
+          </tbody>
+        </table>
+      }}
       <Externals.Dialog
         isOpen=newTourneyDialog.state
         onDismiss=newTourneyDialog.setFalse

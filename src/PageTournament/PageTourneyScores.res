@@ -56,15 +56,17 @@ module ScoreTable = {
           ->Array.reverse
           ->Array.mapWithIndex((i, standing) =>
             <tr key={standing.id->Data.Id.toString} className="pagescores__row">
-              {i == 0
-              /* Only display the rank once */
-                ? <th
-                    className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
-                    rowSpan={List.size(standingsFlat)}
-                    scope="row">
-                    {React.int(rank + 1)}
-                  </th>
-                : React.null}
+              {/* Only display the rank once */
+              if i == 0 {
+                <th
+                  className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
+                  rowSpan={List.size(standingsFlat)}
+                  scope="row">
+                  {React.int(rank + 1)}
+                </th>
+              } else {
+                React.null
+              }}
               {/* It just uses <td> if it's compact. */
               switch size {
               | Compact =>
@@ -241,11 +243,13 @@ module SelectTieBreaks = {
                   </span>
                 </td>
                 <td>
-                  {Js.Array2.includes(tieBreaks, tieBreak)
-                    ? React.null
-                    : <button className="button-micro" onClick={_ => toggleTb(Some(tieBreak))}>
-                        {React.string("Add")}
-                      </button>}
+                  {if Js.Array2.includes(tieBreaks, tieBreak) {
+                    React.null
+                  } else {
+                    <button className="button-micro" onClick={_ => toggleTb(Some(tieBreak))}>
+                      {React.string("Add")}
+                    </button>
+                  }}
                 </td>
               </tr>
             )

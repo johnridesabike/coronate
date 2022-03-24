@@ -194,24 +194,26 @@ module MatchRow = {
       | (true, _) => React.null
       | (false, Some(setSelectedMatch)) =>
         <td className={"pageround__controls data__input"}>
-          {selectedMatch->Option.mapWithDefault(true, id => !Id.eq(id, m.id))
-            ? <button
-                className="button-ghost"
-                title="Edit match"
-                onClick={_ => setSelectedMatch(_ => Some(m.id))}>
-                <Icons.Circle />
-                <Externals.VisuallyHidden>
-                  {`Edit match for ${Player.fullName(whitePlayer)} versus ${Player.fullName(
-                      blackPlayer,
-                    )}`->React.string}
-                </Externals.VisuallyHidden>
-              </button>
-            : <button
-                className="button-ghost button-pressed"
-                title="End editing match"
-                onClick={_ => setSelectedMatch(_ => None)}>
-                <Icons.CheckCircle />
-              </button>}
+          {if selectedMatch->Option.mapWithDefault(true, id => !Id.eq(id, m.id)) {
+            <button
+              className="button-ghost"
+              title="Edit match"
+              onClick={_ => setSelectedMatch(_ => Some(m.id))}>
+              <Icons.Circle />
+              <Externals.VisuallyHidden>
+                {`Edit match for ${Player.fullName(whitePlayer)} versus ${Player.fullName(
+                    blackPlayer,
+                  )}`->React.string}
+              </Externals.VisuallyHidden>
+            </button>
+          } else {
+            <button
+              className="button-ghost button-pressed"
+              title="End editing match"
+              onClick={_ => setSelectedMatch(_ => None)}>
+              <Icons.CheckCircle />
+            </button>
+          }}
           <button
             className="button-ghost"
             title="Open match information."
@@ -283,38 +285,40 @@ module RoundTable = {
   ) => {
     let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
     <table className="pageround__table">
-      {Js.Array.length(matches) == 0
-        ? React.null
-        : <>
-            <caption className={isCompact ? "title-30" : "title-40"}>
-              {React.string("Round ")} {React.int(roundId + 1)}
-            </caption>
-            <thead>
-              <tr>
-                <th className="pageround__row-id" scope="col"> {React.string("#")} </th>
-                <th scope="col">
-                  <Externals.VisuallyHidden>
-                    {React.string("White result")}
-                  </Externals.VisuallyHidden>
+      {if Js.Array.length(matches) == 0 {
+        React.null
+      } else {
+        <>
+          <caption className={isCompact ? "title-30" : "title-40"}>
+            {React.string("Round ")} {React.int(roundId + 1)}
+          </caption>
+          <thead>
+            <tr>
+              <th className="pageround__row-id" scope="col"> {React.string("#")} </th>
+              <th scope="col">
+                <Externals.VisuallyHidden>
+                  {React.string("White result")}
+                </Externals.VisuallyHidden>
+              </th>
+              <th className="row__player" scope="col"> {React.string("White")} </th>
+              <th scope="col">
+                <Externals.VisuallyHidden>
+                  {React.string("Black result")}
+                </Externals.VisuallyHidden>
+              </th>
+              <th className="row__player" scope="col"> {React.string("Black")} </th>
+              <th className="row__result" scope="col"> {React.string("Match result")} </th>
+              {if isCompact {
+                React.null
+              } else {
+                <th className="row__controls" scope="col">
+                  <Externals.VisuallyHidden> {React.string("Controls")} </Externals.VisuallyHidden>
                 </th>
-                <th className="row__player" scope="col"> {React.string("White")} </th>
-                <th scope="col">
-                  <Externals.VisuallyHidden>
-                    {React.string("Black result")}
-                  </Externals.VisuallyHidden>
-                </th>
-                <th className="row__player" scope="col"> {React.string("Black")} </th>
-                <th className="row__result" scope="col"> {React.string("Match result")} </th>
-                {isCompact
-                  ? React.null
-                  : <th className="row__controls" scope="col">
-                      <Externals.VisuallyHidden>
-                        {React.string("Controls")}
-                      </Externals.VisuallyHidden>
-                    </th>}
-              </tr>
-            </thead>
-          </>}
+              }}
+            </tr>
+          </thead>
+        </>
+      }}
       <tbody className="content">
         {Array.mapWithIndex(matches, (pos, m: Match.t) =>
           <MatchRow
@@ -438,9 +442,11 @@ module Round = {
             <Icons.ArrowDown /> {React.string(" Move down")}
           </button>
         </div>
-        {Rounds.Round.size(matches) == 0
-          ? <p> {React.string("No players matched yet.")} </p>
-          : React.null}
+        {if Rounds.Round.size(matches) == 0 {
+          <p> {React.string("No players matched yet.")} </p>
+        } else {
+          React.null
+        }}
         <RoundTable
           roundId
           ?selectedMatch
@@ -488,9 +494,11 @@ let make = (~roundId, ~tournament) => {
       <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
       <TabPanel>
         <div>
-          {unmatchedCount != 0
-            ? <PairPicker roundId tournament unmatched unmatchedWithDummy scoreData />
-            : React.null}
+          {if unmatchedCount != 0 {
+            <PairPicker roundId tournament unmatched unmatchedWithDummy scoreData />
+          } else {
+            React.null
+          }}
         </div>
       </TabPanel>
     </TabPanels>

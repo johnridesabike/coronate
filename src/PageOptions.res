@@ -451,9 +451,11 @@ let make = (~windowDispatch=_ => ()) => {
         {React.string("Reset demo data (this erases everything else)")}
       </button>
       {React.string(" ")}
-      {node_env != "production"
-        ? <button onClick=loadTestData> {React.string("Load testing data")} </button>
-        : React.null}
+      {if node_env != "production" {
+        <button onClick=loadTestData> {React.string("Load testing data")} </button>
+      } else {
+        React.null
+      }}
       <h3> {React.string("Advanced: manually edit data")} </h3>
       <form onSubmit=handleText>
         <textarea
