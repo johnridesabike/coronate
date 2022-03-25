@@ -115,7 +115,6 @@ module SelectTieBreaks = {
   let make = (~tourney: Tournament.t, ~setTourney) => {
     let {tieBreaks, _} = tourney
     let (selectedTb: option<Scoring.TieBreak.t>, setSelectedTb) = React.useState(() => None)
-    let helpDialog = Hooks.useBool(false)
     let defaultId = x =>
       switch x {
       | Some(x) => x
@@ -156,7 +155,7 @@ module SelectTieBreaks = {
         <div className="toolbar">
           <button
             className="button-micro" disabled={selectedTb == None} onClick={_ => toggleTb(None)}>
-            {React.string("Toggle")}
+            {React.string("Remove")}
           </button>
           <button className="button-micro" disabled={selectedTb == None} onClick={_ => moveTb(-1)}>
             <Icons.ArrowUp /> {React.string(" Move up")}
@@ -213,12 +212,6 @@ module SelectTieBreaks = {
             )->React.array}
           </tbody>
         </table>
-        <div className="toolbar">
-          <button onClick={_ => helpDialog.setTrue()}>
-            <Icons.Help /> {React.string(" Tiebreak method information.")}
-          </button>
-        </div>
-        <HelpDialogs.TieBreaks state=helpDialog ariaLabel="Tiebreak method information" />
       </Utils.Panel>
       <Utils.Panel>
         <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>
@@ -264,17 +257,26 @@ module SelectTieBreaks = {
 @react.component
 let make = (~tournament: LoadTournament.t) => {
   let {getPlayer, tourney, setTourney, _} = tournament
+  let helpDialog = Hooks.useBool(false)
   open Externals.ReachTabs
-  <Tabs>
-    <TabList>
-      <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
-      <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
-    </TabList>
-    <TabPanels>
-      <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
-      <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
-    </TabPanels>
-  </Tabs>
+  <div>
+    <Tabs>
+      <TabList>
+        <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
+        <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
+        <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
+      </TabPanels>
+    </Tabs>
+    <div className="toolbar">
+      <button onClick={_ => helpDialog.setTrue()}>
+        <Icons.Help /> {React.string(" Tiebreak method information")}
+      </button>
+    </div>
+    <HelpDialogs.TieBreaks state=helpDialog ariaLabel="Tiebreak method information" />
+  </div>
 }
 
 module Crosstable = {

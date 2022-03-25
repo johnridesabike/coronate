@@ -72,8 +72,7 @@ module SwissTournament = {
       <p>
         {`Coronate uses `->React.string}
         <a href="https://en.wikipedia.org/wiki/Swiss-system_tournament">
-          {`Swiss-system tournaments `->React.string}
-          <Icons.ExternalLink />
+          {`Swiss-system tournaments `->React.string} <Icons.ExternalLink />
         </a>
         {`. It sets a fixed number of rounds that will be smaller than the number of players. It
           pairs players according to their scores, but without any two players meeting twice.`->React.string}
@@ -95,7 +94,7 @@ module SwissTournament = {
 }
 
 module TieBreaks = {
-  module T = Data.Scoring.TieBreak
+  let s = x => Data.Scoring.TieBreak.toPrettyString(x)->React.string
 
   @react.component
   let make = (~state, ~ariaLabel) =>
@@ -106,28 +105,23 @@ module TieBreaks = {
           tournament.`->React.string}
       </p>
       <dl>
-        <dt className="title-20"> {T.toPrettyString(Median)->React.string} </dt>
+        <dt className="title-20"> {s(Median)} </dt>
         <dd>
-          {`Sum all of each player's opponents' scores, discarding the highest and lowest.
-            USCF § 34E1.`->React.string}
+          {`Sum all of each player's opponents' scores, discarding the highest and lowest.`->React.string}
         </dd>
-        <dt className="title-20"> {T.toPrettyString(Solkoff)->React.string} </dt>
+        <dt className="title-20"> {s(Solkoff)} </dt>
         <dd>
-          {`The same as modified median, except without discarding any scores. USCF § 34E2.`->React.string}
+          {`The same as modified median, except without discarding any scores.`->React.string}
         </dd>
-        <dt className="title-20"> {T.toPrettyString(Cumulative)->React.string} </dt>
+        <dt className="title-20"> {s(Cumulative)} </dt>
         <dd>
           {`Sum each player's cumulative, or "running," score for each round. This favors players
-            who scored earlier. (Presumably, they faced harder opponents.) USCF § 34E3.`->React.string}
+            who scored earlier. (Presumably, they faced harder opponents later.)`->React.string}
         </dd>
-        <dt className="title-20"> {T.toPrettyString(CumulativeOfOpposition)->React.string} </dt>
-        <dd>
-          {`Sum the cumulative of each player's opponents' scores. USCF § 34E9.`->React.string}
-        </dd>
-        <dt className="title-20"> {T.toPrettyString(MostBlack)->React.string} </dt>
-        <dd>
-          {`Count the matches where each player used black pieces. USCF § 34E6.`->React.string}
-        </dd>
+        <dt className="title-20"> {s(CumulativeOfOpposition)} </dt>
+        <dd> {`Sum the cumulative of each player's opponents' scores.`->React.string} </dd>
+        <dt className="title-20"> {s(MostBlack)} </dt>
+        <dd> {`Count the matches where each player used black pieces.`->React.string} </dd>
       </dl>
     </BaseDialog>
 }

@@ -53,8 +53,11 @@ let make = (~windowDispatch=_ => ()) => {
         <button onClick={_ => newTourneyDialog.setTrue()}>
           <Icons.Plus /> {React.string(" Add tournament")}
         </button>
-        <button onClick={_ => helpDialog.setTrue()}>
-          <Icons.Help /> {React.string(" Information")}
+        <button className="button-ghost" onClick={_ => helpDialog.setTrue()}>
+          <Icons.Help />
+          <Externals.VisuallyHidden>
+            {React.string(" Tournament information")}
+          </Externals.VisuallyHidden>
         </button>
       </div>
       <HelpDialogs.SwissTournament state=helpDialog ariaLabel="Tournament information" />
