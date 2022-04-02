@@ -30,18 +30,21 @@ test("Players have 0 priority of pairing themselves.", () => {
   // This doesn't technically mean they won't be paired... but let's be
   // realistic. Something nutty must happen for 0 priority pairings to get
   // picked.
-  loadPairData(TestData.byeRoundTourney)
-  ->Map.get(TestData.newbieMcNewberson.id)
-  ->Option.map(newb => Data.Pairing.calcPairIdeal(newb, newb))
-  ->expect
-  ->toBe(Some(0.0), _)
+  let data = loadPairData(TestData.byeRoundTourney)
+  let newb = TestData.newbieMcNewberson.id
+  Data.Pairing.calcPairIdealByIds(data, newb, newb) |> expect |> toBe(Some(0.0))
 })
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney)
   let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
   test("The lowest-ranking player is removed after bye selection.", () =>
-    pairData |> Map.keysToArray |> expect |> not_ |> toContain(TestData.newbieMcNewberson.id)
+    pairData
+    |> Data.Pairing.players
+    |> Map.keysToArray
+    |> expect
+    |> not_
+    |> toContain(TestData.newbieMcNewberson.id)
   )
   test("The lowest-ranking player is returned", () =>
     switch byedPlayer {
