@@ -13,18 +13,19 @@ process.on("unhandledRejection", (err) => {
 
 // Ensure environment variables are read.
 require("../config/env");
-
 const fs = require("fs");
 const chalk = require("chalk");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const clearConsole = require("react-dev-utils/clearConsole");
+const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
 const {
   choosePort,
   createCompiler,
   prepareProxy,
   prepareUrls,
 } = require("react-dev-utils/WebpackDevServerUtils");
+const semver = require("semver");
 const paths = require("../config/paths");
 const configFactory = require("../config/webpack.config");
 const createDevServerConfig = require("../config/webpackDevServer.config");
@@ -34,6 +35,11 @@ const react = require(require.resolve("react", { paths: [paths.appPath] }));
 const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
+
+// Warn and crash if required files are missing
+if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs, paths.appCss])) {
+  process.exit(1);
+}
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
@@ -75,28 +81,18 @@ checkBrowsers(paths.appPath, isInteractive)
     const protocol = process.env.HTTPS === "true" ? "https" : "http";
     const appName = require(paths.appPackageJson).name;
 
-    const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
     const urls = prepareUrls(
       protocol,
       HOST,
       port,
       paths.publicUrlOrPath.slice(0, -1)
     );
-    const devSocket = {
-      warnings: (warnings) =>
-        devServer.sockWrite(devServer.sockets, "warnings", warnings),
-      errors: (errors) =>
-        devServer.sockWrite(devServer.sockets, "errors", errors),
-    };
     // Create a webpack compiler that is configured with custom messages.
     const compiler = createCompiler({
       appName,
       config,
-      devSocket,
       urls,
       useYarn,
-      useTypeScript: false,
-      tscCompileOnError,
       webpack,
     });
     // Load proxy config
@@ -120,6 +116,15 @@ checkBrowsers(paths.appPath, isInteractive)
       if (isInteractive) {
         clearConsole();
       }
+
+      if (env.raw.FAST_REFRESH && semver.lt(react.version, "16.10.0")) {
+        console.log(
+          chalk.yellow(
+            `Fast Refresh requires React 16.10 or higher. You are using React ${react.version}.`
+          )
+        );
+      }
+
       console.log(chalk.cyan("Starting the development server...\n"));
     });
 
