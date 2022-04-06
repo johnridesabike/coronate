@@ -1,6 +1,11 @@
 # Changelog
 
+## Latest
+
+- Fixed the auto-pair algorithm to more correctly weight score differences.
+
 ## 1.5.1
+
 - Adjusted how K-factor is displayed in player profiles.
 
 ## 1.5.0

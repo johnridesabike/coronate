@@ -30,18 +30,21 @@ test("Players have 0 priority of pairing themselves.", () => {
   // This doesn't technically mean they won't be paired... but let's be
   // realistic. Something nutty must happen for 0 priority pairings to get
   // picked.
-  loadPairData(TestData.byeRoundTourney)
-  ->Map.get(TestData.newbieMcNewberson.id)
-  ->Option.map(newb => Data.Pairing.calcPairIdeal(newb, newb))
-  ->expect
-  ->toBe(Some(0.0), _)
+  let data = loadPairData(TestData.byeRoundTourney)
+  let newb = TestData.newbieMcNewberson.id
+  Data.Pairing.calcPairIdealByIds(data, newb, newb) |> expect |> toBe(Some(0.0))
 })
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney)
   let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
   test("The lowest-ranking player is removed after bye selection.", () =>
-    pairData |> Map.keysToArray |> expect |> not_ |> toContain(TestData.newbieMcNewberson.id)
+    pairData
+    |> Data.Pairing.players
+    |> Map.keysToArray
+    |> expect
+    |> not_
+    |> toContain(TestData.newbieMcNewberson.id)
   )
   test("The lowest-ranking player is returned", () =>
     switch byedPlayer {
@@ -82,6 +85,7 @@ test("Players are paired correctly in a simple scenario.", () => {
     (TestData.tomServo.id, TestData.tvsFrank.id),
   ])
 })
+
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws)
   let matches = Data.Pairing.pairPlayers(pairData)
@@ -96,6 +100,20 @@ test("Players are paired correctly after a draw.", () => {
 open JestDom
 open ReactTestingLibrary
 open FireEvent
+
+/* This is quick-and-dirty and fragile. */
+test("Players are paired correctly after a draw (more complex).", () => {
+  let page = render(
+    <LoadTournament tourneyId=Data.Id.fromString("complex-bye-rounds---")>
+      {tournament => <PageRound tournament roundId=4 />}
+    </LoadTournament>,
+  )
+  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
+
+  page
+  |> Expect.expect
+  |> toMatchSnapshot
+})
 
 test("Auto-matching with bye players works", () => {
   let page = render(
