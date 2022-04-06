@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,15 +56,17 @@ module ScoreTable = {
           ->Array.reverse
           ->Array.mapWithIndex((i, standing) =>
             <tr key={standing.id->Data.Id.toString} className="pagescores__row">
-              {i == 0
-              /* Only display the rank once */
-                ? <th
-                    className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
-                    rowSpan={List.size(standingsFlat)}
-                    scope="row">
-                    {React.int(rank + 1)}
-                  </th>
-                : React.null}
+              {/* Only display the rank once */
+              if i == 0 {
+                <th
+                  className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
+                  rowSpan={List.size(standingsFlat)}
+                  scope="row">
+                  {React.int(rank + 1)}
+                </th>
+              } else {
+                React.null
+              }}
               {/* It just uses <td> if it's compact. */
               switch size {
               | Compact =>
@@ -153,7 +155,7 @@ module SelectTieBreaks = {
         <div className="toolbar">
           <button
             className="button-micro" disabled={selectedTb == None} onClick={_ => toggleTb(None)}>
-            {React.string("Toggle")}
+            {React.string("Remove")}
           </button>
           <button className="button-micro" disabled={selectedTb == None} onClick={_ => moveTb(-1)}>
             <Icons.ArrowUp /> {React.string(" Move up")}
@@ -234,11 +236,13 @@ module SelectTieBreaks = {
                   </span>
                 </td>
                 <td>
-                  {Js.Array2.includes(tieBreaks, tieBreak)
-                    ? React.null
-                    : <button className="button-micro" onClick={_ => toggleTb(Some(tieBreak))}>
-                        {React.string("Add")}
-                      </button>}
+                  {if Js.Array2.includes(tieBreaks, tieBreak) {
+                    React.null
+                  } else {
+                    <button className="button-micro" onClick={_ => toggleTb(Some(tieBreak))}>
+                      {React.string("Add")}
+                    </button>
+                  }}
                 </td>
               </tr>
             )
@@ -253,17 +257,26 @@ module SelectTieBreaks = {
 @react.component
 let make = (~tournament: LoadTournament.t) => {
   let {getPlayer, tourney, setTourney, _} = tournament
+  let helpDialog = Hooks.useBool(false)
   open Externals.ReachTabs
-  <Tabs>
-    <TabList>
-      <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
-      <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
-    </TabList>
-    <TabPanels>
-      <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
-      <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
-    </TabPanels>
-  </Tabs>
+  <div>
+    <Tabs>
+      <TabList>
+        <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
+        <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
+        <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
+      </TabPanels>
+    </Tabs>
+    <div className="toolbar">
+      <button onClick={_ => helpDialog.setTrue()}>
+        <Icons.Help /> {React.string(" Tiebreak method information")}
+      </button>
+    </div>
+    <HelpDialogs.TieBreaks state=helpDialog ariaLabel="Tiebreak method information" />
+  </div>
 }
 
 module Crosstable = {

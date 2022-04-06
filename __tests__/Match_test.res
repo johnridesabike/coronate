@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,9 +15,9 @@ test("Ratings are updated correctly after a match.", () => {
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%bs.re("/add newbie mcnewberson/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/add grandy mcmaster/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%bs.re("/match selected/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/add newbie mcnewberson/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/add grandy mcmaster/i"))) |> click
+  page |> getByText(~matcher=#RegExp(%re("/match selected/i"))) |> click
   page
   |> getByDisplayValue(~matcher=#Str("Select winner"))
   |> change(
@@ -30,12 +30,12 @@ test("Ratings are updated correctly after a match.", () => {
   page
   |> getByText(
     ~matcher=#RegExp(
-      %bs.re("/view information for match: newbie mcnewberson versus grandy mcmaster/i"),
+      %re("/view information for match: newbie mcnewberson versus grandy mcmaster/i"),
     ),
   )
   |> click
   page
   |> getByTestId(~matcher=#Str("rating-Newbie_McNewberson___"))
   |> JestDom.expect
-  |> JestDom.toHaveTextContent(#Str("800 (+800)"))
+  |> JestDom.toHaveTextContent(#Str("800 (+40)"))
 })

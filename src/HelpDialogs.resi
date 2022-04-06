@@ -5,19 +5,18 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-module Splash: {
+
+module Pairing: {
   @react.component
-  let make: unit => React.element
+  let make: (~state: Hooks.boolState, ~ariaLabel: string) => React.element
 }
 
-module TimeCalculator: {
-  let title: string
-
+module SwissTournament: {
   @react.component
-  let make: unit => React.element
+  let make: (~state: Hooks.boolState, ~ariaLabel: string) => React.element
 }
 
-module NotFound: {
+module TieBreaks: {
   @react.component
-  let make: unit => React.element
+  let make: (~state: Hooks.boolState, ~ariaLabel: string) => React.element
 }

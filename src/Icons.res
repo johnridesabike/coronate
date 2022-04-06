@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -64,6 +64,10 @@ module Download = {
 module Edit = {
   @module("react-feather") @react.component
   external make: unit => React.element = "Edit"
+}
+module ExternalLink = {
+  @module("react-feather") @react.component
+  external make: unit => React.element = "ExternalLink"
 }
 module Help = {
   @module("react-feather") @react.component

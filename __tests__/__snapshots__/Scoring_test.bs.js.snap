@@ -39,7 +39,7 @@ Object {
               class="title-10"
               scope="col"
             >
-              Median
+              Modified median
             </th>
             <th
               class="title-10"
@@ -660,7 +660,7 @@ Object {
             class="title-10"
             scope="col"
           >
-            Median
+            Modified median
           </th>
           <th
             class="title-10"
@@ -1338,7 +1338,7 @@ Object {
               class="title-10"
               scope="col"
             >
-              Median
+              Modified median
             </th>
             <th
               class="title-10"
@@ -1702,7 +1702,7 @@ Object {
             class="title-10"
             scope="col"
           >
-            Median
+            Modified median
           </th>
           <th
             class="title-10"
