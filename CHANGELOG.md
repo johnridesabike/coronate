@@ -2,14 +2,11 @@
 
 ## Latest
 
-<<<<<<<< HEAD:CHANGLOG.md
+- Fixed the auto-pair algorithm to more correctly weight score differences.
+- Made some screens more printer-friendly.
 - Changed K-factor calculation to be more conservative.
 - Added help windows that explain the Swiss system, pairing rules, and tie-break
   rules.
-========
-- Fixed the auto-pair algorithm to more correctly weight score differences.
-- Made some screens more printer-friendly.
->>>>>>>> master:CHANGELOG.md
 
 ## 1.5.1
 
