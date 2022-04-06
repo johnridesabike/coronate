@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Latest
 
 - Changed K-factor calculation to be more conservative.
 - Added help windows that explain the Swiss system, pairing rules, and tie-break
