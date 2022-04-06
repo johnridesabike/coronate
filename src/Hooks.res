@@ -96,17 +96,17 @@ module SortButton = {
         <Icons.ChevronUp style={ReactDOMRe.Style.make(~opacity="0", ())} />
       </span>
       children
-      {data.isDescending
-        ? <span style=chevronStyle>
-            <Icons.ChevronUp />
-            <Externals.VisuallyHidden> {React.string("Sort ascending.")} </Externals.VisuallyHidden>
-          </span>
-        : <span style=chevronStyle>
-            <Icons.ChevronDown />
-            <Externals.VisuallyHidden>
-              {React.string("Sort descending.")}
-            </Externals.VisuallyHidden>
-          </span>}
+      {if data.isDescending {
+        <span style=chevronStyle>
+          <Icons.ChevronUp />
+          <Externals.VisuallyHidden> {React.string("Sort ascending.")} </Externals.VisuallyHidden>
+        </span>
+      } else {
+        <span style=chevronStyle>
+          <Icons.ChevronDown />
+          <Externals.VisuallyHidden> {React.string("Sort descending.")} </Externals.VisuallyHidden>
+        </span>
+      }}
     </button>
   }
 }

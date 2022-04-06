@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -116,6 +116,8 @@ module TimeCalculator = {
     dispatch(_ => safeValue)
   }
 
+  let title = "Time calculator"
+
   @react.component
   let make = () => {
     let minPlayers = 0
@@ -125,9 +127,9 @@ module TimeCalculator = {
     let (breakTime, setBreakTime) = React.useState(() => 5)
     let (totalTime, setTotalTime) = React.useState(() => 4.0)
     <div className="content-area">
-      <h1> {React.string("Time calculator")} </h1>
+      <h1> {title->React.string} </h1>
       <p className="caption-30">
-        {"Estimate the time requirements for planning your Swiss-style tournament."->React.string}
+        {"Estimate the time requirements for planning your Swiss-system tournament."->React.string}
       </p>
       <form>
         <table style={ReactDOMRe.Style.make(~margin="0", ())}>
@@ -144,10 +146,6 @@ module TimeCalculator = {
                   style={ReactDOMRe.Style.make(~width="40px", ())}
                 />
               </td>
-            </tr>
-            <tr>
-              <td> <label> {React.string("Round count")} </label> </td>
-              <td> {players->Int.toFloat->log2->ceil->fixNumber->React.float} </td>
             </tr>
             <tr>
               <td>
@@ -186,26 +184,30 @@ module TimeCalculator = {
           </tbody>
         </table>
       </form>
-      <p className="title-20"> {React.string("Maximum time control: ")} </p>
-      <p>
-        <span className="title-20">
-          {((totalTime *. 60.0 /. players->Int.toFloat->log2->ceil -.
-            Int.toFloat(breakTime)) /. 2.0)
-          ->ceil
-          ->fixNumber
-          ->React.float}
-          {React.string(" minutes")}
-        </span>
-        <span className="caption-30">
-          {React.string(" = ((")}
-          <strong className="monospace"> {totalTime->React.float} </strong>
-          {React.string(j` × 60 ÷ ⌈log₂(`)}
-          <strong className="monospace"> {players->React.int} </strong>
-          {React.string(j`)⌉) - `)}
-          <strong className="monospace"> {breakTime->React.int} </strong>
-          {React.string(j`) ÷ 2`)}
-        </span>
-      </p>
+      <dl>
+        <dt className="title-20"> {React.string("Round count")} </dt>
+        <dd> {players->Int.toFloat->log2->ceil->fixNumber->React.float} </dd>
+        <dt className="title-20"> {React.string("Maximum time control")} </dt>
+        <dd>
+          <span className="title-20">
+            {((totalTime *. 60.0 /. players->Int.toFloat->log2->ceil -.
+              Int.toFloat(breakTime)) /. 2.0)
+            ->ceil
+            ->fixNumber
+            ->React.float}
+            {React.string(" minutes")}
+          </span>
+          <span className="caption-20">
+            {React.string(" = ((")}
+            <strong className="monospace"> {totalTime->React.float} </strong>
+            {React.string(` × 60 ÷ ⌈log₂(`)}
+            <strong className="monospace"> {players->React.int} </strong>
+            {React.string(`)⌉) - `)}
+            <strong className="monospace"> {breakTime->React.int} </strong>
+            {React.string(`) ÷ 2`)}
+          </span>
+        </dd>
+      </dl>
     </div>
   }
 }

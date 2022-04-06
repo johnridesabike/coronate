@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson. 
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -130,11 +130,11 @@ module TieBreak = {
 
   let toPrettyString = tieBreak =>
     switch tieBreak {
-    | Median => "Median"
+    | Median => "Modified median"
     | Solkoff => "Solkoff"
     | Cumulative => "Cumulative"
     | CumulativeOfOpposition => "Cumulative of opposition"
-    | MostBlack => "Most Black"
+    | MostBlack => "Most black"
     }
 
   let fromString = json =>

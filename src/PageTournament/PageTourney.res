@@ -207,13 +207,15 @@ module Sidebar = {
                 onDragStart=noDraggy
                 onClick={_ => windowDispatch(Window.SetSidebar(false))}>
                 {React.int(id + 1)}
-                {isRoundComplete(id)
-                  ? <span className={"sidebar__hide-on-close caption-20"}>
-                      {React.string(" Complete ")} <Icons.Check />
-                    </span>
-                  : <span className={"sidebar__hide-on-close caption-20"}>
-                      {React.string(" Not complete ")} <Icons.Alert />
-                    </span>}
+                {if isRoundComplete(id) {
+                  <span className={"sidebar__hide-on-close caption-20"}>
+                    {React.string(" Complete ")} <Icons.Check />
+                  </span>
+                } else {
+                  <span className={"sidebar__hide-on-close caption-20"}>
+                    {React.string(" Not complete ")} <Icons.Alert />
+                  </span>
+                }}
               </Link>
             </li>
           )

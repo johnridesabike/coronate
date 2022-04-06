@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson.
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,11 +17,13 @@ module EloRank = {
     ->Js.Math.round
     ->Int.fromFloat
 
-  let getKFactor = matchCount =>
-    try {
-      800 / matchCount
-    } catch {
-    | Division_by_zero => 800
+  let getKFactor = (~matchCount, ~rating) =>
+    if matchCount < 30 {
+      40
+    } else if rating > 2100 {
+      10
+    } else {
+      20
     }
 }
 
@@ -30,8 +32,8 @@ let floor = 100
 let keepAboveFloor = rating => rating > floor ? rating : floor
 
 let calcNewRatings = (~whiteRating, ~blackRating, ~whiteMatchCount, ~blackMatchCount, ~result) => {
-  let whiteElo = EloRank.getKFactor(whiteMatchCount)
-  let blackElo = EloRank.getKFactor(blackMatchCount)
+  let whiteElo = EloRank.getKFactor(~matchCount=whiteMatchCount, ~rating=whiteRating)
+  let blackElo = EloRank.getKFactor(~matchCount=blackMatchCount, ~rating=blackRating)
   let whiteExpected = EloRank.getExpected(whiteRating, blackRating)
   let blackExpected = EloRank.getExpected(blackRating, whiteRating)
   let whiteResult = Data_Scoring.Score.fromResultWhite(result)->Data_Scoring.Score.toFloat
