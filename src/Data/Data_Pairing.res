@@ -9,7 +9,7 @@ open Belt
 module Id = Data_Id
 
 @deriving(accessors)
-type t = {
+type player = {
   id: Id.t,
   avoidIds: Id.Set.t,
   colorScore: float,
@@ -21,7 +21,13 @@ type t = {
   score: float,
 }
 
-//let descendingScore = Utils.descend(compare, x => x.score);
+@deriving(accessors)
+type t = {
+  players: Id.Map.t<player>,
+  maxScore: float,
+  maxPriority: float,
+}
+
 let descendingRating = Utils.descend(compare, (. x) => x.rating)
 
 let splitInHalf = arr => {
@@ -33,11 +39,11 @@ let splitInHalf = arr => {
   (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
 }
 
-@ocaml.doc("
- This determines what \"half\" each player is in: upper half or lower half.
- It also determines their \"position\" within each half.
+/*
+ This determines what "half" each player is in: upper half or lower half.
+ It also determines their "position" within each half.
  USCF § 29C1
- ")
+*/
 let setUpperHalves = data => {
   let dataArr = Map.valuesToArray(data)
   Map.map(data, playerData => {
@@ -59,9 +65,41 @@ let setUpperHalves = data => {
   })
 }
 
+let priority = (~diffDueColor, ~isDiffHalf, ~halfPosDiff, ~scoreDiff, ~canMeet, ~maxScore) => {
+  /*
+  The weight given to match players with opposite due colors.
+  (USCF § 27A4 and § 27A5)
+ */
+  let colors = diffDueColor ? 2. : 0.
+  /*
+   The weight given to match players in lower versus upper halves. This is only
+   applied to players being matched within the same score group. (USCF § 27A3)
+ */
+  let halves = isDiffHalf ? 4. /. (halfPosDiff +. 1.) : 0.
+  /* The weight given to match players with equal scores. (USCF § 27A2) */
+  let scores = maxScore *. 16. -. scoreDiff *. 16.
+  /*
+   The weight given to avoid players meeting twice. This same weight is given to
+   avoid matching players on each other's "avoid" list.
+   This is the highest priority. (USCF § 27A1)
+ */
+  let canMeet = canMeet ? 32. *. maxScore : 0.
+  colors +. halves +. scores +. canMeet
+}
+
+let calcMaxPriority = priority(
+  ~isDiffHalf=true,
+  ~halfPosDiff=0.,
+  ~diffDueColor=true,
+  ~scoreDiff=0.,
+  ~canMeet=true,
+)
+
+let calcMaxScore = m => Map.reduce(m, 0., (acc, _, p) => max(acc, p.score))
+
 let make = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
-  Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
+  let players = Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
     let playerStats = switch Map.get(scoreData, key) {
     | None => Data_Scoring.make(key)
     | Some(x) => x
@@ -84,64 +122,37 @@ let make = (scoreData, playerData, avoidPairs) => {
       ->Data_Scoring.Score.Sum.toFloat,
     }
   })->setUpperHalves
+  let maxScore = calcMaxScore(players)
+  {players: players, maxScore: maxScore, maxPriority: calcMaxPriority(~maxScore)}
 }
 
-let priority = (value, condition) => condition ? value : 0.0
-let divisiblePriority = (dividend, divisor) => dividend /. divisor
+let keep = ({players, _}, ~f) => {
+  let players = Map.keep(players, f)
+  let maxScore = calcMaxScore(players)
+  {players: players, maxScore: maxScore, maxPriority: calcMaxPriority(~maxScore)}
+}
 
-/* The following values probably need to be tweaked a lot. */
-
-@ocaml.doc("
- The weight given to avoid players meeting twice. This same weight is given to
- avoid matching players on each other's \"avoid\" list.
- This is the highest priority. (USCF § 27A1)
- ")
-let avoidMeetingTwice = priority(32.0)
-
-@ocaml.doc("
- The weight given to match players with equal scores. This gets divided
- against the difference between each players' scores, plus one. For example,
- players with scores `1` and `3` would have this priority divided by `3`.
- Players with scores `0` and `3` would have this priority divided by `4`.
- Players with equal scores would divide it by `1`, leaving it unchanged.
- (USCF § 27A2)
- ")
-let sameScores = divisiblePriority(16.0)
-
-@ocaml.doc("
- The weight given to match players in lower versus upper halves. This is only
- applied to players being matched within the same score group. (USCF § 27A3)
- ")
-let halfPosition = divisiblePriority(8.0)
-let sameHalfPriority = _ => 0.0
-let differentHalf = isDiffHalf => isDiffHalf ? halfPosition : sameHalfPriority
-
-@ocaml.doc("
- The weight given to match players with opposite due colors.
- (USCF § 27A4 and § 27A5)
- ")
-let differentDueColor = priority(4.0)
-
-let maxPriority =
-  differentHalf(true, 1.0) +. differentDueColor(true) +. sameScores(1.0) +. avoidMeetingTwice(true)
-
-let calcPairIdeal = (player1, player2) =>
+let calcPairIdeal = (player1, player2, ~maxScore) =>
   if Id.eq(player1.id, player2.id) {
     0.0
   } else {
     let metBefore = List.some(player1.opponents, Id.eq(player2.id))
     let mustAvoid = Set.has(player1.avoidIds, player2.id)
-    let isDiffDueColor = switch (player1.lastColor, player2.lastColor) {
+    let canMeet = !metBefore && !mustAvoid
+    let diffDueColor = switch (player1.lastColor, player2.lastColor) {
     | (Some(color1), Some(color2)) => color1 != color2
     | (_, _) => true
     }
-    let scoreDiff = abs_float(player1.score -. player2.score) +. 1.0
-    let halfDiff = Float.fromInt(abs(player1.halfPos - player2.halfPos) + 1)
+    let scoreDiff = abs_float(player1.score -. player2.score)
+    let halfPosDiff = Float.fromInt(abs(player1.halfPos - player2.halfPos))
     let isDiffHalf = player1.isUpperHalf != player2.isUpperHalf && player1.score == player2.score
-    differentDueColor(isDiffDueColor) +.
-    sameScores(scoreDiff) +.
-    differentHalf(isDiffHalf, halfDiff) +.
-    avoidMeetingTwice(!metBefore && !mustAvoid)
+    priority(~diffDueColor, ~scoreDiff, ~maxScore, ~isDiffHalf, ~halfPosDiff, ~canMeet)
+  }
+
+let calcPairIdealByIds = ({players, maxScore, _}, p1, p2) =>
+  switch (Map.get(players, p1), Map.get(players, p2)) {
+  | (Some(p1), Some(p2)) => Some(calcPairIdeal(p1, p2, ~maxScore))
+  | _ => None
   }
 
 let sortByScoreThenRating = (data1, data2) =>
@@ -150,15 +161,15 @@ let sortByScoreThenRating = (data1, data2) =>
   | x => x
   }
 
-let setByePlayer = (byeQueue, dummyId, data) => {
+let setByePlayer = (byeQueue, dummyId, data: t) => {
   let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId))
   /* if the list is even, just return it. */
-  switch mod(Map.size(data), 2) {
-  | 0 => (data, None)
+  switch mod(Map.size(data.players), 2) {
   | exception Division_by_zero => (data, None)
+  | 0 => (data, None)
   | _ =>
     let dataArr =
-      data
+      data.players
       ->Map.valuesToArray
       ->Array.keep(hasNotHadBye)
       ->SortArray.stableSortBy(sortByScoreThenRating)
@@ -168,7 +179,7 @@ let setByePlayer = (byeQueue, dummyId, data) => {
     let dataForNextBye = switch nextByeSignups[0] {
     /* Assign the bye to the next person who signed up. */
     | Some(id) =>
-      switch Map.get(data, id) {
+      switch Map.get(data.players, id) {
       | Some(_) as x => x
       | None => dataArr[0]
       }
@@ -180,14 +191,15 @@ let setByePlayer = (byeQueue, dummyId, data) => {
       | Some(_) as x => x
       /* In the impossible situation that *everyone* has played a bye
        round previously, then just pick the last player. */
-      | None => data->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.get(0)
+      | None =>
+        data.players->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.get(0)
       }
     }
-    let dataWithoutBye = switch dataForNextBye {
-    | Some(dataForNextBye) => Map.remove(data, dataForNextBye.id)
-    | None => data
+    let players = switch dataForNextBye {
+    | Some(dataForNextBye) => Map.remove(data.players, dataForNextBye.id)
+    | None => data.players
     }
-    (dataWithoutBye, dataForNextBye)
+    ({...data, players: players}, dataForNextBye)
   }
 }
 
@@ -217,10 +229,10 @@ module IdMatch = unpack(Blossom.Match.comparable(Id.compare))
 
 /* This is not optimized for performance, but in practice that hasn't been a
  problem yet. */
-let pairPlayers = pairData => {
-  Map.reduce(pairData, list{}, (acc, p1Id, p1) =>
-    Map.reduce(pairData, acc, (acc2, p2Id, p2) => list{
-      (p1Id, p2Id, calcPairIdeal(p1, p2)),
+let pairPlayers = ({players, maxScore, _}) => {
+  Map.reduce(players, list{}, (acc, p1Id, p1) =>
+    Map.reduce(players, acc, (acc2, p2Id, p2) => list{
+      (p1Id, p2Id, calcPairIdeal(p1, p2, ~maxScore)),
       ...acc2,
     })
   )
@@ -238,7 +250,7 @@ let pairPlayers = pairData => {
   ->Set.toArray
   ->Array.keepMap(pair => {
     let (p1, p2) = Data_Id.Pair.toTuple(pair)
-    switch (Map.get(pairData, p1), Map.get(pairData, p2)) {
+    switch (Map.get(players, p1), Map.get(players, p2)) {
     | (Some(p1), Some(p2)) => Some((p1, p2))
     | _ => None
     }

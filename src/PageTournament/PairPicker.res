@@ -12,7 +12,7 @@ module Id = Data.Id
 let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   /* the pairData includes any players who were already matched. We need to
    only include the specified players. */
-  let filteredData = Map.keep(pairData, (id, _) => Map.has(playerMap, id))
+  let filteredData = Pairing.keep(pairData, ~f=(id, _) => Map.has(playerMap, id))
   let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Id.dummy, filteredData)
   let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
   switch byePlayerData {
@@ -159,27 +159,23 @@ module SelectList = {
 
     /* Hydrate the ideal to the table */
     React.useEffect4(() => {
-      let calcIdealOrNot = player =>
+      let calcIdealOrNot = playerId =>
         switch (state.p1, state.p2) {
-        | (Some(id), None) | (None, Some(id)) =>
-          switch Map.get(pairData, id) {
-          | None => 0.0 /* It's a bye player */
-          | Some(selectedPlayer) =>
-            switch player {
-            | None => 0.0 /* It's a bye player */
-            | Some(player) => Pairing.calcPairIdeal(selectedPlayer, player) /. Pairing.maxPriority
-            }
+        | (Some(selectedPlayer), None)
+        | (None, Some(selectedPlayer)) =>
+          switch Pairing.calcPairIdealByIds(pairData, selectedPlayer, playerId) {
+          | None => 0.
+          | Some(ideal) => ideal /. Pairing.maxPriority(pairData)
           }
-        | _ => 0.0
+        | _ => 0.
         }
       let table =
         unmatched
         ->Map.valuesToArray
         ->Array.map(player => {
           player: player,
-          ideal: calcIdealOrNot(pairData->Map.get(player.id)),
+          ideal: calcIdealOrNot(player.id),
         })
-
       sortedDispatch(SetTable(table))
       None
     }, (unmatched, pairData, sortedDispatch, state))
@@ -268,11 +264,10 @@ module Stage = {
 
     let matchIdeal = switch (state.p1, state.p2) {
     | (Some(p1), Some(p2)) =>
-      switch (Map.get(pairData, p1), Map.get(pairData, p2)) {
-      | (Some(p1Data), Some(p2Data)) =>
-        let ideal = Pairing.calcPairIdeal(p1Data, p2Data)
-        (ideal /. Pairing.maxPriority)->Numeral.make->Numeral.format("%")->React.string
-      | _ => React.null
+      switch Pairing.calcPairIdealByIds(pairData, p1, p2) {
+      | Some(ideal) =>
+        (ideal /. Pairing.maxPriority(pairData))->Numeral.make->Numeral.format("%")->React.string
+      | None => React.null
       }
     | _ => React.null
     }
