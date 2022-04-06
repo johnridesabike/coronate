@@ -34,6 +34,25 @@
   --font-caption-10: 11px;
 }
 
+@media print {
+  :root {
+    --font-display-20: 16pt;
+    --font-title-40: 13pt;
+    --font-title-30: 12pt;
+    --font-title-20: 11pt;
+    --font-title-10: 10pt;
+    --font-body-30: 12pt;
+    --font-body-20: 11pt;
+    --font-body-10: 10pt;
+    --font-caption-30: 12pt;
+    --font-caption-20: 11pt;
+    --font-caption-10: 10pt;
+    --grey-90: black;
+    --grey-30: white;
+    --grey-10: white;
+  }
+}
+
 html {
   font-size: var(--font-body-20);
   font-family: var(--font-main);
@@ -65,6 +84,12 @@ svg {
 
 .content:not(tbody) {
   padding: 4px;
+}
+
+@media print {
+  div[role="tablist"] {
+    display: none;
+  }
 }
 
 /*******************************************************************************
@@ -184,6 +209,12 @@ hr {
 
 .status-ok {
   color: var(--green-80);
+}
+
+@media print {
+  a {
+    text-decoration: underline;
+  }
 }
 
 /*******************************************************************************
@@ -401,6 +432,31 @@ hr {
 
   .mobile-only {
     visibility: hidden;
+  }
+}
+
+@media print {
+  .app {
+    display: block;
+  }
+
+  .app__header {
+    border: none;
+    display: block;
+    height: 1em;
+  }
+
+  .app__header button {
+    display: none;
+  }
+
+  .win__sidebar {
+    display: none;
+  }
+
+  .win__footer {
+    border: none;
+    margin-top: 2em;
   }
 }
 
@@ -725,6 +781,12 @@ li.player.missing {
   justify-content: flex-start;
 }
 
+@media print {
+  .toolbar {
+    display: none;
+  }
+}
+
 /*******************************************************************************
 ## Pages
 *******************************************************************************/
@@ -802,6 +864,17 @@ li.player.missing {
   font-family: var(--font-monospace);
   white-space: pre;
   max-width: 100%;
+}
+
+@media print {
+  .pages__footer {
+    color: black;
+    background-color: white;
+  }
+
+  .pages__footer-link {
+    color: var(--blue-60);
+  }
 }
 
 /*******************************************************************************

@@ -85,6 +85,7 @@ test("Players are paired correctly in a simple scenario.", () => {
     (TestData.tomServo.id, TestData.tvsFrank.id),
   ])
 })
+
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws)
   let matches = Data.Pairing.pairPlayers(pairData)
@@ -99,6 +100,20 @@ test("Players are paired correctly after a draw.", () => {
 open JestDom
 open ReactTestingLibrary
 open FireEvent
+
+/* This is quick-and-dirty and fragile. */
+test("Players are paired correctly after a draw (more complex).", () => {
+  let page = render(
+    <LoadTournament tourneyId=Data.Id.fromString("complex-bye-rounds---")>
+      {tournament => <PageRound tournament roundId=4 />}
+    </LoadTournament>,
+  )
+  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
+
+  page
+  |> Expect.expect
+  |> toMatchSnapshot
+})
 
 test("Auto-matching with bye players works", () => {
   let page = render(

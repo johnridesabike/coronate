@@ -756,6 +756,41 @@ let scoreTest: Tournament.t = {
   }
 }
 
+let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
+
+@raises(Not_found)
+let decode = json => {
+  {
+    "config": Config.decode(json["config"]),
+    "players": json["players"]
+    ->Js.Json.decodeObject
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Player.decode),
+    "tournaments": json["tournaments"]
+    ->Js.Json.decodeObject
+    ->Option.getExn
+    ->dictToMap
+    ->Map.map(Tournament.decode),
+  }
+}
+
+@module("./fixture-pairing-april-2022.json")
+external fixturePairingApril22: {
+  "config": Js.Json.t,
+  "players": Js.Json.t,
+  "tournaments": Js.Json.t,
+} = "default"
+
+let fixturePairingApril22 = decode(fixturePairingApril22)
+
+let mapMerger = (k, a, b) =>
+  switch (a, b) {
+  | (Some(_) as x, None) | (None, Some(_) as x) => x
+  | (Some(_), Some(_)) => failwith("Duplicate " ++ Id.toString(k))
+  | (None, None) => None
+  }
+
 let config: Config.t = {
   byeValue: Full,
   avoidPairs: [
@@ -769,38 +804,40 @@ let config: Config.t = {
   lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
 }
 
-let players = Map.fromArray(
-  ~id=Id.id,
-  [
-    (cambot.id, cambot),
-    (crowTRobot.id, crowTRobot),
-    (drClaytonForrester.id, drClaytonForrester),
-    (grandyMcMaster.id, grandyMcMaster),
-    (gypsy.id, gypsy),
-    (joelRobinson.id, joelRobinson),
-    (jonah.id, jonah),
-    (kinga.id, kinga),
-    (larry.id, larry),
-    (mike.id, mike),
-    (newbieMcNewberson.id, newbieMcNewberson),
-    (observer.id, observer),
-    (pearl.id, pearl),
-    (bobo.id, bobo),
-    (tvsFrank.id, tvsFrank),
-    (tvsSon.id, tvsSon),
-    (tomServo.id, tomServo),
-  ],
-)
+let players =
+  Map.fromArray(
+    ~id=Id.id,
+    [
+      (cambot.id, cambot),
+      (crowTRobot.id, crowTRobot),
+      (drClaytonForrester.id, drClaytonForrester),
+      (grandyMcMaster.id, grandyMcMaster),
+      (gypsy.id, gypsy),
+      (joelRobinson.id, joelRobinson),
+      (jonah.id, jonah),
+      (kinga.id, kinga),
+      (larry.id, larry),
+      (mike.id, mike),
+      (newbieMcNewberson.id, newbieMcNewberson),
+      (observer.id, observer),
+      (pearl.id, pearl),
+      (bobo.id, bobo),
+      (tvsFrank.id, tvsFrank),
+      (tvsSon.id, tvsSon),
+      (tomServo.id, tomServo),
+    ],
+  )->Map.merge(fixturePairingApril22["players"], mapMerger)
 
-let tournaments = Map.fromArray(
-  ~id=Id.id,
-  [
-    (byeRoundTourney.id, byeRoundTourney),
-    (byeRoundTourney2.id, byeRoundTourney2),
-    (byeRoundTourney3.id, byeRoundTourney3),
-    (simplePairing.id, simplePairing),
-    (pairingWithDraws.id, pairingWithDraws),
-    (scoreTest.id, scoreTest),
-    (deletedPlayerTourney.id, deletedPlayerTourney),
-  ],
-)
+let tournaments =
+  Map.fromArray(
+    ~id=Id.id,
+    [
+      (byeRoundTourney.id, byeRoundTourney),
+      (byeRoundTourney2.id, byeRoundTourney2),
+      (byeRoundTourney3.id, byeRoundTourney3),
+      (simplePairing.id, simplePairing),
+      (pairingWithDraws.id, pairingWithDraws),
+      (scoreTest.id, scoreTest),
+      (deletedPlayerTourney.id, deletedPlayerTourney),
+    ],
+  )->Map.merge(fixturePairingApril22["tournaments"], mapMerger)
