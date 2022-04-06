@@ -9,7 +9,7 @@
   },
   "license": "MPL-2.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "https://coronate.netlify.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/johnridesabike/coronate.git"

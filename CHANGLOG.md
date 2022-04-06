@@ -2,6 +2,7 @@
 
 ## Latest
 
+- Fixed the auto-pair algorithm to more correctly weight score differences.
 - Made some screens more printer-friendly.
 
 ## 1.5.1
