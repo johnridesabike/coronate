@@ -27,7 +27,11 @@ module App = {
   }
 }
 
-let init = () => ReactDOMRe.renderToElementWithId(<App />, "root")
+let init = () =>
+  switch ReactDOM.querySelector("#root") {
+  | None => Js.Console.error("Couldn't find root.")
+  | Some(root) => ReactDOM.render(<App />, root)
+  }
 
 /* Ensure that all LocalForage plugins get loaded. */
 LocalForage_Plugins.GetItems.extendPrototype(LocalForage.localForage)

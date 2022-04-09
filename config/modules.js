@@ -2,7 +2,7 @@
 
 const path = require("path");
 const paths = require("./paths");
-const chalk = require("chalk");
+const chalk = require("react-dev-utils/chalk");
 
 /**
  * Get additional module paths based on the baseUrl of a compilerOptions object.
