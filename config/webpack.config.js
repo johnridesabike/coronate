@@ -18,8 +18,6 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
 
-const postcssNormalize = require("postcss-normalize");
-
 const createEnvironmentHash = require("./webpack/persistentCache/createEnvironmentHash");
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
@@ -32,9 +30,6 @@ const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== "false";
 const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || "10000"
 );
-
-// style files regexes
-const cssRegex = /\.css$/;
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -57,6 +52,7 @@ module.exports = function (webpackEnv) {
 
   return {
     target: ["browserslist"],
+    stats: "errors-warnings",
     mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -196,7 +192,7 @@ module.exports = function (webpackEnv) {
             // to a file, but in development "style" loader enables hot editing
             // of CSS.
             {
-              test: cssRegex,
+              test: /\.css$/,
               use: [
                 isEnvDevelopment && require.resolve("style-loader"),
                 isEnvProduction && {
@@ -227,19 +223,23 @@ module.exports = function (webpackEnv) {
                       // Necessary for external CSS imports to work
                       // https://github.com/facebook/create-react-app/issues/2677
                       ident: "postcss",
-                      plugins: () => [
-                        require("postcss-flexbugs-fixes"),
-                        require("postcss-preset-env")({
-                          autoprefixer: {
-                            flexbox: "no-2009",
+                      config: false,
+                      plugins: [
+                        "postcss-flexbugs-fixes",
+                        [
+                          "postcss-preset-env",
+                          {
+                            autoprefixer: {
+                              flexbox: "no-2009",
+                            },
+                            stage: 3,
                           },
-                          stage: 3,
-                        }),
+                        ],
                         // Adds PostCSS Normalize as the reset css with default
                         // options, so that it honors browserslist config in
                         // package.json which in turn let's users customize the
                         // target behavior as per their needs.
-                        postcssNormalize(),
+                        "postcss-normalize",
                       ],
                       sourceMap: isEnvProduction
                         ? shouldUseSourceMap
@@ -324,8 +324,6 @@ module.exports = function (webpackEnv) {
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
       new webpack.DefinePlugin(env.stringified),
-      // This is necessary to emit hot updates (CSS and Fast Refresh):
-      isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/master/packages/react-refresh
       isEnvDevelopment &&
