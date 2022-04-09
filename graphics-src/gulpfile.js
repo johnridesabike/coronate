@@ -1,15 +1,12 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-/* eslint-disable max-len */
-/* eslint-disable camelcase */
 const favicons = require("favicons").stream;
 const gulp = require("gulp");
-const log = require("fancy-log");
 const photon = require("photon-colors");
 
 gulp.task("svg-to-web-icons", function () {
@@ -51,6 +48,5 @@ gulp.task("svg-to-web-icons", function () {
         version: "1.0", // Your application's version string. `string`
       })
     )
-    .on("error", log)
     .pipe(gulp.dest("../public"));
 });
