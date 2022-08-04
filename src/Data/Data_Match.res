@@ -11,13 +11,16 @@ module Option = Belt.Option
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
-  type t = WhiteWon | BlackWon | Draw | NotSet
+  type t = WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted | NotSet
 
   let toString = x =>
     switch x {
     | WhiteWon => "whiteWon"
     | BlackWon => "blackWon"
     | Draw => "draw"
+    | Aborted => "aborted"
+    | WhiteAborted => "whiteAborted"
+    | BlackAborted => "blackAborted"
     | NotSet => "notSet"
     }
 
@@ -26,6 +29,9 @@ module Result = {
     | "whiteWon" => WhiteWon
     | "blackWon" => BlackWon
     | "draw" => Draw
+    | "aborted" => Aborted
+    | "whiteAborted" => WhiteAborted
+    | "blackAborted" => BlackAborted
     | _ => NotSet
     }
 
@@ -46,7 +52,9 @@ module Result = {
     switch t {
     | WhiteWon => BlackWon
     | BlackWon => WhiteWon
-    | (NotSet | Draw) as t => t
+    | WhiteAborted => BlackAborted
+    | BlackAborted => WhiteAborted
+    | (NotSet | Draw | Aborted) as t => t
     }
 }
 
