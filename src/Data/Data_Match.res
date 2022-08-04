@@ -111,12 +111,11 @@ let encode = data =>
     ("result", data.result->Result.encode),
   ])->Js.Json.object_
 
-let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result, byeValue) => {
+let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result: Result.t, byeValue) => {
   id: Id.random(),
   result: switch result {
-  | Result.NotSet =>
-    Result.scoreByeMatch(~byeValue, ~white=white.id, ~black=black.id, ~default=NotSet)
-  | WhiteWon | BlackWon | Draw => result
+  | NotSet => Result.scoreByeMatch(~byeValue, ~white=white.id, ~black=black.id, ~default=NotSet)
+  | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted => result
   },
   whiteId: white.id,
   blackId: black.id,
@@ -131,7 +130,9 @@ let swapColors = match => {
   result: switch match.result {
   | WhiteWon => BlackWon
   | BlackWon => WhiteWon
-  | (Draw | NotSet) as x => x
+  | WhiteAborted => BlackAborted
+  | BlackAborted => WhiteAborted
+  | (Draw | NotSet | Aborted) as x => x
   },
   whiteId: match.blackId,
   blackId: match.whiteId,
