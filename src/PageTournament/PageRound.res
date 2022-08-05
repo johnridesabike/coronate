@@ -79,7 +79,7 @@ module MatchRow = {
         </span>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
-      | (Draw) =>
+      | Draw =>
         /* TODO: find a better icon for draws. */
         <span
           ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
