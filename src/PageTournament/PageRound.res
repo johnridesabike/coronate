@@ -74,18 +74,18 @@ module MatchRow = {
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
-      | Draw =>
+      | (Draw | Aborted) =>
         /* TODO: find a better icon for draws. */
         <span
           ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
           {React.string(`🤝`)}
         </span>
-      | BlackWon =>
+      | (BlackWon | WhiteAborted) =>
         switch playerColor {
         | White => lost
         | Black => won
         }
-      | WhiteWon =>
+      | (WhiteWon | BlackAborted) =>
         switch playerColor {
         | White => won
         | Black => lost
@@ -104,7 +104,7 @@ module MatchRow = {
         | (_, None, _)
         | (_, _, None)
         | (NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
-        | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
+        | (BlackWon | WhiteWon | Draw | Aborted | WhiteAborted | BlackAborted, Some(white), Some(black)) =>
           Ratings.calcNewRatings(
             ~whiteRating=m.whiteOrigRating,
             ~blackRating=m.blackOrigRating,
@@ -125,7 +125,7 @@ module MatchRow = {
             playersDispatch(Set(blackId, {...black, matchCount: black.matchCount + 1}))
           )
         /* If the result is being un-scored, decrement the matchCounts */
-        | WhiteWon | BlackWon | Draw if newResult == NotSet =>
+        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted if newResult == NotSet =>
           Option.forEach(whiteOpt, white =>
             playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount - 1}))
           )
@@ -133,7 +133,7 @@ module MatchRow = {
             playersDispatch(Set(blackId, {...black, matchCount: black.matchCount - 1}))
           )
         /* Simply update the players with new ratings. */
-        | WhiteWon | BlackWon | Draw =>
+        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
           Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
           Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
         }
