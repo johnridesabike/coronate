@@ -186,6 +186,9 @@ module MatchRow = {
             <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
             <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
             <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
+            <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
+            <option value={Match.Result.toString(WhiteAborted)}> {React.string("White Aborted")} </option>
+            <option value={Match.Result.toString(BlackAborted)}> {React.string("Black Aborted")} </option>
           </select>
         </Utils.TestId>
       </td>
