@@ -51,20 +51,20 @@ module Score = {
 
   let fromResultWhite = (x: Data_Match.Result.t) =>
     switch x {
-    | WhiteWon => One
-    | BlackWon => Zero
     | Draw => Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
+    | (WhiteWon | BlackAborted) => One
+    | (BlackWon | WhiteAborted) => Zero
+    | (NotSet | Aborted) => Zero
     }
 
   let fromResultBlack = (x: Data_Match.Result.t) =>
     switch x {
-    | WhiteWon => Zero
-    | BlackWon => One
     | Draw => Half
     /* This loses data, so is a one-way trip. Use with prudence! */
-    | NotSet => Zero
+    | (WhiteWon | BlackAborted) => Zero
+    | (BlackWon | WhiteAborted) => One
+    | (NotSet | Aborted) => Zero
     }
 }
 
@@ -363,7 +363,7 @@ let fromTournament = (~roundList, ~scoreAdjustments) =>
   ->MutableQueue.reduce(Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
     switch match.result {
     | NotSet => acc
-    | WhiteWon | BlackWon | Draw =>
+    | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
       let whiteUpdate = update(
         ~playerId=match.whiteId,
         ~origRating=match.whiteOrigRating,
