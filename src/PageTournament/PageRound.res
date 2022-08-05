@@ -72,23 +72,39 @@ module MatchRow = {
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
+      let aborted = 
+        <span
+          ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(60%)", ())}>
+          {React.string(`❌`)}
+        </span>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
-      | (Draw | Aborted) =>
+      | (Draw) =>
         /* TODO: find a better icon for draws. */
         <span
           ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(70%)", ())}>
           {React.string(`🤝`)}
         </span>
-      | (BlackWon | WhiteAborted) =>
+      | BlackWon =>
         switch playerColor {
         | White => lost
         | Black => won
         }
-      | (WhiteWon | BlackAborted) =>
+      | WhiteWon =>
         switch playerColor {
         | White => won
         | Black => lost
+        }
+      | Aborted => aborted
+      | WhiteAborted =>
+        switch playerColor {
+        | White => aborted
+        | Black => won
+        }
+      | BlackAborted =>
+        switch playerColor {
+        | White => won
+        | Black => aborted
         }
       }
     }
@@ -104,7 +120,8 @@ module MatchRow = {
         | (_, None, _)
         | (_, _, None)
         | (NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
-        | (BlackWon | WhiteWon | Draw | Aborted | WhiteAborted | BlackAborted, Some(white), Some(black)) =>
+        | (Aborted | WhiteAborted | BlackAborted, _, _) => (m.whiteOrigRating, m.blackOrigRating)
+        | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
           Ratings.calcNewRatings(
             ~whiteRating=m.whiteOrigRating,
             ~blackRating=m.blackOrigRating,
