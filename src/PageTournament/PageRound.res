@@ -119,8 +119,7 @@ module MatchRow = {
         let (whiteNewRating, blackNewRating) = switch (newResult, whiteOpt, blackOpt) {
         | (_, None, _)
         | (_, _, None)
-        | (NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
-        | (Aborted | WhiteAborted | BlackAborted, _, _) => (m.whiteOrigRating, m.blackOrigRating)
+        | (NotSet | Aborted | WhiteAborted | BlackAborted, _, _) => (m.whiteOrigRating, m.blackOrigRating)
         | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
           Ratings.calcNewRatings(
             ~whiteRating=m.whiteOrigRating,
