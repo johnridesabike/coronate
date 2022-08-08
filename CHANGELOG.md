@@ -2,6 +2,7 @@
 
 ## Latest
 
+- Added new match results that support asynchronous tournaments.
 - Fixed the auto-pair algorithm to more correctly weight score differences.
 - Made some screens more printer-friendly.
 - Changed K-factor calculation to be more conservative.
