@@ -52,7 +52,6 @@ module Score = {
   let fromResultWhite = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
     | (WhiteWon | BlackAborted) => One
     | (BlackWon | WhiteAborted) => Zero
     | (NotSet | Aborted) => Zero
@@ -61,7 +60,6 @@ module Score = {
   let fromResultBlack = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    /* This loses data, so is a one-way trip. Use with prudence! */
     | (WhiteWon | BlackAborted) => Zero
     | (BlackWon | WhiteAborted) => One
     | (NotSet | Aborted) => Zero
