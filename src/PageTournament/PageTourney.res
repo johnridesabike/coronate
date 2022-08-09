@@ -104,9 +104,12 @@ module Sidebar = {
             /* Don't change players who haven't scored. */
             switch result {
             | NotSet => ()
+            | WhiteWon 
             | BlackWon
             | Draw
-            | WhiteWon =>
+            | Aborted
+            | WhiteAborted
+            | BlackAborted =>
               [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]->Array.forEach(((
                 id,
                 rating,

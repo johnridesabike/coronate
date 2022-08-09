@@ -72,6 +72,11 @@ module MatchRow = {
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
+      let aborted = 
+        <span
+          ariaLabel="Draw" role="img" style={ReactDOMRe.Style.make(~filter="grayscale(60%)", ())}>
+          {React.string(`❌`)}
+        </span>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
       | Draw =>
@@ -90,6 +95,17 @@ module MatchRow = {
         | White => won
         | Black => lost
         }
+      | Aborted => aborted
+      | WhiteAborted =>
+        switch playerColor {
+        | White => aborted
+        | Black => won
+        }
+      | BlackAborted =>
+        switch playerColor {
+        | White => won
+        | Black => aborted
+        }
       }
     }
 
@@ -103,7 +119,7 @@ module MatchRow = {
         let (whiteNewRating, blackNewRating) = switch (newResult, whiteOpt, blackOpt) {
         | (_, None, _)
         | (_, _, None)
-        | (NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
+        | (Aborted | WhiteAborted | BlackAborted | NotSet, _, _) => (m.whiteOrigRating, m.blackOrigRating)
         | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
           Ratings.calcNewRatings(
             ~whiteRating=m.whiteOrigRating,
@@ -125,7 +141,7 @@ module MatchRow = {
             playersDispatch(Set(blackId, {...black, matchCount: black.matchCount + 1}))
           )
         /* If the result is being un-scored, decrement the matchCounts */
-        | WhiteWon | BlackWon | Draw if newResult == NotSet =>
+        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted if newResult == NotSet =>
           Option.forEach(whiteOpt, white =>
             playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount - 1}))
           )
@@ -133,7 +149,7 @@ module MatchRow = {
             playersDispatch(Set(blackId, {...black, matchCount: black.matchCount - 1}))
           )
         /* Simply update the players with new ratings. */
-        | WhiteWon | BlackWon | Draw =>
+        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
           Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
           Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
         }
@@ -186,6 +202,9 @@ module MatchRow = {
             <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
             <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
             <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
+            <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
+            <option value={Match.Result.toString(WhiteAborted)}> {React.string("White Aborted")} </option>
+            <option value={Match.Result.toString(BlackAborted)}> {React.string("Black Aborted")} </option>
           </select>
         </Utils.TestId>
       </td>

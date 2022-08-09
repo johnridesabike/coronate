@@ -11,13 +11,16 @@ module Option = Belt.Option
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
-  type t = WhiteWon | BlackWon | Draw | NotSet
+  type t = WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted | NotSet
 
   let toString = x =>
     switch x {
     | WhiteWon => "whiteWon"
     | BlackWon => "blackWon"
     | Draw => "draw"
+    | Aborted => "aborted"
+    | WhiteAborted => "whiteAborted"
+    | BlackAborted => "blackAborted"
     | NotSet => "notSet"
     }
 
@@ -26,6 +29,9 @@ module Result = {
     | "whiteWon" => WhiteWon
     | "blackWon" => BlackWon
     | "draw" => Draw
+    | "aborted" => Aborted
+    | "whiteAborted" => WhiteAborted
+    | "blackAborted" => BlackAborted
     | _ => NotSet
     }
 
@@ -46,7 +52,9 @@ module Result = {
     switch t {
     | WhiteWon => BlackWon
     | BlackWon => WhiteWon
-    | (NotSet | Draw) as t => t
+    | WhiteAborted => BlackAborted
+    | BlackAborted => WhiteAborted
+    | (NotSet | Draw | Aborted) as t => t
     }
 }
 
@@ -103,12 +111,11 @@ let encode = data =>
     ("result", data.result->Result.encode),
   ])->Js.Json.object_
 
-let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result, byeValue) => {
+let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result: Result.t, byeValue) => {
   id: Id.random(),
   result: switch result {
-  | Result.NotSet =>
-    Result.scoreByeMatch(~byeValue, ~white=white.id, ~black=black.id, ~default=NotSet)
-  | WhiteWon | BlackWon | Draw => result
+  | NotSet => Result.scoreByeMatch(~byeValue, ~white=white.id, ~black=black.id, ~default=NotSet)
+  | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted => result
   },
   whiteId: white.id,
   blackId: black.id,
@@ -123,7 +130,9 @@ let swapColors = match => {
   result: switch match.result {
   | WhiteWon => BlackWon
   | BlackWon => WhiteWon
-  | (Draw | NotSet) as x => x
+  | WhiteAborted => BlackAborted
+  | BlackAborted => WhiteAborted
+  | (Draw | NotSet | Aborted) as x => x
   },
   whiteId: match.blackId,
   blackId: match.whiteId,

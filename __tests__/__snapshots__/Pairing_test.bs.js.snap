@@ -393,6 +393,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -533,6 +548,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -675,6 +705,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -815,6 +860,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -957,6 +1017,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -1097,6 +1172,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -1239,6 +1329,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -1379,6 +1484,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -1521,6 +1641,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -1661,6 +1796,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -1803,6 +1953,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -1943,6 +2108,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -2085,6 +2265,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -2225,6 +2420,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -2367,6 +2577,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -2507,6 +2732,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -2649,6 +2889,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -2789,6 +3044,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -2931,6 +3201,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -3071,6 +3356,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -3213,6 +3513,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -3353,6 +3668,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -3495,6 +3825,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -3635,6 +3980,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -3777,6 +4137,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -3917,6 +4292,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -4059,6 +4449,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -4199,6 +4604,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -4341,6 +4761,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -4482,6 +4917,21 @@ Object {
                         >
                           Draw
                         </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
+                        </option>
                       </select>
                     </td>
                     <td
@@ -4622,6 +5072,21 @@ Object {
                           value="draw"
                         >
                           Draw
+                        </option>
+                        <option
+                          value="aborted"
+                        >
+                          Aborted
+                        </option>
+                        <option
+                          value="whiteAborted"
+                        >
+                          White Aborted
+                        </option>
+                        <option
+                          value="blackAborted"
+                        >
+                          Black Aborted
                         </option>
                       </select>
                     </td>
@@ -5103,6 +5568,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -5243,6 +5723,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -5385,6 +5880,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -5525,6 +6035,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -5667,6 +6192,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -5807,6 +6347,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -5949,6 +6504,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -6089,6 +6659,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -6231,6 +6816,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -6371,6 +6971,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -6513,6 +7128,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -6653,6 +7283,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -6795,6 +7440,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -6935,6 +7595,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -7077,6 +7752,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -7217,6 +7907,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -7359,6 +8064,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -7499,6 +8219,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -7641,6 +8376,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -7781,6 +8531,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -7923,6 +8688,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -8063,6 +8843,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -8205,6 +9000,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -8345,6 +9155,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -8487,6 +9312,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -8627,6 +9467,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -8769,6 +9624,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -8909,6 +9779,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>
@@ -9051,6 +9936,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -9192,6 +10092,21 @@ Object {
                       >
                         Draw
                       </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
+                      </option>
                     </select>
                   </td>
                   <td
@@ -9332,6 +10247,21 @@ Object {
                         value="draw"
                       >
                         Draw
+                      </option>
+                      <option
+                        value="aborted"
+                      >
+                        Aborted
+                      </option>
+                      <option
+                        value="whiteAborted"
+                      >
+                        White Aborted
+                      </option>
+                      <option
+                        value="blackAborted"
+                      >
+                        Black Aborted
                       </option>
                     </select>
                   </td>

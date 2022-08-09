@@ -6,7 +6,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 module Result: {
-  type t = WhiteWon | BlackWon | Draw | NotSet
+  type t = WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted | NotSet
 
   let toString: t => string
 
