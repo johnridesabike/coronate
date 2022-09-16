@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +7,6 @@
 */
 open Belt
 open Jest
-open Expect
 
 let players = TestData.players
 
@@ -32,7 +31,7 @@ test("Players have 0 priority of pairing themselves.", () => {
   // picked.
   let data = loadPairData(TestData.byeRoundTourney)
   let newb = TestData.newbieMcNewberson.id
-  Data.Pairing.calcPairIdealByIds(data, newb, newb) |> expect |> toBe(Some(0.0))
+  Data.Pairing.calcPairIdealByIds(data, newb, newb)->expect->toBe(Some(0.0))
 })
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
@@ -40,16 +39,16 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
   test("The lowest-ranking player is removed after bye selection.", () =>
     pairData
-    |> Data.Pairing.players
-    |> Map.keysToArray
-    |> expect
-    |> not_
-    |> toContain(TestData.newbieMcNewberson.id)
+    ->Data.Pairing.players
+    ->Map.keysToArray
+    ->expect
+    ->not_
+    ->toContain(TestData.newbieMcNewberson.id)
   )
   test("The lowest-ranking player is returned", () =>
     switch byedPlayer {
     | None => assert false
-    | Some(player) => expect(Data.Pairing.id(player)) |> toBe(TestData.newbieMcNewberson.id)
+    | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
     }
   )
 })
@@ -61,7 +60,7 @@ test("The bye signup queue works", () => {
   let (_, byedPlayer) = Data.Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye)
   switch byedPlayer {
   | None => assert false
-  | Some(player) => expect(Data.Pairing.id(player)) |> toBe(TestData.joelRobinson.id)
+  | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.joelRobinson.id)
   }
 })
 test(
@@ -71,14 +70,14 @@ test(
     let (_, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
     switch byedPlayer {
     | None => assert false
-    | Some(player) => expect(Data.Pairing.id(player)) |> toBe(TestData.newbieMcNewberson.id)
+    | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
     }
   },
 )
 test("Players are paired correctly in a simple scenario.", () => {
   let pairData = loadPairData(TestData.simplePairing)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches) |> ExpectJs.toEqual([
+  expect(matches)->toEqual([
     (TestData.grandyMcMaster.id, TestData.gypsy.id),
     (TestData.drClaytonForrester.id, TestData.newbieMcNewberson.id),
     (TestData.joelRobinson.id, TestData.crowTRobot.id),
@@ -89,7 +88,7 @@ test("Players are paired correctly in a simple scenario.", () => {
 test("Players are paired correctly after a draw.", () => {
   let pairData = loadPairData(TestData.pairingWithDraws)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches) |> toEqual([
+  expect(matches)->toEqual([
     (TestData.grandyMcMaster.id, TestData.gypsy.id),
     (TestData.drClaytonForrester.id, TestData.newbieMcNewberson.id),
     (TestData.tomServo.id, TestData.tvsFrank.id),
@@ -101,18 +100,18 @@ open JestDom
 open ReactTestingLibrary
 open FireEvent
 
+JestDom.init()
+
 /* This is quick-and-dirty and fragile. */
 test("Players are paired correctly after a draw (more complex).", () => {
   let page = render(
-    <LoadTournament tourneyId=Data.Id.fromString("complex-bye-rounds---")>
+    <LoadTournament tourneyId={Data.Id.fromString("complex-bye-rounds---")}>
       {tournament => <PageRound tournament roundId=4 />}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
+  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
 
-  page
-  |> Expect.expect
-  |> toMatchSnapshot
+  page->expect->toMatchSnapshot
 })
 
 test("Auto-matching with bye players works", () => {
@@ -122,12 +121,9 @@ test("Auto-matching with bye players works", () => {
     </LoadTournament>,
   )
 
-  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
+  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
 
-  page
-  |> getByTestId(~matcher=#Str("match-3-black"))
-  |> JestDom.expect
-  |> toHaveTextContent(#Str("[Bye]"))
+  page->getByTestId(#Str("match-3-black"))->expect->toHaveTextContent(#Str("[Bye]"))
 })
 
 test("Auto-matching works with manually adjusted scores", () => {
@@ -137,33 +133,29 @@ test("Auto-matching works with manually adjusted scores", () => {
       {tournament => <> <PageTourneyPlayers tournament /> <PageRound tournament roundId=3 /> </>}
     </LoadTournament>,
   )
-  page |> getByText(~matcher=#RegExp(%re("/more options for kinga forrester/i"))) |> click
+  page->getByText(#RegExp(%re("/more options for kinga forrester/i")))->click
   page
-  |> getByLabelText(~matcher=#RegExp(%re("/score adjustment/i")))
-  |> change(
-    ~eventInit={
-      "target": {
-        "value": "3",
-      },
+  ->getByLabelText(#RegExp(%re("/score adjustment/i")))
+  ->change({
+    "target": {
+      "value": "3",
     },
-  )
-  page |> getByText(~matcher=#RegExp(%re("/save/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%re("/more options for TV's Max/i"))) |> click
+  })
+  page->getByText(#RegExp(%re("/save/i")))->click
+  page->getByText(#RegExp(%re("/more options for TV's Max/i")))->click
   page
-  |> getByLabelText(~matcher=#RegExp(%re("/score adjustment/i")))
-  |> change(
-    ~eventInit={
-      "target": {
-        "value": "-3",
-      },
+  ->getByLabelText(#RegExp(%re("/score adjustment/i")))
+  ->change({
+    "target": {
+      "value": "-3",
     },
-  )
-  page |> getByText(~matcher=#RegExp(%re("/save/i"))) |> click
-  page |> getByText(~matcher=#RegExp(%re("/auto-pair unmatched players/i"))) |> click
+  })
+  page->getByText(#RegExp(%re("/save/i")))->click
+  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
   page
-  |> getByTestId(~matcher=#Str("match-0-white"))
-  |> JestDom.expect
-  |> toHaveTextContent(#Str("Bobo Professor"))
+  ->getByTestId(#Str("match-0-white"))
+  ->expect
+  ->toHaveTextContent(#Str("Bobo Professor"))
 })
 
 describe("Manually pairing and byes.", () => {
@@ -173,12 +165,12 @@ describe("Manually pairing and byes.", () => {
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )
-    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
-    page |> getByText(~matcher=#Str("Add Tom Servo")) |> click
+    page->getByText(#Str("Add Joel Robinson"))->click
+    page->getByText(#Str("Add Tom Servo"))->click
     page
-    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
-    |> JestDom.expect
-    |> toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
+    ->getByTestId(#Str("pairpicker-preselect-winner"))
+    ->expect
+    ->toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
   })
 
   test("Pairing with a bye player automatically pre-selects the winner.", () => {
@@ -187,12 +179,12 @@ describe("Manually pairing and byes.", () => {
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )
-    page |> getByText(~matcher=#Str("Add [Bye]")) |> click
-    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
+    page->getByText(#Str("Add [Bye]"))->click
+    page->getByText(#Str("Add Joel Robinson"))->click
     page
-    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
-    |> JestDom.expect
-    |> toHaveValue(#Str(Data.Match.Result.toString(BlackWon)))
+    ->getByTestId(#Str("pairpicker-preselect-winner"))
+    ->expect
+    ->toHaveValue(#Str(Data.Match.Result.toString(BlackWon)))
   })
 
   test("Un-pairing a bye player automatically un-pre-selects the winner.", () => {
@@ -201,12 +193,12 @@ describe("Manually pairing and byes.", () => {
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )
-    page |> getByText(~matcher=#Str("Add [Bye]")) |> click
-    page |> getByText(~matcher=#Str("Add Joel Robinson")) |> click
-    page |> getByText(~matcher=#Str("Remove [Bye]")) |> click
+    page->getByText(#Str("Add [Bye]"))->click
+    page->getByText(#Str("Add Joel Robinson"))->click
+    page->getByText(#Str("Remove [Bye]"))->click
     page
-    |> getByTestId(~matcher=#Str("pairpicker-preselect-winner"))
-    |> JestDom.expect
-    |> toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
+    ->getByTestId(#Str("pairpicker-preselect-winner"))
+    ->expect
+    ->toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
   })
 })

@@ -12,6 +12,10 @@
     {
       "dir": "__tests__",
       "type": "dev"
+    },
+    {
+      "dir": "testutils",
+      "type": "dev"
     }
   ],
   "package-specs": [
@@ -30,11 +34,7 @@
     "rescript-blossom",
     "re-formality"
   ],
-  "bs-dev-dependencies": [
-    "@glennsl/bs-jest",
-    "bs-react-testing-library",
-    "bs-jest-dom"
-  ],
+  "bs-dev-dependencies": [],
   "ppx-flags": ["re-formality/ppx"],
   "ignored-dirs": ["node_modules"],
   "warnings": {
