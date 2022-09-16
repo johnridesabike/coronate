@@ -48,11 +48,11 @@ module About = {
   @react.component
   let make = () =>
     <article className="win__about">
-      <div style={ReactDOMRe.Style.make(~flex="0 0 48%", ~textAlign="center", ())}>
+      <div style={ReactDOM.Style.make(~flex="0 0 48%", ~textAlign="center", ())}>
         <img src=Utils.WebpackAssets.logo height="196" width="196" alt="" />
       </div>
-      <div style={ReactDOMRe.Style.make(~flex="0 0 48%", ())}>
-        <h1 className="title" style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+      <div style={ReactDOM.Style.make(~flex="0 0 48%", ())}>
+        <h1 className="title" style={ReactDOM.Style.make(~textAlign="left", ())}>
           {React.string("Coronate")}
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
@@ -92,7 +92,7 @@ module TitleBar = {
       </button>
       <div
         className="body-20"
-        style={ReactDOMRe.Style.make(
+        style={ReactDOM.Style.make(
           ~left="0",
           ~marginLeft="auto",
           ~marginRight="auto",
@@ -143,7 +143,7 @@ module DefaultSidebar = {
   @react.component
   let make = (~dispatch) =>
     <nav>
-      <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
+      <ul style={ReactDOM.Style.make(~margin="0", ())}>
         <li>
           <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Home />

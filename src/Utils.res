@@ -93,13 +93,13 @@ module DateTimeFormat = {
 
 module Panel = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) =>
+  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
     <div className={`utils__panel ${className}`} style> children </div>
 }
 
 module PanelContainer = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) =>
+  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
     <div style className={`utils__panels ${className}`}> children </div>
 }
 
@@ -111,7 +111,7 @@ module Notification = {
     ~kind=Generic,
     ~tooltip="",
     ~className="",
-    ~style=ReactDOMRe.Style.make(),
+    ~style=ReactDOM.Style.make(),
   ) => {
     let (icon, notifClassName) = switch kind {
     | Success => (<Icons.Check />, "utils__notification-success")
@@ -129,8 +129,7 @@ module Notification = {
 module TestId = {
   /* https://twitter.com/fakenickels/status/1189887257030930433 */
   @react.component
-  let make = (~children, ~testId) =>
-    ReasonReact.cloneElement(children, ~props={"data-testid": testId}, [])
+  let make = (~children, ~testId) => React.cloneElement(children, {"data-testid": testId})
 }
 
 @ocaml.doc("Side effects")

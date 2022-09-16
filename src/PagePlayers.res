@@ -189,7 +189,7 @@ module PlayerList = {
       | None => ()
       | Some(player) =>
         let message = `Are you sure you want to delete ${Player.fullName(player)}?`
-        if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
+        if Webapi.Dom.Window.confirm(Webapi.Dom.window, message) {
           playersDispatch(Db.Del(id))
           configDispatch(Db.DelAvoidSingle(id))
         }
@@ -201,7 +201,7 @@ module PlayerList = {
           <Icons.UserPlus /> {React.string(" Add a new player")}
         </button>
       </div>
-      <table style={ReactDOMRe.Style.make(~margin="auto", ())}>
+      <table style={ReactDOM.Style.make(~margin="auto", ())}>
         <caption> {React.string("Player roster")} </caption>
         <thead>
           <tr>
@@ -339,7 +339,7 @@ module Profile = {
       <Link
         to_=PlayerList
         onClick={event =>
-          if form.dirty() && !Webapi.Dom.Window.confirm("Discard changes?", Webapi.Dom.window) {
+          if form.dirty() && !Webapi.Dom.Window.confirm(Webapi.Dom.window, "Discard changes?") {
             ReactEvent.Mouse.preventDefault(event)
           }}>
         <Icons.ChevronLeft /> {React.string(" Back")}

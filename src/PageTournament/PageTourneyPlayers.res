@@ -255,7 +255,7 @@ let make = (~tournament: LoadTournament.t) => {
       </button>
     </div>
     <Utils.PanelContainer>
-      <Utils.Panel style={ReactDOMRe.Style.make(~flexShrink="0", ())}>
+      <Utils.Panel style={ReactDOM.Style.make(~flexShrink="0", ())}>
         <table>
           <caption> {React.string("Current roster")} </caption>
           <thead>
@@ -271,7 +271,7 @@ let make = (~tournament: LoadTournament.t) => {
         {switch byeQueue {
         | [] => <p className="caption-20"> {React.string("No one has signed up yet.")} </p>
         | byeQueue =>
-          <table style={ReactDOMRe.Style.make(~width="100%", ())}>
+          <table style={ReactDOM.Style.make(~width="100%", ())}>
             <tbody>
               {Array.map(byeQueue, pId =>
                 <tr

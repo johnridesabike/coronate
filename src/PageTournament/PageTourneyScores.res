@@ -188,7 +188,7 @@ module SelectTieBreaks = {
                   x == tieBreak ? "selected" : ""
                 )}>
                 <td> {Scoring.TieBreak.toPrettyString(tieBreak)->React.string} </td>
-                <td style={ReactDOMRe.Style.make(~width="48px", ())}>
+                <td style={ReactDOM.Style.make(~width="48px", ())}>
                   <button
                     className="button-micro"
                     disabled={selectedTb != None && selectedTb !== Some(tieBreak)}
@@ -215,7 +215,7 @@ module SelectTieBreaks = {
       </Utils.Panel>
       <Utils.Panel>
         <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>
-        <table style={ReactDOMRe.Style.make(~marginTop="16px", ())}>
+        <table style={ReactDOM.Style.make(~marginTop="16px", ())}>
           <caption className="title-30"> {React.string("Available tiebreak methods")} </caption>
           <thead>
             <tr>

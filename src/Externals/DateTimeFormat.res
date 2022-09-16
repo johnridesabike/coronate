@@ -23,7 +23,7 @@ type timeZoneName = [#long | #short]
 type weekday = [#long | #short | #narrow]
 type year = [#numeric | #"2-digit"]
 
-@bs.send external format: (t, Js.Date.t) => string = "format"
+@send external format: (t, Js.Date.t) => string = "format"
 
 module Options = {
   type t

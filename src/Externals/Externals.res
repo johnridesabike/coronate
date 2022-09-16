@@ -12,7 +12,7 @@ module FileReader = {
   @new external make: unit => t = "FileReader"
   type onloadArg = {"target": {"result": string}}
   @set external setOnLoad: (t, onloadArg => unit) => unit = "onload"
-  @bs.send external readAsText: (t, string) => unit = "readAsText"
+  @send external readAsText: (t, string) => unit = "readAsText"
 }
 
 module VisuallyHidden = {
@@ -34,7 +34,7 @@ module Dialog = {
     ~onDismiss: unit => unit,
     ~ariaLabel: string,
     ~children: React.element,
-    ~style=ReactDOMRe.Style.make(),
+    ~style=ReactDOM.Style.make(),
     ~className,
   ) =>
     React.createElement(

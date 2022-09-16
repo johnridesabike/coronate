@@ -44,7 +44,7 @@ module Splash = {
           <img src=Utils.WebpackAssets.logo alt="" height="96" width="96" />
         </div>
         <div className="pages__title-text">
-          <h1 className="title" style={ReactDOMRe.Style.make(~fontSize="40px", ())}>
+          <h1 className="title" style={ReactDOM.Style.make(~fontSize="40px", ())}>
             {React.string("Coronate")}
           </h1>
           <p className={"pages__subtitle caption-30"}> {React.string("Tournament manager")} </p>
@@ -60,7 +60,7 @@ module Splash = {
                 alt="Buy Me A Coffee"
                 height="60"
                 width="217"
-                style={ReactDOMRe.Style.make(~height="60px ", ~width="217px ", ())}
+                style={ReactDOM.Style.make(~height="60px ", ~width="217px ", ())}
               />
             </a>
           </p>
@@ -132,7 +132,7 @@ module TimeCalculator = {
         {"Estimate the time requirements for planning your Swiss-system tournament."->React.string}
       </p>
       <form>
-        <table style={ReactDOMRe.Style.make(~margin="0", ())}>
+        <table style={ReactDOM.Style.make(~margin="0", ())}>
           <tbody>
             <tr>
               <td> <label htmlFor="playerCount"> {React.string("Player count ")} </label> </td>
@@ -143,7 +143,7 @@ module TimeCalculator = {
                   value={Int.toString(players)}
                   onChange={updateInt(setPlayers, minPlayers)}
                   min={Int.toString(minPlayers)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
               </td>
             </tr>
@@ -159,7 +159,7 @@ module TimeCalculator = {
                   onChange={updateInt(setBreakTime, minBreakTime)}
                   step=5.0
                   min={Int.toString(minBreakTime)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
                 {React.string(" minutes")}
               </td>
@@ -176,7 +176,7 @@ module TimeCalculator = {
                   onChange={updateFloat(setTotalTime, minTotalTime)}
                   step=0.5
                   min={Float.toString(minTotalTime)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
                 {React.string(" hours")}
               </td>

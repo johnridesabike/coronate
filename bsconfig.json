@@ -28,9 +28,9 @@
   "namespace": true,
   "bs-dependencies": [
     "@ryyppy/rescript-promise",
-    "reason-react",
+    "@rescript/react",
     "re-classnames",
-    "bs-webapi",
+    "rescript-webapi",
     "rescript-blossom",
     "re-formality"
   ],

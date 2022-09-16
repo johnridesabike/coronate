@@ -60,7 +60,7 @@ let make = (~tournament: LoadTournament.t) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(bye),
     })
-    Webapi.Dom.Window.alert(`Bye scores updated to ${s}.`, Webapi.Dom.window)
+    Webapi.Dom.Window.alert(Webapi.Dom.window, `Bye scores updated to ${s}.`)
   }
 
   let updateDate = event => {
@@ -87,12 +87,12 @@ let make = (~tournament: LoadTournament.t) => {
     | Name =>
       <form
         className="display-20"
-        style={ReactDOMRe.Style.make(~textAlign="left", ())}
+        style={ReactDOM.Style.make(~textAlign="left", ())}
         onSubmit={_ => setEditing(_ => NotEditing)}>
         <input
           className="display-20"
-          style={ReactDOMRe.Style.make(~textAlign="left", ())}
-          ref={ReactDOMRe.Ref.domRef(nameInput)}
+          style={ReactDOM.Style.make(~textAlign="left", ())}
+          ref={ReactDOM.Ref.domRef(nameInput)}
           type_="text"
           value=name
           onChange={event =>
@@ -108,7 +108,7 @@ let make = (~tournament: LoadTournament.t) => {
       </form>
     | Date
     | NotEditing =>
-      <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+      <h1 style={ReactDOM.Style.make(~textAlign="left", ())}>
         <span className="inputPlaceholder"> {React.string(name)} </span>
         {React.string(" ")}
         <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
@@ -123,7 +123,7 @@ let make = (~tournament: LoadTournament.t) => {
         <input
           className="caption-30"
           type_="date"
-          ref={ReactDOMRe.Ref.domRef(dateInput)}
+          ref={ReactDOM.Ref.domRef(dateInput)}
           value={makeDateInput(date)}
           onChange=updateDate
         />

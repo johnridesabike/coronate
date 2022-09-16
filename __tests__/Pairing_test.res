@@ -152,10 +152,7 @@ test("Auto-matching works with manually adjusted scores", () => {
   })
   page->getByText(#RegExp(%re("/save/i")))->click
   page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
-  page
-  ->getByTestId(#Str("match-0-white"))
-  ->expect
-  ->toHaveTextContent(#Str("Bobo Professor"))
+  page->getByTestId(#Str("match-0-white"))->expect->toHaveTextContent(#Str("Bobo Professor"))
 })
 
 describe("Manually pairing and byes.", () => {

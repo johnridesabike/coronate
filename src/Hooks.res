@@ -86,14 +86,14 @@ module SortButton = {
         : dispatch(SetColumn(sortColumn))
     let chevronStyle =
       data.column === sortColumn
-        ? ReactDOMRe.Style.make(~opacity="1", ())
-        : ReactDOMRe.Style.make(~opacity="0", ())
+        ? ReactDOM.Style.make(~opacity="1", ())
+        : ReactDOM.Style.make(~opacity="0", ())
     <button
       className="button-micro button-text-ghost title-20"
-      style={ReactDOMRe.Style.make(~width="100%", ())}
+      style={ReactDOM.Style.make(~width="100%", ())}
       onClick={_ => setKeyOrToggleDir()}>
       <span ariaHidden=true>
-        <Icons.ChevronUp style={ReactDOMRe.Style.make(~opacity="0", ())} />
+        <Icons.ChevronUp style={ReactDOM.Style.make(~opacity="0", ())} />
       </span>
       children
       {if data.isDescending {

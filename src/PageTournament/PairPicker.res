@@ -327,8 +327,12 @@ module Stage = {
               <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
               <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
               <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
-              <option value={Match.Result.toString(WhiteAborted)}> {React.string("White Aborted")} </option>
-              <option value={Match.Result.toString(BlackAborted)}> {React.string("Black Aborted")} </option>
+              <option value={Match.Result.toString(WhiteAborted)}>
+                {React.string("White Aborted")}
+              </option>
+              <option value={Match.Result.toString(BlackAborted)}>
+                {React.string("Black Aborted")}
+              </option>
             </select>
           </Utils.TestId>
         </label>
@@ -379,9 +383,9 @@ module PlayerInfo = {
         <dt> {"Has had a bye round"->React.string} </dt>
         <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
         <dt> {"Opponent history"->React.string} </dt>
-        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ol> opponentResults </ol> </dd>
+        <dd style={ReactDOM.Style.make(~margin="0", ())}> <ol> opponentResults </ol> </dd>
         <dt> {"Players to avoid"->React.string} </dt>
-        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ul> avoidListHtml </ul> </dd>
+        <dd style={ReactDOM.Style.make(~margin="0", ())}> <ul> avoidListHtml </ul> </dd>
       </dl>
     </div>
   }
@@ -466,7 +470,7 @@ let make = (
             </button>
           </div>
         </Utils.Panel>
-        <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
+        <Utils.Panel style={ReactDOM.Style.make(~flexGrow="1", ())}>
           <Stage state roundId dispatch pairData setTourney getPlayer byeValue tourney round />
           <Utils.PanelContainer>
             {[state.p1, state.p2]

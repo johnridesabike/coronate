@@ -84,7 +84,7 @@ type numeral = {
   options: Options.t,
 }
 @module("numeral") external numeral: numeral = "default"
-@bs.send external reset: numeral => unit = "reset"
+@send external reset: numeral => unit = "reset"
 let registerLocale: (string, Locale.t) => Locale.t
 let registerFormat: (string, Format.t) => Format.t
 let locale: (~key: string) => string
@@ -96,22 +96,22 @@ type t
 @module("numeral") external make: float => t = "default"
 @module("numeral") external fromNumeral: t => t = "default"
 @module("numeral") external fromInt: int => t = "default"
-@bs.send external clone: t => t = "clone"
-@bs.send external formatDefault: t => string = "format"
-@bs.send external format: (t, string) => string = "format"
-@bs.send
+@send external clone: t => t = "clone"
+@send external formatDefault: t => string = "format"
+@send external format: (t, string) => string = "format"
+@send
 external formatRound: (t, string, @uncurry (float => float)) => string = "format"
 let unformat: (t, string) => float
 let value: t => float
-@bs.send external set: (t, float) => t = "set"
-@bs.send external add: (t, float) => t = "add"
-@bs.send external subtract: (t, float) => t = "subtract"
-@bs.send external multiply: (t, float) => t = "multiply"
-@bs.send external divide: (t, float) => t = "divide"
+@send external set: (t, float) => t = "set"
+@send external add: (t, float) => t = "add"
+@send external subtract: (t, float) => t = "subtract"
+@send external multiply: (t, float) => t = "multiply"
+@send external divide: (t, float) => t = "divide"
 let difference: (t, float) => float
 module String: {
   @module("numeral") external numeral: numeral = "default"
-  @bs.send external reset: numeral => unit = "reset"
+  @send external reset: numeral => unit = "reset"
   let registerLocale: (string, Locale.t) => Locale.t
   let registerFormat: (string, Format.t) => Format.t
   let locale: (~key: string) => string
@@ -122,18 +122,18 @@ module String: {
   type t
   @module("numeral") external make: string => t = "default"
   @module("numeral") external fromNumeral: t => t = "default"
-  @bs.send external clone: t => t = "clone"
-  @bs.send external formatDefault: t => string = "format"
-  @bs.send external format: (t, string) => string = "format"
-  @bs.send
+  @send external clone: t => t = "clone"
+  @send external formatDefault: t => string = "format"
+  @send external format: (t, string) => string = "format"
+  @send
   external formatRound: (t, string, @uncurry (float => float)) => string = "format"
   let unformat: (t, string) => option<float>
   let value: t => option<float>
-  @bs.send external set: (t, string) => t = "set"
-  @bs.send external add: (t, string) => t = "add"
-  @bs.send external subtract: (t, string) => t = "subtract"
-  @bs.send external multiply: (t, string) => t = "multiply"
-  @bs.send external divide: (t, string) => t = "divide"
+  @send external set: (t, string) => t = "set"
+  @send external add: (t, string) => t = "add"
+  @send external subtract: (t, string) => t = "subtract"
+  @send external multiply: (t, string) => t = "multiply"
+  @send external divide: (t, string) => t = "divide"
   let difference: (t, string) => option<float>
 }
 module Helpers: {

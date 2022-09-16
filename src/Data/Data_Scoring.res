@@ -52,17 +52,17 @@ module Score = {
   let fromResultWhite = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    | (WhiteWon | BlackAborted) => One
-    | (BlackWon | WhiteAborted) => Zero
-    | (NotSet | Aborted) => Zero
+    | WhiteWon | BlackAborted => One
+    | BlackWon | WhiteAborted => Zero
+    | NotSet | Aborted => Zero
     }
 
   let fromResultBlack = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    | (WhiteWon | BlackAborted) => Zero
-    | (BlackWon | WhiteAborted) => One
-    | (NotSet | Aborted) => Zero
+    | WhiteWon | BlackAborted => Zero
+    | BlackWon | WhiteAborted => One
+    | NotSet | Aborted => Zero
     }
 }
 

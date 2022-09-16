@@ -21,8 +21,8 @@ let getDateForFile = () => {
 
 let invalidAlert = () =>
   Webapi.Dom.Window.alert(
-    "That data is invalid! A more helpful error message could not be written yet.",
     Webapi.Dom.window,
+    "That data is invalid! A more helpful error message could not be written yet.",
   )
 
 let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
@@ -94,7 +94,7 @@ module GistOpts = {
   | None => Js.Obj.empty()
   }
 
-  let savedAlert = () => Webapi.Dom.Window.alert("Data saved.", Webapi.Dom.window)
+  let savedAlert = () => Webapi.Dom.Window.alert(Webapi.Dom.window, "Data saved.")
 
   @react.component
   let make = (~exportData, ~configDispatch: Db.actionConfig => unit, ~loadJson) => {
@@ -192,8 +192,8 @@ module GistOpts = {
               ->Promise.then(() => loadGistList(auth))
               ->Promise.catch(e => {
                 Webapi.Dom.Window.alert(
-                  "Backup failed. Check your GitHub credentials.",
                   Webapi.Dom.window,
+                  "Backup failed. Check your GitHub credentials.",
                 )
                 handleAuthError(e)
               })
@@ -244,8 +244,8 @@ module GistOpts = {
                   ->Promise.then(() => loadGistList(auth))
                   ->Promise.catch(e => {
                     Webapi.Dom.Window.alert(
-                      "Backup failed. Check your GitHub credentials or try a different gist.",
                       Webapi.Dom.window,
+                      "Backup failed. Check your GitHub credentials or try a different gist.",
                     )
                     handleAuthError(e)
                   })
@@ -324,7 +324,7 @@ let make = (~windowDispatch=_ => ()) => {
     tourneysDispatch(SetAll(tournaments))
     configDispatch(SetState(config))
     playersDispatch(SetAll(players))
-    Webapi.Dom.Window.alert("Data loaded.", Webapi.Dom.window)
+    Webapi.Dom.Window.alert(Webapi.Dom.window, "Data loaded.")
   }
 
   let loadJson = json =>
@@ -387,8 +387,8 @@ let make = (~windowDispatch=_ => ()) => {
         <p className="caption-30">
           {React.string("Select the default score given to a player who takes a bye.")}
         </p>
-        <div style={ReactDOMRe.Style.make(~display="flex", ())}>
-          <label className="body-20" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+        <div style={ReactDOM.Style.make(~display="flex", ())}>
+          <label className="body-20" style={ReactDOM.Style.make(~marginRight="16px", ())}>
             {React.string("Full (")}
             <span className="monospace"> {React.string("1")} </span>
             {React.string(") ")}
@@ -401,7 +401,7 @@ let make = (~windowDispatch=_ => ()) => {
               onChange={_ => configDispatch(SetByeValue(Full))}
             />
           </label>
-          <label className="body-20" style={ReactDOMRe.Style.make(~marginRight="16px", ())}>
+          <label className="body-20" style={ReactDOM.Style.make(~marginRight="16px", ())}>
             {React.string("Half (")}
             <span className="monospace"> {React.string(`½`)} </span>
             {React.string(") ")}

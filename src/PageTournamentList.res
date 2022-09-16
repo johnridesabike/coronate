@@ -43,7 +43,7 @@ let make = (~windowDispatch=_ => ()) => {
   }
   let deleteTournament = (id, name) => {
     let message = j`Are you sure you want to delete “$name”?`
-    if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
+    if Webapi.Dom.Window.confirm(Webapi.Dom.window, message) {
       dispatch(Del(id))
     }
   }

@@ -84,7 +84,7 @@ let toString = x =>
   }
 
 let useUrl = () => {
-  let {path, _} = ReasonReactRouter.useUrl()
+  let {path, _} = RescriptReactRouter.useUrl()
   fromPath(path)
 }
 
@@ -93,26 +93,25 @@ module Link = {
   let make = (~children, ~to_, ~onDragStart=?, ~onClick=?) => {
     let path = useUrl()
     let href = toString(to_)
-    /* RescriptReact hasn't implemented the aria-current attribute yet. We have
-     to define it ourselves! */
-    ReactDOMRe.createElement(
-      "a",
-      ~props=ReactDOMRe.objToDOMProps({
-        "aria-current": href == toString(path),
-        "href": href,
-        "onDragStart": onDragStart,
-        "onClick": event => {
+    // RescriptReact hasn't implemented the aria-current attribute yet.
+    // We have to define it ourselves!
+    React.cloneElement(
+      <a
+        href
+        ?onDragStart
+        onClick={event => {
           switch onClick {
           | None => ()
           | Some(f) => f(event)
           }
           if !ReactEvent.Mouse.defaultPrevented(event) {
             ReactEvent.Mouse.preventDefault(event)
-            ReasonReactRouter.push(href)
+            RescriptReactRouter.push(href)
           }
-        },
-      }),
-      [children],
+        }}>
+        children
+      </a>,
+      {"aria-current": href == toString(path)},
     )
   }
 }

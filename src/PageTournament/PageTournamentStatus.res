@@ -14,11 +14,11 @@ let make = (~tournament: LoadTournament.t) => {
   let lastRoundId = Rounds.getLastKey(tourney.roundList)
   let lastRound = Rounds.get(roundList, lastRoundId)
   <>
-    <h2 style={ReactDOMRe.Style.make(~textAlign="center", ())}>
+    <h2 style={ReactDOM.Style.make(~textAlign="center", ())}>
       {React.string("Tournament status")}
     </h2>
     <div className="content-area">
-      <Utils.PanelContainer style={ReactDOMRe.Style.make(~justifyContent="center", ())}>
+      <Utils.PanelContainer style={ReactDOM.Style.make(~justifyContent="center", ())}>
         <Utils.Panel>
           {switch lastRound {
           | None => <p> {React.string("No rounds played yet.")} </p>
