@@ -12,7 +12,8 @@
   I may replace the arrays with a different data type, so hopefully it will be
   simple to rewrite this module if necessary (versus rewriting every
   component).
-  */
+ */
+
 open Belt
 module Match = Data_Match
 module Id = Data_Id
