@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,7 +29,8 @@ module Footer = {
       </div>
       <hr className="win__footer-divider" />
       <div className="win__footer-block">
-        {React.string("Registered players: ")} {activePlayers->Map.size->React.int}
+        {React.string("Registered players: ")}
+        {activePlayers->Map.size->React.int}
       </div>
       <hr className="win__footer-divider" />
       <Utils.Notification
@@ -117,9 +118,7 @@ module Sidebar = {
                 switch players->Map.get(id) {
                 | Some(player) =>
                   let matchCount = player.matchCount - 1
-                  playersDispatch(
-                    Set(player.id, {...player, matchCount: matchCount, rating: rating}),
-                  )
+                  playersDispatch(Set(player.id, {...player, matchCount, rating}))
                 /* Don't try to set dummy or deleted players */
                 | None => ()
                 }
@@ -212,11 +211,13 @@ module Sidebar = {
                 {React.int(id + 1)}
                 {if isRoundComplete(id) {
                   <span className={"sidebar__hide-on-close caption-20"}>
-                    {React.string(" Complete ")} <Icons.Check />
+                    {React.string(" Complete ")}
+                    <Icons.Check />
                   </span>
                 } else {
                   <span className={"sidebar__hide-on-close caption-20"}>
-                    {React.string(" Not complete ")} <Icons.Alert />
+                    {React.string(" Not complete ")}
+                    <Icons.Alert />
                   </span>
                 }}
               </Link>

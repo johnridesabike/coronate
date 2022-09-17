@@ -77,7 +77,7 @@
     "react-dom": "^16.14.0",
     "react-feather": "^2.0.9",
     "react-refresh": "^0.10.0",
-    "rescript": "^9.1.4",
+    "rescript": "^10.0.1",
     "rescript-blossom": "^3.0.0",
     "rescript-webapi": "^0.6.1",
     "source-map-loader": "^3.0.1",

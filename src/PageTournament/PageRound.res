@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,9 +42,13 @@ module PlayerMatchInfo = {
       <dt> {"Has had a bye round"->React.string} </dt>
       <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
       <dt> {"Opponent history"->React.string} </dt>
-      <dd> <ol> opponentResults </ol> </dd>
+      <dd>
+        <ol> opponentResults </ol>
+      </dd>
       <dt> {"Players to avoid:"->React.string} </dt>
-      <dd> <ul> avoidListHtml </ul> </dd>
+      <dd>
+        <ul> avoidListHtml </ul>
+      </dd>
     </dl>
   }
 }
@@ -74,14 +78,13 @@ module MatchRow = {
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
       let aborted =
         <span ariaLabel="Draw" role="img" style={ReactDOM.Style.make(~filter="grayscale(60%)", ())}>
-          {React.string(`❌`)}
+          {React.string("❌")}
         </span>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
       | Draw =>
-        /* TODO: find a better icon for draws. */
         <span ariaLabel="Draw" role="img" style={ReactDOM.Style.make(~filter="grayscale(70%)", ())}>
-          {React.string(`🤝`)}
+          {React.string("🤝")}
         </span>
       | BlackWon =>
         switch playerColor {
@@ -110,6 +113,7 @@ module MatchRow = {
     let setMatchResult = jsResultCode => {
       let newResult = Match.Result.fromString(jsResultCode)
       let {whiteId, blackId, _} = m
+
       /* if it hasn't changed, then do nothing */
       if m.result != newResult {
         let whiteOpt = players->Map.get(whiteId)
@@ -155,15 +159,10 @@ module MatchRow = {
           Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
           Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
         }
-        let newMatch = {
-          ...m,
-          result: newResult,
-          whiteNewRating: whiteNewRating,
-          blackNewRating: blackNewRating,
-        }
+        let newMatch = {...m, result: newResult, whiteNewRating, blackNewRating}
         roundList
         ->Rounds.setMatch(roundId, newMatch)
-        ->Option.map(roundList => setTourney({...tourney, roundList: roundList}))
+        ->Option.map(roundList => setTourney({...tourney, roundList}))
         ->ignore
       }
     }
@@ -315,7 +314,8 @@ module RoundTable = {
       } else {
         <>
           <caption className={isCompact ? "title-30" : "title-40"}>
-            {React.string("Round ")} {React.int(roundId + 1)}
+            {React.string("Round ")}
+            {React.int(roundId + 1)}
           </caption>
           <thead>
             <tr>
@@ -386,16 +386,7 @@ module Round = {
            on the dispatch. */
           | None => ()
           | Some(player) =>
-            playersDispatch(
-              Set(
-                player.id,
-                {
-                  ...player,
-                  rating: rating,
-                  matchCount: player.matchCount - 1,
-                },
-              ),
-            )
+            playersDispatch(Set(player.id, {...player, rating, matchCount: player.matchCount - 1}))
           }
         )
       | None
@@ -403,11 +394,7 @@ module Round = {
       }
       let newRound = round->Rounds.Round.removeMatchById(matchId)
       switch roundList->Rounds.set(roundId, newRound) {
-      | Some(roundList) =>
-        setTourney({
-          ...tourney,
-          roundList: roundList,
-        })
+      | Some(roundList) => setTourney({...tourney, roundList})
       | None => ()
       }
       setSelectedMatch(_ => None)
@@ -419,7 +406,7 @@ module Round = {
         let newMatch = Match.swapColors(match_)
         roundList
         ->Rounds.setMatch(roundId, newMatch)
-        ->Option.map(roundList => setTourney({...tourney, roundList: roundList}))
+        ->Option.map(roundList => setTourney({...tourney, roundList}))
         ->ignore
       | None => ()
       }
@@ -429,7 +416,7 @@ module Round = {
       | None => ()
       | Some(newRound) =>
         switch Rounds.set(roundList, roundId, newRound) {
-        | Some(roundList) => setTourney({...tourney, roundList: roundList})
+        | Some(roundList) => setTourney({...tourney, roundList})
         | None => ()
         }
       }
@@ -443,28 +430,32 @@ module Round = {
             className="button-micro"
             disabled={selectedMatch == None}
             onClick={_ => selectedMatch->Option.map(unMatch(_, matches))->ignore}>
-            <Icons.Trash /> {React.string(" Unmatch")}
+            <Icons.Trash />
+            {React.string(" Unmatch")}
           </button>
           {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch == None}
             onClick={_ => selectedMatch->Option.map(swapColors(_, matches))->ignore}>
-            <Icons.Repeat /> {React.string(" Swap colors")}
+            <Icons.Repeat />
+            {React.string(" Swap colors")}
           </button>
           {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch == None}
             onClick={_ => selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore}>
-            <Icons.ArrowUp /> {React.string(" Move up")}
+            <Icons.ArrowUp />
+            {React.string(" Move up")}
           </button>
           {React.string(" ")}
           <button
             className="button-micro"
             disabled={selectedMatch == None}
             onClick={_ => selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore}>
-            <Icons.ArrowDown /> {React.string(" Move down")}
+            <Icons.ArrowDown />
+            {React.string(" Move down")}
           </button>
         </div>
         {if Rounds.Round.size(matches) == 0 {
@@ -509,14 +500,18 @@ let make = (~roundId, ~tournament) => {
   <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
     <TabList>
       <Tab disabled={unmatchedCount == activePlayersCount}>
-        <Icons.List /> {React.string(" Matches")}
+        <Icons.List />
+        {React.string(" Matches")}
       </Tab>
       <Tab disabled={unmatchedCount == 0}>
-        <Icons.Users /> {` Unmatched players (${Int.toString(unmatchedCount)})`->React.string}
+        <Icons.Users />
+        {` Unmatched players (${Int.toString(unmatchedCount)})`->React.string}
       </Tab>
     </TabList>
     <TabPanels>
-      <TabPanel> <Round roundId tournament scoreData /> </TabPanel>
+      <TabPanel>
+        <Round roundId tournament scoreData />
+      </TabPanel>
       <TabPanel>
         <div>
           {if unmatchedCount != 0 {

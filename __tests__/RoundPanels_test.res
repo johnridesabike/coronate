@@ -19,7 +19,7 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    let selectTab = page->getByText(#RegExp(%re("/unmatched players \\(/i")))
+    let selectTab = page->getByText(#RegExp(%re("/unmatched players \(/i")))
     selectTab->expect->toHaveAttribute("aria-selected", "true")
   })
 
@@ -29,7 +29,7 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    let selectTab = page->getByText(#RegExp(%re("/unmatched players \\(/i")))
+    let selectTab = page->getByText(#RegExp(%re("/unmatched players \(/i")))
     page->getByText(#RegExp(%re("/add crow t robot/i")))->click
     page->getByText(#RegExp(%re("/add tom servo/i")))->click
     page->getByText(#RegExp(%re("/^match selected$/i")))->click

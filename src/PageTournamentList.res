@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -51,7 +51,8 @@ let make = (~windowDispatch=_ => ()) => {
     <div className="content-area">
       <div className="toolbar">
         <button onClick={_ => newTourneyDialog.setTrue()}>
-          <Icons.Plus /> {React.string(" Add tournament")}
+          <Icons.Plus />
+          {React.string(" Add tournament")}
         </button>
         <button className="button-ghost" onClick={_ => helpDialog.setTrue()}>
           <Icons.Help />
@@ -89,10 +90,12 @@ let make = (~windowDispatch=_ => ()) => {
                 <td>
                   <Link to_=Tournament(id, TourneyPage.Players)> {React.string(name)} </Link>
                 </td>
-                <td> <Utils.DateFormat date /> </td>
+                <td>
+                  <Utils.DateFormat date />
+                </td>
                 <td>
                   <button
-                    ariaLabel=j`Delete “$name”`
+                    ariaLabel={`Delete “${name}”`}
                     className="danger button-ghost"
                     title={"Delete " ++ name}
                     onClick={_ => deleteTournament(id, name)}>
@@ -127,7 +130,9 @@ let make = (~windowDispatch=_ => ()) => {
                 onChange=updateNewName
               />
             </p>
-            <p> <input className="button-primary" type_="submit" value="Create" /> </p>
+            <p>
+              <input className="button-primary" type_="submit" value="Create" />
+            </p>
           </fieldset>
         </form>
       </Externals.Dialog>

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,13 +16,14 @@ let reducer = (_, newState) => newState
 let useBool = init => {
   let (state, setState) = React.Uncurried.useReducer(reducer, init)
   {
-    state: state,
+    state,
     setTrue: () => setState(. true),
     setFalse: () => setState(. false),
   }
 }
 
-@ocaml.doc("Begin the sortable table hook.")
+/* Begin the sortable table hook. */
+
 type getter<'a> =
   | GetString((. 'a) => string)
   | GetInt((. 'a) => int)
@@ -43,9 +44,9 @@ type actionTable<'a> =
 
 let sortedTableReducer = (state, action) => {
   let newState = switch action {
-  | SetTable(table) => {...state, table: table}
-  | SetIsDescending(isDescending) => {...state, isDescending: isDescending}
-  | SetColumn(column) => {...state, column: column}
+  | SetTable(table) => {...state, table}
+  | SetIsDescending(isDescending) => {...state, isDescending}
+  | SetColumn(column) => {...state, column}
   | SortWithoutUpdating => state
   }
   let direction = newState.isDescending ? Utils.descend : Utils.ascend
@@ -56,11 +57,11 @@ let sortedTableReducer = (state, action) => {
   | GetDate(f) => direction(compare, (. date) => f(. date)->Js.Date.getTime)
   }
   let table = Belt.SortArray.stableSortBy(newState.table, sortFunc)
-  {...newState, table: table}
+  {...newState, table}
 }
 
 let useSortedTable = (~table, ~column, ~isDescending) => {
-  let initialState = {table: table, column: column, isDescending: isDescending}
+  let initialState = {table, column, isDescending}
   let (state, dispatch) = React.useReducer(sortedTableReducer, initialState)
   React.useEffect0(() => {
     dispatch(SortWithoutUpdating)
@@ -113,8 +114,8 @@ module SortButton = {
 
 let useLoadingCursorUntil = isLoaded => React.useEffect1(() => {
     let _ = isLoaded
-      ? %raw("document.body.style.cursor = \"auto\"")
-      : %raw("document.body.style.cursor = \"wait\"")
-    let reset = () => %raw("document.body.style.cursor = \"auto\"")
+      ? %raw(`document.body.style.cursor = "auto"`)
+      : %raw(`document.body.style.cursor = "wait"`)
+    let reset = () => %raw(`document.body.style.cursor = "auto"`)
     Some(reset)
   }, [isLoaded])

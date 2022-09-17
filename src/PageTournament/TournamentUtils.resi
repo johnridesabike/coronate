@@ -1,15 +1,17 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-@ocaml.doc("
- I extracted this logic to its own module so it could be easily
- reused (e.g. in testing). It may have also made the whole component tree more
- complicated.
- ")
+
+/*
+  I extracted this logic to its own module so it could be easily
+  reused (e.g. in testing). It may have also made the whole component tree more
+  complicated.
+  */
+
 type roundData = {
   scoreData: Data.Id.Map.t<Data.Scoring.t>,
   unmatched: Data.Id.Map.t<Data.Player.t>,
@@ -18,12 +20,12 @@ type roundData = {
 
 let useRoundData: (int, LoadTournament.t) => roundData
 
-@ocaml.doc("
- For the two components that use this, their logic is basically the same but
- their markup is slightly different. We may want to just merge them into one
- component instead of managing two similar components and one higher-order
- component.
- ")
+/**
+  For the two components that use this, their logic is basically the same but
+  their markup is slightly different. We may want to just merge them into one
+  component instead of managing two similar components and one higher-order
+  component.
+  */
 type scoreInfo = {
   player: Data.Player.t,
   hasBye: bool,

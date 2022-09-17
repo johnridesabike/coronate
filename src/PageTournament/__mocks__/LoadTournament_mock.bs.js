@@ -61,6 +61,5 @@ var make = LoadTournament_mock;
 
 export {
   make ,
-  
 }
 /* react Not a pure module */

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,8 @@ module Splash = {
             {React.string(" (optional)")}
           </li>
           <li className="pages__hint-item">
-            <Icons.ArrowLeft /> {React.string(" Select a menu item.")}
+            <Icons.ArrowLeft />
+            {React.string(" Select a menu item.")}
           </li>
           <li className="pages__hint-item"> {React.string("Start creating your tournaments!")} </li>
         </ol>
@@ -135,7 +136,9 @@ module TimeCalculator = {
         <table style={ReactDOM.Style.make(~margin="0", ())}>
           <tbody>
             <tr>
-              <td> <label htmlFor="playerCount"> {React.string("Player count ")} </label> </td>
+              <td>
+                <label htmlFor="playerCount"> {React.string("Player count ")} </label>
+              </td>
               <td>
                 <input
                   id="playerCount"
@@ -200,11 +203,11 @@ module TimeCalculator = {
           <span className="caption-20">
             {React.string(" = ((")}
             <strong className="monospace"> {totalTime->React.float} </strong>
-            {React.string(` × 60 ÷ ⌈log₂(`)}
+            {React.string(" × 60 ÷ ⌈log₂(")}
             <strong className="monospace"> {players->React.int} </strong>
-            {React.string(`)⌉) - `)}
+            {React.string(")⌉) - ")}
             <strong className="monospace"> {breakTime->React.int} </strong>
-            {React.string(`) ÷ 2`)}
+            {React.string(") ÷ 2")}
           </span>
         </dd>
       </dl>

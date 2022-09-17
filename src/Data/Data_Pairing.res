@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -61,7 +61,7 @@ let setUpperHalves = data => {
     | (None, Some(index)) => (index, false)
     | (None, None) => (0, false) /* This shouldn't happen. */
     }
-    {...playerData, halfPos: halfPos, isUpperHalf: isUpperHalf}
+    {...playerData, halfPos, isUpperHalf}
   })
 }
 
@@ -123,13 +123,13 @@ let make = (scoreData, playerData, avoidPairs) => {
     }
   })->setUpperHalves
   let maxScore = calcMaxScore(players)
-  {players: players, maxScore: maxScore, maxPriority: calcMaxPriority(~maxScore)}
+  {players, maxScore, maxPriority: calcMaxPriority(~maxScore)}
 }
 
 let keep = ({players, _}, ~f) => {
   let players = Map.keep(players, f)
   let maxScore = calcMaxScore(players)
-  {players: players, maxScore: maxScore, maxPriority: calcMaxPriority(~maxScore)}
+  {players, maxScore, maxPriority: calcMaxPriority(~maxScore)}
 }
 
 let calcPairIdeal = (player1, player2, ~maxScore) =>
@@ -199,7 +199,7 @@ let setByePlayer = (byeQueue, dummyId, data: t) => {
     | Some(dataForNextBye) => Map.remove(data.players, dataForNextBye.id)
     | None => data.players
     }
-    ({...data, players: players}, dataForNextBye)
+    ({...data, players}, dataForNextBye)
   }
 }
 

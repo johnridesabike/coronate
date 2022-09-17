@@ -135,12 +135,16 @@ module GistOpts = {
     <div>
       <h3> {"Backup to GitHub"->React.string} </h3>
       <p className="caption-30">
-        {`With a GitHub account, you can save your data to a `->React.string}
-        <a href="https://gist.github.com/"> {"gist "->React.string} <Icons.ExternalLink /> </a>
+        {"With a GitHub account, you can save your data to a "->React.string}
+        <a href="https://gist.github.com/">
+          {"gist "->React.string}
+          <Icons.ExternalLink />
+        </a>
         {`. Note that gists can be ${HtmlEntities.ldquo}secret${HtmlEntities.rdquo} but are always 
         publicly accessible. For more information, `->React.string}
         <a href="https://docs.github.com/en/github/writing-on-github/creating-gists">
-          {"refer to the gist documentation on GitHub "->React.string} <Icons.ExternalLink />
+          {"refer to the gist documentation on GitHub "->React.string}
+          <Icons.ExternalLink />
         </a>
         {"."->React.string}
       </p>
@@ -167,7 +171,8 @@ module GistOpts = {
           </button>
         | _ =>
           <a href={"https://github.com/settings/connections/applications/" ++ github_app_id}>
-            {"Change or remove your GitHub access "->React.string} <Icons.ExternalLink />
+            {"Change or remove your GitHub access "->React.string}
+            <Icons.ExternalLink />
           </a>
         }}
       </p>
@@ -309,7 +314,7 @@ let make = (~windowDispatch=_ => ()) => {
   }, [windowDispatch])
   /* memoize this so the `useEffect` hook syncs with the correct states */
   let exportData = React.useMemo3(
-    () => {config: config, players: players, tournaments: tournaments},
+    () => {config, players, tournaments},
     (config, tournaments, players),
   )
   let exportDataURI = exportData->encodeOptions->Js.Json.stringify->Js.Global.encodeURIComponent
@@ -403,7 +408,7 @@ let make = (~windowDispatch=_ => ()) => {
           </label>
           <label className="body-20" style={ReactDOM.Style.make(~marginRight="16px", ())}>
             {React.string("Half (")}
-            <span className="monospace"> {React.string(`½`)} </span>
+            <span className="monospace"> {React.string("½")} </span>
             {React.string(") ")}
             <input
               checked={switch config.byeValue {
@@ -416,7 +421,7 @@ let make = (~windowDispatch=_ => ()) => {
           </label>
           <label className="body-20">
             {React.string("None (")}
-            <span className="monospace"> {React.string(`0`)} </span>
+            <span className="monospace"> {React.string("0")} </span>
             {React.string(") ")}
             <input
               checked={switch config.byeValue {
@@ -431,7 +436,8 @@ let make = (~windowDispatch=_ => ()) => {
       </form>
       <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">
-        {React.string("Last export: ")} <LastBackupDate date=config.lastBackup />
+        {React.string("Last export: ")}
+        <LastBackupDate date=config.lastBackup />
       </p>
       <GistOpts configDispatch exportData loadJson />
       <h3> {"Backup locally"->React.string} </h3>
@@ -440,7 +446,8 @@ let make = (~windowDispatch=_ => ()) => {
           download={"coronate-" ++ (getDateForFile() ++ ".json")}
           href={"data:application/json," ++ exportDataURI}
           onClick={_ => configDispatch(SetLastBackup(Js.Date.make()))}>
-          <Icons.Download /> {React.string(" Export data to a file.")}
+          <Icons.Download />
+          {React.string(" Export data to a file.")}
         </a>
       </p>
       <label htmlFor="file"> {React.string("Load data from a file:")} </label>
@@ -467,7 +474,9 @@ let make = (~windowDispatch=_ => ()) => {
           value=text
           onChange=handleTextChange
         />
-        <p> <input type_="submit" value="Load" /> </p>
+        <p>
+          <input type_="submit" value="Load" />
+        </p>
       </form>
     </div>
   </Window.Body>

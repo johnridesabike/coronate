@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,11 +18,11 @@ module Options = {
     scalePercentBy100: bool,
   }
   let make = (~currentLocale, ~zeroFormat, ~nullFormat, ~defaultFormat, ~scalePercentBy100) => {
-    currentLocale: currentLocale,
-    zeroFormat: zeroFormat,
-    nullFormat: nullFormat,
-    defaultFormat: defaultFormat,
-    scalePercentBy100: scalePercentBy100,
+    currentLocale,
+    zeroFormat,
+    nullFormat,
+    defaultFormat,
+    scalePercentBy100,
   }
 }
 module Delimiters = {
@@ -30,7 +30,7 @@ module Delimiters = {
     thousands: string,
     decimal: string,
   }
-  let make = (~thousands, ~decimal) => {thousands: thousands, decimal: decimal}
+  let make = (~thousands, ~decimal) => {thousands, decimal}
 }
 module Abbreviations = {
   type t = {
@@ -40,10 +40,10 @@ module Abbreviations = {
     trillion: string,
   }
   let make = (~thousand, ~million, ~billion, ~trillion) => {
-    thousand: thousand,
-    million: million,
-    billion: billion,
-    trillion: trillion,
+    thousand,
+    million,
+    billion,
+    trillion,
   }
 }
 module Currency = {
@@ -58,10 +58,10 @@ module Locale = {
     currency: Currency.t,
   }
   let make = (~delimiters, ~abbreviations, ~ordinal, ~currency) => {
-    delimiters: delimiters,
-    abbreviations: abbreviations,
-    ordinal: ordinal,
-    currency: currency,
+    delimiters,
+    abbreviations,
+    ordinal,
+    currency,
   }
 }
 module RegExps = {
@@ -69,7 +69,7 @@ module RegExps = {
     format: Js.Re.t,
     unformat: Js.Re.t,
   }
-  let make = (~format, ~unformat) => {format: format, unformat: unformat}
+  let make = (~format, ~unformat) => {format, unformat}
 }
 module Format = {
   type formatFn = (float, string, (. float) => float) => string
@@ -83,9 +83,9 @@ module Format = {
     unformatFn: unformatFn,
   }
   let make = (~regexps, ~formatFn, ~unformatFn) => {
-    regexps: regexps,
-    formatFn: formatFn,
-    unformatFn: unformatFn,
+    regexps,
+    formatFn,
+    unformatFn,
   }
 }
 

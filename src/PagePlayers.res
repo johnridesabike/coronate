@@ -82,19 +82,7 @@ module NewPlayerForm = {
     open Form
     let form = useForm(~initialInput, ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
       let id = Data.Id.random()
-      dispatch(
-        Db.Set(
-          id,
-          {
-            Player.firstName: firstName,
-            lastName: lastName,
-            rating: rating,
-            id: id,
-            type_: Person,
-            matchCount: matchCount,
-          },
-        ),
-      )
+      dispatch(Db.Set(id, {Player.firstName, lastName, rating, id, type_: Person, matchCount}))
       switch addPlayerCallback {
       | None => ()
       | Some(fn) => fn(id)
@@ -120,7 +108,7 @@ module NewPlayerForm = {
             required=true
             onChange={event =>
               form.updateFirstName(
-                (input, firstName) => {...input, firstName: firstName},
+                (input, firstName) => {...input, firstName},
                 (event->ReactEvent.Form.target)["value"],
               )}
           />
@@ -136,7 +124,7 @@ module NewPlayerForm = {
             required=true
             onChange={event =>
               form.updateLastName(
-                (input, lastName) => {...input, lastName: lastName},
+                (input, lastName) => {...input, lastName},
                 (event->ReactEvent.Form.target)["value"],
               )}
           />
@@ -153,7 +141,7 @@ module NewPlayerForm = {
             required=true
             onChange={event =>
               form.updateLastName(
-                (input, rating) => {...input, rating: rating},
+                (input, rating) => {...input, rating},
                 (event->ReactEvent.Form.target)["value"],
               )}
           />
@@ -198,7 +186,8 @@ module PlayerList = {
     <div className="content-area">
       <div className="toolbar toolbar__left">
         <button onClick={_ => dialog.setTrue()}>
-          <Icons.UserPlus /> {React.string(" Add a new player")}
+          <Icons.UserPlus />
+          {React.string(" Add a new player")}
         </button>
       </div>
       <table style={ReactDOM.Style.make(~margin="auto", ())}>
@@ -273,24 +262,14 @@ module Profile = {
     open Form
     let form = useForm(
       ~initialInput={
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         rating: Int.toString(rating),
         matchCount: Int.toString(initialMatchCount),
       },
       ~onSubmit=({firstName, lastName, rating, matchCount}, cb) => {
         playersDispatch(
-          Db.Set(
-            playerId,
-            {
-              Player.firstName: firstName,
-              lastName: lastName,
-              matchCount: matchCount,
-              rating: rating,
-              id: playerId,
-              type_: type_,
-            },
-          ),
+          Db.Set(playerId, {Player.firstName, lastName, matchCount, rating, id: playerId, type_}),
         )
         cb.notifyOnSuccess(None)
         cb.reset()
@@ -342,7 +321,8 @@ module Profile = {
           if form.dirty() && !Webapi.Dom.Window.confirm(Webapi.Dom.window, "Discard changes?") {
             ReactEvent.Mouse.preventDefault(event)
           }}>
-        <Icons.ChevronLeft /> {React.string(" Back")}
+        <Icons.ChevronLeft />
+        {React.string(" Back")}
       </Link>
       <h2> {React.string("Profile for " ++ playerName)} </h2>
       <form
@@ -357,7 +337,7 @@ module Profile = {
             onBlur={_ => form.blurFirstName()}
             onChange={event =>
               form.updateFirstName(
-                (input, firstName) => {...input, firstName: firstName},
+                (input, firstName) => {...input, firstName},
                 (event->ReactEvent.Form.target)["value"],
               )}
             name="firstName"
@@ -372,7 +352,7 @@ module Profile = {
             onBlur={_ => form.blurLastName()}
             onChange={event =>
               form.updateLastName(
-                (input, lastName) => {...input, lastName: lastName},
+                (input, lastName) => {...input, lastName},
                 (event->ReactEvent.Form.target)["value"],
               )}
             name="lastName"
@@ -387,7 +367,7 @@ module Profile = {
             onBlur={_ => form.blurMatchCount()}
             onChange={event =>
               form.updateMatchCount(
-                (input, matchCount) => {...input, matchCount: matchCount},
+                (input, matchCount) => {...input, matchCount},
                 (event->ReactEvent.Form.target)["value"],
               )}
             name="matchCount"
@@ -402,7 +382,7 @@ module Profile = {
             onBlur={_ => form.blurRating()}
             onChange={event =>
               form.updateRating(
-                (input, rating) => {...input, rating: rating},
+                (input, rating) => {...input, rating},
                 (event->ReactEvent.Form.target)["value"],
               )}
             name="rating"
@@ -446,7 +426,8 @@ module Profile = {
       <form onSubmit=avoidAdd>
         <label htmlFor="avoid-select"> {React.string("Select a new player to avoid.")} </label>
         {switch selectedAvoider {
-        | Some(selectedAvoider) => <>
+        | Some(selectedAvoider) =>
+          <>
             <select
               id="avoid-select"
               onBlur=handleAvoidBlur

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,9 +35,9 @@ let windowReducer = (state, action) =>
     Webapi.Dom.document
     ->Webapi.Dom.Document.asHtmlDocument
     ->Option.forEach(Webapi.Dom.HtmlDocument.setTitle(_, formatTitle(title)))
-    {...state, title: title}
-  | SetDialog(isDialogOpen) => {...state, isDialogOpen: isDialogOpen}
-  | SetSidebar(isMobileSidebarOpen) => {...state, isMobileSidebarOpen: isMobileSidebarOpen}
+    {...state, title}
+  | SetDialog(isDialogOpen) => {...state, isDialogOpen}
+  | SetSidebar(isMobileSidebarOpen) => {...state, isMobileSidebarOpen}
   }
 
 module About = {
@@ -58,7 +58,8 @@ module About = {
         <p> {React.string(`Version ${version}-${hash}`)} </p>
         <p>
           <a href=Utils.changelog_url>
-            {React.string("View the changelog ")} <Icons.ExternalLink />
+            {React.string("View the changelog ")}
+            <Icons.ExternalLink />
           </a>
         </p>
         <p>
@@ -67,11 +68,13 @@ module About = {
         <p> {React.string("Coronate is free software.")} </p>
         <p>
           <a href=Utils.github_url>
-            {React.string("Source code is available ")} <Icons.ExternalLink />
+            {React.string("Source code is available ")}
+            <Icons.ExternalLink />
           </a>
           {React.string(" under the ")}
           <a href=Utils.license_url>
-            {React.string("Mozilla Public License 2.0 ")} <Icons.ExternalLink />
+            {React.string("Mozilla Public License 2.0 ")}
+            <Icons.ExternalLink />
           </a>
           {React.string(".")}
         </p>

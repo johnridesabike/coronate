@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,13 +11,15 @@ let toString: t => string
 
 let fromString: string => t
 
-@ocaml.doc("
+/**
   This is used in by matches to indicate a dummy player. The `getPlayerMaybe`
   function returns a special dummy player profile when fetching this ID.
- ")
+*/
 let dummy: t
 
-@ocaml.doc("This is useful for passing to `keep` functions.")
+/**
+  This is useful for passing to `keep` functions.
+  */
 let isDummy: t => bool
 
 let random: unit => t
@@ -64,10 +66,10 @@ module Pair: {
     let encode: t => Js.Json.t
     let decode: Js.Json.t => t
 
-    @ocaml.doc("
+    /**
      Flatten the `set((id1, id2), (id1, id3))` structure into an easy-to-access
      `{id1: set(id2, id3), id2: set(id1), id3: set(id1)}` structure.
-     ")
+     */
     let toMap: t => Map.t<Id_Set.t>
   }
 }
