@@ -8,8 +8,7 @@
 // Adapted from
 // https://github.com/babel/babel/blob/2ae19d01b132f5222e1d5bee2c83921e2f107d70/packages/babel-parser/src/plugins/jsx/xhtml.js
 
-// Removed @inline attributes due to this bug:
-// https://github.com/rescript-lang/rescript-compiler/issues/5667
+// Removed @inline attributes until v10.1 fixes them.
 
 let quot = "\u0022"
 let amp = "&" // Included for completeness.

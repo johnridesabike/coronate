@@ -42,7 +42,7 @@ let make = (~windowDispatch=_ => ()) => {
     newTourneyDialog.setFalse()
   }
   let deleteTournament = (id, name) => {
-    let message = j`Are you sure you want to delete “$name”?`
+    let message = `Are you sure you want to delete “${name}”?`
     if Webapi.Dom.Window.confirm(Webapi.Dom.window, message) {
       dispatch(Del(id))
     }
