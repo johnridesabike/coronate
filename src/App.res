@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,14 +13,23 @@ module App = {
       {windowDispatch =>
         <main className="app__main">
           {switch url {
-          | Index => <Window.Body windowDispatch> <Pages.Splash /> </Window.Body>
+          | Index =>
+            <Window.Body windowDispatch>
+              <Pages.Splash />
+            </Window.Body>
           | TournamentList => <PageTournamentList windowDispatch />
           | Tournament(id, subPage) => <PageTourney tourneyId=id subPage windowDispatch />
           | PlayerList => <PagePlayers windowDispatch />
           | Player(id) => <PagePlayers id windowDispatch />
-          | TimeCalculator => <Window.Body windowDispatch> <Pages.TimeCalculator /> </Window.Body>
+          | TimeCalculator =>
+            <Window.Body windowDispatch>
+              <Pages.TimeCalculator />
+            </Window.Body>
           | Options => <PageOptions windowDispatch />
-          | NotFound => <Window.Body windowDispatch> <Pages.NotFound /> </Window.Body>
+          | NotFound =>
+            <Window.Body windowDispatch>
+              <Pages.NotFound />
+            </Window.Body>
           }}
         </main>}
     </Window>

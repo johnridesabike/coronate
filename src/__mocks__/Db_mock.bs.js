@@ -153,6 +153,5 @@ export {
   useAllTournaments ,
   useConfig ,
   useAuth ,
-  
 }
 /* Config Not a pure module */

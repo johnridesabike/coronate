@@ -42,7 +42,7 @@ module Panel: {
   let make: (
     ~children: React.element,
     ~className: string=?,
-    ~style: ReactDOMRe.Style.t=?,
+    ~style: ReactDOM.Style.t=?,
   ) => React.element
 }
 
@@ -51,7 +51,7 @@ module PanelContainer: {
   let make: (
     ~children: React.element,
     ~className: string=?,
-    ~style: ReactDOMRe.Style.t=?,
+    ~style: ReactDOM.Style.t=?,
   ) => React.element
 }
 
@@ -63,7 +63,7 @@ module Notification: {
     ~kind: t=?,
     ~tooltip: string=?,
     ~className: string=?,
-    ~style: ReactDOMRe.Style.t=?,
+    ~style: ReactDOM.Style.t=?,
   ) => React.element
 }
 

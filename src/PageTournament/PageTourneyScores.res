@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -67,8 +67,8 @@ module ScoreTable = {
               } else {
                 React.null
               }}
-              {/* It just uses <td> if it's compact. */
-              switch size {
+              /* It just uses <td> if it's compact. */
+              {switch size {
               | Compact =>
                 <td className={"pagescores__row-td pagescores__playername"}>
                   {standing.id->getPlayer->Player.fullName->React.string}
@@ -88,15 +88,16 @@ module ScoreTable = {
               | Compact => React.null
               | Expanded =>
                 tieBreaks
-                ->Array.map(tb =>
-                  <td
-                    key={Scoring.TieBreak.toString(tb)}
-                    className={"pagescores__row-td table__number"}>
-                    {Scoring.getTieBreak(standing, tb)
-                    ->Scoring.Score.Sum.toNumeral
-                    ->Numeral.format("1/2")
-                    ->React.string}
-                  </td>
+                ->Array.map(
+                  tb =>
+                    <td
+                      key={Scoring.TieBreak.toString(tb)}
+                      className={"pagescores__row-td table__number"}>
+                      {Scoring.getTieBreak(standing, tb)
+                      ->Scoring.Score.Sum.toNumeral
+                      ->Numeral.format("1/2")
+                      ->React.string}
+                    </td>,
                 )
                 ->React.array
               }}
@@ -158,10 +159,12 @@ module SelectTieBreaks = {
             {React.string("Remove")}
           </button>
           <button className="button-micro" disabled={selectedTb == None} onClick={_ => moveTb(-1)}>
-            <Icons.ArrowUp /> {React.string(" Move up")}
+            <Icons.ArrowUp />
+            {React.string(" Move up")}
           </button>
           <button className="button-micro" disabled={selectedTb == None} onClick={_ => moveTb(1)}>
-            <Icons.ArrowDown /> {React.string(" Move down")}
+            <Icons.ArrowDown />
+            {React.string(" Move down")}
           </button>
           <button
             className={Cn.append("button-micro", "button-primary"->Cn.onSome(selectedTb))}
@@ -188,7 +191,7 @@ module SelectTieBreaks = {
                   x == tieBreak ? "selected" : ""
                 )}>
                 <td> {Scoring.TieBreak.toPrettyString(tieBreak)->React.string} </td>
-                <td style={ReactDOMRe.Style.make(~width="48px", ())}>
+                <td style={ReactDOM.Style.make(~width="48px", ())}>
                   <button
                     className="button-micro"
                     disabled={selectedTb != None && selectedTb !== Some(tieBreak)}
@@ -215,7 +218,7 @@ module SelectTieBreaks = {
       </Utils.Panel>
       <Utils.Panel>
         <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>
-        <table style={ReactDOMRe.Style.make(~marginTop="16px", ())}>
+        <table style={ReactDOM.Style.make(~marginTop="16px", ())}>
           <caption className="title-30"> {React.string("Available tiebreak methods")} </caption>
           <thead>
             <tr>
@@ -262,17 +265,28 @@ let make = (~tournament: LoadTournament.t) => {
   <div>
     <Tabs>
       <TabList>
-        <Tab> <Icons.List /> {React.string(" Scores")} </Tab>
-        <Tab> <Icons.Settings /> {React.string(" Edit tiebreak rules")} </Tab>
+        <Tab>
+          <Icons.List />
+          {React.string(" Scores")}
+        </Tab>
+        <Tab>
+          <Icons.Settings />
+          {React.string(" Edit tiebreak rules")}
+        </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel> <ScoreTable size=Expanded tourney getPlayer title="Score detail" /> </TabPanel>
-        <TabPanel> <SelectTieBreaks tourney setTourney /> </TabPanel>
+        <TabPanel>
+          <ScoreTable size=Expanded tourney getPlayer title="Score detail" />
+        </TabPanel>
+        <TabPanel>
+          <SelectTieBreaks tourney setTourney />
+        </TabPanel>
       </TabPanels>
     </Tabs>
     <div className="toolbar">
       <button onClick={_ => helpDialog.setTrue()}>
-        <Icons.Help /> {React.string(" Tiebreak method information")}
+        <Icons.Help />
+        {React.string(" Tiebreak method information")}
       </button>
     </div>
     <HelpDialogs.TieBreaks state=helpDialog ariaLabel="Tiebreak method information" />

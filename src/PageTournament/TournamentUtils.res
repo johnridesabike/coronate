@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,11 +36,7 @@ let useRoundData = (
   }
   /* make a new map so as not to affect auto-pairing */
   let unmatchedWithDummy = Map.set(unmatched, Id.dummy, Player.dummy)
-  {
-    scoreData: scoreData,
-    unmatched: unmatched,
-    unmatchedWithDummy: unmatchedWithDummy,
-  }
+  {scoreData, unmatched, unmatchedWithDummy}
 }
 
 type scoreInfo = {
@@ -120,12 +116,12 @@ let getScoreInfo = (
       }}
     </>
   {
-    player: player,
-    hasBye: hasBye,
-    colorBalance: colorBalance,
+    player,
+    hasBye,
+    colorBalance,
     score: Data.Scoring.Score.calcScore(results, ~adjustment)->Data.Scoring.Score.Sum.toFloat,
-    rating: rating,
-    opponentResults: opponentResults,
-    avoidListHtml: avoidListHtml,
+    rating,
+    opponentResults,
+    avoidListHtml,
   }
 }

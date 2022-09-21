@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -49,14 +49,14 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
       : Rounds.isRoundComplete(roundList, activePlayers, Data.Rounds.size(roundList) - 1)
 
   children({
-    activePlayers: activePlayers,
+    activePlayers,
     getPlayer: Player.getMaybe(players),
-    isItOver: isItOver,
-    isNewRoundReady: isNewRoundReady,
-    players: players,
-    playersDispatch: playersDispatch,
-    roundCount: roundCount,
-    tourney: tourney,
-    setTourney: setTourney,
+    isItOver,
+    isNewRoundReady,
+    players,
+    playersDispatch,
+    roundCount,
+    tourney,
+    setTourney,
   })
 }

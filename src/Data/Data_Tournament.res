@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,8 +19,8 @@ type t = {
 }
 
 let make = (~id, ~name) => {
-  id: id,
-  name: name,
+  id,
+  name,
   byeQueue: [],
   date: Js.Date.make(),
   playerIds: Set.make(~id=Data_Id.id),
@@ -29,10 +29,10 @@ let make = (~id, ~name) => {
   tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
 }
 
-@ocaml.doc("
+/**
   LocalForage/IndexedDB sometimes automatically parses the date for us already,
   and I'm not sure how to propertly handle it.
-")
+  */
 external unsafe_date: Js.Json.t => Js.Date.t = "%identity"
 
 @raises(Not_found)

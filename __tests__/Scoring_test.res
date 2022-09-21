@@ -91,7 +91,10 @@ test("Manually adjusting scores works", () => {
   /* This isn't ideal but routing isn't working for tests I think. */
   let page = render(
     <LoadTournament tourneyId=TestData.scoreTest.id>
-      {tournament => <> <PageTourneyPlayers tournament /> <PageTourneyScores tournament /> </>}
+      {tournament => <>
+        <PageTourneyPlayers tournament />
+        <PageTourneyScores tournament />
+      </>}
     </LoadTournament>,
   )
   page->getByText(#RegExp(%re("/more options for kinga forrester/i")))->click

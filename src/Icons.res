@@ -47,7 +47,7 @@ module ChevronLeft = {
 }
 module ChevronUp = {
   @module("react-feather") @react.component
-  external make: (~style: ReactDOMRe.Style.t=?) => React.element = "ChevronUp"
+  external make: (~style: ReactDOM.Style.t=?) => React.element = "ChevronUp"
 }
 module Circle = {
   @module("react-feather") @react.component
@@ -148,7 +148,7 @@ module SimpleIcon = (
     ~height="24",
     ~width="24",
     ~className="",
-    ~style=ReactDOMRe.Style.make(),
+    ~style=ReactDOM.Style.make(),
     ~ariaLabel=IconData.icon.title ++ " Icon",
     ~ariaHidden=false,
   ) =>
@@ -159,7 +159,7 @@ module SimpleIcon = (
       width
       className
       style={
-        open ReactDOMRe.Style
+        open ReactDOM.Style
         make(~fill="#" ++ IconData.icon.hex, ())->combine(style)
       }
       ariaLabel

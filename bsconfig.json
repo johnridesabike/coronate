@@ -1,42 +1,24 @@
 {
   "name": "coronate",
-  "reason": {
-    "react-jsx": 3
-  },
-  "bsc-flags": ["-bs-super-errors"],
+  "reason": { "react-jsx": 3 },
   "sources": [
-    {
-      "dir": "src",
-      "subdirs": true
-    },
-    {
-      "dir": "__tests__",
-      "type": "dev"
-    },
-    {
-      "dir": "testutils",
-      "type": "dev"
-    }
+    { "dir": "src", "subdirs": true },
+    { "dir": "__tests__", "type": "dev" },
+    { "dir": "testutils", "type": "dev" }
   ],
-  "package-specs": [
-    {
-      "module": "es6",
-      "in-source": true
-    }
-  ],
+  "package-specs": [{ "module": "es6", "in-source": true }],
   "suffix": ".bs.js",
   "namespace": true,
   "bs-dependencies": [
     "@ryyppy/rescript-promise",
-    "reason-react",
+    "@rescript/react",
     "re-classnames",
-    "bs-webapi",
-    "rescript-blossom",
-    "re-formality"
+    "re-formality",
+    "rescript-webapi",
+    "rescript-blossom"
   ],
   "bs-dev-dependencies": [],
   "ppx-flags": ["re-formality/ppx"],
-  "ignored-dirs": ["node_modules"],
   "warnings": {
     "number": "+A-48-42",
     "error": "+A-3-44-102"

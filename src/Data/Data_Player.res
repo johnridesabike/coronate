@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -86,12 +86,12 @@ let dummy = {
   rating: 0,
 }
 
-@ocaml.doc("
+/**
  * If `getMaybe` can't find a profile (e.g. if it was deleted) then it
  * outputs this instead. The ID will be the same as missing player's ID.
- ")
+ */
 let makeMissing = id => {
-  id: id,
+  id,
   firstName: "Anonymous",
   lastName: "Player",
   type_: Missing,

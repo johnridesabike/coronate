@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,7 @@ let make = (config, type t id, data: Id.encodable<t, id>) => {
   module Data = unpack(data)
   let encode = Id.encode(Data.encode)
   let decode = Id.decode(Data.decode)
-  {store: LF.make(config), encode: encode, decode: decode}
+  {store: LF.make(config), encode, decode}
 }
 
 let getItem = ({store, decode, _}, ~key) =>

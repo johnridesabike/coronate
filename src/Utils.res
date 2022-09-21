@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -93,13 +93,13 @@ module DateTimeFormat = {
 
 module Panel = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) =>
+  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
     <div className={`utils__panel ${className}`} style> children </div>
 }
 
 module PanelContainer = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOMRe.Style.make()) =>
+  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
     <div style className={`utils__panels ${className}`}> children </div>
 }
 
@@ -111,7 +111,7 @@ module Notification = {
     ~kind=Generic,
     ~tooltip="",
     ~className="",
-    ~style=ReactDOMRe.Style.make(),
+    ~style=ReactDOM.Style.make(),
   ) => {
     let (icon, notifClassName) = switch kind {
     | Success => (<Icons.Check />, "utils__notification-success")
@@ -129,11 +129,11 @@ module Notification = {
 module TestId = {
   /* https://twitter.com/fakenickels/status/1189887257030930433 */
   @react.component
-  let make = (~children, ~testId) =>
-    ReasonReact.cloneElement(children, ~props={"data-testid": testId}, [])
+  let make = (~children, ~testId) => React.cloneElement(children, {"data-testid": testId})
 }
 
-@ocaml.doc("Side effects")
+/* Side effects */
+
 let _ = Numeral.registerFormat(
   "fraction",
   Numeral.Format.make(
@@ -149,7 +149,7 @@ let _ = Numeral.registerFormat(
       let stringedWhole = whole == 0.0 && fraction != "" ? "" : Float.toString(whole)
       stringedWhole ++ fraction
     },
-    ~regexps=Numeral.RegExps.make(~format=%re("/(1\\/2)/"), ~unformat=%re("/(1\\/2)/")),
+    ~regexps=Numeral.RegExps.make(~format=%re("/(1\/2)/"), ~unformat=%re("/(1\/2)/")),
     /* This doesn't do anything currently */
     ~unformatFn=value => Float.fromString(value)->Option.getWithDefault(0.0),
   ),

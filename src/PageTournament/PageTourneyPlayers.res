@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -189,7 +189,9 @@ module OptionsForm = {
             </button>
           </p>
           {errorNotification(form.scoreAdjustmentResult)}
-          <p> <input type_="submit" value="Save" disabled={form.submitting || !form.valid()} /> </p>
+          <p>
+            <input type_="submit" value="Save" disabled={form.submitting || !form.valid()} />
+          </p>
         </form>
       </>
     }
@@ -211,7 +213,9 @@ module OptionsForm = {
       </button>
       {" "->React.string}
       <button className="button-micro" onClick={_ => dialog.setTrue()}>
-        <span ariaHidden=true> <Icons.More /> </span>
+        <span ariaHidden=true>
+          <Icons.More />
+        </span>
         <Externals.VisuallyHidden>
           {`More options for ${Player.fullName(p)}`->React.string}
         </Externals.VisuallyHidden>
@@ -235,7 +239,9 @@ module PlayerList = {
     ->Array.map(p =>
       <tr key={p.id->Data.Id.toString} className={"player " ++ Player.Type.toString(p.type_)}>
         <td> {p->Player.fullName->React.string} </td>
-        <td> <OptionsForm setTourney tourney byeQueue p /> </td>
+        <td>
+          <OptionsForm setTourney tourney byeQueue p />
+        </td>
       </tr>
     )
     ->React.array}
@@ -251,15 +257,19 @@ let make = (~tournament: LoadTournament.t) => {
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
-        <Icons.Edit /> {React.string(" Edit player roster")}
+        <Icons.Edit />
+        {React.string(" Edit player roster")}
       </button>
     </div>
     <Utils.PanelContainer>
-      <Utils.Panel style={ReactDOMRe.Style.make(~flexShrink="0", ())}>
+      <Utils.Panel style={ReactDOM.Style.make(~flexShrink="0", ())}>
         <table>
           <caption> {React.string("Current roster")} </caption>
           <thead>
-            <tr> <th> {React.string("Name")} </th> <th> {React.string("Options")} </th> </tr>
+            <tr>
+              <th> {React.string("Name")} </th>
+              <th> {React.string("Options")} </th>
+            </tr>
           </thead>
           <tbody className="content">
             <PlayerList byeQueue setTourney tourney players=activePlayers />
@@ -271,7 +281,7 @@ let make = (~tournament: LoadTournament.t) => {
         {switch byeQueue {
         | [] => <p className="caption-20"> {React.string("No one has signed up yet.")} </p>
         | byeQueue =>
-          <table style={ReactDOMRe.Style.make(~width="100%", ())}>
+          <table style={ReactDOM.Style.make(~width="100%", ())}>
             <tbody>
               {Array.map(byeQueue, pId =>
                 <tr

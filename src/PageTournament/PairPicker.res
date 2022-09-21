@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,8 +29,8 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
       blackOrigRating: black.rating,
       whiteNewRating: white.rating,
       blackNewRating: black.rating,
-      whiteId: whiteId,
-      blackId: blackId,
+      whiteId,
+      blackId,
       result: Match.Result.scoreByeMatch(
         ~default=NotSet,
         ~white=whiteId,
@@ -73,43 +73,22 @@ type action = RemoveP1 | RemoveP2 | Add(Id.t) | SetResult(Match.Result.t) | Reve
 
 let reducer = ({p1, p2, result, byeValue, _} as state, action) =>
   switch action {
-  | RemoveP1 => {
-      ...state,
-      p1: None,
-      num: numFromPair(None, p2),
-      result: NotSet,
-    }
-  | RemoveP2 => {
-      ...state,
-      p2: None,
-      num: numFromPair(p1, None),
-      result: NotSet,
-    }
-  | SetResult(result) => {...state, result: result}
-  | Reverse => {
-      ...state,
-      p1: p2,
-      p2: p1,
-      result: Match.Result.reverse(result),
-    }
+  | RemoveP1 => {...state, p1: None, num: numFromPair(None, p2), result: NotSet}
+  | RemoveP2 => {...state, p2: None, num: numFromPair(p1, None), result: NotSet}
+  | SetResult(result) => {...state, result}
+  | Reverse => {...state, p1: p2, p2: p1, result: Match.Result.reverse(result)}
   | Add(id) =>
     let (p1, p2) = switch (p1, p2) {
     | (None, p2) => (Some(id), p2)
     | (p1, None) => (p1, Some(id))
     | _ => (p1, p2)
     }
-    {
-      ...state,
-      p1: p1,
-      p2: p2,
-      num: numFromPair(p1, p2),
-      result: validateResult(p1, p2, byeValue, result),
-    }
+    {...state, p1, p2, num: numFromPair(p1, p2), result: validateResult(p1, p2, byeValue, result)}
   | Clear => {...state, p1: None, p2: None, num: Zero, result: NotSet}
   }
 
 let useStageState = byeValue =>
-  React.useReducer(reducer, {p1: None, p2: None, num: Zero, result: NotSet, byeValue: byeValue})
+  React.useReducer(reducer, {p1: None, p2: None, num: Zero, result: NotSet, byeValue})
 
 let sortByName = Hooks.GetString((. x) => x.player.firstName)
 let sortByIdeal = Hooks.GetFloat((. x) => x.ideal)
@@ -149,8 +128,7 @@ module SelectPlayerRow = {
 module SelectList = {
   @react.component
   let make = (~pairData, ~state, ~dispatch, ~unmatched) => {
-    let initialTable =
-      unmatched->Map.valuesToArray->Array.map(player => {player: player, ideal: 0.0})
+    let initialTable = unmatched->Map.valuesToArray->Array.map(player => {player, ideal: 0.0})
     let (sorted, sortedDispatch) = Hooks.useSortedTable(
       ~table=initialTable,
       ~column=sortByName,
@@ -172,10 +150,7 @@ module SelectList = {
       let table =
         unmatched
         ->Map.valuesToArray
-        ->Array.map(player => {
-          player: player,
-          ideal: calcIdealOrNot(player.id),
-        })
+        ->Array.map(player => {player, ideal: calcIdealOrNot(player.id)})
       sortedDispatch(SetTable(table))
       None
     }, (unmatched, pairData, sortedDispatch, state))
@@ -255,7 +230,7 @@ module Stage = {
           ],
         )
         switch Rounds.set(roundList, roundId, newRound) {
-        | Some(roundList) => setTourney({...tourney, roundList: roundList})
+        | Some(roundList) => setTourney({...tourney, roundList})
         | None => Js.Console.error(`Couldn't add round ${Int.toString(roundId)}`)
         }
         dispatch(Clear)
@@ -278,7 +253,8 @@ module Stage = {
         <p>
           {React.string("White: ")}
           {switch state.p1 {
-          | Some(p) => <>
+          | Some(p) =>
+            <>
               <span className={getPlayer(p).type_->Player.Type.toString}>
                 {React.string(whiteName ++ " ")}
               </span>
@@ -295,7 +271,8 @@ module Stage = {
         <p>
           {React.string("Black: ")}
           {switch state.p2 {
-          | Some(p) => <>
+          | Some(p) =>
+            <>
               <span className={getPlayer(p).type_->Player.Type.toString}>
                 {React.string(blackName ++ " ")}
               </span>
@@ -309,7 +286,10 @@ module Stage = {
           | None => React.null
           }}
         </p>
-        <p> {React.string("Match ideal: ")} matchIdeal </p>
+        <p>
+          {React.string("Match ideal: ")}
+          matchIdeal
+        </p>
       </div>
       <p>
         <label>
@@ -327,19 +307,25 @@ module Stage = {
               <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
               <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
               <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
-              <option value={Match.Result.toString(WhiteAborted)}> {React.string("White Aborted")} </option>
-              <option value={Match.Result.toString(BlackAborted)}> {React.string("Black Aborted")} </option>
+              <option value={Match.Result.toString(WhiteAborted)}>
+                {React.string("White Aborted")}
+              </option>
+              <option value={Match.Result.toString(BlackAborted)}>
+                {React.string("Black Aborted")}
+              </option>
             </select>
           </Utils.TestId>
         </label>
       </p>
       <div className="toolbar">
         <button disabled={state.num == Zero} onClick={_ => dispatch(Reverse)}>
-          <Icons.Repeat /> {React.string(" Swap colors")}
+          <Icons.Repeat />
+          {React.string(" Swap colors")}
         </button>
         {React.string(" ")}
         <button className="button-primary" disabled={state.num != Two} onClick=match>
-          <Icons.Check /> {React.string(" Match selected")}
+          <Icons.Check />
+          {React.string(" Match selected")}
         </button>
       </div>
     </div>
@@ -379,9 +365,13 @@ module PlayerInfo = {
         <dt> {"Has had a bye round"->React.string} </dt>
         <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
         <dt> {"Opponent history"->React.string} </dt>
-        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ol> opponentResults </ol> </dd>
+        <dd style={ReactDOM.Style.make(~margin="0", ())}>
+          <ol> opponentResults </ol>
+        </dd>
         <dt> {"Players to avoid"->React.string} </dt>
-        <dd style={ReactDOMRe.Style.make(~margin="0", ())}> <ul> avoidListHtml </ul> </dd>
+        <dd style={ReactDOM.Style.make(~margin="0", ())}>
+          <ul> avoidListHtml </ul>
+        </dd>
       </dl>
     </div>
   }
@@ -434,7 +424,7 @@ let make = (
       autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->MutableQueue.toArray,
     )
     switch Rounds.set(roundList, roundId, newRound) {
-    | Some(roundList) => setTourney({...tourney, roundList: roundList})
+    | Some(roundList) => setTourney({...tourney, roundList})
     | None => ()
     }
   }
@@ -466,7 +456,7 @@ let make = (
             </button>
           </div>
         </Utils.Panel>
-        <Utils.Panel style={ReactDOMRe.Style.make(~flexGrow="1", ())}>
+        <Utils.Panel style={ReactDOM.Style.make(~flexGrow="1", ())}>
           <Stage state roundId dispatch pairData setTourney getPlayer byeValue tourney round />
           <Utils.PanelContainer>
             {[state.p1, state.p2]

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -54,9 +54,9 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
       ...state,
       avoidPairs: Set.keep(state.avoidPairs, pair => !Data.Id.Pair.has(pair, ~id)),
     }
-  | SetAvoidPairs(avoidPairs) => {...state, avoidPairs: avoidPairs}
-  | SetByeValue(byeValue) => {...state, byeValue: byeValue}
-  | SetLastBackup(lastBackup) => {...state, lastBackup: lastBackup}
+  | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
+  | SetByeValue(byeValue) => {...state, byeValue}
+  | SetLastBackup(lastBackup) => {...state, lastBackup}
   | SetState(state) => state
   }
 }
@@ -64,7 +64,7 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
  with the mocked data. */
 let useAllItemsFromDb = data => {
   let (items, dispatch) = React.useReducer(genericDbReducer, data)
-  {items: items, dispatch: dispatch, loaded: true}
+  {items, dispatch, loaded: true}
 }
 
 let useAllPlayers = () => useAllItemsFromDb(TestData.players)

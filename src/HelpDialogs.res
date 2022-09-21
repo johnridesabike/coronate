@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -72,7 +72,8 @@ module SwissTournament = {
       <p>
         {`Coronate uses `->React.string}
         <a href="https://en.wikipedia.org/wiki/Swiss-system_tournament">
-          {`Swiss-system tournaments `->React.string} <Icons.ExternalLink />
+          {`Swiss-system tournaments `->React.string}
+          <Icons.ExternalLink />
         </a>
         {`. It sets a fixed number of rounds that will be smaller than the number of players. It
           pairs players according to their scores, but without any two players meeting twice.`->React.string}
@@ -86,7 +87,8 @@ module SwissTournament = {
         {`To calculate how many rounds your tournament will require for a certain number of players,
           you can refer to the `->React.string}
         <Router.Link to_=TimeCalculator>
-          {Pages.TimeCalculator.title->React.string} {` page`->React.string}
+          {Pages.TimeCalculator.title->React.string}
+          {` page`->React.string}
         </Router.Link>
         {`.`->React.string}
       </p>

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,8 @@ module Splash = {
             {React.string(" (optional)")}
           </li>
           <li className="pages__hint-item">
-            <Icons.ArrowLeft /> {React.string(" Select a menu item.")}
+            <Icons.ArrowLeft />
+            {React.string(" Select a menu item.")}
           </li>
           <li className="pages__hint-item"> {React.string("Start creating your tournaments!")} </li>
         </ol>
@@ -44,7 +45,7 @@ module Splash = {
           <img src=Utils.WebpackAssets.logo alt="" height="96" width="96" />
         </div>
         <div className="pages__title-text">
-          <h1 className="title" style={ReactDOMRe.Style.make(~fontSize="40px", ())}>
+          <h1 className="title" style={ReactDOM.Style.make(~fontSize="40px", ())}>
             {React.string("Coronate")}
           </h1>
           <p className={"pages__subtitle caption-30"}> {React.string("Tournament manager")} </p>
@@ -60,7 +61,7 @@ module Splash = {
                 alt="Buy Me A Coffee"
                 height="60"
                 width="217"
-                style={ReactDOMRe.Style.make(~height="60px ", ~width="217px ", ())}
+                style={ReactDOM.Style.make(~height="60px ", ~width="217px ", ())}
               />
             </a>
           </p>
@@ -132,10 +133,12 @@ module TimeCalculator = {
         {"Estimate the time requirements for planning your Swiss-system tournament."->React.string}
       </p>
       <form>
-        <table style={ReactDOMRe.Style.make(~margin="0", ())}>
+        <table style={ReactDOM.Style.make(~margin="0", ())}>
           <tbody>
             <tr>
-              <td> <label htmlFor="playerCount"> {React.string("Player count ")} </label> </td>
+              <td>
+                <label htmlFor="playerCount"> {React.string("Player count ")} </label>
+              </td>
               <td>
                 <input
                   id="playerCount"
@@ -143,7 +146,7 @@ module TimeCalculator = {
                   value={Int.toString(players)}
                   onChange={updateInt(setPlayers, minPlayers)}
                   min={Int.toString(minPlayers)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
               </td>
             </tr>
@@ -159,7 +162,7 @@ module TimeCalculator = {
                   onChange={updateInt(setBreakTime, minBreakTime)}
                   step=5.0
                   min={Int.toString(minBreakTime)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
                 {React.string(" minutes")}
               </td>
@@ -176,7 +179,7 @@ module TimeCalculator = {
                   onChange={updateFloat(setTotalTime, minTotalTime)}
                   step=0.5
                   min={Float.toString(minTotalTime)}
-                  style={ReactDOMRe.Style.make(~width="40px", ())}
+                  style={ReactDOM.Style.make(~width="40px", ())}
                 />
                 {React.string(" hours")}
               </td>
@@ -200,11 +203,11 @@ module TimeCalculator = {
           <span className="caption-20">
             {React.string(" = ((")}
             <strong className="monospace"> {totalTime->React.float} </strong>
-            {React.string(` × 60 ÷ ⌈log₂(`)}
+            {React.string(" × 60 ÷ ⌈log₂(")}
             <strong className="monospace"> {players->React.int} </strong>
-            {React.string(`)⌉) - `)}
+            {React.string(")⌉) - ")}
             <strong className="monospace"> {breakTime->React.int} </strong>
-            {React.string(`) ÷ 2`)}
+            {React.string(") ÷ 2")}
           </span>
         </dd>
       </dl>

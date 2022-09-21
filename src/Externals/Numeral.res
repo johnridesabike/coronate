@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,11 +18,11 @@ module Options = {
     scalePercentBy100: bool,
   }
   let make = (~currentLocale, ~zeroFormat, ~nullFormat, ~defaultFormat, ~scalePercentBy100) => {
-    currentLocale: currentLocale,
-    zeroFormat: zeroFormat,
-    nullFormat: nullFormat,
-    defaultFormat: defaultFormat,
-    scalePercentBy100: scalePercentBy100,
+    currentLocale,
+    zeroFormat,
+    nullFormat,
+    defaultFormat,
+    scalePercentBy100,
   }
 }
 module Delimiters = {
@@ -30,7 +30,7 @@ module Delimiters = {
     thousands: string,
     decimal: string,
   }
-  let make = (~thousands, ~decimal) => {thousands: thousands, decimal: decimal}
+  let make = (~thousands, ~decimal) => {thousands, decimal}
 }
 module Abbreviations = {
   type t = {
@@ -40,10 +40,10 @@ module Abbreviations = {
     trillion: string,
   }
   let make = (~thousand, ~million, ~billion, ~trillion) => {
-    thousand: thousand,
-    million: million,
-    billion: billion,
-    trillion: trillion,
+    thousand,
+    million,
+    billion,
+    trillion,
   }
 }
 module Currency = {
@@ -58,10 +58,10 @@ module Locale = {
     currency: Currency.t,
   }
   let make = (~delimiters, ~abbreviations, ~ordinal, ~currency) => {
-    delimiters: delimiters,
-    abbreviations: abbreviations,
-    ordinal: ordinal,
-    currency: currency,
+    delimiters,
+    abbreviations,
+    ordinal,
+    currency,
   }
 }
 module RegExps = {
@@ -69,7 +69,7 @@ module RegExps = {
     format: Js.Re.t,
     unformat: Js.Re.t,
   }
-  let make = (~format, ~unformat) => {format: format, unformat: unformat}
+  let make = (~format, ~unformat) => {format, unformat}
 }
 module Format = {
   type formatFn = (float, string, (. float) => float) => string
@@ -83,9 +83,9 @@ module Format = {
     unformatFn: unformatFn,
   }
   let make = (~regexps, ~formatFn, ~unformatFn) => {
-    regexps: regexps,
-    formatFn: formatFn,
-    unformatFn: unformatFn,
+    regexps,
+    formatFn,
+    unformatFn,
   }
 }
 
@@ -106,28 +106,28 @@ module Make = (
   },
 ) => {
   @module("numeral") external numeral: numeral = "default"
-  @bs.send external reset: numeral => unit = "reset"
-  @bs.send
+  @send external reset: numeral => unit = "reset"
+  @send
   external registerLocale_: (numeral, ~what: string, ~key: string, ~value: Locale.t) => Locale.t =
     "register"
   let registerLocale = (key, value) => numeral->registerLocale_(~what="locale", ~key, ~value)
-  @bs.send
+  @send
   external registerFormat_: (numeral, ~what: string, ~key: string, ~value: Format.t) => Format.t =
     "register"
 
   let registerFormat = (key, value) => numeral->registerFormat_(~what="format", ~key, ~value)
-  @bs.send external locale_: (numeral, ~key: string=?) => string = "locale"
+  @send external locale_: (numeral, ~key: string=?) => string = "locale"
   let locale = (~key) => numeral->locale_(~key)
-  @bs.send
+  @send
   external localeData_: (numeral, ~key: string=?) => Locale.t = "localeData"
   let localeData = (~key) => numeral->localeData_(~key)
-  @bs.send external zeroFormat_: (numeral, string) => unit = "zeroFormat"
+  @send external zeroFormat_: (numeral, string) => unit = "zeroFormat"
   let setZeroFormat = str => numeral->zeroFormat_(str)
   /* [@bs.send] external nullFormat: (t, string) => unit = "nullFormat"; */
-  @bs.send
+  @send
   external setDefaultFormat_: (numeral, string) => unit = "defaultFormat"
   let setDefaultFormat = str => numeral->setDefaultFormat_(str)
-  @bs.send external validate_: (numeral, 'a, 'b) => bool = "validate"
+  @send external validate_: (numeral, 'a, 'b) => bool = "validate"
   let validate = (a, b) => numeral->validate_(a, b)
   /* ****************************************************************************
     Numeral instances
@@ -135,22 +135,22 @@ module Make = (
   type t
   @module("numeral") external make: M.input => t = "default"
   @module("numeral") external fromNumeral: t => t = "default"
-  @bs.send external clone: t => t = "clone"
-  @bs.send external formatDefault: t => string = "format"
-  @bs.send external format: (t, string) => string = "format"
-  @bs.send
+  @send external clone: t => t = "clone"
+  @send external formatDefault: t => string = "format"
+  @send external format: (t, string) => string = "format"
+  @send
   external formatRound: (t, string, @uncurry (float => float)) => string = "format"
-  @bs.send external unformat_: (t, string) => M.output = "unformat"
+  @send external unformat_: (t, string) => M.output = "unformat"
   let unformat = (t, value) => t->unformat_(value)->M.parseOutput
-  @bs.send external value_: t => M.output = "value"
+  @send external value_: t => M.output = "value"
   let value = t => t->value_->M.parseOutput
   /* [@bs.send] external valueOf: t => float = "valueOf"; */
-  @bs.send external set: (t, M.input) => t = "set"
-  @bs.send external add: (t, M.input) => t = "add"
-  @bs.send external subtract: (t, M.input) => t = "subtract"
-  @bs.send external multiply: (t, M.input) => t = "multiply"
-  @bs.send external divide: (t, M.input) => t = "divide"
-  @bs.send external difference_: (t, M.input) => M.output = "difference"
+  @send external set: (t, M.input) => t = "set"
+  @send external add: (t, M.input) => t = "add"
+  @send external subtract: (t, M.input) => t = "subtract"
+  @send external multiply: (t, M.input) => t = "multiply"
+  @send external divide: (t, M.input) => t = "divide"
+  @send external difference_: (t, M.input) => M.output = "difference"
   let difference = (t, value) => t->difference_(value)->M.parseOutput
 }
 /* ******************************************************************************

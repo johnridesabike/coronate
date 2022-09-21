@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,12 +9,13 @@ open Belt
 open Router
 open Data
 
-@ocaml.doc("
- Why are dates so complicated?
- Note to future self & other maintainers: getDate() begins at 1, and
- getMonth() begins at 0. An HTML date input requires that the month begins at
- 1 and the JS Date() object requires that the month begins at 0.
- ")
+/*
+  Why are dates so complicated?
+  Note to future self & other maintainers: getDate() begins at 1, and
+  getMonth() begins at 0. An HTML date input requires that the month begins at
+  1 and the JS Date() object requires that the month begins at 0.
+ */
+
 let makeDateInput = date => {
   open Js.Date
   let year = date->getFullYear->Float.toString
@@ -60,7 +61,7 @@ let make = (~tournament: LoadTournament.t) => {
       ...tourney,
       roundList: roundList->Rounds.updateByeScores(bye),
     })
-    Webapi.Dom.Window.alert(`Bye scores updated to ${s}.`, Webapi.Dom.window)
+    Webapi.Dom.Window.alert(Webapi.Dom.window, `Bye scores updated to ${s}.`)
   }
 
   let updateDate = event => {
@@ -87,12 +88,12 @@ let make = (~tournament: LoadTournament.t) => {
     | Name =>
       <form
         className="display-20"
-        style={ReactDOMRe.Style.make(~textAlign="left", ())}
+        style={ReactDOM.Style.make(~textAlign="left", ())}
         onSubmit={_ => setEditing(_ => NotEditing)}>
         <input
           className="display-20"
-          style={ReactDOMRe.Style.make(~textAlign="left", ())}
-          ref={ReactDOMRe.Ref.domRef(nameInput)}
+          style={ReactDOM.Style.make(~textAlign="left", ())}
+          ref={ReactDOM.Ref.domRef(nameInput)}
           type_="text"
           value=name
           onChange={event =>
@@ -108,7 +109,7 @@ let make = (~tournament: LoadTournament.t) => {
       </form>
     | Date
     | NotEditing =>
-      <h1 style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+      <h1 style={ReactDOM.Style.make(~textAlign="left", ())}>
         <span className="inputPlaceholder"> {React.string(name)} </span>
         {React.string(" ")}
         <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>
@@ -123,7 +124,7 @@ let make = (~tournament: LoadTournament.t) => {
         <input
           className="caption-30"
           type_="date"
-          ref={ReactDOMRe.Ref.domRef(dateInput)}
+          ref={ReactDOM.Ref.domRef(dateInput)}
           value={makeDateInput(date)}
           onChange=updateDate
         />
@@ -149,11 +150,11 @@ let make = (~tournament: LoadTournament.t) => {
     </button>
     {React.string(" ")}
     <button ariaDescribedby="score-desc" onClick={_ => changeByes(Half, `½`)}>
-      {React.string(`Change byes to ½`)}
+      {React.string("Change byes to ½")}
     </button>
     {React.string(" ")}
     <button ariaDescribedby="score-desc" onClick={_ => changeByes(Zero, "0")}>
-      {React.string(`Change byes to 0`)}
+      {React.string("Change byes to 0")}
     </button>
     <p className="caption-30" id="score-desc">
       {React.string("This will update ")}

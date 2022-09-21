@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,9 @@ module EloRank: {
   let getKFactor: (~matchCount: int, ~rating: int) => int
 }
 
-@ocaml.doc("Make new ratings for white and black.")
+/**
+  Make new ratings for white and black.
+  */
 let calcNewRatings: (
   ~whiteRating: EloRank.t,
   ~blackRating: EloRank.t,

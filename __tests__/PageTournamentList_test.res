@@ -24,11 +24,11 @@ test("Creating a new tournament works", () => {
     },
   })
   page->getByText(#RegExp(%re("/create/i")))->click
-  page->getByLabelText(#Str(`Delete “Deep 13 Open”`))->expect->toBeInTheDocument
+  page->getByLabelText(#Str("Delete “Deep 13 Open”"))->expect->toBeInTheDocument
 })
 
 test("Deleting a tournament works", () => {
   let page = render(<PageTournamentList />)
-  page->getByLabelText(#Str(`Delete “Simple Pairing”`))->click
+  page->getByLabelText(#Str("Delete “Simple Pairing”"))->click
   page->queryByText(#RegExp(%re("/simple pairing/")))->expect->toBe(Js.null)
 })

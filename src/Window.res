@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,9 +35,9 @@ let windowReducer = (state, action) =>
     Webapi.Dom.document
     ->Webapi.Dom.Document.asHtmlDocument
     ->Option.forEach(Webapi.Dom.HtmlDocument.setTitle(_, formatTitle(title)))
-    {...state, title: title}
-  | SetDialog(isDialogOpen) => {...state, isDialogOpen: isDialogOpen}
-  | SetSidebar(isMobileSidebarOpen) => {...state, isMobileSidebarOpen: isMobileSidebarOpen}
+    {...state, title}
+  | SetDialog(isDialogOpen) => {...state, isDialogOpen}
+  | SetSidebar(isMobileSidebarOpen) => {...state, isMobileSidebarOpen}
   }
 
 module About = {
@@ -48,17 +48,18 @@ module About = {
   @react.component
   let make = () =>
     <article className="win__about">
-      <div style={ReactDOMRe.Style.make(~flex="0 0 48%", ~textAlign="center", ())}>
+      <div style={ReactDOM.Style.make(~flex="0 0 48%", ~textAlign="center", ())}>
         <img src=Utils.WebpackAssets.logo height="196" width="196" alt="" />
       </div>
-      <div style={ReactDOMRe.Style.make(~flex="0 0 48%", ())}>
-        <h1 className="title" style={ReactDOMRe.Style.make(~textAlign="left", ())}>
+      <div style={ReactDOM.Style.make(~flex="0 0 48%", ())}>
+        <h1 className="title" style={ReactDOM.Style.make(~textAlign="left", ())}>
           {React.string("Coronate")}
         </h1>
         <p> {React.string(`Version ${version}-${hash}`)} </p>
         <p>
           <a href=Utils.changelog_url>
-            {React.string("View the changelog ")} <Icons.ExternalLink />
+            {React.string("View the changelog ")}
+            <Icons.ExternalLink />
           </a>
         </p>
         <p>
@@ -67,11 +68,13 @@ module About = {
         <p> {React.string("Coronate is free software.")} </p>
         <p>
           <a href=Utils.github_url>
-            {React.string("Source code is available ")} <Icons.ExternalLink />
+            {React.string("Source code is available ")}
+            <Icons.ExternalLink />
           </a>
           {React.string(" under the ")}
           <a href=Utils.license_url>
-            {React.string("Mozilla Public License 2.0 ")} <Icons.ExternalLink />
+            {React.string("Mozilla Public License 2.0 ")}
+            <Icons.ExternalLink />
           </a>
           {React.string(".")}
         </p>
@@ -92,7 +95,7 @@ module TitleBar = {
       </button>
       <div
         className="body-20"
-        style={ReactDOMRe.Style.make(
+        style={ReactDOM.Style.make(
           ~left="0",
           ~marginLeft="auto",
           ~marginRight="auto",
@@ -143,7 +146,7 @@ module DefaultSidebar = {
   @react.component
   let make = (~dispatch) =>
     <nav>
-      <ul style={ReactDOMRe.Style.make(~margin="0", ())}>
+      <ul style={ReactDOM.Style.make(~margin="0", ())}>
         <li>
           <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Home />

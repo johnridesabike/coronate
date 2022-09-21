@@ -130,7 +130,10 @@ test("Auto-matching works with manually adjusted scores", () => {
   /* This isn't ideal but routing isn't working for tests I think. */
   let page = render(
     <LoadTournament tourneyId=TestData.scoreTest.id>
-      {tournament => <> <PageTourneyPlayers tournament /> <PageRound tournament roundId=3 /> </>}
+      {tournament => <>
+        <PageTourneyPlayers tournament />
+        <PageRound tournament roundId=3 />
+      </>}
     </LoadTournament>,
   )
   page->getByText(#RegExp(%re("/more options for kinga forrester/i")))->click
@@ -152,10 +155,7 @@ test("Auto-matching works with manually adjusted scores", () => {
   })
   page->getByText(#RegExp(%re("/save/i")))->click
   page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
-  page
-  ->getByTestId(#Str("match-0-white"))
-  ->expect
-  ->toHaveTextContent(#Str("Bobo Professor"))
+  page->getByTestId(#Str("match-0-white"))->expect->toHaveTextContent(#Str("Bobo Professor"))
 })
 
 describe("Manually pairing and byes.", () => {

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,14 +29,15 @@ module Footer = {
       </div>
       <hr className="win__footer-divider" />
       <div className="win__footer-block">
-        {React.string("Registered players: ")} {activePlayers->Map.size->React.int}
+        {React.string("Registered players: ")}
+        {activePlayers->Map.size->React.int}
       </div>
       <hr className="win__footer-divider" />
       <Utils.Notification
         kind=tooltipKind
         tooltip=tooltipText
         className="win__footer-block"
-        style={ReactDOMRe.Style.make(
+        style={ReactDOM.Style.make(
           ~backgroundColor="transparent",
           ~color="initial",
           ~display="inline-flex",
@@ -73,7 +74,7 @@ module Sidebar = {
       ReactEvent.Mouse.preventDefault(event)
       let confirmText = "All rounds have completed. Are you sure you want to begin a new " ++ "one?"
       let confirmed = if isItOver {
-        if Webapi.Dom.Window.confirm(confirmText, Webapi.Dom.window) {
+        if Webapi.Dom.Window.confirm(Webapi.Dom.window, confirmText) {
           true
         } else {
           false
@@ -89,8 +90,8 @@ module Sidebar = {
     let delLastRound = event => {
       ReactEvent.Mouse.preventDefault(event)
       let message = "Are you sure you want to delete the last round?"
-      if Webapi.Dom.Window.confirm(message, Webapi.Dom.window) {
-        ReasonReactRouter.push("#/tourneys/" ++ tourney.id->Data.Id.toString)
+      if Webapi.Dom.Window.confirm(Webapi.Dom.window, message) {
+        RescriptReactRouter.push("#/tourneys/" ++ tourney.id->Data.Id.toString)
         /* If a match has been scored, then reset it.
          Should this logic be somewhere else? */
         let lastRoundId = Rounds.getLastKey(roundList)
@@ -104,7 +105,7 @@ module Sidebar = {
             /* Don't change players who haven't scored. */
             switch result {
             | NotSet => ()
-            | WhiteWon 
+            | WhiteWon
             | BlackWon
             | Draw
             | Aborted
@@ -117,9 +118,7 @@ module Sidebar = {
                 switch players->Map.get(id) {
                 | Some(player) =>
                   let matchCount = player.matchCount - 1
-                  playersDispatch(
-                    Set(player.id, {...player, matchCount: matchCount, rating: rating}),
-                  )
+                  playersDispatch(Set(player.id, {...player, matchCount, rating}))
                 /* Don't try to set dummy or deleted players */
                 | None => ()
                 }
@@ -139,7 +138,7 @@ module Sidebar = {
     }
     <div>
       <nav>
-        <ul style={ReactDOMRe.Style.make(~marginTop="0", ())}>
+        <ul style={ReactDOM.Style.make(~marginTop="0", ())}>
           <li>
             <Link
               to_=TournamentList
@@ -212,11 +211,13 @@ module Sidebar = {
                 {React.int(id + 1)}
                 {if isRoundComplete(id) {
                   <span className={"sidebar__hide-on-close caption-20"}>
-                    {React.string(" Complete ")} <Icons.Check />
+                    {React.string(" Complete ")}
+                    <Icons.Check />
                   </span>
                 } else {
                   <span className={"sidebar__hide-on-close caption-20"}>
-                    {React.string(" Not complete ")} <Icons.Alert />
+                    {React.string(" Not complete ")}
+                    <Icons.Alert />
                   </span>
                 }}
               </Link>
@@ -232,17 +233,17 @@ module Sidebar = {
             className="sidebar-button"
             disabled={!isNewRoundReady}
             onClick=newRound
-            style={ReactDOMRe.Style.make(~width="100%", ())}>
+            style={ReactDOM.Style.make(~width="100%", ())}>
             <Icons.Plus />
             <span className="sidebar__hide-on-close"> {React.string(" New round")} </span>
           </button>
         </li>
-        <li style={ReactDOMRe.Style.make(~textAlign="center", ())}>
+        <li style={ReactDOM.Style.make(~textAlign="center", ())}>
           <button
             disabled={Rounds.size(roundList) == 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
-            style={ReactDOMRe.Style.make(~marginTop="8px", ())}>
+            style={ReactDOM.Style.make(~marginTop="8px", ())}>
             <Icons.Trash />
             <span className="sidebar__hide-on-close"> {React.string(" Remove last round")} </span>
           </button>

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2022 John Jackson. 
+  Copyright (c) 2022 John Jackson.
 
   This Source Code Form is subject to the terms of the Mozilla Public
   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,17 +52,17 @@ module Score = {
   let fromResultWhite = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    | (WhiteWon | BlackAborted) => One
-    | (BlackWon | WhiteAborted) => Zero
-    | (NotSet | Aborted) => Zero
+    | WhiteWon | BlackAborted => One
+    | BlackWon | WhiteAborted => Zero
+    | NotSet | Aborted => Zero
     }
 
   let fromResultBlack = (x: Data_Match.Result.t) =>
     switch x {
     | Draw => Half
-    | (WhiteWon | BlackAborted) => Zero
-    | (BlackWon | WhiteAborted) => One
-    | (NotSet | Aborted) => Zero
+    | WhiteWon | BlackAborted => Zero
+    | BlackWon | WhiteAborted => One
+    | NotSet | Aborted => Zero
     }
 }
 
@@ -154,7 +154,7 @@ module TieBreak = {
 let make = id => {
   colorScores: list{},
   lastColor: None,
-  id: id,
+  id,
   isDummy: false,
   opponentResults: list{},
   ratings: list{},
@@ -185,7 +185,9 @@ let getOpponentScores = (scores, id) =>
     )
   }
 
-@ocaml.doc("USCF § 34E1")
+/**
+  USCF § 34E1
+  */
 let getMedianScore = (scores, id) => {
   let oppScores = scores->getOpponentScores(id)
   let size = List.size(oppScores)
@@ -196,17 +198,23 @@ let getMedianScore = (scores, id) => {
   ->Score.Sum.sum
 }
 
-@ocaml.doc("USCF § 34E2.")
+/**
+  USCF § 34E2.
+  */
 let getSolkoffScore = (scores, id) => scores->getOpponentScores(id)->Score.Sum.sum
 
-@ocaml.doc("Turn the regular score list into a \"running\" score list.")
+/**
+  Turn the regular score list into a \"running\" score list.
+  */
 let runningReducer = (acc, score) =>
   switch acc {
   | list{} => list{Score.toSum(score)}
   | list{last, ...rest} => list{Score.Sum.add(last, Score.toSum(score)), last, ...rest}
   }
 
-@ocaml.doc("USCF § 34E3.")
+/**
+  USCF § 34E3.
+  */
 let getCumulativeScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
@@ -214,7 +222,9 @@ let getCumulativeScore = (scores, id) =>
     resultsNoByes->List.reduce(list{}, runningReducer)->Score.Sum.calcScore(~adjustment)
   }
 
-@ocaml.doc("USCF § 34E4.")
+/**
+  USCF § 34E4.
+  */
 let getCumulativeOfOpponentScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
@@ -226,7 +236,9 @@ let getCumulativeOfOpponentScore = (scores, id) =>
     ->Score.Sum.sum
   }
 
-@ocaml.doc("USCF § 34E6.")
+/**
+  USCF § 34E6.
+  */
 let getColorBalanceScore = (scores, id) =>
   switch Map.get(scores, id) {
   | None => Score.Sum.zero
@@ -252,11 +264,11 @@ let getTieBreak = (scores, x: TieBreak.t) =>
   | MostBlack => scores.mostBlack
   }
 
-@ocaml.doc("
- `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
- tiebreak results to sort by, and in what order. It is expected that `a` and
- b` will have a result for every item in `tieBreaks`.
- ")
+/**
+  `a` and `b` have a list of tiebreak results. `tieBreaks` is a list of what
+  tiebreak results to sort by, and in what order. It is expected that `a` and
+  b` will have a result for every item in `tieBreaks`.
+  */
 let standingsSorter = (orderedMethods, a, b) => {
   let rec tieBreaksCompare = i =>
     switch orderedMethods[i] {
@@ -283,7 +295,7 @@ let createStandingArray = (t, orderedMethods) =>
   // Tiebreaks are computed even if they aren't necessary.
   // If this is a performance problem, they could be wrapped in a lazy type.
   ->Map.map(({id, results, adjustment, _}) => {
-    id: id,
+    id,
     score: Score.calcScore(results, ~adjustment),
     median: getMedianScore(t, id),
     solkoff: getSolkoffScore(t, id),
@@ -307,11 +319,8 @@ let createStandingTree = (standingArray, ~tieBreaks) =>
       switch treeHead {
       | list{} => list{list{standing}, ...tree}
       /* Make a new rank if the scores aren't equal */
-      | list{lastStanding, ..._} if !eq(lastStanding, standing, tieBreaks) => list{
-          list{standing},
-          treeHead,
-          ...treeTail,
-        }
+      | list{lastStanding, ..._} if !eq(lastStanding, standing, tieBreaks) =>
+        list{list{standing}, treeHead, ...treeTail}
       | _ => list{list{standing, ...treeHead}, ...treeTail}
       }
     }
