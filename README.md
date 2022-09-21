@@ -74,13 +74,13 @@ Coronate works completely in your local browser.
 First run this to compile the ReScript source:
 
 ```
-npm run build:res
+npm run build:rescript
 ```
 
 Alternatively, you can run the compiler in watch mode:
 
 ```
-npm run start:res
+npm run start:rescript
 ```
 
 Then run this to start a development version of the app:
