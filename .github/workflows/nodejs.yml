@@ -26,6 +26,6 @@ jobs:
       - run: npm ci
       - run: npm run format
       - run: git diff --exit-code
-      - run: npm run clean:res
+      - run: npm run clean:rescript
       - run: npm run test
       - run: npm run build
