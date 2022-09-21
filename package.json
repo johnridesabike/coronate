@@ -4,7 +4,7 @@
   "description": "Swiss chess tournament manager",
   "author": {
     "name": "John Jackson",
-    "email": "johnbicyclejackson@icloud.com",
+    "email": "jbpjackson+coronate@icloud.com",
     "url": "https://johnridesa.bike/"
   },
   "license": "MPL-2.0",
@@ -16,18 +16,20 @@
   },
   "bugs": {
     "url": "https://github.com/johnridesabike/coronate/issues",
-    "email": "johnbicyclejackson@icloud.com"
+    "email": "jbpjackson+coronate@icloud.com"
   },
   "scripts": {
-    "build": "npm run build:res && node scripts/build.js",
-    "deploy:github-pages": "npm run build && gh-pages -d build",
+    "prebuild": "rescript",
+    "build": "node scripts/build.js",
+    "prestart": "rescript",
     "start": "node scripts/start.js",
-    "test": "node scripts/test.js --watchAll",
-    "test:ci": "node scripts/test.js --watchAll=false",
+    "pretest": "rescript",
+    "test": "node scripts/test.js --watchAll=false",
+    "test:watch": "node scripts/test.js --watchAll",
     "test:coverage": "npm run test -- --coverage",
-    "build:res": "rescript",
-    "start:res": "rescript build -w",
-    "clean:res": "rescript clean",
+    "build:rescript": "rescript",
+    "start:rescript": "rescript build -w",
+    "clean:rescript": "rescript clean",
     "format": "rescript format -all"
   },
   "dependencies": {
@@ -51,7 +53,6 @@
     "esbuild-loader": "^2.18.0",
     "file-loader": "^6.2.0",
     "fs-extra": "^9.0.1",
-    "gh-pages": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "3.0.0",
     "jest": "^26.6.3",
