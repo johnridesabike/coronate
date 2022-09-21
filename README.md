@@ -1,127 +1,132 @@
 <div align="center">
 <img alt="Logo" src="graphics-src/icon-min.svg" height="128" width="128" />
 <h1>Coronate</h1>
+<p>Coronate is a web app for managing Swiss-style chess tournaments.</p>
 </div>
 
-<p align="center">Coronate is a web app for managing Swiss-style chess tournaments.</p>
+## About
 
-## 🧐 About
+Coronate is a free chess tournament manager. Anyone, even a tournament newbie
+with nothing but a web browser at their public library, can use it to run their
+tournament.
 
-Coronate is a free alternative to pricey professional tournament software.
-Anyone, even a tournament newbie with a locked-down public-access computer, can
-use it to run their tournament.
-
-<p align="center"><a href="https://coronate.netlify.app/">👉 Click here for a live demo ♟</a></p>
+<p align="center"><a href="https://coronate.netlify.app/">👉 Click here to open Coronate ♟</a></p>
 
 [Read more about how to use the app here](https://johnridesa.bike/software/coronate/).
 
 ![Round screenshot](./screenshot-round.png)
 ![Scoring screenshot](./screenshot-score-detail.png)
 
-## 🥰 Enjoy using Coronate?
+## Enjoy using Coronate?
 
 Coronate is free software, but you're welcome to show your appreciation.
 
-<a href="https://www.buymeacoffee.com/johnridesabike" target="_blank">
+<a href=https://www.buymeacoffee.com/johnridesabike target=_blank>
   <img
-    src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+    src=https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png
     alt="Buy Me A Coffee"
-    height="60"
-    width="217"
-    style="height: 60px !important;width: 217px !important;" />
+    height=60
+    width=217
+    style="height: 60px !important;width: 217px !important;"
+  />
 </a>
 
-## 🛠 Development
+## Development
 
-These are the basic steps you'll need to follow to get a development copy of
-Coronate running on your machine:
+You will need to install [Node.js] version 18. Coronate might run on other
+versions too, but it's not tested on them.
 
-### Prerequisites
+[node.js]: https://nodejs.org/
 
-You'll need [Node.js](https://nodejs.org/) version 14. Coronate probably runs
-on other versions too, but it's not tested on them.
+The source code is mostly written in [ReScript] and [React], which compiles to
+JavaScript. You'll need to be at least familiar with these languages and their
+toolchains.
+
+[rescript]: https://rescript-lang.org/
+
+[react]: [https://reactjs.org/]
 
 ### Installing
-
-#### 1: Get the code
 
 For most people, the easiest method is to click the "Clone or Download" button
 on [this project's GitHub homepage](https://github.com/johnridesabike/coronate).
 
-If you have Git installed, you can also run:
+If you have Git installed, you can run:
+
 ```
 git clone https://github.com/johnridesabike/coronate.git
 ```
 
-If you want to make your own changes, then it's recommended to fork the
-repository on GitHub and clone your forked version.
-
-#### 2: Install the dependencies
+If you want to make your own changes, then you should fork this repository on
+GitHub and clone your forked version.
 
 Once you have a local copy of the code, run this command in the project's
 directory to install its dependencies:
+
 ```
 npm install
 ```
 
-## 🎈 Usage
+## Usage
 
-Coronate works completely in your local browser. Running it only requires two 
-commands.
+Coronate works completely in your local browser.
 
 First run this to compile the ReScript source:
+
 ```
 npm run build:res
 ```
 
 Alternatively, you can run the compiler in watch mode:
+
 ```
 npm run start:res
 ```
 
-Then run this to start the app:
+Then run this to start a development version of the app:
+
 ```
 npm start
 ```
 
-And then open this URL: `http://localhost:3000`.
+This will start a server hosting Coronate on your computer. You can then open
+the app by clicking the link it shows you.
 
-Because it keeps your data in your browser's storage, be mindful that data loss
+The server works with the JavaScript files that are created by the ReScript
+compiler. If you edit the ReScript source, it will need to recompile before the
+changes appear in the live app.
+
+The app keeps your data in your browser's storage, so be mindful that data loss
 can happen unexpectedly depending on your settings. The app's "options" page has
 a button to back up your data in an external file.
 
-## 🔧 Running the tests
+### Other commands
 
-Just as with using the live version, you need to run `npm run build:res` first.
+To execute the tests, run:
 
-Then you can run the tests with the command:
 ```
 npm test
 ```
 
-## 🚀 Deployment 
-
-To create an optimized version that can be uploaded to your own website, run:
+To create an optimized version for your own website, run:
 
 ```
 npm run build
 ```
 
-## ⛏️ Built using
+To automatically format all of the ReScript source files, run:
 
-- [Node.js](https://nodejs.org/en/) - JavaScript
-- [ReScript](https://rescript-lang.org/) - most of the code
-- [React](https://rescript-lang.org/docs/react/latest/introduction) - interface
-- [LocalForage](https://localforage.github.io/localForage/) - browser storage
-- [Feather](https://feathericons.com/) - icons
+```
+npm run format
+```
 
-## ✍️ Authors
+## Contributing
 
-- [@johnridesabike](https://github.com/johnridesabike) - Idea and initial work
+[See this document with information about contributing.](CONTRIBUTING.md)
 
-## 🎉 Acknowledgements 
+## Acknowledgments
 
-The three "kings" in the logo are derived from the Mérida chess font, which was 
+The three "kings" in the logo are derived from the Mérida chess font, which is
 informally licensed as "freeware."
 
 Some human interface decisions (colors, buttons, etc.) are based on the
