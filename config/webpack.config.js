@@ -11,13 +11,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
-const paths = require("./paths");
-const modules = require("./modules");
-const getClientEnvironment = require("./env");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+const photon = require("photon-colors");
 const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
 
+const getClientEnvironment = require("./env");
+const pkg = require("../package.json");
+const paths = require("./paths");
+const modules = require("./modules");
 const createEnvironmentHash = require("./webpack/persistentCache/createEnvironmentHash");
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
@@ -362,6 +365,33 @@ module.exports = function (webpackEnv) {
             files: manifestFiles,
             entrypoints: entrypointFiles,
           };
+        },
+      }),
+      new FaviconsWebpackPlugin({
+        logo: path.join(".", "graphics", "logo.svg"),
+        prefix: "static/icons/",
+        cache: true,
+        inject: true,
+        favicons: {
+          appName: pkg.name,
+          appDescription: pkg.description,
+          version: pkg.version,
+          developerName: pkg.author.name,
+          developerURL: pkg.author.url,
+          appleStatusBarStyle: "default",
+          background: photon.INK_70,
+          theme_color: photon.INK_70,
+          display: "standalone",
+          lang: "en-US",
+          pixel_art: false,
+          icons: {
+            android: true,
+            appleIcon: true,
+            appleStartup: true,
+            favicons: true,
+            windows: true,
+            yandex: true,
+          },
         },
       }),
     ].filter(Boolean),
