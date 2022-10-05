@@ -57,7 +57,7 @@ module Splash = {
           <p>
             <a href="https://www.buymeacoffee.com/johnridesabike" target="_blank">
               <img
-                src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                src=Utils.WebpackAssets.buyMeACoffee
                 alt="Buy Me A Coffee"
                 height="60"
                 width="217"

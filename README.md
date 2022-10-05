@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Logo" src="graphics-src/icon-min.svg" height="128" width="128" />
+<img alt="Logo" src="graphics/logo.svg" height="128" width="128" />
 <h1>Coronate</h1>
 <p>Coronate is a web app for managing Swiss-style chess tournaments.</p>
 </div>
