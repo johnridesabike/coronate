@@ -63,7 +63,7 @@ module About = {
           </a>
         </p>
         <p>
-          {`Copyright ${HtmlEntities.copy} 2021 John${HtmlEntities.nbsp}Jackson`->React.string}
+          {`Copyright ${HtmlEntities.copy} 2022 John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
