@@ -18,7 +18,6 @@ const fs = require("fs");
 const chalk = require("react-dev-utils/chalk");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
-const clearConsole = require("react-dev-utils/clearConsole");
 const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
 const {
   choosePort,
@@ -112,10 +111,6 @@ checkBrowsers(paths.appPath, isInteractive)
     const devServer = new WebpackDevServer(serverConfig, compiler);
     // Launch WebpackDevServer.
     devServer.startCallback(() => {
-      if (isInteractive) {
-        clearConsole();
-      }
-
       if (env.raw.FAST_REFRESH && semver.lt(react.version, "16.10.0")) {
         console.log(
           chalk.yellow(

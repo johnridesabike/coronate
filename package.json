@@ -53,7 +53,6 @@
     "esbuild-loader": "^2.18.0",
     "favicons": "^7.0.1",
     "favicons-webpack-plugin": "^6.0.0-alpha.1",
-    "file-loader": "^6.2.0",
     "fs-extra": "^9.0.1",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "3.0.0",
