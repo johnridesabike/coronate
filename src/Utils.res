@@ -133,6 +133,40 @@ module TestId = {
   let make = (~children, ~testId) => React.cloneElement(children, {"data-testid": testId})
 }
 
+/**
+ * This is copied and modified from re-formality, MIT-licensed.
+ * https://github.com/shakacode/re-formality
+ */
+module FormHelper = {
+  type fieldStatus<'outputValue> =
+    | Pristine
+    | Dirty(result<'outputValue, string>)
+  type formStatus<'outputValue> =
+    | Editing
+    | Submitting('outputValue, 'outputValue => unit)
+  type formValidationResult<'output, 'fieldStatuses> =
+    | Valid({output: 'output, fieldStatuses: 'fieldStatuses})
+    | Invalid({fieldStatuses: 'fieldStatuses})
+
+  let validateFieldOnBlurWithValidator = (~input, ~fieldStatus, ~validator) =>
+    switch fieldStatus {
+    | Dirty(_) => None
+    | Pristine => Some(Dirty(validator(input)))
+    }
+
+  let exposeFieldResult = fieldStatus =>
+    switch fieldStatus {
+    | Pristine => None
+    | Dirty(result) => Some(result)
+    }
+
+  type state<'input, 'output, 'fieldStatuses> = {
+    input: 'input,
+    fieldStatuses: 'fieldStatuses,
+    formStatus: formStatus<'output>,
+  }
+}
+
 /* Side effects */
 
 let _ = Numeral.registerFormat(

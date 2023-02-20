@@ -13,12 +13,9 @@
     "@ryyppy/rescript-promise",
     "@rescript/react",
     "re-classnames",
-    "re-formality",
     "rescript-webapi",
     "rescript-blossom"
   ],
-  "bs-dev-dependencies": [],
-  "ppx-flags": ["re-formality/ppx"],
   "warnings": {
     "number": "+A-48-42",
     "error": "+A-3-44-102"

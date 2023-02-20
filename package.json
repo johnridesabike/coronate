@@ -72,7 +72,6 @@
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^7.4.3",
     "re-classnames": "^5.0.1",
-    "re-formality": "^4.0.0-beta.17",
     "react": "^16.14.0",
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.0",

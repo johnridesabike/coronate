@@ -72,3 +72,33 @@ module TestId: {
   @react.component
   let make: (~children: React.element, ~testId: string) => React.element
 }
+
+/**
+ * This is copied and modified from re-formality, MIT-licensed.
+ * https://github.com/shakacode/re-formality
+ */
+module FormHelper: {
+  type fieldStatus<'outputValue> =
+    | Pristine
+    | Dirty(result<'outputValue, string>)
+  type formStatus<'outputValue> =
+    | Editing
+    | Submitting('outputValue, 'outputValue => unit)
+  type formValidationResult<'output, 'fieldStatuses> =
+    | Valid({output: 'output, fieldStatuses: 'fieldStatuses})
+    | Invalid({fieldStatuses: 'fieldStatuses})
+
+  let validateFieldOnBlurWithValidator: (
+    ~input: 'input,
+    ~fieldStatus: fieldStatus<'outputValue>,
+    ~validator: 'input => result<'outputValue, string>,
+  ) => option<fieldStatus<'outputValue>>
+
+  let exposeFieldResult: fieldStatus<'a> => option<result<'a, string>>
+
+  type state<'input, 'output, 'fieldStatuses> = {
+    input: 'input,
+    fieldStatuses: 'fieldStatuses,
+    formStatus: formStatus<'output>,
+  }
+}
