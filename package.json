@@ -84,7 +84,7 @@
     "source-map-loader": "^3.0.1",
     "style-loader": "^3.3.1",
     "typeface-fira-sans": "0.0.75",
-    "webpack": "^5.64.4",
+    "webpack": "^5.76.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.1"
   },
