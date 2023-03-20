@@ -366,7 +366,6 @@ module.exports = function (webpackEnv) {
         favicons: {
           appName: pkg.name,
           appDescription: pkg.description,
-          version: pkg.version,
           developerName: pkg.author.name,
           developerURL: pkg.author.url,
           appleStatusBarStyle: "default",

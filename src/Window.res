@@ -42,9 +42,7 @@ let windowReducer = (state, action) =>
 
 module About = {
   @val
-  external version: string = "process.env.APP_VERSION"
-  @val
-  external hash: string = "process.env.GIT_HASH"
+  external gitModified: string = "process.env.GIT_MODIFIED"
   @react.component
   let make = () =>
     <article className="win__about">
@@ -55,15 +53,15 @@ module About = {
         <h1 className="title" style={ReactDOM.Style.make(~textAlign="left", ())}>
           {React.string("Coronate")}
         </h1>
-        <p> {React.string(`Version ${version}-${hash}`)} </p>
+        <p> {React.string(`Last updated on ${gitModified}.`)} </p>
         <p>
           <a href=Utils.changelog_url>
-            {React.string("View the changelog ")}
+            {React.string("View the changelog for new features. ")}
             <Icons.ExternalLink />
           </a>
         </p>
         <p>
-          {`Copyright ${HtmlEntities.copy} 2022 John${HtmlEntities.nbsp}Jackson`->React.string}
+          {`Copyright ${HtmlEntities.copy} John${HtmlEntities.nbsp}Jackson`->React.string}
         </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
