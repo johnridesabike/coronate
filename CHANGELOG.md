@@ -1,6 +1,6 @@
 # Changelog
 
-## latest
+## 2023-03-20
 
 - Reformatted changelog to use dates instead of version numbers. Old version
   numbers are preserved parenthetically.

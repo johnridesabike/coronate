@@ -60,9 +60,7 @@ module About = {
             <Icons.ExternalLink />
           </a>
         </p>
-        <p>
-          {`Copyright ${HtmlEntities.copy} John${HtmlEntities.nbsp}Jackson`->React.string}
-        </p>
+        <p> {`Copyright ${HtmlEntities.copy} John${HtmlEntities.nbsp}Jackson`->React.string} </p>
         <p> {React.string("Coronate is free software.")} </p>
         <p>
           <a href=Utils.github_url>
