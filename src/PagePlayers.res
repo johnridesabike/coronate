@@ -429,29 +429,9 @@ module PlayerList = {
   }
 }
 
-module Profile = {
+module AvoidForm = {
   @react.component
-  let make = (
-    ~player: Player.t,
-    ~players,
-    ~playersDispatch,
-    ~config: Data.Config.t,
-    ~configDispatch,
-    ~windowDispatch=_ => (),
-  ) => {
-    let {id: playerId, firstName, lastName, rating, matchCount: initialMatchCount, type_} = player
-    let form = Form.useForm({
-      firstName,
-      lastName,
-      rating: Int.toString(rating),
-      matchCount: Int.toString(initialMatchCount),
-    })
-    let input = Form.input(form)
-    let playerName = input.firstName ++ " " ++ input.lastName
-    React.useEffect2(() => {
-      windowDispatch(Window.SetTitle("Profile for " ++ playerName))
-      Some(() => windowDispatch(SetTitle("")))
-    }, (windowDispatch, playerName))
+  let make = (~playerId, ~players, ~config: Data.Config.t, ~configDispatch) => {
     let avoidMap = Id.Pair.Set.toMap(config.avoidPairs)
     let singAvoidList = Map.getWithDefault(avoidMap, playerId, Set.make(~id=Id.id))
     let unavoided =
@@ -496,6 +476,85 @@ module Profile = {
       let id: Data.Id.t = ReactEvent.Focus.currentTarget(event)["value"]
       setSelectedAvoider(_ => Map.get(players, id))
     }
+    <>
+      {if Set.isEmpty(singAvoidList) {
+        <p> {React.string("None")} </p>
+      } else {
+        <ul>
+          {singAvoidList
+          ->Set.toArray
+          ->Array.map(Player.getMaybe(players))
+          ->SortArray.stableSortBy(Player.compareName)
+          ->Array.map(p => {
+            let fullName = Player.fullName(p)
+            <li key={p.id->Data.Id.toString}>
+              {fullName->React.string}
+              <button
+                ariaLabel={`Remove ${fullName} from avoid list.`}
+                title={`Remove ${fullName} from avoid list.`}
+                className="danger button-ghost"
+                onClick={_ =>
+                  switch Id.Pair.make(playerId, p.id) {
+                  | None => ()
+                  | Some(pair) => configDispatch(Db.DelAvoidPair(pair))
+                  }}>
+                <Icons.Trash />
+              </button>
+            </li>
+          })
+          ->React.array}
+        </ul>
+      }}
+      <form onSubmit=avoidAdd>
+        <label htmlFor="avoid-select"> {React.string("Select a new player to avoid.")} </label>
+        {switch selectedAvoider {
+        | Some(selectedAvoider) =>
+          <>
+            <select
+              id="avoid-select"
+              onBlur=handleAvoidBlur
+              onChange=handleAvoidChange
+              value={selectedAvoider.id->Data.Id.toString}>
+              {unavoided
+              ->Array.map(p => {
+                let id = Data.Id.toString(p.id)
+                <option key=id value=id> {p->Player.fullName->React.string} </option>
+              })
+              ->React.array}
+            </select>
+            {React.string(" ")}
+            <input className="button-micro" type_="submit" value="Add" />
+          </>
+        | None => React.string("No players are available to avoid.")
+        }}
+      </form>
+    </>
+  }
+}
+
+module Profile = {
+  @react.component
+  let make = (
+    ~player: Player.t,
+    ~players,
+    ~playersDispatch,
+    ~config: Data.Config.t,
+    ~configDispatch,
+    ~windowDispatch=_ => (),
+  ) => {
+    let {id: playerId, firstName, lastName, rating, matchCount: initialMatchCount, type_} = player
+    let form = Form.useForm({
+      firstName,
+      lastName,
+      rating: Int.toString(rating),
+      matchCount: Int.toString(initialMatchCount),
+    })
+    let input = Form.input(form)
+    let playerName = input.firstName ++ " " ++ input.lastName
+    React.useEffect2(() => {
+      windowDispatch(Window.SetTitle("Profile for " ++ playerName))
+      Some(() => windowDispatch(SetTitle("")))
+    }, (windowDispatch, playerName))
     <div className="content-area">
       <Link
         to_=PlayerList
@@ -571,57 +630,7 @@ module Profile = {
         </p>
       </form>
       <h3> {React.string("Players to avoid")} </h3>
-      {if Set.isEmpty(singAvoidList) {
-        <p> {React.string("None")} </p>
-      } else {
-        <ul>
-          {singAvoidList
-          ->Set.toArray
-          ->Array.map(Player.getMaybe(players))
-          ->SortArray.stableSortBy(Player.compareName)
-          ->Array.map(p => {
-            let fullName = Player.fullName(p)
-            <li key={p.id->Data.Id.toString}>
-              {fullName->React.string}
-              <button
-                ariaLabel={`Remove ${fullName} from avoid list.`}
-                title={`Remove ${fullName} from avoid list.`}
-                className="danger button-ghost"
-                onClick={_ =>
-                  switch Id.Pair.make(playerId, p.id) {
-                  | None => ()
-                  | Some(pair) => configDispatch(DelAvoidPair(pair))
-                  }}>
-                <Icons.Trash />
-              </button>
-            </li>
-          })
-          ->React.array}
-        </ul>
-      }}
-      <form onSubmit=avoidAdd>
-        <label htmlFor="avoid-select"> {React.string("Select a new player to avoid.")} </label>
-        {switch selectedAvoider {
-        | Some(selectedAvoider) =>
-          <>
-            <select
-              id="avoid-select"
-              onBlur=handleAvoidBlur
-              onChange=handleAvoidChange
-              value={selectedAvoider.id->Data.Id.toString}>
-              {unavoided
-              ->Array.map(p => {
-                let id = Data.Id.toString(p.id)
-                <option key=id value=id> {p->Player.fullName->React.string} </option>
-              })
-              ->React.array}
-            </select>
-            {React.string(" ")}
-            <input className="button-micro" type_="submit" value="Add" />
-          </>
-        | None => React.string("No players are available to avoid.")
-        }}
-      </form>
+      <AvoidForm playerId players config configDispatch />
       <hr />
       <details>
         <summary> {"Additional information"->React.string} </summary>

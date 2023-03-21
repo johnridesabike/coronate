@@ -26,20 +26,34 @@ module Profile = {
   }
 }
 
-test("Adding a player to avoid works", () => {
-  let page = render(<Profile id=TestData.newbieMcNewberson.id />)
-
-  page
-  ->getByLabelText(#RegExp(%re("/Select a new player to avoid/i")))
-  ->change({
-    "target": {
-      "value": TestData.grandyMcMaster,
-    },
+describe("The avoid form works", () => {
+  test("Adding a player to avoid works", () => {
+    let page = render(<Profile id=TestData.newbieMcNewberson.id />)
+    page
+    ->getByLabelText(#RegExp(%re("/Select a new player to avoid/i")))
+    ->change({
+      "target": {
+        "value": TestData.grandyMcMaster,
+      },
+    })
+    page->getByText(#RegExp(%re("/^add$/i")))->click
+    page->getByText(#RegExp(%re("/grandy mcmaster/i")))->expect->toBeInTheDocument
   })
 
-  page->getByText(#RegExp(%re("/^add$/i")))->click
-
-  page->getByText(#RegExp(%re("/grandy mcmaster/i")))->expect->toBeInTheDocument
+  test("Pathologic: avoiding all players works as expected.", () => {
+    let page = render(<Profile id=TestData.newbieMcNewberson.id />)
+    for _ in 1 to TestData.players->Map.size->pred {
+      page->getByText(#RegExp(%re("/^add$/i")))->click
+    }
+    // Form disappears when all players are avoided.
+    page->getByText(#RegExp(%re("/No players are available to avoid/i")))->expect->toBeInTheDocument
+    // Form reappears and auto-selects first player when players are available
+    page->getByLabelText(#RegExp(%re("/remove tom servo from avoid list/i")))->click
+    page
+    ->getByLabelText(#RegExp(%re("/Select a new player to avoid/i")))
+    ->expect
+    ->toHaveValue(#Str(TestData.tomServo.id->Data.Id.toString))
+  })
 })
 
 describe("The add player form works", () => {
