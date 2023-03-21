@@ -54,17 +54,17 @@
   - Ejected from Create-React-App to optimize build system.
   - Simplified CSS.
 
-## 2020-12-31 (1.1.1)
+## 2021-01-07 (1.1.1)
 
 - Fix crashes when a tournament contains deleted players.
 
-## 2019-11-01 (1.1)
+## 2020-08-25 (1.1)
 
 - Added application version to "About" dialog.
 - Added ability to manually adjust scores of players per-tournament.
 - Various performance and stability improvements.
 - Removed Electron desktop version.
 
-## 2019-11-01 (1.0)
+## 2019-10-30 (1.0)
 
 - Initial release
