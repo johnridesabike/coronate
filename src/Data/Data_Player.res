@@ -41,6 +41,12 @@ type t = {
 
 let fullName = t => t.firstName ++ " " ++ t.lastName
 
+let compareName = (a, b) =>
+  switch compare(a.firstName, b.firstName) {
+  | 0 => compare(a.lastName, b.lastName)
+  | i => i
+  }
+
 let decode = json => {
   let d = Js.Json.decodeObject(json)
   {

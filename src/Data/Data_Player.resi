@@ -25,6 +25,8 @@ type t = {
 
 let fullName: t => string
 
+let compareName: (t, t) => int
+
 let encode: t => Js.Json.t
 
 let decode: Js.Json.t => t

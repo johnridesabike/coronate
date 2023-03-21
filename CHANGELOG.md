@@ -2,6 +2,8 @@
 
 ## 2023-03-20
 
+- On the player profile page, the "players to avoid" list now sorts by name.
+- Fixed some subtle bugs with the "players to avoid" list.
 - Reformatted changelog to use dates instead of version numbers. Old version
   numbers are preserved parenthetically.
 

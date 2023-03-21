@@ -458,20 +458,30 @@ module Profile = {
       players
       ->Map.keysToArray
       ->Array.keep(id => !Set.has(singAvoidList, id) && !Id.eq(id, playerId))
-    let (selectedAvoider, setSelectedAvoider) = React.useState(() => unavoided[0])
+      ->Array.map(Player.getMaybe(players))
+      ->SortArray.stableSortBy(Data.Player.compareName)
+    let (selectedAvoider, setSelectedAvoider) = React.useState(() => None)
+    // Reset the selctedAvoider to the first on the list if it's None and the list is nonempty.
+    React.useEffect2(() => {
+      switch (selectedAvoider, unavoided[0]) {
+      | (Some(_), Some(_) | None) | (None, None) => ()
+      | (None, Some(p)) => setSelectedAvoider(_ => Some(p))
+      }
+      None
+    }, (selectedAvoider, unavoided))
     let avoidAdd = event => {
       ReactEvent.Form.preventDefault(event)
       switch selectedAvoider {
       | None => ()
       | Some(selectedAvoider) =>
-        switch Id.Pair.make(playerId, selectedAvoider) {
+        switch Id.Pair.make(playerId, selectedAvoider.id) {
         | None => ()
         | Some(pair) =>
           configDispatch(Db.AddAvoidPair(pair))
           /* Reset the selected avoider to the first on the list, but check to
            make sure they weren't they weren't the first. */
           let newSelected = switch unavoided[0] {
-          | Some(id) if !Id.eq(id, selectedAvoider) => Some(id)
+          | Some(p) if !Id.eq(p.id, selectedAvoider.id) => Some(p)
           | _ => unavoided[1]
           }
           setSelectedAvoider(_ => newSelected)
@@ -479,12 +489,12 @@ module Profile = {
       }
     }
     let handleAvoidChange = event => {
-      let id = ReactEvent.Form.currentTarget(event)["value"]
-      setSelectedAvoider(_ => id)
+      let id: Data.Id.t = ReactEvent.Form.currentTarget(event)["value"]
+      setSelectedAvoider(_ => Map.get(players, id))
     }
     let handleAvoidBlur = event => {
-      let id = ReactEvent.Focus.currentTarget(event)["value"]
-      setSelectedAvoider(_ => id)
+      let id: Data.Id.t = ReactEvent.Focus.currentTarget(event)["value"]
+      setSelectedAvoider(_ => Map.get(players, id))
     }
     <div className="content-area">
       <Link
@@ -567,16 +577,18 @@ module Profile = {
         <ul>
           {singAvoidList
           ->Set.toArray
-          ->Array.map(pId => {
-            let fullName = Player.getMaybe(players, pId)->Player.fullName
-            <li key={pId->Data.Id.toString}>
+          ->Array.map(Player.getMaybe(players))
+          ->SortArray.stableSortBy(Player.compareName)
+          ->Array.map(p => {
+            let fullName = Player.fullName(p)
+            <li key={p.id->Data.Id.toString}>
               {fullName->React.string}
               <button
                 ariaLabel={`Remove ${fullName} from avoid list.`}
                 title={`Remove ${fullName} from avoid list.`}
                 className="danger button-ghost"
                 onClick={_ =>
-                  switch Id.Pair.make(playerId, pId) {
+                  switch Id.Pair.make(playerId, p.id) {
                   | None => ()
                   | Some(pair) => configDispatch(DelAvoidPair(pair))
                   }}>
@@ -596,13 +608,12 @@ module Profile = {
               id="avoid-select"
               onBlur=handleAvoidBlur
               onChange=handleAvoidChange
-              value={selectedAvoider->Data.Id.toString}>
+              value={selectedAvoider.id->Data.Id.toString}>
               {unavoided
-              ->Array.map(pId =>
-                <option key={pId->Data.Id.toString} value={pId->Data.Id.toString}>
-                  {players->Player.getMaybe(pId)->Player.fullName->React.string}
-                </option>
-              )
+              ->Array.map(p => {
+                let id = Data.Id.toString(p.id)
+                <option key=id value=id> {p->Player.fullName->React.string} </option>
+              })
               ->React.array}
             </select>
             {React.string(" ")}
