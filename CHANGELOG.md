@@ -1,5 +1,9 @@
 # Changelog
 
+## 2023-03-22
+
+- Player profile pages now show a table with win, loss, and draw statistics.
+
 ## 2023-03-20
 
 - On the player profile page, the "players to avoid" list now sorts by name.

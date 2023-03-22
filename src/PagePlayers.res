@@ -429,6 +429,86 @@ module PlayerList = {
   }
 }
 
+module PlayerStats = {
+  type t = {wins: int, losses: int, draws: int}
+
+  let succWins = t => {...t, wins: succ(t.wins)}
+
+  let succLosses = t => {...t, losses: succ(t.losses)}
+
+  let succDraws = t => {...t, draws: succ(t.draws)}
+
+  let empty = {wins: 0, losses: 0, draws: 0}
+
+  let percent = (a, b) => {
+    let x = switch b {
+    | 0 => 0.0
+    | b => Float.fromInt(a) /. Float.fromInt(b)
+    }
+    x->Numeral.make->Numeral.format("%")
+  }
+
+  @react.component
+  let make = (~playerId) => {
+    let {items, _} = Db.useAllTournaments()
+    let idEqual = Data.Id.eq(playerId)
+    let {wins, losses, draws} = Map.reduce(items, empty, (acc, _id, tournament) =>
+      tournament.roundList
+      ->Data.Rounds.toArray
+      ->Array.reduce(acc, (acc, round) =>
+        Data.Rounds.Round.toArray(round)->Array.reduce(
+          acc,
+          (acc, match) =>
+            switch (match.result, idEqual(match.blackId), idEqual(match.whiteId)) {
+            | (BlackWon | WhiteAborted, true, _)
+            | (WhiteWon | BlackAborted, _, true) =>
+              succWins(acc)
+            | (BlackWon | WhiteAborted, _, true)
+            | (WhiteWon | BlackAborted, true, _) =>
+              succLosses(acc)
+            | (Draw, _, true) | (Draw, true, _) => succDraws(acc)
+            | (BlackWon | WhiteWon | Draw | BlackAborted | WhiteAborted, false, false)
+            | (Aborted | NotSet, _, _) => acc
+            },
+        )
+      )
+    )
+    let total = wins + losses + draws
+    <div>
+      <table style={ReactDOM.Style.make(~margin="0", ())}>
+        <thead>
+          <tr>
+            <th> {"Stat"->React.string} </th>
+            <th> {"Count"->React.string} </th>
+            <th> {"Ratio"->React.string} </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"> {"Won"->React.string} </th>
+            <td className="table__number"> {wins->React.int} </td>
+            <td className="table__number"> {percent(wins, total)->React.string} </td>
+          </tr>
+          <tr>
+            <th scope="row"> {"Lost"->React.string} </th>
+            <td className="table__number"> {losses->React.int} </td>
+            <td className="table__number"> {percent(losses, total)->React.string} </td>
+          </tr>
+          <tr>
+            <th scope="row"> {"Drew"->React.string} </th>
+            <td className="table__number"> {draws->React.int} </td>
+            <td className="table__number"> {percent(draws, total)->React.string} </td>
+          </tr>
+        </tbody>
+      </table>
+      <p className="caption-20">
+        {`These statistics are generated from current tournament data. Their total may differ from
+          the "matches played" number above.`->React.string}
+      </p>
+    </div>
+  }
+}
+
 module AvoidForm = {
   @react.component
   let make = (~playerId, ~players, ~config: Data.Config.t, ~configDispatch) => {
@@ -631,6 +711,9 @@ module Profile = {
       </form>
       <h3> {React.string("Players to avoid")} </h3>
       <AvoidForm playerId players config configDispatch />
+      <hr />
+      <h3> {React.string("Statistics")} </h3>
+      <PlayerStats playerId />
       <hr />
       <details>
         <summary> {"Additional information"->React.string} </summary>
