@@ -522,13 +522,11 @@ module AvoidForm = {
       ->SortArray.stableSortBy(Data.Player.compareName)
     let (selectedAvoider, setSelectedAvoider) = React.useState(() => None)
     // Reset the selctedAvoider to the first on the list if it's None and the list is nonempty.
-    React.useEffect2(() => {
-      switch (selectedAvoider, unavoided[0]) {
-      | (Some(_), Some(_) | None) | (None, None) => ()
-      | (None, Some(p)) => setSelectedAvoider(_ => Some(p))
-      }
-      None
-    }, (selectedAvoider, unavoided))
+    // Better to just shadow the value instead of setting the state again.
+    let selectedAvoider = switch selectedAvoider {
+    | None => unavoided[0]
+    | Some(_) as x => x
+    }
     let avoidAdd = event => {
       ReactEvent.Form.preventDefault(event)
       switch selectedAvoider {
@@ -538,13 +536,7 @@ module AvoidForm = {
         | None => ()
         | Some(pair) =>
           configDispatch(Db.AddAvoidPair(pair))
-          /* Reset the selected avoider to the first on the list, but check to
-           make sure they weren't they weren't the first. */
-          let newSelected = switch unavoided[0] {
-          | Some(p) if !Id.eq(p.id, selectedAvoider.id) => Some(p)
-          | _ => unavoided[1]
-          }
-          setSelectedAvoider(_ => newSelected)
+          setSelectedAvoider(_ => None)
         }
       }
     }
