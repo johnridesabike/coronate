@@ -50,7 +50,7 @@
     "esbuild": "^0.14.30",
     "esbuild-jest": "^0.5.0",
     "esbuild-loader": "^2.18.0",
-    "favicons": "^7.0.1",
+    "favicons": "^7.1.2",
     "favicons-webpack-plugin": "^6.0.0-alpha.1",
     "fs-extra": "^9.0.1",
     "html-webpack-plugin": "^5.5.0",
