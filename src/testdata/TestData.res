@@ -9,10 +9,11 @@ open Belt
 open Data
 module Id = Data.Id
 let id = Id.fromString
+let nat = Data.Player.NatInt.fromInt
 
 let crowTRobot: Player.t = {
   id: "Crow_T_Robot_________"->id,
-  matchCount: 5,
+  matchCount: nat(5),
   rating: 1700,
   type_: Person,
   firstName: "Crow T",
@@ -20,7 +21,7 @@ let crowTRobot: Player.t = {
 }
 let drClaytonForrester: Player.t = {
   id: "Dr_Clayton_Forrester_"->id,
-  matchCount: 40,
+  matchCount: nat(40),
   rating: 2100,
   type_: Person,
   firstName: "Clayton",
@@ -28,7 +29,7 @@ let drClaytonForrester: Player.t = {
 }
 let grandyMcMaster: Player.t = {
   id: "Grandy_McMaster______"->id,
-  matchCount: 100,
+  matchCount: nat(100),
   rating: 2600,
   type_: Person,
   firstName: "Grandy",
@@ -36,7 +37,7 @@ let grandyMcMaster: Player.t = {
 }
 let gypsy: Player.t = {
   id: "Gypsy________________"->id,
-  matchCount: 15,
+  matchCount: nat(15),
   rating: 1600,
   type_: Person,
   firstName: "Gypsy",
@@ -44,7 +45,7 @@ let gypsy: Player.t = {
 }
 let joelRobinson: Player.t = {
   id: "Joel_Robinson________"->id,
-  matchCount: 70,
+  matchCount: nat(70),
   rating: 2400,
   type_: Person,
   firstName: "Joel",
@@ -52,7 +53,7 @@ let joelRobinson: Player.t = {
 }
 let newbieMcNewberson: Player.t = {
   id: "Newbie_McNewberson___"->id,
-  matchCount: 0,
+  matchCount: nat(0),
   rating: 800,
   type_: Person,
   firstName: "Newbie",
@@ -60,7 +61,7 @@ let newbieMcNewberson: Player.t = {
 }
 let tomServo: Player.t = {
   id: "Tom_Servo____________"->id,
-  matchCount: 10,
+  matchCount: nat(10),
   rating: 1800,
   type_: Person,
   firstName: "Tom",
@@ -68,7 +69,7 @@ let tomServo: Player.t = {
 }
 let tvsFrank: Player.t = {
   id: "TVs_Frank____________"->id,
-  matchCount: 35,
+  matchCount: nat(35),
   rating: 1400,
   type_: Person,
   firstName: "TV's",
@@ -76,7 +77,7 @@ let tvsFrank: Player.t = {
 }
 let cambot: Player.t = {
   id: "Cambot_______________"->id,
-  matchCount: 25,
+  matchCount: nat(25),
   rating: 1500,
   type_: Person,
   firstName: "Cambot",
@@ -84,7 +85,7 @@ let cambot: Player.t = {
 }
 let jonah: Player.t = {
   id: "Jonah_Heston_________"->id,
-  matchCount: 50,
+  matchCount: nat(50),
   rating: 2200,
   type_: Person,
   firstName: "Jonah",
@@ -92,7 +93,7 @@ let jonah: Player.t = {
 }
 let kinga: Player.t = {
   id: "Kinga_Forrester______"->id,
-  matchCount: 20,
+  matchCount: nat(20),
   rating: 1900,
   type_: Person,
   firstName: "Kinga",
@@ -100,7 +101,7 @@ let kinga: Player.t = {
 }
 let larry: Player.t = {
   id: "Larry_Erhardt________"->id,
-  matchCount: 45,
+  matchCount: nat(45),
   rating: 1300,
   type_: Person,
   firstName: "Larry",
@@ -108,7 +109,7 @@ let larry: Player.t = {
 }
 let mike: Player.t = {
   id: "Mike_Nelson__________"->id,
-  matchCount: 60,
+  matchCount: nat(60),
   rating: 2300,
   type_: Person,
   firstName: "Mike",
@@ -116,7 +117,7 @@ let mike: Player.t = {
 }
 let observer: Player.t = {
   id: "Observer_Brain_Guy___"->id,
-  matchCount: 55,
+  matchCount: nat(55),
   rating: 1200,
   type_: Person,
   firstName: "Brain",
@@ -124,7 +125,7 @@ let observer: Player.t = {
 }
 let pearl: Player.t = {
   id: "Pearl_Forrester______"->id,
-  matchCount: 30,
+  matchCount: nat(30),
   rating: 2000,
   type_: Person,
   firstName: "Pearl",
@@ -132,7 +133,7 @@ let pearl: Player.t = {
 }
 let bobo: Player.t = {
   id: "Professor_Bobo_______"->id,
-  matchCount: 75,
+  matchCount: nat(75),
   rating: 1000,
   type_: Person,
   firstName: "Bobo",
@@ -140,7 +141,7 @@ let bobo: Player.t = {
 }
 let tvsSon: Player.t = {
   id: "TVs_Son_of_TVs_Frank_"->id,
-  matchCount: 65,
+  matchCount: nat(65),
   rating: 1100,
   type_: Person,
   firstName: "TV's",

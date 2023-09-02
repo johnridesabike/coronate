@@ -134,30 +134,32 @@ module MatchRow = {
             ~result=newResult,
           )
         }
-        let whiteOpt = Option.map(whiteOpt, white => {...white, rating: whiteNewRating})
-        let blackOpt = Option.map(blackOpt, black => {...black, rating: blackNewRating})
-        switch m.result {
-        /* If the result hasn't been scored yet, increment the matchCounts */
-        | NotSet =>
-          Option.forEach(whiteOpt, white =>
-            playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount + 1}))
-          )
-          Option.forEach(blackOpt, black =>
-            playersDispatch(Set(blackId, {...black, matchCount: black.matchCount + 1}))
-          )
-        /* If the result is being un-scored, decrement the matchCounts */
-        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted
-          if newResult == NotSet =>
-          Option.forEach(whiteOpt, white =>
-            playersDispatch(Set(whiteId, {...white, matchCount: white.matchCount - 1}))
-          )
-          Option.forEach(blackOpt, black =>
-            playersDispatch(Set(blackId, {...black, matchCount: black.matchCount - 1}))
-          )
-        /* Simply update the players with new ratings. */
-        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
-          Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
-          Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
+        let whiteOpt = Option.map(whiteOpt, white => Player.setRating(white, whiteNewRating))
+        let blackOpt = Option.map(blackOpt, black => Player.setRating(black, blackNewRating))
+        if !Match.isBye(m) {
+          switch m.result {
+          /* If the result hasn't been scored yet, increment the matchCounts */
+          | NotSet =>
+            Option.forEach(whiteOpt, white =>
+              playersDispatch(Set(whiteId, Player.succMatchCount(white)))
+            )
+            Option.forEach(blackOpt, black =>
+              playersDispatch(Set(blackId, Player.succMatchCount(black)))
+            )
+          /* If the result is being un-scored, decrement the matchCounts */
+          | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted
+            if newResult == NotSet =>
+            Option.forEach(whiteOpt, white =>
+              playersDispatch(Set(whiteId, Player.predMatchCount(white)))
+            )
+            Option.forEach(blackOpt, black =>
+              playersDispatch(Set(blackId, Player.predMatchCount(black)))
+            )
+          /* Simply update the players with new ratings. */
+          | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
+            Option.forEach(whiteOpt, white => playersDispatch(Set(whiteId, white)))
+            Option.forEach(blackOpt, black => playersDispatch(Set(blackId, black)))
+          }
         }
         let newMatch = {...m, result: newResult, whiteNewRating, blackNewRating}
         roundList
@@ -374,23 +376,17 @@ module Round = {
 
     let unMatch = (matchId, round) => {
       switch round->Rounds.Round.getMatchById(matchId) {
-      /* checks if the match has been scored yet & resets the players'
-       records */
-      | Some(match) if match.result != NotSet =>
-        [
-          (match.whiteId, match.whiteOrigRating),
-          (match.blackId, match.blackOrigRating),
-        ]->Array.forEach(((id, rating)) =>
+      /* checks if the match has been scored yet & resets the players' records */
+      | Some(match) if match.result != NotSet && !Match.isBye(match) =>
+        let reset = (id, rating) =>
           switch players->Map.get(id) {
-          /* If there was a dummy player or a deleted player then bail
-           on the dispatch. */
-          | None => ()
           | Some(player) =>
-            playersDispatch(Set(player.id, {...player, rating, matchCount: player.matchCount - 1}))
+            playersDispatch(Set(player.id, player->Player.setRating(rating)->Player.predMatchCount))
+          | None => () /* Don't try to set dummy or deleted players */
           }
-        )
-      | None
-      | Some(_) => ()
+        reset(match.whiteId, match.whiteOrigRating)
+        reset(match.blackId, match.blackOrigRating)
+      | None | Some(_) => ()
       }
       let newRound = round->Rounds.Round.removeMatchById(matchId)
       switch roundList->Rounds.set(roundId, newRound) {

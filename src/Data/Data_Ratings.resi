@@ -7,7 +7,7 @@
 */
 module EloRank: {
   type t = int
-  let getKFactor: (~matchCount: int, ~rating: int) => int
+  let getKFactor: (~matchCount: Data_Player.NatInt.t, ~rating: int) => int
 }
 
 /**
@@ -16,7 +16,7 @@ module EloRank: {
 let calcNewRatings: (
   ~whiteRating: EloRank.t,
   ~blackRating: EloRank.t,
-  ~whiteMatchCount: int,
-  ~blackMatchCount: int,
+  ~whiteMatchCount: Data_Player.NatInt.t,
+  ~blackMatchCount: Data_Player.NatInt.t,
   ~result: Data_Match.Result.t,
 ) => (EloRank.t, EloRank.t)

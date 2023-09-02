@@ -18,7 +18,7 @@ module EloRank = {
     ->Int.fromFloat
 
   let getKFactor = (~matchCount, ~rating) =>
-    if matchCount < 30 {
+    if Data_Player.NatInt.toInt(matchCount) < 30 {
       40
     } else if rating > 2100 {
       10

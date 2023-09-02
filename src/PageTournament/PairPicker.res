@@ -215,6 +215,7 @@ module Stage = {
     | Some(player) => player->getPlayer->Player.fullName
     }
 
+    /* TODO: should this increment match counts? */
     let match = _ =>
       switch (state.p1, state.p2) {
       | (Some(white), Some(black)) =>

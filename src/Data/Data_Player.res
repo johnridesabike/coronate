@@ -30,11 +30,39 @@ module Type = {
   let decode = data => Js.Json.decodeString(data)->Option.getExn->fromString
 }
 
+module NatInt = {
+  type t = int
+
+  let fromInt = x =>
+    if x < 0 {
+      0
+    } else {
+      x
+    }
+
+  let toInt = x => x
+  let toString = string_of_int
+
+  let succ = x =>
+    if x < 0 {
+      0
+    } else {
+      succ(x)
+    }
+
+  let pred = x =>
+    if x < 1 {
+      0
+    } else {
+      pred(x)
+    }
+}
+
 type t = {
   firstName: string,
   id: Data_Id.t,
   lastName: string,
-  matchCount: int,
+  matchCount: NatInt.t,
   rating: int,
   type_: Type.t,
 }
@@ -46,6 +74,11 @@ let compareName = (a, b) =>
   | 0 => compare(a.lastName, b.lastName)
   | i => i
   }
+
+let succMatchCount = t => {...t, matchCount: NatInt.succ(t.matchCount)}
+let predMatchCount = t => {...t, matchCount: NatInt.pred(t.matchCount)}
+
+let setRating = (t, rating) => {...t, rating}
 
 let decode = json => {
   let d = Js.Json.decodeObject(json)

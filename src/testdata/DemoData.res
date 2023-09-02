@@ -9,6 +9,7 @@ open Belt
 open Data
 module Id = Data.Id
 let id = Data.Id.fromString
+let nat = Data.Player.NatInt.fromInt
 let batman = "BruceWayne_lv_ZsUHTU9"->id
 let robin = "DickGrayson_1C2rCokHH"->id
 let alfred = "AlfredPennyworth_y4dW"->id
@@ -48,7 +49,7 @@ let players = Map.fromArray(
         firstName: "Bruce",
         lastName: "Wayne",
         rating: 1998,
-        matchCount: 9,
+        matchCount: nat(9),
       },
     ),
     (
@@ -59,7 +60,7 @@ let players = Map.fromArray(
         firstName: "Dick",
         lastName: "Grayson",
         rating: 1909,
-        matchCount: 9,
+        matchCount: nat(9),
       },
     ),
     (
@@ -70,7 +71,7 @@ let players = Map.fromArray(
         firstName: "Alfred",
         lastName: "Pennyworth",
         rating: 1999,
-        matchCount: 9,
+        matchCount: nat(9),
       },
     ),
     (
@@ -81,7 +82,7 @@ let players = Map.fromArray(
         firstName: "Barbara",
         lastName: "Gordon",
         rating: 1345,
-        matchCount: 7,
+        matchCount: nat(7),
       },
     ),
     (
@@ -92,7 +93,7 @@ let players = Map.fromArray(
         firstName: "Kate",
         lastName: "Kane",
         rating: 1539,
-        matchCount: 9,
+        matchCount: nat(9),
       },
     ),
     (
@@ -103,7 +104,7 @@ let players = Map.fromArray(
         firstName: "Selina",
         lastName: "Kyle",
         rating: 1495,
-        matchCount: 9,
+        matchCount: nat(9),
       },
     ),
     (
@@ -114,7 +115,7 @@ let players = Map.fromArray(
         firstName: "Jason",
         lastName: "Todd",
         rating: 1101,
-        matchCount: 7,
+        matchCount: nat(7),
       },
     ),
     (
@@ -125,7 +126,7 @@ let players = Map.fromArray(
         firstName: "James",
         lastName: "Gordon",
         rating: 1167,
-        matchCount: 7,
+        matchCount: nat(7),
       },
     ),
     (
@@ -136,7 +137,7 @@ let players = Map.fromArray(
         firstName: "Helena",
         lastName: "Wayne",
         rating: 1087,
-        matchCount: 7,
+        matchCount: nat(7),
       },
     ),
     (
@@ -147,7 +148,7 @@ let players = Map.fromArray(
         firstName: "Joker",
         lastName: "",
         rating: 1538,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -158,7 +159,7 @@ let players = Map.fromArray(
         firstName: "Harley",
         lastName: "Quinn",
         rating: 1648,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -169,7 +170,7 @@ let players = Map.fromArray(
         firstName: "Victor",
         lastName: "Fries",
         rating: 862,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -180,7 +181,7 @@ let players = Map.fromArray(
         firstName: "Oswald",
         lastName: "Cobblepot",
         rating: 1812,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -191,7 +192,7 @@ let players = Map.fromArray(
         firstName: "Ra's",
         lastName: "al Ghul",
         rating: 1404,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -202,7 +203,7 @@ let players = Map.fromArray(
         firstName: "Pamela",
         lastName: "Isley",
         rating: 965,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -213,7 +214,7 @@ let players = Map.fromArray(
         firstName: "Edward",
         lastName: "Nigma",
         rating: 948,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -224,7 +225,7 @@ let players = Map.fromArray(
         firstName: "Jonathan",
         lastName: "Crane",
         rating: 899,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -235,7 +236,7 @@ let players = Map.fromArray(
         firstName: "Harvey",
         lastName: "Dent",
         rating: 1649,
-        matchCount: 1,
+        matchCount: nat(1),
       },
     ),
     (
@@ -246,7 +247,7 @@ let players = Map.fromArray(
         firstName: "Hugo",
         lastName: "Strange",
         rating: 800,
-        matchCount: 0,
+        matchCount: nat(0),
       },
     ),
   ],

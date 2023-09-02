@@ -102,27 +102,18 @@ module Sidebar = {
           ->Rounds.Round.toArray
           ->Array.forEach(match_ => {
             let {result, whiteId, blackId, whiteOrigRating, blackOrigRating, _} = match_
-            /* Don't change players who haven't scored. */
-            switch result {
-            | NotSet => ()
-            | WhiteWon
-            | BlackWon
-            | Draw
-            | Aborted
-            | WhiteAborted
-            | BlackAborted =>
-              [(whiteId, whiteOrigRating), (blackId, blackOrigRating)]->Array.forEach(((
-                id,
-                rating,
-              )) =>
+            if result != NotSet && !Match.isBye(match_) {
+              /* Don't change players who haven't scored. */
+              let reset = (id, rating) =>
                 switch players->Map.get(id) {
                 | Some(player) =>
-                  let matchCount = player.matchCount - 1
-                  playersDispatch(Set(player.id, {...player, matchCount, rating}))
-                /* Don't try to set dummy or deleted players */
-                | None => ()
+                  playersDispatch(
+                    Set(player.id, player->Player.setRating(rating)->Player.predMatchCount),
+                  )
+                | None => () /* Don't try to set dummy or deleted players */
                 }
-              )
+              reset(whiteId, whiteOrigRating)
+              reset(blackId, blackOrigRating)
             }
           })
         }

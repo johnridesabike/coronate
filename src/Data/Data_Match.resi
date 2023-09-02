@@ -33,6 +33,8 @@ type t = {
   result: Result.t,
 }
 
+let isBye: t => bool
+
 let decode: Js.Json.t => t
 
 let encode: t => Js.Json.t

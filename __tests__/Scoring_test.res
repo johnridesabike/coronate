@@ -42,8 +42,8 @@ test("Ratings never go below 100", () => {
   let (newRatingWhite, _) = Data.Ratings.calcNewRatings(
     ~whiteRating=100,
     ~blackRating=100,
-    ~whiteMatchCount=69,
-    ~blackMatchCount=69,
+    ~whiteMatchCount=Data.Player.NatInt.fromInt(69),
+    ~blackMatchCount=Data.Player.NatInt.fromInt(69),
     ~result=Data.Match.Result.BlackWon,
   )
   expect(newRatingWhite)->toBe(100)
