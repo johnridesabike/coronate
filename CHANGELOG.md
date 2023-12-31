@@ -3,6 +3,7 @@
 ## Latest
 
 - Enable sorting on more player lists.
+- Add "1-0" style score notation to the tournament round page.
 
 ## 2023-03-22
 

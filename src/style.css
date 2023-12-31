@@ -895,7 +895,11 @@ li.player.missing {
   border-color: var(--grey-40);
 }
 
-.pageround__td {
+.pageround__table-head {
+  text-align: left;
+}
+
+.pageround__tr {
   padding: 8px 4px;
 }
 

@@ -194,6 +194,19 @@ module MatchRow = {
           {blackPlayer->Player.fullName->React.string}
         </td>
       </Utils.TestId>
+      <td className="pageround__matchresult__score monospace">
+        {Scoring.Score.fromResultWhite(m.result)
+        ->Scoring.Score.toFloat
+        ->Numeral.make
+        ->Numeral.format("1/2")
+        ->React.string}
+        {"-"->React.string}
+        {Scoring.Score.fromResultBlack(m.result)
+        ->Scoring.Score.toFloat
+        ->Numeral.make
+        ->Numeral.format("1/2")
+        ->React.string}
+      </td>
       <td className={"pageround__matchresult data__input row__controls"}>
         <Utils.TestId testId={`match-${Int.toString(pos)}-select`}>
           <select
@@ -319,7 +332,7 @@ module RoundTable = {
             {React.string("Round ")}
             {React.int(roundId + 1)}
           </caption>
-          <thead>
+          <thead className="pageround__table-head">
             <tr>
               <th className="pageround__row-id" scope="col"> {React.string("#")} </th>
               <th scope="col">
@@ -334,7 +347,9 @@ module RoundTable = {
                 </Externals.VisuallyHidden>
               </th>
               <th className="row__player" scope="col"> {React.string("Black")} </th>
-              <th className="row__result" scope="col"> {React.string("Match result")} </th>
+              <th className="row__result" scope="col" colSpan=2>
+                {React.string("Match result")}
+              </th>
               {if isCompact {
                 React.null
               } else {
@@ -358,7 +373,7 @@ module RoundTable = {
             setSelectedMatch
             scoreData
             tournament
-            className="pageround__td"
+            className="pageround__tr"
             avoidPairs
           />
         )->React.array}
