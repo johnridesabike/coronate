@@ -90,7 +90,8 @@ let reducer = ({p1, p2, result, byeValue, _} as state, action) =>
 let useStageState = byeValue =>
   React.useReducer(reducer, {p1: None, p2: None, num: Zero, result: NotSet, byeValue})
 
-let sortByName = Hooks.GetString((. x) => x.player.firstName)
+let sortByFirstName = Hooks.GetString((. x) => x.player.firstName)
+let sortByLastName = Hooks.GetString((. x) => x.player.lastName)
 let sortByIdeal = Hooks.GetFloat((. x) => x.ideal)
 
 module SelectPlayerRow = {
@@ -115,7 +116,8 @@ module SelectPlayerRow = {
           </Externals.VisuallyHidden>
         </button>
       </td>
-      <td className="pageround__selectlist-name"> {player->Player.fullName->React.string} </td>
+      <td className="pageround__selectlist-name"> {player.firstName->React.string} </td>
+      <td className="pageround__selectlist-name"> {player.lastName->React.string} </td>
       <td>
         {switch state.num {
         | One => ideal->Numeral.make->Numeral.format("%")->React.string
@@ -131,7 +133,7 @@ module SelectList = {
     let initialTable = unmatched->Map.valuesToArray->Array.map(player => {player, ideal: 0.0})
     let (sorted, sortedDispatch) = Hooks.useSortedTable(
       ~table=initialTable,
-      ~column=sortByName,
+      ~column=sortByFirstName,
       ~isDescending=false,
     )
 
@@ -166,8 +168,13 @@ module SelectList = {
               <Externals.VisuallyHidden> {React.string("Controls")} </Externals.VisuallyHidden>
             </th>
             <th>
-              <Hooks.SortButton sortColumn=sortByName data=sorted dispatch=sortedDispatch>
-                {React.string("Name")}
+              <Hooks.SortButton sortColumn=sortByFirstName data=sorted dispatch=sortedDispatch>
+                {React.string("First name")}
+              </Hooks.SortButton>
+            </th>
+            <th>
+              <Hooks.SortButton sortColumn=sortByLastName data=sorted dispatch=sortedDispatch>
+                {React.string("Last name")}
               </Hooks.SortButton>
             </th>
             <th>

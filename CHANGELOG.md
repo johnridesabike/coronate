@@ -1,5 +1,9 @@
 # Changelog
 
+## Latest
+
+- Enable sorting on more player lists.
+
 ## 2023-03-22
 
 - Player profile pages now show a table with win, loss, and draw statistics.

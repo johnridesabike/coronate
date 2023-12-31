@@ -9,10 +9,18 @@ open Data
 open Belt
 module Id = Data.Id
 
+let sortFirstName = Hooks.GetString((. p) => p.Player.firstName)
+let sortLastName = Hooks.GetString((. p) => p.Player.lastName)
+
 module Selecting = {
   @react.component
   let make = (~tourney: Tournament.t, ~setTourney, ~players, ~playersDispatch) => {
     let {playerIds, _} = tourney
+    let (table, tableDispatch) = Hooks.useSortedTable(
+      ~table=Map.valuesToArray(players),
+      ~column=sortFirstName,
+      ~isDescending=false,
+    )
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)["value"]
       if ReactEvent.Form.target(event)["checked"] {
@@ -46,14 +54,21 @@ module Selecting = {
         <caption> {React.string("Select players")} </caption>
         <thead>
           <tr>
-            <th> {React.string("First name")} </th>
-            <th> {React.string("Last name")} </th>
+            <th>
+              <Hooks.SortButton sortColumn=sortFirstName data=table dispatch=tableDispatch>
+                {React.string("First name")}
+              </Hooks.SortButton>
+            </th>
+            <th>
+              <Hooks.SortButton sortColumn=sortLastName data=table dispatch=tableDispatch>
+                {React.string("Last name")}
+              </Hooks.SortButton>
+            </th>
             <th> {React.string("Select")} </th>
           </tr>
         </thead>
         <tbody>
-          {players
-          ->Map.valuesToArray
+          {table.table
           ->Array.map(({Player.id: id, firstName, lastName, _}) =>
             <tr key={id->Data.Id.toString}>
               <td> {React.string(firstName)} </td>
@@ -339,12 +354,12 @@ module OptionsForm = {
 
 module PlayerList = {
   @react.component
-  let make = (~players: Id.Map.t<Player.t>, ~tourney, ~setTourney, ~byeQueue) => <>
+  let make = (~players: array<Player.t>, ~tourney, ~setTourney, ~byeQueue) => <>
     {players
-    ->Map.valuesToArray
     ->Array.map(p =>
       <tr key={p.id->Data.Id.toString} className={"player " ++ Player.Type.toString(p.type_)}>
-        <td> {p->Player.fullName->React.string} </td>
+        <td> {p.firstName->React.string} </td>
+        <td> {p.lastName->React.string} </td>
         <td>
           <OptionsForm setTourney tourney byeQueue p />
         </td>
@@ -357,6 +372,11 @@ module PlayerList = {
 @react.component
 let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, players, activePlayers, playersDispatch, getPlayer, _} = tournament
+  let (playerTable, tableDispatch) = Hooks.useSortedTable(
+    ~table=Map.valuesToArray(activePlayers),
+    ~column=sortFirstName,
+    ~isDescending=false,
+  )
   let {playerIds, roundList, byeQueue, _} = tourney
   let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
   let matches = Rounds.rounds2Matches(roundList)
@@ -373,12 +393,21 @@ let make = (~tournament: LoadTournament.t) => {
           <caption> {React.string("Current roster")} </caption>
           <thead>
             <tr>
-              <th> {React.string("Name")} </th>
+              <th>
+                <Hooks.SortButton sortColumn=sortFirstName data=playerTable dispatch=tableDispatch>
+                  {React.string("First name")}
+                </Hooks.SortButton>
+              </th>
+              <th>
+                <Hooks.SortButton sortColumn=sortLastName data=playerTable dispatch=tableDispatch>
+                  {React.string("Last name")}
+                </Hooks.SortButton>
+              </th>
               <th> {React.string("Options")} </th>
             </tr>
           </thead>
           <tbody className="content">
-            <PlayerList byeQueue setTourney tourney players=activePlayers />
+            <PlayerList byeQueue setTourney tourney players=playerTable.table />
           </tbody>
         </table>
       </Utils.Panel>

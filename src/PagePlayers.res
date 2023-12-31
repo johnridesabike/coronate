@@ -10,7 +10,8 @@ open Data
 open Router
 module Id = Data.Id
 
-let sortName = Hooks.GetString((. x: Player.t) => x.firstName)
+let sortFirstName = Hooks.GetString((. x: Player.t) => x.firstName)
+let sortLastName = Hooks.GetString((. x: Player.t) => x.lastName)
 let sortRating = Hooks.GetInt((. x: Player.t) => x.rating)
 let sortMatchCount = Hooks.GetInt((. x: Player.t) => Player.NatInt.toInt(x.matchCount))
 
@@ -376,8 +377,13 @@ module PlayerList = {
         <thead>
           <tr>
             <th>
-              <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=sortName>
-                {React.string("Name")}
+              <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=sortFirstName>
+                {React.string("First name")}
+              </Hooks.SortButton>
+            </th>
+            <th>
+              <Hooks.SortButton data=sorted dispatch=sortDispatch sortColumn=sortLastName>
+                {React.string("Last name")}
               </Hooks.SortButton>
             </th>
             <th>
@@ -398,7 +404,7 @@ module PlayerList = {
         <tbody className="content">
           {Array.map(sorted.table, p =>
             <tr key={p.id->Data.Id.toString}>
-              <td className="table__player">
+              <td className="table__player" colSpan=2>
                 <Link to_=Player(p.id)> {p->Player.fullName->React.string} </Link>
               </td>
               <td className="table__number"> {p.rating->React.int} </td>
@@ -735,7 +741,7 @@ let make = (~id=?, ~windowDispatch) => {
   let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (sorted, sortDispatch) = Hooks.useSortedTable(
     ~table=Map.valuesToArray(players),
-    ~column=sortName,
+    ~column=sortFirstName,
     ~isDescending=false,
   )
   React.useEffect2(() => {
