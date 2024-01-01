@@ -1,9 +1,10 @@
 # Changelog
 
-## Latest
+## 2024-01-01
 
 - Enable sorting on more player lists.
 - Add "1-0" style score notation to the tournament round page.
+- Add custom names for White and Black.
 
 ## 2023-03-22
 
