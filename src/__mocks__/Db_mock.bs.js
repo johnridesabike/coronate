@@ -72,13 +72,17 @@ function configReducer(state, action) {
         return {
                 avoidPairs: Belt_Set.add(state.avoidPairs, action._0),
                 byeValue: state.byeValue,
-                lastBackup: state.lastBackup
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
               };
     case /* DelAvoidPair */1 :
         return {
                 avoidPairs: Belt_Set.remove(state.avoidPairs, action._0),
                 byeValue: state.byeValue,
-                lastBackup: state.lastBackup
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
               };
     case /* DelAvoidSingle */2 :
         var id = action._0;
@@ -87,19 +91,25 @@ function configReducer(state, action) {
                         return !Data_Id$Coronate.Pair.has(pair, id);
                       })),
                 byeValue: state.byeValue,
-                lastBackup: state.lastBackup
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
               };
     case /* SetAvoidPairs */3 :
         return {
                 avoidPairs: action._0,
                 byeValue: state.byeValue,
-                lastBackup: state.lastBackup
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
               };
     case /* SetByeValue */4 :
         return {
                 avoidPairs: state.avoidPairs,
                 byeValue: action._0,
-                lastBackup: state.lastBackup
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
               };
     case /* SetState */5 :
         return action._0;
@@ -107,7 +117,25 @@ function configReducer(state, action) {
         return {
                 avoidPairs: state.avoidPairs,
                 byeValue: state.byeValue,
-                lastBackup: action._0
+                lastBackup: action._0,
+                whiteAlias: state.whiteAlias,
+                blackAlias: state.blackAlias
+              };
+    case /* SetWhiteAlias */7 :
+        return {
+                avoidPairs: state.avoidPairs,
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup,
+                whiteAlias: Data_Config$Coronate.alias(action._0),
+                blackAlias: state.blackAlias
+              };
+    case /* SetBlackAlias */8 :
+        return {
+                avoidPairs: state.avoidPairs,
+                byeValue: state.byeValue,
+                lastBackup: state.lastBackup,
+                whiteAlias: state.whiteAlias,
+                blackAlias: Data_Config$Coronate.alias(action._0)
               };
     
   }

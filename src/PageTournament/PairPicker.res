@@ -206,9 +206,9 @@ module Stage = {
     ~state,
     ~dispatch,
     ~setTourney,
-    ~byeValue,
     ~tourney: Tournament.t,
     ~round,
+    ~config: Config.t,
   ) => {
     let {roundList, _} = tourney
 
@@ -233,7 +233,7 @@ module Stage = {
               ~white=getPlayer(white),
               ~black=getPlayer(black),
               state.result,
-              byeValue,
+              config.byeValue,
             ),
           ],
         )
@@ -259,7 +259,8 @@ module Stage = {
       <h2> {React.string("Selected for matching:")} </h2>
       <div className="content">
         <p>
-          {React.string("White: ")}
+          {React.string(Data.Config.aliasToStringWhite(config))}
+          {React.string(": ")}
           {switch state.p1 {
           | Some(p) =>
             <>
@@ -277,7 +278,8 @@ module Stage = {
           }}
         </p>
         <p>
-          {React.string("Black: ")}
+          {React.string(Data.Config.aliasToStringBlack(config))}
+          {React.string(": ")}
           {switch state.p2 {
           | Some(p) =>
             <>
@@ -311,15 +313,23 @@ module Stage = {
               onChange={e =>
                 ReactEvent.Form.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}>
               <option value={Match.Result.toString(NotSet)}> {React.string("None")} </option>
-              <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
-              <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
+              <option value={Match.Result.toString(WhiteWon)}>
+                {React.string(Data.Config.aliasToStringWhite(config))}
+                {React.string(" won")}
+              </option>
+              <option value={Match.Result.toString(BlackWon)}>
+                {React.string(Data.Config.aliasToStringBlack(config))}
+                {React.string(" won")}
+              </option>
               <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
               <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
               <option value={Match.Result.toString(WhiteAborted)}>
-                {React.string("White Aborted")}
+                {React.string(Data.Config.aliasToStringWhite(config))}
+                {React.string(" Aborted")}
               </option>
               <option value={Match.Result.toString(BlackAborted)}>
-                {React.string("Black Aborted")}
+                {React.string(Data.Config.aliasToStringBlack(config))}
+                {React.string(" Aborted")}
               </option>
             </select>
           </Utils.TestId>
@@ -342,7 +352,7 @@ module Stage = {
 
 module PlayerInfo = {
   @react.component
-  let make = (~player, ~scoreData, ~players, ~avoidPairs, ~origRating, ~newRating, ~getPlayer) => {
+  let make = (~player, ~scoreData, ~players, ~config, ~origRating, ~newRating, ~getPlayer) => {
     let {
       player,
       hasBye,
@@ -358,7 +368,7 @@ module PlayerInfo = {
       ~players,
       ~origRating,
       ~newRating,
-      ~avoidPairs,
+      ~config,
     )
     <div className="player-card">
       <h3> {player->Player.fullName->React.string} </h3>
@@ -393,8 +403,8 @@ let make = (
   ~unmatched,
   ~unmatchedWithDummy,
 ) => {
-  let ({Config.avoidPairs: avoidPairs, byeValue, _}, _) = Db.useConfig()
-  let (state, dispatch) = useStageState(byeValue)
+  let (config, _) = Db.useConfig()
+  let (state, dispatch) = useStageState(config.byeValue)
   let {tourney, activePlayers, players, getPlayer, setTourney, playersDispatch, _} = tournament
   let {roundList, byeQueue, _} = tourney
   let round = Rounds.get(roundList, roundId)
@@ -402,8 +412,8 @@ let make = (
   let autoPairHelp = Hooks.useBool(false)
   /* `createPairingData` is relatively expensive */
   let pairData = React.useMemo3(
-    () => Pairing.make(scoreData, activePlayers, avoidPairs),
-    (activePlayers, avoidPairs, scoreData),
+    () => Pairing.make(scoreData, activePlayers, config.avoidPairs),
+    (activePlayers, config.avoidPairs, scoreData),
   )
   /* Clean staged players if they were removed from the tournament */
   React.useEffect3(() => {
@@ -429,7 +439,12 @@ let make = (
   let autoPair = round => {
     let newRound = Rounds.Round.addMatches(
       round,
-      autoPair(~pairData, ~byeValue, ~byeQueue, ~playerMap=unmatched)->MutableQueue.toArray,
+      autoPair(
+        ~pairData,
+        ~byeValue=config.byeValue,
+        ~byeQueue,
+        ~playerMap=unmatched,
+      )->MutableQueue.toArray,
     )
     switch Rounds.set(roundList, roundId, newRound) {
     | Some(roundList) => setTourney({...tourney, roundList})
@@ -465,7 +480,7 @@ let make = (
           </div>
         </Utils.Panel>
         <Utils.Panel style={ReactDOM.Style.make(~flexGrow="1", ())}>
-          <Stage state roundId dispatch pairData setTourney getPlayer byeValue tourney round />
+          <Stage state roundId dispatch pairData setTourney getPlayer tourney round config />
           <Utils.PanelContainer>
             {[state.p1, state.p2]
             ->Array.map(id =>
@@ -477,7 +492,7 @@ let make = (
                     player={getPlayer(playerId)}
                     scoreData
                     players
-                    avoidPairs
+                    config
                     origRating=getPlayer(playerId).rating
                     newRating=None
                     getPlayer
@@ -499,7 +514,7 @@ let make = (
         </button>
         <PageTourneyPlayers.Selecting tourney setTourney players playersDispatch />
       </Externals.Dialog>
-      <HelpDialogs.Pairing state=autoPairHelp ariaLabel="Auto-pair information" />
+      <HelpDialogs.Pairing state=autoPairHelp config ariaLabel="Auto-pair information" />
     </div>
   }
 }

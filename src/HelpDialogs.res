@@ -17,7 +17,7 @@ module BaseDialog = {
 
 module Pairing = {
   @react.component
-  let make = (~state, ~ariaLabel) =>
+  let make = (~state, ~config, ~ariaLabel) =>
     <BaseDialog state ariaLabel>
       <p>
         {`A Swiss-system tournament is effective when you carefully pair players according to
@@ -35,7 +35,11 @@ module Pairing = {
             of ratings. (This gives the chance for an upset!)`->React.string}
         </li>
         <li>
-          {`Players should each alternate playing black or white pieces. To facilitate this, each
+          {`Players should each alternate playing `->React.string}
+          {Data.Config.aliasToStringWhite(config)->React.string}
+          {` and `->React.string}
+          {Data.Config.aliasToStringBlack(config)->React.string}
+          {` pieces. To facilitate this, each
             player should be paired with someone who is due the opposite color that they are due.`->React.string}
         </li>
       </ol>

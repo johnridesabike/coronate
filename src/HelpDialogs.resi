@@ -8,7 +8,7 @@
 
 module Pairing: {
   @react.component
-  let make: (~state: Hooks.boolState, ~ariaLabel: string) => React.element
+  let make: (~state: Hooks.boolState, ~config: Data.Config.t, ~ariaLabel: string) => React.element
 }
 
 module SwissTournament: {

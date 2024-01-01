@@ -38,6 +38,8 @@ type actionConfig =
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t)
+  | SetWhiteAlias(string)
+  | SetBlackAlias(string)
 
 let useConfig: unit => (Data.Config.t, actionConfig => unit)
 

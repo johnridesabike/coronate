@@ -266,7 +266,9 @@ Object {
                   Round 
                   5
                 </caption>
-                <thead>
+                <thead
+                  class="pageround__table-head"
+                >
                   <tr>
                     <th
                       class="pageround__row-id"
@@ -280,7 +282,8 @@ Object {
                       <span
                         style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
                       >
-                        White result
+                        White
+                         result
                       </span>
                     </th>
                     <th
@@ -295,7 +298,8 @@ Object {
                       <span
                         style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
                       >
-                        Black result
+                        Black
+                         result
                       </span>
                     </th>
                     <th
@@ -306,6 +310,7 @@ Object {
                     </th>
                     <th
                       class="row__result"
+                      colspan="2"
                       scope="col"
                     >
                       Match result
@@ -326,7 +331,7 @@ Object {
                   class="content"
                 >
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -365,6 +370,13 @@ Object {
                       id="match-0-black"
                     >
                       Di H
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -482,7 +494,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -521,6 +533,13 @@ Object {
                       id="match-1-black"
                     >
                       Ev R
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -638,7 +657,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -677,6 +696,13 @@ Object {
                       id="match-2-black"
                     >
                       Ch R
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -794,7 +820,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -833,6 +859,13 @@ Object {
                       id="match-3-black"
                     >
                       Ch A
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -950,7 +983,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -989,6 +1022,13 @@ Object {
                       id="match-4-black"
                     >
                       Er R
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1106,7 +1146,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1145,6 +1185,13 @@ Object {
                       id="match-5-black"
                     >
                       Aa C
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1262,7 +1309,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1301,6 +1348,13 @@ Object {
                       id="match-6-black"
                     >
                       El M
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1418,7 +1472,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1457,6 +1511,13 @@ Object {
                       id="match-7-black"
                     >
                       Mr C
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1574,7 +1635,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1613,6 +1674,13 @@ Object {
                       id="match-8-black"
                     >
                       Ch B
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1730,7 +1798,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1769,6 +1837,13 @@ Object {
                       id="match-9-black"
                     >
                       Au H
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -1886,7 +1961,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -1925,6 +2000,13 @@ Object {
                       id="match-10-black"
                     >
                       Ry S
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2042,7 +2124,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2081,6 +2163,13 @@ Object {
                       id="match-11-black"
                     >
                       Jo B
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2198,7 +2287,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2237,6 +2326,13 @@ Object {
                       id="match-12-black"
                     >
                       Kai S
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2354,7 +2450,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2393,6 +2489,13 @@ Object {
                       id="match-13-black"
                     >
                       Ta C
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2510,7 +2613,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2549,6 +2652,13 @@ Object {
                       id="match-14-black"
                     >
                       Kel B
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2666,7 +2776,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2705,6 +2815,13 @@ Object {
                       id="match-15-black"
                     >
                       Dr D
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2822,7 +2939,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -2861,6 +2978,13 @@ Object {
                       id="match-16-black"
                     >
                       Th O
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -2978,7 +3102,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3017,6 +3141,13 @@ Object {
                       id="match-17-black"
                     >
                       Ji J
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3134,7 +3265,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3173,6 +3304,13 @@ Object {
                       id="match-18-black"
                     >
                       Ka S
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3290,7 +3428,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3329,6 +3467,13 @@ Object {
                       id="match-19-black"
                     >
                       Am D
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3446,7 +3591,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3485,6 +3630,13 @@ Object {
                       id="match-20-black"
                     >
                       Ka M
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3602,7 +3754,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3641,6 +3793,13 @@ Object {
                       id="match-21-black"
                     >
                       Je P
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3758,7 +3917,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3797,6 +3956,13 @@ Object {
                       id="match-22-black"
                     >
                       Je W
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -3914,7 +4080,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -3953,6 +4119,13 @@ Object {
                       id="match-23-black"
                     >
                       Ca S
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4070,7 +4243,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4109,6 +4282,13 @@ Object {
                       id="match-24-black"
                     >
                       Av H
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4226,7 +4406,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4265,6 +4445,13 @@ Object {
                       id="match-25-black"
                     >
                       Mi P
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4382,7 +4569,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4421,6 +4608,13 @@ Object {
                       id="match-26-black"
                     >
                       Ja W
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4538,7 +4732,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4577,6 +4771,13 @@ Object {
                       id="match-27-black"
                     >
                       Za D
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4694,7 +4895,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4733,6 +4934,13 @@ Object {
                       id="match-28-black"
                     >
                       Cl M
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -4850,7 +5058,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -4889,6 +5097,13 @@ Object {
                       id="match-29-black"
                     >
                       Da N
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -5006,7 +5221,7 @@ Object {
                     </td>
                   </tr>
                   <tr
-                    class="pageround__td"
+                    class="pageround__tr"
                   >
                     <th
                       class="pageround__row-id table__number"
@@ -5045,6 +5260,13 @@ Object {
                       id="match-30-black"
                     >
                       Ke B
+                    </td>
+                    <td
+                      class="pageround__matchresult__score monospace"
+                    >
+                      0
+                      -
+                      0
                     </td>
                     <td
                       class="pageround__matchresult data__input row__controls"
@@ -5441,7 +5663,9 @@ Object {
                 Round 
                 5
               </caption>
-              <thead>
+              <thead
+                class="pageround__table-head"
+              >
                 <tr>
                   <th
                     class="pageround__row-id"
@@ -5455,7 +5679,8 @@ Object {
                     <span
                       style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
                     >
-                      White result
+                      White
+                       result
                     </span>
                   </th>
                   <th
@@ -5470,7 +5695,8 @@ Object {
                     <span
                       style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
                     >
-                      Black result
+                      Black
+                       result
                     </span>
                   </th>
                   <th
@@ -5481,6 +5707,7 @@ Object {
                   </th>
                   <th
                     class="row__result"
+                    colspan="2"
                     scope="col"
                   >
                     Match result
@@ -5501,7 +5728,7 @@ Object {
                 class="content"
               >
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -5540,6 +5767,13 @@ Object {
                     id="match-0-black"
                   >
                     Di H
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -5657,7 +5891,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -5696,6 +5930,13 @@ Object {
                     id="match-1-black"
                   >
                     Ev R
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -5813,7 +6054,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -5852,6 +6093,13 @@ Object {
                     id="match-2-black"
                   >
                     Ch R
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -5969,7 +6217,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6008,6 +6256,13 @@ Object {
                     id="match-3-black"
                   >
                     Ch A
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6125,7 +6380,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6164,6 +6419,13 @@ Object {
                     id="match-4-black"
                   >
                     Er R
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6281,7 +6543,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6320,6 +6582,13 @@ Object {
                     id="match-5-black"
                   >
                     Aa C
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6437,7 +6706,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6476,6 +6745,13 @@ Object {
                     id="match-6-black"
                   >
                     El M
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6593,7 +6869,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6632,6 +6908,13 @@ Object {
                     id="match-7-black"
                   >
                     Mr C
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6749,7 +7032,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6788,6 +7071,13 @@ Object {
                     id="match-8-black"
                   >
                     Ch B
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -6905,7 +7195,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -6944,6 +7234,13 @@ Object {
                     id="match-9-black"
                   >
                     Au H
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7061,7 +7358,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7100,6 +7397,13 @@ Object {
                     id="match-10-black"
                   >
                     Ry S
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7217,7 +7521,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7256,6 +7560,13 @@ Object {
                     id="match-11-black"
                   >
                     Jo B
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7373,7 +7684,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7412,6 +7723,13 @@ Object {
                     id="match-12-black"
                   >
                     Kai S
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7529,7 +7847,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7568,6 +7886,13 @@ Object {
                     id="match-13-black"
                   >
                     Ta C
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7685,7 +8010,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7724,6 +8049,13 @@ Object {
                     id="match-14-black"
                   >
                     Kel B
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7841,7 +8173,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -7880,6 +8212,13 @@ Object {
                     id="match-15-black"
                   >
                     Dr D
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -7997,7 +8336,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8036,6 +8375,13 @@ Object {
                     id="match-16-black"
                   >
                     Th O
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8153,7 +8499,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8192,6 +8538,13 @@ Object {
                     id="match-17-black"
                   >
                     Ji J
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8309,7 +8662,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8348,6 +8701,13 @@ Object {
                     id="match-18-black"
                   >
                     Ka S
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8465,7 +8825,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8504,6 +8864,13 @@ Object {
                     id="match-19-black"
                   >
                     Am D
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8621,7 +8988,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8660,6 +9027,13 @@ Object {
                     id="match-20-black"
                   >
                     Ka M
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8777,7 +9151,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8816,6 +9190,13 @@ Object {
                     id="match-21-black"
                   >
                     Je P
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -8933,7 +9314,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -8972,6 +9353,13 @@ Object {
                     id="match-22-black"
                   >
                     Je W
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9089,7 +9477,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9128,6 +9516,13 @@ Object {
                     id="match-23-black"
                   >
                     Ca S
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9245,7 +9640,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9284,6 +9679,13 @@ Object {
                     id="match-24-black"
                   >
                     Av H
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9401,7 +9803,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9440,6 +9842,13 @@ Object {
                     id="match-25-black"
                   >
                     Mi P
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9557,7 +9966,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9596,6 +10005,13 @@ Object {
                     id="match-26-black"
                   >
                     Ja W
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9713,7 +10129,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9752,6 +10168,13 @@ Object {
                     id="match-27-black"
                   >
                     Za D
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -9869,7 +10292,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -9908,6 +10331,13 @@ Object {
                     id="match-28-black"
                   >
                     Cl M
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -10025,7 +10455,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -10064,6 +10494,13 @@ Object {
                     id="match-29-black"
                   >
                     Da N
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"
@@ -10181,7 +10618,7 @@ Object {
                   </td>
                 </tr>
                 <tr
-                  class="pageround__td"
+                  class="pageround__tr"
                 >
                   <th
                     class="pageround__row-id table__number"
@@ -10220,6 +10657,13 @@ Object {
                     id="match-30-black"
                   >
                     Ke B
+                  </td>
+                  <td
+                    class="pageround__matchresult__score monospace"
+                  >
+                    0
+                    -
+                    0
                   </td>
                   <td
                     class="pageround__matchresult data__input row__controls"

@@ -131,6 +131,8 @@ type actionConfig =
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
   | SetLastBackup(Js.Date.t)
+  | SetWhiteAlias(string)
+  | SetBlackAlias(string)
 
 let configReducer = (state: Data.Config.t, action): Data.Config.t => {
   switch action {
@@ -149,6 +151,8 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
   | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
   | SetByeValue(byeValue) => {...state, byeValue}
   | SetLastBackup(lastBackup) => {...state, lastBackup}
+  | SetWhiteAlias(s) => {...state, whiteAlias: Data.Config.alias(s)}
+  | SetBlackAlias(s) => {...state, blackAlias: Data.Config.alias(s)}
   | SetState(state) => state
   }
 }

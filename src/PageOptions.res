@@ -387,7 +387,7 @@ let make = (~windowDispatch=_ => ()) => {
   }
   <Window.Body windowDispatch>
     <div className="content-area">
-      <h2> {React.string("Bye  settings")} </h2>
+      <h2> {React.string("Bye settings")} </h2>
       <form>
         <p className="caption-30">
           {React.string("Select the default score given to a player who takes a bye.")}
@@ -433,6 +433,38 @@ let make = (~windowDispatch=_ => ()) => {
             />
           </label>
         </div>
+      </form>
+      <h2> {React.string("Player labels")} </h2>
+      <form>
+        <p className="caption-30"> {React.string("Use custom labels for opposing players.")} </p>
+        <label className="body-20">
+          {React.string("Player 1: ")}
+          <input
+            type_="text"
+            placeholder={Config.aliasToStringWhite(Config.default)}
+            value={switch Config.aliasToOption(config.whiteAlias) {
+            | None => ""
+            | Some(s) => s
+            }}
+            onChange={event => {
+              configDispatch(SetWhiteAlias((event->ReactEvent.Form.target)["value"]))
+            }}
+          />
+        </label>
+        <label className="body-20">
+          {React.string("Player 2: ")}
+          <input
+            type_="text"
+            placeholder={Config.aliasToStringBlack(Config.default)}
+            value={switch Config.aliasToOption(config.blackAlias) {
+            | None => ""
+            | Some(s) => s
+            }}
+            onChange={event => {
+              configDispatch(SetBlackAlias((event->ReactEvent.Form.target)["value"]))
+            }}
+          />
+        </label>
       </form>
       <h2> {React.string("Manage data")} </h2>
       <p className="caption-20">

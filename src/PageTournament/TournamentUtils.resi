@@ -39,7 +39,7 @@ type scoreInfo = {
 let getScoreInfo: (
   ~player: Data.Player.t,
   ~scoreData: Data.Id.Map.t<Data.Scoring.t>,
-  ~avoidPairs: Data.Id.Pair.Set.t,
+  ~config: Data.Config.t,
   ~getPlayer: Data.Id.t => Data.Player.t,
   ~players: Data.Id.Map.t<Data.Player.t>,
   ~origRating: int,

@@ -52,7 +52,7 @@ type scoreInfo = {
 let getScoreInfo = (
   ~player: Data.Player.t,
   ~scoreData,
-  ~avoidPairs,
+  ~config,
   ~getPlayer,
   ~players,
   ~origRating,
@@ -67,8 +67,8 @@ let getScoreInfo = (
   }
   let hasBye = List.some(opponentResults, ((id, _)) => Data.Id.isDummy(id))
   let colorBalance = switch Data.Scoring.Score.sum(colorScores)->Data.Scoring.Score.Sum.toFloat {
-  | x if x < 0.0 => "White +" ++ x->abs_float->Float.toString
-  | x if x > 0.0 => "Black +" ++ x->Float.toString
+  | x if x < 0.0 => Data.Config.aliasToStringWhite(config) ++ " +" ++ x->abs_float->Float.toString
+  | x if x > 0.0 => Data.Config.aliasToStringBlack(config) ++ " +" ++ x->Float.toString
   | _ => "Even"
   }
 
@@ -91,7 +91,7 @@ let getScoreInfo = (
     )
     ->React.array
   let avoidListHtml =
-    Data.Id.Pair.Set.toMap(avoidPairs)
+    Data.Id.Pair.Set.toMap(config.avoidPairs)
     ->Map.get(player.id)
     ->Option.mapWithDefault([], Set.toArray)
     ->Array.map(pId =>

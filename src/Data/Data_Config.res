@@ -29,10 +29,14 @@ module ByeValue = {
   let decode = json => Js.Json.decodeNumber(json)->Option.getExn->fromFloat
 }
 
+type alias = option<string>
+
 type t = {
   avoidPairs: Data_Id.Pair.Set.t,
   byeValue: ByeValue.t,
   lastBackup: Js.Date.t,
+  whiteAlias: alias,
+  blackAlias: alias,
 }
 
 let decode = json => {
@@ -45,18 +49,51 @@ let decode = json => {
     ->Option.flatMap(Js.Json.decodeString)
     ->Option.getExn
     ->Js.Date.fromString,
+    whiteAlias: d->Js.Dict.get("whiteAlias")->Option.flatMap(Js.Json.decodeString),
+    blackAlias: d->Js.Dict.get("blackAlias")->Option.flatMap(Js.Json.decodeString),
   }
 }
+
+let encodeAlias = o =>
+  switch o {
+  | None => Js.Json.null
+  | Some(s) => Js.Json.string(s)
+  }
 
 let encode = data =>
   Js.Dict.fromArray([
     ("avoidPairs", data.avoidPairs->Data_Id.Pair.Set.encode),
     ("byeValue", data.byeValue->ByeValue.encode),
     ("lastBackup", data.lastBackup->Js.Date.toJSONUnsafe->Js.Json.string),
+    ("whiteAlias", encodeAlias(data.whiteAlias)),
+    ("blackAlias", encodeAlias(data.blackAlias)),
   ])->Js.Json.object_
 
 let default = {
   byeValue: Full,
   avoidPairs: Belt.Set.make(~id=Data_Id.Pair.id),
   lastBackup: Js.Date.fromFloat(0.0),
+  whiteAlias: None,
+  blackAlias: None,
 }
+
+let aliasEmpty = None
+let alias = s =>
+  switch s {
+  | "" => None
+  | s => Some(s)
+  }
+
+let aliasToStringWhite = t =>
+  switch t.whiteAlias {
+  | None => "White"
+  | Some(s) => s
+  }
+
+let aliasToStringBlack = t =>
+  switch t.blackAlias {
+  | None => "Black"
+  | Some(s) => s
+  }
+
+let aliasToOption = o => o

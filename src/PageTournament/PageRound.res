@@ -11,7 +11,7 @@ module Id = Data.Id
 
 module PlayerMatchInfo = {
   @react.component
-  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players, ~avoidPairs) => {
+  let make = (~player, ~origRating, ~newRating, ~getPlayer, ~scoreData, ~players, ~config) => {
     let {
       player,
       hasBye,
@@ -27,7 +27,7 @@ module PlayerMatchInfo = {
       ~players,
       ~origRating,
       ~newRating,
-      ~avoidPairs,
+      ~config,
     )
     <dl className="player-card">
       <h3> {player->Player.fullName->React.string} </h3>
@@ -65,7 +65,7 @@ module MatchRow = {
     ~scoreData,
     ~tournament: LoadTournament.t,
     ~className="",
-    ~avoidPairs,
+    ~config: Config.t,
   ) => {
     let {tourney, setTourney, players, getPlayer, playersDispatch, _} = tournament
     let {roundList, _} = tourney
@@ -215,15 +215,23 @@ module MatchRow = {
             onBlur=setMatchResultBlur
             onChange=setMatchResultChange>
             <option value={Match.Result.toString(NotSet)}> {React.string("Select winner")} </option>
-            <option value={Match.Result.toString(WhiteWon)}> {React.string("White won")} </option>
-            <option value={Match.Result.toString(BlackWon)}> {React.string("Black won")} </option>
+            <option value={Match.Result.toString(WhiteWon)}>
+              {React.string(Data.Config.aliasToStringWhite(config))}
+              {React.string(" won")}
+            </option>
+            <option value={Match.Result.toString(BlackWon)}>
+              {React.string(Data.Config.aliasToStringBlack(config))}
+              {React.string(" won")}
+            </option>
             <option value={Match.Result.toString(Draw)}> {React.string("Draw")} </option>
             <option value={Match.Result.toString(Aborted)}> {React.string("Aborted")} </option>
             <option value={Match.Result.toString(WhiteAborted)}>
-              {React.string("White Aborted")}
+              {React.string(Data.Config.aliasToStringWhite(config))}
+              {React.string(" Aborted")}
             </option>
             <option value={Match.Result.toString(BlackAborted)}>
-              {React.string("Black Aborted")}
+              {React.string(Data.Config.aliasToStringBlack(config))}
+              {React.string(" Aborted")}
             </option>
           </select>
         </Utils.TestId>
@@ -288,7 +296,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
-                    avoidPairs
+                    config
                   />
                 </Utils.Panel>
                 <Utils.Panel>
@@ -299,7 +307,7 @@ module MatchRow = {
                     getPlayer
                     scoreData
                     players
-                    avoidPairs
+                    config
                   />
                 </Utils.Panel>
               </Utils.PanelContainer>
@@ -322,7 +330,7 @@ module RoundTable = {
     ~tournament,
     ~scoreData=?,
   ) => {
-    let ({Config.avoidPairs: avoidPairs, _}, _) = Db.useConfig()
+    let (config, _) = Db.useConfig()
     <table className="pageround__table">
       {if Js.Array.length(matches) == 0 {
         React.null
@@ -337,16 +345,22 @@ module RoundTable = {
               <th className="pageround__row-id" scope="col"> {React.string("#")} </th>
               <th scope="col">
                 <Externals.VisuallyHidden>
-                  {React.string("White result")}
+                  {React.string(Data.Config.aliasToStringWhite(config))}
+                  {React.string(" result")}
                 </Externals.VisuallyHidden>
               </th>
-              <th className="row__player" scope="col"> {React.string("White")} </th>
+              <th className="row__player" scope="col">
+                {React.string(Config.aliasToStringWhite(config))}
+              </th>
               <th scope="col">
                 <Externals.VisuallyHidden>
-                  {React.string("Black result")}
+                  {React.string(Data.Config.aliasToStringBlack(config))}
+                  {React.string(" result")}
                 </Externals.VisuallyHidden>
               </th>
-              <th className="row__player" scope="col"> {React.string("Black")} </th>
+              <th className="row__player" scope="col">
+                {React.string(Config.aliasToStringBlack(config))}
+              </th>
               <th className="row__result" scope="col" colSpan=2>
                 {React.string("Match result")}
               </th>
@@ -374,7 +388,7 @@ module RoundTable = {
             scoreData
             tournament
             className="pageround__tr"
-            avoidPairs
+            config
           />
         )->React.array}
       </tbody>
