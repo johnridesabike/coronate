@@ -49,7 +49,7 @@ Yes, sometimes people want to join later, it happens. Before each new round you
 can add players to the list, or unselect players which want to skip a round or
 just leave.
 
-[TODO: add screenshot]
+![Add new players screenshot.](screenshots/add_new_players.png)
 
 ## Can I save / export all results up to a certain round and later use those to continue the same tournament?
 
@@ -67,7 +67,7 @@ names, by the program menus.
 Yes. In the "Players" tab of the main menu, click on the player you want to edit
 and you can change their name on the form that displays.
 
-[TODO: add screenshot]
+![Edit player name screenshot.](screenshots/edit_player_name.png)
 
 ## Can I remove a player from the tournament ?
 
@@ -77,7 +77,7 @@ roster" button. From there, you can un-check the player you want to remove.
 This will exclude the player from any future matches. It will not affect any
 matches they already played.
 
-[TODO: add screenshot]
+![Remove players screenshot.](screenshots/remove_players.png)
 
 ## Can I force / fix a pairing?
 
@@ -85,7 +85,11 @@ Yes. From the round screen, elect the pairing(s) you want to remove and click
 the "Unmatch" button. Then, on the "Unmatched players" tab, manually add the two
 players you want to pair and click the "Match selected" button.
 
-[TODO: add screenshots]
+![Fix pairing screenshot.](screenshots/fix_match_1.png)
+
+![Fix pairing screenshot.](screenshots/fix_match_2.png)
+
+![Fix pairing screenshot.](screenshots/fix_match_3.png)
 
 ## Can I force that a player pairing will never be made?
 
@@ -97,7 +101,7 @@ This will practically guarantee that they will never match. It may still be
 possible to artificially force them to match in pathological situations, though
 (e.g. if every other player was also told to avoid them too).
 
-[TODO: add screenshot]
+![Avoid pairing screenshot.](screenshots/players_avoid.png)
 
 ## Can I have groups in the tournament?
 
@@ -111,12 +115,16 @@ If player with rating `r1` earns `s` score against player with rating `r2`, and
 has match count `c`, then:
 
 ```
-elo = if c < 30 then 40 else if r1 > 2100 then 10 else 20
+k_factor = if c < 30 then 40 else if r1 > 2100 then 10 else 20
 expected = 1 / (1 + 10 ^ ((r2 - r1) / 400))
-new_rating = r1 + elo * (s - expected)
+new_rating = r1 + k_factor * (s - expected)
 ```
 
 Score `s` is `1` if the player won, `0` if they lost, and `1/2` if they drew.
+
+I copied these formulas from Wikipedia. They're a best-effort for a small
+tournament, and I don't recommend using Coronate as an authoritative rating
+calculator.
 
 ## How can I set a number of rounds for my tournament?
 
@@ -141,7 +149,7 @@ If you don't like the automatic pairing, you can manually pair players too.
 On the tournament screen, click on each numbered round under the "Rounds" in the
 sidebar.
 
-[TODO: add screenshot]
+![Rounds list screenshot.](screenshots/rounds_list.png)
 
 ## How can I see the current standings?
 
@@ -157,8 +165,6 @@ No, there's no print function inside the program, but your browser can print any
 You can remove the most recent round with the "Remove last round" button on the
 tournament screen. To remove a round before that, you have to remove the rounds
 that came after it first.
-
-[TODO: add screenshot]
 
 ## Can I prevent a pairing of players with high rating difference?
 
