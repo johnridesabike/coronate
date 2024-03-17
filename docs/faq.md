@@ -72,7 +72,7 @@ and you can change their name on the form that displays.
 ## Can I remove a player from the tournament ?
 
 Yes. In the "Players" tab of the tournament screen, click the "Edit player
-roster" button. From there, you can un-check the player you want to remove.
+roster" button. From there, you can uncheck the player you want to remove.
 
 This will exclude the player from any future matches. It will not affect any
 matches they already played.
@@ -105,9 +105,7 @@ possible to artificially force them to match in pathological situations, though
 
 ## Can I have groups in the tournament?
 
-No, this feature is not implemented (yet). However, consider this: the (optimal)
-pairings are not only calculated according to the game results so far, but also
-according to rating.
+No, this feature is not implemented (yet).
 
 ## How is rating calculated according to the results?
 
