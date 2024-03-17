@@ -55,6 +55,9 @@ module About = {
         </h1>
         <p> {React.string(`Last updated on ${gitModified}.`)} </p>
         <p>
+          <a href=Utils.faq_url> {React.string("Read the FAQ.")} </a>
+        </p>
+        <p>
           <a href=Utils.changelog_url>
             {React.string("View the changelog for new features. ")}
             <Icons.ExternalLink />
