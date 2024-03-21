@@ -14,6 +14,8 @@ tournament.
 
 [Read more about how to use the app here](https://johnridesa.bike/software/coronate/).
 
+[Read the frequently asked questions here](./docs/faq.md).
+
 ![Round screenshot](./screenshot-round.png)
 ![Scoring screenshot](./screenshot-score-detail.png)
 
