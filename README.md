@@ -122,9 +122,12 @@ To automatically format all of the ReScript source files, run:
 npm run format
 ```
 
-## Contributing
+## Contributing, hacking, and more
 
 [See this document with information about contributing.](CONTRIBUTING.md)
+
+Coronate tries to have easy-to-use formats so users can truly own their data.
+[For example, you can use this python script to output standings](https://github.com/johnridesabike/coronate/issues/90).
 
 ## Acknowledgments
 
