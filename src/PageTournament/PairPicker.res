@@ -19,7 +19,7 @@ let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   | Some(player) => MutableQueue.add(pairs, (Pairing.id(player), Id.dummy))
   | None => ()
   }
-  let getPlayer = Player.getMaybe(playerMap)
+  let getPlayer = Player.getMaybe(playerMap, ...)
   MutableQueue.map(pairs, ((whiteId, blackId)) => {
     let white = getPlayer(whiteId)
     let black = getPlayer(blackId)
@@ -90,9 +90,9 @@ let reducer = ({p1, p2, result, byeValue, _} as state, action) =>
 let useStageState = byeValue =>
   React.useReducer(reducer, {p1: None, p2: None, num: Zero, result: NotSet, byeValue})
 
-let sortByFirstName = Hooks.GetString((. x) => x.player.firstName)
-let sortByLastName = Hooks.GetString((. x) => x.player.lastName)
-let sortByIdeal = Hooks.GetFloat((. x) => x.ideal)
+let sortByFirstName = Hooks.GetString(x => x.player.firstName)
+let sortByLastName = Hooks.GetString(x => x.player.lastName)
+let sortByIdeal = Hooks.GetFloat(x => x.ideal)
 
 module SelectPlayerRow = {
   let isPlayerSelectable = (state, id) =>
@@ -383,11 +383,11 @@ module PlayerInfo = {
         <dt> {"Has had a bye round"->React.string} </dt>
         <dd> {React.string(hasBye ? "Yes" : "No")} </dd>
         <dt> {"Opponent history"->React.string} </dt>
-        <dd style={ReactDOM.Style.make(~margin="0", ())}>
+        <dd style={{margin: "0"}}>
           <ol> opponentResults </ol>
         </dd>
         <dt> {"Players to avoid"->React.string} </dt>
-        <dd style={ReactDOM.Style.make(~margin="0", ())}>
+        <dd style={{margin: "0"}}>
           <ul> avoidListHtml </ul>
         </dd>
       </dl>
@@ -479,7 +479,7 @@ let make = (
             </button>
           </div>
         </Utils.Panel>
-        <Utils.Panel style={ReactDOM.Style.make(~flexGrow="1", ())}>
+        <Utils.Panel style={{flexGrow: "1"}}>
           <Stage state roundId dispatch pairData setTourney getPlayer tourney round config />
           <Utils.PanelContainer>
             {[state.p1, state.p2]

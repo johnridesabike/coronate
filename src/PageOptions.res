@@ -5,6 +5,8 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+// TODO Somehow couldn't get the warning suppression working locally :(
+@@warning("-20")
 open Belt
 open Data
 
@@ -371,7 +373,8 @@ let make = (~windowDispatch=_ => ()) => {
     )
     /* so the filename won't linger onscreen */
     /* https://github.com/BuckleScript/bucklescript/issues/4391 */
-    @warning("-20") ReactEvent.Form.currentTarget(event)["value"] = ""
+    // TODO remove file-scoped @warning("-20") and fix this locally
+    ReactEvent.Form.currentTarget(event)["value"] = ""
   }
   let reloadDemoData = event => {
     ReactEvent.Mouse.preventDefault(event)
@@ -392,8 +395,8 @@ let make = (~windowDispatch=_ => ()) => {
         <p className="caption-30">
           {React.string("Select the default score given to a player who takes a bye.")}
         </p>
-        <div style={ReactDOM.Style.make(~display="flex", ())}>
-          <label className="body-20" style={ReactDOM.Style.make(~marginRight="16px", ())}>
+        <div style={{display: "flex"}}>
+          <label className="body-20" style={{marginRight: "16px"}}>
             {React.string("Full (")}
             <span className="monospace"> {React.string("1")} </span>
             {React.string(") ")}
@@ -406,7 +409,7 @@ let make = (~windowDispatch=_ => ()) => {
               onChange={_ => configDispatch(SetByeValue(Full))}
             />
           </label>
-          <label className="body-20" style={ReactDOM.Style.make(~marginRight="16px", ())}>
+          <label className="body-20" style={{marginRight: "16px"}}>
             {React.string("Half (")}
             <span className="monospace"> {React.string("½")} </span>
             {React.string(") ")}

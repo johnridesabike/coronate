@@ -26,6 +26,6 @@ let setItems: (t<'value, 'identity>, ~items: array<(string, 'value)>) => Promise
 
 let removeItems: (t<'value, 'identity>, ~items: array<string>) => Promise.t<unit>
 
-let iterateU: (t<'value, 'identity>, ~f: (. 'value, string, int) => unit) => Promise.t<unit>
+let iterateU: (t<'value, 'identity>, ~f: ('value, string, int) => unit) => Promise.t<unit>
 
 let iterate: (t<'value, 'identity>, ~f: ('value, string, int) => unit) => Promise.t<unit>

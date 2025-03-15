@@ -14,9 +14,9 @@ let changelog_url = "https://github.com/johnridesabike/coronate/blob/master/CHAN
 let faq_url = "https://github.com/johnridesabike/coronate/blob/master/docs/faq.md"
 
 /* Pass a `compare` function to avoid polymorphic compare errors. */
-type direction<'data, 'field> = (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int
-let ascend = (cmp, getter, a, b) => cmp(getter(. a), getter(. b))
-let descend = (cmp, getter, a, b) => cmp(getter(. b), getter(. a))
+type direction<'data, 'field> = (('field, 'field) => int, 'data => 'field, 'data, 'data) => int
+let ascend = (cmp, getter, a, b) => cmp(getter(a), getter(b))
+let descend = (cmp, getter, a, b) => cmp(getter(b), getter(a))
 
 module Array = {
   type t<'a> = array<'a>
@@ -95,13 +95,13 @@ module DateTimeFormat = {
 
 module Panel = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
+  let make = (~children, ~className="", ~style: ReactDOM.Style.t={{}}) =>
     <div className={`utils__panel ${className}`} style> children </div>
 }
 
 module PanelContainer = {
   @react.component
-  let make = (~children, ~className="", ~style=ReactDOM.Style.make()) =>
+  let make = (~children, ~className="", ~style: ReactDOM.Style.t={{}}) =>
     <div style className={`utils__panels ${className}`}> children </div>
 }
 
@@ -113,7 +113,7 @@ module Notification = {
     ~kind=Generic,
     ~tooltip="",
     ~className="",
-    ~style=ReactDOM.Style.make(),
+    ~style: ReactDOM.Style.t={{}},
   ) => {
     let (icon, notifClassName) = switch kind {
     | Success => (<Icons.Check />, "utils__notification-success")

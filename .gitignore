@@ -29,8 +29,8 @@ yarn-error.log*
 .merlin
 /lib
 .bsb.lock
-*.bs.js
-!**/__mocks__/*.bs.js
+*.res.js
+!**/__mocks__/*.res.js
 _esy/
 *.cmt
 

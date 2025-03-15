@@ -304,7 +304,7 @@ let createStandingArray = (t, orderedMethods) =>
     mostBlack: getColorBalanceScore(t, id),
   })
   ->Map.valuesToArray
-  ->SortArray.stableSortBy(standingsSorter(orderedMethods))
+  ->SortArray.stableSortBy(standingsSorter(orderedMethods, ...))
 
 let eq = (a, b, tieBreaks) =>
   Score.Sum.eq(a.score, b.score) &&
@@ -371,24 +371,28 @@ let fromTournament = (~roundList, ~scoreAdjustments) =>
     switch match.result {
     | NotSet => acc
     | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
-      let whiteUpdate = update(
-        ~playerId=match.whiteId,
-        ~origRating=match.whiteOrigRating,
-        ~newRating=match.whiteNewRating,
-        ~result=Score.fromResultWhite(match.result),
-        ~oppId=match.blackId,
-        ~color=White,
-        ~scoreAdjustments,
-      )
-      let blackUpdate = update(
-        ~playerId=match.blackId,
-        ~origRating=match.blackOrigRating,
-        ~newRating=match.blackNewRating,
-        ~result=Score.fromResultBlack(match.result),
-        ~oppId=match.whiteId,
-        ~color=Black,
-        ~scoreAdjustments,
-      )
+      let whiteUpdate =
+        update(
+          ~playerId=match.whiteId,
+          ~origRating=match.whiteOrigRating,
+          ~newRating=match.whiteNewRating,
+          ~result=Score.fromResultWhite(match.result),
+          ~oppId=match.blackId,
+          ~color=White,
+          ~scoreAdjustments,
+          ...
+        )
+      let blackUpdate =
+        update(
+          ~playerId=match.blackId,
+          ~origRating=match.blackOrigRating,
+          ~newRating=match.blackNewRating,
+          ~result=Score.fromResultBlack(match.result),
+          ~oppId=match.whiteId,
+          ~color=Black,
+          ~scoreAdjustments,
+          ...
+        )
       acc->Map.update(match.whiteId, whiteUpdate)->Map.update(match.blackId, blackUpdate)
     }
   )

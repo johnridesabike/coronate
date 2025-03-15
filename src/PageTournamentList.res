@@ -10,8 +10,8 @@ open Router
 open Data.Tournament
 
 /* These can't be definined inline or the comparisons don't work. */
-let dateSort = Hooks.GetDate((. x) => x.date)
-let nameSort = Hooks.GetString((. x) => x.name)
+let dateSort = Hooks.GetDate(x => x.date)
+let nameSort = Hooks.GetString(x => x.name)
 
 @react.component
 let make = (~windowDispatch=_ => ()) => {

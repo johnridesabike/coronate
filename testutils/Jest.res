@@ -8,14 +8,14 @@
 
 type t<'a>
 
-@val external test: (string, @uncurry (unit => unit)) => unit = "test"
-@val external describe: (string, @uncurry (unit => unit)) => unit = "describe"
+@val external test: (string, @uncurry unit => unit) => unit = "test"
+@val external describe: (string, @uncurry unit => unit) => unit = "describe"
 @val external expect: 'a => t<'a> = "expect"
 @send external toBe: (t<'a>, 'a) => unit = "toBe"
 @send external toEqual: (t<'a>, 'a) => unit = "toEqual"
-@send external toThrow: t<@uncurry (unit => 'a)> => unit = "toThrow"
+@send external toThrow: t<@uncurry unit => 'a> => unit = "toThrow"
 @send external toContain: (t<array<'a>>, 'a) => unit = "toContain"
 @send external toMatchSnapshot: t<'a> => unit = "toMatchSnapshot"
 @get external not_: t<'a> => t<'a> = "not"
 
-@scope("test") @val external skip: (string, @uncurry (unit => unit)) => unit = "skip"
+@scope("test") @val external skip: (string, @uncurry unit => unit) => unit = "skip"

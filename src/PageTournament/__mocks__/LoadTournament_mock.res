@@ -32,7 +32,7 @@ type t = LoadTournament.t = {
 }
 
 @react.component
-let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
+let make = (~children, ~tourneyId, ~windowDispatch as _) => {
   let (tourney, setTourney) = React.useReducer(
     tournamentReducer,
     Map.getExn(tournamentData, tourneyId),
@@ -50,7 +50,7 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
 
   children({
     activePlayers,
-    getPlayer: Player.getMaybe(players),
+    getPlayer: Player.getMaybe(players, ...),
     isItOver,
     isNewRoundReady,
     players,

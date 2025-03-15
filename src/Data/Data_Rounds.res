@@ -32,9 +32,9 @@ module Round = {
   @raises(Not_found)
   let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Match.decode)
 
-  let size = Js.Array2.length
+  let size = arr => Array.length(arr)
 
-  let addMatches = Array.concat
+  let addMatches = (arr1, arr2) => Array.concat(arr1, arr2)
 
   /* flatten all of the ids from the matches to one array. */
   let getMatched = (round: t) => {
@@ -81,11 +81,11 @@ let encode = t => t->Array.map(Round.encode)->Js.Json.array
 @raises(Not_found)
 let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Round.decode)
 
-let size = Js.Array2.length
+let size = arr => Js.Array2.length(arr)
 
 let getLastKey = rounds => Array.length(rounds) - 1
 
-let get = Array.get
+let get = (arr, i) => arr[i]
 
 let set = (rounds, key, round) => {
   let rounds = Array.copy(rounds)
@@ -94,7 +94,7 @@ let set = (rounds, key, round) => {
 }
 
 let setMatch = (rounds, key, match_) =>
-  rounds->get(key)->Option.flatMap(Round.setMatch(_, match_))->Option.flatMap(set(rounds, key))
+  rounds->get(key)->Option.flatMap(Round.setMatch(_, match_))->Option.flatMap(set(rounds, key, ...))
 
 let rounds2Matches = roundList => {
   module Q = MutableQueue
@@ -120,7 +120,7 @@ let isRoundComplete = (roundList, players, roundId) =>
 
 let addRound = roundList => Array.concat(roundList, [[]])
 
-let delLastRound = roundList => Js.Array2.slice(roundList, ~start=0, ~end_=-1)
+let delLastRound = roundList => Js.Array.slice(roundList, ~start=0, ~end_=-1)
 
 let updateByeScores = (rounds: t, byeValue) =>
   Array.map(rounds, round =>

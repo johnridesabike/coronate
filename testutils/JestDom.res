@@ -10,7 +10,8 @@ type t = Jest.t<Dom.element>
 
 /**
   You must manually load jest-dom because it extends jest's features as a side-effect.
- */ @val
+ */
+@val
 external init: (@as("@testing-library/jest-dom") _, unit) => unit = "require"
 
 @send external toBeInTheDocument: t => unit = "toBeInTheDocument"

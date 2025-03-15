@@ -21,5 +21,5 @@ type t = {
 let make: (
   ~children: t => React.element,
   ~tourneyId: Data.Id.t,
-  ~windowDispatch: Window.action => unit=?,
+  ~windowDispatch: option<Window.action => unit>,
 ) => React.element

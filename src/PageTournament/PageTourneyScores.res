@@ -136,7 +136,7 @@ module SelectTieBreaks = {
       } else {
         setTourney({
           ...tourney,
-          tieBreaks: Js.Array2.concat(tourney.tieBreaks, [defaultId(id)]),
+          tieBreaks: Js.Array.concat(tourney.tieBreaks, [defaultId(id)]),
         })
       }
 
@@ -167,7 +167,7 @@ module SelectTieBreaks = {
             {React.string(" Move down")}
           </button>
           <button
-            className={Cn.append("button-micro", "button-primary"->Cn.onSome(selectedTb))}
+            className={`button-micro ${selectedTb != None ? "button-primary" : ""}`}
             disabled={selectedTb == None}
             onClick={_ => setSelectedTb(_ => None)}>
             {React.string("Done")}
@@ -191,7 +191,7 @@ module SelectTieBreaks = {
                   x == tieBreak ? "selected" : ""
                 )}>
                 <td> {Scoring.TieBreak.toPrettyString(tieBreak)->React.string} </td>
-                <td style={ReactDOM.Style.make(~width="48px", ())}>
+                <td style={{width: "48px"}}>
                   <button
                     className="button-micro"
                     disabled={selectedTb != None && selectedTb !== Some(tieBreak)}
@@ -218,7 +218,7 @@ module SelectTieBreaks = {
       </Utils.Panel>
       <Utils.Panel>
         <div className="toolbar"> {React.string(HtmlEntities.nbsp)} </div>
-        <table style={ReactDOM.Style.make(~marginTop="16px", ())}>
+        <table style={{marginTop: "16px"}}>
           <caption className="title-30"> {React.string("Available tiebreak methods")} </caption>
           <thead>
             <tr>

@@ -11,8 +11,8 @@ module Id = LocalForage_Id
 
 type t<'a, 'identity> = {
   store: LF.t,
-  encode: (. 'a) => Js.Json.t,
-  decode: (. Js.Json.t) => 'a,
+  encode: 'a => Js.Json.t,
+  decode: Js.Json.t => 'a,
 }
 
 let make = (config, type t id, data: Id.encodable<t, id>) => {
@@ -24,11 +24,11 @@ let make = (config, type t id, data: Id.encodable<t, id>) => {
 
 let get = ({store, decode, _}) =>
   LocalForage_Plugins.GetItems.allJson(store)->P.then(items =>
-    switch decode(. items) {
+    switch decode(items) {
     | exception error => P.reject(error)
     | items => P.resolve(items)
     }
   )
 
 let set = ({store, encode, _}, ~items) =>
-  LocalForage_Plugins.SetItems.fromJson(store, encode(. items))
+  LocalForage_Plugins.SetItems.fromJson(store, encode(items))

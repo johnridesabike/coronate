@@ -28,7 +28,7 @@ type t = {
   maxPriority: float,
 }
 
-let descendingRating = Utils.descend(compare, (. x) => x.rating)
+let descendingRating = Utils.descend(compare, x => x.rating, ...)
 
 let splitInHalf = arr => {
   let midpoint = try {
@@ -87,13 +87,8 @@ let priority = (~diffDueColor, ~isDiffHalf, ~halfPosDiff, ~scoreDiff, ~canMeet, 
   colors +. halves +. scores +. canMeet
 }
 
-let calcMaxPriority = priority(
-  ~isDiffHalf=true,
-  ~halfPosDiff=0.,
-  ~diffDueColor=true,
-  ~scoreDiff=0.,
-  ~canMeet=true,
-)
+let calcMaxPriority =
+  priority(~isDiffHalf=true, ~halfPosDiff=0., ~diffDueColor=true, ~scoreDiff=0., ~canMeet=true, ...)
 
 let calcMaxScore = m => Map.reduce(m, 0., (acc, _, p) => max(acc, p.score))
 
@@ -127,7 +122,7 @@ let make = (scoreData, playerData, avoidPairs) => {
 }
 
 let keep = ({players, _}, ~f) => {
-  let players = Map.keep(players, f)
+  let players = Map.keep(players, (key, player) => f(key, player))
   let maxScore = calcMaxScore(players)
   {players, maxScore, maxPriority: calcMaxPriority(~maxScore)}
 }
@@ -136,7 +131,7 @@ let calcPairIdeal = (player1, player2, ~maxScore) =>
   if Id.eq(player1.id, player2.id) {
     0.0
   } else {
-    let metBefore = List.some(player1.opponents, Id.eq(player2.id))
+    let metBefore = List.some(player1.opponents, Id.eq(player2.id, ...))
     let mustAvoid = Set.has(player1.avoidIds, player2.id)
     let canMeet = !metBefore && !mustAvoid
     let diffDueColor = switch (player1.lastColor, player2.lastColor) {
@@ -162,7 +157,7 @@ let sortByScoreThenRating = (data1, data2) =>
   }
 
 let setByePlayer = (byeQueue, dummyId, data: t) => {
-  let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId))
+  let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId, ...))
   /* if the list is even, just return it. */
   switch mod(Map.size(data.players), 2) {
   | exception Division_by_zero => (data, None)
@@ -174,7 +169,7 @@ let setByePlayer = (byeQueue, dummyId, data: t) => {
       ->Array.keep(hasNotHadBye)
       ->SortArray.stableSortBy(sortByScoreThenRating)
     let playerIdsWithoutByes = Array.map(dataArr, p => p.id)
-    let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id))
+    let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id, ...))
     let nextByeSignups = Array.keep(byeQueue, hasntHadByeFn)
     let dataForNextBye = switch nextByeSignups[0] {
     /* Assign the bye to the next person who signed up. */

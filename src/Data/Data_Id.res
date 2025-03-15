@@ -20,7 +20,7 @@ let isDummy = id => id == dummy
 
 let random = Externals.nanoid
 
-let encode = Js.Json.string
+let encode = s => Js.Json.string(s)
 
 let decode = json => Js.Json.decodeString(json)->Option.getExn
 
@@ -38,7 +38,7 @@ module Map = {
   type key = t
   type t<'v> = Belt.Map.t<key, 'v, identity>
   let fromStringArray = arr => arr->Belt.Map.fromArray(~id)
-  let toStringArray = Belt.Map.toArray
+  let toStringArray = arr => Belt.Map.toArray(arr)
 }
 
 module Set = {

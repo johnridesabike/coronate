@@ -39,7 +39,7 @@ module App = {
 let init = () =>
   switch ReactDOM.querySelector("#root") {
   | None => Js.Console.error("Couldn't find root.")
-  | Some(root) => ReactDOM.render(<App />, root)
+  | Some(root) => root->ReactDOM.Client.createRoot->ReactDOM.Client.Root.render(<App />)
   }
 
 /* Ensure that all LocalForage plugins get loaded. */

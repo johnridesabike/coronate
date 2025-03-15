@@ -9,8 +9,8 @@ open Data
 open Belt
 module Id = Data.Id
 
-let sortFirstName = Hooks.GetString((. p) => p.Player.firstName)
-let sortLastName = Hooks.GetString((. p) => p.Player.lastName)
+let sortFirstName = Hooks.GetString(p => p.Player.firstName)
+let sortLastName = Hooks.GetString(p => p.Player.lastName)
 
 module Selecting = {
   @react.component
@@ -388,7 +388,7 @@ let make = (~tournament: LoadTournament.t) => {
       </button>
     </div>
     <Utils.PanelContainer>
-      <Utils.Panel style={ReactDOM.Style.make(~flexShrink="0", ())}>
+      <Utils.Panel style={{flexShrink: "0"}}>
         <table>
           <caption> {React.string("Current roster")} </caption>
           <thead>
@@ -416,7 +416,7 @@ let make = (~tournament: LoadTournament.t) => {
         {switch byeQueue {
         | [] => <p className="caption-20"> {React.string("No one has signed up yet.")} </p>
         | byeQueue =>
-          <table style={ReactDOM.Style.make(~width="100%", ())}>
+          <table style={{width: "100%"}}>
             <tbody>
               {Array.map(byeQueue, pId =>
                 <tr

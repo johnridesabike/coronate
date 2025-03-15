@@ -77,13 +77,13 @@ module MatchRow = {
       let won = <Icons.Award className="pageround__wonicon" />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
       let aborted =
-        <span ariaLabel="Draw" role="img" style={ReactDOM.Style.make(~filter="grayscale(60%)", ())}>
+        <span ariaLabel="Draw" role="img" style={{filter: "grayscale(60%)"}}>
           {React.string("❌")}
         </span>
       switch m.result {
       | NotSet => <Externals.VisuallyHidden> {React.string("Not set")} </Externals.VisuallyHidden>
       | Draw =>
-        <span ariaLabel="Draw" role="img" style={ReactDOM.Style.make(~filter="grayscale(70%)", ())}>
+        <span ariaLabel="Draw" role="img" style={{filter: "grayscale(70%)"}}>
           {React.string("🤝")}
         </span>
       | BlackWon =>
@@ -170,11 +170,11 @@ module MatchRow = {
     }
     let setMatchResultBlur = event => setMatchResult(ReactEvent.Focus.target(event)["value"])
     let setMatchResultChange = event => setMatchResult(ReactEvent.Form.target(event)["value"])
-    <tr
-      className={Cn.append(
-        className,
-        Cn.mapSome(selectedMatch, id => Id.eq(m.id, id) ? "selected" : ""),
-      )}>
+    let selected = switch selectedMatch {
+    | None => false
+    | Some(selectedValue) => Id.eq(m.id, selectedValue)
+    }
+    <tr className={`${className} ${selected ? "selected" : ""}}`}>
       <th className={"pageround__row-id table__number"} scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>
