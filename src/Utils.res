@@ -95,13 +95,13 @@ module DateTimeFormat = {
 
 module Panel = {
   @react.component
-  let make = (~children, ~className="", ~style: ReactDOM.Style.t={{}}) =>
+  let make = (~children, ~className="", ~style: ReactDOM.Style.t={}) =>
     <div className={`utils__panel ${className}`} style> children </div>
 }
 
 module PanelContainer = {
   @react.component
-  let make = (~children, ~className="", ~style: ReactDOM.Style.t={{}}) =>
+  let make = (~children, ~className="", ~style: ReactDOM.Style.t={}) =>
     <div style className={`utils__panels ${className}`}> children </div>
 }
 
@@ -113,7 +113,7 @@ module Notification = {
     ~kind=Generic,
     ~tooltip="",
     ~className="",
-    ~style: ReactDOM.Style.t={{}},
+    ~style: ReactDOM.Style.t={},
   ) => {
     let (icon, notifClassName) = switch kind {
     | Success => (<Icons.Check />, "utils__notification-success")
