@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 
 let github_url = "https://github.com/johnridesabike/coronate"
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE"

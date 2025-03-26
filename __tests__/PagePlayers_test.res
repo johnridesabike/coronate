@@ -12,7 +12,7 @@ open FireEvent
 
 JestDom.init()
 
-open Belt
+open! Belt
 
 module Profile = {
   @react.component

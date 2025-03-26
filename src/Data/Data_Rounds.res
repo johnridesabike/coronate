@@ -14,7 +14,7 @@
   component).
  */
 
-open Belt
+open! Belt
 module Match = Data_Match
 module Id = Data_Id
 

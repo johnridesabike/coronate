@@ -6,7 +6,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 open Data
-open Belt
+open! Belt
 module Id = Data.Id
 
 let sortFirstName = Hooks.GetString(p => p.Player.firstName)
