@@ -370,9 +370,7 @@ let make = (~windowDispatch=_ => ()) => {
       ReactEvent.Form.currentTarget(event)["files"]->Array.get(0)->Option.getWithDefault(""),
     )
     /* so the filename won't linger onscreen */
-    /* https://github.com/BuckleScript/bucklescript/issues/4391 */
-    // TODO remove file-scoped @warning("-20") and fix this locally
-    ReactEvent.Form.currentTarget(event)["value"] = ""
+    ReactEvent.Form.currentTarget(event)->Object.set("value", "")
   }
   let reloadDemoData = event => {
     ReactEvent.Mouse.preventDefault(event)
