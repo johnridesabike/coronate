@@ -5,12 +5,12 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 
 /* ******************************************************************************
  * Initialize the databases
  ***************************************************************************** */
-let localForageConfig = LocalForage.Config.make(~name="Coronate")
+let localForageConfig = LocalForage.Config.make(~name="Coronate", ...)
 module Config = LocalForage.Id.MakeEncodable(Data.Config)
 module Player = LocalForage.Id.MakeEncodable(Data.Player)
 module Tournament = LocalForage.Id.MakeEncodable(Data.Tournament)

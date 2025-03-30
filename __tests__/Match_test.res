@@ -13,7 +13,7 @@ JestDom.init()
 
 test("Ratings are updated correctly after a match.", () => {
   let page = render(
-    <LoadTournament tourneyId=TestData.simplePairing.id>
+    <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )

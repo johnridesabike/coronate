@@ -15,7 +15,7 @@ JestDom.init()
 describe("Tabs auto-change correctly.", () => {
   test("When no players are matched, it defaults to the pair-picker", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.simplePairing.id>
+      <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
@@ -25,7 +25,7 @@ describe("Tabs auto-change correctly.", () => {
 
   test("Tab doesn't change focus if there are still players to be matched.", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.simplePairing.id>
+      <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
@@ -38,7 +38,7 @@ describe("Tabs auto-change correctly.", () => {
 
   test("The tab selection doesn't change if there are still matched players", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.simplePairing.id>
+      <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
@@ -57,7 +57,7 @@ describe("Tabs auto-change correctly.", () => {
 
   test("The tab selection changes when all players have been unmatched", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.simplePairing.id>
+      <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
@@ -71,7 +71,7 @@ describe("Tabs auto-change correctly.", () => {
 
   test("The tab selection changes when all players have been paired", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.simplePairing.id>
+      <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
@@ -86,7 +86,7 @@ describe("Tabs auto-change correctly.", () => {
 test("Matches with deleted players don't crash when edited.", () => {
   let page = () =>
     render(
-      <LoadTournament tourneyId=TestData.deletedPlayerTourney.id>
+      <LoadTournament tourneyId=TestData.deletedPlayerTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )

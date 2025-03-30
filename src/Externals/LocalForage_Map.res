@@ -13,8 +13,8 @@ module Id = LocalForage_Id
 
 type t<'a, 'id> = {
   store: LF.t,
-  encode: (. 'a) => Js.Json.t,
-  decode: (. Js.Json.t) => 'a,
+  encode: 'a => Js.Json.t,
+  decode: Js.Json.t => 'a,
 }
 
 let make = (config, type t id, data: Id.encodable<t, id>) => {
@@ -32,13 +32,13 @@ let getItem = ({store, decode, _}, ~key) =>
     }
   )
 
-let setItem = ({store, encode, _}, ~key, ~v) => LF.setItem(store, key, encode(. v))
+let setItem = ({store, encode, _}, ~key, ~v) => LF.setItem(store, key, encode(v))
 
 let getKeys = ({store, _}) => LF.keys(store)
 
-let mapValues = ((key, value), ~f) => (key, f(. value))
+let mapValues = ((key, value), ~f) => (key, f(value))
 
-let parseItems = (decode, items) => items->D.entries->A.map(mapValues(~f=decode))
+let parseItems = (decode, items) => items->D.entries->A.map(mapValues(~f=decode, ...))
 
 let getItems = ({store, decode, _}, ~keys) =>
   LocalForage_Plugins.GetItems.dictFromArray(store, keys)->P.then(items =>
@@ -57,11 +57,14 @@ let getAllItems = ({store, decode, _}) =>
   )
 
 let setItems = ({store, encode, _}, ~items) =>
-  items->A.map(mapValues(~f=encode))->D.fromArray->LocalForage_Plugins.SetItems.fromDict(store, _)
+  items
+  ->A.map(mapValues(~f=encode, ...))
+  ->D.fromArray
+  ->(LocalForage_Plugins.SetItems.fromDict(store, _))
 
 let removeItems = ({store, _}, ~items) => LocalForage_Plugins.RemoveItems.fromArray(store, items)
 
 let iterateU = ({store, decode, _}, ~f) =>
-  LF.iterate(store, (value, key, iterationNumber) => f(. decode(. value), key, iterationNumber))
+  LF.iterate(store, (value, key, iterationNumber) => f(decode(value), key, iterationNumber))
 
-let iterate = (map, ~f) => iterateU(map, ~f=(. value, key, num) => f(value, key, num))
+let iterate = (map, ~f) => iterateU(map, ~f=(value, key, num) => f(value, key, num))

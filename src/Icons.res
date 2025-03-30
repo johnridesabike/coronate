@@ -148,7 +148,7 @@ module SimpleIcon = (
     ~height="24",
     ~width="24",
     ~className="",
-    ~style=ReactDOM.Style.make(),
+    ~style={{}},
     ~ariaLabel=IconData.icon.title ++ " Icon",
     ~ariaHidden=false,
   ) =>
@@ -160,7 +160,7 @@ module SimpleIcon = (
       className
       style={
         open ReactDOM.Style
-        make(~fill="#" ++ IconData.icon.hex, ())->combine(style)
+        make(~fill="#" ++ IconData.icon.hex)->combine(style)
       }
       ariaLabel
       ariaHidden>

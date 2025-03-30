@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Router
 
 let global_title = "Coronate"
@@ -46,13 +46,11 @@ module About = {
   @react.component
   let make = () =>
     <article className="win__about">
-      <div style={ReactDOM.Style.make(~flex="0 0 48%", ~textAlign="center", ())}>
+      <div style={{flex: "0 0 48%", textAlign: "center"}}>
         <img src=Utils.WebpackAssets.logo height="196" width="196" alt="" />
       </div>
-      <div style={ReactDOM.Style.make(~flex="0 0 48%", ())}>
-        <h1 className="title" style={ReactDOM.Style.make(~textAlign="left", ())}>
-          {React.string("Coronate")}
-        </h1>
+      <div style={{flex: "0 0 48%"}}>
+        <h1 className="title" style={{textAlign: "left"}}> {React.string("Coronate")} </h1>
         <p> {React.string(`Last updated on ${gitModified}.`)} </p>
         <p>
           <a href=Utils.faq_url> {React.string("Read the FAQ.")} </a>
@@ -120,10 +118,9 @@ let make = (~children, ~className) => {
   let (state, dispatch) = React.useReducer(windowReducer, initialWinState)
   let {isMobileSidebarOpen, isDialogOpen, title} = state
   <div
-    className={Cn.append(
-      className,
-      isMobileSidebarOpen ? "mobile-sidebar-open" : "mobile-sidebar-closed",
-    )}>
+    className={`${className} ${isMobileSidebarOpen
+        ? "mobile-sidebar-open"
+        : "mobile-sidebar-closed"}`}>
     <TitleBar isMobileSidebarOpen title dispatch />
     {children(dispatch)}
     <Externals.Dialog
@@ -145,7 +142,7 @@ module DefaultSidebar = {
   @react.component
   let make = (~dispatch) =>
     <nav>
-      <ul style={ReactDOM.Style.make(~margin="0", ())}>
+      <ul style={{margin: "0"}}>
         <li>
           <Link to_=Index onDragStart=noDraggy onClick={_ => dispatch(SetSidebar(false))}>
             <Icons.Home />
@@ -195,7 +192,7 @@ let sidebarCallback = dispatch => <DefaultSidebar dispatch />
 module Body = {
   @react.component
   let make = (~children, ~windowDispatch, ~footerFunc=?, ~sidebarFunc=sidebarCallback) =>
-    <div className={Cn.append("winBody", "winBody-hasFooter"->Cn.onSome(footerFunc))}>
+    <div className={`winBody ${footerFunc != None ? "winBody-hasFooter" : ""})`}>
       <div className="win__sidebar"> {sidebarFunc(windowDispatch)} </div>
       <div className="win__content"> children </div>
       {switch footerFunc {

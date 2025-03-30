@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Data
 
 let log2 = num => log(num) /. log(2.0)
@@ -32,7 +32,7 @@ type t = LoadTournament.t = {
 }
 
 @react.component
-let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
+let make = (~children, ~tourneyId, ~windowDispatch as _) => {
   let (tourney, setTourney) = React.useReducer(
     tournamentReducer,
     Map.getExn(tournamentData, tourneyId),
@@ -50,7 +50,7 @@ let make = (~children, ~tourneyId, ~windowDispatch as _=?) => {
 
   children({
     activePlayers,
-    getPlayer: Player.getMaybe(players),
+    getPlayer: Player.getMaybe(players, ...),
     isItOver,
     isNewRoundReady,
     players,

@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Jest
 
 let players = TestData.players
@@ -47,7 +47,7 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
   )
   test("The lowest-ranking player is returned", () =>
     switch byedPlayer {
-    | None => assert false
+    | None => assert(false)
     | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
     }
   )
@@ -59,7 +59,7 @@ test("The bye signup queue works", () => {
   // Newbie McNewberson already played the first bye round
   let (_, byedPlayer) = Data.Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye)
   switch byedPlayer {
-  | None => assert false
+  | None => assert(false)
   | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.joelRobinson.id)
   }
 })
@@ -69,7 +69,7 @@ test(
     let dataPreBye = loadPairData(TestData.byeRoundTourney3)
     let (_, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
     switch byedPlayer {
-    | None => assert false
+    | None => assert(false)
     | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
     }
   },
@@ -105,7 +105,7 @@ JestDom.init()
 /* This is quick-and-dirty and fragile. */
 test("Players are paired correctly after a draw (more complex).", () => {
   let page = render(
-    <LoadTournament tourneyId={Data.Id.fromString("complex-bye-rounds---")}>
+    <LoadTournament tourneyId={Data.Id.fromString("complex-bye-rounds---")} windowDispatch=None>
       {tournament => <PageRound tournament roundId=4 />}
     </LoadTournament>,
   )
@@ -116,7 +116,7 @@ test("Players are paired correctly after a draw (more complex).", () => {
 
 test("Auto-matching with bye players works", () => {
   let page = render(
-    <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+    <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
       {tournament => <PageRound tournament roundId=0 />}
     </LoadTournament>,
   )
@@ -129,7 +129,7 @@ test("Auto-matching with bye players works", () => {
 test("Auto-matching works with manually adjusted scores", () => {
   /* This isn't ideal but routing isn't working for tests I think. */
   let page = render(
-    <LoadTournament tourneyId=TestData.scoreTest.id>
+    <LoadTournament tourneyId=TestData.scoreTest.id windowDispatch=None>
       {tournament => <>
         <PageTourneyPlayers tournament />
         <PageRound tournament roundId=3 />
@@ -161,7 +161,7 @@ test("Auto-matching works with manually adjusted scores", () => {
 describe("Manually pairing and byes.", () => {
   test("Pairing players does not automatically pre-select the winner.", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )
@@ -175,7 +175,7 @@ describe("Manually pairing and byes.", () => {
 
   test("Pairing with a bye player automatically pre-selects the winner.", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )
@@ -189,7 +189,7 @@ describe("Manually pairing and byes.", () => {
 
   test("Un-pairing a bye player automatically un-pre-selects the winner.", () => {
     let page = render(
-      <LoadTournament tourneyId=TestData.byeRoundTourney.id>
+      <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
       </LoadTournament>,
     )

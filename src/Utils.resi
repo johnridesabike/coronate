@@ -11,7 +11,7 @@ let issues_url: string
 let changelog_url: string
 let faq_url: string
 
-type direction<'data, 'field> = (('field, 'field) => int, (. 'data) => 'field, 'data, 'data) => int
+type direction<'data, 'field> = (('field, 'field) => int, 'data => 'field, 'data, 'data) => int
 
 let ascend: direction<'data, 'field>
 

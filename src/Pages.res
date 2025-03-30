@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 
 module Splash = {
   @react.component
@@ -45,9 +45,7 @@ module Splash = {
           <img src=Utils.WebpackAssets.logo alt="" height="96" width="96" />
         </div>
         <div className="pages__title-text">
-          <h1 className="title" style={ReactDOM.Style.make(~fontSize="40px", ())}>
-            {React.string("Coronate")}
-          </h1>
+          <h1 className="title" style={{fontSize: "40px"}}> {React.string("Coronate")} </h1>
           <p className={"pages__subtitle caption-30"}> {React.string("Tournament manager")} </p>
         </div>
       </div>
@@ -61,7 +59,7 @@ module Splash = {
                 alt="Buy Me A Coffee"
                 height="60"
                 width="217"
-                style={ReactDOM.Style.make(~height="60px ", ~width="217px ", ())}
+                style={{height: "60px", width: "217px"}}
               />
             </a>
           </p>
@@ -133,7 +131,7 @@ module TimeCalculator = {
         {"Estimate the time requirements for planning your Swiss-system tournament."->React.string}
       </p>
       <form>
-        <table style={ReactDOM.Style.make(~margin="0", ())}>
+        <table style={{margin: "0"}}>
           <tbody>
             <tr>
               <td>
@@ -144,9 +142,9 @@ module TimeCalculator = {
                   id="playerCount"
                   type_="number"
                   value={Int.toString(players)}
-                  onChange={updateInt(setPlayers, minPlayers)}
+                  onChange={updateInt(setPlayers, minPlayers, ...)}
                   min={Int.toString(minPlayers)}
-                  style={ReactDOM.Style.make(~width="40px", ())}
+                  style={{width: "40px"}}
                 />
               </td>
             </tr>
@@ -159,10 +157,10 @@ module TimeCalculator = {
                   id="breakTime"
                   type_="number"
                   value={Int.toString(breakTime)}
-                  onChange={updateInt(setBreakTime, minBreakTime)}
+                  onChange={updateInt(setBreakTime, minBreakTime, ...)}
                   step=5.0
                   min={Int.toString(minBreakTime)}
-                  style={ReactDOM.Style.make(~width="40px", ())}
+                  style={{width: "40px"}}
                 />
                 {React.string(" minutes")}
               </td>
@@ -176,10 +174,10 @@ module TimeCalculator = {
                   id="totalTime"
                   type_="number"
                   value={Float.toString(totalTime)}
-                  onChange={updateFloat(setTotalTime, minTotalTime)}
+                  onChange={updateFloat(setTotalTime, minTotalTime, ...)}
                   step=0.5
                   min={Float.toString(minTotalTime)}
-                  style={ReactDOM.Style.make(~width="40px", ())}
+                  style={{width: "40px"}}
                 />
                 {React.string(" hours")}
               </td>

@@ -5,11 +5,11 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-type encode<'a, 'id> = (. 'a) => Js.Json.t
-type decode<'a, 'id> = (. Js.Json.t) => 'a
+type encode<'a, 'id> = 'a => Js.Json.t
+type decode<'a, 'id> = Js.Json.t => 'a
 
-external encode: (encode<'a, 'id>, . 'a) => Js.Json.t = "%identity"
-external decode: (decode<'a, 'id>, . Js.Json.t) => 'a = "%identity"
+external encode: encode<'a, 'id> => 'a => Js.Json.t = "%identity"
+external decode: decode<'a, 'id> => Js.Json.t => 'a = "%identity"
 
 module type Encodable = {
   type t
@@ -34,10 +34,10 @@ module MakeEncodable = (
   type identity
   let encode = {
     let encode = M.encode
-    (. x) => encode(x)
+    x => encode(x)
   }
   let decode = {
     let decode = M.decode
-    (. x) => decode(x)
+    x => decode(x)
   }
 }

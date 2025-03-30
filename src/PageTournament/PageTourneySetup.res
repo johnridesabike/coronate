@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Router
 open Data
 
@@ -88,11 +88,11 @@ let make = (~tournament: LoadTournament.t) => {
     | Name =>
       <form
         className="display-20"
-        style={ReactDOM.Style.make(~textAlign="left", ())}
+        style={{textAlign: "left"}}
         onSubmit={_ => setEditing(_ => NotEditing)}>
         <input
           className="display-20"
-          style={ReactDOM.Style.make(~textAlign="left", ())}
+          style={{textAlign: "left"}}
           ref={ReactDOM.Ref.domRef(nameInput)}
           type_="text"
           value=name
@@ -109,7 +109,7 @@ let make = (~tournament: LoadTournament.t) => {
       </form>
     | Date
     | NotEditing =>
-      <h1 style={ReactDOM.Style.make(~textAlign="left", ())}>
+      <h1 style={{textAlign: "left"}}>
         <span className="inputPlaceholder"> {React.string(name)} </span>
         {React.string(" ")}
         <button className="button-ghost" onClick={_ => setEditing(_ => Name)}>

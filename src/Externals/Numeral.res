@@ -72,7 +72,7 @@ module RegExps = {
   let make = (~format, ~unformat) => {format, unformat}
 }
 module Format = {
-  type formatFn = (float, string, (. float) => float) => string
+  type formatFn = (float, string, float => float) => string
   type unformatFn = string => float
 
   type t = {
@@ -139,7 +139,7 @@ module Make = (
   @send external formatDefault: t => string = "format"
   @send external format: (t, string) => string = "format"
   @send
-  external formatRound: (t, string, @uncurry (float => float)) => string = "format"
+  external formatRound: (t, string, @uncurry float => float) => string = "format"
   @send external unformat_: (t, string) => M.output = "unformat"
   let unformat = (t, value) => t->unformat_(value)->M.parseOutput
   @send external value_: t => M.output = "value"
@@ -169,67 +169,10 @@ module String = Make({
   type input = string
   type output = Js.Nullable.t<float>
   type parsedOutput = option<float>
-  let parseOutput = Js.Nullable.toOption
+  let parseOutput = output => Js.Nullable.toOption(output)
 })
 /* It probably doesn't make sense to add other types, like `int`, because the
  we can't guarantee that it will stay an int once it goes to the JS side. */
-module Helpers = {
-  /* These bindings aren't well tested or documented. Use with caution.
-   Pull requests and bug reports are welcome! */
-  type t
-  @get external getHelpers: numeral => t = "_"
-
-  type numberToFormat = (float, string, (. float) => float) => string
-  @get external getNumberToFormat: t => numberToFormat = "numberToFormat"
-  let numberToFormat = (~value, ~format, ~roundingFunction) =>
-    numeral->getHelpers->getNumberToFormat(value, format, roundingFunction)
-
-  type stringToNumber = string => float
-  @get external getStringToNumber: t => stringToNumber = "stringToNumber"
-  let stringToNumber = value => numeral->getHelpers->getStringToNumber(value)
-
-  type includes = (string, string) => bool
-  @get external getIncludes: t => includes = "includes"
-  let includes = (string, search) => numeral->getHelpers->getIncludes(string, search)
-
-  type insert = (string, string, int) => string
-  @get external getInsert: t => insert = "insert"
-  let insert = (string, subString, start) =>
-    numeral->getHelpers->getInsert(string, subString, start)
-
-  type multiplier = string => float
-  @get external getMultiplier: t => multiplier = "multiplier"
-  let multiplier = x => numeral->getHelpers->getMultiplier(x)
-
-  type correctionFactor1 = float => float
-  type correctionFactor2 = (float, float) => float
-  type correctionFactor3 = (float, float, float) => float
-  type correctionFactor4 = (float, float, float, float) => float
-  type correctionFactor5 = (float, float, float, float, float) => float
-  @get
-  external getCorrectionFactor1: t => correctionFactor1 = "correctionFactor"
-  @get
-  external getCorrectionFactor2: t => correctionFactor2 = "correctionFactor"
-  @get
-  external getCorrectionFactor3: t => correctionFactor3 = "correctionFactor"
-  @get
-  external getCorrectionFactor4: t => correctionFactor4 = "correctionFactor"
-  @get
-  external getCorrectionFactor5: t => correctionFactor5 = "correctionFactor"
-  let correctionFactor1 = arg1 => numeral->getHelpers->getCorrectionFactor1(arg1)
-  let correctionFactor2 = (arg1, arg2) => numeral->getHelpers->getCorrectionFactor2(arg1, arg2)
-  let correctionFactor3 = (arg1, arg2, arg3) =>
-    numeral->getHelpers->getCorrectionFactor3(arg1, arg2, arg3)
-  let correctionFactor4 = (arg1, arg2, arg3, arg4) =>
-    numeral->getHelpers->getCorrectionFactor4(arg1, arg2, arg3, arg4)
-  let correctionFactor5 = (arg1, arg2, arg3, arg4, arg5) =>
-    numeral->getHelpers->getCorrectionFactor5(arg1, arg2, arg3, arg4, arg5)
-
-  type toFixed = (float, int, (. float) => float, int) => float
-  @get external getToFixed: t => toFixed = "toFixed"
-  let toFixed = (value, maxDecimals, roundingFunction, optionals) =>
-    numeral->getHelpers->getToFixed(value, maxDecimals, roundingFunction, optionals)
-}
 /* This is a hack to make sure that it works on both Babel ES6 and commonJs.
  This probably isn't safe or stable. */
 %%raw(`if (Numeral.default === undefined) {

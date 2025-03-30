@@ -22,12 +22,14 @@ test("K Factor is calculated correctly", () => {
 })
 
 test("Ratings are calculated correctly", () => {
-  let calcRatingsForPair = Data.Ratings.calcNewRatings(
-    ~whiteRating=newb.rating,
-    ~blackRating=master.rating,
-    ~whiteMatchCount=newb.matchCount,
-    ~blackMatchCount=master.matchCount,
-  )
+  let calcRatingsForPair =
+    Data.Ratings.calcNewRatings(
+      ~whiteRating=newb.rating,
+      ~blackRating=master.rating,
+      ~whiteMatchCount=newb.matchCount,
+      ~blackMatchCount=master.matchCount,
+      ...
+    )
   let newbWon = calcRatingsForPair(~result=Data.Match.Result.WhiteWon)
   // not really a good example for this next one because they don't change:
   let masterWon = calcRatingsForPair(~result=Data.Match.Result.BlackWon)
@@ -55,7 +57,7 @@ open ReactTestingLibrary
 open JestDom
 
 let scorePage = (~id) =>
-  <LoadTournament tourneyId=id>
+  <LoadTournament tourneyId=id windowDispatch=None>
     {({tourney: {name: title, _} as tourney, getPlayer, _}) =>
       <PageTourneyScores.ScoreTable size=Expanded tourney getPlayer title />}
   </LoadTournament>->render
@@ -90,7 +92,7 @@ open FireEvent
 test("Manually adjusting scores works", () => {
   /* This isn't ideal but routing isn't working for tests I think. */
   let page = render(
-    <LoadTournament tourneyId=TestData.scoreTest.id>
+    <LoadTournament tourneyId=TestData.scoreTest.id windowDispatch=None>
       {tournament => <>
         <PageTourneyPlayers tournament />
         <PageTourneyScores tournament />
@@ -111,7 +113,7 @@ test("Manually adjusting scores works", () => {
 
 test("Pairing players twice displays the correct history", () => {
   let page = render(
-    <LoadTournament tourneyId=TestData.simplePairing.id>
+    <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )

@@ -66,7 +66,7 @@ module RegExps: {
 }
 
 module Format: {
-  type formatFn = (float, string, (. float) => float) => string
+  type formatFn = (float, string, float => float) => string
   type unformatFn = string => float
 
   type t = {
@@ -100,7 +100,7 @@ type t
 @send external formatDefault: t => string = "format"
 @send external format: (t, string) => string = "format"
 @send
-external formatRound: (t, string, @uncurry (float => float)) => string = "format"
+external formatRound: (t, string, @uncurry float => float) => string = "format"
 let unformat: (t, string) => float
 let value: t => float
 @send external set: (t, float) => t = "set"
@@ -126,7 +126,7 @@ module String: {
   @send external formatDefault: t => string = "format"
   @send external format: (t, string) => string = "format"
   @send
-  external formatRound: (t, string, @uncurry (float => float)) => string = "format"
+  external formatRound: (t, string, @uncurry float => float) => string = "format"
   let unformat: (t, string) => option<float>
   let value: t => option<float>
   @send external set: (t, string) => t = "set"
@@ -136,50 +136,50 @@ module String: {
   @send external divide: (t, string) => t = "divide"
   let difference: (t, string) => option<float>
 }
-module Helpers: {
-  type t
-  @get external getHelpers: numeral => t = "_"
-  type numberToFormat = (float, string, (. float) => float) => string
-  @get
-  external getNumberToFormat: t => numberToFormat = "numberToFormat"
-  let numberToFormat: (
-    ~value: float,
-    ~format: string,
-    ~roundingFunction: (. float) => float,
-  ) => string
-  type stringToNumber = string => float
-  @get external getStringToNumber: t => stringToNumber = "stringToNumber"
-  let stringToNumber: string => float
-  type includes = (string, string) => bool
-  @get external getIncludes: t => includes = "includes"
-  let includes: (string, string) => bool
-  type insert = (string, string, int) => string
-  @get external getInsert: t => insert = "insert"
-  let insert: (string, string, int) => string
-  type multiplier = string => float
-  @get external getMultiplier: t => multiplier = "multiplier"
-  let multiplier: string => float
-  type correctionFactor1 = float => float
-  type correctionFactor2 = (float, float) => float
-  type correctionFactor3 = (float, float, float) => float
-  type correctionFactor4 = (float, float, float, float) => float
-  type correctionFactor5 = (float, float, float, float, float) => float
-  @get
-  external getCorrectionFactor1: t => correctionFactor1 = "correctionFactor"
-  @get
-  external getCorrectionFactor2: t => correctionFactor2 = "correctionFactor"
-  @get
-  external getCorrectionFactor3: t => correctionFactor3 = "correctionFactor"
-  @get
-  external getCorrectionFactor4: t => correctionFactor4 = "correctionFactor"
-  @get
-  external getCorrectionFactor5: t => correctionFactor5 = "correctionFactor"
-  let correctionFactor1: float => float
-  let correctionFactor2: (float, float) => float
-  let correctionFactor3: (float, float, float) => float
-  let correctionFactor4: (float, float, float, float) => float
-  let correctionFactor5: (float, float, float, float, float) => float
-  type toFixed = (float, int, (. float) => float, int) => float
-  @get external getToFixed: t => toFixed = "toFixed"
-  let toFixed: (float, int, (. float) => float, int) => float
-}
+// module Helpers: {
+//   type t
+//   @get external getHelpers: numeral => t = "_"
+//   type numberToFormat = (float, string, (float) => float) => string
+//   @get
+//   external getNumberToFormat: t => numberToFormat = "numberToFormat"
+//   let numberToFormat: (
+//     ~value: float,
+//     ~format: string,
+//     ~roundingFunction: (float) => float,
+//   ) => string
+//   type stringToNumber = string => float
+//   @get external getStringToNumber: t => stringToNumber = "stringToNumber"
+//   let stringToNumber: string => float
+//   type includes = (string, string) => bool
+//   @get external getIncludes: t => includes = "includes"
+//   let includes: (string, string) => bool
+//   type insert = (string, string, int) => string
+//   @get external getInsert: t => insert = "insert"
+//   let insert: (string, string, int) => string
+//   type multiplier = string => float
+//   @get external getMultiplier: t => multiplier = "multiplier"
+//   let multiplier: string => float
+//   type correctionFactor1 = float => float
+//   type correctionFactor2 = (float, float) => float
+//   type correctionFactor3 = (float, float, float) => float
+//   type correctionFactor4 = (float, float, float, float) => float
+//   type correctionFactor5 = (float, float, float, float, float) => float
+//   @get
+//   external getCorrectionFactor1: t => correctionFactor1 = "correctionFactor"
+//   @get
+//   external getCorrectionFactor2: t => correctionFactor2 = "correctionFactor"
+//   @get
+//   external getCorrectionFactor3: t => correctionFactor3 = "correctionFactor"
+//   @get
+//   external getCorrectionFactor4: t => correctionFactor4 = "correctionFactor"
+//   @get
+//   external getCorrectionFactor5: t => correctionFactor5 = "correctionFactor"
+//   let correctionFactor1: float => float
+//   let correctionFactor2: (float, float) => float
+//   let correctionFactor3: (float, float, float) => float
+//   let correctionFactor4: (float, float, float, float) => float
+//   let correctionFactor5: (float, float, float, float, float) => float
+//   type toFixed = (float, int, (float) => float, int) => float
+//   @get external getToFixed: t => toFixed = "toFixed"
+//   let toFixed: (float, int, (float) => float, int) => float
+// }

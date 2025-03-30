@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Data
 module Id = Data.Id
 
@@ -41,7 +41,7 @@ let isLoadedDone = x =>
   }
 
 @react.component
-let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
+let make = (~children, ~tourneyId, ~windowDispatch) => {
   let tourneyId = Id.toString(tourneyId)
   let (tourney, setTourney) = React.useReducer(tournamentReducer, emptyTourney)
   let {name, playerIds, roundList, _} = tourney
@@ -49,10 +49,14 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
   let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded)
   Hooks.useLoadingCursorUntil(isLoadedDone(tourneyLoaded) && arePlayersLoaded)
 
+  let actualWindowDispatch = switch windowDispatch {
+  | Some(dispatch) => dispatch
+  | None => _ => ()
+  }
   React.useEffect2(() => {
-    windowDispatch(Window.SetTitle(name))
-    Some(() => windowDispatch(SetTitle("")))
-  }, (name, windowDispatch))
+    actualWindowDispatch(Window.SetTitle(name))
+    Some(() => actualWindowDispatch(SetTitle("")))
+  }, (name, actualWindowDispatch))
 
   /* Initialize the tournament from the database. */
   React.useEffect1(() => {
@@ -106,7 +110,7 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
         : Rounds.isRoundComplete(roundList, activePlayers, Rounds.size(roundList) - 1)
     children({
       activePlayers,
-      getPlayer: Player.getMaybe(players),
+      getPlayer: Player.getMaybe(players, ...),
       isItOver,
       isNewRoundReady,
       players,
@@ -116,10 +120,10 @@ let make = (~children, ~tourneyId, ~windowDispatch=_ => ()) => {
       setTourney,
     })
   | (Error, _) =>
-    <Window.Body windowDispatch>
+    <Window.Body windowDispatch={actualWindowDispatch}>
       {React.string("Error: tournament couldn't be loaded.")}
     </Window.Body>
   | (NotLoaded, false) | (NotLoaded, true) | (Loaded, false) =>
-    <Window.Body windowDispatch> {React.string("Loading...")} </Window.Body>
+    <Window.Body windowDispatch={actualWindowDispatch}> {React.string("Loading...")} </Window.Body>
   }
 }

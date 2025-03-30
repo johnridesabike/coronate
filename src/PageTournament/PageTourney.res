@@ -5,7 +5,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Belt
+open! Belt
 open Router
 open LoadTournament
 open Data
@@ -37,21 +37,20 @@ module Footer = {
         kind=tooltipKind
         tooltip=tooltipText
         className="win__footer-block"
-        style={ReactDOM.Style.make(
-          ~backgroundColor="transparent",
-          ~color="initial",
-          ~display="inline-flex",
-          ~margin="0",
-          ~minHeight="initial",
-          (),
-        )}>
+        style={{
+          backgroundColor: "transparent",
+          color: "initial",
+          display: "inline-flex",
+          margin: "0",
+          minHeight: "initial",
+        }}>
         {React.string(tooltipText)}
       </Utils.Notification>
     </>
   }
 }
 
-let footerFunc = (tournament, ()) => <Footer tournament />
+let footerFunc = tournament => <Footer tournament />
 
 let noDraggy = e => ReactEvent.Mouse.preventDefault(e)
 
@@ -69,7 +68,7 @@ module Sidebar = {
       _,
     } = tournament
     let {roundList, _} = tourney
-    let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers)
+    let isRoundComplete = Rounds.isRoundComplete(roundList, activePlayers, ...)
     let newRound = event => {
       ReactEvent.Mouse.preventDefault(event)
       let confirmText = "All rounds have completed. Are you sure you want to begin a new " ++ "one?"
@@ -129,7 +128,7 @@ module Sidebar = {
     }
     <div>
       <nav>
-        <ul style={ReactDOM.Style.make(~marginTop="0", ())}>
+        <ul style={{marginTop: "0"}}>
           <li>
             <Link
               to_=TournamentList
@@ -224,17 +223,17 @@ module Sidebar = {
             className="sidebar-button"
             disabled={!isNewRoundReady}
             onClick=newRound
-            style={ReactDOM.Style.make(~width="100%", ())}>
+            style={{width: "100%"}}>
             <Icons.Plus />
             <span className="sidebar__hide-on-close"> {React.string(" New round")} </span>
           </button>
         </li>
-        <li style={ReactDOM.Style.make(~textAlign="center", ())}>
+        <li style={{textAlign: "center"}}>
           <button
             disabled={Rounds.size(roundList) == 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
-            style={ReactDOM.Style.make(~marginTop="8px", ())}>
+            style={{marginTop: "8px"}}>
             <Icons.Trash />
             <span className="sidebar__hide-on-close"> {React.string(" Remove last round")} </span>
           </button>
@@ -248,10 +247,12 @@ let sidebarFunc = (tournament, windowDispatch) => <Sidebar windowDispatch tourna
 
 @react.component
 let make = (~tourneyId, ~subPage: TourneyPage.t, ~windowDispatch) =>
-  <LoadTournament tourneyId windowDispatch>
+  <LoadTournament tourneyId windowDispatch=Some(windowDispatch)>
     {tournament =>
       <Window.Body
-        windowDispatch footerFunc={footerFunc(tournament)} sidebarFunc={sidebarFunc(tournament)}>
+        windowDispatch
+        footerFunc={() => footerFunc(tournament)}
+        sidebarFunc={sidebarFunc(tournament, ...)}>
         {switch subPage {
         | Players => <PageTourneyPlayers tournament />
         | Scores => <PageTourneyScores tournament />

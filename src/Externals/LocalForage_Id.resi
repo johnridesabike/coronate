@@ -11,8 +11,8 @@
 type encode<'a, 'id>
 type decode<'a, 'id>
 
-external encode: (encode<'a, 'id>, . 'a) => Js.Json.t = "%identity"
-external decode: (decode<'a, 'id>, . Js.Json.t) => 'a = "%identity"
+external encode: encode<'a, 'id> => 'a => Js.Json.t = "%identity"
+external decode: decode<'a, 'id> => Js.Json.t => 'a = "%identity"
 
 module type Encodable = {
   type t

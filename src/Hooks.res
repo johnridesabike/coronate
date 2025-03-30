@@ -17,18 +17,18 @@ let useBool = init => {
   let (state, setState) = React.Uncurried.useReducer(reducer, init)
   {
     state,
-    setTrue: () => setState(. true),
-    setFalse: () => setState(. false),
+    setTrue: () => setState(true),
+    setFalse: () => setState(false),
   }
 }
 
 /* Begin the sortable table hook. */
 
 type getter<'a> =
-  | GetString((. 'a) => string)
-  | GetInt((. 'a) => int)
-  | GetFloat((. 'a) => float)
-  | GetDate((. 'a) => Js.Date.t)
+  | GetString('a => string)
+  | GetInt('a => int)
+  | GetFloat('a => float)
+  | GetDate('a => Js.Date.t)
 
 type tableState<'a> = {
   isDescending: bool,
@@ -51,10 +51,10 @@ let sortedTableReducer = (state, action) => {
   }
   let direction = newState.isDescending ? Utils.descend : Utils.ascend
   let sortFunc = switch newState.column {
-  | GetString(f) => direction(compare, (. str) => f(. str)->Js.String2.toLowerCase)
-  | GetInt(f) => direction(compare, f)
-  | GetFloat(f) => direction(compare, f)
-  | GetDate(f) => direction(compare, (. date) => f(. date)->Js.Date.getTime)
+  | GetString(f) => direction(compare, str => f(str)->Js.String2.toLowerCase, ...)
+  | GetInt(f) => direction(compare, f, ...)
+  | GetFloat(f) => direction(compare, f, ...)
+  | GetDate(f) => direction(compare, date => f(date)->Js.Date.getTime, ...)
   }
   let table = Belt.SortArray.stableSortBy(newState.table, sortFunc)
   {...newState, table}
@@ -85,29 +85,29 @@ module SortButton = {
       data.column === sortColumn
         ? dispatch(SetIsDescending(!data.isDescending))
         : dispatch(SetColumn(sortColumn))
-    let chevronStyle =
-      data.column === sortColumn
-        ? ReactDOM.Style.make(~opacity="1", ())
-        : ReactDOM.Style.make(~opacity="0", ())
     <button
       className="button-micro button-text-ghost title-20"
-      style={ReactDOM.Style.make(~width="100%", ())}
+      style={{width: "100%"}}
       onClick={_ => setKeyOrToggleDir()}>
       <span ariaHidden=true>
-        <Icons.ChevronUp style={ReactDOM.Style.make(~opacity="0", ())} />
+        <Icons.ChevronUp style={{opacity: "0"}} />
       </span>
       children
-      {if data.isDescending {
-        <span style=chevronStyle>
-          <Icons.ChevronUp />
-          <Externals.VisuallyHidden> {React.string("Sort ascending.")} </Externals.VisuallyHidden>
-        </span>
-      } else {
-        <span style=chevronStyle>
-          <Icons.ChevronDown />
-          <Externals.VisuallyHidden> {React.string("Sort descending.")} </Externals.VisuallyHidden>
-        </span>
-      }}
+      <span style={opacity: data.column === sortColumn ? "1" : "0"}>
+        {if data.isDescending {
+          <>
+            <Icons.ChevronUp />
+            <Externals.VisuallyHidden> {React.string("Sort ascending.")} </Externals.VisuallyHidden>
+          </>
+        } else {
+          <>
+            <Icons.ChevronDown />
+            <Externals.VisuallyHidden>
+              {React.string("Sort descending.")}
+            </Externals.VisuallyHidden>
+          </>
+        }}
+      </span>
     </button>
   }
 }
