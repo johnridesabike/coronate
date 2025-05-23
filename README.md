@@ -1,20 +1,27 @@
-<div align="center">
-<img alt="Logo" src="graphics/logo.svg" height="128" width="128" />
-<h1>Coronate</h1>
-<p>Coronate is a web app for managing Swiss-style chess tournaments.</p>
-</div>
+![Coronate logo.](./graphics/logo.svg)
 
-## Notice
+# Coronate
+
+Coronate is a web app for managing Swiss-style chess tournaments.
+
+[Web app](https://coronate.netlify.app/) |
+[Issue tracker](https://github.com/johnridesabike/coronate/issues) |
+[Source code on GitHub](https://github.com/johnridesabike/coronate) |
+[Sourcehut mirror](https://sr.ht/~johnridesabike/coronate/) |
+[Mailing list](https://lists.sr.ht/~johnridesabike/public-inbox)
+
+## Help wanted!
 
 Maintenance is currently paused for Coronate. This has almost always been a
 one-person passion project, and there simply isn't time to work on it these
 days. The [version hosted here](https://coronate.netlify.app/) should continue
-to work for the indefinite future, and its code will always be open-source.
+to work for the forseeable future, and its code will always be open-source.
 Anyone may use the Coronate source code in accordance with its
 [license](./LICENSE).
 
 If you have a special interest in working with Coronate that you wish to
-discuss, please still feel free to reach out to me or open a GitHub issue.
+discuss, please still feel free to reach out through my maling list
+(<~johnridesabike/public-inbox@lists.sr.ht>) or the GitHub issue tracker.
 
 ## About
 
@@ -22,7 +29,7 @@ Coronate is a free chess tournament manager. Anyone, even a tournament newbie
 with nothing but a web browser at their public library, can use it to run their
 tournament.
 
-<p align="center"><a href="https://coronate.netlify.app/">👉 Click here to open Coronate ♟</a></p>
+[👉 Click here to open Coronate ♟](https://coronate.netlify.app/)
 
 [Read more about how to use the app here](https://johnridesa.bike/software/coronate/).
 
