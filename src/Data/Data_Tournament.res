@@ -15,6 +15,7 @@ type t = {
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
   byeRequests: Data_Id.Map.t<Belt.Set.Int.t>,
+  totalRounds: int,
   tieBreaks: array<Data_Scoring.TieBreak.t>,
   roundList: Data_Rounds.t,
 }
@@ -24,6 +25,7 @@ let make = (~id, ~name) => {
   name,
   byeQueue: [],
   byeRequests: Map.make(~id=Data_Id.id),
+  totalRounds: 9, // Default to 9 rounds (common for Swiss tournaments)
   date: Js.Date.make(),
   playerIds: Set.make(~id=Data_Id.id),
   scoreAdjustments: Map.make(~id=Data_Id.id),
@@ -84,6 +86,11 @@ let decode = json => {
       }
     )
     ->Map.fromArray(~id=Data_Id.id),
+    totalRounds: d
+    ->Js.Dict.get("totalRounds")
+    ->Option.flatMap(Js.Json.decodeNumber)
+    ->Option.map(Belt.Float.toInt)
+    ->Option.getWithDefault(9), // Default to 9 rounds for backward compatibility
     tieBreaks: d
     ->Js.Dict.get("tieBreaks")
     ->Option.flatMap(Js.Json.decodeArray)
@@ -126,6 +133,7 @@ let encode = data =>
       ]->Js.Json.array)
       ->Js.Json.array,
     ),
+    ("totalRounds", data.totalRounds->Belt.Float.fromInt->Js.Json.number),
     ("tieBreaks", data.tieBreaks->Array.map(Data_Scoring.TieBreak.encode)->Js.Json.array),
     ("roundList", data.roundList->Data_Rounds.encode),
     (

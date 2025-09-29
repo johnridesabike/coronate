@@ -9,12 +9,7 @@ open! Belt
 open Data
 module Id = Data.Id
 
-let log2 = num => log(num) /. log(2.0)
-
-let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount->float_of_int->log2->ceil
-  roundCount != neg_infinity ? int_of_float(roundCount) : 0
-}
+// Removed calcNumOfRounds function - now using tournament.totalRounds instead
 
 let emptyTourney = Tournament.make(~id=Id.random(), ~name="")
 
@@ -44,7 +39,7 @@ let isLoadedDone = x =>
 let make = (~children, ~tourneyId, ~windowDispatch) => {
   let tourneyId = Id.toString(tourneyId)
   let (tourney, setTourney) = React.useReducer(tournamentReducer, emptyTourney)
-  let {name, playerIds, roundList, _} = tourney
+  let {name, playerIds, roundList, totalRounds, _} = tourney
   let {items: players, dispatch: playersDispatch, loaded: arePlayersLoaded} = Db.useAllPlayers()
   let (tourneyLoaded, setTourneyLoaded) = React.useState(() => NotLoaded)
   Hooks.useLoadingCursorUntil(isLoadedDone(tourneyLoaded) && arePlayersLoaded)
@@ -102,7 +97,7 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
     let activePlayers = Map.keep(players, (id, _) => Set.has(playerIds, id))
-    let roundCount = activePlayers->Map.size->calcNumOfRounds
+    let roundCount = totalRounds
     let isItOver = Rounds.size(roundList) >= roundCount
     let isNewRoundReady =
       Rounds.size(roundList) == 0

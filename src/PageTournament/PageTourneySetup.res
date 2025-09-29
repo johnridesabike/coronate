@@ -31,15 +31,17 @@ let makeDateInput = date => {
 type inputs =
   | Name
   | Date
+  | TotalRounds
   | NotEditing
 
 @react.component
 let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, _} = tournament
-  let {name, date, roundList, _} = tourney
+  let {name, date, roundList, totalRounds, _} = tourney
   let (editing, setEditing) = React.useState(() => NotEditing)
   let nameInput = React.useRef(Js.Nullable.null)
   let dateInput = React.useRef(Js.Nullable.null)
+  let totalRoundsInput = React.useRef(Js.Nullable.null)
   let focusRef = myref =>
     myref.React.current
     ->Js.Nullable.toOption
@@ -51,6 +53,7 @@ let make = (~tournament: LoadTournament.t) => {
     switch editing {
     | Name => focusRef(nameInput)
     | Date => focusRef(dateInput)
+    | TotalRounds => focusRef(totalRoundsInput)
     | NotEditing => ()
     }
     None
@@ -83,6 +86,15 @@ let make = (~tournament: LoadTournament.t) => {
     }
   }
 
+  let updateTotalRounds = event => {
+    let value = ReactEvent.Form.currentTarget(event)["value"]
+    switch Int.fromString(value) {
+    | Some(rounds) when rounds > 0 && rounds <= 50 =>
+      setTourney({...tourney, totalRounds: rounds})
+    | _ => () // Invalid input, ignore
+    }
+  }
+
   <div className="content-area">
     {switch editing {
     | Name =>
@@ -108,6 +120,7 @@ let make = (~tournament: LoadTournament.t) => {
         </button>
       </form>
     | Date
+    | TotalRounds
     | NotEditing =>
       <h1 style={{textAlign: "left"}}>
         <span className="inputPlaceholder"> {React.string(name)} </span>
@@ -134,6 +147,7 @@ let make = (~tournament: LoadTournament.t) => {
         </button>
       </form>
     | Name
+    | TotalRounds
     | NotEditing =>
       <p className="caption-30">
         <Utils.DateFormat date />
@@ -144,6 +158,40 @@ let make = (~tournament: LoadTournament.t) => {
         </button>
       </p>
     }}
+    <div style={{marginBottom: "24px"}}>
+      <h2> {React.string("Tournament rounds")} </h2>
+      {switch editing {
+      | TotalRounds =>
+        <form className="caption-30" onSubmit={_ => setEditing(_ => NotEditing)}>
+          <label htmlFor="totalRounds">
+            {React.string("Number of rounds: ")}
+          </label>
+          <input
+            id="totalRounds"
+            type_="number"
+            min="1"
+            max="50"
+            ref={ReactDOM.Ref.domRef(totalRoundsInput)}
+            value={Belt.Int.toString(totalRounds)}
+            onChange=updateTotalRounds
+          />
+          {React.string(" ")}
+          <button className="button-ghost" onClick={_ => setEditing(_ => NotEditing)}>
+            <Icons.Check />
+          </button>
+        </form>
+      | Name | Date | NotEditing =>
+        <p className="caption-30">
+          {React.string("This tournament will have ")}
+          <strong> {React.int(totalRounds)} </strong>
+          {React.string(" rounds. ")}
+          <button className="button-ghost" onClick={_ => setEditing(_ => TotalRounds)}>
+            <Icons.Edit />
+            <Externals.VisuallyHidden> {React.string("Edit total rounds")} </Externals.VisuallyHidden>
+          </button>
+        </p>
+      }}
+    </div>
     <h2> {React.string("Change all bye scores")} </h2>
     <button ariaDescribedby="score-desc" onClick={_ => changeByes(Full, "1")}>
       {React.string("Change byes to 1")}

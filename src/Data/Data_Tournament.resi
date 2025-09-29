@@ -13,6 +13,7 @@ type t = {
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
   byeRequests: Data_Id.Map.t<Belt.Set.Int.t>,
+  totalRounds: int,
   tieBreaks: array<Data_Scoring.TieBreak.t>,
   roundList: Data_Rounds.t,
 }

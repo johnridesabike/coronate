@@ -267,6 +267,7 @@ let tournaments = Map.fromArray(
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
         byeRequests: Map.make(~id=Id.id),
+        totalRounds: 9,
         playerIds: Set.fromArray(
           ~id=Id.id,
           [batman, robin, alfred, barbara, batwoman, catwoman, jason, james, huntress],
@@ -493,6 +494,7 @@ let tournaments = Map.fromArray(
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
         byeRequests: Map.make(~id=Id.id),
+        totalRounds: 9,
         playerIds: Set.fromArray(
           ~id=Id.id,
           [

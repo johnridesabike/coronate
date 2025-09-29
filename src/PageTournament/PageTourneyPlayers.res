@@ -318,7 +318,7 @@ module OptionsForm = {
     @react.component
     let make = (~setTourney, ~dialog: Hooks.boolState, ~tourney: Data.Tournament.t, ~p: Data.Player.t) => {
       let currentRequests = Map.getWithDefault(tourney.byeRequests, p.id, Belt.Set.Int.empty)
-      let totalRounds = Data_Rounds.size(tourney.roundList)
+      let totalRounds = tourney.totalRounds
       let (selectedRounds, setSelectedRounds) = React.useState(() => currentRequests)
 
       let toggleRound = (roundNum) => {

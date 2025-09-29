@@ -153,6 +153,7 @@ let byeRoundTourney: Tournament.t = {
   id: "Bye_Round_Tourney____"->id,
   byeQueue: [],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
   playerIds: Set.fromArray(
     ~id=Id.id,
@@ -175,6 +176,7 @@ let byeRoundTourney2: Tournament.t = {
   id: "Bye_Round_Tourney_2__"->id,
   byeQueue: [],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
   playerIds: Set.fromArray(
     ~id=Id.id,
@@ -240,6 +242,7 @@ let byeRoundTourney3: Tournament.t = {
   id: "Bye_Tourney_3________"->id,
   byeQueue: [],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2019-06-17T23:00:29.603Z"),
   playerIds: Set.fromArray(~id=Id.id, [kinga.id, newbieMcNewberson.id, jonah.id]),
   scoreAdjustments: Map.make(~id=Id.id),
@@ -318,6 +321,7 @@ let simplePairing: Tournament.t = {
   id: "Simple_Pairing_______"->id,
   byeQueue: [],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2019-06-14T11:40:34.407Z"),
   playerIds: Set.fromArray(
     ~id=Id.id,
@@ -385,6 +389,7 @@ let deletedPlayerTourney: Tournament.t = {
   id: "Deleted_Player_Torney"->id,
   byeQueue: [deletedPlayer],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2020-12-24T11:40:34.407Z"),
   playerIds: Set.fromArray(
     ~id=Id.id,
@@ -452,6 +457,7 @@ let pairingWithDraws: Tournament.t = {
   id: "Pairing_With_Draws___"->id,
   byeQueue: [],
   byeRequests: Map.make(~id=Id.id),
+  totalRounds: 9,
   date: Js.Date.fromString("2019-06-14T14:18:06.686Z"),
   playerIds: Set.fromArray(
     ~id=Id.id,
@@ -519,6 +525,7 @@ let scoreTest: Tournament.t = {
   {
     id: "WY_AzAeDDZeHMbhgUVuum"->id,
     byeRequests: Map.make(~id=Id.id),
+    totalRounds: 9,
     name: "Score testing",
     date: Js.Date.fromString("2020-06-28T12:42:46.347Z"),
     playerIds: Set.fromArray(
