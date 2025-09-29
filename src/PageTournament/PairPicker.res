@@ -9,11 +9,11 @@ open! Belt
 open Data
 module Id = Data.Id
 
-let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
+let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue, ~byeRequests, ~currentRound) => {
   /* the pairData includes any players who were already matched. We need to
    only include the specified players. */
   let filteredData = Pairing.keep(pairData, ~f=(id, _) => Map.has(playerMap, id))
-  let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Id.dummy, filteredData)
+  let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, byeRequests, currentRound, Id.dummy, filteredData)
   let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
   switch byePlayerData {
   | Some(player) => MutableQueue.add(pairs, (Pairing.id(player), Id.dummy))
@@ -406,7 +406,7 @@ let make = (
   let (config, _) = Db.useConfig()
   let (state, dispatch) = useStageState(config.byeValue)
   let {tourney, activePlayers, players, getPlayer, setTourney, playersDispatch, _} = tournament
-  let {roundList, byeQueue, _} = tourney
+  let {roundList, byeQueue, byeRequests, _} = tourney
   let round = Rounds.get(roundList, roundId)
   let addOrRemovePlayers = Hooks.useBool(false)
   let autoPairHelp = Hooks.useBool(false)
@@ -443,6 +443,8 @@ let make = (
         ~pairData,
         ~byeValue=config.byeValue,
         ~byeQueue,
+        ~byeRequests,
+        ~currentRound=roundId + 1,
         ~playerMap=unmatched,
       )->MutableQueue.toArray,
     )

@@ -37,7 +37,7 @@ let calcPairIdealByIds: (t, Data_Id.t, Data_Id.t) => option<float>
  is assigned a bye, the second object is `null`. After calling this, be sure to
  add the bye round after the non-bye'd players are paired.
 */
-let setByePlayer: (array<Data_Id.t>, Data_Id.t, t) => (t, option<player>)
+let setByePlayer: (array<Data_Id.t>, Data_Id.Map.t<Belt.Set.Int.t>, int, Data_Id.t, t) => (t, option<player>)
 
 /*
  Create pairings according to the rules specified in USCF § 27, § 28,  and

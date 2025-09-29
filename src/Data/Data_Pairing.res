@@ -156,7 +156,7 @@ let sortByScoreThenRating = (data1, data2) =>
   | x => x
   }
 
-let setByePlayer = (byeQueue, dummyId, data: t) => {
+let setByePlayer = (byeQueue, byeRequests, currentRound, dummyId, data: t) => {
   let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId, ...))
   /* if the list is even, just return it. */
   switch mod(Map.size(data.players), 2) {
@@ -170,9 +170,25 @@ let setByePlayer = (byeQueue, dummyId, data: t) => {
       ->SortArray.stableSortBy(sortByScoreThenRating)
     let playerIdsWithoutByes = Array.map(dataArr, p => p.id)
     let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id, ...))
-    let nextByeSignups = Array.keep(byeQueue, hasntHadByeFn)
+
+    /* First, check for players who specifically requested a bye for this round */
+    let roundSpecificRequests = byeRequests
+    ->Map.toArray
+    ->Array.keepMap(((playerId, roundSet)) =>
+      if Belt.Set.Int.has(roundSet, currentRound) && hasntHadByeFn(playerId) {
+        Some(playerId)
+      } else {
+        None
+      }
+    )
+
+    /* If no one requested a bye for this round, fall back to the old bye queue logic */
+    let nextByeSignups = Array.length(roundSpecificRequests) > 0
+      ? roundSpecificRequests
+      : Array.keep(byeQueue, hasntHadByeFn)
+
     let dataForNextBye = switch nextByeSignups[0] {
-    /* Assign the bye to the next person who signed up. */
+    /* Assign the bye to the next person who signed up or requested this round. */
     | Some(id) =>
       switch Map.get(data.players, id) {
       | Some(_) as x => x

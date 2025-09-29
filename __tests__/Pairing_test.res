@@ -36,7 +36,7 @@ test("Players have 0 priority of pairing themselves.", () => {
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney)
-  let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
+  let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Belt.Map.make(~id=Data.Id.id), 1, Data.Id.dummy, dataPreBye)
   test("The lowest-ranking player is removed after bye selection.", () =>
     pairData
     ->Data.Pairing.players
@@ -57,7 +57,7 @@ test("The bye signup queue works", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney2)
   let byeQueue = [TestData.newbieMcNewberson.id, TestData.joelRobinson.id]
   // Newbie McNewberson already played the first bye round
-  let (_, byedPlayer) = Data.Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye)
+  let (_, byedPlayer) = Data.Pairing.setByePlayer(byeQueue, Belt.Map.make(~id=Data.Id.id), 2, Data.Id.dummy, dataPreBye)
   switch byedPlayer {
   | None => assert(false)
   | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.joelRobinson.id)
@@ -67,7 +67,7 @@ test(
   "If all player have (impossibly) played a bye round, the lowest-rated player is picked",
   () => {
     let dataPreBye = loadPairData(TestData.byeRoundTourney3)
-    let (_, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
+    let (_, byedPlayer) = Data.Pairing.setByePlayer([], Belt.Map.make(~id=Data.Id.id), 1, Data.Id.dummy, dataPreBye)
     switch byedPlayer {
     | None => assert(false)
     | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)

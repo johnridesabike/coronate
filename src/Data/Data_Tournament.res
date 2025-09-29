@@ -14,6 +14,7 @@ type t = {
   playerIds: Data_Id.Set.t,
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
+  byeRequests: Data_Id.Map.t<Belt.Set.Int.t>,
   tieBreaks: array<Data_Scoring.TieBreak.t>,
   roundList: Data_Rounds.t,
 }
@@ -22,6 +23,7 @@ let make = (~id, ~name) => {
   id,
   name,
   byeQueue: [],
+  byeRequests: Map.make(~id=Data_Id.id),
   date: Js.Date.make(),
   playerIds: Set.make(~id=Data_Id.id),
   scoreAdjustments: Map.make(~id=Data_Id.id),
@@ -61,6 +63,27 @@ let decode = json => {
     ->Option.flatMap(Js.Json.decodeArray)
     ->Option.getExn
     ->Array.map(Data_Id.decode),
+    byeRequests: d
+    ->Js.Dict.get("byeRequests")
+    ->Option.flatMap(Js.Json.decodeArray)
+    ->Option.getWithDefault([])
+    ->Array.keepMap(Js.Json.decodeArray)
+    ->Array.keepMap(a =>
+      switch (a[0], a[1]) {
+      | (Some(k), Some(v)) =>
+        switch Js.Json.decodeArray(v) {
+        | Some(rounds) =>
+          let roundSet = rounds
+          ->Array.keepMap(Js.Json.decodeNumber)
+          ->Array.map(Belt.Float.toInt)
+          ->Belt.Set.Int.fromArray
+          Some((Data_Id.decode(k), roundSet))
+        | None => None
+        }
+      | _ => None
+      }
+    )
+    ->Map.fromArray(~id=Data_Id.id),
     tieBreaks: d
     ->Js.Dict.get("tieBreaks")
     ->Option.flatMap(Js.Json.decodeArray)
@@ -93,6 +116,16 @@ let encode = data =>
     ("date", data.date->Js.Date.toJSONUnsafe->Js.Json.string),
     ("playerIds", data.playerIds->Set.toArray->Array.map(Data_Id.encode)->Js.Json.array),
     ("byeQueue", data.byeQueue->Array.map(Data_Id.encode)->Js.Json.array),
+    (
+      "byeRequests",
+      data.byeRequests
+      ->Map.toArray
+      ->Array.map(((k, v)) => [
+        Data_Id.encode(k),
+        v->Belt.Set.Int.toArray->Array.map(Belt.Float.fromInt)->Array.map(Js.Json.number)->Js.Json.array
+      ]->Js.Json.array)
+      ->Js.Json.array,
+    ),
     ("tieBreaks", data.tieBreaks->Array.map(Data_Scoring.TieBreak.encode)->Js.Json.array),
     ("roundList", data.roundList->Data_Rounds.encode),
     (

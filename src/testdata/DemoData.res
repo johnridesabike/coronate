@@ -266,6 +266,7 @@ let tournaments = Map.fromArray(
         name: "Wayne Manor Open",
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
+        byeRequests: Map.make(~id=Id.id),
         playerIds: Set.fromArray(
           ~id=Id.id,
           [batman, robin, alfred, barbara, batwoman, catwoman, jason, james, huntress],
@@ -491,6 +492,7 @@ let tournaments = Map.fromArray(
         name: "The Battle for Gotham City",
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
+        byeRequests: Map.make(~id=Id.id),
         playerIds: Set.fromArray(
           ~id=Id.id,
           [

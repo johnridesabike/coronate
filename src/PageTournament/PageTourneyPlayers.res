@@ -100,11 +100,7 @@ module Selecting = {
   }
 }
 
-let hasHadBye = (matches, playerId) =>
-  matches
-  ->MutableQueue.toArray
-  ->Array.keep((match: Match.t) => Id.eq(match.whiteId, playerId) || Id.eq(match.blackId, playerId))
-  ->Array.some(match => Id.isDummy(match.whiteId) || Id.isDummy(match.blackId))
+// Removed hasHadBye function since we're no longer using it with the new bye request system
 
 module OptionsForm = {
   let errorNotification = x =>
@@ -318,19 +314,78 @@ module OptionsForm = {
     }
   }
 
+  module ByeRequestDialog = {
+    @react.component
+    let make = (~setTourney, ~dialog: Hooks.boolState, ~tourney: Data.Tournament.t, ~p: Data.Player.t) => {
+      let currentRequests = Map.getWithDefault(tourney.byeRequests, p.id, Belt.Set.Int.empty)
+      let totalRounds = Data_Rounds.size(tourney.roundList)
+      let (selectedRounds, setSelectedRounds) = React.useState(() => currentRequests)
+
+      let toggleRound = (roundNum) => {
+        setSelectedRounds(prev =>
+          if Belt.Set.Int.has(prev, roundNum) {
+            Belt.Set.Int.remove(prev, roundNum)
+          } else {
+            Belt.Set.Int.add(prev, roundNum)
+          }
+        )
+      }
+
+      let saveRequests = () => {
+        let newByeRequests = if Belt.Set.Int.isEmpty(selectedRounds) {
+          Map.remove(tourney.byeRequests, p.id)
+        } else {
+          Map.set(tourney.byeRequests, p.id, selectedRounds)
+        }
+        setTourney({...tourney, byeRequests: newByeRequests})
+        dialog.setFalse()
+      }
+
+      <>
+        <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
+          {React.string("Cancel")}
+        </button>
+        <h2> {`Bye requests for ${Player.fullName(p)}`->React.string} </h2>
+        <p className="caption-30">
+          {"Select the rounds where this player needs a bye:"->React.string}
+        </p>
+        <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", margin: "16px 0"}}>
+          {Array.range(1, totalRounds)->Array.map(roundNum =>
+            <label key={Belt.Int.toString(roundNum)} style={{display: "flex", alignItems: "center", gap: "4px"}}>
+              <input
+                type_="checkbox"
+                checked={Belt.Set.Int.has(selectedRounds, roundNum)}
+                onChange={_ => toggleRound(roundNum)}
+              />
+              {`Round ${Belt.Int.toString(roundNum)}`->React.string}
+            </label>
+          )->React.array}
+        </div>
+        <div style={{marginTop: "16px"}}>
+          <button className="button-micro button-primary" onClick={_ => saveRequests()}>
+            {"Save"->React.string}
+          </button>
+          {" "->React.string}
+          <button className="button-micro" onClick={_ => {
+            setSelectedRounds(_ => Belt.Set.Int.empty)
+          }}>
+            {"Clear all"->React.string}
+          </button>
+        </div>
+      </>
+    }
+  }
+
   @react.component
-  let make = (~setTourney, ~tourney: Tournament.t, ~byeQueue, ~p: Player.t) => {
+  let make = (~setTourney, ~tourney: Tournament.t, ~byeQueue as _, ~p: Player.t) => {
     let dialog = Hooks.useBool(false)
+    let byeDialog = Hooks.useBool(false)
+    let hasRequestedRounds = Map.has(tourney.byeRequests, p.id)
     <>
       <button
         className="button-micro"
-        disabled={Js.Array2.includes(byeQueue, p.id)}
-        onClick={_ =>
-          setTourney({
-            ...tourney,
-            byeQueue: Array.concat(byeQueue, [p.id]),
-          })}>
-        {"Bye signup"->React.string}
+        onClick={_ => byeDialog.setTrue()}>
+        {(hasRequestedRounds ? "Edit bye requests" : "Request byes")->React.string}
       </button>
       {" "->React.string}
       <button className="button-micro" onClick={_ => dialog.setTrue()}>
@@ -347,6 +402,13 @@ module OptionsForm = {
         ariaLabel={`Options for ${Player.fullName(p)}`}
         className="">
         <More setTourney dialog tourney p />
+      </Externals.Dialog>
+      <Externals.Dialog
+        isOpen=byeDialog.state
+        onDismiss=byeDialog.setFalse
+        ariaLabel={`Bye requests for ${Player.fullName(p)}`}
+        className="">
+        <ByeRequestDialog setTourney dialog=byeDialog tourney p />
       </Externals.Dialog>
     </>
   }
@@ -377,9 +439,8 @@ let make = (~tournament: LoadTournament.t) => {
     ~column=sortFirstName,
     ~isDescending=false,
   )
-  let {playerIds, roundList, byeQueue, _} = tourney
+  let {playerIds, byeQueue, _} = tourney
   let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
-  let matches = Rounds.rounds2Matches(roundList)
   <div className="content-area">
     <div className="toolbar">
       <button onClick={_ => setIsSelecting(_ => true)}>
@@ -412,29 +473,43 @@ let make = (~tournament: LoadTournament.t) => {
         </table>
       </Utils.Panel>
       <Utils.Panel>
-        <h3> {React.string("Bye queue")} </h3>
-        {switch byeQueue {
-        | [] => <p className="caption-20"> {React.string("No one has signed up yet.")} </p>
-        | byeQueue =>
+        <h3> {React.string("Bye requests")} </h3>
+        {switch Map.isEmpty(tourney.byeRequests) {
+        | true => <p className="caption-20"> {React.string("No bye requests yet.")} </p>
+        | false =>
           <table style={{width: "100%"}}>
+            <thead>
+              <tr>
+                <th style={{textAlign: "left"}}> {React.string("Player")} </th>
+                <th style={{textAlign: "left"}}> {React.string("Requested rounds")} </th>
+                <th> {React.string("Actions")} </th>
+              </tr>
+            </thead>
             <tbody>
-              {Array.map(byeQueue, pId =>
-                <tr
-                  key={Data.Id.toString(pId)} className={hasHadBye(matches, pId) ? "disabled" : ""}>
+              {tourney.byeRequests
+              ->Map.toArray
+              ->Array.map(((pId, roundSet)) => {
+                let roundsText = roundSet
+                ->Belt.Set.Int.toArray
+                ->Array.map(Belt.Int.toString)
+                ->Js.Array2.joinWith(", ")
+                <tr key={Data.Id.toString(pId)}>
                   <td> {pId->getPlayer->Player.fullName->React.string} </td>
+                  <td> {roundsText->React.string} </td>
                   <td>
                     <button
                       className="button-micro"
                       onClick={_ =>
                         setTourney({
                           ...tourney,
-                          byeQueue: Js.Array2.filter(byeQueue, id => !Id.eq(pId, id)),
+                          byeRequests: Map.remove(tourney.byeRequests, pId),
                         })}>
-                      {React.string("Remove")}
+                      {React.string("Clear")}
                     </button>
                   </td>
                 </tr>
-              )->React.array}
+              })
+              ->React.array}
             </tbody>
           </table>
         }}
