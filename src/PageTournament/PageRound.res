@@ -341,14 +341,30 @@ module RoundTable = {
     ~scoreData=?,
   ) => {
     let (config, _) = Db.useConfig()
+
+    let incompleteGamesCount =
+      matches
+      ->Array.keep((m: Data.Match.t) => m.result == NotSet)
+      ->Array.length
+
     <table className="pageround__table">
       {if Js.Array.length(matches) == 0 {
         React.null
       } else {
         <>
           <caption className={isCompact ? "title-30" : "title-40"}>
-            {React.string("Round ")}
-            {React.int(roundId + 1)}
+            <div>
+              {React.string("Round ")}
+              {React.int(roundId + 1)}
+            </div>
+            {if incompleteGamesCount > 0 {
+              <div className="pageround__gamesinprogress__caption">
+                {React.string("Incomplete Games: ")}
+                {React.int(incompleteGamesCount)}
+              </div>
+            } else {
+              React.null
+            }}
           </caption>
           <thead className="pageround__table-head">
             <tr>
