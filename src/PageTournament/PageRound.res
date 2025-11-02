@@ -73,6 +73,16 @@ module MatchRow = {
     let whitePlayer = getPlayer(m.whiteId)
     let blackPlayer = getPlayer(m.blackId)
 
+    let matchResultClass = switch m.result {
+    | NotSet => "pageround__gameinprogress"
+    | WhiteWon
+    | BlackWon
+    | Draw
+    | Aborted
+    | WhiteAborted
+    | BlackAborted => ""
+    }
+
     let resultDisplay = (playerColor: Scoring.Color.t) => {
       let won = <Icons.Award className="pageround__wonicon" />
       let lost = <Externals.VisuallyHidden> {React.string("Lost")} </Externals.VisuallyHidden>
@@ -174,7 +184,7 @@ module MatchRow = {
     | None => false
     | Some(selectedValue) => Id.eq(m.id, selectedValue)
     }
-    <tr className={`${className} ${selected ? "selected" : ""}}`}>
+    <tr className={`${className} ${matchResultClass} ${selected ? "selected" : ""}}`}>
       <th className={"pageround__row-id table__number"} scope="row">
         {string_of_int(pos + 1)->React.string}
       </th>

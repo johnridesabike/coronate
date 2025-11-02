@@ -926,6 +926,10 @@ li.player.missing {
   color: var(--yellow-70);
 }
 
+.pageround__gameinprogress {
+  background-color: lightyellow;
+}
+
 .pageround__select-list .dummy {
   border-top: 1px solid var(--grey-40);
 }
