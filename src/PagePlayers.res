@@ -337,6 +337,303 @@ module NewPlayerForm = {
   }
 }
 
+module BulkImportForm = {
+  type parsedPlayer = {
+    firstName: string,
+    lastName: string,
+    rating: int,
+    lineNumber: int,
+  }
+
+  type parseResult =
+    | Valid(array<parsedPlayer>)
+    | Invalid(array<string>)
+
+  let detectSeparator = input => {
+    // Remove carriage returns
+    let cleanInput = input->Js.String2.replaceByRe(%re("/\r/g"), "")
+    let lines = cleanInput->Js.String2.split("\n")
+
+    // Get first few non-empty lines
+    let sampleLines = lines
+      ->Array.keep(line => line->Js.String2.trim != "")
+      ->Array.slice(~offset=0, ~len=5)
+
+    if Array.length(sampleLines) == 0 {
+      "\t" // Default to tab
+    } else {
+      // Count occurrences of each separator
+      let separators = [("\t", "tab"), (",", "comma"), (";", "semicolon")]
+
+      let scores = separators->Array.map(((sep, _name)) => {
+        let counts = sampleLines->Array.map(line => {
+          let parts = line->Js.String2.split(sep)
+          Array.length(parts)
+        })
+
+        // Check if this separator produces valid results (at least some lines with 2+ columns)
+        let hasValidLines = counts->Array.some(count => count >= 2)
+
+        if !hasValidLines {
+          // Invalid separator - produces only single columns
+          (sep, -1000.0)
+        } else {
+          // Calculate average column count
+          let totalCount = counts->Array.reduce(0, (acc, c) => acc + c)
+          let avgCount = Float.fromInt(totalCount) /. Float.fromInt(Array.length(counts))
+
+          // Small penalty for variance to prefer consistency, but don't overweight it
+          let variance = counts->Array.reduce(0.0, (acc, c) => {
+            let diff = Float.fromInt(c) -. avgCount
+            acc +. (diff *. diff)
+          })
+
+          // Score favors more columns and slight preference for consistency
+          // But variance penalty is small so mixed 2/3 column formats work
+          (sep, avgCount *. 10.0 -. variance *. 0.5)
+        }
+      })
+
+      // Return separator with highest score
+      let bestSep = scores->Array.reduce(("\t", -2000.0), (best, current) => {
+        let (_bestSep, bestScore) = best
+        let (_currSep, currScore) = current
+        if currScore > bestScore {
+          current
+        } else {
+          best
+        }
+      })
+
+      let (sep, _score) = bestSep
+      sep
+    }
+  }
+
+  let parseLine = (line, lineNumber, separator) => {
+    // Remove carriage returns and trim
+    let cleanLine = line->Js.String2.replaceByRe(%re("/\r/g"), "")->Js.String2.trim
+
+    if cleanLine == "" {
+      None
+    } else {
+      let parts = cleanLine->Js.String2.split(separator)
+      let numParts = Array.length(parts)
+
+      if numParts >= 3 {
+        // Three or more columns: firstName, lastName, rating
+        let firstName = parts[0]->Option.getWithDefault("")
+        let lastName = parts[1]->Option.getWithDefault("")
+        let ratingStr = parts[2]->Option.getWithDefault("")
+
+        let firstNameTrimmed = firstName->Js.String2.trim
+        let lastNameTrimmed = lastName->Js.String2.trim
+        let ratingTrimmed = ratingStr->Js.String2.trim
+
+        if firstNameTrimmed == "" {
+          Some(Error(`Line ${Int.toString(lineNumber)}: First name is required`))
+        } else if lastNameTrimmed == "" {
+          Some(Error(`Line ${Int.toString(lineNumber)}: Last name is required`))
+        } else {
+          switch Int.fromString(ratingTrimmed) {
+          | None => Some(Error(`Line ${Int.toString(lineNumber)}: Rating must be a number`))
+          | Some(rating) => Some(Ok({firstName: firstNameTrimmed, lastName: lastNameTrimmed, rating, lineNumber}))
+          }
+        }
+      } else if numParts == 2 {
+        // Two columns: firstName, lastName (default rating 1200)
+        let firstName = parts[0]->Option.getWithDefault("")
+        let lastName = parts[1]->Option.getWithDefault("")
+
+        let firstNameTrimmed = firstName->Js.String2.trim
+        let lastNameTrimmed = lastName->Js.String2.trim
+
+        if firstNameTrimmed == "" {
+          Some(Error(`Line ${Int.toString(lineNumber)}: First name is required`))
+        } else if lastNameTrimmed == "" {
+          Some(Error(`Line ${Int.toString(lineNumber)}: Last name is required`))
+        } else {
+          Some(Ok({firstName: firstNameTrimmed, lastName: lastNameTrimmed, rating: 1200, lineNumber}))
+        }
+      } else {
+        Some(Error(`Line ${Int.toString(lineNumber)}: Expected 2 or 3 columns (FirstName, LastName, Rating)`))
+      }
+    }
+  }
+
+  let parseInput = input => {
+    // Auto-detect separator
+    let separator = detectSeparator(input)
+    let lines = input->Js.String2.split("\n")
+
+    let results = lines->Array.mapWithIndex((i, line) => parseLine(line, i + 1, separator))
+
+    // Filter out empty lines (None)
+    let nonEmptyResults = results->Array.keepMap(x => x)
+
+    if Array.length(nonEmptyResults) == 0 {
+      Invalid(["Please enter at least one player"])
+    } else {
+      let errors = nonEmptyResults->Array.keepMap(r =>
+        switch r {
+        | Error(e) => Some(e)
+        | Ok(_) => None
+        }
+      )
+
+      if Array.length(errors) > 0 {
+        Invalid(errors)
+      } else {
+        let players = nonEmptyResults->Array.keepMap(r =>
+          switch r {
+          | Ok(p) => Some(p)
+          | Error(_) => None
+          }
+        )
+        Valid(players)
+      }
+    }
+  }
+
+  @react.component
+  let make = (~dispatch, ~onSuccess=?) => {
+    let (input, setInput) = React.useState(() => "")
+    let (parseResult, setParseResult) = React.useState(() => None)
+    let (importing, setImporting) = React.useState(() => false)
+
+    let handleFileUpload = event => {
+      module FileReader = Externals.FileReader
+      ReactEvent.Form.preventDefault(event)
+      let reader = FileReader.make()
+
+      let onload = ev => {
+        let content = ev["target"]["result"]
+        setInput(_ => content)
+        setParseResult(_ => None)
+      }
+
+      FileReader.setOnLoad(reader, onload)
+      FileReader.readAsText(
+        reader,
+        ReactEvent.Form.currentTarget(event)["files"]->Array.get(0)->Option.getWithDefault(""),
+      )
+      // Clear the filename so the same file can be uploaded again
+      ReactEvent.Form.currentTarget(event)->Object.set("value", "")
+    }
+
+    let handleSubmit = event => {
+      ReactEvent.Form.preventDefault(event)
+
+      switch parseInput(input) {
+      | Invalid(errors) => setParseResult(_ => Some(Invalid(errors)))
+      | Valid(players) => {
+          setImporting(_ => true)
+
+          // Import all players
+          players->Array.forEach(p => {
+            let id = Data.Id.random()
+            dispatch(Db.Set(id, {
+              Player.firstName: p.firstName,
+              lastName: p.lastName,
+              rating: p.rating,
+              id,
+              type_: Person,
+              matchCount: Player.NatInt.fromInt(0),
+            }))
+          })
+
+          setParseResult(_ => Some(Valid(players)))
+          setImporting(_ => false)
+
+          // Call success callback if provided
+          switch onSuccess {
+          | None => ()
+          | Some(fn) => fn()
+          }
+        }
+      }
+    }
+
+    let handlePreview = event => {
+      ReactEvent.Mouse.preventDefault(event)
+      setParseResult(_ => Some(parseInput(input)))
+    }
+
+    <form onSubmit=handleSubmit>
+      <fieldset>
+        <legend> {React.string("Bulk import players")} </legend>
+        <p>
+          <label htmlFor="bulk-import-file">
+            {React.string("Upload a file (CSV, TSV, or TXT):")}
+          </label>
+        </p>
+        <p>
+          <input
+            type_="file"
+            id="bulk-import-file"
+            accept=".csv,.tsv,.txt"
+            onChange=handleFileUpload
+          />
+        </p>
+        <p className="caption-20" style={ReactDOM.Style.make(~textAlign="center", ())}>
+          {React.string("— OR —")}
+        </p>
+        <p>
+          <label htmlFor="bulk-import-textarea">
+            {React.string("Paste player data (tab, comma, or semicolon separated):")}
+          </label>
+        </p>
+        <p className="caption-20">
+          {React.string("Format: One player per line. Separator will be auto-detected. Rating is optional (defaults to 1200).")}
+        </p>
+        <textarea
+          id="bulk-import-textarea"
+          rows=10
+          value=input
+          placeholder="John\tDoe\t1600\nJane\tSmith\t1450"
+          style={ReactDOM.Style.make(~width="100%", ~fontFamily="monospace", ())}
+          onChange={event => {
+            setInput(_ => (event->ReactEvent.Form.target)["value"])
+            setParseResult(_ => None)
+          }}
+        />
+        <p>
+          <button type_="button" onClick=handlePreview>
+            {React.string("Preview")}
+          </button>
+          {React.string(" ")}
+          <button type_="submit" disabled=importing>
+            {React.string(importing ? "Importing..." : "Import All")}
+          </button>
+        </p>
+        {switch parseResult {
+        | None => React.null
+        | Some(Invalid(errors)) =>
+          <Utils.Notification kind=Error>
+            <p> <strong> {React.string("Validation errors:")} </strong> </p>
+            <ul>
+              {errors->Array.map(error =>
+                <li key=error> {React.string(error)} </li>
+              )->React.array}
+            </ul>
+          </Utils.Notification>
+        | Some(Valid(players)) =>
+          <Utils.Notification kind=Success>
+            <p> <strong> {React.string(`Successfully imported ${Int.toString(Array.length(players))} player(s)!`)} </strong> </p>
+            <ul>
+              {players->Array.map(p =>
+                <li key={Int.toString(p.lineNumber)}>
+                  {React.string(`${p.firstName} ${p.lastName} (${Int.toString(p.rating)})`)}
+                </li>
+              )->React.array}
+            </ul>
+          </Utils.Notification>
+        }}
+      </fieldset>
+    </form>
+  }
+}
+
 module PlayerList = {
   @react.component
   let make = (
@@ -348,6 +645,7 @@ module PlayerList = {
     ~windowDispatch=_ => (),
   ) => {
     let dialog = Hooks.useBool(false)
+    let bulkDialog = Hooks.useBool(false)
     React.useEffect1(() => {
       windowDispatch(Window.SetTitle("Players"))
       Some(() => windowDispatch(SetTitle("")))
@@ -370,6 +668,10 @@ module PlayerList = {
         <button onClick={_ => dialog.setTrue()}>
           <Icons.UserPlus />
           {React.string(" Add a new player")}
+        </button>
+        <button onClick={_ => bulkDialog.setTrue()}>
+          <Icons.Users />
+          {React.string(" Bulk import players")}
         </button>
       </div>
       <table style={{margin: "auto"}}>
@@ -430,6 +732,16 @@ module PlayerList = {
           {React.string("Close")}
         </button>
         <NewPlayerForm dispatch=playersDispatch />
+      </Externals.Dialog>
+      <Externals.Dialog
+        isOpen=bulkDialog.state
+        onDismiss={_ => bulkDialog.setFalse()}
+        ariaLabel="Bulk import players form"
+        className="">
+        <button className="button-micro" onClick={_ => bulkDialog.setFalse()}>
+          {React.string("Close")}
+        </button>
+        <BulkImportForm dispatch=playersDispatch onSuccess={_ => bulkDialog.setFalse()} />
       </Externals.Dialog>
     </div>
   }
