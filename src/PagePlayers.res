@@ -350,9 +350,8 @@ module BulkImportForm = {
     | Invalid(array<string>)
 
   let detectSeparator = input => {
-    // Remove carriage returns
-    let cleanInput = input->Js.String2.replaceByRe(%re("/\r/g"), "")
-    let lines = cleanInput->Js.String2.split("\n")
+    // Split by newlines (trim will handle any \r characters)
+    let lines = input->Js.String2.split("\n")
 
     // Get first few non-empty lines
     let sampleLines = lines
@@ -575,7 +574,7 @@ module BulkImportForm = {
             onChange=handleFileUpload
           />
         </p>
-        <p className="caption-20" style={ReactDOM.Style.make(~textAlign="center", ())}>
+        <p className="caption-20" style={{textAlign: "center"}}>
           {React.string("— OR —")}
         </p>
         <p>
@@ -591,7 +590,7 @@ module BulkImportForm = {
           rows=10
           value=input
           placeholder="John\tDoe\t1600\nJane\tSmith\t1450"
-          style={ReactDOM.Style.make(~width="100%", ~fontFamily="monospace", ())}
+          style={{width: "100%", fontFamily: "monospace"}}
           onChange={event => {
             setInput(_ => (event->ReactEvent.Form.target)["value"])
             setParseResult(_ => None)
