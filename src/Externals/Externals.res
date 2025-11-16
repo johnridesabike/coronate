@@ -34,7 +34,7 @@ module Dialog = {
     ~onDismiss: unit => unit,
     ~ariaLabel: string,
     ~children: React.element,
-    ~style=ReactDOM.Style.make(),
+    ~style: ReactDOM.Style.t={},
     ~className,
   ) =>
     React.createElement(
