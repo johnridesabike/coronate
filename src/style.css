@@ -926,6 +926,16 @@ li.player.missing {
   color: var(--yellow-70);
 }
 
+.pageround__gamesinprogress__caption {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  font-size: smaller;
+  background-color: lightyellow;
+}
+.pageround__gameinprogress {
+  background-color: lightyellow;
+}
+
 .pageround__select-list .dummy {
   border-top: 1px solid var(--grey-40);
 }
