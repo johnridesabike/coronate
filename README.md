@@ -54,7 +54,7 @@ Coronate is free software, but you're welcome to show your appreciation.
 
 ## Development
 
-You will need to install [Node.js] version 22. Coronate might run on other
+You will need to install [Node.js] version 24. Coronate might run on other
 versions too, but it's not tested on them.
 
 [node.js]: https://nodejs.org/
