@@ -377,6 +377,13 @@ let make = (~tournament: LoadTournament.t) => {
     ~column=sortFirstName,
     ~isDescending=false,
   )
+
+  // update the current roster table when activePlayers changes
+  React.useEffect1(() => {
+    tableDispatch(Hooks.SetTable(Map.valuesToArray(activePlayers)))
+    None
+  }, [activePlayers])
+
   let {playerIds, roundList, byeQueue, _} = tourney
   let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
   let matches = Rounds.rounds2Matches(roundList)
