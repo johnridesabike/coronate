@@ -1,6 +1,6 @@
 # example netlify.toml
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "build"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
@@ -14,7 +14,7 @@
   ## https://github.com/netlify/cli/blob/main/docs/netlify-dev.md#project-detection
 [dev]
   framework = "#custom"
-  command = "npm run start" # Command to start your dev server
+  command = "pnpm run start" # Command to start your dev server
   targetPort = 3000 # Port that the dev server will be listening on
   publish = "build" # Folder with the static content for _redirect file
 

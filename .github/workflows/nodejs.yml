@@ -18,14 +18,16 @@ jobs:
         node-version: [22]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run format
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm run format
       - run: git diff --exit-code
-      - run: npm run clean:rescript
-      - run: npm run test
-      - run: npm run build
+      - run: pnpm run clean:rescript
+      - run: pnpm run test
+      - run: pnpm run build

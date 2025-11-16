@@ -85,7 +85,11 @@ Once you have a local copy of the code, run this command in the project's
 directory to install its dependencies:
 
 ```
-npm install
+# Install Corepack:
+npm install -g corepack
+
+# Install dependencies:
+pnpm install
 ```
 
 ## Usage
@@ -95,19 +99,19 @@ Coronate works completely in your local browser.
 First run this to compile the ReScript source:
 
 ```
-npm run build:rescript
+pnpm run build:rescript
 ```
 
 Alternatively, you can run the compiler in watch mode:
 
 ```
-npm run start:rescript
+pnpm run start:rescript
 ```
 
 Then run this to start a development version of the app:
 
 ```
-npm start
+pnpm start
 ```
 
 This will start a server hosting Coronate on your computer. You can then open
@@ -126,19 +130,19 @@ a button to back up your data in an external file.
 To execute the tests, run:
 
 ```
-npm test
+pnpm test
 ```
 
 To create an optimized version for your own website, run:
 
 ```
-npm run build
+pnpm run build
 ```
 
 To automatically format all of the ReScript source files, run:
 
 ```
-npm run format
+pnpm run format
 ```
 
 ## Contributing, hacking, and more
