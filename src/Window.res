@@ -42,7 +42,7 @@ let windowReducer = (state, action) =>
 
 module About = {
   @val
-  external gitModified: string = "process.env.GIT_MODIFIED"
+  external gitModified: string = "__LAST_COMMIT_DATE__"
   @react.component
   let make = () =>
     <article className="win__about">

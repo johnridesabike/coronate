@@ -6,7 +6,10 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 open! Belt
-open Jest
+open Vitest
+open ReactTestingLibrary
+open JestDom
+open FireEvent
 
 let players = TestData.players
 
@@ -25,59 +28,60 @@ let loadPairData = tourney => {
   )
 }
 
-test("Players have 0 priority of pairing themselves.", () => {
+test("Players have 0 priority of pairing themselves.", t => {
   // This doesn't technically mean they won't be paired... but let's be
   // realistic. Something nutty must happen for 0 priority pairings to get
   // picked.
   let data = loadPairData(TestData.byeRoundTourney)
   let newb = TestData.newbieMcNewberson.id
-  Data.Pairing.calcPairIdealByIds(data, newb, newb)->expect->toBe(Some(0.0))
+  t->expect(Data.Pairing.calcPairIdealByIds(data, newb, newb))->Expect.toBe(Some(0.0))
 })
 
 describe("The lowest-ranking player is automatically picked for byes.", () => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney)
   let (pairData, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
-  test("The lowest-ranking player is removed after bye selection.", () =>
-    pairData
-    ->Data.Pairing.players
-    ->Map.keysToArray
-    ->expect
-    ->not_
-    ->toContain(TestData.newbieMcNewberson.id)
+  test("The lowest-ranking player is removed after bye selection.", t =>
+    t
+    ->expect(
+      pairData
+      ->Data.Pairing.players
+      ->Map.keysToArray,
+    )
+    ->Expect.not
+    ->Expect.toContain(TestData.newbieMcNewberson.id)
   )
-  test("The lowest-ranking player is returned", () =>
+  test("The lowest-ranking player is returned", t =>
     switch byedPlayer {
     | None => assert(false)
-    | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
+    | Some(player) => t->expect(Data.Pairing.id(player))->Expect.toBe(TestData.newbieMcNewberson.id)
     }
   )
 })
 
-test("The bye signup queue works", () => {
+test("The bye signup queue works", t => {
   let dataPreBye = loadPairData(TestData.byeRoundTourney2)
   let byeQueue = [TestData.newbieMcNewberson.id, TestData.joelRobinson.id]
   // Newbie McNewberson already played the first bye round
   let (_, byedPlayer) = Data.Pairing.setByePlayer(byeQueue, Data.Id.dummy, dataPreBye)
   switch byedPlayer {
   | None => assert(false)
-  | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.joelRobinson.id)
+  | Some(player) => t->expect(Data.Pairing.id(player))->Expect.toBe(TestData.joelRobinson.id)
   }
 })
-test(
-  "If all player have (impossibly) played a bye round, the lowest-rated player is picked",
-  () => {
-    let dataPreBye = loadPairData(TestData.byeRoundTourney3)
-    let (_, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
-    switch byedPlayer {
-    | None => assert(false)
-    | Some(player) => expect(Data.Pairing.id(player))->toBe(TestData.newbieMcNewberson.id)
-    }
-  },
-)
-test("Players are paired correctly in a simple scenario.", () => {
+test("If all player have (impossibly) played a bye round, the lowest-rated player is picked", t => {
+  let dataPreBye = loadPairData(TestData.byeRoundTourney3)
+  let (_, byedPlayer) = Data.Pairing.setByePlayer([], Data.Id.dummy, dataPreBye)
+  switch byedPlayer {
+  | None => assert(false)
+  | Some(player) => t->expect(Data.Pairing.id(player))->Expect.toBe(TestData.newbieMcNewberson.id)
+  }
+})
+test("Players are paired correctly in a simple scenario.", t => {
   let pairData = loadPairData(TestData.simplePairing)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches)->toEqual([
+  t
+  ->expect(matches)
+  ->Expect.toEqual([
     (TestData.grandyMcMaster.id, TestData.gypsy.id),
     (TestData.drClaytonForrester.id, TestData.newbieMcNewberson.id),
     (TestData.joelRobinson.id, TestData.crowTRobot.id),
@@ -85,10 +89,12 @@ test("Players are paired correctly in a simple scenario.", () => {
   ])
 })
 
-test("Players are paired correctly after a draw.", () => {
+test("Players are paired correctly after a draw.", t => {
   let pairData = loadPairData(TestData.pairingWithDraws)
   let matches = Data.Pairing.pairPlayers(pairData)
-  expect(matches)->toEqual([
+  t
+  ->expect(matches)
+  ->Expect.toEqual([
     (TestData.grandyMcMaster.id, TestData.gypsy.id),
     (TestData.drClaytonForrester.id, TestData.newbieMcNewberson.id),
     (TestData.tomServo.id, TestData.tvsFrank.id),
@@ -96,25 +102,20 @@ test("Players are paired correctly after a draw.", () => {
   ])
 })
 
-open JestDom
-open ReactTestingLibrary
-open FireEvent
-
-JestDom.init()
-
 /* This is quick-and-dirty and fragile. */
-test("Players are paired correctly after a draw (more complex).", () => {
+test("Players are paired correctly after a draw (more complex).", t => {
   let page = render(
     <LoadTournament tourneyId={Data.Id.fromString("complex-bye-rounds---")} windowDispatch=None>
       {tournament => <PageRound tournament roundId=4 />}
     </LoadTournament>,
   )
+
   page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
 
-  page->expect->toMatchSnapshot
+  t->expect(page)->Expect.toMatchSnapshot
 })
 
-test("Auto-matching with bye players works", () => {
+test("Auto-matching with bye players works", t => {
   let page = render(
     <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
       {tournament => <PageRound tournament roundId=0 />}
@@ -123,10 +124,10 @@ test("Auto-matching with bye players works", () => {
 
   page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
 
-  page->getByTestId(#Str("match-3-black"))->expect->toHaveTextContent(#Str("[Bye]"))
+  t->expect(page->getByTestId(#Str("match-3-black")))->toHaveTextContent(#Str("[Bye]"))
 })
 
-test("Auto-matching works with manually adjusted scores", () => {
+test("Auto-matching works with manually adjusted scores", t => {
   /* This isn't ideal but routing isn't working for tests I think. */
   let page = render(
     <LoadTournament tourneyId=TestData.scoreTest.id windowDispatch=None>
@@ -155,11 +156,11 @@ test("Auto-matching works with manually adjusted scores", () => {
   })
   page->getByText(#RegExp(%re("/save/i")))->click
   page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
-  page->getByTestId(#Str("match-0-white"))->expect->toHaveTextContent(#Str("Bobo Professor"))
+  t->expect(page->getByTestId(#Str("match-0-white")))->toHaveTextContent(#Str("Bobo Professor"))
 })
 
 describe("Manually pairing and byes.", () => {
-  test("Pairing players does not automatically pre-select the winner.", () => {
+  test("Pairing players does not automatically pre-select the winner.", t => {
     let page = render(
       <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
@@ -167,13 +168,12 @@ describe("Manually pairing and byes.", () => {
     )
     page->getByText(#Str("Add Joel Robinson"))->click
     page->getByText(#Str("Add Tom Servo"))->click
-    page
-    ->getByTestId(#Str("pairpicker-preselect-winner"))
-    ->expect
+    t
+    ->expect(page->getByTestId(#Str("pairpicker-preselect-winner")))
     ->toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
   })
 
-  test("Pairing with a bye player automatically pre-selects the winner.", () => {
+  test("Pairing with a bye player automatically pre-selects the winner.", t => {
     let page = render(
       <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
@@ -181,13 +181,12 @@ describe("Manually pairing and byes.", () => {
     )
     page->getByText(#Str("Add [Bye]"))->click
     page->getByText(#Str("Add Joel Robinson"))->click
-    page
-    ->getByTestId(#Str("pairpicker-preselect-winner"))
-    ->expect
+    t
+    ->expect(page->getByTestId(#Str("pairpicker-preselect-winner")))
     ->toHaveValue(#Str(Data.Match.Result.toString(BlackWon)))
   })
 
-  test("Un-pairing a bye player automatically un-pre-selects the winner.", () => {
+  test("Un-pairing a bye player automatically un-pre-selects the winner.", t => {
     let page = render(
       <LoadTournament tourneyId=TestData.byeRoundTourney.id windowDispatch=None>
         {tournament => <PageRound tournament roundId=0 />}
@@ -196,9 +195,8 @@ describe("Manually pairing and byes.", () => {
     page->getByText(#Str("Add [Bye]"))->click
     page->getByText(#Str("Add Joel Robinson"))->click
     page->getByText(#Str("Remove [Bye]"))->click
-    page
-    ->getByTestId(#Str("pairpicker-preselect-winner"))
-    ->expect
+    t
+    ->expect(page->getByTestId(#Str("pairpicker-preselect-winner")))
     ->toHaveValue(#Str(Data.Match.Result.toString(NotSet)))
   })
 })

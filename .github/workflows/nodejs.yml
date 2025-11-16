@@ -28,6 +28,6 @@ jobs:
       - run: pnpm install
       - run: pnpm run format
       - run: git diff --exit-code
-      - run: pnpm run clean:rescript
+      - run: pnpm run res:clean
       - run: pnpm run test
       - run: pnpm run build

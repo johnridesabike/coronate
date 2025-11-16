@@ -31,6 +31,8 @@ yarn-error.log*
 .bsb.lock
 *.res.js
 !**/__mocks__/*.res.js
+*.res.mjs
+!**/__mocks__/*.res.mjs
 _esy/
 *.cmt
 
