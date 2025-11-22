@@ -7,14 +7,16 @@
 */
 type t
 
-@module("localforage") external indexedDb: LocalForage_Config.driver = "INDEXEDDB"
-@module("localforage") external webSql: LocalForage_Config.driver = "WEBSQL"
-@module("localforage")
-external localStorage: LocalForage_Config.driver = "LOCALSTORAGE"
-@module("localforage") external make: LocalForage_Config.t => t = "createInstance"
+@module("localforage") @scope("default") external indexedDb: LocalForage_Config.driver = "INDEXEDDB"
+@module("localforage") @scope("default") external webSql: LocalForage_Config.driver = "WEBSQL"
 
-@module("localforage")
-external clear: unit => Promise.t<unit> = "clear"
+@module("localforage") @scope("default")
+external localStorage: LocalForage_Config.driver = "LOCALSTORAGE"
+
+@module("localforage") @scope("default")
+external createInstance: LocalForage_Config.t => t = "createInstance"
+
+@module("localforage") @scope("default") external clear: unit => Promise.t<unit> = "clear"
 
 /* Data API */
 @send
