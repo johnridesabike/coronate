@@ -3,14 +3,14 @@
 import * as React from "react";
 import * as Belt_Map from "rescript/lib/es6/belt_Map.js";
 import * as Belt_Set from "rescript/lib/es6/belt_Set.js";
-import * as Data_Id$Coronate from "../Data/Data_Id.res.js";
-import * as TestData$Coronate from "../testdata/TestData.res.js";
-import * as Data_Auth$Coronate from "../Data/Data_Auth.res.js";
-import * as Data_Config$Coronate from "../Data/Data_Config.res.js";
-import * as Data_Player$Coronate from "../Data/Data_Player.res.js";
-import * as LocalForage_Id$Coronate from "../Externals/LocalForage_Id.res.js";
-import * as Data_Tournament$Coronate from "../Data/Data_Tournament.res.js";
-import * as LocalForage_Map$Coronate from "../Externals/LocalForage_Map.res.js";
+import * as Data_Id$Coronate from "../Data/Data_Id.res.mjs";
+import * as TestData$Coronate from "../testdata/TestData.res.mjs";
+import * as Data_Auth$Coronate from "../Data/Data_Auth.res.mjs";
+import * as Data_Config$Coronate from "../Data/Data_Config.res.mjs";
+import * as Data_Player$Coronate from "../Data/Data_Player.res.mjs";
+import * as LocalForage_Id$Coronate from "../Externals/LocalForage_Id.res.mjs";
+import * as Data_Tournament$Coronate from "../Data/Data_Tournament.res.mjs";
+import * as LocalForage_Map$Coronate from "../Externals/LocalForage_Map.res.mjs";
 
 var Config = LocalForage_Id$Coronate.MakeEncodable({
       encode: Data_Config$Coronate.encode,

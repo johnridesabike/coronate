@@ -21,7 +21,7 @@ let make = (config, type t id, data: Id.encodable<t, id>) => {
   module Data = unpack(data)
   let encode = Id.encode(Data.encode)
   let decode = Id.decode(Data.decode)
-  {store: LF.make(config), encode, decode}
+  {store: LF.createInstance(config), encode, decode}
 }
 
 let getItem = ({store, decode, _}, ~key) =>

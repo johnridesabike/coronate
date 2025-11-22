@@ -5,13 +5,11 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Jest
-open JestDom
+open Vitest
 open ReactTestingLibrary
+open JestDom
 
-JestDom.init()
-
-test("Ratings are updated correctly after a match.", () => {
+test("Ratings are updated correctly after a match.", t => {
   let page = render(
     <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
       {tournament => <PageRound tournament roundId=1 />}
@@ -32,8 +30,7 @@ test("Ratings are updated correctly after a match.", () => {
     #RegExp(%re("/view information for match: newbie mcnewberson versus grandy mcmaster/i")),
   )
   ->FireEvent.click
-  page
-  ->getByTestId(#Str("rating-Newbie_McNewberson___"))
-  ->expect
-  ->toHaveTextContent(#Str("800 (+40)"))
+  t
+  ->expect(page->getByTestId(#Str("rating-Newbie_McNewberson___")))
+  ->JestDom.toHaveTextContent(#Str("800 (+40)"))
 })

@@ -3,11 +3,11 @@
 import * as React from "react";
 import * as Belt_Map from "rescript/lib/es6/belt_Map.js";
 import * as Belt_Set from "rescript/lib/es6/belt_Set.js";
-import * as Db$Coronate from "../../Db.res.js";
+import * as Db$Coronate from "../../Db.res.mjs";
 import * as PervasivesU from "rescript/lib/es6/pervasivesU.js";
-import * as TestData$Coronate from "../../testdata/TestData.res.js";
-import * as Data_Player$Coronate from "../../Data/Data_Player.res.js";
-import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.res.js";
+import * as TestData$Coronate from "../../testdata/TestData.res.mjs";
+import * as Data_Player$Coronate from "../../Data/Data_Player.res.mjs";
+import * as Data_Rounds$Coronate from "../../Data/Data_Rounds.res.mjs";
 
 function log2(num) {
   return Math.log(num) / Math.log(2.0);

@@ -8,7 +8,7 @@
 open! Belt
 open Data
 
-@val external node_env: string = "process.env.NODE_ENV"
+@val external devMode: bool = "import.meta.env.DEV"
 
 let getDateForFile = () => {
   let date = Js.Date.make()
@@ -86,8 +86,8 @@ module GistOpts = {
     )
   }
 
-  @val external github_app_id: string = "process.env.GITHUB_APP_ID"
-  @val external netlify_id: option<string> = "process.env.NETLIFY_ID"
+  @val external github_app_id: string = "import.meta.env.GITHUB_APP_ID"
+  @val external netlify_id: option<string> = "import.meta.env.NETLIFY_ID"
 
   let netlifyopts = switch netlify_id {
   | Some(site_id) => {"site_id": site_id}
@@ -489,7 +489,7 @@ let make = (~windowDispatch=_ => ()) => {
         {React.string("Reset demo data (this erases everything else)")}
       </button>
       {React.string(" ")}
-      {if node_env != "production" {
+      {if devMode {
         <button onClick=loadTestData> {React.string("Load testing data")} </button>
       } else {
         React.null

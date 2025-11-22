@@ -5,15 +5,13 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open Jest
+open Vitest
 open JestDom
 open ReactTestingLibrary
 open FireEvent
 
-JestDom.init()
-
 /* I think the Reach Dialog component may have a problem with this? */
-test("Creating a new tournament works", () => {
+test("Creating a new tournament works", t => {
   let page = render(<PageTournamentList />)
   page->getByText(#RegExp(%re("/add tournament/i")))->click
   page
@@ -24,11 +22,11 @@ test("Creating a new tournament works", () => {
     },
   })
   page->getByText(#RegExp(%re("/create/i")))->click
-  page->getByLabelText(#Str("Delete “Deep 13 Open”"))->expect->toBeInTheDocument
+  t->expect(page->getByLabelText(#Str("Delete “Deep 13 Open”")))->toBeInTheDocument
 })
 
-test("Deleting a tournament works", () => {
+test("Deleting a tournament works", t => {
   let page = render(<PageTournamentList />)
   page->getByLabelText(#Str("Delete “Simple Pairing”"))->click
-  page->queryByText(#RegExp(%re("/simple pairing/")))->expect->toBe(Js.null)
+  t->expect(page->queryByText(#RegExp(%re("/simple pairing/"))))->Expect.toBeNull
 })

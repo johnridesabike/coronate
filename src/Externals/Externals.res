@@ -17,7 +17,7 @@ module FileReader = {
 
 module VisuallyHidden = {
   @module("@reach/visually-hidden") @react.component
-  external make: (~children: React.element) => React.element = "default"
+  external make: (~children: React.element) => React.element = "VisuallyHidden"
 }
 
 module Dialog = {
@@ -34,7 +34,7 @@ module Dialog = {
     ~onDismiss: unit => unit,
     ~ariaLabel: string,
     ~children: React.element,
-    ~style=ReactDOM.Style.make(),
+    ~style: ReactDOM.Style.t={},
     ~className,
   ) =>
     React.createElement(

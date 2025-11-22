@@ -42,7 +42,7 @@ let windowReducer = (state, action) =>
 
 module About = {
   @val
-  external gitModified: string = "process.env.GIT_MODIFIED"
+  external gitModified: string = "__LAST_COMMIT_DATE__"
   @react.component
   let make = () =>
     <article className="win__about">
@@ -92,18 +92,17 @@ module TitleBar = {
       </button>
       <div
         className="body-20"
-        style={ReactDOM.Style.make(
-          ~left="0",
-          ~marginLeft="auto",
-          ~marginRight="auto",
-          ~position="absolute",
-          ~right="0",
-          ~textAlign="center",
-          ~width="50%",
-          ~whiteSpace="nowrap",
-          ~overflow="hidden",
-          (),
-        )}>
+        style={{
+          left: "0",
+          marginLeft: "auto",
+          marginRight: "auto",
+          position: "absolute",
+          right: "0",
+          textAlign: "center",
+          width: "50%",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}>
         {title->formatTitle->React.string}
       </div>
       <button className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>

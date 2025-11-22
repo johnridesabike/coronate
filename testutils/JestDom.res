@@ -6,13 +6,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-type t = Jest.t<Dom.element>
-
-/**
-  You must manually load jest-dom because it extends jest's features as a side-effect.
- */
-@val
-external init: (@as("@testing-library/jest-dom") _, unit) => unit = "require"
+type t = Vitest_Types.expected<Dom.element>
 
 @send external toBeInTheDocument: t => unit = "toBeInTheDocument"
 
