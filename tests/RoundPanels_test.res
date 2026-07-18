@@ -23,7 +23,7 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    let selectTab = page->getByText(#RegExp(%re("/unmatched players \(/i")))
+    let selectTab = page->getByText(#RegExp(/unmatched players \(/i))
     t->expect(selectTab)->toHaveAttribute("aria-selected", "true")
   })
 
@@ -33,10 +33,10 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    let selectTab = page->getByText(#RegExp(%re("/unmatched players \(/i")))
-    page->getByText(#RegExp(%re("/add crow t robot/i")))->click
-    page->getByText(#RegExp(%re("/add tom servo/i")))->click
-    page->getByText(#RegExp(%re("/^match selected$/i")))->click
+    let selectTab = page->getByText(#RegExp(/unmatched players \(/i))
+    page->getByText(#RegExp(/add crow t robot/i))->click
+    page->getByText(#RegExp(/add tom servo/i))->click
+    page->getByText(#RegExp(/^match selected$/i))->click
     t->expect(selectTab)->toHaveAttribute("aria-selected", "true")
   })
 
@@ -46,16 +46,16 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    page->getByText(#RegExp(%re("/add crow t robot/i")))->click
-    page->getByText(#RegExp(%re("/add tom servo/i")))->click
-    page->getByText(#RegExp(%re("/^match selected$/i")))->click
-    page->getByText(#RegExp(%re("/add joel robinson/i")))->click
-    page->getByText(#RegExp(%re("/add clayton forrester/i")))->click
-    page->getByText(#RegExp(%re("/^match selected$/i")))->click
-    let matchesTab = page->getByText(#RegExp(%re("/^matches$/i")))
-    matchesTab->click
-    page->getByText(#RegExp(%re("/edit match for joel robinson versus clayton forrester/i")))->click
-    page->getByText(#RegExp(%re("/^unmatch$/i")))->click
+    page->getByText(#RegExp(/add crow t robot/i))->click
+    page->getByText(#RegExp(/add tom servo/i))->click
+    page->getByText(#RegExp(/^match selected$/i))->click
+    page->getByText(#RegExp(/add joel robinson/i))->click
+    page->getByText(#RegExp(/add clayton forrester/i))->click
+    page->getByText(#RegExp(/^match selected$/i))->click
+    let matchesTab = page->getByText(#RegExp(/^matches$/i))
+    matchesTab->mouseDown
+    page->getByText(#RegExp(/edit match for joel robinson versus clayton forrester/i))->click
+    page->getByText(#RegExp(/^unmatch$/i))->click
     t->expect(matchesTab)->toHaveAttribute("aria-selected", "true")
   })
 
@@ -65,13 +65,13 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    page->getByText(#RegExp(%re("/add crow t robot/i")))->click
-    page->getByText(#RegExp(%re("/add tom servo/i")))->click
-    page->getByText(#RegExp(%re("/^match selected$/i")))->click
-    page->getByText(#RegExp(%re("/edit match for crow t robot versus tom servo/i")))->click
-    page->getByText(#RegExp(%re("/^unmatch$/i")))->click
+    page->getByText(#RegExp(/add crow t robot/i))->click
+    page->getByText(#RegExp(/add tom servo/i))->click
+    page->getByText(#RegExp(/^match selected$/i))->click
+    page->getByText(#RegExp(/edit match for crow t robot versus tom servo/i))->click
+    page->getByText(#RegExp(/^unmatch$/i))->click
     t
-    ->expect(page->getByText(#RegExp(%re("/Matches/i"))))
+    ->expect(page->getByText(#RegExp(/Matches/i)))
     ->toHaveAttribute("aria-selected", "false")
   })
 
@@ -81,9 +81,9 @@ describe("Tabs auto-change correctly.", () => {
         {tournament => <PageRound tournament roundId=1 />}
       </LoadTournament>,
     )
-    page->getByText(#RegExp(%re("/^auto-pair unmatched players$/i")))->click
+    page->getByText(#RegExp(/^auto-pair unmatched players$/i))->click
     t
-    ->expect(page->getByText(#RegExp(%re("/^Unmatched players/i"))))
+    ->expect(page->getByText(#RegExp(/^Unmatched players/i)))
     ->toHaveAttribute("aria-selected", "false")
   })
 })

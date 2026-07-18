@@ -36,7 +36,7 @@ type actionConfig =
   | SetAvoidPairs(Data.Id.Pair.Set.t)
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
-  | SetLastBackup(Js.Date.t)
+  | SetLastBackup(Date.t)
   | SetWhiteAlias(string)
   | SetBlackAlias(string)
 

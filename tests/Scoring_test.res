@@ -23,14 +23,13 @@ test("K Factor is calculated correctly", t => {
 })
 
 test("Ratings are calculated correctly", t => {
-  let calcRatingsForPair =
-    Data.Ratings.calcNewRatings(
-      ~whiteRating=newb.rating,
-      ~blackRating=master.rating,
-      ~whiteMatchCount=newb.matchCount,
-      ~blackMatchCount=master.matchCount,
-      ...
-    )
+  let calcRatingsForPair = Data.Ratings.calcNewRatings(
+    ~whiteRating=newb.rating,
+    ~blackRating=master.rating,
+    ~whiteMatchCount=newb.matchCount,
+    ~blackMatchCount=master.matchCount,
+    ...
+  )
   let newbWon = calcRatingsForPair(~result=Data.Match.Result.WhiteWon)
   // not really a good example for this next one because they don't change:
   let masterWon = calcRatingsForPair(~result=Data.Match.Result.BlackWon)
@@ -103,15 +102,15 @@ testAsync("Manually adjusting scores works", async t => {
       </>}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/more options for kinga forrester/i")))->click
+  page->getByText(#RegExp(/more options for kinga forrester/i))->click
   page
-  ->getByLabelText(#RegExp(%re("/score adjustment/i")))
+  ->getByLabelText(#RegExp(/score adjustment/i))
   ->change({
     "target": {
       "value": "100",
     },
   })
-  page->getByText(#RegExp(%re("/save/i")))->click
+  page->getByText(#RegExp(/save/i))->click
   t->expect(page->getByTestId(#Str("rank-1.0")))->toHaveTextContent(#Str("Kinga Forrester"))
 })
 
@@ -121,10 +120,10 @@ testAsync("Pairing players twice displays the correct history", async t => {
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/add crow t robot/i")))->click
-  page->getByText(#RegExp(%re("/add grandy mcmaster/i")))->click
-  page->getByText(#RegExp(%re("/match selected/i")))->click
-  page->getByText(#RegExp(%re("/^Matches$/")))->click
+  page->getByText(#RegExp(/add crow t robot/i))->click
+  page->getByText(#RegExp(/add grandy mcmaster/i))->click
+  page->getByText(#RegExp(/match selected/i))->click
+  page->getByText(#RegExp(/^Matches$/))->click
   page
   ->getByDisplayValue(#Str("Select winner"))
   ->change({
@@ -133,10 +132,10 @@ testAsync("Pairing players twice displays the correct history", async t => {
     },
   })
   page
-  ->getByText(#RegExp(%re("/View information for match: Crow T Robot versus Grandy McMaster/i")))
+  ->getByText(#RegExp(/View information for match: Crow T Robot versus Grandy McMaster/i))
   ->click
   /* This is a quick heuristic, probably should be more robust */
   t
-  ->expect(page->queryAllByText(#RegExp(%re("/Crow T Robot - Won/i")))->Belt.Array.size)
+  ->expect(page->queryAllByText(#RegExp(/Crow T Robot - Won/i))->Array.length)
   ->Expect.toBe(2)
 })

@@ -10,27 +10,25 @@ type t = {
   github_gist_id: string,
 }
 
-module Option = Belt.Option
-
 let decode = json => {
-  let d = Js.Json.decodeObject(json)->Option.getExn
+  let d = JSON.Decode.object(json)->Option.getOrThrow
   {
     github_token: d
-    ->Js.Dict.get("github_token")
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn,
+    ->Dict.get("github_token")
+    ->Option.flatMap(JSON.Decode.string)
+    ->Option.getOrThrow,
     github_gist_id: d
-    ->Js.Dict.get("github_gist_id")
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn,
+    ->Dict.get("github_gist_id")
+    ->Option.flatMap(JSON.Decode.string)
+    ->Option.getOrThrow,
   }
 }
 
 let encode = data =>
-  Js.Dict.fromArray([
-    ("github_token", data.github_token->Js.Json.string),
-    ("github_gist_id", data.github_gist_id->Js.Json.string),
-  ])->Js.Json.object_
+  Dict.fromArray([
+    ("github_token", data.github_token->JSON.Encode.string),
+    ("github_gist_id", data.github_gist_id->JSON.Encode.string),
+  ])->JSON.Encode.object
 
 let default = {
   github_token: "",

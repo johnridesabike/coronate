@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-module Option = Belt.Option
 
 module Type = {
   type t = Person | Dummy | Missing
@@ -25,9 +24,9 @@ module Type = {
     | _ => Person
     }
 
-  let encode = data => data->toString->Js.Json.string
+  let encode = data => data->toString->JSON.Encode.string
 
-  let decode = data => Js.Json.decodeString(data)->Option.getExn->fromString
+  let decode = data => JSON.Decode.string(data)->Option.getOrThrow->fromString
 }
 
 module NatInt = {
@@ -41,20 +40,20 @@ module NatInt = {
     }
 
   let toInt = x => x
-  let toString = string_of_int
+  let toString = x => Int.toString(x)
 
   let succ = x =>
     if x < 0 {
       0
     } else {
-      succ(x)
+      x + 1
     }
 
   let pred = x =>
     if x < 1 {
       0
     } else {
-      pred(x)
+      x - 1
     }
 }
 
@@ -81,40 +80,40 @@ let predMatchCount = t => {...t, matchCount: NatInt.pred(t.matchCount)}
 let setRating = (t, rating) => {...t, rating}
 
 let decode = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = JSON.Decode.object(json)
   {
-    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Data_Id.decode,
+    id: d->Option.flatMap(d => Dict.get(d, "id"))->Option.getOrThrow->Data_Id.decode,
     firstName: d
-    ->Option.flatMap(d => Js.Dict.get(d, "firstName"))
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn,
+    ->Option.flatMap(d => Dict.get(d, "firstName"))
+    ->Option.flatMap(JSON.Decode.string)
+    ->Option.getOrThrow,
     lastName: d
-    ->Option.flatMap(d => Js.Dict.get(d, "lastName"))
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn,
+    ->Option.flatMap(d => Dict.get(d, "lastName"))
+    ->Option.flatMap(JSON.Decode.string)
+    ->Option.getOrThrow,
     matchCount: d
-    ->Option.flatMap(d => Js.Dict.get(d, "matchCount"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
-    ->Belt.Float.toInt,
+    ->Option.flatMap(d => Dict.get(d, "matchCount"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
+    ->Float.toInt,
     rating: d
-    ->Option.flatMap(d => Js.Dict.get(d, "rating"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
-    ->Belt.Float.toInt,
-    type_: d->Option.flatMap(d => Js.Dict.get(d, "type_"))->Option.getExn->Type.decode,
+    ->Option.flatMap(d => Dict.get(d, "rating"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
+    ->Float.toInt,
+    type_: d->Option.flatMap(d => Dict.get(d, "type_"))->Option.getOrThrow->Type.decode,
   }
 }
 
 let encode = data =>
-  Js.Dict.fromArray([
-    ("firstName", data.firstName->Js.Json.string),
+  Dict.fromArray([
+    ("firstName", data.firstName->JSON.Encode.string),
     ("id", data.id->Data_Id.encode),
-    ("lastName", data.lastName->Js.Json.string),
-    ("matchCount", data.matchCount->Belt.Float.fromInt->Js.Json.number),
-    ("rating", data.rating->Belt.Float.fromInt->Js.Json.number),
+    ("lastName", data.lastName->JSON.Encode.string),
+    ("matchCount", data.matchCount->Float.fromInt->JSON.Encode.float),
+    ("rating", data.rating->Float.fromInt->JSON.Encode.float),
     ("type_", data.type_->Type.encode),
-  ])->Js.Json.object_
+  ])->JSON.Encode.object
 
 let dummy = {
   id: Data_Id.dummy,

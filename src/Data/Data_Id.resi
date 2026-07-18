@@ -24,9 +24,9 @@ let isDummy: t => bool
 
 let random: unit => t
 
-let encode: t => Js.Json.t
+let encode: t => JSON.t
 
-let decode: Js.Json.t => t
+let decode: JSON.t => t
 
 let compare: (t, t) => int
 
@@ -64,8 +64,8 @@ module Pair: {
   module Set: {
     type pair = t
     type t = Belt.Set.t<pair, identity>
-    let encode: t => Js.Json.t
-    let decode: Js.Json.t => t
+    let encode: t => JSON.t
+    let decode: JSON.t => t
 
     /**
      Flatten the `set((id1, id2), (id1, id3))` structure into an easy-to-access

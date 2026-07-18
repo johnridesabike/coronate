@@ -12,5 +12,5 @@ type data = {token: string}
 external authenticate: (
   t,
   {"provider": [#github], "scope": string},
-  @uncurry (Js.Nullable.t<exn>, option<data>) => unit,
+  @uncurry (Nullable.t<exn>, option<data>) => unit,
 ) => unit = "authenticate"

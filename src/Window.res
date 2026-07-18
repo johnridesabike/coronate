@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Router
 
 let global_title = "Coronate"
@@ -86,7 +85,8 @@ module TitleBar = {
     <header className="app__header">
       <button
         className={`mobile-only ${toolbarClasses}`}
-        onClick={_ => dispatch(SetSidebar(!isMobileSidebarOpen))}>
+        onClick={_ => dispatch(SetSidebar(!isMobileSidebarOpen))}
+      >
         <Icons.Menu />
         <Externals.VisuallyHidden> {React.string("Toggle sidebar")} </Externals.VisuallyHidden>
       </button>
@@ -102,7 +102,8 @@ module TitleBar = {
           width: "50%",
           whiteSpace: "nowrap",
           overflow: "hidden",
-        }}>
+        }}
+      >
         {title->formatTitle->React.string}
       </div>
       <button className=toolbarClasses onClick={_ => dispatch(SetDialog(true))}>
@@ -119,14 +120,17 @@ let make = (~children, ~className) => {
   <div
     className={`${className} ${isMobileSidebarOpen
         ? "mobile-sidebar-open"
-        : "mobile-sidebar-closed"}`}>
+        : "mobile-sidebar-closed"}`}
+  >
     <TitleBar isMobileSidebarOpen title dispatch />
     {children(dispatch)}
     <Externals.Dialog
       isOpen=isDialogOpen
       onDismiss={() => dispatch(SetDialog(false))}
       className="win__about-dialog"
-      ariaLabel="About Coronate">
+      ariaLabel="About Coronate"
+      visuallyHiddenTitle=true
+    >
       <button className="button-micro" onClick={_ => dispatch(SetDialog(false))}>
         {React.string("Close")}
       </button>
@@ -191,7 +195,7 @@ let sidebarCallback = dispatch => <DefaultSidebar dispatch />
 module Body = {
   @react.component
   let make = (~children, ~windowDispatch, ~footerFunc=?, ~sidebarFunc=sidebarCallback) =>
-    <div className={`winBody ${footerFunc != None ? "winBody-hasFooter" : ""})`}>
+    <div className={`winBody ${footerFunc != None ? "winBody-hasFooter" : ""}`}>
       <div className="win__sidebar"> {sidebarFunc(windowDispatch)} </div>
       <div className="win__content"> children </div>
       {switch footerFunc {

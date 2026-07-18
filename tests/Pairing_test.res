@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Vitest
 open ReactTestingLibrary
 open JestDom
@@ -15,9 +14,9 @@ let players = TestData.players
 
 let loadPairData = tourney => {
   let {Data.Tournament.playerIds: playerIds, roundList, scoreAdjustments, _} = tourney
-  let players = Map.reduce(players, Belt.Map.make(~id=Data.Id.id), (acc, key, player) =>
-    if Set.has(playerIds, key) {
-      Map.set(acc, key, player)
+  let players = Belt.Map.reduce(players, Belt.Map.make(~id=Data.Id.id), (acc, key, player) =>
+    if Belt.Set.has(playerIds, key) {
+      Belt.Map.set(acc, key, player)
     } else {
       acc
     }
@@ -45,7 +44,7 @@ describe("The lowest-ranking player is automatically picked for byes.", () => {
     ->expect(
       pairData
       ->Data.Pairing.players
-      ->Map.keysToArray,
+      ->Belt.Map.keysToArray,
     )
     ->Expect.not
     ->Expect.toContain(TestData.newbieMcNewberson.id)
@@ -115,7 +114,7 @@ testAsync("Players are paired correctly after a draw (more complex).", async t =
       {tournament => <PageRound tournament roundId=4 />}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
+  page->getByText(#RegExp(/auto-pair unmatched players/i))->click
   t->expect(page)->Expect.toMatchSnapshot
 })
 
@@ -125,7 +124,7 @@ testAsync("Auto-matching with bye players works", async t => {
       {tournament => <PageRound tournament roundId=0 />}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
+  page->getByText(#RegExp(/auto-pair unmatched players/i))->click
   t->expect(page->getByTestId(#Str("match-3-black")))->toHaveTextContent(#Str("[Bye]"))
 })
 
@@ -139,25 +138,25 @@ testAsync("Auto-matching works with manually adjusted scores", async t => {
       </>}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/more options for kinga forrester/i")))->click
+  page->getByText(#RegExp(/more options for kinga forrester/i))->click
   page
-  ->getByLabelText(#RegExp(%re("/score adjustment/i")))
+  ->getByLabelText(#RegExp(/score adjustment/i))
   ->change({
     "target": {
       "value": "3",
     },
   })
-  page->getByText(#RegExp(%re("/save/i")))->click
-  page->getByText(#RegExp(%re("/more options for TV's Max/i")))->click
+  page->getByText(#RegExp(/save/i))->click
+  page->getByText(#RegExp(/more options for TV's Max/i))->click
   page
-  ->getByLabelText(#RegExp(%re("/score adjustment/i")))
+  ->getByLabelText(#RegExp(/score adjustment/i))
   ->change({
     "target": {
       "value": "-3",
     },
   })
-  page->getByText(#RegExp(%re("/save/i")))->click
-  page->getByText(#RegExp(%re("/auto-pair unmatched players/i")))->click
+  page->getByText(#RegExp(/save/i))->click
+  page->getByText(#RegExp(/auto-pair unmatched players/i))->click
   t->expect(page->getByTestId(#Str("match-0-white")))->toHaveTextContent(#Str("Bobo Professor"))
 })
 

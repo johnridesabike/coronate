@@ -9,7 +9,7 @@ open Vitest
 open JestDom
 open ReactTestingLibrary
 
-let date = Js.Date.fromString("2000-01-01T13:55:02.573Z")
+let date = Date.fromString("2000-01-01T13:55:02.573Z")
 
 test("Date format component works", t =>
   t

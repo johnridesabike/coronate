@@ -17,7 +17,7 @@ external getByText: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
 ) => Dom.element = "getByText"
@@ -28,7 +28,7 @@ external getByTestId: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
 ) => Dom.element = "getByTestId"
@@ -39,7 +39,7 @@ external getByDisplayValue: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
 ) => Dom.element = "getByDisplayValue"
@@ -50,7 +50,7 @@ external getByLabelText: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
 ) => Dom.element = "getByLabelText"
@@ -61,10 +61,10 @@ external queryByText: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
-) => Js.Null.t<Dom.element> = "queryByText"
+) => Null.t<Dom.element> = "queryByText"
 
 @send
 external queryAllByText: (
@@ -72,7 +72,7 @@ external queryAllByText: (
   @unwrap
   [
     | #Str(string)
-    | #RegExp(Js.Re.t)
+    | #RegExp(RegExp.t)
     | #Func((string, Dom.element) => bool)
   ],
 ) => array<Dom.element> = "queryAllByText"

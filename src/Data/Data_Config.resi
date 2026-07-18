@@ -18,13 +18,13 @@ type alias
 type t = {
   avoidPairs: Data_Id.Pair.Set.t,
   byeValue: ByeValue.t,
-  lastBackup: Js.Date.t,
+  lastBackup: Date.t,
   whiteAlias: alias,
   blackAlias: alias,
 }
 
-let decode: Js.Json.t => t
-let encode: t => Js.Json.t
+let decode: JSON.t => t
+let encode: t => JSON.t
 
 let default: t
 

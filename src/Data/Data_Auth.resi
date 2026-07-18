@@ -10,8 +10,8 @@ type t = {
   github_gist_id: string,
 }
 
-let encode: t => Js.Json.t
+let encode: t => JSON.t
 
-let decode: Js.Json.t => t
+let decode: JSON.t => t
 
 let default: t

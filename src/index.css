@@ -8,7 +8,6 @@
 @import "@fontsource/fira-sans";
 /* https://design.firefox.com/photon/ */
 @import "photon-colors/photon-colors.css";
-@import "@reach/dialog/styles.css";
 @import-normalize;
 
 /*******************************************************************************
@@ -319,12 +318,29 @@ hr {
   overflow: auto;
 }
 
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.33);
+}
+
+.dialog-content {
+  width: calc(80vw - 2rem);
+  margin: 10vh auto;
+  background: var(--white-100);
+  padding: 2rem;
+  outline: none;
+}
+
+/* Modifiers must follow `.dialog-content`: they have equal specificity, so the
+   later rule wins. */
 .win__about-dialog {
   background-color: var(--grey-20);
 }
 
-[data-reach-dialog-content] {
-  width: calc(80vw - 2rem);
+.dialog-title {
+  margin-top: 0;
 }
 
 .content-area {
@@ -426,7 +442,7 @@ hr {
     width: 100%;
   }
 
-  [data-reach-dialog-content] {
+  .dialog-content {
     width: 50vw;
   }
 
@@ -694,7 +710,7 @@ li.player.missing {
 ## Tabs
 *******************************************************************************/
 
-[data-reach-tabs] {
+.tabs {
   height: 100%;
   width: 100%;
   display: grid;
@@ -704,7 +720,7 @@ li.player.missing {
     "tab-panels";
 }
 
-[data-reach-tab-list] {
+.tabs-list {
   grid-area: tab-list;
   display: flex;
   justify-content: center;
@@ -712,12 +728,17 @@ li.player.missing {
   height: 48px;
 }
 
-[data-reach-tab-panels] {
+.tabs-panels {
   grid-area: tab-panels;
   overflow: auto;
 }
 
-[data-reach-tab] {
+/* Panels are force-mounted, so inactive ones must be hidden with CSS. */
+.tab-panel[data-state="inactive"] {
+  display: none;
+}
+
+.tab {
   border-bottom-width: 2px;
   border-bottom-style: solid;
   border-bottom-color: transparent;
@@ -728,34 +749,34 @@ li.player.missing {
   font-size: 1em;
 }
 
-[data-reach-tab]:hover {
+.tab:hover {
   background-color: var(--grey-90-a10);
   border-bottom-color: var(--grey-90-a20);
 }
 
-[data-reach-tab]:active {
+.tab:active {
   background-color: var(--grey-90-a20);
   border-bottom-color: var(--grey-90-a20);
 }
 
-[data-reach-tab][aria-selected="true"] {
+.tab[aria-selected="true"] {
   color: var(--blue-60);
   border-bottom-color: var(--blue-50);
 }
 
-[data-reach-tab][aria-selected="true"]:hover {
+.tab[aria-selected="true"]:hover {
   background-color: var(--grey-90-a10);
 }
 
-[data-reach-tab][aria-selected="true"]:active {
+.tab[aria-selected="true"]:active {
   background-color: var(--grey-90-a20);
 }
 
-[data-reach-tab][disabled] {
+.tab[disabled] {
   background-color: transparent;
 }
 
-[data-reach-tab][disabled]:hover {
+.tab[disabled]:hover {
   background-color: transparent;
 }
 

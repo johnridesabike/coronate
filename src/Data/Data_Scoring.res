@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 module Id = Data_Id
 
 module Score = {
@@ -145,10 +144,10 @@ module TieBreak = {
     | _ => Median
     }
 
-  let encode = data => data->toString->Js.Json.string
+  let encode = data => data->toString->JSON.Encode.string
 
   @raises(Not_found)
-  let decode = json => Js.Json.decodeString(json)->Option.getExn->fromString
+  let decode = json => JSON.Decode.string(json)->Option.getOrThrow->fromString
 }
 
 let make = id => {
@@ -165,22 +164,22 @@ let make = id => {
 }
 
 let isNotDummy = (scores, oppId) =>
-  switch Map.get(scores, oppId) {
+  switch Belt.Map.get(scores, oppId) {
   | None => true
   | Some(opponent) => !opponent.isDummy
   }
 
 let getPlayerScore = (scores, id) =>
-  switch Map.get(scores, id) {
+  switch Belt.Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({results, adjustment, _}) => Score.calcScore(results, ~adjustment)
   }
 
 let getOpponentScores = (scores, id) =>
-  switch Map.get(scores, id) {
+  switch Belt.Map.get(scores, id) {
   | None => list{}
   | Some({opponentResults, _}) =>
-    List.keepMap(opponentResults, ((oppId, _)) =>
+    List.filterMap(opponentResults, ((oppId, _)) =>
       isNotDummy(scores, oppId) ? Some(getPlayerScore(scores, oppId)) : None
     )
   }
@@ -192,9 +191,9 @@ let getMedianScore = (scores, id) => {
   let oppScores = scores->getOpponentScores(id)
   let size = List.size(oppScores)
   oppScores
-  ->List.sort(Score.Sum.compare)
+  ->Belt.List.sort(Score.Sum.compare)
   // Remove the highest and lowest scores.
-  ->List.keepWithIndex((_, i) => !(i == 0 || i == size - 1))
+  ->List.filterWithIndex((_, i) => !(i == 0 || i == size - 1))
   ->Score.Sum.sum
 }
 
@@ -216,7 +215,7 @@ let runningReducer = (acc, score) =>
   USCF § 34E3.
   */
 let getCumulativeScore = (scores, id) =>
-  switch Map.get(scores, id) {
+  switch Belt.Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({resultsNoByes, adjustment, _}) =>
     resultsNoByes->List.reduce(list{}, runningReducer)->Score.Sum.calcScore(~adjustment)
@@ -226,11 +225,11 @@ let getCumulativeScore = (scores, id) =>
   USCF § 34E4.
   */
 let getCumulativeOfOpponentScore = (scores, id) =>
-  switch Map.get(scores, id) {
+  switch Belt.Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({opponentResults, _}) =>
     opponentResults
-    ->List.keepMap(((id, _)) =>
+    ->List.filterMap(((id, _)) =>
       isNotDummy(scores, id) ? Some(getCumulativeScore(scores, id)) : None
     )
     ->Score.Sum.sum
@@ -240,7 +239,7 @@ let getCumulativeOfOpponentScore = (scores, id) =>
   USCF § 34E6.
   */
 let getColorBalanceScore = (scores, id) =>
-  switch Map.get(scores, id) {
+  switch Belt.Map.get(scores, id) {
   | None => Score.Sum.zero
   | Some({colorScores, _}) => Score.sum(colorScores)
   }
@@ -278,7 +277,7 @@ let standingsSorter = (orderedMethods, a, b) => {
       | (a', b') =>
         /* a and b are switched for ascending order */
         switch Score.Sum.compare(b', a') {
-        | 0 => tieBreaksCompare(succ(i))
+        | 0 => tieBreaksCompare(i + 1)
         | x => x
         }
       }
@@ -294,7 +293,7 @@ let createStandingArray = (t, orderedMethods) =>
   t
   // Tiebreaks are computed even if they aren't necessary.
   // If this is a performance problem, they could be wrapped in a lazy type.
-  ->Map.map(({id, results, adjustment, _}) => {
+  ->Belt.Map.map(({id, results, adjustment, _}) => {
     id,
     score: Score.calcScore(results, ~adjustment),
     median: getMedianScore(t, id),
@@ -303,8 +302,8 @@ let createStandingArray = (t, orderedMethods) =>
     cumulativeOfOpposition: getCumulativeOfOpponentScore(t, id),
     mostBlack: getColorBalanceScore(t, id),
   })
-  ->Map.valuesToArray
-  ->SortArray.stableSortBy(standingsSorter(orderedMethods, ...))
+  ->Belt.Map.valuesToArray
+  ->Belt.SortArray.stableSortBy(standingsSorter(orderedMethods, ...))
 
 let eq = (a, b, tieBreaks) =>
   Score.Sum.eq(a.score, b.score) &&
@@ -341,7 +340,7 @@ let update = (
     Some({
       id: playerId,
       firstRating: origRating,
-      adjustment: Map.getWithDefault(scoreAdjustments, playerId, 0.0),
+      adjustment: Belt.Map.getWithDefault(scoreAdjustments, playerId, 0.0),
       results: list{result},
       resultsNoByes: Data_Id.isDummy(oppId) ? list{} : list{result},
       lastColor: Some(color),
@@ -367,32 +366,30 @@ let update = (
 let fromTournament = (~roundList, ~scoreAdjustments) =>
   roundList
   ->Data_Rounds.rounds2Matches
-  ->MutableQueue.reduce(Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
+  ->Belt.MutableQueue.reduce(Belt.Map.make(~id=Data_Id.id), (acc, match: Data_Match.t) =>
     switch match.result {
     | NotSet => acc
     | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
-      let whiteUpdate =
-        update(
-          ~playerId=match.whiteId,
-          ~origRating=match.whiteOrigRating,
-          ~newRating=match.whiteNewRating,
-          ~result=Score.fromResultWhite(match.result),
-          ~oppId=match.blackId,
-          ~color=White,
-          ~scoreAdjustments,
-          ...
-        )
-      let blackUpdate =
-        update(
-          ~playerId=match.blackId,
-          ~origRating=match.blackOrigRating,
-          ~newRating=match.blackNewRating,
-          ~result=Score.fromResultBlack(match.result),
-          ~oppId=match.whiteId,
-          ~color=Black,
-          ~scoreAdjustments,
-          ...
-        )
-      acc->Map.update(match.whiteId, whiteUpdate)->Map.update(match.blackId, blackUpdate)
+      let whiteUpdate = update(
+        ~playerId=match.whiteId,
+        ~origRating=match.whiteOrigRating,
+        ~newRating=match.whiteNewRating,
+        ~result=Score.fromResultWhite(match.result),
+        ~oppId=match.blackId,
+        ~color=White,
+        ~scoreAdjustments,
+        ...
+      )
+      let blackUpdate = update(
+        ~playerId=match.blackId,
+        ~origRating=match.blackOrigRating,
+        ~newRating=match.blackNewRating,
+        ~result=Score.fromResultBlack(match.result),
+        ~oppId=match.whiteId,
+        ~color=Black,
+        ~scoreAdjustments,
+        ...
+      )
+      acc->Belt.Map.update(match.whiteId, whiteUpdate)->Belt.Map.update(match.blackId, blackUpdate)
     }
   )

@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 
 let github_url = "https://github.com/johnridesabike/coronate"
 let license_url = "https://github.com/johnridesabike/coronate/blob/master/LICENSE"
@@ -46,7 +45,7 @@ module DateFormat = {
   }
   @react.component
   let make = (~date) =>
-    <time dateTime={Js.Date.toISOString(date)}>
+    <time dateTime={Date.toISOString(date)}>
       {formatter->DateTimeFormat.format(date)->React.string}
     </time>
 }
@@ -87,7 +86,7 @@ module DateTimeFormat = {
         ),
       )
     }
-    <time dateTime={Js.Date.toISOString(date)}>
+    <time dateTime={Date.toISOString(date)}>
       {formatter->DateTimeFormat.format(date)->React.string}
     </time>
   }
@@ -174,7 +173,7 @@ let _ = Numeral.registerFormat(
   "fraction",
   Numeral.Format.make(
     ~formatFn=(value, _format, _roundingFunction) => {
-      let whole = floor(value)
+      let whole = Math.floor(value)
       let remainder = value -. whole
       let fraction = switch remainder {
       | 0.25 => `¼`
@@ -185,8 +184,8 @@ let _ = Numeral.registerFormat(
       let stringedWhole = whole == 0.0 && fraction != "" ? "" : Float.toString(whole)
       stringedWhole ++ fraction
     },
-    ~regexps=Numeral.RegExps.make(~format=%re("/(1\/2)/"), ~unformat=%re("/(1\/2)/")),
+    ~regexps=Numeral.RegExps.make(~format=/(1\/2)/, ~unformat=/(1\/2)/),
     /* This doesn't do anything currently */
-    ~unformatFn=value => Float.fromString(value)->Option.getWithDefault(0.0),
+    ~unformatFn=value => Float.fromString(value)->Option.getOr(0.0),
   ),
 )

@@ -18,9 +18,9 @@ module Round: {
 
   let empty: t
 
-  let encode: t => Js.Json.t
+  let encode: t => JSON.t
 
-  let decode: Js.Json.t => t
+  let decode: JSON.t => t
 
   let size: t => int
 
@@ -45,9 +45,9 @@ let toArray: t => array<Round.t>
 
 let empty: t
 
-let encode: t => Js.Json.t
+let encode: t => JSON.t
 
-let decode: Js.Json.t => t
+let decode: JSON.t => t
 
 let size: t => int
 

@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Router
 open LoadTournament
 open Data
@@ -30,7 +29,7 @@ module Footer = {
       <hr className="win__footer-divider" />
       <div className="win__footer-block">
         {React.string("Registered players: ")}
-        {activePlayers->Map.size->React.int}
+        {activePlayers->Belt.Map.size->React.int}
       </div>
       <hr className="win__footer-divider" />
       <Utils.Notification
@@ -43,7 +42,8 @@ module Footer = {
           display: "inline-flex",
           margin: "0",
           minHeight: "initial",
-        }}>
+        }}
+      >
         {React.string(tooltipText)}
       </Utils.Notification>
     </>
@@ -104,7 +104,7 @@ module Sidebar = {
             if result != NotSet && !Match.isBye(match_) {
               /* Don't change players who haven't scored. */
               let reset = (id, rating) =>
-                switch players->Map.get(id) {
+                switch players->Belt.Map.get(id) {
                 | Some(player) =>
                   playersDispatch(
                     Set(player.id, player->Player.setRating(rating)->Player.predMatchCount),
@@ -133,7 +133,8 @@ module Sidebar = {
             <Link
               to_=TournamentList
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.ChevronLeft />
               <span className="sidebar__hide-on-close"> {React.string(" Back")} </span>
             </Link>
@@ -145,7 +146,8 @@ module Sidebar = {
             <Link
               to_=Tournament(tourney.id, Setup)
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.Settings />
               <span className="sidebar__hide-on-close"> {React.string(" Setup")} </span>
             </Link>
@@ -154,7 +156,8 @@ module Sidebar = {
             <Link
               to_=Tournament(tourney.id, Players)
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.Users />
               <span className="sidebar__hide-on-close"> {React.string(" Players")} </span>
             </Link>
@@ -163,7 +166,8 @@ module Sidebar = {
             <Link
               to_=Tournament(tourney.id, Status)
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.Activity />
               <span className="sidebar__hide-on-close"> {React.string(" Status")} </span>
             </Link>
@@ -172,7 +176,8 @@ module Sidebar = {
             <Link
               to_=Tournament(tourney.id, Crosstable)
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.Layers />
               <span className="sidebar__hide-on-close"> {React.string(" Crosstable")} </span>
             </Link>
@@ -181,7 +186,8 @@ module Sidebar = {
             <Link
               to_=Tournament(tourney.id, Scores)
               onDragStart=noDraggy
-              onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+              onClick={_ => windowDispatch(Window.SetSidebar(false))}
+            >
               <Icons.List />
               <span className="sidebar__hide-on-close"> {React.string(" Score detail")} </span>
             </Link>
@@ -192,12 +198,13 @@ module Sidebar = {
         <ul className="center-on-close">
           {roundList
           ->Rounds.toArray
-          ->Array.mapWithIndex((id, _) =>
+          ->Array.mapWithIndex((_, id) =>
             <li key={Int.toString(id)}>
               <Link
                 to_=Tournament(tourney.id, Round(id))
                 onDragStart=noDraggy
-                onClick={_ => windowDispatch(Window.SetSidebar(false))}>
+                onClick={_ => windowDispatch(Window.SetSidebar(false))}
+              >
                 {React.int(id + 1)}
                 {if isRoundComplete(id) {
                   <span className={"sidebar__hide-on-close caption-20"}>
@@ -223,7 +230,8 @@ module Sidebar = {
             className="sidebar-button"
             disabled={!isNewRoundReady}
             onClick=newRound
-            style={{width: "100%"}}>
+            style={{width: "100%"}}
+          >
             <Icons.Plus />
             <span className="sidebar__hide-on-close"> {React.string(" New round")} </span>
           </button>
@@ -233,7 +241,8 @@ module Sidebar = {
             disabled={Rounds.size(roundList) == 0}
             onClick=delLastRound
             className="button-micro sidebar-button"
-            style={{marginTop: "8px"}}>
+            style={{marginTop: "8px"}}
+          >
             <Icons.Trash />
             <span className="sidebar__hide-on-close"> {React.string(" Remove last round")} </span>
           </button>
@@ -252,7 +261,8 @@ let make = (~tourneyId, ~subPage: TourneyPage.t, ~windowDispatch) =>
       <Window.Body
         windowDispatch
         footerFunc={() => footerFunc(tournament)}
-        sidebarFunc={sidebarFunc(tournament, ...)}>
+        sidebarFunc={sidebarFunc(tournament, ...)}
+      >
         {switch subPage {
         | Players => <PageTourneyPlayers tournament />
         | Scores => <PageTourneyScores tournament />

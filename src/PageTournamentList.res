@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Router
 open Data.Tournament
 
@@ -17,7 +16,7 @@ let nameSort = Hooks.GetString(x => x.name)
 let make = (~windowDispatch=_ => ()) => {
   let {items: tourneys, dispatch, _} = Db.useAllTournaments()
   let (sorted, sortDispatch) = Hooks.useSortedTable(
-    ~table=Map.valuesToArray(tourneys),
+    ~table=Belt.Map.valuesToArray(tourneys),
     ~column=dateSort,
     ~isDescending=true,
   )
@@ -29,7 +28,7 @@ let make = (~windowDispatch=_ => ()) => {
     Some(() => windowDispatch(Window.SetTitle("")))
   }, [windowDispatch])
   React.useEffect2(() => {
-    sortDispatch(Hooks.SetTable(Map.valuesToArray(tourneys)))
+    sortDispatch(Hooks.SetTable(Belt.Map.valuesToArray(tourneys)))
     None
   }, (tourneys, sortDispatch))
 
@@ -98,7 +97,8 @@ let make = (~windowDispatch=_ => ()) => {
                     ariaLabel={`Delete “${name}”`}
                     className="danger button-ghost"
                     title={"Delete " ++ name}
-                    onClick={_ => deleteTournament(id, name)}>
+                    onClick={_ => deleteTournament(id, name)}
+                  >
                     <Icons.Trash />
                   </button>
                 </td>
@@ -111,7 +111,8 @@ let make = (~windowDispatch=_ => ()) => {
         isOpen=newTourneyDialog.state
         onDismiss=newTourneyDialog.setFalse
         ariaLabel="Create new tournament"
-        className="">
+        visuallyHiddenTitle=true
+      >
         <button className="button-micro" onClick={_ => newTourneyDialog.setFalse()}>
           {React.string("Close")}
         </button>

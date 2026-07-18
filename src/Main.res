@@ -7,5 +7,5 @@ switch ReactDOM.querySelector("#root") {
       <App />
     </React.StrictMode>,
   )
-| None => Js.Console.error("Couldn't find root.")
+| None => Console.error("Couldn't find root.")
 }

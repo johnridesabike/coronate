@@ -8,24 +8,28 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
   >
     <div>
       <div
+        class="tabs"
         data-orientation="horizontal"
-        data-reach-tabs=""
+        dir="ltr"
       >
         <div
           aria-orientation="horizontal"
-          data-reach-tab-list=""
+          class="tabs-list"
+          data-orientation="horizontal"
           role="tablist"
+          style="outline: none;"
+          tabindex="0"
         >
           <button
-            aria-controls="tabs--panel--0"
-            aria-disabled="false"
+            aria-controls="radix-_r_0_-content-matches"
             aria-selected="true"
+            class="tab"
             data-orientation="horizontal"
-            data-reach-tab=""
-            data-selected=""
-            id="tabs--tab--0"
+            data-radix-collection-item=""
+            data-state="active"
+            id="radix-_r_0_-trigger-matches"
             role="tab"
-            tabindex="0"
+            tabindex="-1"
             type="button"
           >
             <svg
@@ -79,13 +83,15 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
              Matches
           </button>
           <button
-            aria-controls="tabs--panel--1"
-            aria-disabled="true"
+            aria-controls="radix-_r_0_-content-unmatched"
             aria-selected="false"
+            class="tab"
+            data-disabled=""
             data-orientation="horizontal"
-            data-reach-tab=""
+            data-radix-collection-item=""
+            data-state="inactive"
             disabled=""
-            id="tabs--tab--1"
+            id="radix-_r_0_-trigger-unmatched"
             role="tab"
             tabindex="-1"
             type="button"
@@ -120,12 +126,14 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
           </button>
         </div>
         <div
-          data-reach-tab-panels=""
+          class="tabs-panels"
         >
           <div
-            aria-labelledby="tabs--tab--0"
-            data-reach-tab-panel=""
-            id="tabs--panel--0"
+            aria-labelledby="radix-_r_0_-trigger-matches"
+            class="tab-panel"
+            data-orientation="horizontal"
+            data-state="active"
+            id="radix-_r_0_-content-matches"
             role="tabpanel"
             tabindex="0"
           >
@@ -290,7 +298,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       scope="col"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         White
                          result
@@ -306,7 +314,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       scope="col"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Black
                          result
@@ -330,7 +338,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       scope="col"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Controls
                       </span>
@@ -353,7 +361,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -369,7 +377,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -461,7 +469,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ch W versus Di H
                         </span>
@@ -500,7 +508,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ch W versus Di H
                         </span>
@@ -520,7 +528,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -536,7 +544,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -628,7 +636,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for El A versus Ev R
                         </span>
@@ -667,7 +675,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: El A versus Ev R
                         </span>
@@ -687,7 +695,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -703,7 +711,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -795,7 +803,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Da H versus Ch R
                         </span>
@@ -834,7 +842,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Da H versus Ch R
                         </span>
@@ -854,7 +862,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -870,7 +878,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -962,7 +970,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Co B versus Ch A
                         </span>
@@ -1001,7 +1009,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Co B versus Ch A
                         </span>
@@ -1021,7 +1029,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1037,7 +1045,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1129,7 +1137,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for El R versus Er R
                         </span>
@@ -1168,7 +1176,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: El R versus Er R
                         </span>
@@ -1188,7 +1196,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1204,7 +1212,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1296,7 +1304,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ca R versus Aa C
                         </span>
@@ -1335,7 +1343,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ca R versus Aa C
                         </span>
@@ -1355,7 +1363,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1371,7 +1379,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1463,7 +1471,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Da K versus El M
                         </span>
@@ -1502,7 +1510,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Da K versus El M
                         </span>
@@ -1522,7 +1530,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1538,7 +1546,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1630,7 +1638,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Jj S versus Mr C
                         </span>
@@ -1669,7 +1677,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Jj S versus Mr C
                         </span>
@@ -1689,7 +1697,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1705,7 +1713,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1797,7 +1805,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Br K versus Ch B
                         </span>
@@ -1836,7 +1844,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Br K versus Ch B
                         </span>
@@ -1856,7 +1864,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1872,7 +1880,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -1964,7 +1972,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Br B versus Au H
                         </span>
@@ -2003,7 +2011,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Br B versus Au H
                         </span>
@@ -2023,7 +2031,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2039,7 +2047,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2131,7 +2139,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ho M versus Ry S
                         </span>
@@ -2170,7 +2178,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ho M versus Ry S
                         </span>
@@ -2190,7 +2198,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2206,7 +2214,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2298,7 +2306,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Br T versus Jo B
                         </span>
@@ -2337,7 +2345,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Br T versus Jo B
                         </span>
@@ -2357,7 +2365,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2373,7 +2381,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2465,7 +2473,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Mr G versus Kai S
                         </span>
@@ -2504,7 +2512,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Mr G versus Kai S
                         </span>
@@ -2524,7 +2532,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2540,7 +2548,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2632,7 +2640,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ja J versus Ta C
                         </span>
@@ -2671,7 +2679,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ja J versus Ta C
                         </span>
@@ -2691,7 +2699,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2707,7 +2715,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2799,7 +2807,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Bry E versus Kel B
                         </span>
@@ -2838,7 +2846,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Bry E versus Kel B
                         </span>
@@ -2858,7 +2866,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2874,7 +2882,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -2966,7 +2974,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ke N versus Dr D
                         </span>
@@ -3005,7 +3013,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ke N versus Dr D
                         </span>
@@ -3025,7 +3033,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3041,7 +3049,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3133,7 +3141,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Li A versus Th O
                         </span>
@@ -3172,7 +3180,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Li A versus Th O
                         </span>
@@ -3192,7 +3200,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3208,7 +3216,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3300,7 +3308,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ja K versus Ji J
                         </span>
@@ -3339,7 +3347,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ja K versus Ji J
                         </span>
@@ -3359,7 +3367,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3375,7 +3383,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3467,7 +3475,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Br P versus Ka S
                         </span>
@@ -3506,7 +3514,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Br P versus Ka S
                         </span>
@@ -3526,7 +3534,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3542,7 +3550,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3634,7 +3642,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Wi W versus Am D
                         </span>
@@ -3673,7 +3681,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Wi W versus Am D
                         </span>
@@ -3693,7 +3701,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3709,7 +3717,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3801,7 +3809,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ju M versus Ka M
                         </span>
@@ -3840,7 +3848,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ju M versus Ka M
                         </span>
@@ -3860,7 +3868,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3876,7 +3884,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -3968,7 +3976,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ze V versus Je P
                         </span>
@@ -4007,7 +4015,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ze V versus Je P
                         </span>
@@ -4027,7 +4035,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4043,7 +4051,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4135,7 +4143,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Je K versus Je W
                         </span>
@@ -4174,7 +4182,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Je K versus Je W
                         </span>
@@ -4194,7 +4202,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4210,7 +4218,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4302,7 +4310,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Is R versus Ca S
                         </span>
@@ -4341,7 +4349,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Is R versus Ca S
                         </span>
@@ -4361,7 +4369,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4377,7 +4385,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4469,7 +4477,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ja G versus Av H
                         </span>
@@ -4508,7 +4516,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ja G versus Av H
                         </span>
@@ -4528,7 +4536,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4544,7 +4552,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4636,7 +4644,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ra V versus Mi P
                         </span>
@@ -4675,7 +4683,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ra V versus Mi P
                         </span>
@@ -4695,7 +4703,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4711,7 +4719,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4803,7 +4811,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Br E versus Ja W
                         </span>
@@ -4842,7 +4850,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Br E versus Ja W
                         </span>
@@ -4862,7 +4870,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4878,7 +4886,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -4970,7 +4978,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Co C versus Za D
                         </span>
@@ -5009,7 +5017,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Co C versus Za D
                         </span>
@@ -5029,7 +5037,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5045,7 +5053,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5137,7 +5145,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Lu L versus Cl M
                         </span>
@@ -5176,7 +5184,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Lu L versus Cl M
                         </span>
@@ -5196,7 +5204,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5212,7 +5220,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5304,7 +5312,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Li I versus Da N
                         </span>
@@ -5343,7 +5351,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Li I versus Da N
                         </span>
@@ -5363,7 +5371,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5379,7 +5387,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                       class="pageround__playerresult"
                     >
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Not set
                       </span>
@@ -5471,7 +5479,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           Edit match for Ca W versus Ke B
                         </span>
@@ -5510,7 +5518,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                           />
                         </svg>
                         <span
-                          style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                         >
                           View information for match: Ca W versus Ke B
                         </span>
@@ -5522,12 +5530,14 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
             </div>
           </div>
           <div
-            aria-labelledby="tabs--tab--1"
-            data-reach-tab-panel=""
-            hidden=""
-            id="tabs--panel--1"
+            aria-labelledby="radix-_r_0_-trigger-unmatched"
+            class="tab-panel"
+            data-orientation="horizontal"
+            data-state="inactive"
+            id="radix-_r_0_-content-unmatched"
             role="tabpanel"
-            tabindex="-1"
+            style=""
+            tabindex="0"
           >
             <div />
           </div>
@@ -5537,24 +5547,28 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
   </body>,
   "container": <div>
     <div
+      class="tabs"
       data-orientation="horizontal"
-      data-reach-tabs=""
+      dir="ltr"
     >
       <div
         aria-orientation="horizontal"
-        data-reach-tab-list=""
+        class="tabs-list"
+        data-orientation="horizontal"
         role="tablist"
+        style="outline: none;"
+        tabindex="0"
       >
         <button
-          aria-controls="tabs--panel--0"
-          aria-disabled="false"
+          aria-controls="radix-_r_0_-content-matches"
           aria-selected="true"
+          class="tab"
           data-orientation="horizontal"
-          data-reach-tab=""
-          data-selected=""
-          id="tabs--tab--0"
+          data-radix-collection-item=""
+          data-state="active"
+          id="radix-_r_0_-trigger-matches"
           role="tab"
-          tabindex="0"
+          tabindex="-1"
           type="button"
         >
           <svg
@@ -5608,13 +5622,15 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
            Matches
         </button>
         <button
-          aria-controls="tabs--panel--1"
-          aria-disabled="true"
+          aria-controls="radix-_r_0_-content-unmatched"
           aria-selected="false"
+          class="tab"
+          data-disabled=""
           data-orientation="horizontal"
-          data-reach-tab=""
+          data-radix-collection-item=""
+          data-state="inactive"
           disabled=""
-          id="tabs--tab--1"
+          id="radix-_r_0_-trigger-unmatched"
           role="tab"
           tabindex="-1"
           type="button"
@@ -5649,12 +5665,14 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
         </button>
       </div>
       <div
-        data-reach-tab-panels=""
+        class="tabs-panels"
       >
         <div
-          aria-labelledby="tabs--tab--0"
-          data-reach-tab-panel=""
-          id="tabs--panel--0"
+          aria-labelledby="radix-_r_0_-trigger-matches"
+          class="tab-panel"
+          data-orientation="horizontal"
+          data-state="active"
+          id="radix-_r_0_-content-matches"
           role="tabpanel"
           tabindex="0"
         >
@@ -5819,7 +5837,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     scope="col"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       White
                        result
@@ -5835,7 +5853,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     scope="col"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Black
                        result
@@ -5859,7 +5877,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     scope="col"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Controls
                     </span>
@@ -5882,7 +5900,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -5898,7 +5916,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -5990,7 +6008,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ch W versus Di H
                       </span>
@@ -6029,7 +6047,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ch W versus Di H
                       </span>
@@ -6049,7 +6067,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6065,7 +6083,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6157,7 +6175,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for El A versus Ev R
                       </span>
@@ -6196,7 +6214,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: El A versus Ev R
                       </span>
@@ -6216,7 +6234,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6232,7 +6250,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6324,7 +6342,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Da H versus Ch R
                       </span>
@@ -6363,7 +6381,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Da H versus Ch R
                       </span>
@@ -6383,7 +6401,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6399,7 +6417,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6491,7 +6509,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Co B versus Ch A
                       </span>
@@ -6530,7 +6548,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Co B versus Ch A
                       </span>
@@ -6550,7 +6568,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6566,7 +6584,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6658,7 +6676,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for El R versus Er R
                       </span>
@@ -6697,7 +6715,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: El R versus Er R
                       </span>
@@ -6717,7 +6735,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6733,7 +6751,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6825,7 +6843,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ca R versus Aa C
                       </span>
@@ -6864,7 +6882,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ca R versus Aa C
                       </span>
@@ -6884,7 +6902,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6900,7 +6918,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -6992,7 +7010,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Da K versus El M
                       </span>
@@ -7031,7 +7049,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Da K versus El M
                       </span>
@@ -7051,7 +7069,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7067,7 +7085,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7159,7 +7177,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Jj S versus Mr C
                       </span>
@@ -7198,7 +7216,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Jj S versus Mr C
                       </span>
@@ -7218,7 +7236,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7234,7 +7252,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7326,7 +7344,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Br K versus Ch B
                       </span>
@@ -7365,7 +7383,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Br K versus Ch B
                       </span>
@@ -7385,7 +7403,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7401,7 +7419,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7493,7 +7511,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Br B versus Au H
                       </span>
@@ -7532,7 +7550,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Br B versus Au H
                       </span>
@@ -7552,7 +7570,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7568,7 +7586,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7660,7 +7678,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ho M versus Ry S
                       </span>
@@ -7699,7 +7717,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ho M versus Ry S
                       </span>
@@ -7719,7 +7737,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7735,7 +7753,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7827,7 +7845,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Br T versus Jo B
                       </span>
@@ -7866,7 +7884,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Br T versus Jo B
                       </span>
@@ -7886,7 +7904,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7902,7 +7920,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -7994,7 +8012,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Mr G versus Kai S
                       </span>
@@ -8033,7 +8051,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Mr G versus Kai S
                       </span>
@@ -8053,7 +8071,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8069,7 +8087,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8161,7 +8179,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ja J versus Ta C
                       </span>
@@ -8200,7 +8218,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ja J versus Ta C
                       </span>
@@ -8220,7 +8238,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8236,7 +8254,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8328,7 +8346,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Bry E versus Kel B
                       </span>
@@ -8367,7 +8385,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Bry E versus Kel B
                       </span>
@@ -8387,7 +8405,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8403,7 +8421,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8495,7 +8513,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ke N versus Dr D
                       </span>
@@ -8534,7 +8552,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ke N versus Dr D
                       </span>
@@ -8554,7 +8572,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8570,7 +8588,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8662,7 +8680,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Li A versus Th O
                       </span>
@@ -8701,7 +8719,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Li A versus Th O
                       </span>
@@ -8721,7 +8739,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8737,7 +8755,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8829,7 +8847,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ja K versus Ji J
                       </span>
@@ -8868,7 +8886,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ja K versus Ji J
                       </span>
@@ -8888,7 +8906,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8904,7 +8922,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -8996,7 +9014,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Br P versus Ka S
                       </span>
@@ -9035,7 +9053,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Br P versus Ka S
                       </span>
@@ -9055,7 +9073,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9071,7 +9089,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9163,7 +9181,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Wi W versus Am D
                       </span>
@@ -9202,7 +9220,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Wi W versus Am D
                       </span>
@@ -9222,7 +9240,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9238,7 +9256,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9330,7 +9348,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ju M versus Ka M
                       </span>
@@ -9369,7 +9387,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ju M versus Ka M
                       </span>
@@ -9389,7 +9407,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9405,7 +9423,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9497,7 +9515,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ze V versus Je P
                       </span>
@@ -9536,7 +9554,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ze V versus Je P
                       </span>
@@ -9556,7 +9574,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9572,7 +9590,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9664,7 +9682,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Je K versus Je W
                       </span>
@@ -9703,7 +9721,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Je K versus Je W
                       </span>
@@ -9723,7 +9741,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9739,7 +9757,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9831,7 +9849,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Is R versus Ca S
                       </span>
@@ -9870,7 +9888,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Is R versus Ca S
                       </span>
@@ -9890,7 +9908,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9906,7 +9924,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -9998,7 +10016,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ja G versus Av H
                       </span>
@@ -10037,7 +10055,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ja G versus Av H
                       </span>
@@ -10057,7 +10075,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10073,7 +10091,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10165,7 +10183,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ra V versus Mi P
                       </span>
@@ -10204,7 +10222,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ra V versus Mi P
                       </span>
@@ -10224,7 +10242,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10240,7 +10258,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10332,7 +10350,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Br E versus Ja W
                       </span>
@@ -10371,7 +10389,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Br E versus Ja W
                       </span>
@@ -10391,7 +10409,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10407,7 +10425,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10499,7 +10517,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Co C versus Za D
                       </span>
@@ -10538,7 +10556,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Co C versus Za D
                       </span>
@@ -10558,7 +10576,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10574,7 +10592,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10666,7 +10684,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Lu L versus Cl M
                       </span>
@@ -10705,7 +10723,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Lu L versus Cl M
                       </span>
@@ -10725,7 +10743,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10741,7 +10759,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10833,7 +10851,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Li I versus Da N
                       </span>
@@ -10872,7 +10890,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Li I versus Da N
                       </span>
@@ -10892,7 +10910,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -10908,7 +10926,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                     class="pageround__playerresult"
                   >
                     <span
-                      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                     >
                       Not set
                     </span>
@@ -11000,7 +11018,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         Edit match for Ca W versus Ke B
                       </span>
@@ -11039,7 +11057,7 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
                         />
                       </svg>
                       <span
-                        style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap; word-wrap: normal;"
+                        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
                       >
                         View information for match: Ca W versus Ke B
                       </span>
@@ -11051,12 +11069,14 @@ exports[`Players are paired correctly after a draw (more complex). 1`] = `
           </div>
         </div>
         <div
-          aria-labelledby="tabs--tab--1"
-          data-reach-tab-panel=""
-          hidden=""
-          id="tabs--panel--1"
+          aria-labelledby="radix-_r_0_-trigger-unmatched"
+          class="tab-panel"
+          data-orientation="horizontal"
+          data-state="inactive"
+          id="radix-_r_0_-content-unmatched"
           role="tabpanel"
-          tabindex="-1"
+          style=""
+          tabindex="0"
         >
           <div />
         </div>

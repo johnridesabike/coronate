@@ -7,7 +7,6 @@
 */
 module Id = Data_Id
 module Float = Belt.Float
-module Option = Belt.Option
 
 /* Not to be confused with `Belt.Result` */
 module Result = {
@@ -35,9 +34,9 @@ module Result = {
     | _ => NotSet
     }
 
-  let encode = data => data->toString->Js.Json.string
+  let encode = data => data->toString->JSON.Encode.string
 
-  let decode = json => Js.Json.decodeString(json)->Option.getExn->fromString
+  let decode = json => JSON.Decode.string(json)->Option.getOrThrow->fromString
 
   let scoreByeMatch = (~white, ~black, ~byeValue: Data_Config.ByeValue.t, ~default) => {
     switch (Id.isDummy(white), Id.isDummy(black), byeValue) {
@@ -72,46 +71,46 @@ type t = {
 let isBye = ({whiteId, blackId, _}) => Data_Id.isDummy(whiteId) || Data_Id.isDummy(blackId)
 
 let decode = json => {
-  let d = Js.Json.decodeObject(json)
+  let d = JSON.Decode.object(json)
   {
-    id: d->Option.flatMap(d => Js.Dict.get(d, "id"))->Option.getExn->Id.decode,
-    whiteId: d->Option.flatMap(d => Js.Dict.get(d, "whiteId"))->Option.getExn->Id.decode,
-    blackId: d->Option.flatMap(d => Js.Dict.get(d, "blackId"))->Option.getExn->Id.decode,
+    id: d->Option.flatMap(d => Dict.get(d, "id"))->Option.getOrThrow->Id.decode,
+    whiteId: d->Option.flatMap(d => Dict.get(d, "whiteId"))->Option.getOrThrow->Id.decode,
+    blackId: d->Option.flatMap(d => Dict.get(d, "blackId"))->Option.getOrThrow->Id.decode,
     whiteNewRating: d
-    ->Option.flatMap(d => Js.Dict.get(d, "whiteNewRating"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
+    ->Option.flatMap(d => Dict.get(d, "whiteNewRating"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
     ->Float.toInt,
     blackNewRating: d
-    ->Option.flatMap(d => Js.Dict.get(d, "blackNewRating"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
+    ->Option.flatMap(d => Dict.get(d, "blackNewRating"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
     ->Float.toInt,
     whiteOrigRating: d
-    ->Option.flatMap(d => Js.Dict.get(d, "whiteOrigRating"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
+    ->Option.flatMap(d => Dict.get(d, "whiteOrigRating"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
     ->Float.toInt,
     blackOrigRating: d
-    ->Option.flatMap(d => Js.Dict.get(d, "blackOrigRating"))
-    ->Option.flatMap(Js.Json.decodeNumber)
-    ->Option.getExn
+    ->Option.flatMap(d => Dict.get(d, "blackOrigRating"))
+    ->Option.flatMap(JSON.Decode.float)
+    ->Option.getOrThrow
     ->Float.toInt,
-    result: d->Option.flatMap(d => Js.Dict.get(d, "result"))->Option.getExn->Result.decode,
+    result: d->Option.flatMap(d => Dict.get(d, "result"))->Option.getOrThrow->Result.decode,
   }
 }
 
 let encode = data =>
-  Js.Dict.fromArray([
+  Dict.fromArray([
     ("id", data.id->Id.encode),
     ("whiteId", data.whiteId->Id.encode),
     ("blackId", data.blackId->Id.encode),
-    ("whiteNewRating", data.whiteNewRating->Float.fromInt->Js.Json.number),
-    ("blackNewRating", data.blackNewRating->Float.fromInt->Js.Json.number),
-    ("whiteOrigRating", data.whiteOrigRating->Float.fromInt->Js.Json.number),
-    ("blackOrigRating", data.blackOrigRating->Float.fromInt->Js.Json.number),
+    ("whiteNewRating", data.whiteNewRating->Float.fromInt->JSON.Encode.float),
+    ("blackNewRating", data.blackNewRating->Float.fromInt->JSON.Encode.float),
+    ("whiteOrigRating", data.whiteOrigRating->Float.fromInt->JSON.Encode.float),
+    ("blackOrigRating", data.blackOrigRating->Float.fromInt->JSON.Encode.float),
     ("result", data.result->Result.encode),
-  ])->Js.Json.object_
+  ])->JSON.Encode.object
 
 let manualPair = (~white: Data_Player.t, ~black: Data_Player.t, result: Result.t, byeValue) => {
   id: Id.random(),

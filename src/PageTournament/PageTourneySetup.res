@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Router
 open Data
 
@@ -17,14 +16,12 @@ open Data
  */
 
 let makeDateInput = date => {
-  open Js.Date
-  let year = date->getFullYear->Float.toString
-  let rawMonth = date->getMonth
-  let rawDate = date->getDate
+  let year = date->Date.getFullYear->Int.toString
+  let rawMonth = date->Date.getMonth
+  let rawDate = date->Date.getDate
   /* The date input requires a 2-digit month and day. */
-  let month =
-    rawMonth < 9.0 ? "0" ++ Float.toString(rawMonth +. 1.0) : Float.toString(rawMonth +. 1.0)
-  let day = rawDate < 10.0 ? "0" ++ Float.toString(rawDate) : Float.toString(rawDate)
+  let month = rawMonth < 9 ? "0" ++ Int.toString(rawMonth + 1) : Int.toString(rawMonth + 1)
+  let day = rawDate < 10 ? "0" ++ Int.toString(rawDate) : Int.toString(rawDate)
   `${year}-${month}-${day}`
 }
 
@@ -38,11 +35,11 @@ let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, _} = tournament
   let {name, date, roundList, _} = tourney
   let (editing, setEditing) = React.useState(() => NotEditing)
-  let nameInput = React.useRef(Js.Nullable.null)
-  let dateInput = React.useRef(Js.Nullable.null)
+  let nameInput = React.useRef(Nullable.null)
+  let dateInput = React.useRef(Nullable.null)
   let focusRef = myref =>
     myref.React.current
-    ->Js.Nullable.toOption
+    ->Nullable.toOption
     ->Option.flatMap(Webapi.Dom.Element.asHtmlElement)
     ->Option.map(Webapi.Dom.HtmlElement.focus)
     ->ignore
@@ -66,7 +63,7 @@ let make = (~tournament: LoadTournament.t) => {
 
   let updateDate = event => {
     let rawDate = ReactEvent.Form.currentTarget(event)["value"]
-    let (rawYear, rawMonth, rawDay) = switch Js.String2.split(rawDate, "-") {
+    let (rawYear, rawMonth, rawDay) = switch String.split(rawDate, "-") {
     | [year, month, day] => (year, month, day)
     | _ => ("2000", "01", "01") /* this was chosen randomly */
     }
@@ -77,7 +74,11 @@ let make = (~tournament: LoadTournament.t) => {
     | (Some(year), Some(month), Some(date)) =>
       setTourney({
         ...tourney,
-        date: Js.Date.makeWithYMD(~year, ~month=month -. 1.0, ~date, ()),
+        date: Date.makeWithYMD(
+          ~year=Float.toInt(year),
+          ~month=Float.toInt(month -. 1.0),
+          ~day=Float.toInt(date),
+        ),
       })
     | _ => ()
     }
@@ -89,7 +90,8 @@ let make = (~tournament: LoadTournament.t) => {
       <form
         className="display-20"
         style={{textAlign: "left"}}
-        onSubmit={_ => setEditing(_ => NotEditing)}>
+        onSubmit={_ => setEditing(_ => NotEditing)}
+      >
         <input
           className="display-20"
           style={{textAlign: "left"}}

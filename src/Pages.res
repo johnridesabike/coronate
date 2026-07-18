@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 
 module Splash = {
   @react.component
@@ -87,7 +86,7 @@ module Splash = {
     </div>
 }
 
-let log2 = num => log(num) /. log(2.0)
+let log2 = num => Math.log(num) /. Math.log(2.0)
 
 let fixNumber = num =>
   if num < 0.0 || num == infinity || num == neg_infinity {
@@ -102,15 +101,14 @@ module TimeCalculator = {
     let value =
       ReactEvent.Form.currentTarget(event)["value"]
       ->Float.fromString
-      ->Option.getWithDefault(minimum)
+      ->Option.getOr(minimum)
     let safeValue = value < minimum ? minimum : value
     dispatch(_ => safeValue)
   }
 
   let updateInt = (dispatch, minimum, event) => {
     ReactEvent.Form.preventDefault(event)
-    let value =
-      ReactEvent.Form.currentTarget(event)["value"]->Int.fromString->Option.getWithDefault(minimum)
+    let value = ReactEvent.Form.currentTarget(event)["value"]->Int.fromString->Option.getOr(minimum)
     let safeValue = value < minimum ? minimum : value
     dispatch(_ => safeValue)
   }
@@ -187,13 +185,13 @@ module TimeCalculator = {
       </form>
       <dl>
         <dt className="title-20"> {React.string("Round count")} </dt>
-        <dd> {players->Int.toFloat->log2->ceil->fixNumber->React.float} </dd>
+        <dd> {players->Int.toFloat->log2->Math.ceil->fixNumber->React.float} </dd>
         <dt className="title-20"> {React.string("Maximum time control")} </dt>
         <dd>
           <span className="title-20">
-            {((totalTime *. 60.0 /. players->Int.toFloat->log2->ceil -.
+            {((totalTime *. 60.0 /. players->Int.toFloat->log2->Math.ceil -.
               Int.toFloat(breakTime)) /. 2.0)
-            ->ceil
+            ->Math.ceil
             ->fixNumber
             ->React.float}
             {React.string(" minutes")}

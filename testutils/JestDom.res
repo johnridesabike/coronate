@@ -11,7 +11,7 @@ type t = Vitest_Types.expected<Dom.element>
 @send external toBeInTheDocument: t => unit = "toBeInTheDocument"
 
 @send
-external toHaveTextContent: (t, @unwrap [#Str(string) | #RegExp(Js.Re.t)]) => unit =
+external toHaveTextContent: (t, @unwrap [#Str(string) | #RegExp(RegExp.t)]) => unit =
   "toHaveTextContent"
 
 @send
@@ -25,10 +25,14 @@ module FireEvent = {
   @module("@testing-library/dom") @scope("fireEvent")
   external click: Dom.element => unit = "click"
 
+  /* Radix tab triggers activate on mousedown, not click. */
   @module("@testing-library/dom") @scope("fireEvent")
-  external change: (Dom.element, Js.t<{..}>) => unit = "change"
+  external mouseDown: Dom.element => unit = "mouseDown"
+
+  @module("@testing-library/dom") @scope("fireEvent")
+  external change: (Dom.element, {..}) => unit = "change"
 }
 
 @module("@testing-library/dom")
-external waitForElementToBeRemoved: (unit => Js.Null.t<Dom.element>) => Promise.t<unit> =
+external waitForElementToBeRemoved: (unit => Null.t<Dom.element>) => Promise.t<unit> =
   "waitForElementToBeRemoved"
