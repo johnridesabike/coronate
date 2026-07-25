@@ -1,6 +1,9 @@
-onlyBuiltDependencies:
-  - core-js
-  - core-js-pure
-  - esbuild
-  - rescript
-  - sharp
+allowBuilds:
+  esbuild: false
+  sharp: false
+# rescript-vitest 2.1.1 hard-depends on vitest 3, which makes tests register
+# against a second vitest instance ("Vitest failed to find the current suite").
+# Force it onto the project's vitest until the upstream fix is released.
+overrides:
+  rescript-vitest>vite: ^8.1.5
+  rescript-vitest>vitest: ^4.1.10

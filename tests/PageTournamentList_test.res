@@ -16,23 +16,22 @@ let renderAsync = async x => {
   page
 }
 
-/* I think the Reach Dialog component may have a problem with this? */
 testAsync("Creating a new tournament works", async t => {
   let page = await renderAsync(<PageTournamentList />)
-  page->getByText(#RegExp(%re("/add tournament/i")))->click
+  page->getByText(#RegExp(/add tournament/i))->click
   page
-  ->getByLabelText(#RegExp(%re("/name:/i")))
+  ->getByLabelText(#RegExp(/name:/i))
   ->change({
     "target": {
       "value": "Deep 13 Open",
     },
   })
-  page->getByText(#RegExp(%re("/create/i")))->click
+  page->getByText(#RegExp(/^create$/i))->click
   t->expect(page->getByLabelText(#Str("Delete “Deep 13 Open”")))->toBeInTheDocument
 })
 
 testAsync("Deleting a tournament works", async t => {
   let page = await renderAsync(<PageTournamentList />)
   page->getByLabelText(#Str("Delete “Simple Pairing”"))->click
-  t->expect(page->queryByText(#RegExp(%re("/simple pairing/"))))->Expect.toBeNull
+  t->expect(page->queryByText(#RegExp(/simple pairing/)))->Expect.toBeNull
 })

@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 
@@ -31,11 +30,11 @@ let useRoundData = (
   let unmatched = switch (Rounds.get(roundList, roundId), isThisTheLastRound) {
   | (Some(round), true) =>
     let matched = Rounds.Round.getMatched(round)
-    Map.removeMany(activePlayers, matched)
-  | _ => Map.make(~id=Id.id)
+    Belt.Map.removeMany(activePlayers, matched)
+  | _ => Belt.Map.make(~id=Id.id)
   }
   /* make a new map so as not to affect auto-pairing */
-  let unmatchedWithDummy = Map.set(unmatched, Id.dummy, Player.dummy)
+  let unmatchedWithDummy = Belt.Map.set(unmatched, Id.dummy, Player.dummy)
   {scoreData, unmatched, unmatchedWithDummy}
 }
 
@@ -58,7 +57,7 @@ let getScoreInfo = (
   ~origRating,
   ~newRating,
 ) => {
-  let {colorScores, opponentResults, results, adjustment, _} = switch Map.get(
+  let {colorScores, opponentResults, results, adjustment, _} = switch Belt.Map.get(
     scoreData,
     player.id,
   ) {
@@ -67,7 +66,7 @@ let getScoreInfo = (
   }
   let hasBye = List.some(opponentResults, ((id, _)) => Data.Id.isDummy(id))
   let colorBalance = switch Data.Scoring.Score.sum(colorScores)->Data.Scoring.Score.Sum.toFloat {
-  | x if x < 0.0 => Data.Config.aliasToStringWhite(config) ++ " +" ++ x->abs_float->Float.toString
+  | x if x < 0.0 => Data.Config.aliasToStringWhite(config) ++ " +" ++ x->Math.abs->Float.toString
   | x if x > 0.0 => Data.Config.aliasToStringBlack(config) ++ " +" ++ x->Float.toString
   | _ => "Even"
   }
@@ -75,7 +74,7 @@ let getScoreInfo = (
   let opponentResults =
     opponentResults
     ->List.toArray
-    ->Array.mapWithIndex((i, (opId, result)) =>
+    ->Array.mapWithIndex(((opId, result), i) =>
       <li key={Data.Id.toString(opId) ++ ("-" ++ Int.toString(i))}>
         {opId->getPlayer->Data.Player.fullName->React.string}
         {" - "->React.string}
@@ -92,10 +91,10 @@ let getScoreInfo = (
     ->React.array
   let avoidListHtml =
     Data.Id.Pair.Set.toMap(config.avoidPairs)
-    ->Map.get(player.id)
-    ->Option.mapWithDefault([], Set.toArray)
+    ->Belt.Map.get(player.id)
+    ->Option.mapOr([], Belt.Set.toArray)
     ->Array.map(pId =>
-      switch Map.get(players, pId) {
+      switch Belt.Map.get(players, pId) {
       /* don't show players not in this tourney */
       | None => React.null
       | Some(p) => <li key={Data.Id.toString(pId)}> {p->Player.fullName->React.string} </li>

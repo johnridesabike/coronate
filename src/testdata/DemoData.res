@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 let id = Data.Id.fromString
@@ -33,14 +32,14 @@ let hugo = "HugoStrange_az43f9mtS"->id
 let config: Config.t = {
   byeValue: Full,
   avoidPairs: [(barbara, james), (joker, harley), (huntress, batman)]
-  ->Array.keepMap(((a, b)) => Id.Pair.make(a, b))
-  ->Set.fromArray(~id=Id.Pair.id),
-  lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
+  ->Array.filterMap(((a, b)) => Id.Pair.make(a, b))
+  ->Belt.Set.fromArray(~id=Id.Pair.id),
+  lastBackup: Date.fromString("1970-01-01T00:00:00.000Z"),
   whiteAlias: Config.aliasEmpty,
   blackAlias: Config.aliasEmpty,
 }
 
-let players = Map.fromArray(
+let players = Belt.Map.fromArray(
   ~id=Id.id,
   [
     (
@@ -255,22 +254,22 @@ let players = Map.fromArray(
   ],
 )
 
-let tournaments = Map.fromArray(
+let tournaments = Belt.Map.fromArray(
   ~id=Id.id,
   [
     (
       "CaouTNel9k70jUJ0h6SYM"->id,
       {
-        Tournament.date: Js.Date.fromString("2019-05-22T12:14:47.670Z"),
+        Tournament.date: Date.fromString("2019-05-22T12:14:47.670Z"),
         id: "CaouTNel9k70jUJ0h6SYM"->id,
         name: "Wayne Manor Open",
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
-        playerIds: Set.fromArray(
+        playerIds: Belt.Set.fromArray(
           ~id=Id.id,
           [batman, robin, alfred, barbara, batwoman, catwoman, jason, james, huntress],
         ),
-        scoreAdjustments: Map.make(~id=Id.id),
+        scoreAdjustments: Belt.Map.make(~id=Id.id),
         roundList: [
           [
             {
@@ -486,12 +485,12 @@ let tournaments = Map.fromArray(
     (
       "tvAdS4YbSOznrBgrg0ITA"->id,
       {
-        date: Js.Date.fromString("2019-05-29T12:15:20.593Z"),
+        date: Date.fromString("2019-05-29T12:15:20.593Z"),
         id: "tvAdS4YbSOznrBgrg0ITA"->id,
         name: "The Battle for Gotham City",
         tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
         byeQueue: [],
-        playerIds: Set.fromArray(
+        playerIds: Belt.Set.fromArray(
           ~id=Id.id,
           [
             batman,
@@ -514,7 +513,7 @@ let tournaments = Map.fromArray(
             twoface,
           ],
         ),
-        scoreAdjustments: Map.make(~id=Id.id),
+        scoreAdjustments: Belt.Map.make(~id=Id.id),
         roundList: [
           [
             {

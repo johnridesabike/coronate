@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 module Id = Data_Id
 
 @deriving(accessors)
@@ -32,11 +31,11 @@ let descendingRating = Utils.descend(compare, x => x.rating, ...)
 
 let splitInHalf = arr => {
   let midpoint = try {
-    Array.size(arr) / 2
+    Array.length(arr) / 2
   } catch {
   | Division_by_zero => 0
   }
-  (Array.slice(arr, ~offset=0, ~len=midpoint), Array.sliceToEnd(arr, midpoint))
+  (Array.slice(arr, ~start=0, ~end=midpoint), Array.slice(arr, ~start=midpoint))
 }
 
 /*
@@ -45,16 +44,16 @@ let splitInHalf = arr => {
  USCF § 29C1
 */
 let setUpperHalves = data => {
-  let dataArr = Map.valuesToArray(data)
-  Map.map(data, playerData => {
+  let dataArr = Belt.Map.valuesToArray(data)
+  Belt.Map.map(data, playerData => {
     let (upperHalfIds, lowerHalfIds) =
       dataArr
-      ->Array.keep(({score, _}) => score == playerData.score)
+      ->Array.filter(({score, _}) => score == playerData.score)
       ->Belt.SortArray.stableSortBy(descendingRating)
       ->splitInHalf
     /* We need to know what position in each half the player occupies. We're
      uisng array indices to identify these. */
-    let getIndex = Array.getIndexBy(_, x => Data_Id.eq(x.id, playerData.id))
+    let getIndex = Array.findIndexOpt(_, x => Data_Id.eq(x.id, playerData.id))
     let (halfPos, isUpperHalf) = switch (getIndex(upperHalfIds), getIndex(lowerHalfIds)) {
     | (Some(index), Some(_)) /* This shouldn't happen. */
     | (Some(index), None) => (index, true)
@@ -87,20 +86,26 @@ let priority = (~diffDueColor, ~isDiffHalf, ~halfPosDiff, ~scoreDiff, ~canMeet, 
   colors +. halves +. scores +. canMeet
 }
 
-let calcMaxPriority =
-  priority(~isDiffHalf=true, ~halfPosDiff=0., ~diffDueColor=true, ~scoreDiff=0., ~canMeet=true, ...)
+let calcMaxPriority = priority(
+  ~isDiffHalf=true,
+  ~halfPosDiff=0.,
+  ~diffDueColor=true,
+  ~scoreDiff=0.,
+  ~canMeet=true,
+  ...
+)
 
-let calcMaxScore = m => Map.reduce(m, 0., (acc, _, p) => max(acc, p.score))
+let calcMaxScore = m => Belt.Map.reduce(m, 0., (acc, _, p) => max(acc, p.score))
 
 let make = (scoreData, playerData, avoidPairs) => {
   let avoidMap = Data_Id.Pair.Set.toMap(avoidPairs)
-  let players = Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
-    let playerStats = switch Map.get(scoreData, key) {
+  let players = Belt.Map.mapWithKey(playerData, (key, data: Data_Player.t) => {
+    let playerStats = switch Belt.Map.get(scoreData, key) {
     | None => Data_Scoring.make(key)
     | Some(x) => x
     }
-    let newAvoidIds = switch Map.get(avoidMap, key) {
-    | None => Set.make(~id=Data_Id.id)
+    let newAvoidIds = switch Belt.Map.get(avoidMap, key) {
+    | None => Belt.Set.make(~id=Data_Id.id)
     | Some(x) => x
     }
     {
@@ -122,7 +127,7 @@ let make = (scoreData, playerData, avoidPairs) => {
 }
 
 let keep = ({players, _}, ~f) => {
-  let players = Map.keep(players, (key, player) => f(key, player))
+  let players = Belt.Map.keep(players, (key, player) => f(key, player))
   let maxScore = calcMaxScore(players)
   {players, maxScore, maxPriority: calcMaxPriority(~maxScore)}
 }
@@ -132,20 +137,20 @@ let calcPairIdeal = (player1, player2, ~maxScore) =>
     0.0
   } else {
     let metBefore = List.some(player1.opponents, Id.eq(player2.id, ...))
-    let mustAvoid = Set.has(player1.avoidIds, player2.id)
+    let mustAvoid = Belt.Set.has(player1.avoidIds, player2.id)
     let canMeet = !metBefore && !mustAvoid
     let diffDueColor = switch (player1.lastColor, player2.lastColor) {
     | (Some(color1), Some(color2)) => color1 != color2
     | (_, _) => true
     }
-    let scoreDiff = abs_float(player1.score -. player2.score)
+    let scoreDiff = Math.abs(player1.score -. player2.score)
     let halfPosDiff = Float.fromInt(abs(player1.halfPos - player2.halfPos))
     let isDiffHalf = player1.isUpperHalf != player2.isUpperHalf && player1.score == player2.score
     priority(~diffDueColor, ~scoreDiff, ~maxScore, ~isDiffHalf, ~halfPosDiff, ~canMeet)
   }
 
 let calcPairIdealByIds = ({players, maxScore, _}, p1, p2) =>
-  switch (Map.get(players, p1), Map.get(players, p2)) {
+  switch (Belt.Map.get(players, p1), Belt.Map.get(players, p2)) {
   | (Some(p1), Some(p2)) => Some(calcPairIdeal(p1, p2, ~maxScore))
   | _ => None
   }
@@ -159,22 +164,22 @@ let sortByScoreThenRating = (data1, data2) =>
 let setByePlayer = (byeQueue, dummyId, data: t) => {
   let hasNotHadBye = p => !List.some(p.opponents, Id.eq(dummyId, ...))
   /* if the list is even, just return it. */
-  switch mod(Map.size(data.players), 2) {
+  switch mod(Belt.Map.size(data.players), 2) {
   | exception Division_by_zero => (data, None)
   | 0 => (data, None)
   | _ =>
     let dataArr =
       data.players
-      ->Map.valuesToArray
-      ->Array.keep(hasNotHadBye)
-      ->SortArray.stableSortBy(sortByScoreThenRating)
+      ->Belt.Map.valuesToArray
+      ->Array.filter(hasNotHadBye)
+      ->Belt.SortArray.stableSortBy(sortByScoreThenRating)
     let playerIdsWithoutByes = Array.map(dataArr, p => p.id)
     let hasntHadByeFn = id => Array.some(playerIdsWithoutByes, Id.eq(id, ...))
-    let nextByeSignups = Array.keep(byeQueue, hasntHadByeFn)
+    let nextByeSignups = Array.filter(byeQueue, hasntHadByeFn)
     let dataForNextBye = switch nextByeSignups[0] {
     /* Assign the bye to the next person who signed up. */
     | Some(id) =>
-      switch Map.get(data.players, id) {
+      switch Belt.Map.get(data.players, id) {
       | Some(_) as x => x
       | None => dataArr[0]
       }
@@ -187,11 +192,14 @@ let setByePlayer = (byeQueue, dummyId, data: t) => {
       /* In the impossible situation that *everyone* has played a bye
        round previously, then just pick the last player. */
       | None =>
-        data.players->Map.valuesToArray->SortArray.stableSortBy(sortByScoreThenRating)->Array.get(0)
+        data.players
+        ->Belt.Map.valuesToArray
+        ->Belt.SortArray.stableSortBy(sortByScoreThenRating)
+        ->Array.get(0)
       }
     }
     let players = switch dataForNextBye {
-    | Some(dataForNextBye) => Map.remove(data.players, dataForNextBye.id)
+    | Some(dataForNextBye) => Belt.Map.remove(data.players, dataForNextBye.id)
     | None => data.players
     }
     ({...data, players}, dataForNextBye)
@@ -225,8 +233,8 @@ module IdMatch = unpack(Blossom.Match.comparable(Id.compare))
 /* This is not optimized for performance, but in practice that hasn't been a
  problem yet. */
 let pairPlayers = ({players, maxScore, _}) => {
-  Map.reduce(players, list{}, (acc, p1Id, p1) =>
-    Map.reduce(players, acc, (acc2, p2Id, p2) => list{
+  Belt.Map.reduce(players, list{}, (acc, p1Id, p1) =>
+    Belt.Map.reduce(players, acc, (acc2, p2Id, p2) => list{
       (p1Id, p2Id, calcPairIdeal(p1, p2, ~maxScore)),
       ...acc2,
     })
@@ -235,21 +243,21 @@ let pairPlayers = ({players, maxScore, _}) => {
    algorithm work its magic. */
   ->Blossom.Match.make(~id=module(IdMatch))
   /* Blossom returns redundant pair data. This filters them out. */
-  ->Blossom.Match.reduce(~init=Set.make(~id=Data_Id.Pair.id), ~f=(acc, p1, p2) =>
+  ->Blossom.Match.reduce(~init=Belt.Set.make(~id=Data_Id.Pair.id), ~f=(acc, p1, p2) =>
     switch Data_Id.Pair.make(p1, p2) {
     | None => acc
-    | Some(pair) => Set.add(acc, pair)
+    | Some(pair) => Belt.Set.add(acc, pair)
     }
   )
   /* Convert the ids back to their pairing data */
-  ->Set.toArray
-  ->Array.keepMap(pair => {
+  ->Belt.Set.toArray
+  ->Array.filterMap(pair => {
     let (p1, p2) = Data_Id.Pair.toTuple(pair)
-    switch (Map.get(players, p1), Map.get(players, p2)) {
+    switch (Belt.Map.get(players, p1), Belt.Map.get(players, p2)) {
     | (Some(p1), Some(p2)) => Some((p1, p2))
     | _ => None
     }
   })
-  ->SortArray.stableSortBy(sortByNetScoreThenRating)
+  ->Belt.SortArray.stableSortBy(sortByNetScoreThenRating)
   ->Array.map(assignColorsForPair)
 }

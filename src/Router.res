@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 let str = Data.Id.toString
 
 module TourneyPage = {
@@ -108,7 +107,8 @@ module Link = {
             ReactEvent.Mouse.preventDefault(event)
             RescriptReactRouter.push(href)
           }
-        }}>
+        }}
+      >
         children
       </a>,
       {"aria-current": href == toString(path)},

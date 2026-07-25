@@ -31,12 +31,12 @@ module WebpackAssets: {
 
 module DateFormat: {
   @react.component
-  let make: (~date: Js.Date.t) => React.element
+  let make: (~date: Date.t) => React.element
 }
 
 module DateTimeFormat: {
   @react.component
-  let make: (~date: Js.Date.t, ~timeZone: string=?) => React.element
+  let make: (~date: Date.t, ~timeZone: string=?) => React.element
 }
 
 module Panel: {

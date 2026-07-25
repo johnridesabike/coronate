@@ -28,7 +28,7 @@ type getter<'a> =
   | GetString('a => string)
   | GetInt('a => int)
   | GetFloat('a => float)
-  | GetDate('a => Js.Date.t)
+  | GetDate('a => Date.t)
 
 type tableState<'a> = {
   isDescending: bool,
@@ -51,10 +51,10 @@ let sortedTableReducer = (state, action) => {
   }
   let direction = newState.isDescending ? Utils.descend : Utils.ascend
   let sortFunc = switch newState.column {
-  | GetString(f) => direction(compare, str => f(str)->Js.String2.toLowerCase, ...)
+  | GetString(f) => direction(compare, str => f(str)->String.toLowerCase, ...)
   | GetInt(f) => direction(compare, f, ...)
   | GetFloat(f) => direction(compare, f, ...)
-  | GetDate(f) => direction(compare, date => f(date)->Js.Date.getTime, ...)
+  | GetDate(f) => direction(compare, date => f(date)->Date.getTime, ...)
   }
   let table = Belt.SortArray.stableSortBy(newState.table, sortFunc)
   {...newState, table}
@@ -88,7 +88,8 @@ module SortButton = {
     <button
       className="button-micro button-text-ghost title-20"
       style={{width: "100%"}}
-      onClick={_ => setKeyOrToggleDir()}>
+      onClick={_ => setKeyOrToggleDir()}
+    >
       <span ariaHidden=true>
         <Icons.ChevronUp style={{opacity: "0"}} />
       </span>
@@ -112,7 +113,10 @@ module SortButton = {
   }
 }
 
-let useLoadingCursorUntil = isLoaded => React.useEffect1(() => {
+/* A layout effect so the cursor is updated in the same commit as the loading
+ state it reflects; a passive effect can lag behind, which snapshot tests see
+ as a stale "wait" cursor. */
+let useLoadingCursorUntil = isLoaded => React.useLayoutEffect1(() => {
     let _ = isLoaded
       ? %raw(`document.body.style.cursor = "auto"`)
       : %raw(`document.body.style.cursor = "wait"`)

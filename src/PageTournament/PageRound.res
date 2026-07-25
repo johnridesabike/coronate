@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 
@@ -126,8 +125,8 @@ module MatchRow = {
 
       /* if it hasn't changed, then do nothing */
       if m.result != newResult {
-        let whiteOpt = players->Map.get(whiteId)
-        let blackOpt = players->Map.get(blackId)
+        let whiteOpt = players->Belt.Map.get(whiteId)
+        let blackOpt = players->Belt.Map.get(blackId)
         let (whiteNewRating, blackNewRating) = switch (newResult, whiteOpt, blackOpt) {
         | (_, None, _)
         | (_, _, None)
@@ -186,21 +185,23 @@ module MatchRow = {
     }
     <tr className={`${className} ${matchResultClass} ${selected ? "selected" : ""}}`}>
       <th className={"pageround__row-id table__number"} scope="row">
-        {string_of_int(pos + 1)->React.string}
+        {Int.toString(pos + 1)->React.string}
       </th>
       <td className="pageround__playerresult"> {resultDisplay(White)} </td>
-      <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-white")}>
+      <Utils.TestId testId={"match-" ++ (Int.toString(pos) ++ "-white")}>
         <td
           className={"table__player row__player " ++ Player.Type.toString(whitePlayer.type_)}
-          id={"match-" ++ (string_of_int(pos) ++ "-white")}>
+          id={"match-" ++ (Int.toString(pos) ++ "-white")}
+        >
           {whitePlayer->Player.fullName->React.string}
         </td>
       </Utils.TestId>
       <td className="pageround__playerresult"> {resultDisplay(Black)} </td>
-      <Utils.TestId testId={"match-" ++ (string_of_int(pos) ++ "-black")}>
+      <Utils.TestId testId={"match-" ++ (Int.toString(pos) ++ "-black")}>
         <td
           className={"table__player row__player " ++ Player.Type.toString(blackPlayer.type_)}
-          id={"match-" ++ (string_of_int(pos) ++ "-black")}>
+          id={"match-" ++ (Int.toString(pos) ++ "-black")}
+        >
           {blackPlayer->Player.fullName->React.string}
         </td>
       </Utils.TestId>
@@ -223,7 +224,8 @@ module MatchRow = {
             className="pageround__winnerSelect"
             value={Match.Result.toString(m.result)}
             onBlur=setMatchResultBlur
-            onChange=setMatchResultChange>
+            onChange=setMatchResultChange
+          >
             <option value={Match.Result.toString(NotSet)}> {React.string("Select winner")} </option>
             <option value={Match.Result.toString(WhiteWon)}>
               {React.string(Data.Config.aliasToStringWhite(config))}
@@ -251,11 +253,12 @@ module MatchRow = {
       | (true, _) => React.null
       | (false, Some(setSelectedMatch)) =>
         <td className={"pageround__controls data__input"}>
-          {if selectedMatch->Option.mapWithDefault(true, id => !Id.eq(id, m.id)) {
+          {if selectedMatch->Option.mapOr(true, id => !Id.eq(id, m.id)) {
             <button
               className="button-ghost"
               title="Edit match"
-              onClick={_ => setSelectedMatch(_ => Some(m.id))}>
+              onClick={_ => setSelectedMatch(_ => Some(m.id))}
+            >
               <Icons.Circle />
               <Externals.VisuallyHidden>
                 {`Edit match for ${Player.fullName(whitePlayer)} versus ${Player.fullName(
@@ -267,14 +270,14 @@ module MatchRow = {
             <button
               className="button-ghost button-pressed"
               title="End editing match"
-              onClick={_ => setSelectedMatch(_ => None)}>
+              onClick={_ => setSelectedMatch(_ => None)}
+            >
               <Icons.CheckCircle />
             </button>
           }}
           <button
-            className="button-ghost"
-            title="Open match information."
-            onClick={_ => dialog.setTrue()}>
+            className="button-ghost" title="Open match information." onClick={_ => dialog.setTrue()}
+          >
             <Icons.Info />
             <Externals.VisuallyHidden>
               {`View information for match: ${Player.fullName(
@@ -286,10 +289,8 @@ module MatchRow = {
           | None => React.null
           | Some(scoreData) =>
             <Externals.Dialog
-              isOpen=dialog.state
-              onDismiss={_ => dialog.setFalse()}
-              ariaLabel="Match information"
-              className="">
+              isOpen=dialog.state onDismiss={_ => dialog.setFalse()} ariaLabel="Match information"
+            >
               <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
                 {React.string("close")}
               </button>
@@ -344,11 +345,11 @@ module RoundTable = {
 
     let incompleteGamesCount =
       matches
-      ->Array.keep((m: Data.Match.t) => m.result == NotSet)
+      ->Array.filter((m: Data.Match.t) => m.result == NotSet)
       ->Array.length
 
     <table className="pageround__table">
-      {if Js.Array.length(matches) == 0 {
+      {if Array.length(matches) == 0 {
         React.null
       } else {
         <>
@@ -402,7 +403,7 @@ module RoundTable = {
         </>
       }}
       <tbody className="content">
-        {Array.mapWithIndex(matches, (pos, m: Match.t) =>
+        {Array.mapWithIndex(matches, (m: Match.t, pos) =>
           <MatchRow
             key={m.id->Data.Id.toString}
             isCompact
@@ -434,7 +435,7 @@ module Round = {
       /* checks if the match has been scored yet & resets the players' records */
       | Some(match) if match.result != NotSet && !Match.isBye(match) =>
         let reset = (id, rating) =>
-          switch players->Map.get(id) {
+          switch players->Belt.Map.get(id) {
           | Some(player) =>
             playersDispatch(Set(player.id, player->Player.setRating(rating)->Player.predMatchCount))
           | None => () /* Don't try to set dummy or deleted players */
@@ -480,7 +481,8 @@ module Round = {
           <button
             className="button-micro"
             disabled={selectedMatch == None}
-            onClick={_ => selectedMatch->Option.map(unMatch(_, matches))->ignore}>
+            onClick={_ => selectedMatch->Option.map(unMatch(_, matches))->ignore}
+          >
             <Icons.Trash />
             {React.string(" Unmatch")}
           </button>
@@ -488,7 +490,8 @@ module Round = {
           <button
             className="button-micro"
             disabled={selectedMatch == None}
-            onClick={_ => selectedMatch->Option.map(swapColors(_, matches))->ignore}>
+            onClick={_ => selectedMatch->Option.map(swapColors(_, matches))->ignore}
+          >
             <Icons.Repeat />
             {React.string(" Swap colors")}
           </button>
@@ -496,7 +499,8 @@ module Round = {
           <button
             className="button-micro"
             disabled={selectedMatch == None}
-            onClick={_ => selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore}>
+            onClick={_ => selectedMatch->Option.map(moveMatch(_, -1, matches))->ignore}
+          >
             <Icons.ArrowUp />
             {React.string(" Move up")}
           </button>
@@ -504,7 +508,8 @@ module Round = {
           <button
             className="button-micro"
             disabled={selectedMatch == None}
-            onClick={_ => selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore}>
+            onClick={_ => selectedMatch->Option.map(moveMatch(_, 1, matches))->ignore}
+          >
             <Icons.ArrowDown />
             {React.string(" Move down")}
           </button>
@@ -533,37 +538,37 @@ let make = (~roundId, ~tournament) => {
     roundId,
     tournament,
   )
-  let unmatchedCount = Map.size(unmatched)
-  let activePlayersCount = Map.size(tournament.activePlayers)
-  let initialTab = unmatchedCount == activePlayersCount ? 1 : 0
+  let unmatchedCount = Belt.Map.size(unmatched)
+  let activePlayersCount = Belt.Map.size(tournament.activePlayers)
+  let initialTab = unmatchedCount == activePlayersCount ? "unmatched" : "matches"
   let (openTab, setOpenTab) = React.useState(() => initialTab)
   /* Auto-switch the tab */
   React.useEffect3(() => {
     if unmatchedCount == activePlayersCount {
-      setOpenTab(_ => 1)
+      setOpenTab(_ => "unmatched")
     }
     if unmatchedCount == 0 {
-      setOpenTab(_ => 0)
+      setOpenTab(_ => "matches")
     }
     None
   }, (unmatchedCount, activePlayersCount, setOpenTab))
-  open Externals.ReachTabs
-  <Tabs index=openTab onChange={index => setOpenTab(_ => index)}>
-    <TabList>
-      <Tab disabled={unmatchedCount == activePlayersCount}>
+  module Tabs = Externals.Tabs
+  <Tabs.Root value=openTab onValueChange={value => setOpenTab(_ => value)} className="tabs">
+    <Tabs.List className="tabs-list">
+      <Tabs.Trigger value="matches" disabled={unmatchedCount == activePlayersCount} className="tab">
         <Icons.List />
         {React.string(" Matches")}
-      </Tab>
-      <Tab disabled={unmatchedCount == 0}>
+      </Tabs.Trigger>
+      <Tabs.Trigger value="unmatched" disabled={unmatchedCount == 0} className="tab">
         <Icons.Users />
         {` Unmatched players (${Int.toString(unmatchedCount)})`->React.string}
-      </Tab>
-    </TabList>
-    <TabPanels>
-      <TabPanel>
+      </Tabs.Trigger>
+    </Tabs.List>
+    <div className="tabs-panels">
+      <Tabs.Content value="matches" forceMount=true className="tab-panel">
         <Round roundId tournament scoreData />
-      </TabPanel>
-      <TabPanel>
+      </Tabs.Content>
+      <Tabs.Content value="unmatched" forceMount=true className="tab-panel">
         <div>
           {if unmatchedCount != 0 {
             <PairPicker roundId tournament unmatched unmatchedWithDummy scoreData />
@@ -571,7 +576,7 @@ let make = (~roundId, ~tournament) => {
             React.null
           }}
         </div>
-      </TabPanel>
-    </TabPanels>
-  </Tabs>
+      </Tabs.Content>
+    </div>
+  </Tabs.Root>
 }

@@ -77,9 +77,9 @@ module TieBreak: {
     | CumulativeOfOpposition
     | MostBlack
 
-  let encode: t => Js.Json.t
+  let encode: t => JSON.t
 
-  let decode: Js.Json.t => t
+  let decode: JSON.t => t
 
   let toString: t => string
 

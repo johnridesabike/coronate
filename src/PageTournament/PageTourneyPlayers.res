@@ -6,7 +6,6 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 open Data
-open! Belt
 module Id = Data.Id
 
 let sortFirstName = Hooks.GetString(p => p.Player.firstName)
@@ -17,18 +16,18 @@ module Selecting = {
   let make = (~tourney: Tournament.t, ~setTourney, ~players, ~playersDispatch) => {
     let {playerIds, _} = tourney
     let (table, tableDispatch) = Hooks.useSortedTable(
-      ~table=Map.valuesToArray(players),
+      ~table=Belt.Map.valuesToArray(players),
       ~column=sortFirstName,
       ~isDescending=false,
     )
     let togglePlayer = event => {
       let id = ReactEvent.Form.target(event)["value"]
       if ReactEvent.Form.target(event)["checked"] {
-        setTourney({...tourney, playerIds: Set.add(playerIds, id)})
+        setTourney({...tourney, playerIds: Belt.Set.add(playerIds, id)})
       } else {
         setTourney({
           ...tourney,
-          playerIds: Set.keep(playerIds, pId => !Id.eq(pId, id)),
+          playerIds: Belt.Set.keep(playerIds, pId => !Id.eq(pId, id)),
         })
       }
     }
@@ -40,13 +39,15 @@ module Selecting = {
           onClick={_ =>
             setTourney({
               ...tourney,
-              playerIds: players->Map.keysToArray->Set.fromArray(~id=Id.id),
-            })}>
+              playerIds: players->Belt.Map.keysToArray->Belt.Set.fromArray(~id=Id.id),
+            })}
+        >
           {React.string("Select all")}
         </button>
         <button
           className="button-micro"
-          onClick={_ => setTourney({...tourney, playerIds: Set.make(~id=Id.id)})}>
+          onClick={_ => setTourney({...tourney, playerIds: Belt.Set.make(~id=Id.id)})}
+        >
           {React.string("Select none")}
         </button>
       </div>
@@ -80,7 +81,7 @@ module Selecting = {
                   </label>
                 </Externals.VisuallyHidden>
                 <input
-                  checked={Set.has(playerIds, id)}
+                  checked={Belt.Set.has(playerIds, id)}
                   type_="checkbox"
                   value={id->Data.Id.toString}
                   id={"select-" ++ id->Data.Id.toString}
@@ -94,7 +95,7 @@ module Selecting = {
       </table>
       <PagePlayers.NewPlayerForm
         dispatch=playersDispatch
-        addPlayerCallback={id => setTourney({...tourney, playerIds: Set.add(playerIds, id)})}
+        addPlayerCallback={id => setTourney({...tourney, playerIds: Belt.Set.add(playerIds, id)})}
       />
     </div>
   }
@@ -102,8 +103,10 @@ module Selecting = {
 
 let hasHadBye = (matches, playerId) =>
   matches
-  ->MutableQueue.toArray
-  ->Array.keep((match: Match.t) => Id.eq(match.whiteId, playerId) || Id.eq(match.blackId, playerId))
+  ->Belt.MutableQueue.toArray
+  ->Array.filter((match: Match.t) =>
+    Id.eq(match.whiteId, playerId) || Id.eq(match.blackId, playerId)
+  )
   ->Array.some(match => Id.isDummy(match.whiteId) || Id.isDummy(match.blackId))
 
 module OptionsForm = {
@@ -249,7 +252,7 @@ module OptionsForm = {
       ~p: Data.Player.t,
     ) => {
       let scoreAdjustment =
-        Map.get(tourney.scoreAdjustments, p.id)->Option.mapWithDefault("0", Float.toString)
+        Belt.Map.get(tourney.scoreAdjustments, p.id)->Option.mapOr("0", x => Float.toString(x))
       let form = Form.useForm({scoreAdjustment: scoreAdjustment})
       <>
         <button className="button-micro button-primary" onClick={_ => dialog.setFalse()}>
@@ -264,17 +267,18 @@ module OptionsForm = {
               | {scoreAdjustment: 0.} =>
                 setTourney({
                   ...tourney,
-                  scoreAdjustments: Map.remove(tourney.scoreAdjustments, p.id),
+                  scoreAdjustments: Belt.Map.remove(tourney.scoreAdjustments, p.id),
                 })
               | {scoreAdjustment} =>
                 setTourney({
                   ...tourney,
-                  scoreAdjustments: Map.set(tourney.scoreAdjustments, p.id, scoreAdjustment),
+                  scoreAdjustments: Belt.Map.set(tourney.scoreAdjustments, p.id, scoreAdjustment),
                 })
               }
               dialog.setFalse()
             })
-          }}>
+          }}
+        >
           <h3>
             <label className="title-30" htmlFor={Data.Id.toString(p.id) ++ "-scoreAdjustment"}>
               {"Score adjustment"->React.string}
@@ -303,7 +307,8 @@ module OptionsForm = {
               onClick={event => {
                 ReactEvent.Mouse.preventDefault(event)
                 Form.updateScoreAdjustment(form, "0")
-              }}>
+              }}
+            >
               {"Reset"->React.string}
             </button>
           </p>
@@ -324,12 +329,13 @@ module OptionsForm = {
     <>
       <button
         className="button-micro"
-        disabled={Js.Array2.includes(byeQueue, p.id)}
+        disabled={Js.Array.includes(p.id, byeQueue)}
         onClick={_ =>
           setTourney({
             ...tourney,
             byeQueue: Array.concat(byeQueue, [p.id]),
-          })}>
+          })}
+      >
         {"Bye signup"->React.string}
       </button>
       {" "->React.string}
@@ -345,7 +351,8 @@ module OptionsForm = {
         isOpen=dialog.state
         onDismiss=dialog.setFalse
         ariaLabel={`Options for ${Player.fullName(p)}`}
-        className="">
+        visuallyHiddenTitle=true
+      >
         <More setTourney dialog tourney p />
       </Externals.Dialog>
     </>
@@ -373,19 +380,19 @@ module PlayerList = {
 let make = (~tournament: LoadTournament.t) => {
   let {tourney, setTourney, players, activePlayers, playersDispatch, getPlayer, _} = tournament
   let (playerTable, tableDispatch) = Hooks.useSortedTable(
-    ~table=Map.valuesToArray(activePlayers),
+    ~table=Belt.Map.valuesToArray(activePlayers),
     ~column=sortFirstName,
     ~isDescending=false,
   )
 
   // update the current roster table when activePlayers changes
   React.useEffect1(() => {
-    tableDispatch(Hooks.SetTable(Map.valuesToArray(activePlayers)))
+    tableDispatch(Hooks.SetTable(Belt.Map.valuesToArray(activePlayers)))
     None
   }, [activePlayers])
 
   let {playerIds, roundList, byeQueue, _} = tourney
-  let (isSelecting, setIsSelecting) = React.useState(() => Set.isEmpty(playerIds))
+  let (isSelecting, setIsSelecting) = React.useState(() => Belt.Set.isEmpty(playerIds))
   let matches = Rounds.rounds2Matches(roundList)
   <div className="content-area">
     <div className="toolbar">
@@ -427,7 +434,8 @@ let make = (~tournament: LoadTournament.t) => {
             <tbody>
               {Array.map(byeQueue, pId =>
                 <tr
-                  key={Data.Id.toString(pId)} className={hasHadBye(matches, pId) ? "disabled" : ""}>
+                  key={Data.Id.toString(pId)} className={hasHadBye(matches, pId) ? "disabled" : ""}
+                >
                   <td> {pId->getPlayer->Player.fullName->React.string} </td>
                   <td>
                     <button
@@ -435,8 +443,9 @@ let make = (~tournament: LoadTournament.t) => {
                       onClick={_ =>
                         setTourney({
                           ...tourney,
-                          byeQueue: Js.Array2.filter(byeQueue, id => !Id.eq(pId, id)),
-                        })}>
+                          byeQueue: Js.Array.filter(id => !Id.eq(pId, id), byeQueue),
+                        })}
+                    >
                       {React.string("Remove")}
                     </button>
                   </td>
@@ -447,10 +456,8 @@ let make = (~tournament: LoadTournament.t) => {
         }}
       </Utils.Panel>
       <Externals.Dialog
-        isOpen=isSelecting
-        onDismiss={() => setIsSelecting(_ => false)}
-        ariaLabel="Select players"
-        className="">
+        isOpen=isSelecting onDismiss={() => setIsSelecting(_ => false)} ariaLabel="Select players"
+      >
         <button className="button-micro button-primary" onClick={_ => setIsSelecting(_ => false)}>
           {React.string("Done")}
         </button>

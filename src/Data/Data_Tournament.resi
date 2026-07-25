@@ -8,7 +8,7 @@
 type t = {
   id: Data_Id.t,
   name: string,
-  date: Js.Date.t,
+  date: Date.t,
   playerIds: Data_Id.Set.t,
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
@@ -18,6 +18,6 @@ type t = {
 
 let make: (~id: Data_Id.t, ~name: string) => t
 
-let encode: t => Js.Json.t
+let encode: t => JSON.t
 
-let decode: Js.Json.t => t
+let decode: JSON.t => t

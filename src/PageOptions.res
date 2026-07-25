@@ -5,18 +5,17 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 
 @val external devMode: bool = "import.meta.env.DEV"
 
 let getDateForFile = () => {
-  let date = Js.Date.make()
+  let date = Date.make()
   [
-    date->Js.Date.getFullYear->Float.toString,
-    (Js.Date.getMonth(date) +. 1.0)->Numeral.make->Numeral.format("00"),
-    Js.Date.getDate(date)->Numeral.make->Numeral.format("00"),
-  ]->Js.Array2.joinWith("-")
+    date->Date.getFullYear->Int.toString,
+    (Date.getMonth(date) + 1)->Int.toFloat->Numeral.make->Numeral.format("00"),
+    Date.getDate(date)->Int.toFloat->Numeral.make->Numeral.format("00"),
+  ]->Array.join("-")
 }
 
 let invalidAlert = () =>
@@ -25,8 +24,8 @@ let invalidAlert = () =>
     "That data is invalid! A more helpful error message could not be written yet.",
   )
 
-let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
-let mapToDict = map => map->Data.Id.Map.toStringArray->Js.Dict.fromArray
+let dictToMap = dict => dict->Dict.toArray->Data.Id.Map.fromStringArray
+let mapToDict = map => map->Data.Id.Map.toStringArray->Dict.fromArray
 
 type input_data = {
   config: Config.t,
@@ -36,35 +35,38 @@ type input_data = {
 
 @raises(Not_found)
 let decodeOptions = json => {
-  let d = Js.Json.decodeObject(json)->Option.getExn
+  let d = JSON.Decode.object(json)->Option.getOrThrow
   {
-    config: d->Js.Dict.get("config")->Option.getExn->Config.decode,
+    config: d->Dict.get("config")->Option.getOrThrow->Config.decode,
     players: d
-    ->Js.Dict.get("players")
-    ->Option.flatMap(Js.Json.decodeObject)
-    ->Option.getExn
+    ->Dict.get("players")
+    ->Option.flatMap(JSON.Decode.object)
+    ->Option.getOrThrow
     ->dictToMap
-    ->Map.map(Player.decode),
+    ->Belt.Map.map(Player.decode),
     tournaments: d
-    ->Js.Dict.get("tournaments")
-    ->Option.flatMap(Js.Json.decodeObject)
-    ->Option.getExn
+    ->Dict.get("tournaments")
+    ->Option.flatMap(JSON.Decode.object)
+    ->Option.getOrThrow
     ->dictToMap
-    ->Map.map(Tournament.decode),
+    ->Belt.Map.map(Tournament.decode),
   }
 }
 
 let encodeOptions = data =>
-  Js.Dict.fromArray([
+  Dict.fromArray([
     ("config", Config.encode(data.config)),
-    ("players", Map.map(data.players, Player.encode)->mapToDict->Js.Json.object_),
-    ("tournaments", Map.map(data.tournaments, Tournament.encode)->mapToDict->Js.Json.object_),
-  ])->Js.Json.object_
+    ("players", Belt.Map.map(data.players, Player.encode)->mapToDict->JSON.Encode.object),
+    (
+      "tournaments",
+      Belt.Map.map(data.tournaments, Tournament.encode)->mapToDict->JSON.Encode.object,
+    ),
+  ])->JSON.Encode.object
 
 module LastBackupDate = {
   @react.component
   let make = (~date) =>
-    if Js.Date.getTime(date) == 0.0 {
+    if Date.getTime(date) == 0.0 {
       React.string("Never")
     } else {
       <Utils.DateTimeFormat date />
@@ -91,7 +93,7 @@ module GistOpts = {
 
   let netlifyopts = switch netlify_id {
   | Some(site_id) => {"site_id": site_id}
-  | None => Js.Obj.empty()
+  | None => Object.make()
   }
 
   let savedAlert = () => Webapi.Dom.Window.alert(Webapi.Dom.window, "Data saved.")
@@ -104,7 +106,7 @@ module GistOpts = {
     let cancelAllEffects = ref(false)
 
     let handleAuthError = e => {
-      Js.Console.error(e)
+      Console.error(e)
       if !cancelAllEffects.contents {
         authDispatch(Reset)
       }
@@ -157,16 +159,17 @@ module GistOpts = {
               NetlifyAuth.make(netlifyopts)->NetlifyAuth.authenticate(
                 {"provider": #github, "scope": "gist"},
                 (err, data) =>
-                  switch (Js.Nullable.toOption(err), data) {
+                  switch (Nullable.toOption(err), data) {
                   | (_, Some({token})) =>
                     if !cancelAllEffects.contents {
                       authDispatch(SetGitHubToken(token))
                     }
-                  | (Some(err), _) => Js.Console.error(err)
-                  | (None, None) => Js.Console.error("Something wrong happened.")
+                  | (Some(err), _) => Console.error(err)
+                  | (None, None) => Console.error("Something wrong happened.")
                   },
               )
-            }}>
+            }}
+          >
             {"Log in with GitHub"->React.string}
           </button>
         | _ =>
@@ -190,7 +193,7 @@ module GistOpts = {
               ->Promise.thenResolve((newGist: Octokit.response<_, _>) => {
                 if !cancelAllEffects.contents {
                   authDispatch(SetGistId(newGist.data["id"]))
-                  configDispatch(SetLastBackup(Js.Date.make()))
+                  configDispatch(SetLastBackup(Date.make()))
                 }
                 savedAlert()
               })
@@ -203,7 +206,8 @@ module GistOpts = {
                 handleAuthError(e)
               })
               ->ignore
-            }}>
+            }}
+          >
             {"Create a new gist"->React.string}
           </button>
           <p className="caption-30"> {"Or select an existing gist."->React.string} </p>
@@ -216,7 +220,8 @@ module GistOpts = {
             onChange={e => {
               let id = ReactEvent.Form.currentTarget(e)["value"]
               authDispatch(SetGistId(id))
-            }}>
+            }}
+          >
             <option value=""> {"No gist selected."->React.string} </option>
             {gists
             ->Array.map(({name, id, updated_at}) =>
@@ -232,7 +237,7 @@ module GistOpts = {
             <button
               onClick={_ => {
                 switch auth.github_gist_id {
-                | "" => Js.Console.error("Gist ID is blank.")
+                | "" => Console.error("Gist ID is blank.")
                 | id =>
                   Octokit.Gist.write(
                     ~id,
@@ -242,7 +247,7 @@ module GistOpts = {
                   )
                   ->Promise.thenResolve(_ => {
                     if !cancelAllEffects.contents {
-                      configDispatch(SetLastBackup(Js.Date.make()))
+                      configDispatch(SetLastBackup(Date.make()))
                     }
                     savedAlert()
                   })
@@ -257,14 +262,15 @@ module GistOpts = {
                   ->ignore
                 }
               }}
-              disabled={auth.github_gist_id == ""}>
+              disabled={auth.github_gist_id == ""}
+            >
               {"Backup to this gist"->React.string}
             </button>
             {" "->React.string}
             <button
               onClick={_ => {
                 switch auth.github_gist_id {
-                | "" => Js.Console.error("Gist ID is blank.")
+                | "" => Console.error("Gist ID is blank.")
                 | id =>
                   Octokit.Gist.read(~id, ~token=github_token)
                   ->Promise.thenResolve(result => {
@@ -277,7 +283,8 @@ module GistOpts = {
                   ->ignore
                 }
               }}
-              disabled={auth.github_gist_id == ""}>
+              disabled={auth.github_gist_id == ""}
+            >
               {"Load from this gist"->React.string}
             </button>
           </p>
@@ -317,10 +324,10 @@ let make = (~windowDispatch=_ => ()) => {
     () => {config, players, tournaments},
     (config, tournaments, players),
   )
-  let exportDataURI = exportData->encodeOptions->Js.Json.stringify->Js.Global.encodeURIComponent
+  let exportDataURI = exportData->encodeOptions->JSON.stringify->encodeURIComponent
   React.useEffect2(() => {
     let encoded = encodeOptions(exportData)
-    let json = Js.Json.stringifyWithSpace(encoded, 2)
+    let json = JSON.stringify(encoded, ~space=2)
     setText(_ => json)
     None
   }, (exportData, setText))
@@ -334,11 +341,11 @@ let make = (~windowDispatch=_ => ()) => {
 
   let loadJson = json =>
     try {
-      let {config, players, tournaments} = json->Js.Json.parseExn->decodeOptions
+      let {config, players, tournaments} = json->JSON.parseOrThrow->decodeOptions
       loadData(~tournaments, ~players, ~config)
     } catch {
     | e =>
-      Js.Console.error(e)
+      Console.error(e)
       invalidAlert()
     }
 
@@ -356,18 +363,18 @@ let make = (~windowDispatch=_ => ()) => {
       ignore(ev)
       let data = ev["target"]["result"]
       try {
-        let {config, players, tournaments} = data->Js.Json.parseExn->decodeOptions
+        let {config, players, tournaments} = data->JSON.parseOrThrow->decodeOptions
         loadData(~tournaments, ~players, ~config)
       } catch {
       | e =>
-        Js.Console.error(e)
+        Console.error(e)
         invalidAlert()
       }
     }
     FileReader.setOnLoad(reader, onload)
     FileReader.readAsText(
       reader,
-      ReactEvent.Form.currentTarget(event)["files"]->Array.get(0)->Option.getWithDefault(""),
+      ReactEvent.Form.currentTarget(event)["files"]->Array.get(0)->Option.getOr(""),
     )
     /* so the filename won't linger onscreen */
     ReactEvent.Form.currentTarget(event)->Object.set("value", "")
@@ -476,7 +483,8 @@ let make = (~windowDispatch=_ => ()) => {
         <a
           download={"coronate-" ++ (getDateForFile() ++ ".json")}
           href={"data:application/json," ++ exportDataURI}
-          onClick={_ => configDispatch(SetLastBackup(Js.Date.make()))}>
+          onClick={_ => configDispatch(SetLastBackup(Date.make()))}
+        >
           <Icons.Download />
           {React.string(" Export data to a file.")}
         </a>

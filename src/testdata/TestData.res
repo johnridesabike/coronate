@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 let id = Id.fromString
@@ -152,8 +151,8 @@ let deletedPlayer = "Deleted_Player_______"->id
 let byeRoundTourney: Tournament.t = {
   id: "Bye_Round_Tourney____"->id,
   byeQueue: [],
-  date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
-  playerIds: Set.fromArray(
+  date: Date.fromString("2019-06-12T23:49:47.103Z"),
+  playerIds: Belt.Set.fromArray(
     ~id=Id.id,
     [
       joelRobinson.id,
@@ -165,7 +164,7 @@ let byeRoundTourney: Tournament.t = {
       grandyMcMaster.id,
     ],
   ),
-  scoreAdjustments: Map.make(~id=Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: Rounds.empty,
   tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
   name: "Bye Round Tourney",
@@ -173,8 +172,8 @@ let byeRoundTourney: Tournament.t = {
 let byeRoundTourney2: Tournament.t = {
   id: "Bye_Round_Tourney_2__"->id,
   byeQueue: [],
-  date: Js.Date.fromString("2019-06-12T23:49:47.103Z"),
-  playerIds: Set.fromArray(
+  date: Date.fromString("2019-06-12T23:49:47.103Z"),
+  playerIds: Belt.Set.fromArray(
     ~id=Id.id,
     [
       joelRobinson.id,
@@ -186,7 +185,7 @@ let byeRoundTourney2: Tournament.t = {
       grandyMcMaster.id,
     ],
   ),
-  scoreAdjustments: Map.make(~id=Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: [
     [
       {
@@ -237,9 +236,9 @@ let byeRoundTourney2: Tournament.t = {
 let byeRoundTourney3: Tournament.t = {
   id: "Bye_Tourney_3________"->id,
   byeQueue: [],
-  date: Js.Date.fromString("2019-06-17T23:00:29.603Z"),
-  playerIds: Set.fromArray(~id=Id.id, [kinga.id, newbieMcNewberson.id, jonah.id]),
-  scoreAdjustments: Map.make(~id=Id.id),
+  date: Date.fromString("2019-06-17T23:00:29.603Z"),
+  playerIds: Belt.Set.fromArray(~id=Id.id, [kinga.id, newbieMcNewberson.id, jonah.id]),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: [
     [
       {
@@ -314,8 +313,8 @@ let byeRoundTourney3: Tournament.t = {
 let simplePairing: Tournament.t = {
   id: "Simple_Pairing_______"->id,
   byeQueue: [],
-  date: Js.Date.fromString("2019-06-14T11:40:34.407Z"),
-  playerIds: Set.fromArray(
+  date: Date.fromString("2019-06-14T11:40:34.407Z"),
+  playerIds: Belt.Set.fromArray(
     ~id=Id.id,
     [
       newbieMcNewberson.id,
@@ -328,7 +327,7 @@ let simplePairing: Tournament.t = {
       gypsy.id,
     ],
   ),
-  scoreAdjustments: Map.make(~id=Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: [
     [
       {
@@ -380,8 +379,8 @@ let simplePairing: Tournament.t = {
 let deletedPlayerTourney: Tournament.t = {
   id: "Deleted_Player_Torney"->id,
   byeQueue: [deletedPlayer],
-  date: Js.Date.fromString("2020-12-24T11:40:34.407Z"),
-  playerIds: Set.fromArray(
+  date: Date.fromString("2020-12-24T11:40:34.407Z"),
+  playerIds: Belt.Set.fromArray(
     ~id=Id.id,
     [
       newbieMcNewberson.id,
@@ -394,7 +393,7 @@ let deletedPlayerTourney: Tournament.t = {
       deletedPlayer,
     ],
   ),
-  scoreAdjustments: Map.make(~id=Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: [
     [
       {
@@ -446,8 +445,8 @@ let deletedPlayerTourney: Tournament.t = {
 let pairingWithDraws: Tournament.t = {
   id: "Pairing_With_Draws___"->id,
   byeQueue: [],
-  date: Js.Date.fromString("2019-06-14T14:18:06.686Z"),
-  playerIds: Set.fromArray(
+  date: Date.fromString("2019-06-14T14:18:06.686Z"),
+  playerIds: Belt.Set.fromArray(
     ~id=Id.id,
     [
       newbieMcNewberson.id,
@@ -460,7 +459,7 @@ let pairingWithDraws: Tournament.t = {
       gypsy.id,
     ],
   ),
-  scoreAdjustments: Map.make(~id=Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Id.id),
   roundList: [
     [
       {
@@ -513,8 +512,8 @@ let scoreTest: Tournament.t = {
   {
     id: "WY_AzAeDDZeHMbhgUVuum"->id,
     name: "Score testing",
-    date: Js.Date.fromString("2020-06-28T12:42:46.347Z"),
-    playerIds: Set.fromArray(
+    date: Date.fromString("2020-06-28T12:42:46.347Z"),
+    playerIds: Belt.Set.fromArray(
       ~id=Id.id,
       [
         joelRobinson.id,
@@ -753,35 +752,32 @@ let scoreTest: Tournament.t = {
       ]->Rounds.Round.fromArray,
       []->Rounds.Round.fromArray,
     ]->Rounds.fromArray,
-    scoreAdjustments: Map.make(~id=Id.id),
+    scoreAdjustments: Belt.Map.make(~id=Id.id),
   }
 }
 
-let dictToMap = dict => dict->Js.Dict.entries->Data.Id.Map.fromStringArray
+let dictToMap = dict => dict->Dict.toArray->Data.Id.Map.fromStringArray
 
 @raises(Not_found)
 let decode = json => {
   {
     "config": Config.decode(json["config"]),
     "players": json["players"]
-    ->Js.Json.decodeObject
-    ->Option.getExn
+    ->JSON.Decode.object
+    ->Option.getOrThrow
     ->dictToMap
-    ->Map.map(Player.decode),
+    ->Belt.Map.map(Player.decode),
     "tournaments": json["tournaments"]
-    ->Js.Json.decodeObject
-    ->Option.getExn
+    ->JSON.Decode.object
+    ->Option.getOrThrow
     ->dictToMap
-    ->Map.map(Tournament.decode),
+    ->Belt.Map.map(Tournament.decode),
   }
 }
 
 @module("./fixture-pairing-april-2022.json")
-external fixturePairingApril22: {
-  "config": Js.Json.t,
-  "players": Js.Json.t,
-  "tournaments": Js.Json.t,
-} = "default"
+external fixturePairingApril22: {"config": JSON.t, "players": JSON.t, "tournaments": JSON.t} =
+  "default"
 
 let fixturePairingApril22 = decode(fixturePairingApril22)
 
@@ -800,15 +796,15 @@ let config: Config.t = {
     (kinga.id, drClaytonForrester.id),
     (kinga.id, pearl.id),
   ]
-  ->Array.keepMap(((a, b)) => Id.Pair.make(a, b))
-  ->Set.fromArray(~id=Id.Pair.id),
-  lastBackup: Js.Date.fromString("1970-01-01T00:00:00.000Z"),
+  ->Array.filterMap(((a, b)) => Id.Pair.make(a, b))
+  ->Belt.Set.fromArray(~id=Id.Pair.id),
+  lastBackup: Date.fromString("1970-01-01T00:00:00.000Z"),
   whiteAlias: Config.aliasEmpty,
   blackAlias: Config.aliasEmpty,
 }
 
 let players =
-  Map.fromArray(
+  Belt.Map.fromArray(
     ~id=Id.id,
     [
       (cambot.id, cambot),
@@ -829,10 +825,10 @@ let players =
       (tvsSon.id, tvsSon),
       (tomServo.id, tomServo),
     ],
-  )->Map.merge(fixturePairingApril22["players"], mapMerger)
+  )->Belt.Map.merge(fixturePairingApril22["players"], mapMerger)
 
 let tournaments =
-  Map.fromArray(
+  Belt.Map.fromArray(
     ~id=Id.id,
     [
       (byeRoundTourney.id, byeRoundTourney),
@@ -843,4 +839,4 @@ let tournaments =
       (scoreTest.id, scoreTest),
       (deletedPlayerTourney.id, deletedPlayerTourney),
     ],
-  )->Map.merge(fixturePairingApril22["tournaments"], mapMerger)
+  )->Belt.Map.merge(fixturePairingApril22["tournaments"], mapMerger)

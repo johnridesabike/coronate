@@ -5,12 +5,10 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
-
 type t = {
   id: Data_Id.t,
   name: string,
-  date: Js.Date.t,
+  date: Date.t,
   playerIds: Data_Id.Set.t,
   scoreAdjustments: Data_Id.Map.t<float>,
   byeQueue: array<Data_Id.t>,
@@ -22,9 +20,9 @@ let make = (~id, ~name) => {
   id,
   name,
   byeQueue: [],
-  date: Js.Date.make(),
-  playerIds: Set.make(~id=Data_Id.id),
-  scoreAdjustments: Map.make(~id=Data_Id.id),
+  date: Date.make(),
+  playerIds: Belt.Set.make(~id=Data_Id.id),
+  scoreAdjustments: Belt.Map.make(~id=Data_Id.id),
   roundList: Data_Rounds.empty,
   tieBreaks: [Median, Solkoff, Cumulative, CumulativeOfOpposition],
 }
@@ -33,73 +31,73 @@ let make = (~id, ~name) => {
   LocalForage/IndexedDB sometimes automatically parses the date for us already,
   and I'm not sure how to propertly handle it.
   */
-external unsafe_date: Js.Json.t => Js.Date.t = "%identity"
+external unsafe_date: JSON.t => Date.t = "%identity"
 
 @raises(Not_found)
 let decode = json => {
-  let d = Js.Json.decodeObject(json)->Option.getExn
+  let d = JSON.Decode.object(json)->Option.getOrThrow
   {
-    id: d->Js.Dict.get("id")->Option.getExn->Data_Id.decode,
-    name: d->Js.Dict.get("name")->Option.flatMap(Js.Json.decodeString)->Option.getExn,
+    id: d->Dict.get("id")->Option.getOrThrow->Data_Id.decode,
+    name: d->Dict.get("name")->Option.flatMap(JSON.Decode.string)->Option.getOrThrow,
     date: d
-    ->Js.Dict.get("date")
+    ->Dict.get("date")
     ->Option.map(json =>
-      switch Js.Json.decodeString(json) {
-      | Some(s) => Js.Date.fromString(s)
+      switch JSON.Decode.string(json) {
+      | Some(s) => Date.fromString(s)
       | None => unsafe_date(json)
       }
     )
-    ->Option.getExn,
+    ->Option.getOrThrow,
     playerIds: d
-    ->Js.Dict.get("playerIds")
-    ->Option.flatMap(Js.Json.decodeArray)
-    ->Option.getExn
+    ->Dict.get("playerIds")
+    ->Option.flatMap(JSON.Decode.array)
+    ->Option.getOrThrow
     ->Array.map(Data_Id.decode)
-    ->Set.fromArray(~id=Data_Id.id),
+    ->Belt.Set.fromArray(~id=Data_Id.id),
     byeQueue: d
-    ->Js.Dict.get("byeQueue")
-    ->Option.flatMap(Js.Json.decodeArray)
-    ->Option.getExn
+    ->Dict.get("byeQueue")
+    ->Option.flatMap(JSON.Decode.array)
+    ->Option.getOrThrow
     ->Array.map(Data_Id.decode),
     tieBreaks: d
-    ->Js.Dict.get("tieBreaks")
-    ->Option.flatMap(Js.Json.decodeArray)
-    ->Option.getExn
+    ->Dict.get("tieBreaks")
+    ->Option.flatMap(JSON.Decode.array)
+    ->Option.getOrThrow
     ->Array.map(Data_Scoring.TieBreak.decode),
-    roundList: d->Js.Dict.get("roundList")->Option.getExn->Data_Rounds.decode,
+    roundList: d->Dict.get("roundList")->Option.getOrThrow->Data_Rounds.decode,
     scoreAdjustments: d
-    ->Js.Dict.get("scoreAdjustments")
-    ->Option.flatMap(Js.Json.decodeArray)
-    ->Option.getWithDefault([])
-    ->Array.keepMap(Js.Json.decodeArray)
-    ->Array.keepMap(a =>
+    ->Dict.get("scoreAdjustments")
+    ->Option.flatMap(JSON.Decode.array)
+    ->Option.getOr([])
+    ->Array.filterMap(JSON.Decode.array)
+    ->Array.filterMap(a =>
       switch (a[0], a[1]) {
       | (Some(k), Some(v)) =>
-        switch Js.Json.decodeNumber(v) {
+        switch JSON.Decode.float(v) {
         | Some(v) => Some((Data_Id.decode(k), v))
         | None => None
         }
       | _ => None
       }
     )
-    ->Map.fromArray(~id=Data_Id.id),
+    ->Belt.Map.fromArray(~id=Data_Id.id),
   }
 }
 
 let encode = data =>
-  Js.Dict.fromArray([
+  Dict.fromArray([
     ("id", data.id->Data_Id.encode),
-    ("name", data.name->Js.Json.string),
-    ("date", data.date->Js.Date.toJSONUnsafe->Js.Json.string),
-    ("playerIds", data.playerIds->Set.toArray->Array.map(Data_Id.encode)->Js.Json.array),
-    ("byeQueue", data.byeQueue->Array.map(Data_Id.encode)->Js.Json.array),
-    ("tieBreaks", data.tieBreaks->Array.map(Data_Scoring.TieBreak.encode)->Js.Json.array),
+    ("name", data.name->JSON.Encode.string),
+    ("date", data.date->Date.toJSON->Option.getOr("")->JSON.Encode.string),
+    ("playerIds", data.playerIds->Belt.Set.toArray->Array.map(Data_Id.encode)->JSON.Encode.array),
+    ("byeQueue", data.byeQueue->Array.map(Data_Id.encode)->JSON.Encode.array),
+    ("tieBreaks", data.tieBreaks->Array.map(Data_Scoring.TieBreak.encode)->JSON.Encode.array),
     ("roundList", data.roundList->Data_Rounds.encode),
     (
       "scoreAdjustments",
       data.scoreAdjustments
-      ->Map.toArray
-      ->Array.map(((k, v)) => [Data_Id.encode(k), Js.Json.number(v)]->Js.Json.array)
-      ->Js.Json.array,
+      ->Belt.Map.toArray
+      ->Array.map(((k, v)) => [Data_Id.encode(k), JSON.Encode.float(v)]->JSON.Encode.array)
+      ->JSON.Encode.array,
     ),
-  ])->Js.Json.object_
+  ])->JSON.Encode.object

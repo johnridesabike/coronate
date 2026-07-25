@@ -21,9 +21,9 @@ testAsync("Ratings are updated correctly after a match.", async t => {
       {tournament => <PageRound tournament roundId=1 />}
     </LoadTournament>,
   )
-  page->getByText(#RegExp(%re("/add newbie mcnewberson/i")))->JestDom.FireEvent.click
-  page->getByText(#RegExp(%re("/add grandy mcmaster/i")))->JestDom.FireEvent.click
-  page->getByText(#RegExp(%re("/match selected/i")))->JestDom.FireEvent.click
+  page->getByText(#RegExp(/add newbie mcnewberson/i))->JestDom.FireEvent.click
+  page->getByText(#RegExp(/add grandy mcmaster/i))->JestDom.FireEvent.click
+  page->getByText(#RegExp(/match selected/i))->JestDom.FireEvent.click
   page
   ->getByDisplayValue(#Str("Select winner"))
   ->FireEvent.change({
@@ -32,9 +32,7 @@ testAsync("Ratings are updated correctly after a match.", async t => {
     },
   })
   page
-  ->getByText(
-    #RegExp(%re("/view information for match: newbie mcnewberson versus grandy mcmaster/i")),
-  )
+  ->getByText(#RegExp(/view information for match: newbie mcnewberson versus grandy mcmaster/i))
   ->FireEvent.click
   t
   ->expect(page->getByTestId(#Str("rating-Newbie_McNewberson___")))

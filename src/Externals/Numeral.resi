@@ -59,10 +59,10 @@ module Locale: {
 }
 module RegExps: {
   type t = {
-    format: Js.Re.t,
-    unformat: Js.Re.t,
+    format: RegExp.t,
+    unformat: RegExp.t,
   }
-  let make: (~format: Js.Re.t, ~unformat: Js.Re.t) => t
+  let make: (~format: RegExp.t, ~unformat: RegExp.t) => t
 }
 
 module Format: {

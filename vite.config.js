@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => {
     favicons("graphics/logo.svg"),
   ];
   // https://github.com/jihchi/vite-plugin-rescript/issues/231
-  if (!(mode === "test" && process.env.CI)) {
+  // Tests run on the compiled .res.mjs files, so they don't need the plugin;
+  // its `rescript watch` child also breaks vitest's exit code at teardown.
+  if (mode !== "test") {
     plugins.push(
       reScript({
         loader: {

@@ -14,7 +14,6 @@
   component).
  */
 
-open! Belt
 module Match = Data_Match
 module Id = Data_Id
 
@@ -27,10 +26,10 @@ module Round = {
 
   let empty: t = []
 
-  let encode = t => t->Array.map(Match.encode)->Js.Json.array
+  let encode = t => t->Array.map(Match.encode)->JSON.Encode.array
 
   @raises(Not_found)
-  let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Match.decode)
+  let decode = json => JSON.Decode.array(json)->Option.getOrThrow->Array.map(Match.decode)
 
   let size = arr => Array.length(arr)
 
@@ -38,23 +37,23 @@ module Round = {
 
   /* flatten all of the ids from the matches to one array. */
   let getMatched = (round: t) => {
-    let q = MutableQueue.make()
+    let q = Belt.MutableQueue.make()
     Array.forEach(round, ({whiteId, blackId, _}) => {
-      MutableQueue.add(q, whiteId)
-      MutableQueue.add(q, blackId)
+      Belt.MutableQueue.add(q, whiteId)
+      Belt.MutableQueue.add(q, blackId)
     })
-    MutableQueue.toArray(q)
+    Belt.MutableQueue.toArray(q)
   }
 
-  let getMatchById = (round: t, id) => Array.getBy(round, x => Id.eq(x.id, id))
+  let getMatchById = (round: t, id) => Array.find(round, x => Id.eq(x.id, id))
 
-  let removeMatchById = (round: t, id) => Array.keep(round, x => !Id.eq(x.id, id))
+  let removeMatchById = (round: t, id) => Array.filter(round, x => !Id.eq(x.id, id))
 
   let setMatch = (round: t, match: Data_Match.t) => {
     let round = Array.copy(round)
     round
-    ->Array.getIndexBy(({Match.id: id, _}) => Id.eq(id, match.id))
-    ->Option.map(x => round[x] = match)
+    ->Array.findIndexOpt(({Match.id: id, _}) => Id.eq(id, match.id))
+    ->Option.map(x => Belt.Array.set(round, x, match))
     ->Option.flatMap(wasSuccessful => wasSuccessful ? Some(round) : None)
   }
 
@@ -62,7 +61,7 @@ module Round = {
     switch getMatchById(round, matchId) {
     | None => None
     | Some(match_) =>
-      let oldIndex = Js.Array2.indexOf(round, match_)
+      let oldIndex = Js.Array.indexOf(match_, round)
       let newIndex = oldIndex + direction >= 0 ? oldIndex + direction : 0
       Some(Utils.Array.swap(round, oldIndex, newIndex))
     }
@@ -76,12 +75,12 @@ let toArray = x => x
 
 let empty: t = [[]]
 
-let encode = t => t->Array.map(Round.encode)->Js.Json.array
+let encode = t => t->Array.map(Round.encode)->JSON.Encode.array
 
 @raises(Not_found)
-let decode = json => Js.Json.decodeArray(json)->Option.getExn->Array.map(Round.decode)
+let decode = json => JSON.Decode.array(json)->Option.getOrThrow->Array.map(Round.decode)
 
-let size = arr => Js.Array2.length(arr)
+let size = arr => Array.length(arr)
 
 let getLastKey = rounds => Array.length(rounds) - 1
 
@@ -89,7 +88,7 @@ let get = (arr, i) => arr[i]
 
 let set = (rounds, key, round) => {
   let rounds = Array.copy(rounds)
-  let wasSuccessful = rounds[key] = round
+  let wasSuccessful = Belt.Array.set(rounds, key, round)
   wasSuccessful ? Some(rounds) : None
 }
 
@@ -97,7 +96,7 @@ let setMatch = (rounds, key, match_) =>
   rounds->get(key)->Option.flatMap(Round.setMatch(_, match_))->Option.flatMap(set(rounds, key, ...))
 
 let rounds2Matches = roundList => {
-  module Q = MutableQueue
+  module Q = Belt.MutableQueue
   let q = Q.make()
   Array.forEach(roundList, r => r->Q.fromArray->Q.transfer(q))
   q
@@ -107,20 +106,20 @@ let isRoundComplete = (roundList, players, roundId) =>
   switch roundList[roundId] {
   | Some(round) =>
     /* If it's not the last round, it's complete. */
-    if roundId < Array.size(roundList) - 1 {
+    if roundId < Array.length(roundList) - 1 {
       true
     } else {
       let matched = Round.getMatched(round)
-      let unmatched = Map.removeMany(players, matched)
+      let unmatched = Belt.Map.removeMany(players, matched)
       let results = Array.map(round, match => match.result)
-      Map.size(unmatched) == 0 && !Js.Array2.includes(results, NotSet)
+      Belt.Map.size(unmatched) == 0 && !Js.Array.includes(Match.Result.NotSet, results)
     }
   | None => true
   }
 
 let addRound = roundList => Array.concat(roundList, [[]])
 
-let delLastRound = roundList => Js.Array.slice(roundList, ~start=0, ~end_=-1)
+let delLastRound = roundList => Js.Array.slice(0, ~end_=-1, ~obj=roundList)
 
 let updateByeScores = (rounds: t, byeValue) =>
   Array.map(rounds, round =>

@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 
@@ -18,14 +17,15 @@ module ScoreTable = {
     let standingTree =
       Scoring.fromTournament(~roundList, ~scoreAdjustments)
       ->Scoring.createStandingArray(tieBreaks)
-      ->Array.keep(({id, _}) => !Data.Id.isDummy(id))
+      ->Array.filter(({id, _}) => !Data.Id.isDummy(id))
       ->Scoring.createStandingTree(~tieBreaks)
     <table className={"pagescores__table"}>
       <caption
         className={switch size {
         | Compact => "title-30"
         | Expanded => "title-40"
-        }}>
+        }}
+      >
         {React.string(title)}
       </caption>
       <thead>
@@ -49,24 +49,26 @@ module ScoreTable = {
       <tbody>
         {standingTree
         ->List.toArray
-        ->Array.reverse
-        ->Array.mapWithIndex((rank, standingsFlat) =>
+        ->Array.toReversed
+        ->Array.mapWithIndex((standingsFlat, rank) =>
           standingsFlat
           ->List.toArray
-          ->Array.reverse
-          ->Array.mapWithIndex((i, standing) =>
+          ->Array.toReversed
+          ->Array.mapWithIndex((standing, i) =>
             <tr key={standing.id->Data.Id.toString} className="pagescores__row">
               {/* Only display the rank once */
               if i == 0 {
                 <th
                   className={"table__number pagescores__number pagescores__rank pagescores__row-th"}
                   rowSpan={List.size(standingsFlat)}
-                  scope="row">
+                  scope="row"
+                >
                   {React.int(rank + 1)}
                 </th>
               } else {
                 React.null
               }}
+
               /* It just uses <td> if it's compact. */
               {switch size {
               | Compact =>
@@ -75,7 +77,8 @@ module ScoreTable = {
                 </td> /* Use the name as a header if not compact. */
               | Expanded =>
                 <Utils.TestId
-                  testId={"rank-" ++ (Int.toString(rank + 1) ++ ("." ++ Int.toString(i)))}>
+                  testId={"rank-" ++ (Int.toString(rank + 1) ++ ("." ++ Int.toString(i)))}
+                >
                   <th className={"pagescores__row-th pagescores__playername"} scope="row">
                     {standing.id->getPlayer->Player.fullName->React.string}
                   </th>
@@ -92,7 +95,8 @@ module ScoreTable = {
                   tb =>
                     <td
                       key={Scoring.TieBreak.toString(tb)}
-                      className={"pagescores__row-td table__number"}>
+                      className={"pagescores__row-td table__number"}
+                    >
                       {Scoring.getTieBreak(standing, tb)
                       ->Scoring.Score.Sum.toNumeral
                       ->Numeral.format("1/2")
@@ -127,10 +131,10 @@ module SelectTieBreaks = {
       }
 
     let toggleTb = id =>
-      if Js.Array2.includes(tieBreaks, defaultId(id)) {
+      if Js.Array.includes(defaultId(id), tieBreaks) {
         setTourney({
           ...tourney,
-          tieBreaks: Js.Array2.filter(tourney.tieBreaks, tbId => defaultId(id) != tbId),
+          tieBreaks: Js.Array.filter(tbId => defaultId(id) != tbId, tourney.tieBreaks),
         })
         setSelectedTb(_ => None)
       } else {
@@ -144,7 +148,7 @@ module SelectTieBreaks = {
       switch selectedTb {
       | None => ()
       | Some(selectedTb) =>
-        let index = Js.Array2.indexOf(tieBreaks, selectedTb)
+        let index = Js.Array.indexOf(selectedTb, tieBreaks)
         setTourney({
           ...tourney,
           tieBreaks: Utils.Array.swap(tourney.tieBreaks, index, index + direction),
@@ -155,7 +159,8 @@ module SelectTieBreaks = {
       <Utils.Panel>
         <div className="toolbar">
           <button
-            className="button-micro" disabled={selectedTb == None} onClick={_ => toggleTb(None)}>
+            className="button-micro" disabled={selectedTb == None} onClick={_ => toggleTb(None)}
+          >
             {React.string("Remove")}
           </button>
           <button className="button-micro" disabled={selectedTb == None} onClick={_ => moveTb(-1)}>
@@ -169,7 +174,8 @@ module SelectTieBreaks = {
           <button
             className={`button-micro ${selectedTb != None ? "button-primary" : ""}`}
             disabled={selectedTb == None}
-            onClick={_ => setSelectedTb(_ => None)}>
+            onClick={_ => setSelectedTb(_ => None)}
+          >
             {React.string("Done")}
           </button>
         </div>
@@ -187,9 +193,8 @@ module SelectTieBreaks = {
             {Array.map(tieBreaks, tieBreak =>
               <tr
                 key={Scoring.TieBreak.toString(tieBreak)}
-                className={Option.mapWithDefault(selectedTb, "", x =>
-                  x == tieBreak ? "selected" : ""
-                )}>
+                className={Option.mapOr(selectedTb, "", x => x == tieBreak ? "selected" : "")}
+              >
                 <td> {Scoring.TieBreak.toPrettyString(tieBreak)->React.string} </td>
                 <td style={{width: "48px"}}>
                   <button
@@ -202,7 +207,8 @@ module SelectTieBreaks = {
                         selectedTb == tieBreak
                           ? setSelectedTb(_ => None)
                           : setSelectedTb(_ => Some(tieBreak))
-                      }}>
+                      }}
+                  >
                     {React.string(
                       switch selectedTb {
                       | None => "Edit"
@@ -233,13 +239,12 @@ module SelectTieBreaks = {
             ->Array.map(tieBreak =>
               <tr key={Scoring.TieBreak.toString(tieBreak)}>
                 <td>
-                  <span
-                    className={Js.Array2.includes(tieBreaks, tieBreak) ? "disabled" : "enabled"}>
+                  <span className={Js.Array.includes(tieBreak, tieBreaks) ? "disabled" : "enabled"}>
                     {tieBreak->Scoring.TieBreak.toPrettyString->React.string}
                   </span>
                 </td>
                 <td>
-                  {if Js.Array2.includes(tieBreaks, tieBreak) {
+                  {if Js.Array.includes(tieBreak, tieBreaks) {
                     React.null
                   } else {
                     <button className="button-micro" onClick={_ => toggleTb(Some(tieBreak))}>
@@ -261,28 +266,28 @@ module SelectTieBreaks = {
 let make = (~tournament: LoadTournament.t) => {
   let {getPlayer, tourney, setTourney, _} = tournament
   let helpDialog = Hooks.useBool(false)
-  open Externals.ReachTabs
+  module Tabs = Externals.Tabs
   <div>
-    <Tabs>
-      <TabList>
-        <Tab>
+    <Tabs.Root defaultValue="scores" className="tabs">
+      <Tabs.List className="tabs-list">
+        <Tabs.Trigger value="scores" className="tab">
           <Icons.List />
           {React.string(" Scores")}
-        </Tab>
-        <Tab>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tiebreaks" className="tab">
           <Icons.Settings />
           {React.string(" Edit tiebreak rules")}
-        </Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <div className="tabs-panels">
+        <Tabs.Content value="scores" forceMount=true className="tab-panel">
           <ScoreTable size=Expanded tourney getPlayer title="Score detail" />
-        </TabPanel>
-        <TabPanel>
+        </Tabs.Content>
+        <Tabs.Content value="tiebreaks" forceMount=true className="tab-panel">
           <SelectTieBreaks tourney setTourney />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+        </Tabs.Content>
+      </div>
+    </Tabs.Root>
     <div className="toolbar">
       <button onClick={_ => helpDialog.setTrue()}>
         <Icons.Help />
@@ -298,7 +303,7 @@ module Crosstable = {
     if Id.eq(player1Id, player2Id) {
       <Icons.X className="pagescores__x" />
     } else {
-      switch Map.get(scoreData, player1Id) {
+      switch Belt.Map.get(scoreData, player1Id) {
       | None => React.null
       | Some(scoreData) =>
         switch Scoring.oppResultsToSumById(scoreData, player2Id) {
@@ -310,11 +315,11 @@ module Crosstable = {
 
   let getRatingChangeTds = (scoreData, playerId) => {
     let firstRating =
-      Map.get(scoreData, playerId)->Option.map(x => x.Scoring.firstRating)->Option.getWithDefault(0)
+      Belt.Map.get(scoreData, playerId)->Option.map(x => x.Scoring.firstRating)->Option.getOr(0)
     let lastRating =
-      Map.get(scoreData, playerId)
+      Belt.Map.get(scoreData, playerId)
       ->Option.flatMap(x => List.head(x.ratings))
-      ->Option.getWithDefault(firstRating)
+      ->Option.getOr(firstRating)
     let change = Numeral.fromInt(lastRating - firstRating)->Numeral.format("+0")
     <>
       <td className={"pagescores__row-td table__number"}> {lastRating->React.int} </td>
@@ -341,7 +346,7 @@ module Crosstable = {
           <th> {React.string("Name")} </th>
           {/* Display a rank as a shorthand for each player. */
           standings
-          ->Array.mapWithIndex((rank, _) =>
+          ->Array.mapWithIndex((_, rank) =>
             <th key={Int.toString(rank)}> {React.int(rank + 1)} </th>
           )
           ->React.array}
@@ -351,7 +356,7 @@ module Crosstable = {
       </thead>
       <tbody>
         {standings
-        ->Array.mapWithIndex((index, standing) =>
+        ->Array.mapWithIndex((standing, index) =>
           <tr key={Int.toString(index)} className="pagescores__row">
             <th className={"pagescores__row-th pagescores__rank"} scope="col">
               {React.int(index + 1)}
@@ -361,12 +366,13 @@ module Crosstable = {
             </th>
             {/* Output a cell for each other player */
             standings
-            ->Array.mapWithIndex((index2, opponent) =>
+            ->Array.mapWithIndex((opponent, index2) =>
               <td key={Int.toString(index2)} className={"pagescores__row-td table__number"}>
                 {getXScore(scoreData, standing.id, opponent.id)}
               </td>
             )
             ->React.array}
+
             /* Output their score and rating change */
             <td className={"pagescores__row-td table__number"}>
               {standing.score->Scoring.Score.Sum.toNumeral->Numeral.format("1/2")->React.string}

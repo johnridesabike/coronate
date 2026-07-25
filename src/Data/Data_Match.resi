@@ -35,9 +35,9 @@ type t = {
 
 let isBye: t => bool
 
-let decode: Js.Json.t => t
+let decode: JSON.t => t
 
-let encode: t => Js.Json.t
+let encode: t => JSON.t
 
 let manualPair: (
   ~white: Data_Player.t,

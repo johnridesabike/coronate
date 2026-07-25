@@ -66,8 +66,8 @@ module Locale = {
 }
 module RegExps = {
   type t = {
-    format: Js.Re.t,
-    unformat: Js.Re.t,
+    format: RegExp.t,
+    unformat: RegExp.t,
   }
   let make = (~format, ~unformat) => {format, unformat}
 }
@@ -167,9 +167,9 @@ include Float
 @module("numeral") external fromInt: int => t = "default"
 module String = Make({
   type input = string
-  type output = Js.Nullable.t<float>
+  type output = Nullable.t<float>
   type parsedOutput = option<float>
-  let parseOutput = output => Js.Nullable.toOption(output)
+  let parseOutput = output => Nullable.toOption(output)
 })
 /* It probably doesn't make sense to add other types, like `int`, because the
  we can't guarantee that it will stay an int once it goes to the JS side. */

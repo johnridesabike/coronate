@@ -19,17 +19,17 @@ module Gist = {
   type file = {
     id: string,
     name: string,
-    updated_at: Js.Date.t,
+    updated_at: Date.t,
   }
 
   let list = (~token) => {
     make({"auth": token})
-    ->request("GET /gists", Js.Obj.empty())
+    ->request("GET /gists", Object.make())
     ->Promise.thenResolve(result =>
-      result.data->Belt.Array.map(x => {
-        name: Js.Dict.keys(x["files"])->Belt.Array.getUnsafe(0),
+      result.data->Array.map(x => {
+        name: Dict.keysToArray(x["files"])->Array.getUnsafe(0),
         id: x["id"],
-        updated_at: Js.Date.fromString(x["updated_at"]),
+        updated_at: Date.fromString(x["updated_at"]),
       })
     )
   }
@@ -42,9 +42,9 @@ module Gist = {
         "files": {
           "coronate-data.json": {
             "content": if minify {
-              Js.Json.stringify(data)
+              JSON.stringify(data)
             } else {
-              Js.Json.stringifyWithSpace(data, 2)
+              JSON.stringify(data, ~space=2)
             },
           },
         },
@@ -55,7 +55,7 @@ module Gist = {
   let read = (~token, ~id) => {
     let octokit = make({"auth": token})
     request(octokit, "GET /gists/" ++ id, {"gist_id": id})->Promise.thenResolve(x => {
-      let file = x.data["files"]->Js.Dict.values->Belt.Array.getUnsafe(0)
+      let file = x.data["files"]->Dict.valuesToArray->Array.getUnsafe(0)
       file["content"]
     })
   }
@@ -67,9 +67,9 @@ module Gist = {
         "files": {
           "coronate-data.json": {
             "content": if minify {
-              Js.Json.stringify(data)
+              JSON.stringify(data)
             } else {
-              Js.Json.stringifyWithSpace(data, 2)
+              JSON.stringify(data, ~space=2)
             },
           },
         },

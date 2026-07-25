@@ -17,7 +17,7 @@ type getter<'a> =
   | GetString('a => string)
   | GetInt('a => int)
   | GetFloat('a => float)
-  | GetDate('a => Js.Date.t)
+  | GetDate('a => Date.t)
 
 type tableState<'a> = {
   isDescending: bool,

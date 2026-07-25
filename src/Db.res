@@ -5,16 +5,13 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
-module D = Js.Dict
-module A = Js.Array2
 
 /** Use LocalForage to automatically save state data in browsers. In a testing environment, replace
     it with an in-memory read-only store. */
 module type Encodable = {
   type t
-  let encode: t => Js.Json.t
-  let decode: Js.Json.t => t
+  let encode: t => JSON.t
+  let decode: JSON.t => t
 }
 
 type encodable<'a> = module(Encodable with type t = 'a)
@@ -61,17 +58,17 @@ module LocalForage: STORE = {
   @module("localforage") @scope("default") external clear: unit => Promise.t<unit> = "clear"
 
   @send
-  external setItem: (localforage, string, Js.Json.t) => Promise.t<unit> = "setItem"
+  external setItem: (localforage, string, JSON.t) => Promise.t<unit> = "setItem"
   @send
-  external getItem: (localforage, string) => Promise.t<Js.Nullable.t<Js.Json.t>> = "getItem"
+  external getItem: (localforage, string) => Promise.t<Nullable.t<JSON.t>> = "getItem"
   @send external keys: localforage => Promise.t<array<string>> = "keys"
 
   module GetItems = {
     @module("localforage-getitems")
     external extendPrototype: localforage => unit = "extendPrototype"
     @send
-    external allDict: localforage => Promise.t<Js.Dict.t<Js.Json.t>> = "getItems"
-    @send external allJson: localforage => Promise.t<Js.Json.t> = "getItems"
+    external allDict: localforage => Promise.t<dict<JSON.t>> = "getItems"
+    @send external allJson: localforage => Promise.t<JSON.t> = "getItems"
   }
 
   module RemoveItems = {
@@ -85,19 +82,19 @@ module LocalForage: STORE = {
     @module("localforage-setitems")
     external extendPrototype: localforage => unit = "extendPrototype"
     @send
-    external fromDict: (localforage, Js.Dict.t<Js.Json.t>) => Promise.t<unit> = "setItems"
+    external fromDict: (localforage, dict<JSON.t>) => Promise.t<unit> = "setItems"
     @send
-    external fromJson: (localforage, Js.Json.t) => Promise.t<unit> = "setItems"
+    external fromJson: (localforage, JSON.t) => Promise.t<unit> = "setItems"
   }
 
   module Record = {
     type t<'a> = {
       store: localforage,
-      encode: 'a => Js.Json.t,
-      decode: Js.Json.t => 'a,
+      encode: 'a => JSON.t,
+      decode: JSON.t => 'a,
     }
 
-    let make = (config, type t, data: encodable<t>) => {
+    let make = (type t, config, data: encodable<t>) => {
       module Data = unpack(data)
       {store: createInstance(config), encode: Data.encode, decode: Data.decode}
     }
@@ -114,18 +111,18 @@ module LocalForage: STORE = {
   module Map = {
     type t<'a> = {
       store: localforage,
-      encode: 'a => Js.Json.t,
-      decode: Js.Json.t => 'a,
+      encode: 'a => JSON.t,
+      decode: JSON.t => 'a,
     }
 
-    let make = (config, type t, data: encodable<t>) => {
+    let make = (type t, config, data: encodable<t>) => {
       module Data = unpack(data)
       {store: createInstance(config), encode: Data.encode, decode: Data.decode}
     }
 
     let getItem = async ({store, decode, _}, ~key) => {
       let value = await getItem(store, Data.Id.toString(key))
-      value->Js.Nullable.toOption->Belt.Option.mapU(decode)
+      value->Nullable.toOption->Option.map(decode)
     }
 
     let setItem = ({store, encode, _}, ~key, ~v) => setItem(store, Data.Id.toString(key), encode(v))
@@ -134,7 +131,7 @@ module LocalForage: STORE = {
 
     let mapValues = ((key, value), ~f) => (key, f(value))
 
-    let parseItems = (decode, items) => items->D.entries->A.map(mapValues(~f=decode, ...))
+    let parseItems = (decode, items) => items->Dict.toArray->Array.map(mapValues(~f=decode, ...))
 
     let getAllItems = async ({store, decode, _}) => {
       let items = await GetItems.allDict(store)
@@ -143,10 +140,10 @@ module LocalForage: STORE = {
 
     let setItems = ({store, encode, _}, ~items) =>
       items
-      ->Map.map(encode)
+      ->Belt.Map.map(encode)
       ->Data.Id.Map.toStringArray
-      ->D.fromArray
-      ->(SetItems.fromDict(store, _))
+      ->Dict.fromArray
+      ->SetItems.fromDict(store, _)
 
     let removeItems = ({store, _}, ~items) => RemoveItems.fromArray(store, items)
     let setDataForTesting = (_, ~items as _) => ()
@@ -177,8 +174,8 @@ module TestStore: STORE = {
 
   module Map = {
     type t<'a> = ref<Data.Id.Map.t<'a>>
-    let make = (_, _) => ref(Map.make(~id=Data.Id.id))
-    let getItem = async (t, ~key) => t.contents->Map.get(key)
+    let make = (_, _) => ref(Belt.Map.make(~id=Data.Id.id))
+    let getItem = async (t, ~key) => t.contents->Belt.Map.get(key)
     let setItem = async (_, ~key as _, ~v as _) => ()
     let setItems = async (_, ~items as _) => ()
     let getAllItems = async t => t.contents->Data.Id.Map.toStringArray
@@ -258,13 +255,13 @@ type state<'a> = {
 
 let genericDbReducer = (state, action) =>
   switch action {
-  | Set(id, item) => Map.set(state, id, item)
-  | Del(id) => Map.remove(state, id)
+  | Set(id, item) => Belt.Map.set(state, id, item)
+  | Del(id) => Belt.Map.remove(state, id)
   | SetAll(state) => state
   }
 
 let useAllDb = store => {
-  let (items, dispatch) = React.useReducer(genericDbReducer, Map.make(~id=Data.Id.id))
+  let (items, dispatch) = React.useReducer(genericDbReducer, Belt.Map.make(~id=Data.Id.id))
   let loaded = Hooks.useBool(false)
   Hooks.useLoadingCursorUntil(loaded.state)
   /*
@@ -284,7 +281,7 @@ let useAllDb = store => {
         /* Even if there was an error, we'll clear the database. This means a
              corrupt database will get wiped. In the future, we may need to
              replace this with more elegant error recovery. */
-        Js.Console.error(error)
+        Console.error(error)
         Store.clear()->ignore
         loaded.setTrue()
       }
@@ -310,7 +307,7 @@ let useAllDb = store => {
          It needs to be fixed. */
       ->Promise.then(_ => Store.Map.getKeys(store))
       ->Promise.then(keys => {
-        let deleted = Array.keep(keys, x => !Map.has(items, Data.Id.fromString(x)))
+        let deleted = Array.filter(keys, x => !Belt.Map.has(items, Data.Id.fromString(x)))
         Store.Map.removeItems(store, ~items=deleted)
       })
       ->ignore
@@ -331,7 +328,7 @@ type actionConfig =
   | SetAvoidPairs(Data.Id.Pair.Set.t)
   | SetByeValue(Data.Config.ByeValue.t)
   | SetState(Data.Config.t)
-  | SetLastBackup(Js.Date.t)
+  | SetLastBackup(Date.t)
   | SetWhiteAlias(string)
   | SetBlackAlias(string)
 
@@ -339,15 +336,15 @@ let configReducer = (state: Data.Config.t, action): Data.Config.t => {
   switch action {
   | AddAvoidPair(pair) => {
       ...state,
-      avoidPairs: Set.add(state.avoidPairs, pair),
+      avoidPairs: Belt.Set.add(state.avoidPairs, pair),
     }
   | DelAvoidPair(pair) => {
       ...state,
-      avoidPairs: Set.remove(state.avoidPairs, pair),
+      avoidPairs: Belt.Set.remove(state.avoidPairs, pair),
     }
   | DelAvoidSingle(id) => {
       ...state,
-      avoidPairs: Set.keep(state.avoidPairs, pair => !Data.Id.Pair.has(pair, ~id)),
+      avoidPairs: Belt.Set.keep(state.avoidPairs, pair => !Data.Id.Pair.has(pair, ~id)),
     }
   | SetAvoidPairs(avoidPairs) => {...state, avoidPairs}
   | SetByeValue(byeValue) => {...state, byeValue}
@@ -373,7 +370,7 @@ let useConfig = () => {
     )
     ->Promise.catch(error => {
       if !didCancel.contents {
-        Js.Console.error(error)
+        Console.error(error)
         Store.clear()->ignore
         dispatch(SetState(Data.Config.default))
         loaded.setTrue()

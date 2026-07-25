@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 
 module EloRank = {
   type t = int
@@ -14,7 +13,7 @@ module EloRank = {
 
   let updateRating = (rating, expected, actual, current) =>
     (Float.fromInt(current) +. Float.fromInt(rating) *. (actual -. expected))
-    ->Js.Math.round
+    ->Math.round
     ->Int.fromFloat
 
   let getKFactor = (~matchCount, ~rating) =>

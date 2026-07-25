@@ -5,15 +5,14 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 
-let log2 = num => log(num) /. log(2.0)
+let log2 = num => Math.log(num) /. Math.log(2.0)
 
 let calcNumOfRounds = playerCount => {
-  let roundCount = playerCount->float_of_int->log2->ceil
-  roundCount != neg_infinity ? int_of_float(roundCount) : 0
+  let roundCount = playerCount->Int.toFloat->log2->Math.ceil
+  roundCount != neg_infinity ? Float.toInt(roundCount) : 0
 }
 
 let emptyTourney = Tournament.make(~id=Id.random(), ~name="")
@@ -99,8 +98,8 @@ let make = (~children, ~tourneyId, ~windowDispatch) => {
   switch (tourneyLoaded, arePlayersLoaded) {
   | (Loaded, true) =>
     /* `activePlayers` is only players to be matched in future matches. */
-    let activePlayers = Map.keep(players, (id, _) => Set.has(playerIds, id))
-    let roundCount = activePlayers->Map.size->calcNumOfRounds
+    let activePlayers = Belt.Map.keep(players, (id, _) => Belt.Set.has(playerIds, id))
+    let roundCount = activePlayers->Belt.Map.size->calcNumOfRounds
     let isItOver = Rounds.size(roundList) >= roundCount
     let isNewRoundReady =
       Rounds.size(roundList) == 0

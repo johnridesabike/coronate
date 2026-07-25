@@ -9,7 +9,7 @@
 module BaseDialog = {
   @react.component
   let make = (~state as {Hooks.state: state, setFalse, _}, ~ariaLabel, ~children) =>
-    <Externals.Dialog isOpen=state onDismiss=setFalse ariaLabel className="">
+    <Externals.Dialog isOpen=state onDismiss=setFalse ariaLabel>
       <button className="button-micro" onClick={_ => setFalse()}> {React.string("Done")} </button>
       children
     </Externals.Dialog>

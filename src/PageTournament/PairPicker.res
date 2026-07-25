@@ -5,22 +5,21 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 module Id = Data.Id
 
 let autoPair = (~pairData, ~byeValue, ~playerMap, ~byeQueue) => {
   /* the pairData includes any players who were already matched. We need to
    only include the specified players. */
-  let filteredData = Pairing.keep(pairData, ~f=(id, _) => Map.has(playerMap, id))
+  let filteredData = Pairing.keep(pairData, ~f=(id, _) => Belt.Map.has(playerMap, id))
   let (pairdataNoByes, byePlayerData) = Pairing.setByePlayer(byeQueue, Id.dummy, filteredData)
-  let pairs = Pairing.pairPlayers(pairdataNoByes)->MutableQueue.fromArray
+  let pairs = Pairing.pairPlayers(pairdataNoByes)->Belt.MutableQueue.fromArray
   switch byePlayerData {
-  | Some(player) => MutableQueue.add(pairs, (Pairing.id(player), Id.dummy))
+  | Some(player) => Belt.MutableQueue.add(pairs, (Pairing.id(player), Id.dummy))
   | None => ()
   }
   let getPlayer = Player.getMaybe(playerMap, ...)
-  MutableQueue.map(pairs, ((whiteId, blackId)) => {
+  Belt.MutableQueue.map(pairs, ((whiteId, blackId)) => {
     let white = getPlayer(whiteId)
     let black = getPlayer(blackId)
     {
@@ -109,7 +108,8 @@ module SelectPlayerRow = {
         <button
           className="button-ghost"
           disabled={!isPlayerSelectable(state, player.id)}
-          onClick={_ => dispatch(Add(player.id))}>
+          onClick={_ => dispatch(Add(player.id))}
+        >
           <Icons.UserPlus />
           <Externals.VisuallyHidden>
             {`Add ${Player.fullName(player)}`->React.string}
@@ -130,7 +130,7 @@ module SelectPlayerRow = {
 module SelectList = {
   @react.component
   let make = (~pairData, ~state, ~dispatch, ~unmatched) => {
-    let initialTable = unmatched->Map.valuesToArray->Array.map(player => {player, ideal: 0.0})
+    let initialTable = unmatched->Belt.Map.valuesToArray->Array.map(player => {player, ideal: 0.0})
     let (sorted, sortedDispatch) = Hooks.useSortedTable(
       ~table=initialTable,
       ~column=sortByFirstName,
@@ -151,14 +151,14 @@ module SelectList = {
         }
       let table =
         unmatched
-        ->Map.valuesToArray
+        ->Belt.Map.valuesToArray
         ->Array.map(player => {player, ideal: calcIdealOrNot(player.id)})
       sortedDispatch(SetTable(table))
       None
     }, (unmatched, pairData, sortedDispatch, state))
 
     /* only use unmatched players if this is the last round. */
-    if Map.size(unmatched) == 0 {
+    if Belt.Map.size(unmatched) == 0 {
       React.null
     } else {
       <table className="content pageround__select-list">
@@ -239,7 +239,7 @@ module Stage = {
         )
         switch Rounds.set(roundList, roundId, newRound) {
         | Some(roundList) => setTourney({...tourney, roundList})
-        | None => Js.Console.error(`Couldn't add round ${Int.toString(roundId)}`)
+        | None => Console.error(`Couldn't add round ${Int.toString(roundId)}`)
         }
         dispatch(Clear)
       | _ => ()
@@ -311,7 +311,8 @@ module Stage = {
               onBlur={e =>
                 ReactEvent.Focus.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}
               onChange={e =>
-                ReactEvent.Form.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}>
+                ReactEvent.Form.target(e)["value"]->Match.Result.fromString->SetResult->dispatch}
+            >
               <option value={Match.Result.toString(NotSet)}> {React.string("None")} </option>
               <option value={Match.Result.toString(WhiteWon)}>
                 {React.string(Data.Config.aliasToStringWhite(config))}
@@ -420,7 +421,7 @@ let make = (
     switch state.p1 {
     | None => ()
     | Some(p1) =>
-      switch Map.get(unmatchedWithDummy, p1) {
+      switch Belt.Map.get(unmatchedWithDummy, p1) {
       | None => dispatch(RemoveP1)
       | Some(_) => ()
       }
@@ -428,7 +429,7 @@ let make = (
     switch state.p2 {
     | None => ()
     | Some(p2) =>
-      switch Map.get(unmatchedWithDummy, p2) {
+      switch Belt.Map.get(unmatchedWithDummy, p2) {
       | None => dispatch(RemoveP2)
       | Some(_) => ()
       }
@@ -444,7 +445,7 @@ let make = (
         ~byeValue=config.byeValue,
         ~byeQueue,
         ~playerMap=unmatched,
-      )->MutableQueue.toArray,
+      )->Belt.MutableQueue.toArray,
     )
     switch Rounds.set(roundList, roundId, newRound) {
     | Some(roundList) => setTourney({...tourney, roundList})
@@ -461,8 +462,9 @@ let make = (
           <div className="toolbar">
             <button
               className="button-primary"
-              disabled={Map.size(unmatched) == 0}
-              onClick={_ => autoPair(round)}>
+              disabled={Belt.Map.size(unmatched) == 0}
+              onClick={_ => autoPair(round)}
+            >
               {React.string("Auto-pair unmatched players")}
             </button>
             <button className="button-ghost" onClick={_ => autoPairHelp.setTrue()}>
@@ -508,7 +510,7 @@ let make = (
         isOpen=addOrRemovePlayers.state
         onDismiss=addOrRemovePlayers.setFalse
         ariaLabel="Select players"
-        className="">
+      >
         <button className="button-micro" onClick={_ => addOrRemovePlayers.setFalse()}>
           {React.string("Done")}
         </button>

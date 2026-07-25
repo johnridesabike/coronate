@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-module Option = Belt.Option
 
 module ByeValue = {
   type t = Full | Half | Zero
@@ -24,9 +23,9 @@ module ByeValue = {
     | _ => Full
     }
 
-  let encode = data => data->toFloat->Js.Json.number
+  let encode = data => data->toFloat->JSON.Encode.float
 
-  let decode = json => Js.Json.decodeNumber(json)->Option.getExn->fromFloat
+  let decode = json => JSON.Decode.float(json)->Option.getOrThrow->fromFloat
 }
 
 type alias = option<string>
@@ -34,45 +33,46 @@ type alias = option<string>
 type t = {
   avoidPairs: Data_Id.Pair.Set.t,
   byeValue: ByeValue.t,
-  lastBackup: Js.Date.t,
+  lastBackup: Date.t,
   whiteAlias: alias,
   blackAlias: alias,
 }
 
 let decode = json => {
-  let d = Js.Json.decodeObject(json)->Option.getExn
+  let d = JSON.Decode.object(json)->Option.getOrThrow
   {
-    avoidPairs: d->Js.Dict.get("avoidPairs")->Option.getExn->Data_Id.Pair.Set.decode,
-    byeValue: d->Js.Dict.get("byeValue")->Option.getExn->ByeValue.decode,
+    avoidPairs: d->Dict.get("avoidPairs")->Option.getOrThrow->Data_Id.Pair.Set.decode,
+    byeValue: d->Dict.get("byeValue")->Option.getOrThrow->ByeValue.decode,
     lastBackup: d
-    ->Js.Dict.get("lastBackup")
-    ->Option.flatMap(Js.Json.decodeString)
-    ->Option.getExn
-    ->Js.Date.fromString,
-    whiteAlias: d->Js.Dict.get("whiteAlias")->Option.flatMap(Js.Json.decodeString),
-    blackAlias: d->Js.Dict.get("blackAlias")->Option.flatMap(Js.Json.decodeString),
+    ->Dict.get("lastBackup")
+    ->Option.flatMap(JSON.Decode.string)
+    ->Option.getOrThrow
+    ->Date.fromString,
+    whiteAlias: d->Dict.get("whiteAlias")->Option.flatMap(JSON.Decode.string),
+    blackAlias: d->Dict.get("blackAlias")->Option.flatMap(JSON.Decode.string),
   }
 }
 
 let encodeAlias = o =>
   switch o {
-  | None => Js.Json.null
-  | Some(s) => Js.Json.string(s)
+  | None => JSON.Encode.null
+
+  | Some(s) => JSON.Encode.string(s)
   }
 
 let encode = data =>
-  Js.Dict.fromArray([
+  Dict.fromArray([
     ("avoidPairs", data.avoidPairs->Data_Id.Pair.Set.encode),
     ("byeValue", data.byeValue->ByeValue.encode),
-    ("lastBackup", data.lastBackup->Js.Date.toJSONUnsafe->Js.Json.string),
+    ("lastBackup", data.lastBackup->Date.toJSON->Option.getOr("")->JSON.Encode.string),
     ("whiteAlias", encodeAlias(data.whiteAlias)),
     ("blackAlias", encodeAlias(data.blackAlias)),
-  ])->Js.Json.object_
+  ])->JSON.Encode.object
 
 let default = {
   byeValue: Full,
   avoidPairs: Belt.Set.make(~id=Data_Id.Pair.id),
-  lastBackup: Js.Date.fromFloat(0.0),
+  lastBackup: Date.fromTime(0.0),
   whiteAlias: None,
   blackAlias: None,
 }

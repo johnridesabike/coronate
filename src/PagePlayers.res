@@ -5,7 +5,6 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
-open! Belt
 open Data
 open Router
 module Id = Data.Id
@@ -287,7 +286,8 @@ module NewPlayerForm = {
           | Some(fn) => fn(id)
           }
         })
-      }}>
+      }}
+    >
       <fieldset>
         <legend> {React.string("Register a new player")} </legend>
         <p>
@@ -354,7 +354,7 @@ module PlayerList = {
     }, [windowDispatch])
     let delPlayer = (event, id) => {
       ReactEvent.Mouse.preventDefault(event)
-      let playerOpt = Map.get(players, id)
+      let playerOpt = Belt.Map.get(players, id)
       switch playerOpt {
       | None => ()
       | Some(player) =>
@@ -425,7 +425,8 @@ module PlayerList = {
         isOpen=dialog.state
         onDismiss={_ => dialog.setFalse()}
         ariaLabel="New player form"
-        className="">
+        visuallyHiddenTitle=true
+      >
         <button className="button-micro" onClick={_ => dialog.setFalse()}>
           {React.string("Close")}
         </button>
@@ -438,11 +439,11 @@ module PlayerList = {
 module PlayerStats = {
   type t = {wins: int, losses: int, draws: int}
 
-  let succWins = t => {...t, wins: succ(t.wins)}
+  let succWins = t => {...t, wins: t.wins + 1}
 
-  let succLosses = t => {...t, losses: succ(t.losses)}
+  let succLosses = t => {...t, losses: t.losses + 1}
 
-  let succDraws = t => {...t, draws: succ(t.draws)}
+  let succDraws = t => {...t, draws: t.draws + 1}
 
   let empty = {wins: 0, losses: 0, draws: 0}
 
@@ -458,7 +459,7 @@ module PlayerStats = {
   let make = (~playerId) => {
     let {items, _} = Db.useAllTournaments()
     let idEqual = Data.Id.eq(playerId, ...)
-    let {wins, losses, draws} = Map.reduce(items, empty, (acc, _id, tournament) =>
+    let {wins, losses, draws} = Belt.Map.reduce(items, empty, (acc, _id, tournament) =>
       tournament.roundList
       ->Data.Rounds.toArray
       ->Array.reduce(acc, (acc, round) =>
@@ -519,13 +520,13 @@ module AvoidForm = {
   @react.component
   let make = (~playerId, ~players, ~config: Data.Config.t, ~configDispatch) => {
     let avoidMap = Id.Pair.Set.toMap(config.avoidPairs)
-    let singAvoidList = Map.getWithDefault(avoidMap, playerId, Set.make(~id=Id.id))
+    let singAvoidList = Belt.Map.getWithDefault(avoidMap, playerId, Belt.Set.make(~id=Id.id))
     let unavoided =
       players
-      ->Map.keysToArray
-      ->Array.keep(id => !Set.has(singAvoidList, id) && !Id.eq(id, playerId))
+      ->Belt.Map.keysToArray
+      ->Array.filter(id => !Belt.Set.has(singAvoidList, id) && !Id.eq(id, playerId))
       ->Array.map(Player.getMaybe(players, ...))
-      ->SortArray.stableSortBy(Data.Player.compareName)
+      ->Belt.SortArray.stableSortBy(Data.Player.compareName)
     let (selectedAvoider, setSelectedAvoider) = React.useState(() => None)
     // Reset the selctedAvoider to the first on the list if it's None and the list is nonempty.
     // Better to just shadow the value instead of setting the state again.
@@ -548,21 +549,21 @@ module AvoidForm = {
     }
     let handleAvoidChange = event => {
       let id: Data.Id.t = ReactEvent.Form.currentTarget(event)["value"]
-      setSelectedAvoider(_ => Map.get(players, id))
+      setSelectedAvoider(_ => Belt.Map.get(players, id))
     }
     let handleAvoidBlur = event => {
       let id: Data.Id.t = ReactEvent.Focus.currentTarget(event)["value"]
-      setSelectedAvoider(_ => Map.get(players, id))
+      setSelectedAvoider(_ => Belt.Map.get(players, id))
     }
     <>
-      {if Set.isEmpty(singAvoidList) {
+      {if Belt.Set.isEmpty(singAvoidList) {
         <p> {React.string("None")} </p>
       } else {
         <ul>
           {singAvoidList
-          ->Set.toArray
+          ->Belt.Set.toArray
           ->Array.map(Player.getMaybe(players, ...))
-          ->SortArray.stableSortBy(Player.compareName)
+          ->Belt.SortArray.stableSortBy(Player.compareName)
           ->Array.map(p => {
             let fullName = Player.fullName(p)
             <li key={p.id->Data.Id.toString}>
@@ -575,7 +576,8 @@ module AvoidForm = {
                   switch Id.Pair.make(playerId, p.id) {
                   | None => ()
                   | Some(pair) => configDispatch(Db.DelAvoidPair(pair))
-                  }}>
+                  }}
+              >
                 <Icons.Trash />
               </button>
             </li>
@@ -592,7 +594,8 @@ module AvoidForm = {
               id="avoid-select"
               onBlur=handleAvoidBlur
               onChange=handleAvoidChange
-              value={selectedAvoider.id->Data.Id.toString}>
+              value={selectedAvoider.id->Data.Id.toString}
+            >
               {unavoided
               ->Array.map(p => {
                 let id = Data.Id.toString(p.id)
@@ -639,7 +642,8 @@ module Profile = {
         onClick={event =>
           if Form.dirty(form) && !Webapi.Dom.Window.confirm(Webapi.Dom.window, "Discard changes?") {
             ReactEvent.Mouse.preventDefault(event)
-          }}>
+          }}
+      >
         <Icons.ChevronLeft />
         {React.string(" Back")}
       </Link>
@@ -655,7 +659,8 @@ module Profile = {
               ),
             )
           )
-        }}>
+        }}
+      >
         <p>
           <label htmlFor="firstName"> {React.string("First name")} </label>
           <input
@@ -740,12 +745,12 @@ module Profile = {
 let make = (~id=?, ~windowDispatch) => {
   let {items: players, dispatch: playersDispatch, _} = Db.useAllPlayers()
   let (sorted, sortDispatch) = Hooks.useSortedTable(
-    ~table=Map.valuesToArray(players),
+    ~table=Belt.Map.valuesToArray(players),
     ~column=sortFirstName,
     ~isDescending=false,
   )
   React.useEffect2(() => {
-    sortDispatch(SetTable(Map.valuesToArray(players)))
+    sortDispatch(SetTable(Belt.Map.valuesToArray(players)))
     None
   }, (players, sortDispatch))
   let (config, configDispatch) = Db.useConfig()
@@ -754,7 +759,7 @@ let make = (~id=?, ~windowDispatch) => {
     | None =>
       <PlayerList sorted sortDispatch players playersDispatch configDispatch windowDispatch />
     | Some(id) =>
-      switch Map.get(players, id) {
+      switch Belt.Map.get(players, id) {
       | None => <div> {React.string("Loading...")} </div>
       | Some(player) =>
         <Profile player players playersDispatch config configDispatch windowDispatch />
