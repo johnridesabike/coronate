@@ -202,6 +202,8 @@ module Stage = {
   let make = (
     ~getPlayer,
     ~pairData,
+    ~players: Id.Map.t<Player.t>,
+    ~playersDispatch: Db.action<Player.t> => unit,
     ~roundId,
     ~state,
     ~dispatch,
@@ -222,7 +224,44 @@ module Stage = {
     | Some(player) => player->getPlayer->Player.fullName
     }
 
-    /* TODO: should this increment match counts? */
+    let scoreStagedMatch = (m: Match.t) => {
+      let {whiteId, blackId, result, _} = m
+      let whiteOpt = Belt.Map.get(players, whiteId)
+      let blackOpt = Belt.Map.get(players, blackId)
+      let (whiteNewRating, blackNewRating) = switch (result, whiteOpt, blackOpt) {
+      | (_, None, _)
+      | (_, _, None)
+      | (Aborted | WhiteAborted | BlackAborted | NotSet, _, _) => (
+          m.whiteOrigRating,
+          m.blackOrigRating,
+        )
+      | (BlackWon | WhiteWon | Draw, Some(white), Some(black)) =>
+        Ratings.calcNewRatings(
+          ~whiteRating=m.whiteOrigRating,
+          ~blackRating=m.blackOrigRating,
+          ~whiteMatchCount=white.matchCount,
+          ~blackMatchCount=black.matchCount,
+          ~result,
+        )
+      }
+      let whiteOpt = Option.map(whiteOpt, white => Player.setRating(white, whiteNewRating))
+      let blackOpt = Option.map(blackOpt, black => Player.setRating(black, blackNewRating))
+
+      if !Match.isBye(m) {
+        switch result {
+        | NotSet => ()
+        | WhiteWon | BlackWon | Draw | Aborted | WhiteAborted | BlackAborted =>
+          Option.forEach(whiteOpt, white =>
+            playersDispatch(Set(whiteId, Player.succMatchCount(white)))
+          )
+          Option.forEach(blackOpt, black =>
+            playersDispatch(Set(blackId, Player.succMatchCount(black)))
+          )
+        }
+      }
+      {...m, whiteNewRating, blackNewRating}
+    }
+
     let match = _ =>
       switch (state.p1, state.p2) {
       | (Some(white), Some(black)) =>
@@ -234,7 +273,7 @@ module Stage = {
               ~black=getPlayer(black),
               state.result,
               config.byeValue,
-            ),
+            )->scoreStagedMatch,
           ],
         )
         switch Rounds.set(roundList, roundId, newRound) {
@@ -482,7 +521,19 @@ let make = (
           </div>
         </Utils.Panel>
         <Utils.Panel style={{flexGrow: "1"}}>
-          <Stage state roundId dispatch pairData setTourney getPlayer tourney round config />
+          <Stage
+            state
+            roundId
+            dispatch
+            pairData
+            players
+            playersDispatch
+            setTourney
+            getPlayer
+            tourney
+            round
+            config
+          />
           <Utils.PanelContainer>
             {[state.p1, state.p2]
             ->Array.map(id =>

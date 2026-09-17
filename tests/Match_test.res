@@ -38,3 +38,27 @@ testAsync("Ratings are updated correctly after a match.", async t => {
   ->expect(page->getByTestId(#Str("rating-Newbie_McNewberson___")))
   ->JestDom.toHaveTextContent(#Str("800 (+40)"))
 })
+
+testAsync("Ratings are updated correctly when a winner is pre-selected.", async t => {
+  let page = await renderAsync(
+    <LoadTournament tourneyId=TestData.simplePairing.id windowDispatch=None>
+      {tournament => <PageRound tournament roundId=1 />}
+    </LoadTournament>,
+  )
+  page->getByText(#RegExp(/add newbie mcnewberson/i))->JestDom.FireEvent.click
+  page->getByText(#RegExp(/add grandy mcmaster/i))->JestDom.FireEvent.click
+  page
+  ->getByTestId(#Str("pairpicker-preselect-winner"))
+  ->FireEvent.change({
+    "target": {
+      "value": Data.Match.Result.toString(Data.Match.Result.WhiteWon),
+    },
+  })
+  page->getByText(#RegExp(/match selected/i))->JestDom.FireEvent.click
+  page
+  ->getByText(#RegExp(/view information for match: newbie mcnewberson versus grandy mcmaster/i))
+  ->FireEvent.click
+  t
+  ->expect(page->getByTestId(#Str("rating-Newbie_McNewberson___")))
+  ->JestDom.toHaveTextContent(#Str("800 (+40)"))
+})
