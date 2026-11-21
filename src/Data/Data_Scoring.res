@@ -343,8 +343,8 @@ let update = (
       adjustment: Belt.Map.getWithDefault(scoreAdjustments, playerId, 0.0),
       results: list{result},
       resultsNoByes: Data_Id.isDummy(oppId) ? list{} : list{result},
-      lastColor: Some(color),
-      colorScores: list{Color.toScore(color)},
+      lastColor: Data_Id.isDummy(oppId) ? None : Some(color),
+      colorScores: Data_Id.isDummy(oppId) ? list{} : list{Color.toScore(color)},
       opponentResults: list{(oppId, result)},
       ratings: list{newRating},
       isDummy: Data_Id.isDummy(playerId),
@@ -356,8 +356,10 @@ let update = (
       resultsNoByes: Data_Id.isDummy(oppId)
         ? data.resultsNoByes
         : list{result, ...data.resultsNoByes},
-      lastColor: Some(color),
-      colorScores: list{Color.toScore(color), ...data.colorScores},
+      lastColor: Data_Id.isDummy(oppId) ? data.lastColor : Some(color),
+      colorScores: Data_Id.isDummy(oppId)
+        ? data.colorScores
+        : list{Color.toScore(color), ...data.colorScores},
       opponentResults: list{(oppId, result), ...data.opponentResults},
       ratings: list{newRating, ...data.ratings},
     })
