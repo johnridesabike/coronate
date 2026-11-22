@@ -1,0 +1,26 @@
+# This workflow uses the dockerfile in the directory root to build and publish a docker image to the GitHub container registry
+#This allows for easy deployment by anyone who knows docker/docker-compose
+
+name: docker
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  docker:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out code
+
+      - name: Build & push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: ${{ github.event.repository.name }}
+          tags: latest
+          registry: ghcr.io
+          dockerfile: Dockerfile
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
