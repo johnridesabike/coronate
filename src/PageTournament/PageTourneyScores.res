@@ -336,7 +336,10 @@ module Crosstable = {
     }: LoadTournament.t,
   ) => {
     let scoreData = Scoring.fromTournament(~roundList, ~scoreAdjustments)
-    let standings = Scoring.createStandingArray(scoreData, tieBreaks)
+    let standings =
+      Scoring.createStandingArray(scoreData, tieBreaks)->Array.filter(({id, _}) =>
+        !Data.Id.isDummy(id)
+      )
 
     <table className="pagescores__table">
       <caption> {React.string("Crosstable")} </caption>
