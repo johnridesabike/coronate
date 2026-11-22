@@ -238,10 +238,13 @@ let getCumulativeOfOpponentScore = (scores, id) =>
 /**
   USCF § 34E6.
   */
-let getColorBalanceScore = (scores, id) =>
+let getMostBlackScore = (scores, id) =>
   switch Belt.Map.get(scores, id) {
   | None => Score.Sum.zero
-  | Some({colorScores, _}) => Score.sum(colorScores)
+  | Some({colorScores, _}) =>
+    /* Black games score +1 and white games score -1, so this counts black games. */
+    let total = Score.sum(colorScores)->Score.Sum.toFloat
+    Score.Sum.fromFloat((total +. Float.fromInt(List.size(colorScores))) /. 2.0)
   }
 
 type scores = {
@@ -300,7 +303,7 @@ let createStandingArray = (t, orderedMethods) =>
     solkoff: getSolkoffScore(t, id),
     cumulative: getCumulativeScore(t, id),
     cumulativeOfOpposition: getCumulativeOfOpponentScore(t, id),
-    mostBlack: getColorBalanceScore(t, id),
+    mostBlack: getMostBlackScore(t, id),
   })
   ->Belt.Map.valuesToArray
   ->Belt.SortArray.stableSortBy(standingsSorter(orderedMethods, ...))
